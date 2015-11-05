@@ -16,19 +16,16 @@ class ProductDetail(api_resource.ApiResource):
 	resource = 'product_detail'
 
 
-	@param_required(['id'])
+	@param_required(['product_id'])
 	def get(args):
 		"""
 		获取商品详情
 
 		@param id 商品ID
 		"""
-		product_id = args['id']
 		product_detail = resource.get('mall', 'product_detail', {
-			'oid': 48,
-			'product_id': product_id
+			'woid': args['woid'],
+			'product_id': args['product_id']
 		})
-		return product_detail.to_dict(
-									'min_limit',
-									'swipe_images_json'
-				)
+
+		return product_detail

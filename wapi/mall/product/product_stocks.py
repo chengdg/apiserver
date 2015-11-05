@@ -36,14 +36,8 @@ class ProductStocks(api_resource.ApiResource):
 
 		result_data = dict()
 
-		print '*' * 20
-		print args
-		print '*' * 20
 		if product_id:
 			models = mall_models.ProductModel.select().dj_where(product=product_id, is_deleted=False)
-			print '*' * 20
-			print models
-			print '*' * 20
 		elif model_ids:
 			model_ids = model_ids.split(",")
 			models = mall_models.ProductModel.select().dj_where(id__in=model_ids, is_deleted=False)

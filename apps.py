@@ -9,6 +9,7 @@ import falcon
 #import requests
 
 from core import api_resource
+from core import auth
 from core.exceptionutil import unicode_full_stack
 import settings
 
@@ -60,6 +61,7 @@ class FalconResource:
 			"innerErrMsg": "",
 		}
 		resp.status = falcon.HTTP_200
+		req.params['webapp_user'] = auth.WebAppUser(1)
 		try:
 			raw_response = wapi_resource.wapi_call(method, app, resource, req.params, req)
 			response['code'] = 200

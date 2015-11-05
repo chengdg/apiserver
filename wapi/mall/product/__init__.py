@@ -3,3 +3,4 @@
 import product_detail
 import products
 import product_stocks
+import product

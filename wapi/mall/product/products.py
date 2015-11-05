@@ -12,7 +12,7 @@ class Products(api_resource.ApiResource):
 	resource = 'products'
 
 
-	@param_required(['category_id'])
+	@param_required(['woid', 'category_id'])
 	def get(args):
 		"""
 		获取商品详情
@@ -20,12 +20,10 @@ class Products(api_resource.ApiResource):
 		@param category_id 商品分类ID
 		"""
 		category_id = args['category_id']
-		oid = args['oid']
-		wid = args['wid']
+		woid = args['woid']
 
 		products = resource.get('mall', 'products', {
-			"oid": oid,
-			"wid": wid,
+			"woid": woid,
 			"category_id": category_id
 		})
 		return products

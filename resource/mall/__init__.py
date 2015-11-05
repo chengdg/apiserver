@@ -1,2 +1,4 @@
 import r_product_detail
 import r_products
+import r_top_product_review
+import r_product_hint

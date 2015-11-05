@@ -168,20 +168,18 @@ class RProducts(resource.Resource):
 				import resource
 				for product in products:
 					new_product = resource.get('mall', 'product_detail', {
-						"oid": webapp_owner_id,
+						"woid": webapp_owner_id,
 						"product_id": product.id
 					})
 					#new_product = get_webapp_product_detail(webapp_owner_id, product.id)
 					new_products.append(new_product)
 
-				mall_models.Product.fill_display_price(new_products)
+				#mall_models.Product.fill_display_price(new_products)
 
-				for product in new_products:
-					product_dict = product.to_dict()
-					product_dict['display_price'] = product.display_price
-					product_dict['categories'] = product2categories.get(product.id, set())
-					product_dict['promotion'] = product.promotion if hasattr(product, 'promotion') else None
+				for product_dict in new_products:
+					product_dict['categories'] = product2categories.get(product_dict['id'], [])
 					product_dicts.append(product_dict)
+
 				return {
 					'value': {
 						"products": product_dicts,
@@ -237,16 +235,16 @@ class RProducts(resource.Resource):
 
 		return category, products
 
-	@param_required(['oid', 'category_id', 'wid'])
+	@param_required(['woid', 'category_id'])
 	def get(args):
 		"""
 		获取商品详情
 
 		@param category_id 类别ID(id=0表示全部分类)
 		"""
-		owner_id = args['oid']
+		owner_id = args['woid']
 		category_id = int(args['category_id'])
-		webapp_id = args['wid']
+		webapp_id = 0
 		is_access_weizoom_mall = args.get('is_access_weizoom_mall', False)
 		
 		# 伪造一个UserProfile，便于传递参数
@@ -264,7 +262,7 @@ class RProducts(resource.Resource):
 		#categories = result['value']['categories']
 		result = []
 		for product in products:
-			data = product.to_dict('display_price')
+			data = product.format_to_dict()
 			data['pic_url'] = '%s%s' % (settings.IMAGE_HOST, data['pic_url'])
 			data['thumbnails_url'] = '%s%s' % (settings.IMAGE_HOST, data['thumbnails_url'])
 			result.append(data)

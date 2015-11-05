@@ -25,5 +25,4 @@ class SqlMonitorMiddleware(object):
 class RedisMiddleware(object):
 	def process_request(self, request, response):
 		if request.params.get('__nocache', None):
-			cache.local_cache = {}
 			cache.utils.clear_db()

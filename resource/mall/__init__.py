@@ -1,0 +1,2 @@
+import r_product_detail
+import r_products

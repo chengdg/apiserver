@@ -1,0 +1,118 @@
+# -*- coding: utf-8 -*-
+
+import os
+import sys
+path = os.path.abspath(os.path.join('.', '..'))
+sys.path.insert(0, path)
+
+import unittest
+from pymongo import Connection
+
+import settings
+from features.util import bdd_util
+
+######################################################################################
+# __clear_all_account_data: 清空账号数据
+######################################################################################
+def __clear_all_account_data():
+	pass
+
+
+######################################################################################
+# __clear_all_app_data: 清空应用数据
+######################################################################################
+def __clear_all_app_data():
+	pass
+
+######################################################################################
+# __create_system_user: 创建系统用户
+######################################################################################
+def __create_system_user(username):
+	pass
+
+
+def before_all(context):
+	# __clear_all_account_data()
+	# __create_system_user('jobs')
+	# __create_system_user('bill')
+	# __create_system_user('tom')
+	weapp_working_dir = os.path.join(settings.WEAPP_DIR, 'weapp')
+	if not os.path.exists(weapp_working_dir):
+		info = '* ERROR: CAN NOT do bdd testing. Because bdd need %s be exists!!!' % weapp_working_dir
+		info = info.replace(os.path.sep, '/')
+		print('*' * 80)
+		print(info)
+		print('*' * 80)
+		sys.exit(3)
+
+	#创建test case，使用assert
+	context.tc = unittest.TestCase('__init__')
+	bdd_util.tc = context.tc
+
+	#为model instance安装__getitem__，方便测试
+	enhance_model_class()
+
+	#设置bdd模式
+	settings.IS_UNDER_BDD = True
+
+	#登录添加App
+	#client = bdd_util.login('manager')
+
+
+def after_all(context):
+	pass
+
+
+def before_scenario(context, scenario):
+	is_ui_test = False
+	context.scenario = scenario
+	for tag in scenario.tags:
+		if tag.startswith('ui-') or tag == 'ui':
+			is_ui_test = True
+			break
+
+	if is_ui_test:
+		#创建浏览器
+		print('[before scenario]: init browser driver')
+		chrome_options = Options()
+		chrome_options.add_argument("--disable-extensions")
+		chrome_options.add_argument("--disable-plugins")
+		driver = webdriver.Chrome(chrome_options=chrome_options)
+		driver.implicitly_wait(3)
+		context.driver = driver
+
+	__clear_all_app_data()
+
+
+def after_scenario(context, scenario):
+	if hasattr(context, 'client') and context.client:
+		context.client.logout()
+
+	if hasattr(context, 'driver') and context.driver:
+		print('[after scenario]: close browser driver')
+		page_frame = PageFrame(context.driver)
+		page_frame.logout()
+		context.driver.quit()
+
+	if hasattr(context, 'webapp_driver') and context.driver:
+		print('[after scenario]: close webapp browser driver')
+		context.webapp_driver.quit()
+
+
+#
+# 为Model添加__getitem__
+#
+def enhance_model_class():
+	from db.models import Model
+
+	#def model_getitem(self, key):
+	#	return getattr(self, key)
+	#Model.__getitem__ = model_getitem
+
+	def model_todict(self):
+		columns = [field.get_attname() for field in self._meta.fields]
+		result = {}
+		for field in self._meta.fields:
+			result[field.get_attname()] = field.value_to_string(self)
+		return result
+	Model.to_dict = model_todict

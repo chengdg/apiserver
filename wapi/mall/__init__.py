@@ -1,0 +1,4 @@
+# -*- coding: utf-8 -*-
+
+import product
+import shopping_cart_item

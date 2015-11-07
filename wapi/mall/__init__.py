@@ -2,3 +2,4 @@
 
 import product
 import shopping_cart_item
+import purchasing

@@ -4,11 +4,208 @@ from datetime import datetime
 import json
 
 from db import models
-from wapi.user.models import User
+from wapi.user.models import User, UserProfile
 from core.watchdog.utils import watchdog_fatal
 import settings
+from utils import area_util
 
 
+#########################################################################
+# 商城相关Model
+#########################################################################
+MALL_CONFIG_PRODUCT_COUNT_NO_LIMIT = 999999999
+MALL_CONFIG_PRODUCT_NORMAL = 7
+class MallConfig(models.Model):
+	"""
+	商城配置
+	"""
+	owner = models.ForeignKey(User, related_name='mall_config')
+	max_product_count = models.IntegerField(default=MALL_CONFIG_PRODUCT_NORMAL)  # 最大商品数量
+	is_enable_bill = models.BooleanField(default=False)  # 是否启用发票功能
+	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间
+	# new add at 13  by bert
+	order_expired_day = models.IntegerField(default=0)  # 未付款订单过期时间(单位是小时)
+
+	class Meta(object):
+		db_table = 'mall_config'
+
+	@staticmethod
+	def set_max_product_count_for(user, max_product_count):
+		if user is None or max_product_count < 0:
+			return
+
+		MallConfig.update(max_product_count=max_product_count).dj_where(owner=user.id)
+
+	@staticmethod
+	def get_order_expired_day(user):
+		if user is None:
+			return -1
+
+		if MallConfig.select().dj_where(owner=user.id).count() > 0:
+			return MallConfig.select().dj_where(owner=user)[0].order_expired_day
+
+
+
+
+
+
+
+
+#########################################################################
+# 地域相关Model
+#########################################################################
+class City(models.Model):
+	name = models.CharField(max_length=50)
+	zip_code = models.CharField(max_length=50)
+	province_id = models.IntegerField(db_index=True)
+
+	class Meta(object):
+		db_table = 'city'
+		verbose_name = '城市列表'
+		verbose_name_plural = '城市列表'
+
+class Province(models.Model):
+	name = models.CharField(max_length=50)
+
+	class Meta(object):
+		db_table = 'province'
+		verbose_name = '省份列表'
+		verbose_name_plural = '省份列表'
+
+
+class District(models.Model):
+	name = models.CharField(max_length=50)
+	city_id = models.IntegerField(db_index=True)
+
+	class Meta(object):
+		db_table = 'district'
+		verbose_name = '区县列表'
+		verbose_name_plural = '区县列表'
+
+
+
+
+
+
+
+
+
+#########################################################################
+# 运费相关Model
+#########################################################################
+class PostageConfig(models.Model):
+	"""
+	运费配置
+	"""
+	owner = models.ForeignKey(User)
+	name = models.CharField(max_length=256)  # 名称
+	first_weight = models.FloatField(default=0.0)  # 首重
+	first_weight_price = models.FloatField(default=0.0)  # 首重价格
+	is_enable_added_weight = models.BooleanField(default=True)  # 是否启用续重机制
+	added_weight = models.CharField(max_length=256, default='0')  # 续重
+	added_weight_price = models.CharField(max_length=256, default='0')  # 续重价格
+	display_index = models.IntegerField(default=1, db_index=True)  # 显示的排序
+	is_used = models.BooleanField(default=True)  # 是否启用
+	is_system_level_config = models.BooleanField(default=False)  # 是否是系统创建的不可修改的配置
+	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间
+	update_time = models.DateTimeField(auto_now=True)  # 更新时间
+	is_enable_special_config = models.BooleanField(default=True)  # 是否启用续重机制
+	is_enable_free_config = models.BooleanField(default=True)  # 是否启用包邮机制
+	is_deleted = models.BooleanField(default=False) #是否删除
+
+	class Meta(object):
+		db_table = 'mall_postage_config'
+
+	def get_special_configs(self):
+		return SpecialPostageConfig.select().dj_where(postage_config=self)
+
+	def get_free_configs(self):
+		return FreePostageConfig.select().dj_where(postage_config=self)
+
+
+class SpecialPostageConfig(models.Model):
+	"""
+	特殊地区运费配置
+	"""
+	owner = models.ForeignKey(User)
+	postage_config = models.ForeignKey(PostageConfig)
+	first_weight_price = models.FloatField(default=0.0)  # 首重价格
+	added_weight_price = models.CharField(max_length=256)  # 续重价格
+	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间
+	# v2
+	destination = models.CharField(max_length=512)  # 目的省份的id集合
+	first_weight = models.FloatField(default=0.0)  # 首重
+	added_weight = models.FloatField(default=0.0)  # 续重
+
+	class Meta(object):
+		db_table = 'mall_postage_config_special'
+
+	def get_special_has_provinces(self):
+		return PostageConfigSpecialHasProvince.select().dj_where(postage_config_special=self)
+
+	def get_provinces_array(self):
+		provinces = []
+		for special_has_provinces in self.get_special_has_provinces():
+			provinces.append({
+				'id': special_has_provinces.province.id, 
+				'name': special_has_provinces.province.name
+			})
+		return provinces
+
+	@property
+	def destination_str(self):
+		province_ids = self.destination.split(',')
+		provinces = area_util.get_provinces_by_ids(province_ids)
+		self._dest_str = u', '.join(provinces)
+		return self._dest_str
+
+
+class FreePostageConfig(models.Model):
+	"""
+	特殊地区包邮配置
+	"""
+	owner = models.ForeignKey(User)
+	postage_config = models.ForeignKey(PostageConfig)
+	destination = models.CharField(max_length=512)  # 目的省份的id集合
+	condition = models.CharField(max_length=25, default='count')  # 免邮条件类型, 共有'count', 'money'两种
+	condition_value = models.CharField(max_length=25)  # 免邮条件值
+	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间
+
+	class Meta(object):
+		db_table = 'mall_free_postage_config'
+
+	@property
+	def destination_str(self):
+		province_ids = self.destination.split(',')
+		provinces = area_util.get_provinces_by_ids(province_ids)
+		self._dest_str = u', '.join(provinces)
+		return self._dest_str
+
+
+# class PostageConfigSpecialHasProvince(models.Model):
+# 	owner = models.ForeignKey(User)
+# 	postage_config = models.ForeignKey(PostageConfig)
+# 	postage_config_special = models.ForeignKey(SpecialPostageConfig)
+# 	province = models.ForeignKey(Province)
+# 	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间
+
+# 	class Meta(object):
+# 		db_table = 'mall_postage_config_special_has_province'
+# 		verbose_name = '运费特殊配置对应省份'
+# 		verbose_name_plural = '运费特殊配置对应省份'
+
+
+
+
+
+
+
+
+
+
+#########################################################################
+# 商品相关Model
+#########################################################################
 class ProductCategory(models.Model):
 	"""
 	商品分类
@@ -78,8 +275,6 @@ class Product(models.Model):
 	postage_id = models.IntegerField(default=-1)  # 运费id ，-1为使用统一运费
 	is_use_online_pay_interface = models.BooleanField(default=True)  # 在线支付方式
 	is_use_cod_pay_interface = models.BooleanField(default=False)  # 货到付款支付方式
-	# v2
-	# product_mode = models.ForeignKey(ProductModel, blank=True, null=True)
 	promotion_title = models.CharField(max_length=256, default='')  # 促销标题
 	user_code = models.CharField(max_length=256, default='')  # 编码
 	bar_code = models.CharField(max_length=256, default='')  # 条码
@@ -143,6 +338,41 @@ class Product(models.Model):
 	@is_use_custom_model.setter
 	def is_use_custom_model(self, value):
 		self._is_use_custom_model = value
+
+	# 如果规格有图片就显示，如果没有，使用缩略图
+	@property
+	def order_thumbnails_url(self):
+		'''
+		if hasattr(self, 'custom_model_properties') and self.custom_model_properties:
+			for model in self.custom_model_properties:
+				if model['property_pic_url']:
+					return model['property_pic_url']
+		'''
+		return self.thumbnails_url
+
+	def fill_specific_model(self, model_name, models=None):
+		if not models:
+			models = self.models
+
+		candidate_models = filter(lambda m: m['name'] == model_name, models)
+		if len(candidate_models) > 0:
+			model = candidate_models[0]
+			product = self
+			product.price = model['price']
+			product.weight = model['weight']
+			product.stock_type = model['stock_type']
+			if not hasattr(product, 'min_limit'):
+				product.min_limit = product.stocks
+			product.stocks = model['stocks']
+			product.model_name = model_name
+			product.model = model
+			product.is_model_deleted = False
+			product.market_price = model.get('market_price', 0.0)
+
+			if model_name == 'standard':
+				product.custom_model_properties = None
+			else:
+				product.custom_model_properties = [{'property_value': property_value['name']} for property_value in model['property_values']]
 
 	def fill_standard_model(self):
 		"""
@@ -682,12 +912,15 @@ class Product(models.Model):
 			'id': self.id,
 			'is_deleted': self.is_deleted,
 			'name': self.name,
+			'model_name': getattr(self, 'model_name', 'standard'),
+			'weshop_sync': self.weshop_sync,
 			'shelve_type': self.shelve_type,
 			'shelve_start_time': self.shelve_start_time,
 			'shelve_end_time': self.shelve_end_time,
 			'detail': self.detail,
-			'thumbnails_url': self.thumbnails_url,# if 'http:' in self.thumbnails_url else '%s%s' % (settings.IMAGE_HOST, self.thumbnails_url),
-			'pic_url': self.pic_url,# if 'http:' in self.pic_url else '%s%s' % (settings.IMAGE_HOST, self.pic_url),
+			'thumbnails_url': '%s%s' % (settings.IMAGE_HOST, self.thumbnails_url),
+			'order_thumbnails_url': '%s%s' % (settings.IMAGE_HOST, self.order_thumbnails_url),
+			'pic_url': '%s%s' % (settings.IMAGE_HOST, self.pic_url),
 			'detail_link': '/mall2/product/?id=%d&source=onshelf' % self.id,
 			'categories': getattr(self, 'categories', []),
 			'properties': getattr(self, 'properties', []),
@@ -755,6 +988,174 @@ class ProductSales(models.Model):
 
 	class Meta(object):
 		db_table = 'mall_product_sales'
+
+
+PAY_INTERFACE_ALIPAY = 0
+PAY_INTERFACE_TENPAY = 1
+PAY_INTERFACE_WEIXIN_PAY = 2
+PAY_INTERFACE_COD = 9
+PAY_INTERFACE_PREFERENCE = 10
+PAY_INTERFACE_WEIZOOM_COIN = 3
+
+PAYTYPE2LOGO = {
+	PAY_INTERFACE_ALIPAY: '/standard_static/img/mockapi/alipay.png',
+	PAY_INTERFACE_TENPAY: '/standard_static/img/mockapi/tenpay.png',
+	PAY_INTERFACE_WEIXIN_PAY: '/standard_static/img/mockapi/weixin_pay.png',
+	PAY_INTERFACE_COD: '/standard_static/img/mockapi/cod.png',
+	PAY_INTERFACE_WEIZOOM_COIN: '/standard_static/img/mockapi/wzcoin.png',
+}
+PAYTYPE2NAME = {
+	-1: u'',
+	PAY_INTERFACE_PREFERENCE: u'优惠抵扣',
+	PAY_INTERFACE_ALIPAY: u'支付宝',
+	PAY_INTERFACE_TENPAY: u'财付通',
+	PAY_INTERFACE_WEIXIN_PAY: u'微信支付',
+	PAY_INTERFACE_COD: u'货到付款',
+	PAY_INTERFACE_WEIZOOM_COIN: u"微众卡支付"
+}
+PAYNAME2TYPE = {
+	u'优惠抵扣':PAY_INTERFACE_PREFERENCE,
+	u'支付宝': PAY_INTERFACE_ALIPAY,
+	u'财付通': PAY_INTERFACE_TENPAY,
+	u'微信支付': PAY_INTERFACE_WEIXIN_PAY,
+	u'货到付款': PAY_INTERFACE_COD,
+	u"微众卡支付": PAY_INTERFACE_WEIZOOM_COIN
+}
+
+VALID_PAY_INTERFACES = [
+	PAY_INTERFACE_WEIXIN_PAY,
+	PAY_INTERFACE_COD,
+	PAY_INTERFACE_WEIZOOM_COIN,
+	PAY_INTERFACE_ALIPAY]
+ONLINE_PAY_INTERFACE = [
+	PAY_INTERFACE_WEIXIN_PAY,
+	PAY_INTERFACE_ALIPAY,
+	PAY_INTERFACE_WEIZOOM_COIN,
+	PAY_INTERFACE_TENPAY]
+	
+class PayInterface(models.Model):
+	"""
+	支付方式
+	"""
+	owner = models.ForeignKey(User)
+	type = models.IntegerField()  # 支付接口类型
+	description = models.CharField(max_length=50)  # 描述
+	is_active = models.BooleanField(default=True)  # 是否启用
+	related_config_id = models.IntegerField(default=0)  # 各种支付方式关联配置信息的id
+	created_at = models.DateTimeField(auto_now_add=True)  # 创建日期
+
+	class Meta(object):
+		db_table = 'mall_pay_interface'
+
+	def pay(self, order, webapp_owner_id):
+		if PAY_INTERFACE_ALIPAY == self.type:
+			return '/webapp/alipay/?woid={}&order_id={}&related_config_id={}'.format(webapp_owner_id, order.order_id, self.related_config_id)
+		elif PAY_INTERFACE_TENPAY == self.type:
+			from account.models import UserProfile
+			user_profile = UserProfile.objects.get(user_id=webapp_owner_id)
+			call_back_url = "http://{}/tenpay/mall/pay_result/get/{}/{}/".format(
+				user_profile.host,
+				webapp_owner_id,
+				self.related_config_id)
+			notify_url = "http://{}/tenpay/mall/pay_notify_result/get/{}/{}/".format(
+				user_profile.host,
+				webapp_owner_id,
+				self.related_config_id)
+			pay_submit = TenpaySubmit(
+				self.related_config_id,
+				order,
+				call_back_url,
+				notify_url)
+			tenpay_url = pay_submit.submit()
+
+			return tenpay_url
+		elif PAY_INTERFACE_COD == self.type:
+			return './?woid={}&module=mall&model=pay_result&action=get&pay_interface_type={}&order_id={}'.format(
+				webapp_owner_id,
+				PAY_INTERFACE_COD,
+				order.order_id)
+		elif PAY_INTERFACE_WEIXIN_PAY == self.type:
+			return '/webapp/wxpay/?woid={}&order_id={}&pay_id={}&showwxpaytitle=1'.format(
+				webapp_owner_id,
+				order.order_id,
+				self.id)
+		else:
+			return ''
+
+	def parse_pay_result(self, request):
+		error_msg = ''
+		if PAY_INTERFACE_ALIPAY == self.type:
+			order_id = request.GET.get('out_trade_no', None)
+			trade_status = request.GET.get('result', '')
+			is_trade_success = ('success' == trade_status.lower())
+		elif PAY_INTERFACE_TENPAY == self.type:
+			trade_status = int(request.GET.get('trade_status', -1))
+			is_trade_success = (0 == trade_status)
+			error_msg = request.GET.get('pay_info', '')
+			order_id = request.GET.get('out_trade_no', None)
+		elif PAY_INTERFACE_COD == self.type:
+			is_trade_success = True
+			order_id = request.GET.get('order_id')
+		elif PAY_INTERFACE_WEIXIN_PAY == self.type:
+			is_trade_success = True
+			order_id = request.GET.get('order_id')
+		else:
+			pass
+
+		#兼容改价
+		try:
+			order_id = order_id.split('-')[0]
+		except:
+			pass
+
+		return {
+			'is_success': is_trade_success,
+			'order_id': order_id,
+			'error_msg': error_msg
+		}
+
+	def parse_notify_result(self, request):
+		error_msg = ''
+		if PAY_INTERFACE_ALIPAY == self.type:
+			config = UserAlipayOrderConfig.objects.get(
+				id=self.related_config_id)
+			notify = AlipayNotify(request, config)
+		elif PAY_INTERFACE_TENPAY == self.type:
+			notify = TenpayNotify(request)
+		elif PAY_INTERFACE_WEIXIN_PAY == self.type:
+			notify = WxpayNotify(request)
+		else:
+			notify = None
+
+		if notify:
+			order_id = notify.get_payed_order_id()
+			is_trade_success = notify.is_pay_succeed()
+			error_msg = notify.get_pay_info()
+			reply_response = notify.get_reply_response()
+			order_payment_info = notify.get_order_payment_info()
+		else:
+			order_id = ''
+			is_trade_success = False
+			error_msg = ''
+			reply_response = ''
+			order_payment_info = None
+
+		#兼容改价
+		try:
+			order_id = order_id.split('-')[0]
+		except:
+			pass
+
+		return {
+			'order_id': order_id,
+			'is_success': is_trade_success,
+			'error_msg': error_msg,
+			'reply_response': reply_response,
+			'order_payment_info': order_payment_info
+		}
+
+	def get_str_name(self):
+		return PAYTYPE2NAME[self.type]
 
 
 
@@ -1041,6 +1442,7 @@ class Order(models.Model):
 			return Order.objects.filter(webapp_source_id__in=webapp_id, origin_order_id__lte=0)
 		else:
 			return Order.objects.filter(webapp_source_id=webapp_id, origin_order_id__lte=0)
+
 	##########################################################################
 	# get_coupon: 获取定单使用的优惠券信息
 	##########################################################################
@@ -1098,7 +1500,7 @@ class Order(models.Model):
 
 	@property
 	def get_str_area(self):
-		from tools.regional import views as regional_util
+		from utils import regional_util
 		if self.area:
 			return regional_util.get_str_value_by_string_ids(self.area)
 		else:

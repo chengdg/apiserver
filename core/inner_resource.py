@@ -12,6 +12,7 @@ class ResourceBase(type):
 			pass
 		else:
 			app_resource = '%s-%s' % (self.app, self.resource)
+			print 'register inner resource: %s' % app_resource
 
 			for key, value in self.__dict__.items():
 				if hasattr(value, '__call__'):

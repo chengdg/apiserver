@@ -1,21 +1,19 @@
 # -*- coding: utf-8 -*-
 
 import json
-#import logging
-#import uuid
 from wsgiref import simple_server
+from datetime import datetime, date
 
 import falcon
-#import requests
-
 from core import api_resource
 from core import auth
 from core.exceptionutil import unicode_full_stack
 import settings
-
+import resource as resource_module
 import resource.resources
 import wapi.resources
 import wapi as wapi_resource
+from db import models
 
 class ThingsResource:
 	def on_get(self, req, resp):
@@ -47,6 +45,15 @@ class ApiListerResource:
 		resp.body = json.dumps(api_list)
 		return
 
+def _default(obj):
+	if isinstance(obj, datetime): 
+		return obj.strftime('%Y-%m-%d %H:%M:%S') 
+	elif isinstance(obj, date): 
+		return obj.strftime('%Y-%m-%d') 
+	elif settings.DEBUG and isinstance(obj, models.Model):
+		return obj.to_dict()
+	else: 
+		raise TypeError('%r is not JSON serializable' % obj)
 
 class FalconResource:
 	def __init__(self):
@@ -62,6 +69,17 @@ class FalconResource:
 		}
 		resp.status = falcon.HTTP_200
 		req.params['webapp_user'] = auth.WebAppUser(1)
+		if 'woid' in req.params:
+			webapp_owner_info, _ = resource_module.get('account', 'webapp_owner_info', {
+				"woid": req.params['woid']
+			})
+			mall_data = resource_module.get('account', 'mall_data', {
+				"woid": req.params['woid']
+			})
+			webapp_owner_info.mall_data = mall_data
+			req.params['webapp_owner_info'] = webapp_owner_info
+			req.params['mall_data'] = webapp_owner_info
+			req.params['webapp_user'].webapp_owner_info = webapp_owner_info
 		try:
 			raw_response = wapi_resource.wapi_call(method, app, resource, req.params, req)
 			response['code'] = 200
@@ -74,7 +92,7 @@ class FalconResource:
 			response['code'] = 500
 			response['errMsg'] = str(e).strip()
 			response['innerErrMsg'] = unicode_full_stack()
-		resp.body = json.dumps(response)
+		resp.body = json.dumps(response, default=_default)
 
 	def on_get(self, req, resp, app, resource):
 		self.call_wapi('get', app, resource, req, resp)
@@ -110,10 +128,10 @@ def create_app():
 	falcon_app.add_route('/wapi/{app}/{resource}/', FalconResource())
 
 	if settings.DEBUG:
-		from core.inner_resource import api_console_resource
+		from core.dev_resource import api_console_resource
 		falcon_app.add_route('/console/', api_console_resource.ApiConsoleResource())
 
-		from core.inner_resource import static_resource
+		from core.dev_resource import static_resource
 		falcon_app.add_sink(static_resource.serve_static_resource, '/static/')
 
 	# things will handle all requests to the '/things' URL path

@@ -12,6 +12,19 @@ class UserProfile(object):
 class WebAppUser(object):
 	def __init__(self, id):
 		self.id = id
+		self.integral_info = {
+			'count': 0,
+			'usable_integral_percentage_in_order': 1,
+			'count_per_yuan': 1,
+			'usable_integral_or_conpon': 0
+		}
+		self.coupons = []
+		self.ship_info = None
+
+
+class WebAppOwnerInfo(object):
+	def __init__(self, id):
+		self.member_grades = []
 
 
 class DummyRequest(object):

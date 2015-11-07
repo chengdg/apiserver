@@ -23,6 +23,13 @@ r = redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.
 
 CACHE_QUERIES = []
 
+class Object(object):
+	def __init__(self):
+		pass
+
+	def to_dict(self):
+		return self.__dict__
+
 def get_trace_back():
 	stack_entries = traceback.extract_stack()
 	stack_entries = filter(lambda entry: (('apiserver' in entry[0]) and (not 'cache%sutils' % os.path.sep in entry[0])), stack_entries)
@@ -46,7 +53,7 @@ def get_cache(key):
 	# return r.get(key)
 
 def get_many(keys):
-	return r.mget(keys)
+	return [pickle.loads(value) if value else value for value in r.mget(keys)]
 
 def delete_cache(key):
 	r.delete(key)
@@ -213,7 +220,14 @@ def get_many_from_cache(key_infos):
 		keys.append(key)
 		key2onmiss[key] = key_info['on_miss']
 
-	objs = GET_MANY(keys)
+	values = GET_MANY(keys)
+	objs = {}
+	for i in range(len(keys)):
+		key = keys[i]
+		value = values[i]
+		if value:
+			objs[key] = value
+
 	for key in keys:
 		if objs.get(key, None):
 			continue

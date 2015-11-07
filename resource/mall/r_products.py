@@ -3,7 +3,7 @@
 import json
 import itertools
 
-from core import resource
+from core import inner_resource
 from core import auth
 from cache import utils as cache_util
 import cache
@@ -12,7 +12,7 @@ from wapi.mall import models as mall_models
 import settings
 
 
-class RProducts(resource.Resource):
+class RProducts(inner_resource.Resource):
 	"""
 	商品集合
 	"""
@@ -263,7 +263,5 @@ class RProducts(resource.Resource):
 		result = []
 		for product in products:
 			data = product.format_to_dict()
-			data['pic_url'] = '%s%s' % (settings.IMAGE_HOST, data['pic_url'])
-			data['thumbnails_url'] = '%s%s' % (settings.IMAGE_HOST, data['thumbnails_url'])
 			result.append(data)
 		return result

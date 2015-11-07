@@ -4,7 +4,7 @@ import json
 
 from bs4 import BeautifulSoup
 
-from core import resource
+from core import inner_resource
 from wapi.decorators import param_required
 from wapi import wapi_utils
 from cache import utils as cache_util
@@ -13,7 +13,7 @@ import settings
 from core.watchdog.utils import watchdog_alert
 
 
-class RProductDetail(resource.Resource):
+class RProductDetail(inner_resource.Resource):
 	"""
 	商品详情
 	"""
@@ -290,4 +290,7 @@ class RProductDetail(resource.Resource):
 				product = mall_modules.Product()
 				product.is_deleted = True
 
-		return product.format_to_dict()
+		if 'return_model' in args:
+			return product
+		else:
+			return product.format_to_dict()

@@ -6,7 +6,7 @@ import settings
 
 _resource_logger = None
 
-def resource_log(app, resource, method, params, time_in_s, status=0):
+def resource_log(app, resource, method, params, time_in_s, status=0, indent=0):
 	"""
 	记录WAPI信息，保存到mongo中
 	"""
@@ -15,6 +15,9 @@ def resource_log(app, resource, method, params, time_in_s, status=0):
 		if _resource_logger is None:
 			_resource_logger = MongoAPILogger()
 		if settings.MODE == 'develop' or settings.MODE == 'test':
-			print("called RESOURCE (in {} s): {} {}/{}, param: {}".format(time_in_s, method, app, resource, params))
+			if time_in_s == -999:
+				print("{}[start {}-{}:{}] param: {}".format(indent*'\t', app, resource, method, params))
+			else:
+				print("{}[finish {}-{}:{}] in {}s".format(indent*'\t', app, resource, method, time_in_s))
 		return _resource_logger.log(app, resource, method, params, time_in_s, status)
 	return

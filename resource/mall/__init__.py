@@ -2,3 +2,8 @@ import r_product_detail
 import r_products
 import r_top_product_review
 import r_product_hint
+import r_order
+import r_product_pay_interfaces
+import r_order_products
+import r_product_groups
+import r_forbidden_coupon_product_ids

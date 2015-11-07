@@ -4,7 +4,7 @@ import json
 from bs4 import BeautifulSoup
 from datetime import timedelta
 
-from core import resource
+from core import inner_resource
 from wapi.decorators import param_required
 from wapi import wapi_utils
 from cache import utils as cache_util
@@ -13,7 +13,7 @@ import settings
 
 OVERDUE_DAYS = 15
 
-class RTopProductReview(resource.Resource):
+class RTopProductReview(inner_resource.Resource):
 	"""
 	商品详情
 	"""

@@ -1,1 +1,2 @@
 import r_member_product_info
+import r_member_discount

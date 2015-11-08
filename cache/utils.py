@@ -24,8 +24,8 @@ r = redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.
 CACHE_QUERIES = []
 
 class Object(object):
-	def __init__(self):
-		pass
+	def __init__(self, name=""):
+		self.name = name
 
 	def to_dict(self):
 		return self.__dict__

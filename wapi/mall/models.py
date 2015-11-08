@@ -104,7 +104,7 @@ class PostageConfig(models.Model):
 	is_enable_added_weight = models.BooleanField(default=True)  # 是否启用续重机制
 	added_weight = models.CharField(max_length=256, default='0')  # 续重
 	added_weight_price = models.CharField(max_length=256, default='0')  # 续重价格
-	display_index = models.IntegerField(default=1, db_index=True)  # 显示的排序
+	display_index = models.IntegerField(default=1)  # 显示的排序
 	is_used = models.BooleanField(default=True)  # 是否启用
 	is_system_level_config = models.BooleanField(default=False)  # 是否是系统创建的不可修改的配置
 	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间
@@ -838,7 +838,7 @@ class Product(models.Model):
 		'''
 
 	@staticmethod
-	def fill_sales_detail(webapp_owner, products, product_ids):
+	def fill_sales_detail(webapp_owner_id, products, product_ids):
 		id2product = dict([(product.id, product) for product in products])
 		for product in products:
 			product.sales = 0
@@ -899,13 +899,13 @@ class Product(models.Model):
 
 		if options.get('with_all_category', False):
 			Product.fill_category_detail(
-				webapp_owner,
+				webapp_owner_id,
 				products,
 				product_ids,
 				False)
 
 		if options.get('with_sales', False):
-			Product.fill_sales_detail(webapp_owner, products, product_ids)
+			Product.fill_sales_detail(webapp_owner_id, products, product_ids)
 
 	def format_to_dict(self):
 		return {
@@ -945,6 +945,7 @@ class Product(models.Model):
 			'urchase_price': self.purchase_price,
 			'swipe_images': getattr(self, 'swipe_images', []),
 			'promotion': getattr(self, 'promotion', None),
+			'promotion_title': getattr(self, 'promotion_title', ''),
 			'product_review': getattr(self, 'product_review', None),
 			'price_info': getattr(self, 'price_info', None)
 		}

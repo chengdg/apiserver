@@ -22,8 +22,13 @@ DATABASES = {
 
 MIDDLEWARES = [
     'middleware.core_middleware.ApiAuthMiddleware',
+    
     'middleware.debug_middleware.SqlMonitorMiddleware',
-	'middleware.debug_middleware.RedisMiddleware'
+    'middleware.debug_middleware.RedisMiddleware',
+
+    #账号信息中间件
+    'middleware.account_middleware.WebAppOwnerUserProfileMiddleware',
+	'middleware.account_middleware.AccountsMiddleware'
 ]
 
 # settings for WAPI Logger
@@ -46,7 +51,7 @@ else:
 #缓存相关配置
 REDIS_HOST = 'redis.weapp.com'
 REDIS_PORT = 6379
-REDIS_CACHES_DB = 1
+REDIS_CACHES_DB = 2
 
 #BDD相关配置
 WEAPP_DIR = '../weapp'

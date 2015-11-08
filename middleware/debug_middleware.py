@@ -9,6 +9,9 @@ import cache
 
 class SqlMonitorMiddleware(object):
 	def process_request(self, request, response):
+		import resource
+		resource.indent = 0
+		
 		print 'empty peewee.QUERIES'
 		peewee.QUERIES = []
 		cache.utils.CACHE_QUERIES = []

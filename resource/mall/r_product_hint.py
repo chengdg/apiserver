@@ -4,6 +4,7 @@ from core import inner_resource
 from wapi.decorators import param_required
 from cache import utils as cache_util
 from wapi.mall import promotion_models
+import resource
 
 
 class ProductHint(inner_resource.Resource):

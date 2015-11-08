@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import copy
+from datetime import datetime
 
 from core import api_resource
 from wapi.decorators import param_required
 from wapi.mall import models as mall_models
+from wapi.mall import promotion_models
 from utils import dateutil as utils_dateutil
 import resource
 
@@ -89,12 +91,13 @@ class Purchasing(api_resource.ApiResource):
 		# productIds2price = dict()
 		productIds2original_price = dict()
 		is_forbidden_coupon = True
+		from resource.mall import r_product_hint
 		for product in products:
 			product_ids.append(product.id)
 			product_total_price = product.price * product.purchase_count
 			product_total_original_price = product.original_price * product.purchase_count
 			# TODO: 去掉ProductHint的直接调用
-			if not ProductHint.is_forbidden_coupon(webapp_owner_id, product.id):
+			if not r_product_hint.ProductHint.is_forbidden_coupon(webapp_owner_id, product.id):
 				#不是被禁用全场优惠券的商品 duhao 20150908
 				total_price += product_total_price
 				is_forbidden_coupon = False

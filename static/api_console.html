@@ -135,12 +135,21 @@
 				var resource = $('#resource').val();
 				var url = '/wapi/' + resource.replace(/\./g, '/');
 
+				resultViewer.set('fetching...');
+				__displayQueries([]);
+
 				if (action == 'get') {
 					$.get(url, data, function(data) {
 						var queries = data.queries;
 						delete data.queries;
-						resultViewer.set(data);
 						__displayQueries(queries);
+
+						if (data.code !== 200) {
+							var buffer = ['Error: ' + data.errMsg, '\n', data.innerErrMsg];
+							$('.jsoneditor textarea').val(buffer.join('\n'));
+						} else {
+							resultViewer.set(data);
+						}
 					}).fail(failCallback);
 				} else if (action == 'put' || action == 'post' || action == 'delete') {
 					if (action !== 'post') {
@@ -150,7 +159,12 @@
 						var queries = data.queries;
 						delete data.queries;
 						__displayQueries(queries);
-						resultViewer.set(data);
+
+						if (data.code !== 200) {
+							alert('error');
+						} else {
+							resultViewer.set(data);
+						}
 					}).fail(failCallback);
 				}
 			});

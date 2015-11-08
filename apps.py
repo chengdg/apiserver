@@ -68,7 +68,11 @@ class FalconResource:
 			"innerErrMsg": "",
 		}
 		resp.status = falcon.HTTP_200
-		req.params['webapp_user'] = auth.WebAppUser(1)
+		
+		args = {}
+		args.update(req.params)
+		args.update(req.context)
+
 		if 'woid' in req.params:
 			webapp_owner_info, _ = resource_module.get('account', 'webapp_owner_info', {
 				"woid": req.params['woid']
@@ -77,11 +81,11 @@ class FalconResource:
 				"woid": req.params['woid']
 			})
 			webapp_owner_info.mall_data = mall_data
-			req.params['webapp_owner_info'] = webapp_owner_info
-			req.params['mall_data'] = webapp_owner_info
-			req.params['webapp_user'].webapp_owner_info = webapp_owner_info
+			args['webapp_owner_info'] = webapp_owner_info
+			args['mall_data'] = webapp_owner_info
+			args['webapp_user'].webapp_owner_info = webapp_owner_info
 		try:
-			raw_response = wapi_resource.wapi_call(method, app, resource, req.params, req)
+			raw_response = wapi_resource.wapi_call(method, app, resource, args, req)
 			response['code'] = 200
 			response['data'] = raw_response
 		except wapi_resource.ApiNotExistError as e:

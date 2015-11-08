@@ -9,6 +9,7 @@ from wapi.decorators import param_required
 from wapi import wapi_utils
 from cache import utils as cache_util
 from wapi.mall import models as mall_models
+from wapi.mall import promotion_models
 import settings
 from core.watchdog.utils import watchdog_alert
 
@@ -52,14 +53,6 @@ class RProductDetail(inner_resource.Resource):
 					"with_property": True
 				})
 
-				#获取轮播图
-				# product.swipe_images = []
-				# for swipe_image in mall_models.ProductSwipeImage.select().where(mall_models.ProductSwipeImage.product_id==product_id):
-				# 	product.swipe_images.append({
-				# 		'url': swipe_image.url
-				# 	})
-				#product.swipe_images_json = json.dumps(product.swipe_images)
-
 				#获取商品的评论
 				#TODO: 恢复获取评论的逻辑
 				# product_review = ProductReview.objects.filter(
@@ -80,53 +73,48 @@ class RProductDetail(inner_resource.Resource):
 				# 			review.member_name = '*'
 
 				#获取促销活动和积分折扣信息
-				# TODO: 恢复促销活动的逻辑
-				# promotion_ids = map(lambda x: x.promotion_id, promotion_models.ProductHasPromotion.objects.filter(product=product))
-				# # Todo: 促销已经结束， 但数据库状态未更改
-				# promotions = promotion_models.Promotion.objects.filter(
-				# 	owner_id=webapp_owner_id,
-				# 	id__in=promotion_ids,
-				# 	status=promotion_models.PROMOTION_STATUS_STARTED
-				# )
-				# promotion = None
-				# integral_sale = None
-				# for one_promotion in promotions:
-				# 	if one_promotion.type == promotion_models.PROMOTION_TYPE_INTEGRAL_SALE:
-				# 		integral_sale = one_promotion
-				# 	# RFC
-				# 	elif one_promotion.type != promotion_models.PROMOTION_TYPE_COUPON:
-				# 		promotion = one_promotion
-				# #填充促销活动信息
-				# if promotion:
-				# 	promotion_models.Promotion.fill_concrete_info_detail(webapp_owner_id, [promotion])
-				# 	product.original_promotion_title = product.promotion_title
-				# 	if promotion.promotion_title:
-				# 		product.promotion_title = promotion.promotion_title
-				# 	if promotion.type == promotion_models.PROMOTION_TYPE_PRICE_CUT:
-				# 		promotion.promotion_title = '满%s减%s' % (promotion.detail['price_threshold'], promotion.detail['cut_money'])
-				# 	elif promotion.type == promotion_models.PROMOTION_TYPE_PREMIUM_SALE:
-				# 		promotion.promotion_title = '%s * %s' % (promotion.detail['premium_products'][0]['name'], promotion.detail['count'])
-				# 	elif promotion.type == promotion_models.PROMOTION_TYPE_FLASH_SALE:
-				# 		# promotion.promotion_title = '活动截止:%s' % (promotion.end_date)
-				# 		gapPrice = product.price - promotion.detail['promotion_price']
-				# 		promotion.promotion_title = '已优惠%s元' % gapPrice
-				# 	else:
-				# 		promotion.promotion_title = ''
-				# 	product.promotion = promotion.to_dict('detail', 'type_name')
-				# else:
-				# 	product.original_promotion_title = product.promotion_title
-				# 	product.promotion = None
-				# #填充积分折扣信息
-				# if integral_sale:
-				# 	promotion_models.Promotion.fill_concrete_info_detail(webapp_owner_id, [integral_sale])
-				# 	# integral_sale.end_date = integral_sale.end_date.strftime('%Y-%m-%d %H:%M:%S')
-				# 	# integral_sale.created_at = integral_sale.created_at.strftime('%Y-%m-%d %H:%M:%S')
-				# 	# integral_sale.start_date = integral_sale.start_date.strftime('%Y-%m-%d %H:%M:%S')
-				# 	product.integral_sale = integral_sale.to_dict('detail', 'type_name')
-				# else:
-				# 	product.integral_sale = None
-
-				# Product.fill_property_detail(webapp_owner_id, [product], '')
+				#TODO: 恢复促销活动的逻辑
+				promotion_ids = map(lambda x: x.promotion_id, promotion_models.ProductHasPromotion.select().dj_where(product=product.id))
+				# Todo: 促销已经结束， 但数据库状态未更改
+				promotions = promotion_models.Promotion.select().dj_where(
+					owner_id=webapp_owner_id,
+					id__in=promotion_ids,
+					status=promotion_models.PROMOTION_STATUS_STARTED
+				)
+				promotion = None
+				integral_sale = None
+				for one_promotion in promotions:
+					if one_promotion.type == promotion_models.PROMOTION_TYPE_INTEGRAL_SALE:
+						integral_sale = one_promotion
+					# RFC
+					elif one_promotion.type != promotion_models.PROMOTION_TYPE_COUPON:
+						promotion = one_promotion
+				#填充积分折扣信息
+				if integral_sale:
+					promotion_models.Promotion.fill_concrete_info_detail(webapp_owner_id, [integral_sale])
+					if integral_sale.promotion_title:
+						product.integral_sale_promotion_title = integral_sale.promotion_title
+					product.integral_sale = integral_sale.to_dict('detail', 'type_name')
+				else:
+					product.integral_sale = None
+				#填充促销活动信息
+				if promotion:
+					promotion_models.Promotion.fill_concrete_info_detail(webapp_owner_id, [promotion])
+					if promotion.promotion_title:
+						product.promotion_title = promotion.promotion_title
+					if promotion.type == promotion_models.PROMOTION_TYPE_PRICE_CUT:
+						promotion.promotion_title = '满%s减%s' % (promotion.detail['price_threshold'], promotion.detail['cut_money'])
+					elif promotion.type == promotion_models.PROMOTION_TYPE_PREMIUM_SALE:
+						promotion.promotion_title = '%s * %s' % (promotion.detail['premium_products'][0]['name'], promotion.detail['count'])
+					elif promotion.type == promotion_models.PROMOTION_TYPE_FLASH_SALE:
+						# promotion.promotion_title = '活动截止:%s' % (promotion.end_date)
+						gapPrice = product.price - promotion.detail['promotion_price']
+						promotion.promotion_title = '已优惠%s元' % gapPrice
+					else:
+						promotion.promotion_title = ''
+					product.promotion = promotion.to_dict('detail', 'type_name')
+				else:
+					product.promotion = None
 			except:
 				if settings.DEBUG:
 					raise
@@ -174,21 +162,21 @@ class RProductDetail(inner_resource.Resource):
 					product.integral_sale['detail']['discount'] = str(i['discount'])+"%"
 					break
 
-		# promotion_data = data['promotion']
-		# if promotion_data and len(promotion_data) > 0:
-		#     product.promotion_model = promotion_models.Promotion.from_dict(
-		#         promotion_data)
-		# else:
-		#     product.promotion_model = dict()
+		promotion_data = data.get('promotion', None)
+		if promotion_data and len(promotion_data) > 0:
+		    product.promotion_model = promotion_models.Promotion.from_dict(
+		        promotion_data)
+		else:
+		    product.promotion_model = dict()
 		product.promotion_dict = dict()
 
-		# integral_sale_data = data['integral_sale']
-		# if integral_sale_data and len(integral_sale_data) > 0:
-		#     product.integral_sale_model = promotion_models.Promotion.from_dict(
-		#         integral_sale_data)
-		# else:
-		#     product.integral_sale_model = None
-		# product.original_promotion_title = data['original_promotion_title']
+		integral_sale_data = data.get('integral_sale', None)
+		if integral_sale_data and len(integral_sale_data) > 0:
+		    product.integral_sale_model = promotion_models.Promotion.from_dict(
+		        integral_sale_data)
+		else:
+		    product.integral_sale_model = None
+		product.original_promotion_title = data['promotion_title']
 
 		return product
 

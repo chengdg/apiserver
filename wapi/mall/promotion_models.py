@@ -5,6 +5,7 @@ import json
 
 from db import models
 from wapi.user.models import User
+from wapi.mall import models as mall_models
 from core.watchdog.utils import watchdog_fatal
 import settings
 from wapi.mall import models as mall_models
@@ -157,8 +158,8 @@ class Promotion(models.Model):
 		id2promotion = dict([(promotion.id, promotion) for promotion in promotions])
 		promotion_ids = [promotion.id for promotion in promotions]
 		product_ids = [relation.product_id for relation in ProductHasPromotion.select().dj_where(promotion_id__in=promotion_ids)]
-		products = list(Product.select().dj_where(id__in=product_ids))
-		Product.fill_details(webapp_owner, products, {
+		products = list(mall_models.Product.select().dj_where(id__in=product_ids))
+		moall_models.Product.fill_details(webapp_owner, products, {
 			'with_product_model': True,
 			"with_model_property_info": True,
 			'with_sales': True
@@ -383,8 +384,8 @@ class PremiumSale(models.Model):
 
 		premium_sale_products = list(PremiumSaleProduct.select().dj_where(premium_sale_id__in=premium_sale_ids))
 		product_ids = [premium_sale_product.product_id for premium_sale_product in premium_sale_products]
-		products = Product.select().dj_where(id__in=product_ids)
-		Product.fill_details(webapp_owner, products, {
+		products = mall_models.Product.select().dj_where(id__in=product_ids)
+		mall_models.Product.fill_details(webapp_owner, products, {
 			'with_product_model': True,
 			"with_model_property_info": True,
 			'with_sales': True
@@ -485,6 +486,54 @@ class CouponRule(models.Model):
 		}
 
 
+#优惠券状态
+COUPON_STATUS_UNUSED = 0 #已领取
+COUPON_STATUS_USED = 1 #已被使用
+COUPON_STATUS_EXPIRED = 2 #已过期
+COUPON_STATUS_DISCARD = 3 #作废 手机端用户不显示
+COUPON_STATUS_UNGOT = 4 #未领取
+COUPON_STATUS_Expired = 5 #已失效
+COUPONSTATUS = {
+	COUPON_STATUS_UNUSED: {
+		"name": u'未使用'
+	},
+	COUPON_STATUS_USED: {
+		"name": u'已使用'
+	},
+	COUPON_STATUS_EXPIRED: {
+		"name": u'已过期'
+	},
+	COUPON_STATUS_DISCARD: {
+		"name": u'作废'
+	},
+	COUPON_STATUS_UNGOT: {
+		"name": u'未领取'
+	},
+	COUPON_STATUS_Expired: {
+		"name": u'已失效'
+	}
+}
+class Coupon(models.Model):
+	"""
+	优惠券
+	"""
+	owner = models.ForeignKey(User)
+	coupon_rule = models.ForeignKey(CouponRule) #coupon rule
+	member_id = models.IntegerField(default=0) #优惠券分配的member的id
+	coupon_record_id = models.IntegerField(default=0) #优惠券记录的id
+	status = models.IntegerField(default=COUPON_STATUS_UNUSED) #优惠券状态
+	coupon_id = models.CharField(max_length=50) #优惠券号
+	provided_time = models.DateTimeField() #领取时间
+	start_time = models.DateTimeField() #优惠券有效期开始时间
+	expired_time = models.DateTimeField() #过期时间
+	money = models.FloatField() #金额
+	is_manual_generated = models.BooleanField(default=False) #是否手工生成
+	created_at = models.DateTimeField(auto_now_add=True) #添加时间
+
+	class Meta(object):
+		db_table = 'market_tool_coupon'
+
+
 FORBIDDEN_STATUS_NOT_START = 1
 FORBIDDEN_STATUS_STARTED = 2
 FORBIDDEN_STATUS_FINISHED = 3
@@ -568,7 +617,7 @@ class ForbiddenCouponProduct(models.Model):
 		return False
 
 	def to_dict(self):
-		Product.fill_details(self.owner_id, [self.product], {
+		mall_models.Product.fill_details(self.owner_id, [self.product], {
 			'with_product_model': True,
 			"with_model_property_info": True,
 			'with_sales': True

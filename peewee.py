@@ -352,10 +352,13 @@ def django_where_returns_clone(func):
             else:
                 if op == '__not':
                     args.append(db_field.__ne__(value))
+                elif op == '__lt':
+                    args.append(db_field.__lt__(value))
                 elif op == '__notin':
                     args.append(db_field.not_in(value))
                 elif op == '__in':
-                    args.append(db_field.in_(value))
+                    if len(value) > 0:
+                        args.append(db_field.in_(value))
         kwargs = {}
             
         clone = self.clone()  # Assumes object implements `clone`.

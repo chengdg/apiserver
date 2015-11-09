@@ -10,6 +10,7 @@ from wapi import wapi_utils
 from cache import utils as cache_util
 from wapi.mall import models as mall_models
 from wapi.member import models as member_models
+from wapi.user import models as user_models
 import settings
 
 class RMemberAccounts(inner_resource.Resource):
@@ -44,7 +45,15 @@ class RMemberAccounts(inner_resource.Resource):
 	@param_required(['openid', 'wid'])
 	def get(args):
 		openid = args['openid']
-		webapp_id = args['wid']
+		wid = args['wid']
+		#测试使用
+		#TODO 结合h5使用参数
+		try:
+			user_profile = user_models.UserProfile.select().dj_where(user_id=wid)[0]
+			webapp_id = user_profile.webapp_id
+		except:
+			webapp_id = wid
+		
 
 		today = datetime.today()
 		date_str = datetime.today().strftime('%Y-%m-%d') 
@@ -70,17 +79,18 @@ class RMemberAccounts(inner_resource.Resource):
 
 	@param_required(['openid', 'wid', 'for_oauth'])
 	def post(args):
-		
 		openid = args['openid']
-		webapp_id = args['wid']
+		wid = args['wid']
 		for_oauth = args['for_oauth']
 
+		user_profile = user_models.UserProfile.select().dj_where(user_id=wid)[0]
+		webapp_id = user_profile.webapp_id
 		if for_oauth == '1':
 			for_oauth = True
 		else:
 			for_oauth = False
 		member = member_models.Member.create_member(openid, webapp_id, for_oauth)
-
+		#args['wid'] = webapp_id
 		if member:
 			return RMemberAccounts.get(args)
 		else:

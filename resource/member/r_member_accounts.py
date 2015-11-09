@@ -79,10 +79,13 @@ class RMemberAccounts(inner_resource.Resource):
 			for_oauth = True
 		else:
 			for_oauth = False
-		print 'aaaaaaddddddddddffffffffff',for_oauth
 		member = member_models.Member.create_member(openid, webapp_id, for_oauth)
 
 		if member:
-			return get(args)
+			return RMemberAccounts.get(args)
 		else:
+			#如果创建不成功重试
+			member = member_models.Member.create_member(openid, webapp_id, for_oauth)
+			if member:
+				return RMemberAccounts.get(args)		
 			return {}

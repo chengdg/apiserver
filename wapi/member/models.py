@@ -6,7 +6,10 @@ from wapi.user.models import User
 from core.decorator import cached_property
 from utils.string_util import hex_to_byte, byte_to_hex
 import resource
+
 from hashlib import md5
+import time
+import string
 
 #######################################################################
 # 会员账号相关model
@@ -53,9 +56,9 @@ class MemberGrade(models.Model):
 	@staticmethod
 	def get_default_grade(webapp_id):
 		try:
-			return MemberGrade.objects.get(webapp_id=webapp_id, is_default_grade=True)
+			return MemberGrade.get(webapp_id=webapp_id, is_default_grade=True)
 		except:
-			return MemberGrade.objects.create(
+			return MemberGrade.create(
 				webapp_id = webapp_id,
 				name = MemberGrade.DEFAULT_GRADE_NAME,
 				upgrade_lower_bound = 0,
@@ -352,7 +355,13 @@ def _generate_member_token(member, social_account):
 		(''.join(random.sample(string.ascii_letters + string.digits, 6))) + str(member.id))
 
 
-
+import random
+def _create_random():
+	date = str(time.time()*1000)
+	sample_list = ['0','1','2','3','4','5','6','7','8','9','a', 'b', 'c', 'd', 'e']
+	random_str = ''.join(random.sample(string.ascii_letters + string.digits, 10))
+	random_str = date + random_str
+	return random_str
 
 #关注渠道
 SOURCE_SELF_SUB = 0  # 直接关注
@@ -675,22 +684,26 @@ class Member(models.Model):
 
 
 	@staticmethod
-	def create_member(webapp_id, openid, for_oauthed=False):
-		print '---------------------1'
+	def create_member(openid, webapp_id, for_oauthed=False):
 		token = md5('%s_%s' % (webapp_id, openid)).hexdigest()
-		print '-------------------2',token
-		social_account, _ = SocialAccount.objects.get_or_create(
-			platform = 0,
-			webapp_id = webapp_id,
-			openid = openid,
-			token = token,
-			is_for_test = is_for_test
-		)
-		print '-------------------3'
-		if MemberHasSocialAccount.objects.filter(webapp_id=webapp_id, account=social_account).count() >  0:
-			return MemberHasSocialAccount.objects.filter(webapp_id=webapp_id, account=social_account)[0].member
+		sure_created = False		
+		try:
+			social_account = SocialAccount.get(webapp_id = webapp_id, openid = openid)
+			print 'get_social_account>>>>>>>>>>>>>>>>>:',social_account
+		except:
+			social_account, sure_created = SocialAccount.get_or_create(
+				platform = 0,
+				webapp_id = webapp_id,
+				openid = openid,
+				token = token,
+				is_for_test = False,
+				access_token = '',
+				uuid=''
+			)
+			print 'create_social_account>>>>>>>>>>>>>>>>>:',social_account
+		if not sure_created and MemberHasSocialAccount.filter(webapp_id=webapp_id, account=social_account).count() >  0:
+			return True #MemberHasSocialAccount.filter(webapp_id=webapp_id, account=social_account)[0].member
 		#默认等级
-		print '-------------------4'
 		member_grade = MemberGrade.get_default_grade(webapp_id)
 
 		if for_oauthed:
@@ -700,14 +713,15 @@ class Member(models.Model):
 			is_subscribed = True
 			status = SUBSCRIBED
 
-		temporary_token = _create_random()
-		member = Member.objects.create(
+		#temporary_token = _create_random()
+		member_token = _generate_member_token(social_account, social_account)
+		member = Member.create(
 			webapp_id = social_account.webapp_id,
 			user_icon = '',#social_account_info.head_img if social_account_info else '',
 			username_hexstr = '',
 			grade = member_grade,
 			remarks_name = '',
-			token = temporary_token,
+			token = member_token,
 			is_for_test = social_account.is_for_test,
 			is_subscribed = is_subscribed,
 			status = status
@@ -715,20 +729,23 @@ class Member(models.Model):
 		if not member:
 			return None
 
-		member_token = _generate_member_token(member, social_account)
-		member.token = member_token
-		member.save()
-
-		MemberHasSocialAccount.objects.create(
+		MemberHasSocialAccount.create(
 					member = member,
 					account = social_account,
 					webapp_id = webapp_id
 					)
 
+		WebAppUser.create(
+			token = member.token,
+			webapp_id = webapp_id,
+			member_id = member.id
+			)
+
 		#添加默认分组
 		#try:
-		default_member_tag = MemberTag.get_default_tag(user_profile.webapp_id)
+		default_member_tag = MemberTag.get_default_tag(webapp_id)
 		MemberHasTag.add_tag_member_relation(member, [default_member_tag.id])
+		return True
 		# except:
 		# 	pass
 
@@ -851,3 +868,111 @@ class IntegralStrategySttings(models.Model):
 			return IntegralStrategySttings.select().dj_where(webapp_id=webapp_id)[0].integral_each_yuan
 		else:
 			return None
+
+class MemberTag(models.Model):
+	"""
+	表示会员的标签(分组)
+	"""
+	webapp_id = models.CharField(max_length=16)
+	name = models.CharField(max_length=100)
+	created_at = models.DateTimeField(auto_now_add=True)
+
+	class Meta(object):
+		db_table = 'member_tag'
+		verbose_name = '会员分组'
+		verbose_name_plural = '会员分组'
+
+	DEFAULT_TAG_NAME = u'未分组'
+	@staticmethod
+	def get_default_tag(webapp_id):
+		try:
+			return MemberTag.get(webapp_id=webapp_id, name="未分组")
+		except:
+			return MemberTag.create(webapp_id=webapp_id, name="未分组")
+
+
+	@staticmethod
+	def get_member_tags(webapp_id):
+		if webapp_id:
+			if MemberTag.filter(webapp_id=webapp_id, name="未分组").count() == 0:
+				MemberTag.create(webapp_id=webapp_id, name="未分组")
+			return list(MemberTag.filter(webapp_id=webapp_id))
+		else:
+			return []
+
+	@staticmethod
+	def get_member_tag(webapp_id, name):
+		return MemberTag.filter(webapp_id=webapp_id, name=name)[0] if MemberTag.filter(webapp_id=webapp_id, name=name).count() > 0 else None
+
+	@staticmethod
+	def create(webapp_id, name):
+		return MemberTag.create(webapp_id=webapp_id, name=name)
+
+#########################################################################
+# MemberHasTag
+#########################################################################
+class MemberHasTag(models.Model):
+	member = models.ForeignKey(Member)
+	member_tag = models.ForeignKey(MemberTag)
+
+	class Meta(object):
+		db_table = 'member_has_tag'
+		verbose_name = '会员所属分组'
+		verbose_name_plural = '会员所属分组'
+
+	@staticmethod
+	def get_member_has_tags(member):
+		if member:
+			return list(MemberHasTag.filter(member=member))
+		return []
+
+	@staticmethod
+	def get_tag_has_member_count(tag):
+		return MemberHasTag.filter(member_tag=tag).count()
+
+	@staticmethod
+	def is_member_tag(member, member_tag):
+		if member and member_tag:
+			return MemberHasTag.filter(member=member, member_tag_id=member_tag.id).count()
+		else:
+			return False
+
+	@staticmethod
+	def delete_tag_member_relation_by_member(member):
+		if member:
+			MemberHasTag.filter(member=member).delete()
+
+	@staticmethod
+	def add_tag_member_relation(member, tag_ids_list):
+		print '>>>>>>>>>>>>>>>>>tag_ids_list:::',tag_ids_list
+		if member and len(tag_ids_list) > 0:
+			for tag_id in tag_ids_list:
+				if tag_id:
+					if MemberHasTag.select().dj_where(member=member, member_tag_id=tag_id).count() == 0:
+						print '>>>>>>>>>>>>>>>>>tag_id:::',tag_id
+						MemberHasTag.create(member=member, member_tag=tag_id)
+	# @staticmethod
+	# def get_member_list_by_tag_id(tag_id):
+	# 	if tag_id:
+	# 		members = []
+	# 		for member_has_tag in MemberHasTag.filter(member_tag_id=tag_id):
+	# 			members.append(member_has_tag.member)
+	# 		return members
+	# 	else:
+	# 		return []
+
+	# @staticmethod
+	# def add_members_tag(default_tag_id, tag_id, member_ids):
+	# 	if tag_id:
+	# 		for member_id in member_ids:
+	# 			if MemberHasTag.filter(member_tag_id=default_tag_id, member_id=member_id).count() > 0:
+	# 				MemberHasTag.filter(member_tag_id=default_tag_id, member_id=member_id).delete()
+	# 			if MemberHasTag.filter(member_tag_id=tag_id, member_id=member_id).count() == 0:
+	# 				MemberHasTag.create(member_id=member_id, member_tag_id=tag_id)
+
+	# @staticmethod
+	# def get_tag_has_sub_member_count(tag):
+	# 	if isinstance(tag, MemberTag):
+	# 		return MemberHasTag.filter(member_tag=tag, member__status=SUBSCRIBED).count()
+	# 	else:
+	# 		return MemberHasTag.filter(member_tag_id=tag, member__status=SUBSCRIBED).count()

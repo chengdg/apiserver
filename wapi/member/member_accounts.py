@@ -28,11 +28,13 @@ class MemberAccounts(api_resource.ApiResource):
 	@param_required(['openid', 'wid', 'for_oauth'])
 	def post(args):
 		"""
-		获取商品详情
+		创建会员接口
 
-		@param id 商品ID
+		@param openid 公众号粉丝唯一标识
+		@param wid wid
+		@param for_oauth 是否是通过授权获得的openid
+		
 		"""
-		print 'aaaaaaaaaaaaaaaa'
 		return resource.post('member', 'member_accounts', {
 			"openid": args['openid'],
 			"wid": args['wid'],

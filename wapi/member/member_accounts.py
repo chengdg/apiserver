@@ -24,3 +24,18 @@ class MemberAccounts(api_resource.ApiResource):
 			"openid": args['openid'],
 			"wid": args['wid']
 		})
+
+	@param_required(['openid', 'wid', 'for_oauth'])
+	def post(args):
+		"""
+		获取商品详情
+
+		@param id 商品ID
+		"""
+		print 'aaaaaaaaaaaaaaaa'
+		return resource.post('member', 'member_accounts', {
+			"openid": args['openid'],
+			"wid": args['wid'],
+			"for_oauth": args['for_oauth']
+		})
+

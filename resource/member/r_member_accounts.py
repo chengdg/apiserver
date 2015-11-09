@@ -67,3 +67,22 @@ class RMemberAccounts(inner_resource.Resource):
 			}
 		else:
 			return data
+
+	@param_required(['openid', 'wid', 'for_oauth'])
+	def post(args):
+		
+		openid = args['openid']
+		webapp_id = args['wid']
+		for_oauth = args['for_oauth']
+
+		if for_oauth == '1':
+			for_oauth = True
+		else:
+			for_oauth = False
+		print 'aaaaaaddddddddddffffffffff',for_oauth
+		member = member_models.Member.create_member(openid, webapp_id, for_oauth)
+
+		if member:
+			return get(args)
+		else:
+			return {}

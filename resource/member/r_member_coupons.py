@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 import math
 from datetime import datetime
 
-from core import resource
+#from core import resource
 from wapi.decorators import param_required
 from wapi import wapi_utils
 from cache import utils as cache_util

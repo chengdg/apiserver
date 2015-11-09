@@ -6,6 +6,7 @@ from wapi.user.models import User
 from core.decorator import cached_property
 from utils.string_util import hex_to_byte, byte_to_hex
 import resource
+from hashlib import md5
 
 #######################################################################
 # 会员账号相关model
@@ -343,6 +344,15 @@ class WebAppUser(models.Model):
 			notify_msg = u"消费积分出错，会员id:{}, type:{}".format(member.id, type)
 			watchdog_fatal(notify_msg)
 
+def _generate_member_token(member, social_account):
+	return "{}{}{}{}".format(
+		member.webapp_id,
+		social_account.platform,
+		time.strftime("%Y%m%d"),
+		(''.join(random.sample(string.ascii_letters + string.digits, 6))) + str(member.id))
+
+
+
 
 #关注渠道
 SOURCE_SELF_SUB = 0  # 直接关注
@@ -664,10 +674,63 @@ class Member(models.Model):
 			return False
 
 
+	@staticmethod
+	def create_member(webapp_id, openid, for_oauthed=False):
+		print '---------------------1'
+		token = md5('%s_%s' % (webapp_id, openid)).hexdigest()
+		print '-------------------2',token
+		social_account, _ = SocialAccount.objects.get_or_create(
+			platform = 0,
+			webapp_id = webapp_id,
+			openid = openid,
+			token = token,
+			is_for_test = is_for_test
+		)
+		print '-------------------3'
+		if MemberHasSocialAccount.objects.filter(webapp_id=webapp_id, account=social_account).count() >  0:
+			return MemberHasSocialAccount.objects.filter(webapp_id=webapp_id, account=social_account)[0].member
+		#默认等级
+		print '-------------------4'
+		member_grade = MemberGrade.get_default_grade(webapp_id)
 
+		if for_oauthed:
+			is_subscribed = False
+			status = NOT_SUBSCRIBED
+		else:
+			is_subscribed = True
+			status = SUBSCRIBED
 
+		temporary_token = _create_random()
+		member = Member.objects.create(
+			webapp_id = social_account.webapp_id,
+			user_icon = '',#social_account_info.head_img if social_account_info else '',
+			username_hexstr = '',
+			grade = member_grade,
+			remarks_name = '',
+			token = temporary_token,
+			is_for_test = social_account.is_for_test,
+			is_subscribed = is_subscribed,
+			status = status
+		)
+		if not member:
+			return None
 
+		member_token = _generate_member_token(member, social_account)
+		member.token = member_token
+		member.save()
 
+		MemberHasSocialAccount.objects.create(
+					member = member,
+					account = social_account,
+					webapp_id = webapp_id
+					)
+
+		#添加默认分组
+		#try:
+		default_member_tag = MemberTag.get_default_tag(user_profile.webapp_id)
+		MemberHasTag.add_tag_member_relation(member, [default_member_tag.id])
+		# except:
+		# 	pass
 
 
 

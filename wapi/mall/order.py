@@ -11,6 +11,7 @@ from utils import dateutil as utils_dateutil
 import resource
 from wapi.mall.purchasing import Purchasing as PurchasingApiResource
 from cache import utils as cache_utils
+from business.mall.b_pre_order import BPreOrder
 
 
 class Order(api_resource.ApiResource):
@@ -32,16 +33,16 @@ class Order(api_resource.ApiResource):
 		member = args.get('member', None)
 		webapp_owner_info = webapp_user.webapp_owner_info
 		profile = args['webapp_owner_profile']
-		webapp_id = webapp_owner_info.webapp_id
+		webapp_id = profile.webapp_id
 		ship_name = args['ship_name']
 		ship_address = args['ship_address']
 		ship_tel = args['ship_tel']
 		order_type = args.get('order_type', mall_models.PRODUCT_DEFAULT_TYPE)
 		pay_interface = args.get('xa-choseInterfaces', '-1')
 		refueling_order = args.get('refueling_order', '')
-		area = request.POST.get('area', '') #地址信息
-		bill_type = ORDER_BILL_TYPE_NONE #发票
-		customer_message = request.POST.get('message', '') #用户留言
+		area = args.get('area', '') #地址信息
+		bill_type = mall_models.ORDER_BILL_TYPE_NONE #发票
+		customer_message = args.get('message', '') #用户留言
 
 		product_info = PurchasingApiResource.get_product_param(args)
 		products = resource.get('mall', 'order_products', {
@@ -52,7 +53,7 @@ class Order(api_resource.ApiResource):
 			"product_info": product_info
 		})
 
-		pre_order = resource.get('mall', 'order', {
+		pre_order = BPreOrder.get({
 			'woid': webapp_owner_id,
 			'webapp_owner_info': webapp_owner_info,
 			'webapp_user': webapp_user,
@@ -60,6 +61,11 @@ class Order(api_resource.ApiResource):
 			'products': products,
 			'request_args': args
 		})
+
+		pre_order_validation = pre_order.check_validation()
+
+		if (not pre_order_validation['is_valid']):
+			return 500, pre_order_validation['reason']
 		#如果pre_order不有效，直接返回
 
 		# 发送下单检查信号

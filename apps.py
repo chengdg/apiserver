@@ -86,8 +86,15 @@ class FalconResource:
 			args['webapp_user'].webapp_owner_info = webapp_owner_info
 		try:
 			raw_response = wapi_resource.wapi_call(method, app, resource, args, req)
-			response['code'] = 200
-			response['data'] = raw_response
+			if type(raw_response) == tuple:
+				print '-*-' * 30
+				print raw_response
+				print '-*-' * 30
+				response['code'] = raw_response[0]
+				response['data'] = raw_response[1]
+			else:
+				response['code'] = 200
+				response['data'] = raw_response
 		except wapi_resource.ApiNotExistError as e:
 			response['code'] = 404
 			response['errMsg'] = str(e).strip()

@@ -110,7 +110,7 @@ class RPreOrder(inner_resource.Resource):
 		检查是否有商品下架
 		"""
 		products = pre_order.products
-		off_shelve_products = [product for product in products if product.shelve_type == PRODUCT_SHELVE_TYPE_OFF]
+		off_shelve_products = [product for product in products if product.shelve_type == mall_models.PRODUCT_SHELVE_TYPE_OFF]
 		if len(off_shelve_products) > 0:
 			if len(off_shelve_products) == len(products):
 				#所有商品下架，返回商品列表页
@@ -187,11 +187,11 @@ class RPreOrder(inner_resource.Resource):
 		products = args['products']
 		request_args = args['request_args']
 
-		order = cache_util.Object("pre_order")
-		order.products = products
+		fake_order = cache_util.Object("pre_order")
+		fake_order.products = products
 
 		#按促销进行product分组
-		order.product_groups = resource.get('mall', 'product_groups', {
+		fake_order.product_groups = resource.get('mall', 'product_groups', {
 			'webapp_owner_info': webapp_owner_info,
 			'member': member,
 			'products': products
@@ -199,8 +199,9 @@ class RPreOrder(inner_resource.Resource):
 
 		#检查order的有效性
 		for checker in RPreOrder.checkers:
-			result = checker(webapp_owner_id, products, request_args)
+			result = checker(webapp_owner_id, fake_order, request_args)
 
 RPreOrder.checkers = [
-	RPreOrder.check_products
+	RPreOrder.check_products,
+	RPreOrder.check_coupon,
 ]

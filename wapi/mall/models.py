@@ -348,7 +348,19 @@ class Product(models.Model):
 				if model['property_pic_url']:
 					return model['property_pic_url']
 		'''
-		return self.thumbnails_url
+		if not self._order_thumbnails_url:
+			self._order_thumbnails_url = self.thumbnails_url
+		return self._order_thumbnails_url
+
+	@order_thumbnails_url.setter
+	def order_thumbnails_url(self, url):
+		'''
+		if hasattr(self, 'custom_model_properties') and self.custom_model_properties:
+			for model in self.custom_model_properties:
+				if model['property_pic_url']:
+					return model['property_pic_url']
+		'''
+		self._order_thumbnails_url = url
 
 	def fill_specific_model(self, model_name, models=None):
 		if not models:

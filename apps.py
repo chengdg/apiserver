@@ -87,9 +87,6 @@ class FalconResource:
 		try:
 			raw_response = wapi_resource.wapi_call(method, app, resource, args, req)
 			if type(raw_response) == tuple:
-				print '-*-' * 30
-				print raw_response
-				print '-*-' * 30
 				response['code'] = raw_response[0]
 				response['data'] = raw_response[1]
 			else:

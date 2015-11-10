@@ -5,8 +5,9 @@ from wapi.decorators import param_required
 import resource
 
 from wapi.mall import models as mall_models
+from business.mall.product_stocks import ProductStocks
 
-class ProductStocks(api_resource.ApiResource):
+class AProductStocks(api_resource.ApiResource):
 	"""
 	商品库存信息
 	"""
@@ -31,27 +32,30 @@ class ProductStocks(api_resource.ApiResource):
 		# 	response.data = cache_util.get_product_stocks_from_cache(model_ids, True)
 		# else:
 		# 	return create_response(500).get_response()
+		
 
 		# return response.get_response()
 
 		result_data = dict()
 
+		#获取商品的库存信息
 		if product_id:
-			models = mall_models.ProductModel.select().dj_where(product=product_id, is_deleted=False)
+			product_stocks = ProductStocks.from_product_id({
+				'product_id': product_id
+			})
 		elif model_ids:
 			model_ids = model_ids.split(",")
-			models = mall_models.ProductModel.select().dj_where(id__in=model_ids, is_deleted=False)
+			product_stocks = ProductStocks.from_product_id({
+				'model_ids': model_ids
+			})
 		else:
-			models = []
+			product_stocks = None
 
-		for model in models:
-			model_data = dict()
-			model_data["stocks"] = model.stocks
-			model_data["stock_type"] = model.stock_type
-			result_data[model.id] = model_data
+		if product_stocks:
+			result_data.update(product_stocks.model2stock)
 
 		# 代码来自 get_member_product_info(request) mall/module_api.py
-		if need_member_info == '1':
+		if need_member_info in args:
 			member_info_data = resource.get('member', 'member_product_info', {
 				"woid": args['woid'],
 				"wuid": args['wuid'],

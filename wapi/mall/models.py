@@ -348,7 +348,7 @@ class Product(models.Model):
 				if model['property_pic_url']:
 					return model['property_pic_url']
 		'''
-		if not self._order_thumbnails_url:
+		if not hasattr(self, '_order_thumbnails_url'):
 			self._order_thumbnails_url = self.thumbnails_url
 		return self._order_thumbnails_url
 
@@ -930,9 +930,9 @@ class Product(models.Model):
 			'shelve_start_time': self.shelve_start_time,
 			'shelve_end_time': self.shelve_end_time,
 			'detail': self.detail,
-			'thumbnails_url': '%s%s' % (settings.IMAGE_HOST, self.thumbnails_url),
-			'order_thumbnails_url': '%s%s' % (settings.IMAGE_HOST, self.order_thumbnails_url),
-			'pic_url': '%s%s' % (settings.IMAGE_HOST, self.pic_url),
+			'thumbnails_url': self.thumbnails_url if 'http:' in self.thumbnails_url else '%s%s' % (settings.IMAGE_HOST, self.thumbnails_url),
+			'order_thumbnails_url': self.order_thumbnails_url if 'http:' in self.order_thumbnails_url else '%s%s' % (settings.IMAGE_HOST, self.order_thumbnails_url),
+			'pic_url': self.pic_url if 'http:' in self.pic_url else '%s%s' % (settings.IMAGE_HOST, self.pic_url),
 			'detail_link': '/mall2/product/?id=%d&source=onshelf' % self.id,
 			'categories': getattr(self, 'categories', []),
 			'properties': getattr(self, 'properties', []),
@@ -954,7 +954,7 @@ class Product(models.Model):
 			'created_at': self.created_at if type(self.created_at) == str else datetime.strftime(self.created_at, '%Y-%m-%d %H:%M'),
 			'display_index': self.display_index,
 			'is_member_product': self.is_member_product,
-			'urchase_price': self.purchase_price,
+			'purchase_price': self.purchase_price,
 			'swipe_images': getattr(self, 'swipe_images', []),
 			'promotion': getattr(self, 'promotion', None),
 			'promotion_title': getattr(self, 'promotion_title', ''),

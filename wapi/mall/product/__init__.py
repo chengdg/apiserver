@@ -1,6 +1,6 @@
 #coding: utf8
 
-import product_detail
-import products
+import a_product_detail
+import a_products
 import product_stocks
-import product
+import a_product

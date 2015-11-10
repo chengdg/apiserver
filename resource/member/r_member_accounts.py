@@ -11,6 +11,7 @@ from cache import utils as cache_util
 from wapi.mall import models as mall_models
 from wapi.member import models as member_models
 from wapi.user import models as user_models
+from r_member_relations import RMemberRelations
 import settings
 
 class RMemberAccounts(inner_resource.Resource):
@@ -54,7 +55,6 @@ class RMemberAccounts(inner_resource.Resource):
 		except:
 			webapp_id = wid
 		
-
 		today = datetime.today()
 		date_str = datetime.today().strftime('%Y-%m-%d') 
 		key = 'member_{webapp:%s}_{openid:%s}' % (webapp_id, openid)
@@ -77,11 +77,12 @@ class RMemberAccounts(inner_resource.Resource):
 		else:
 			return data
 
-	@param_required(['openid', 'wid', 'for_oauth'])
+	@param_required(['openid', 'wid', 'for_oauth', 'fmt'])
 	def post(args):
 		openid = args['openid']
 		wid = args['wid']
 		for_oauth = args['for_oauth']
+		fmt = args['fmt']
 
 		user_profile = user_models.UserProfile.select().dj_where(user_id=wid)[0]
 		webapp_id = user_profile.webapp_id
@@ -89,13 +90,24 @@ class RMemberAccounts(inner_resource.Resource):
 			for_oauth = True
 		else:
 			for_oauth = False
-		member = member_models.Member.create_member(openid, webapp_id, for_oauth)
+		member,created = member_models.Member.create_member(openid, webapp_id, for_oauth)
 		#args['wid'] = webapp_id
+
+		
 		if member:
-			return RMemberAccounts.get(args)
+			return_model = RMemberAccounts.get(args)
 		else:
 			#如果创建不成功重试
 			member = member_models.Member.create_member(openid, webapp_id, for_oauth)
 			if member:
-				return RMemberAccounts.get(args)		
-			return {}
+				return_model = RMemberAccounts.get(args)	
+
+		#创建会员关系
+		if return_model and return_model['member'] and return_model['member']['token'] and fmt !='notfmt':
+			if created:
+				is_fans = '1'
+			else:
+				is_fans = '0'
+			RMemberRelations.post({'mt': return_model['member']['token'], 'fmt': fmt, 'is_fans': is_fans})
+
+		return return_model

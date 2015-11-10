@@ -2,3 +2,4 @@ import r_member_product_info
 import r_member_discount
 import r_member_accounts
 import r_member_coupons
+import r_member_relations

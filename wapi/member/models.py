@@ -702,7 +702,7 @@ class Member(models.Model):
 			)
 			print 'create_social_account>>>>>>>>>>>>>>>>>:',social_account
 		if not sure_created and MemberHasSocialAccount.filter(webapp_id=webapp_id, account=social_account).count() >  0:
-			return True #MemberHasSocialAccount.filter(webapp_id=webapp_id, account=social_account)[0].member
+			return True, False
 		#默认等级
 		member_grade = MemberGrade.get_default_grade(webapp_id)
 
@@ -745,7 +745,7 @@ class Member(models.Model):
 		#try:
 		default_member_tag = MemberTag.get_default_tag(webapp_id)
 		MemberHasTag.add_tag_member_relation(member, [default_member_tag.id])
-		return True
+		return member, True
 		# except:
 		# 	pass
 

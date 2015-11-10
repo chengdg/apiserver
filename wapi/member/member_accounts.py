@@ -25,7 +25,7 @@ class MemberAccounts(api_resource.ApiResource):
 			"wid": args['wid']
 		})
 
-	@param_required(['openid', 'wid', 'for_oauth'])
+	@param_required(['openid', 'wid', 'for_oauth', 'fmt'])
 	def post(args):
 		"""
 		创建会员接口
@@ -38,6 +38,7 @@ class MemberAccounts(api_resource.ApiResource):
 		return resource.post('member', 'member_accounts', {
 			"openid": args['openid'],
 			"wid": args['wid'],
-			"for_oauth": args['for_oauth']
+			"for_oauth": args['for_oauth'],
+			"fmt": args['fmt']
 		})
 

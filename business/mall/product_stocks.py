@@ -32,12 +32,16 @@ class ProductStocks(business_model.Model):
 		product_stocks = ProductStocks()
 		product_stocks.init(models)
 
+		return product_stocks
+
 	@staticmethod
 	@param_required(['model_ids'])
 	def from_product_model_ids(args):
 		models = mall_models.ProductModel.select().dj_where(id__in=model_ids, is_deleted=False)
 		product_stocks = ProductStocks()
 		product_stocks.init(models)
+
+		return product_stocks
 
 	def __init__(self):
 		business_model.Model.__init__(self)

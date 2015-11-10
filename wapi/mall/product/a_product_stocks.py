@@ -55,7 +55,7 @@ class AProductStocks(api_resource.ApiResource):
 			result_data.update(product_stocks.model2stock)
 
 		# 代码来自 get_member_product_info(request) mall/module_api.py
-		if need_member_info in args:
+		if 'need_member_info' in args:
 			member_info_data = resource.get('member', 'member_product_info', {
 				"woid": args['woid'],
 				"wuid": args['wuid'],

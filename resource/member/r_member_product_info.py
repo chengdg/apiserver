@@ -27,6 +27,9 @@ class RMemberProductInfo(inner_resource.Resource):
 		result_data = dict()
 		shopping_cart_count = mall_models.ShoppingCart.select().dj_where(webapp_user_id=wuid).count()
 		result_data['count'] = shopping_cart_count
+		print '$-$' * 20
+		print result_data
+		print '$-$' * 20
 		webapp_owner_id = args['woid']
 		product_id = args['product_id']
 		if member:

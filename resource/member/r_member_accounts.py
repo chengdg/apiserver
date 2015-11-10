@@ -11,7 +11,7 @@ from cache import utils as cache_util
 from wapi.mall import models as mall_models
 from wapi.member import models as member_models
 from wapi.user import models as user_models
-from r_member_relations import RMemberRelations
+#from r_member_relations import RMemberRelations
 import settings
 
 class RMemberAccounts(inner_resource.Resource):
@@ -108,6 +108,6 @@ class RMemberAccounts(inner_resource.Resource):
 				is_fans = '1'
 			else:
 				is_fans = '0'
-			RMemberRelations.post({'mt': return_model['member']['token'], 'fmt': fmt, 'is_fans': is_fans})
+			#RMemberRelations.post({'mt': return_model['member']['token'], 'fmt': fmt, 'is_fans': is_fans})
 
 		return return_model

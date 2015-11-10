@@ -24,15 +24,9 @@ class Model(object):
 			value = dict.get(slot, None)
 			setattr(instance, slot, value)
 		return instance
-		'''
-		if dict == None:
-			return None
-		#obj = cls.__new__(cls)
-		obj = cls()
-		for key, value in dict.items():
-			try:
-				setattr(obj, key, value)
-			except AttributeError:
-				pass
-		return obj
-		'''
+
+	def to_dict(self):
+		result = dict()
+		for slot in self.__slots__:
+			result[slot] = getattr(self, slot, None)
+		return result		

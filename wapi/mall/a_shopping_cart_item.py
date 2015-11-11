@@ -15,7 +15,7 @@ class AShoppingCartItem(api_resource.ApiResource):
 	app = 'mall'
 	resource = 'shopping_cart_item'
 	
-	@param_required(['product_id', 'count', 'webapp_user'])
+	@param_required(['woid', 'wuid', 'product_id', 'count'])
 	def put(args):
 		"""
 		创建购物车项目
@@ -24,13 +24,13 @@ class AShoppingCartItem(api_resource.ApiResource):
 		product_model_name = args.get('product_model_name', 'standard')
 		count = int(args.get('count', 0))
 
-		shopping_cart = ShoppingCart.get_for_webapp_user(args['webapp_user'])
+		shopping_cart = ShoppingCart.get_for_webapp_user({
+			'webapp_user': args['webapp_user']
+		})
 		shopping_cart.add_product(product_id, product_model_name, count)
 
-		new_count = shopping_cart.product_count()
-
 		return {
-			"shopping_cart_product_nums": new_count
+			"shopping_cart_product_nums": shopping_cart.product_count
 		}
 
 	@param_required(['id'])

@@ -33,7 +33,7 @@ class AProduct(api_resource.ApiResource):
 
 		"""
 		product_id = args['product_id']
-		webapp_owner_id = args['woid']
+		webapp_owner = args['webapp_owner']
 		webapp_user = args['webapp_user']
 
 		member = args.get('member', None)
@@ -46,8 +46,8 @@ class AProduct(api_resource.ApiResource):
 		# })
 
 		product = Product.from_id({
-			'woid': args['woid'],
-			'member': args['member'],
+			'webapp_owner': webapp_owner,
+			'member': member,
 			'product_id': args['product_id']
 		})
 

@@ -12,7 +12,7 @@ class AProducts(api_resource.ApiResource):
 	app = 'mall'
 	resource = 'products'
 
-	@param_required(['woid', 'webapp_owner_profile', 'category_id'])
+	@param_required(['woid', 'category_id'])
 	def get(args):
 		"""
 		获取商品详情
@@ -20,11 +20,10 @@ class AProducts(api_resource.ApiResource):
 		@param category_id 商品分类ID
 		"""
 		category_id = args['category_id']
-		woid = args['woid']
-		webapp_owner_profile = args['webapp_owner_profile']
+		webapp_owner = args['webapp_owner']
 
 		products = SimpleProducts.get({
-			"webapp_owner_profile": webapp_owner_profile,
+			"webapp_owner": webapp_owner,
 			"category_id": category_id,
 			"is_access_weizoom_mall": False
 		})

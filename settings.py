@@ -27,7 +27,7 @@ MIDDLEWARES = [
     'middleware.debug_middleware.RedisMiddleware',
 
     #账号信息中间件
-    'middleware.account_middleware.WebAppOwnerUserProfileMiddleware',
+    'middleware.account_middleware.WebAppOwnerMiddleware',
 	'middleware.account_middleware.AccountsMiddleware'
 ]
 

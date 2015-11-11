@@ -9,70 +9,15 @@ from wapi.mall import models as mall_models
 from wapi.mall import promotion_models
 from utils import dateutil as utils_dateutil
 import resource
+from business.mall.purchase_info import PurchaseInfo
 
 
-class Purchasing(api_resource.ApiResource):
+class APurchasing(api_resource.ApiResource):
 	"""
 	购物车项目
 	"""
 	app = 'mall'
 	resource = 'purchasing'
-
-	def get_product_param(args):
-	    '''获取订单商品id，数量，规格
-	    供_get_products调用
-	    '''
-	    if 'redirect_url_query_string' in args:
-	        query_string = Purchasing.get_query_string_dict_to_str(args['redirect_url_query_string'])
-	    else:
-	        query_string = args
-
-	    if 'product_ids' in query_string:
-	        product_ids = query_string.get('product_ids', None)
-	        if product_ids:
-	            product_ids = product_ids.split('_')
-	        promotion_ids = query_string.get('promotion_ids', None)
-	        if promotion_ids:
-	            promotion_ids = promotion_ids.split('_')
-	        else:
-	            promotion_ids = [0] * len(product_ids)
-	        product_counts = query_string.get('product_counts', None)
-	        if product_counts:
-	            product_counts = product_counts.split('_')
-	        product_model_names = query_string.get('product_model_names', None)
-	        if product_model_names:
-	            if '$' in product_model_names:
-	                product_model_names = product_model_names.split('$')
-	            else:
-	                product_model_names = product_model_names.split('%24')
-	        product_promotion_ids = query_string.get('product_promotion_ids', None)
-	        if product_promotion_ids:
-	            product_promotion_ids = product_promotion_ids.split('_')
-	        product_integral_counts = query_string.get('product_integral_counts', None)
-	        if product_integral_counts:
-	            product_integral_counts = product_integral_counts.split('_')
-	    else:
-	        product_ids = [query_string.get('product_id', None)]
-	        promotion_ids = [query_string.get('promotion_id', None)]
-	        product_counts = [query_string.get('product_count', None)]
-	        product_model_names = [query_string.get('product_model_name', 'standard')]
-	        product_promotion_ids = [query_string.get('product_promotion_id', None)]
-	        product_integral_counts = [query_string.get('product_integral_count', None)]
-
-	    return {
-	    	"product_ids": product_ids,
-	    	"promotion_ids": promotion_ids,
-	    	"product_counts": product_counts,
-	    	"product_model_names": product_model_names
-	    }
-
-	@staticmethod
-	def get_query_string_dict_to_str(str):
-	    data = dict()
-	    for item in str.split('&'):
-	        values = item.split('=')
-	        data[values[0]] = values[1]
-	    return data
 
 	def __fill_coupons_for_edit_order(webapp_owner_id, webapp_user, products):
 		"""
@@ -201,7 +146,7 @@ class Purchasing(api_resource.ApiResource):
 
 		return factors
 
-	@param_required(['woid', 'webapp_user', 'product_id', 'product_count', 'product_model_name'])
+	@param_required(['woid', 'webapp_user'])
 	def get(args):
 		"""
 		获取购物车项目
@@ -213,7 +158,9 @@ class Purchasing(api_resource.ApiResource):
 		member = args.get('member', None)
 		webapp_owner_info = webapp_user.webapp_owner_info
 
-		product_info = Purchasing.get_product_param(args)
+		purchase_info = PurchaseInfo.parse({
+			'request_args': args
+		})
 		products = resource.get('mall', 'order_products', {
 			"woid": webapp_owner_id,
 			"webapp_owner_info": webapp_owner_info,

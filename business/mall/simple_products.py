@@ -25,31 +25,31 @@ class SimpleProducts(business_model.Model):
 	)
 
 	@staticmethod
-	@param_required(['webapp_owner_profile', 'category_id', 'is_access_weizoom_mall'])
+	@param_required(['webapp_owner', 'category_id', 'is_access_weizoom_mall'])
 	def get(args):
 		"""
 		factory方法
 		"""
-		webapp_owner_profile = args['webapp_owner_profile']
+		webapp_owner = args['webapp_owner']
 		category_id = int(args['category_id'])
 		is_access_weizoom_mall = args['is_access_weizoom_mall']
 		
-		products = SimpleProducts(webapp_owner_profile, is_access_weizoom_mall, category_id)
+		products = SimpleProducts(webapp_owner, is_access_weizoom_mall, category_id)
 		return products
 
-	def __init__(self, webapp_owner_profile, is_access_weizoom_mall, category_id):
+	def __init__(self, webapp_owner, is_access_weizoom_mall, category_id):
 		business_model.Model.__init__(self)
-		self.category, self.products = self.__get_from_cache(webapp_owner_profile, is_access_weizoom_mall, category_id)
+		self.category, self.products = self.__get_from_cache(webapp_owner, is_access_weizoom_mall, category_id)
 
 	def __iter__(self):
 		return self.products.__iter__()
 
-	def __get_from_cache(self, webapp_owner_user_profile, is_access_weizoom_mall, category_id):
+	def __get_from_cache(self, webapp_owner, is_access_weizoom_mall, category_id):
 		"""
 		从缓存中获取数据
 		"""
-		key = 'webapp_products_categories_{wo:%s}' % webapp_owner_user_profile.user_id
-		data = cache_util.get_from_cache(key, self.__get_from_db(webapp_owner_user_profile, is_access_weizoom_mall))
+		key = 'webapp_products_categories_{wo:%s}' % webapp_owner.id
+		data = cache_util.get_from_cache(key, self.__get_from_db(webapp_owner, is_access_weizoom_mall))
 
 		if category_id == 0:
 			category = mall_models.ProductCategory()
@@ -89,13 +89,13 @@ class SimpleProducts(business_model.Model):
 		return category, products
 
 
-	def __get_from_db(self, webapp_owner_user_profile, is_access_weizoom_mall):
+	def __get_from_db(self, webapp_owner, is_access_weizoom_mall):
 		"""
 		从数据库中获取需要存储到缓存中的数据
 		"""
 		def inner_func():
-			webapp_id = webapp_owner_user_profile.webapp_id
-			webapp_owner_id = webapp_owner_user_profile.user_id
+			webapp_id = webapp_owner.webapp_id
+			webapp_owner_id = webapp_owner.id
 
 			_, products = self.__get_products(webapp_id, is_access_weizoom_mall, webapp_owner_id, 0)
 

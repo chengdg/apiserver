@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 
+""" @package business.mall.shopping_cart
+
+购物车业务对象
+"""
+
 import json
 from bs4 import BeautifulSoup
 import math
@@ -22,7 +27,7 @@ class ShoppingCart(business_model.Model):
 	@staticmethod
 	@param_required(['webapp_user'])
 	def get_for_webapp_user(args):
-		shopping_cart = ShoppingCart(webapp_user)
+		shopping_cart = ShoppingCart(args['webapp_user'])
 
 		return shopping_cart
 
@@ -31,7 +36,14 @@ class ShoppingCart(business_model.Model):
 
 		self.webapp_user = webapp_user
 
-	def add_product(product_id, product_model_name, count):
+	def add_product(self, product_id, product_model_name, count):
+		"""
+		向购物车中增加一个商品
+
+		@param[in] product_id: 商品id
+		@param[in] product_model_name: 商品规格名
+		@param[in] count: 商品数量
+		"""
 		try:
 			shopping_cart_item = mall_models.ShoppingCart.get(
 				mall_models.ShoppingCart.webapp_user_id == self.webapp_user.id,
@@ -51,6 +63,8 @@ class ShoppingCart(business_model.Model):
 	@property
 	def product_count(self):
 		"""
-		获得购物车中商品数量
+		[property] 商品数量
+
+		@return 不同商品的数量，注意：如果有商品A（1个），商品B（3个），则返回2，而不是4
 		"""
 		return mall_models.ShoppingCart.select().dj_where(webapp_user_id=self.webapp_user.id).count()

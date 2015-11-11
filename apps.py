@@ -73,17 +73,6 @@ class FalconResource:
 		args.update(req.params)
 		args.update(req.context)
 
-		if 'woid' in req.params:
-			webapp_owner_info, _ = resource_module.get('account', 'webapp_owner_info', {
-				"woid": req.params['woid']
-			})
-			mall_data = resource_module.get('account', 'mall_data', {
-				"woid": req.params['woid']
-			})
-			webapp_owner_info.mall_data = mall_data
-			args['webapp_owner_info'] = webapp_owner_info
-			args['mall_data'] = webapp_owner_info
-			args['webapp_user'].webapp_owner_info = webapp_owner_info
 		try:
 			raw_response = wapi_resource.wapi_call(method, app, resource, args, req)
 			if type(raw_response) == tuple:

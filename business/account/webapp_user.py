@@ -113,9 +113,9 @@ class CachedProduct(object):
 		return product
 
 	@staticmethod
-	@param_required(['webapp_owner', 'member', 'product_id'])
+	@param_required(['woid', 'member', 'product_id'])
 	def get(args):
-		webapp_owner_id = args['webapp_owner'].id
+		webapp_owner_id = args['woid']
 		product_id = args['product_id']
 		member = args['member']
 		member_grade_id = member.grade_id if member else None
@@ -284,12 +284,12 @@ class Product(business_model.Model):
 		return product
 
 	@staticmethod
-	@param_required(['webapp_owner', 'member', 'product_id'])
+	@param_required(['woid', 'member', 'product_id'])
 	def from_id(args):
 		return CachedProduct.get(args)
 
 	@staticmethod
-	@param_required(['webapp_owner', 'member', 'product_ids'])
+	@param_required(['woid', 'member', 'product_ids'])
 	def from_ids(args):
 		"""从product_ids集合构造Product对象集合
 

@@ -5,15 +5,23 @@
 
 ## 启动 API server ##
 
+建议使用virtualenv开启虚拟环境，参考http://www.cnblogs.com/skynet/p/4124763.html
+```
+pip install virtualenv
+virtualenv path
+source bin/activate或者 Scripts\activate.bat
+```
+
 安装必要的组件：
 ```
-pip install --upgrade falcon peewee "pymongo==2.5"
+pip install --upgrade falcon peewee "pymongo==2.5" beautifulsoup4 redis PyMySQL
 ```
 
 像Django一样启动falcon API server：
 ```
-python manage.py runserver 0.0.0.0 8004
+python manage.py runserver 0.0.0.0 8001
 ```
+或者使用runserver.sh or runserver.bat
 
 ## API调试Console ##
 

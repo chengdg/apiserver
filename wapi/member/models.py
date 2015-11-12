@@ -976,3 +976,46 @@ class MemberHasTag(models.Model):
 	# 		return MemberHasTag.filter(member_tag=tag, member__status=SUBSCRIBED).count()
 	# 	else:
 	# 		return MemberHasTag.filter(member_tag_id=tag, member__status=SUBSCRIBED).count()
+
+class MemberSharedUrlInfo(models.Model):
+	member = models.ForeignKey(Member)
+	shared_url = models.CharField(max_length=1024)
+	shared_url_digest = models.CharField(max_length=32)
+	pv = models.IntegerField(default=1)
+	leadto_buy_count = models.IntegerField(default=0)
+	title = models.CharField(max_length=256, default='')
+	cr = models.FloatField(default=0.0)
+	followers = models.IntegerField(default=0)
+	created_at = models.DateTimeField(auto_now_add=True)
+
+	class Meta(object):
+		db_table = 'member_shared_url_info'
+		verbose_name = '分享链接信息'
+		verbose_name_plural = '分享链接信息'
+
+
+class MemberClickedUrl(models.Model):
+	url = models.CharField(max_length=1024)
+	url_digest = models.CharField(max_length=32) #md5
+	mid = models.IntegerField()
+	followed_mid = models.IntegerField()
+	created_at = models.DateTimeField(auto_now_add=True)
+
+	class Meta(object):
+		db_table = 'member_clicked_url'
+		verbose_name = '会员url点击记录'
+		verbose_name_plural = '会员url点击记录'
+
+
+class MallOrderFromSharedRecord(models.Model):        
+	"""
+	add by bert 记录通过分享链接下单 订单号和分享者信息
+	"""
+	order_id = models.IntegerField()
+	fmt = models.CharField(default='', max_length=255)
+	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间
+	
+	class Meta:
+		verbose_name = "通过分享链接订单"
+		verbose_name_plural = "通过分享链接订单"
+		db_table = "mall_order_from_shared_record"

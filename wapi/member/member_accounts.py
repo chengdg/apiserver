@@ -16,7 +16,7 @@ class MemberAccounts(api_resource.ApiResource):
 	@param_required(['openid', 'wid'])
 	def get(args):
 		"""
-		获取商品详情
+		获取会员详情
 
 		@param id 商品ID
 		"""
@@ -25,20 +25,23 @@ class MemberAccounts(api_resource.ApiResource):
 			"wid": args['wid']
 		})
 
-	@param_required(['openid', 'wid', 'for_oauth', 'fmt'])
+	@param_required(['openid', 'wid', 'for_oauth', 'fmt', 'r_url'])
 	def post(args):
 		"""
 		创建会员接口
 
 		@param openid 公众号粉丝唯一标识
 		@param wid wid
-		@param for_oauth 是否是通过授权获得的openid
+		@param fmt 分享会员token
+		@param r_url 当前url
+		@param for_oauth 是否是授权是调用
 		
 		"""
 		return resource.post('member', 'member_accounts', {
 			"openid": args['openid'],
 			"wid": args['wid'],
 			"for_oauth": args['for_oauth'],
-			"fmt": args['fmt']
+			"fmt": args['fmt'],
+			"r_url": args['r_url']
 		})
 

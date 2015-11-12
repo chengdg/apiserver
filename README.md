@@ -1,5 +1,8 @@
 # apiserver: 微商城后端API Server #
 
+## 源码文档 ##
+用Doxygen生成文档：`doxygen Doxygen`。也可以直接访问[在线文档](http://s01.gaoliqi.com:82/doc/apiserver)。
+
 ## 启动 API server ##
 
 安装必要的组件：

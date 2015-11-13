@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+""" @package business.mall.product
+商品的业务对象
+
+"""
 
 import json
 from bs4 import BeautifulSoup
@@ -17,6 +21,10 @@ import settings
 
 
 class CachedProduct(object):
+	"""
+	缓存的Product
+	"""
+
 	@staticmethod
 	def __get_from_db(webapp_owner_id, product_id, member_grade_id=None):
 		"""
@@ -80,7 +88,7 @@ class CachedProduct(object):
 	@staticmethod
 	def __get_from_cache(woid, product_id, member_grade_id=None):
 		"""
-		webapp_cache.get_webapp_product_detail
+		@see webapp_cache.get_webapp_product_detail
 		"""
 		key = 'webapp_product_detail_{wo:%s}_{pid:%s}' % (woid, product_id)
 		data = cache_util.get_from_cache(key, CachedProduct.__get_from_db(woid, product_id))
@@ -315,6 +323,9 @@ class Product(business_model.Model):
 
 	@property
 	def is_sellout(self):
+		"""
+		是否卖光
+		"""
 		return self.total_stocks <= 0
 
 	@is_sellout.setter

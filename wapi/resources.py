@@ -2,6 +2,7 @@
 
 import mall
 import member
+import message
 #import stats
 
 #import views

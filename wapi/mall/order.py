@@ -9,7 +9,7 @@ from wapi.mall import models as mall_models
 from wapi.mall import promotion_models
 from utils import dateutil as utils_dateutil
 import resource
-from wapi.mall.purchasing import Purchasing as PurchasingApiResource
+from wapi.mall.a_purchasing import APurchasing as PurchasingApiResource
 from cache import utils as cache_utils
 from business.mall.b_pre_order import BPreOrder
 

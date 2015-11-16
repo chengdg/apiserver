@@ -226,6 +226,7 @@ class Product(business_model.Model):
 	__slots__ = (
 		'id',
 		'owner_id',
+		'type',
 		'is_deleted',
 		'name',
 		'display_index',
@@ -403,6 +404,30 @@ class Product(business_model.Model):
 			return u'该商品不参与全场优惠券使用！'
 		else:
 			return u''
+
+	def get_specific_model(self, model_name):
+		"""
+		获得特定的商品规格信息
+
+		@param [in] model_name: 商品规格名
+
+		@return dict形式的商品规格信息
+		```
+		{
+			"price": 1.0,
+			"weight": 1.0,
+		}
+		```
+		"""
+		if not models:
+			models = self.models
+
+		candidate_models = filter(lambda m: m['name'] == model_name, models)
+		if len(candidate_models) > 0:
+			model = candidate_models[0]
+			return model
+		else:
+			return None
 
 	def fill_specific_model(self, model_name, models=None):
 		if not models:
@@ -1014,6 +1039,7 @@ class Product(business_model.Model):
 	def to_dict(self, **kwargs):
 		result = {
 			'id': self.id,
+			'type': self.type,
 			'is_deleted': self.is_deleted,
 			'name': self.name,
 			'model_name': getattr(self, 'model_name', 'standard'),

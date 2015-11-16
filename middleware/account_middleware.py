@@ -3,6 +3,7 @@
 from wapi.user import models as account_models
 import resource
 from business.account.webapp_owner import WebAppOwner
+from business.account.member import Member
 
 
 class WebAppOwnerMiddleware(object):
@@ -32,4 +33,7 @@ class AccountsMiddleware(object):
 			"wid": webapp_id,
 			"return_model": True
 		})
+		print 'get member in AccountsMiddleware...'
+		member_accounts['member'] = Member.from_model(req.context['webapp_owner'], member_accounts['member'])
+		print member_accounts
 		req.context.update(member_accounts)

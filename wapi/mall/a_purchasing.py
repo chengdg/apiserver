@@ -10,6 +10,7 @@ from wapi.mall import promotion_models
 from utils import dateutil as utils_dateutil
 import resource
 from business.mall.purchase_info import PurchaseInfo
+from business.mall.order import Order
 
 
 class APurchasing(api_resource.ApiResource):
@@ -146,7 +147,7 @@ class APurchasing(api_resource.ApiResource):
 
 		return factors
 
-	@param_required(['woid', 'webapp_user'])
+	@param_required(['woid'])
 	def get(args):
 		"""
 		获取购物车项目
@@ -154,33 +155,21 @@ class APurchasing(api_resource.ApiResource):
 		@param id 商品ID
 		"""
 		webapp_user = args['webapp_user']
-		webapp_owner_id = args['woid']
+		webapp_owner = args['webapp_owner']
 		member = args.get('member', None)
-		webapp_owner_info = webapp_user.webapp_owner_info
 
 		purchase_info = PurchaseInfo.parse({
 			'request_args': args
 		})
-		products = resource.get('mall', 'order_products', {
-			"woid": webapp_owner_id,
-			"webapp_owner_info": webapp_owner_info,
-			"webapp_user": webapp_user,
-			"member": member,
-			"product_info": product_info
-		})
-		product = products[0]
 
-		#创建order对象
-		order = resource.get('mall', 'order', {
-			'woid': webapp_owner_id,
-			'webapp_owner_info': webapp_owner_info,
-			'webapp_user': webapp_user,
-			'member': member,
-			'products': products
+		order = Order.create({
+			"webapp_owner": webapp_owner,
+			"webapp_user": webapp_user,
+			"purchase_info": purchase_info,
 		})
 
 		#获得运费配置，支持前端修改数量、优惠券等后实时计算运费
-		postage_factor = product.postage_config['factor']
+		postage_factor = webapp_owner.system_postage_config['factor']
 
 		#获取积分信息
 		integral_info = webapp_user.integral_info

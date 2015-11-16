@@ -23,7 +23,6 @@ class PurchaseInfo(business_model.Model):
 	"""购买信息
 	"""
 	__slots__ = (
-		'is_purchase_single_product',
 		'product_ids',
 		'promotion_ids',
 		'product_counts',
@@ -108,3 +107,16 @@ class PurchaseInfo(business_model.Model):
 	        values = item.split('=')
 	        data[values[0]] = values[1]
 	    return data
+
+	def is_purchase_single_product(self):
+		"""是否购买单个商品
+
+		@return True: 购买单个商品; False: 不是购买单个商品
+		"""
+		if not self.product_ids:
+			return False
+
+		if len(self.product_ids) == 1:
+			return True
+		else:
+			return False

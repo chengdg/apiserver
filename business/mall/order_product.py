@@ -18,127 +18,103 @@ from core.watchdog.utils import watchdog_alert
 from business import model as business_model 
 from business.mall.product import Product
 import settings
+from business.decorator import cached_context_property
 
 
 class OrderProduct(business_model.Model):
 	"""订单商品
 	"""
 	__slots__ = (
+		'id',
+		'type',
 		'member_discount',
 		'purchase_count',
 		'used_promotion_id',
 		'total_price',
+		'product_model_id',
+		'_postage_config',
+
+		'price',
+		'weight',
+		'stock_type',
+		'stocks',
+		'min_limit',
+		'model_name',
+		'model',
+		'is_model_deleted',
+		'market_price',
+		'custom_model_properties',
+		'total_price',
 	)
 
 	@staticmethod
-	@param_required(['webapp_owner_info', 'webapp_user', 'product_id', 'product_model_name'])
-	def create(args):
+	@param_required(['webapp_owner', 'webapp_user', 'product_info'])
+	def get(args):
 		"""工厂方法，创建OrderProduct对象
 
 		@return OrderProduct对象
 		"""
-		order_product = OrderProduct(args['webapp_owner_info'], args['webapp_user'], args['product_id'], args['product_model_name'])
+		order_product = OrderProduct(args['webapp_owner'], args['webapp_user'], args['product_info'])
 
 		return order_product
 
-	def __init__(self, webapp_owner_info, webapp_user, product_id, product_model_name, webapp_user):
+	def __init__(self, webapp_owner, webapp_user, product_info):
 		business_model.Model.__init__(self)
 
-		self.__fill_detail(product_id, product_model_name, webapp_user)
+		self.context['webapp_owner'] = webapp_owner
+		self.__fill_detail(webapp_user, product_info)
 
-	def __fill_detail(self, product_id, product_model_name, webapp_user):
+	def __fill_detail(self, webapp_user, product_info):
 		"""
 		mall_api:get_product_details_with_model
 		获得指定规格的商品详情
 		"""
-		product = Product.from_id(product_id)
-		products = []
-		invalid_products = []
-		id2info = dict([('%s_%s' % (info['id'], info['model_name']), info) for info in product_infos])
-		for product_info in product_infos:
-			product = resource.get('mall', 'product_detail', {
-				"woid": webapp_owner_id,
-				"product_id": product_info['id'],
-				"return_model": True
-			})
-			#product = webapp_cache.get_webapp_product_detail(webapp_owner_id, product_info['id'])
-			#product = copy.copy(product)
-			product.flash_data = {
-				"product_model_id": '%s_%s' % (product_info['id'], product_info['model_name'])
-			}
-			products.append(product)
+		product = Product.from_id(product_info['id'])
+		self.context['product'] = product
 
-		for product in products:
-			product_info = id2info[product.flash_data['product_model_id']]
-			product.fill_specific_model(product_info['model_name'])
-			if webapp_owner_id != product.owner_id and product.weshop_sync == 2:
-				product.price = round(product.price * 1.1, 2)
+		model = product.get_specific_model(product_info['model_name'])
+		self.type = product.type,
+		self.id = product.id,
+		self.price = model['price']
+		self.weight = model['weight']
+		self.stock_type = model['stock_type']
+		if not hasattr(product, 'min_limit'):
+			self.min_limit = model['stocks']
+		self.stocks = model['stocks']
+		self.model_name = product_info['model_name']
+		self.model = model
+		self.is_model_deleted = False
+		self.market_price = model.get('market_price', 0.0)
+		self.product_model_id = '%s_%s' % (product_info['id'], product_info['model_name'])
+		self.purchase_count = product_info['count']
+		self.used_promotion_id = product_info['promotion_id']
+		self.total_price = float(self.price) * int(self.purchase_count)
 
-		return products
+		if product.is_member_product:
+			self.member_discount = webapp_user.member.discount
+		else:
+			self.member_discount = 1.00
+		#TODO2: 为微众商城增加1.1的价格因子
 
-	@staticmethod
-	def get_product_member_discount(discount, product):
-	    """
-	    get_product_member_discount
-	    判断商品是否参加会员折扣，返回对应折扣(0.000~1.000), 1.000 表示伟打折.
+	@cached_context_property
+	def postage_config(self):
+		"""
+		[property] 订单商品的运费策略
+		"""
+		product = self.context['product']
+		webapp_owner = self.context['webapp_owner']
 
-
-	    Return:
-	      fload: 如果商品参加会员折扣， 返回对应的折扣 否则返回1.000
-	    """
-	    # 商品是否参加会员折扣
-	    if product.is_member_product:
-	        return discount
-	    return 1.000
-
-	def get_products(self, webapp_owner_id, webapp_owner_info, webapp_user, purchase_info):
-	    '''获取商品集合
-	    '''
-	    member = webapp_user.member
-	    member_grade_id, member_discount = resource.get('member', 'member_discount', {
-	    	'member': member,
-	    	'webapp_owner_info': webapp_owner_info
-	    })
-
-	    product_ids = purchase_info['product_ids']
-	    promotion_ids = purchase_info['promotion_ids']
-	    product_counts = purchase_info['product_counts']
-	    product_model_names = purchase_info['product_model_names']
-	    products = []
-	    product_infos = []
-	    product2count = {}
-	    product2promotion = {}
-
-	    for i in range(len(product_ids)):
-	        product_id = int(product_ids[i])
-	        product_model_name = product_model_names[i]
-	        product_infos.append({"id": product_id, "model_name": product_model_name})
-	        product_model_id = '%s_%s' % (product_id, product_model_name)
-	        product2count[product_model_id] = int(product_counts[i])
-	        product2promotion[product_model_id] = promotion_ids[i] if promotion_ids[i] else 0
-
-	    postage_configs = webapp_owner_info.mall_data['postage_configs']
-	    system_postage_config = filter(lambda c: c.is_used, postage_configs)[0]
-	    products = ROrderProducts.get_product_details_with_model(webapp_owner_id, webapp_user, product_infos)
-	    for product in products:
-	        product_model_id = '%s_%s' % (product.id, product.model['name'])
-	        product.member_discount = ROrderProducts.get_product_member_discount(member_discount, product)
-	        product.purchase_count = product2count[product_model_id]
-	        product.used_promotion_id = int(product2promotion[product_model_id])
-	        product.total_price = float(product.price)*product.purchase_count
-
-	        # 确定商品的运费策略
-	        if product.postage_type == mall_models.POSTAGE_TYPE_UNIFIED:
-	            #使用统一运费
-	            product.postage_config = {
-	                "id": -1,
-	                "money": product.unified_postage_money,
-	                "factor": None
-	            }
-	        else:
-	            if isinstance(system_postage_config.created_at, datetime):
-	                system_postage_config.created_at = system_postage_config.created_at.strftime('%Y-%m-%d %H:%M:%S')
-	            if isinstance(system_postage_config.update_time, datetime):
-	                system_postage_config.update_time = system_postage_config.update_time.strftime('%Y-%m-%d %H:%M:%S')
-	            product.postage_config = system_postage_config.to_dict('factor')
-	    return products
+        if product.postage_type == mall_models.POSTAGE_TYPE_UNIFIED:
+            #使用统一运费
+            product.postage_config = {
+                "id": -1,
+                "money": product.unified_postage_money,
+                "factor": None
+            }
+        else:
+        	system_postage_config = webapp_owner.system_postage_config
+            if isinstance(system_postage_config.created_at, datetime):
+                system_postage_config.created_at = system_postage_config.created_at.strftime('%Y-%m-%d %H:%M:%S')
+            if isinstance(system_postage_config.update_time, datetime):
+                system_postage_config.update_time = system_postage_config.update_time.strftime('%Y-%m-%d %H:%M:%S')
+            product.postage_config = system_postage_config.to_dict('factor')

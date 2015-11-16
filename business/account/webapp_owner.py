@@ -16,6 +16,7 @@ from core.watchdog.utils import watchdog_alert
 from business.decorator import cached_context_property
 from business import model as business_model
 from business.mall.mall_data import MallData
+from business.account.webapp_owner_info import WebAppOwnerInfo
 import settings
 
 
@@ -39,7 +40,6 @@ class WebAppOwner(business_model.Model):
 		self.webapp_id = webapp_owner_profile.webapp_id
 		self.id = webapp_owner_profile.user_id
 
-
 	@cached_context_property
 	def __mall_data(self):
 		return MallData.get({
@@ -48,7 +48,7 @@ class WebAppOwner(business_model.Model):
 
 	@cached_context_property
 	def __webapp_owner_info(self):
-		return MallData.get({
+		return WebAppOwnerInfo.get({
 			'woid': self.id
 		})
 
@@ -65,6 +65,13 @@ class WebAppOwner(business_model.Model):
 		[property] 运费配置
 		"""
 		return self.__mall_data['postage_configs']
+
+	@property
+	def system_postage_config(self):
+		"""
+		[property] 当前正在使用的运费配置
+		"""
+		filter(lambda config: config.is_used, self.postage_configs)[0]
 
 	@property
 	def product_model_properties(self):
@@ -114,3 +121,17 @@ class WebAppOwner(business_model.Model):
 		[property] 二维码图片
 		"""
 		return self.__webapp_owner_info['qrcode_img']
+
+	@property
+	def member_grades(self):
+		"""
+		[property] 会员等级
+		"""
+		return self.__webapp_owner_info['member_grades']
+
+	@property
+	def member2grade(self):
+		"""
+		[property] <member_grade_id, member_grade>映射集合
+		"""
+		return self.__webapp_owner_info['member2grade']

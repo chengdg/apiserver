@@ -21,6 +21,7 @@ from wapi.member import models as member_models
 import settings
 from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
 from core.exceptionutil import unicode_full_stack
+from business import model as business_model
 
 
 
@@ -199,7 +200,8 @@ class WebAppOwnerInfo(business_model.Model):
 		obj.integral_strategy_settings = member_models.IntegralStrategySttings.from_dict(data['integral_strategy_settings'])
 		obj.member_grades = member_models.MemberGrade.from_list(data['member_grades'])
 		obj.member2grade = dict([(grade.id, grade) for grade in obj.member_grades])
-		obj.pay_interfaces = mall_models.PayInterface.from_list(data['pay_interfaces'])
+		#obj.pay_interfaces = mall_models.PayInterface.from_list(data['pay_interfaces'])
+		obj.pay_interfaces = data['pay_interfaces']
 		obj.is_weizoom_card_permission = data['has_permission']
 		obj.operation_settings = account_models.OperationSettings.from_dict(data['operation_settings'])
 		obj.red_envelope = red_envelope

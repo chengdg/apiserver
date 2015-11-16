@@ -268,9 +268,7 @@ class Product(models.Model):
 	is_deleted = models.BooleanField(default=False)  # 是否删除
 	is_support_make_thanks_card = models.BooleanField(
 		default=False)  # 是否支持制作感恩贺卡
-	type = models.CharField(
-		max_length=50,
-		default=PRODUCT_DEFAULT_TYPE)  # 产品的类型
+	type = models.CharField(max_length=50,default=PRODUCT_DEFAULT_TYPE)  # 产品的类型
 	update_time = models.DateTimeField(auto_now=True)  # 商品信息更新时间 2014-11-11
 	postage_id = models.IntegerField(default=-1)  # 运费id ，-1为使用统一运费
 	is_use_online_pay_interface = models.BooleanField(default=True)  # 在线支付方式

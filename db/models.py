@@ -62,7 +62,13 @@ class IntegerField(peewee.IntegerField):
 
 
 class CharField(peewee.CharField):
-	pass
+
+	def __init__(self, blank=False, db_index=False, **kwargs):
+		kwargs['null'] = blank
+		if db_index:
+			kwargs['index'] = db_index
+		super(CharField, self).__init__(**kwargs)
+
 
 class TextField(peewee.TextField):
 	pass

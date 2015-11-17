@@ -13,6 +13,7 @@ from utils import area_util
 #########################################################################
 # 商城相关Model
 #########################################################################
+
 MALL_CONFIG_PRODUCT_COUNT_NO_LIMIT = 999999999
 MALL_CONFIG_PRODUCT_NORMAL = 7
 class MallConfig(models.Model):

@@ -42,6 +42,9 @@ class RMemberShareUrl(inner_resource.Resource):
 		umt = args['umt']
 		cmt = args['cmt']
 		order_id = args['order_id']
+		print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+		from tasks import add
+		add.delay('ddddddddd')
 
 		try:
 			url_member = member_models.Member.get(token=umt)
@@ -50,6 +53,8 @@ class RMemberShareUrl(inner_resource.Resource):
 			url_member = None
 			click_member = None
 		print ')))))))))))))))))))))))>>>>', url_member, click_member
+
+		
 		if url_member and click_member:
 			if str(order_id) != '-1':
 				if member_models.MallOrderFromSharedRecord.select().dj_where(order_id = order_id, fmt = umt).count() == 0:

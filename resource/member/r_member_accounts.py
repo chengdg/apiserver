@@ -67,8 +67,6 @@ class RMemberAccounts(inner_resource.Resource):
 			member = member_models.Member.from_dict(data['member'])
 			webapp_user = member_models.WebAppUser.from_dict(data['webapp_user'])
 			social_account = member_models.SocialAccount.from_dict(data['social_account'])
-			member.webapp_user = webapp_user
-			webapp_user.member = member
 			return {
 				'member': member,
 				'webapp_user': webapp_user,

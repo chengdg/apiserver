@@ -4,6 +4,7 @@ from wapi.user import models as account_models
 import resource
 from business.account.webapp_owner import WebAppOwner
 from business.account.member import Member
+from business.account.webapp_user import WebAppUser
 
 
 class WebAppOwnerMiddleware(object):
@@ -34,6 +35,10 @@ class AccountsMiddleware(object):
 			"return_model": True
 		})
 		print 'get member in AccountsMiddleware...'
-		member_accounts['member'] = Member.from_model(req.context['webapp_owner'], member_accounts['member'])
+		member = Member.from_model(req.context['webapp_owner'], member_accounts['member'])
+		webapp_user = WebAppUser.from_model(req.context['webapp_owner'], member_accounts['webapp_user'])
+		webapp_user.member = member
+		member_accounts['member'] = member
+		member_accounts['webapp_user'] = webapp_user
 		print member_accounts
 		req.context.update(member_accounts)

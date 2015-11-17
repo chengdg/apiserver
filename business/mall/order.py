@@ -31,7 +31,10 @@ class Order(business_model.Model):
 		'type',
 		'ship_info',
 		'products',
-		'postage'
+		'postage',
+		'product_groups',
+		'pay_interfaces',
+		'usable_integral'
 	)
 
 	@staticmethod
@@ -48,29 +51,31 @@ class Order(business_model.Model):
 	def __init__(self, webapp_owner, webapp_user, purchase_info):
 		business_model.Model.__init__(self)
 
-		webapp_owner_id = args['woid']
-		webapp_user = args['webapp_user']
-		webapp_owner_info = args['webapp_owner_info']
-		member = args['member']
-		products = args['products']
+		self.type = mall_models.PRODUCT_DEFAULT_TYPE
 
 		if webapp_user.ship_info:
 			ship_info = webapp_user.ship_info
 			self.ship_info = {
-				"ship_name": ship_info.ship_name,
-				"ship_id": ship_info.id,
-				"ship_tel": ship_info.tel,
-				"ship_address": ship_info.ship_address,
-				"area": ship_info.area
+				"name": ship_info['name'],
+				"id": ship_info['id'],
+				"tel": ship_info['tel'],
+				"address": ship_info['address'],
+				"area": ship_info['area']
 			}
-
-		# 积分订单
-		if product.type == mall_models.PRODUCT_INTEGRAL_TYPE:
-			self.type = mall_models.PRODUCT_INTEGRAL_TYPE
 
 		#计算折扣
 		#product.original_price = product.price
+		order_products = OrderProducts.get({
+			"webapp_owner": webapp_owner,
+			"webapp_user": webapp_user,
+			"purchase_info": purchase_info
+		})
 		self.products = order_products.products
+
+		# 积分订单
+		temp_product = self.products[0]
+		if temp_product.type == mall_models.PRODUCT_INTEGRAL_TYPE:
+			self.type = mall_models.PRODUCT_INTEGRAL_TYPE
 
 		#订单运费由前台计算
 		self.postage = 0.0
@@ -80,7 +85,7 @@ class Order(business_model.Model):
 
 		#按促销进行product分组
 		product_grouper = ProductGrouper()
-		order.product_groups = product_grouper.group_product_by_promotion(webapp_user.member, self.products)
+		self.product_groups = product_grouper.group_product_by_promotion(webapp_user.member, self.products)
 
 		#获取订单可用积分
 		integral_info = webapp_user.integral_info

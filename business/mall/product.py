@@ -268,6 +268,8 @@ class Product(business_model.Model):
 		'price_info',
 		'sales',
 		'is_sellout',
+		'postage_id',
+		'postage_type',
 		
 		#促销信息
 		'promotion',
@@ -308,6 +310,7 @@ class Product(business_model.Model):
 
 	def __init__(self):
 		business_model.Model.__init__(self)
+		self.promotion = None
 
 	def __set_image_to_lazy_load(self):
 		# 商品详情图片lazyload
@@ -419,8 +422,7 @@ class Product(business_model.Model):
 		}
 		```
 		"""
-		if not models:
-			models = self.models
+		models = self.models
 
 		candidate_models = filter(lambda m: m['name'] == model_name, models)
 		if len(candidate_models) > 0:
@@ -910,7 +912,8 @@ class Product(business_model.Model):
 
 	@staticmethod
 	def __fill_promotion_detail(webapp_owner, products, product_ids):
-		pass
+		for product in products:
+			product.promotion = None
 		'''
 		from mall.promotion import models as promotion_models
 		today = datetime.today()
@@ -1033,8 +1036,7 @@ class Product(business_model.Model):
 			Product.__fill_sales_detail(webapp_owner_id, products, product_ids)
 
 		# if options.get('with_promotion', False):
-		# 	for product in products:
-		# 		product.__fill_promotion_detail2()
+		# 	Product.__fill_promotion_detail(webapp_owner_id, products, product_ids)
 
 	def to_dict(self, **kwargs):
 		result = {

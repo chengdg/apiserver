@@ -106,31 +106,21 @@ class APurchasing(api_resource.ApiResource):
 
 		return result_coupons, limit_coupons
 
-	def __format_product_group_price_factor(product_groups, webapp_owner_id):
-		"""
-		request_util:__format_product_group_price_factor
-		"""
-		forbidden_coupon_product_ids = resource.get('mall', 'forbidden_coupon_product_ids', {
-			'woid': webapp_owner_id
-		})
-
+	def __format_product_group_price_factor(product_groups):
 		factors = []
 		for product_group in product_groups:
 			product_factors = []
 			for product in product_group['products']:
-				is_forbidden_coupon = False
-				if product['id'] in forbidden_coupon_product_ids:
-					is_forbidden_coupon = True
 				product_factors.append({
-					"id": product['id'],
-					"model": product['model_name'],
-					"count": product['purchase_count'],
-					"price": product['price'],
-					"original_price": product['original_price'],
-					"weight": product['weight'],
-					"active_integral_sale_rule": product.get('active_integral_sale_rule', None),
-					"postageConfig": product.get('postage_config', {}),
-					"forbidden_coupon": is_forbidden_coupon
+					"id": product.id,
+					"model": product.model_name,
+					"count": product.purchase_count,
+					"price": product.price,
+					"original_price": product.original_price,
+					"weight": product.weight,
+					"active_integral_sale_rule": getattr(product, 'active_integral_sale_rule', None),
+					"postageConfig": product.postage_config,
+					"forbidden_coupon": (not product.can_use_coupon)
 				})
 
 			factor = {
@@ -176,19 +166,31 @@ class APurchasing(api_resource.ApiResource):
 		integral_info['have_integral'] = (integral_info['count'] > 0)
 
 		#获取优惠券
-		coupons, limit_coupons = Purchasing.__fill_coupons_for_edit_order(webapp_owner_id, webapp_user, products)
+		#coupons, limit_coupons = Purchasing.__fill_coupons_for_edit_order(webapp_owner_id, webapp_user, products)
+		coupons, limit_coupons = [], []
 
 		#获取商城配置
-		mall_config = webapp_owner_info.mall_data['mall_config']#MallConfig.objects.get(owner_id=webapp_owner_id)
-		use_ceiling = webapp_owner_info.integral_strategy_settings.use_ceiling
+		mall_config = webapp_owner.mall_config
+		use_ceiling = webapp_owner.integral_strategy_settings.use_ceiling
+
+		order_info = {
+			'type': order.type,
+			'ship_name': order.ship_info['name'],
+			'ship_tel': order.ship_info['tel'],
+			'ship_address': order.ship_info['address'],
+			'ship_id': order.ship_info['id'],
+			'ship_area': order.ship_info['area'],
+			'pay_interfaces': order.pay_interfaces,
+			'product_groups': order.product_groups
+		}
 
 		return {
-			'order': order,
+			'order': order_info,
 			'mall_config': mall_config,
 			'integral_info': integral_info,
 			'coupons': coupons,
 			'limit_coupons': limit_coupons,
 			'use_ceiling': use_ceiling,
 			'postage_factor': postage_factor,
-			'product_groups': Purchasing.__format_product_group_price_factor(order['product_groups'], webapp_owner_id)
+			'product_groups': APurchasing.__format_product_group_price_factor(order.product_groups)
 		}

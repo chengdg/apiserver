@@ -8,6 +8,7 @@ import json
 from bs4 import BeautifulSoup
 import math
 import itertools
+from datetime import datetime
 
 from wapi.decorators import param_required
 from wapi import wapi_utils
@@ -35,6 +36,7 @@ class OrderProduct(business_model.Model):
 		'_postage_config',
 
 		'price',
+		'_original_price',
 		'weight',
 		'stock_type',
 		'stocks',
@@ -45,6 +47,9 @@ class OrderProduct(business_model.Model):
 		'market_price',
 		'custom_model_properties',
 		'total_price',
+		'can_use_coupon',
+		'is_member_product',
+		'promotion'
 	)
 
 	@staticmethod
@@ -69,8 +74,16 @@ class OrderProduct(business_model.Model):
 		mall_api:get_product_details_with_model
 		获得指定规格的商品详情
 		"""
-		product = Product.from_id(product_info['id'])
+		product = Product.from_id({
+			"webapp_owner": self.context['webapp_owner'],
+			"member": webapp_user.member,
+			"product_id": product_info['id']
+		})
 		self.context['product'] = product
+
+		#默认可以使用优惠券
+		#TODO2：目前对商品是否可使用优惠券的设置放在了order_products中，主要是出于目前批量处理的考虑，后续应该将r_forbidden_coupon_product_ids资源进行优化，将判断逻辑放入到order_product中
+		self.can_use_coupon = True
 
 		model = product.get_specific_model(product_info['model_name'])
 		self.type = product.type,
@@ -90,6 +103,14 @@ class OrderProduct(business_model.Model):
 		self.used_promotion_id = product_info['promotion_id']
 		self.total_price = float(self.price) * int(self.purchase_count)
 
+		self.is_member_product = product.is_member_product
+		print '-$-' * 30
+		print product
+		print type(product)
+		print dir(product)
+		print '-$-' * 30
+		self.promotion = product.promotion
+
 		if product.is_member_product:
 			self.member_discount = webapp_user.member.discount
 		else:
@@ -104,17 +125,26 @@ class OrderProduct(business_model.Model):
 		product = self.context['product']
 		webapp_owner = self.context['webapp_owner']
 
-        if product.postage_type == mall_models.POSTAGE_TYPE_UNIFIED:
-            #使用统一运费
-            product.postage_config = {
-                "id": -1,
-                "money": product.unified_postage_money,
-                "factor": None
-            }
-        else:
-        	system_postage_config = webapp_owner.system_postage_config
-            if isinstance(system_postage_config.created_at, datetime):
-                system_postage_config.created_at = system_postage_config.created_at.strftime('%Y-%m-%d %H:%M:%S')
-            if isinstance(system_postage_config.update_time, datetime):
-                system_postage_config.update_time = system_postage_config.update_time.strftime('%Y-%m-%d %H:%M:%S')
-            product.postage_config = system_postage_config.to_dict('factor')
+		if product.postage_type == mall_models.POSTAGE_TYPE_UNIFIED:
+			#使用统一运费
+			return {
+				"id": -1,
+				"money": product.unified_postage_money,
+				"factor": None
+			}
+		else:
+			return webapp_owner.system_postage_config
+
+	@property
+	def original_price(self):
+		"""
+		[property] 订单商品的原始价格
+		"""
+		return self._original_price
+
+	@original_price.setter
+	def original_price(self, value):
+		"""
+		[property setter] 订单商品的原始价格
+		"""
+		self._original_price = value

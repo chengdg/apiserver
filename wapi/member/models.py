@@ -113,6 +113,31 @@ class SocialAccount(models.Model):
 		db_table = 'binding_social_account'
 
 
+class ShipInfo(models.Model):
+	"""
+	收货地址
+	"""
+	webapp_user_id = models.IntegerField(db_index=True, default=0)
+	ship_name = models.CharField(max_length=100) # 收货人姓名
+	ship_tel = models.CharField(max_length=100) # 收货人电话
+	ship_address = models.CharField(max_length=200) # 收货人地址
+	area = models.CharField(max_length=256) #地区
+	is_selected = models.BooleanField(default=True) # 是否选中，默认是选中
+	is_deleted = models.BooleanField(default=False) # 是否被删除
+	created_at = models.DateTimeField(auto_now_add=True)
+
+	class Meta(object):
+		db_table = 'member_ship_info'
+
+	@property
+	def get_str_area(self):
+		from tools.regional import views as regional_util
+		if self.area:
+			return regional_util.get_str_value_by_string_ids(self.area)
+		else:
+			return ''
+
+
 class WebAppUser(models.Model):
 	"""
 	WebApp的用户
@@ -748,6 +773,11 @@ class Member(models.Model):
 		return member, True
 		# except:
 		# 	pass
+
+
+
+
+
 
 
 

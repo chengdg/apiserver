@@ -36,24 +36,25 @@ class PurchaseInfo(business_model.Model):
 
 		@return PurchaseInfo对象
 		"""
-		purchase_info = PurchaseInfo()
-		purchase_info.parse(args['request_args'])
+		purchase_info = PurchaseInfo(args['request_args'])
 
 		return purchase_info
 
-	def __init__(self):
+	def __init__(self, request_args):
 		business_model.Model.__init__(self)
 
-	def parse(self, request_args):
+		self.__parse(request_args)
+
+	def __parse(self, request_args):
 		"""解析request参数
 		"""
-		result = self.__get_product_param(args)
+		result = self.__get_product_param(request_args)
 		self.product_ids = result['product_ids']
 		self.promotion_ids = result['promotion_ids']
 		self.product_counts = result['product_counts']
 		self.product_model_names = result['product_model_names']
 
-	def __get_product_param(args):
+	def __get_product_param(self, args):
 	    '''获取订单商品id，数量，规格
 	    供_get_products调用
 	    '''

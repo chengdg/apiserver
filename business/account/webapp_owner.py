@@ -57,21 +57,21 @@ class WebAppOwner(business_model.Model):
 		"""
 		[property] 商城配置
 		"""
-		return self.__mall_data['mall_config']
+		return self.__mall_data.mall_config
 
 	@property
 	def postage_configs(self):
 		"""
 		[property] 运费配置
 		"""
-		return self.__mall_data['postage_configs']
+		return self.__mall_data.postage_configs
 
 	@property
 	def system_postage_config(self):
 		"""
 		[property] 当前正在使用的运费配置
 		"""
-		filter(lambda config: config.is_used, self.postage_configs)[0]
+		return filter(lambda config: config['is_used'], self.postage_configs)[0]
 
 	@property
 	def product_model_properties(self):
@@ -85,53 +85,53 @@ class WebAppOwner(business_model.Model):
 		"""
 		[property] 红包
 		"""
-		return self.__webapp_owner_info['red_envelope']
+		return self.__webapp_owner_info.red_envelope
 
 	@property
 	def global_navbar(self):
 		"""
 		[property] 全局导航配置
 		"""
-		return self.__webapp_owner_info['global_navbar']
+		return self.__webapp_owner_info.global_navbar
 
 	@property
 	def integral_strategy_settings(self):
 		"""
 		[property] 积分使用策略配置
 		"""
-		return self.__webapp_owner_info['integral_strategy_settings']
+		return self.__webapp_owner_info.integral_strategy_settings
 
 	@property
 	def pay_interfaces(self):
 		"""
 		[property] 支付方式配置
 		"""
-		return self.__webapp_owner_info['pay_interfaces']
+		return self.__webapp_owner_info.pay_interfaces
 
 	@property
 	def is_weizoom_card_permission(self):
 		"""
 		[property] 是否开启了微众卡权限
 		"""
-		return self.__webapp_owner_info['is_weizoom_card_permission']
+		return self.__webapp_owner_info.is_weizoom_card_permission
 
 	@property
 	def qrcode_img(self):
 		"""
 		[property] 二维码图片
 		"""
-		return self.__webapp_owner_info['qrcode_img']
+		return self.__webapp_owner_info.qrcode_img
 
 	@property
 	def member_grades(self):
 		"""
 		[property] 会员等级
 		"""
-		return self.__webapp_owner_info['member_grades']
+		return self.__webapp_owner_info.member_grades
 
 	@property
 	def member2grade(self):
 		"""
 		[property] <member_grade_id, member_grade>映射集合
 		"""
-		return self.__webapp_owner_info['member2grade']
+		return self.__webapp_owner_info.member2grade

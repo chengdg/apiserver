@@ -35,7 +35,9 @@ class WebAppOwnerInfo(business_model.Model):
 		'integral_strategy_settings',
 		'pay_interfaces',
 		'is_weizoom_card_permission',
-		'qrcode_img'
+		'qrcode_img',
+		'member2grade',
+		'member_grades'
 	)
 
 	@staticmethod
@@ -58,7 +60,7 @@ class WebAppOwnerInfo(business_model.Model):
 
 	def __get_red_envelope_for_cache(self, webapp_owner_id):
 		def inner_func():
-			red_envelope = list(promotion_models.RedEnvelopeRule.select().dj_where(owner_id=owner_id, status=True,receive_method=False))
+			red_envelope = list(promotion_models.RedEnvelopeRule.select().dj_where(owner=webapp_owner_id, status=True,receive_method=False))
 			result = {}
 			if len(red_envelope):
 				red_envelope = red_envelope[0]
@@ -180,10 +182,10 @@ class WebAppOwnerInfo(business_model.Model):
 		red_envelope_key = 'red_envelope_{wo:%s}' % webapp_owner_id
 		key_infos = [{
 			'key': webapp_owner_info_key,
-			'on_miss': self.get_webapp_owner_info_from_db(webapp_owner_id)
+			'on_miss': self.__get_webapp_owner_info_from_db(webapp_owner_id)
 		},{
 			'key': red_envelope_key,
-			'on_miss': self.get_red_envelope_for_cache(webapp_owner_id)
+			'on_miss': self.__get_red_envelope_for_cache(webapp_owner_id)
 
 		}]
 		data = cache_util.get_many_from_cache(key_infos)

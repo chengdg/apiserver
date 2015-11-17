@@ -8,6 +8,7 @@ import json
 from bs4 import BeautifulSoup
 import math
 import itertools
+from datetime import datetime
 
 from wapi.decorators import param_required
 from wapi import wapi_utils
@@ -66,6 +67,7 @@ class ProductGrouper(business_model.Model):
 		"""
 		收集product_group积分规则抵扣规则
 		"""
+		return None
 		merged_rule = {
 			"member_grade_id": target_member_grade_id,
 			"product_model_names": []

@@ -40,7 +40,7 @@ class MallData(business_model.Model):
 
 	def __init__(self, woid):
 		business_model.Model.__init__(self)
-		self.__get_from_cache(args['woid'])
+		self.__get_from_cache(woid)
 
 	def __get_mall_config_for_cache(self, webapp_owner_id):
 		"""
@@ -157,13 +157,13 @@ class MallData(business_model.Model):
 		product_model_properties_key = 'webapp_product_model_properties_{wo:%s}' % webapp_owner_id
 		key_infos = [{
 			'key': mall_config_key,
-			'on_miss': self.get_mall_config_for_cache(webapp_owner_id)
+			'on_miss': self.__get_mall_config_for_cache(webapp_owner_id)
 		}, {
 			'key': postage_configs_key,
-			'on_miss': self.get_postage_configs_for_cache(webapp_owner_id)
+			'on_miss': self.__get_postage_configs_for_cache(webapp_owner_id)
 		}, {
 			'key': product_model_properties_key,
-			'on_miss': self.get_product_model_properties_for_cache(webapp_owner_id)
+			'on_miss': self.__get_product_model_properties_for_cache(webapp_owner_id)
 		}]
 		data = cache_util.get_many_from_cache(key_infos)
 

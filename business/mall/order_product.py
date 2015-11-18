@@ -152,7 +152,6 @@ class OrderProduct(business_model.Model):
 	def to_dict(self):
 		data = business_model.Model.to_dict(self)
 		data['postage_config'] = data['_postage_config']
-		data['original_price'] = data['_original_price']
 		return data
 
 	@cached_context_property

@@ -11,8 +11,9 @@ from utils import dateutil as utils_dateutil
 import resource
 from wapi.mall.a_purchasing import APurchasing as PurchasingApiResource
 from cache import utils as cache_utils
-from business.mall.order import Order
+from business.mall.order_factory import OrderFactory
 from business.mall.purchase_info import PurchaseInfo
+from business.mall.pay_interface import PayInterface
 
 
 class AOrder(api_resource.ApiResource):
@@ -38,7 +39,7 @@ class AOrder(api_resource.ApiResource):
 			'request_args': args
 		})
 
-		order = Order.create({
+		order_factory = OrderFactory.create({
 			"webapp_owner": webapp_owner,
 			"webapp_user": webapp_user,
 			"purchase_info": purchase_info,
@@ -61,19 +62,19 @@ class AOrder(api_resource.ApiResource):
 		# 	'request_args': args
 		# })
 
-		order_validation = order.validate()
+		order_validation = order_factory.validate()
 
 		if (not order_validation['is_valid']):
 			return 500, pre_order_validation['reason']
 
-		if order.save():
+		order = order_factory.save()
+		if order:
 			if order.final_price > 0 and purchase_info.used_pay_interface_type != '-1':
-				# 处理 支付跳转路径
-				# pay_interface = PayInterface.objects.get(owner_id=request.webapp_owner_id, type=pay_interface)
-				pay_interface_data = filter(lambda x: x['type'] == int(purchase_info.used_pay_interface_type), webapp_owner.pay_interfaces)[0]
-				pay_interface = mall_models.PayInterface.from_dict(pay_interface_data)
-				#pay_url = pay_interface.pay(order, webapp_owner.id)
-				pay_url = 'lala'
+				pay_interface = PayInterface.from_type({
+					"webapp_owner": webapp_owner,
+					"pay_interface_type": purchase_info.used_pay_interface_type
+				})
+				pay_url = pay_interface.get_pay_url_for_order(order)
 
 		data = {
 			'order_id' : order.order_id,

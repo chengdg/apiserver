@@ -60,7 +60,8 @@ class PurchaseOrder(business_model.Model):
 				"id": ship_info['id'],
 				"tel": ship_info['tel'],
 				"address": ship_info['address'],
-				"area": ship_info['area']
+				"area": ship_info['area'],
+				"display_area": ship_info['area']
 			}
 
 		#计算折扣

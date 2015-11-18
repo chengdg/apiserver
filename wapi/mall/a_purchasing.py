@@ -10,7 +10,7 @@ from wapi.mall import promotion_models
 from utils import dateutil as utils_dateutil
 import resource
 from business.mall.purchase_info import PurchaseInfo
-from business.mall.order import Order
+from business.mall.purchase_order import PurchaseOrder
 
 
 class APurchasing(api_resource.ApiResource):
@@ -152,7 +152,7 @@ class APurchasing(api_resource.ApiResource):
 			'request_args': args
 		})
 
-		order = Order.create({
+		order = PurchaseOrder.create({
 			"webapp_owner": webapp_owner,
 			"webapp_user": webapp_user,
 			"purchase_info": purchase_info,
@@ -173,6 +173,8 @@ class APurchasing(api_resource.ApiResource):
 		mall_config = webapp_owner.mall_config
 		use_ceiling = webapp_owner.integral_strategy_settings.use_ceiling
 
+		product_groups = APurchasing.__format_product_group_price_factor(order.product_groups)
+
 		order_info = {
 			'type': order.type,
 			'ship_name': order.ship_info['name'],
@@ -183,6 +185,12 @@ class APurchasing(api_resource.ApiResource):
 			'pay_interfaces': order.pay_interfaces,
 			'product_groups': order.product_groups
 		}
+		#将product_groups中的order_product转化为dict
+		for product_group in order_info['product_groups']:
+			new_products = []
+			for product in product_group['products']:
+				new_products.append(product.to_dict())
+			product_group['products'] = new_products
 
 		return {
 			'order': order_info,
@@ -192,5 +200,5 @@ class APurchasing(api_resource.ApiResource):
 			'limit_coupons': limit_coupons,
 			'use_ceiling': use_ceiling,
 			'postage_factor': postage_factor,
-			'product_groups': APurchasing.__format_product_group_price_factor(order.product_groups)
+			'product_groups': product_groups
 		}

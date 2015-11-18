@@ -287,8 +287,7 @@ class Product(business_model.Model):
 
 	@staticmethod
 	def from_model(webapp_owner_id, model, fill_options):
-		product = Product()
-		product._init_slot_from_model(model)
+		product = Product(model)
 		Product.__fill_details(webapp_owner_id, [product], fill_options)
 		product.__set_image_to_lazy_load()
 
@@ -308,9 +307,13 @@ class Product(business_model.Model):
 		"""
 		return [Product.from_id(product_id) for product_id in args['product_ids']]
 
-	def __init__(self):
+	def __init__(self, model=None):
 		business_model.Model.__init__(self)
 		self.promotion = None
+
+		if model:
+			self._init_slot_from_model(model)
+			self.owner_id = model.owner_id
 
 	def __set_image_to_lazy_load(self):
 		# 商品详情图片lazyload
@@ -407,6 +410,12 @@ class Product(business_model.Model):
 			return u'该商品不参与全场优惠券使用！'
 		else:
 			return u''
+
+	def is_on_shelve(self):
+		"""
+		判断商品是否是商家状态
+		"""
+		return self.shelve_type == mall_models.PRODUCT_SHELVE_TYPE_ON
 
 	def get_specific_model(self, model_name):
 		"""
@@ -1041,6 +1050,7 @@ class Product(business_model.Model):
 	def to_dict(self, **kwargs):
 		result = {
 			'id': self.id,
+			'owner_id': self.owner_id,
 			'type': self.type,
 			'is_deleted': self.is_deleted,
 			'name': self.name,

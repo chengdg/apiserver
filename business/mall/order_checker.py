@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+"""订单有效性的判断器
+"""
+
 import json
 from bs4 import BeautifulSoup
 import math
@@ -13,58 +16,33 @@ from core.watchdog.utils import watchdog_alert
 from business import model as business_model 
 
 
-class BPreOrder(business_model.Model):
+class OrderChecker(business_model.Model):
 	"""
-	用于判断订单有效性的订单
+	订单有效性的判断器
 	"""
-	__slots__ = (
-		'products',
-		'product_groups',
-		'session_data',
+	__slots__ = ('order',)
 
-		'_checkers',
-	)
-
-	@staticmethod
-	@param_required(['woid', 'webapp_owner_info', 'webapp_user', 'member', 'products', 'request_args'])
-	def get(args):
-		"""
-		factory方法
-		"""
-		pre_order = BPreOrder()
-		pre_order.products = args['products']
-		pre_order.context.update({
-			'webapp_owner_id': args['woid'],
-			'webapp_user': args['webapp_user'],
-			'member': args['member'],
-			'request_args': args['request_args'],
-			'webapp_owner_info': args['webapp_owner_info']
-		})
-
-		#按促销进行product分组
-		pre_order.product_groups = resource.get('mall', 'product_groups', {
-			'webapp_owner_info': args['webapp_owner_info'],
-			'member': args['member'],
-			'products': args['products']
-		})
-
-		return pre_order
-
-	def __init__(self):
+	def __init__(self, webapp_owner, webapp_user, order):
 		business_model.Model.__init__(self)
 
-		self._checkers = [
+		self.context['checkers'] = [
 			self.__check_products, 
 			self.__check_coupon,
 			self.__check_product_stock
 		]
 
-	def __check_products(self, webapp_owner_id, request_args):
+		self.context['webapp_owner'] = webapp_owner
+		self.context['webapp_user'] = webapp_user
+		self.order = order
+
+
+	def __check_products(self):
 		"""
 		检查是否有商品下架
 		"""
-		products = self.products
-		off_shelve_products = [product for product in products if product.shelve_type == mall_models.PRODUCT_SHELVE_TYPE_OFF]
+		webapp_owner_id = self.context['webapp_owner'].id
+		products = self.order.products
+		off_shelve_products = [product for product in products if not product.is_on_shelve()]
 		if len(off_shelve_products) > 0:
 			if len(off_shelve_products) == len(products):
 				#所有商品下架，返回商品列表页
@@ -88,10 +66,14 @@ class BPreOrder(business_model.Model):
 				'success': True
 			}
 
-	def __check_coupon(self, webapp_owner_id, request_args):
+	def __check_coupon(self):
 		"""
 		检查优惠券
 		"""
+		return {
+			'success': True
+		}
+		'''
 		if not hasattr(self, 'session_data'):
 			self.session_data = dict()
 		fail_msg = {
@@ -130,6 +112,7 @@ class BPreOrder(business_model.Model):
 		return {
 			'success': True
 		}
+		'''
 
 	def __fill_realtime_stocks(self, products):
 		"""
@@ -163,65 +146,63 @@ class BPreOrder(business_model.Model):
 				model['stocks'] = realtime_model['stocks']
 				model['is_deleted'] = realtime_model['is_deleted']
 
-	def __check_product_stock(self, webapp_owner_id, request_args):
-	    """
-	    检查商品库存是否满足下单条件
-	    @todo 改为基于redis的并发安全的实现
-	    """
-	    fail_msg = {
-	        'success': False,
-	        'data': {
-	            'msg': u'有商品库存不足<br/>2秒后返回购物车<br/>请重新下单',
-	            'redirect_url': '/workbench/jqm/preview/?module=mall&model=shopping_cart&action=show&workspace_id=mall&woid=%s' % webapp_owner_id,
-	            'detail': []
-	        }
-	    }
+	def __check_product_stock(self):
+		"""
+		检查商品库存是否满足下单条件
+		@todo 改为基于redis的并发安全的实现
+		"""
+		webapp_owner_id = self.context['webapp_owner'].id
+		fail_msg = {
+			'success': False,
+			'data': {
+				'msg': u'有商品库存不足<br/>2秒后返回购物车<br/>请重新下单',
+				'redirect_url': '/workbench/jqm/preview/?module=mall&model=shopping_cart&action=show&workspace_id=mall&woid=%s' % webapp_owner_id,
+				'detail': []
+			}
+		}
 
-	    products = self.products
-	    #TODO2: 将fill_realtime_stocks放入Product bModel
-	    self.__fill_realtime_stocks(products)
-	    for product in products:
-	        for model in product.models:
-	            if product.model_name == model['name']:
-	                product.stock_type = model['stock_type']
-	                product.stocks = model['stocks']
-	                if model.get('is_deleted', True):
-	                    fail_msg['data']['detail'].append({
-	                        'id': product.id,
-	                        'model_name': product.model_name,
-	                        'msg': u'有商品规格已删除，请重新下单',
-	                        'short_msg': u'已删除'
-	                    })
+		products = self.order.products
+		for product in products:
+			stock_result = product.check_stocks()
+			if not stock_result["is_sufficient"]:
+				reason = stock_result["reason"]
+				if reason == 'deleted':
+					fail_msg['data']['detail'].append({
+							'id': product.id,
+							'model_name': product.model_name,
+							'msg': u'有商品规格已删除，请重新下单',
+							'short_msg': u'已删除'
+						})
+				elif reason == 'sellout':
+					fail_msg['data']['detail'].append({
+						'id': product.id,
+						'model_name': product.model_name,
+						'msg': u'有商品已售罄，请重新下单',
+						'short_msg': u'已售罄'
+					})
+				else:
+					fail_msg['data']['detail'].append({
+						'id': product.id,
+						'model_name': product.model_name,
+						'msg': u'有商品库存不足，请重新下单',
+						'short_msg': u'库存不足'
+					})
 
-	        if product.stock_type == mall_models.PRODUCT_STOCK_TYPE_LIMIT and product.purchase_count > product.stocks:
-	            if product.stocks == 0:
-	                fail_msg['data']['detail'].append({
-	                    'id': product.id,
-	                    'model_name': product.model_name,
-	                    'msg': u'有商品已售罄，请重新下单',
-	                    'short_msg': u'已售罄'
-	                })
-	            else:
-	                fail_msg['data']['detail'].append({
-	                    'id': product.id,
-	                    'model_name': product.model_name,
-	                    'msg': u'有商品库存不足，请重新下单',
-	                    'short_msg': u'库存不足'
-	                })
-	    if len(fail_msg['data']['detail']) > 0:
-	        return fail_msg
-	    return {
-	        'success': True
-	    }
+		if len(fail_msg['data']['detail']) > 0:
+			return fail_msg
 
-	def __check_pro_id_in_detail_list(datadetail, pro_id):
+		return {
+			'success': True
+		}
+
+	def __check_pro_id_in_detail_list(self, datadetail, pro_id):
 		flag, index = False,0
 		for index, data in enumerate (datadetail):
 			if data['id'] == pro_id and data['short_msg'] == u'已删除':
 				flag, index = True, index # 存在，以及索引
 				break
 			elif data['id'] == pro_id and data['short_msg'] == u'已下架':
-			    flag, index = True, index # 存在，以及索引
+				flag, index = True, index # 存在，以及索引
 			else:
 				flag, index = False, index # 存在，以及索引
 		return flag,index
@@ -236,7 +217,7 @@ class BPreOrder(business_model.Model):
 
 		products_ids = [detail['id'] for detail in details]
 		for id in products_ids:
-			flag, index = _check_pro_id_in_detail_list(details,id)
+			flag, index = self.__check_pro_id_in_detail_list(details,id)
 			if flag:
 				real_details.append(details[index])
 				continue
@@ -247,7 +228,7 @@ class BPreOrder(business_model.Model):
 		
 		return real_details
 
-	def check_validation(self):
+	def check(self):
 		"""
 		检查order的有效性
 
@@ -255,11 +236,9 @@ class BPreOrder(business_model.Model):
 			is_valid: 是否有效
 			reason: 当is_valid为False时，失效的理由
 		"""
-		webapp_owner_id = self.context['webapp_owner_id']
-		request_args = self.context['request_args']
 		failed_results = []
-		for checker in self._checkers:
-			result = checker(webapp_owner_id, request_args)
+		for checker in self.context['checkers']:
+			result = checker()
 			if not result['success']:
 				failed_results.append(result)
 

@@ -19,13 +19,14 @@ from core.watchdog.utils import watchdog_alert
 from business import model as business_model
 import settings
 from business.decorator import cached_context_property
-
+from utils import emojicons_util
 
 class Member(business_model.Model):
 	"""会员
 	"""
 	__slots__ = (
 		'grade_id',
+		'username_hexstr'
 	)
 
 	@staticmethod
@@ -107,3 +108,17 @@ class Member(business_model.Model):
 			'usable_integral_percentage_in_order' : usable_integral_percentage_in_order,
 			'usable_integral_or_conpon' : integral_strategy_settings.usable_integral_or_conpon
 		}
+
+	@cached_context_property
+	def username_for_html(self):
+		if (self.username_hexstr is not None) and (len(self.username_hexstr) > 0):
+			username = emojicons_util.encode_emojicons_for_html(self.username_hexstr, is_hex_str=True)
+		else:
+			username = emojicons_util.encode_emojicons_for_html(self.username)		
+
+		try:
+			username.decode('utf-8')
+		except:
+			username = self.username_hexstr
+
+		return username

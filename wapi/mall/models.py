@@ -1373,7 +1373,7 @@ class Order(models.Model):
 	webapp_id = models.CharField(max_length=20, verbose_name='店铺ID')  # webapp,订单成交的店铺id
 	webapp_source_id = models.CharField(max_length=20, default=0, verbose_name='商品来源店铺ID')  # 订单内商品实际来源店铺的id
 	buyer_name = models.CharField(max_length=100)  # 购买人姓名
-	buyer_tel = models.CharField(max_length=100)  # 购买人电话
+	buyer_tel = models.CharField(max_length=100, default='')  # 购买人电话
 	ship_name = models.CharField(max_length=100)  # 收货人姓名
 	ship_tel = models.CharField(max_length=100)  # 收货人电话
 	ship_address = models.CharField(max_length=200)  # 收货人地址
@@ -1382,7 +1382,7 @@ class Order(models.Model):
 	order_source = models.IntegerField(default=ORDER_SOURCE_OWN)  # 订单来源 0本店 1商城
 	bill_type = models.IntegerField(default=ORDER_BILL_TYPE_NONE)  # 发票类型
 	bill = models.CharField(max_length=100, default='')  # 发票信息
-	remark = models.TextField()  # 备注
+	remark = models.TextField(default='')  # 备注
 	product_price = models.FloatField(default=0.0)  # 商品金额
 	coupon_id = models.IntegerField(default=0)  # 优惠券id，用于支持返还优惠券
 	coupon_money = models.FloatField(default=0.0)  # 优惠券金额
@@ -1396,8 +1396,8 @@ class Order(models.Model):
 	final_price = models.FloatField(default=0.0)
 	pay_interface_type = models.IntegerField(default=-1)  # 支付方式
 	express_company_name = models.CharField(max_length=50, default='')  # 物流公司名称
-	express_number = models.CharField(max_length=100)  # 快递单号
-	leader_name = models.CharField(max_length=256)  # 订单负责人
+	express_number = models.CharField(max_length=100, default='')  # 快递单号
+	leader_name = models.CharField(max_length=256, default='')  # 订单负责人
 	customer_message = models.CharField(max_length=1024)  # 商家留言
 	payment_time = models.DateTimeField(default=DEFAULT_DATETIME)  # 订单支付时间
 	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间

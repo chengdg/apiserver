@@ -27,6 +27,11 @@ class PurchaseInfo(business_model.Model):
 		'promotion_ids',
 		'product_counts',
 		'product_model_names',
+
+		'ship_info',
+		'used_pay_interface_type',
+		'customer_message',
+		'order_type'
 	)
 
 	@staticmethod
@@ -53,6 +58,35 @@ class PurchaseInfo(business_model.Model):
 		self.promotion_ids = result['promotion_ids']
 		self.product_counts = result['product_counts']
 		self.product_model_names = result['product_model_names']
+
+		self.__parse_ship_info(request_args)
+		self.__parse_pay_interface(request_args)
+		self.__parse_custom_message(request_args)
+
+		self.order_type = request_args.get('order_type', mall_models.PRODUCT_DEFAULT_TYPE)
+
+	def __parse_ship_info(self, request_args):
+		"""解析收货人信息
+		"""
+		if 'ship_name' in request_args:
+			self.ship_info = {
+				"name": request_args['ship_name'],
+				"tel": request_args['ship_tel'],
+				"area": request_args['area'],
+				"address": request_args['ship_address']
+			}
+		else:
+			self.ship_info = None
+
+	def __parse_pay_interface(self, request_args):
+		"""解析支付方式
+		"""
+		self.used_pay_interface_type = request_args.get('xa-choseInterfaces', '-1')
+
+	def __parse_custom_message(self, request_args):
+		"""解析用户留言
+		"""
+		self.customer_message = request_args.get('message', '')
 
 	def __get_product_param(self, args):
 	    '''获取订单商品id，数量，规格

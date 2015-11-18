@@ -27,16 +27,20 @@ class OrderProduct(business_model.Model):
 	"""
 	__slots__ = (
 		'id',
+		'name',
 		'type',
+		'thumbnails_url',
+		'pic_url',
 		'member_discount',
 		'purchase_count',
 		'used_promotion_id',
 		'total_price',
 		'product_model_id',
 		'_postage_config',
+		'is_use_custom_model',
 
 		'price',
-		'_original_price',
+		'original_price',
 		'weight',
 		'stock_type',
 		'stocks',
@@ -49,7 +53,9 @@ class OrderProduct(business_model.Model):
 		'total_price',
 		'can_use_coupon',
 		'is_member_product',
-		'promotion'
+		'promotion',
+		'shelve_type',
+		'promotion_money'
 	)
 
 	@staticmethod
@@ -69,6 +75,8 @@ class OrderProduct(business_model.Model):
 		self.context['webapp_owner'] = webapp_owner
 		self.__fill_detail(webapp_user, product_info)
 
+		self.promotion_money = 0.0
+
 	def __fill_detail(self, webapp_user, product_info):
 		"""
 		mall_api:get_product_details_with_model
@@ -86,9 +94,16 @@ class OrderProduct(business_model.Model):
 		self.can_use_coupon = True
 
 		model = product.get_specific_model(product_info['model_name'])
-		self.type = product.type,
-		self.id = product.id,
-		self.price = model['price']
+		self.type = product.type
+		self.id = product.id
+		self.name = product.name
+		self.thumbnails_url = product.thumbnails_url
+		self.pic_url = product.pic_url
+		self.shelve_type = product.shelve_type
+		self.is_use_custom_model = product.is_use_custom_model
+
+		self.price = float(model['price'])
+		self.original_price = float(model['price'])
 		self.weight = model['weight']
 		self.stock_type = model['stock_type']
 		if not hasattr(product, 'min_limit'):
@@ -101,20 +116,16 @@ class OrderProduct(business_model.Model):
 		self.product_model_id = '%s_%s' % (product_info['id'], product_info['model_name'])
 		self.purchase_count = product_info['count']
 		self.used_promotion_id = product_info['promotion_id']
-		self.total_price = float(self.price) * int(self.purchase_count)
+		self.total_price = self.original_price * int(self.purchase_count)
 
 		self.is_member_product = product.is_member_product
-		print '-$-' * 30
-		print product
-		print type(product)
-		print dir(product)
-		print '-$-' * 30
 		self.promotion = product.promotion
 
 		if product.is_member_product:
-			self.member_discount = webapp_user.member.discount
+			_, self.member_discount = webapp_user.member.discount
 		else:
 			self.member_discount = 1.00
+		self.price = self.price * self.member_discount #折扣后的价格
 		#TODO2: 为微众商城增加1.1的价格因子
 
 	@cached_context_property
@@ -135,16 +146,78 @@ class OrderProduct(business_model.Model):
 		else:
 			return webapp_owner.system_postage_config
 
-	@property
-	def original_price(self):
-		"""
-		[property] 订单商品的原始价格
-		"""
-		return self._original_price
+	def is_on_shelve(self):
+		return self.context['product'].is_on_shelve()
 
-	@original_price.setter
-	def original_price(self, value):
+	def to_dict(self):
+		data = business_model.Model.to_dict(self)
+		data['postage_config'] = data['_postage_config']
+		data['original_price'] = data['_original_price']
+		return data
+
+	@cached_context_property
+	def __current_model(self):
 		"""
-		[property setter] 订单商品的原始价格
+		[property] 当前规格的信息
 		"""
-		self._original_price = value
+		#TODO2: perf - 将这个操作放入OrderProducts进行批量处理
+		product = self.context['product']
+		for model in product.models:
+			if self.model_name == model['name']:
+				model_id = model['id']
+
+
+		db_product_model = mall_models.ProductModel.get(id=model_id)
+
+		return db_product_model.to_dict()
+
+	def check_stocks(self):
+		"""
+		检查库存
+
+		@return 
+			is_sufficient: 库存是否充足
+			reason: 如果is_sufficient为False, 这里是库存不足的原因; 如果is_sufficient为True, reason为None
+		"""
+		current_model = self.__current_model
+		if current_model.get('is_deleted', True):
+			return {
+				"is_sufficient": False,
+				"reason": "deleted"
+			}
+
+		if current_model['stock_type'] == mall_models.PRODUCT_STOCK_TYPE_LIMIT and self.purchase_count > current_model['stocks']:
+			if current_model['stocks'] == 0:
+				return {
+					"is_sufficient": False,
+					"reason": "sellout"
+				}
+			else:
+				return {
+					"is_sufficient": False,
+					"reason": "not_enough_stocks"
+				}
+		else:
+			return {
+				"is_sufficient": True,
+				"reason": None
+			} 
+
+	def consume_stocks(self):
+		"""
+		消耗库存
+		"""
+		#TODO2: 库存在self.check_stocks()时，就应该被扣除
+		current_model = self.__current_model
+		if current_model['stock_type'] == mall_models.PRODUCT_STOCK_TYPE_LIMIT:
+			counter=Stat.counter + 1
+			mall_models.ProductModel.update(stocks=mall_models.ProductModel.stocks-self.purchase_count).dj_where(id=current_model['id']).execute()
+
+	@cached_context_property
+	def discount_money(self):
+		# 目前product.member_discount_money 只有限时抢购会设置成0，不用乘商品数量
+		return self.total_price * self.member_discount
+
+	@property
+	def supplier(self):
+		return self.context['product'].owner_id

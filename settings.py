@@ -55,3 +55,9 @@ REDIS_CACHES_DB = 2
 
 #BDD相关配置
 WEAPP_DIR = '../weapp'
+
+
+INSTALLED_TASKS = [
+    # Celery for Falcon
+    'resource.member.tasks'
+    ]

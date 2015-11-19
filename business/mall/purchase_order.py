@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-
-"""订单商品
+"""@package business.mall.purchase_order
+用于支持购买过程中进行订单编辑的订单
 
 """
 

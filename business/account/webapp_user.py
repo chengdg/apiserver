@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-"""
+"""@package business.account.webapp_user
 WebApp User
+
 """
 
 import json

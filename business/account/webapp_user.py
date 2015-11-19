@@ -25,7 +25,8 @@ class WebAppUser(business_model.Model):
 	"""
 	__slots__ = (
 		'id',
-		'member'
+		'member',
+		'has_purchased'
 	)
 
 	@staticmethod
@@ -87,3 +88,10 @@ class WebAppUser(business_model.Model):
 			return list(member_models.ShipInfo.select().dj_where(webapp_user_id=self.id, is_deleted=False))
 		except:
 			return None
+
+	def set_purchased(self):
+		"""
+		设置已购买标识
+		"""
+		if not self.has_purchased:
+			member_models.WebAppUser.update(has_purchased=True).dj_where(id=self.id).execute()

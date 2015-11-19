@@ -12,7 +12,7 @@ class Model(object):
 	def _init_slot_from_model(self, model):
 		for slot in self.__slots__:
 			value = getattr(model, slot, None)
-			if value:
+			if value != None:
 				if 'id' == slot:
 					value = int(value)
 				setattr(self, slot, value)
@@ -25,8 +25,12 @@ class Model(object):
 			setattr(instance, slot, value)
 		return instance
 
-	def to_dict(self):
+	def to_dict(self, *extras):
 		result = dict()
 		for slot in self.__slots__:
 			result[slot] = getattr(self, slot, None)
+
+		for item in extras:
+			result[item] = getattr(self, item, None)
+			
 		return result		

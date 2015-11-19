@@ -78,6 +78,9 @@ class FalconResource:
 			if type(raw_response) == tuple:
 				response['code'] = raw_response[0]
 				response['data'] = raw_response[1]
+				if response['code'] != 200:
+					response['errMsg'] = response['data']
+					response['innerErrMsg'] = response['data']
 			else:
 				response['code'] = 200
 				response['data'] = raw_response

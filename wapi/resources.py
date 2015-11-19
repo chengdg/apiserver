@@ -3,6 +3,7 @@
 import mall
 import member
 import message
+import pay
 #import stats
 
 #import views

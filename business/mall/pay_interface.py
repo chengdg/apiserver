@@ -31,11 +31,21 @@ class PayInterface(business_model.Model):
 	"""支付接口
 	"""
 	__slots__ = (
-		'id',
-		'order_id',
-		'pay_interface_type',
-		'final_price',
+		'type',
+		'related_config_id'
 	)
+
+	@staticmethod
+	@param_required(['webapp_owner', 'interface_id'])
+	def from_id(args):
+		"""工厂方法，创建PayInterface对象
+
+		@param [in] pay_interface_type : 支付接口的类型
+
+		@return Order对象
+		"""
+		pay_interface = PayInterface(args['webapp_owner'], interface_id=int(args['interface_id']))
+		return pay_interface
 
 	@staticmethod
 	@param_required(['webapp_owner', 'pay_interface_type'])
@@ -46,15 +56,22 @@ class PayInterface(business_model.Model):
 
 		@return Order对象
 		"""
-		pay_interface = PayInterface(args['webapp_owner'], int(args['pay_interface_type']))
+		pay_interface = PayInterface(args['webapp_owner'], pay_interface_type=int(args['pay_interface_type']))
 		return pay_interface
 
-	def __init__(self, webapp_owner, pay_interface_type):
+	def __init__(self, webapp_owner, pay_interface_type=None, interface_id=None):
 		business_model.Model.__init__(self)
 
 		self.context['webapp_owner'] = webapp_owner
 
-		self.context['interface'] = next(interface for interface in webapp_owner.pay_interfaces if interface['type'] == pay_interface_type)
+		if pay_interface_type:
+			self.context['interface'] = next(interface for interface in webapp_owner.pay_interfaces if interface['type'] == pay_interface_type)
+		elif interface_id:
+			self.context['interface'] = next(interface for interface in webapp_owner.pay_interfaces if interface['id'] == interface_id)
+
+		interface = self.context['interface']
+		self.type = interface['type']
+		self.related_config_id = interface['related_config_id']
 
 	def get_pay_url_for_order(self, order):
 		interface = self.context['interface']
@@ -95,3 +112,54 @@ class PayInterface(business_model.Model):
 				interface['id'])
 		else:
 			return ''
+
+	@cached_context_property
+	def pay_config(self):
+		"""与支付接口关联的具体支付配置
+		"""
+		interface = self.context['interface']
+		if interface['type'] == mall_models.PAY_INTERFACE_WEIXIN_PAY:
+			weixin_pay_config = mall_models.UserWeixinPayOrderConfig.get(id=interface['related_config_id'])
+			return weixin_pay_config.to_dict()
+		else:
+			return None
+
+	def parse_pay_result(self, pay_result):
+		"""解析支付结果
+
+		@return 支付结果
+			is_success: 支付是否成功
+			order_id: 支付的订单的id
+			error_msg: 如果is_success为False, error_msg中给出失败的原因
+		"""
+		error_msg = ''
+		if mall_models.PAY_INTERFACE_ALIPAY == self.type:
+			order_id = pay_result.get('out_trade_no', None)
+			trade_status = pay_result.get('result', '')
+			is_trade_success = ('success' == trade_status.lower())
+		elif mall_models.PAY_INTERFACE_TENPAY == self.type:
+			trade_status = int(pay_result.get('trade_status', -1))
+			is_trade_success = (0 == trade_status)
+			error_msg = pay_result.get('pay_info', '')
+			order_id = pay_result.get('out_trade_no', None)
+		elif mall_models.PAY_INTERFACE_COD == self.type:
+			is_trade_success = True
+			order_id = pay_result.get('order_id')
+		elif mall_models.PAY_INTERFACE_WEIXIN_PAY == self.type:
+			is_trade_success = True
+			order_id = pay_result.get('order_id')
+		else:
+			pass
+
+		#兼容改价
+		try:
+			order_id = order_id.split('-')[0]
+		except:
+			pass
+
+		return {
+			'is_success': is_trade_success,
+			'order_id': order_id,
+			'error_msg': error_msg
+		}
+

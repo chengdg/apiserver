@@ -38,6 +38,7 @@ if MODE == 'develop':
     WAPI_LOGGER_SERVER_PORT = 27017
     WAPI_LOGGER_DB = 'wapi'
     IMAGE_HOST = 'http://dev.weapp.com'
+    PAY_HOST = 'api.weapp.com'
 else:
     # 真实环境暂时关闭
     #WAPI_LOGGER_ENABLED = False
@@ -46,6 +47,7 @@ else:
     WAPI_LOGGER_SERVER_PORT = 27017
     WAPI_LOGGER_DB = 'wapi'
     IMAGE_HOST = 'http://dev.weapp.com'
+    PAY_HOST = 'api.weapp.com'
 
 
 #缓存相关配置

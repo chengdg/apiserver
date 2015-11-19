@@ -1170,6 +1170,27 @@ class PayInterface(models.Model):
 		return PAYTYPE2NAME[self.type]
 
 
+V2 = 0
+V3 = 1
+class UserWeixinPayOrderConfig(models.Model):
+	owner = models.ForeignKey(User)
+	app_id = models.CharField(max_length=32, verbose_name='微信公众号app_id')
+	app_secret = models.CharField(max_length=64)
+	partner_id = models.CharField(max_length=32, verbose_name='合作商户id')
+	partner_key = models.CharField(max_length=32, verbose_name='合作商初始密钥')	
+	paysign_key = models.CharField(max_length=128, verbose_name='支付专用签名串')	
+	pay_version  = models.IntegerField(default=V2)
+
+	class Meta(object):
+		db_table = 'account_weixin_pay_order_config'
+
+
+
+
+
+
+
+
 
 
 

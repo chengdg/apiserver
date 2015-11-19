@@ -1,28 +1,30 @@
 # -*- coding: utf-8 -*-
-
-"""会员
+"""@package business.account.member
+会员
 """
 
-import json
-from bs4 import BeautifulSoup
-import math
-from datetime import datetime
+#import json
+#from bs4 import BeautifulSoup
+#import math
+#from datetime import datetime
 
-from wapi.decorators import param_required
-from wapi import wapi_utils
-from cache import utils as cache_util
-from wapi.mall import models as mall_models
-from wapi.mall import promotion_models
+#from wapi.decorators import param_required
+#from wapi import wapi_utils
+#from cache import utils as cache_util
+#from wapi.mall import models as mall_models
+#from wapi.mall import promotion_models
 from wapi.member import models as member_models
-import resource
-from core.watchdog.utils import watchdog_alert
+#import resource
+#from core.watchdog.utils import watchdog_alert
 from business import model as business_model
-import settings
+#import settings
 from business.decorator import cached_context_property
 from utils import emojicons_util
 
+
 class Member(business_model.Model):
-	"""会员
+	"""
+	会员
 	"""
 	__slots__ = (
 		'grade_id',
@@ -58,6 +60,8 @@ class Member(business_model.Model):
 	def discount(self):
 		"""
 		[property] 会员折扣
+
+		@return 返回二元组(grade_id, 折扣百分数)
 		"""
 		member_model = self.context['db_model']
 		if not member_model:

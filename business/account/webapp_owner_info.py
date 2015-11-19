@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+"""
+webapp owner的信息
+"""
 
 import json
 from bs4 import BeautifulSoup

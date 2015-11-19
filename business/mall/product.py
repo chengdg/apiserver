@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-""" @package business.mall.product
+"""@package business.mall.product
 商品的业务对象
 
 """

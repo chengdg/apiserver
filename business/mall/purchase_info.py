@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-
-"""购买信息
+"""@package business.mall.purchase_info
+购买信息
 
 """
 
@@ -20,7 +20,8 @@ import settings
 
 
 class PurchaseInfo(business_model.Model):
-	"""购买信息
+	"""
+	购买信息
 	"""
 	__slots__ = (
 		'product_ids',
@@ -89,9 +90,9 @@ class PurchaseInfo(business_model.Model):
 		self.customer_message = request_args.get('message', '')
 
 	def __get_product_param(self, args):
-	    '''获取订单商品id，数量，规格
+	    """获取订单商品id，数量，规格
 	    供_get_products调用
-	    '''
+	    """
 	    if 'redirect_url_query_string' in args:
 	        query_string = self.__get_query_string_dict_to_str(args['redirect_url_query_string'])
 	    else:

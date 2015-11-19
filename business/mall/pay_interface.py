@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-
-"""支付接口
+"""@package business.mall.pay_interface
+支付接口
 
 """
 

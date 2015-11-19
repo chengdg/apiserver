@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
+"""@package business.mall.coupon
 优惠券
 """
 

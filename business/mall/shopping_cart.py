@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-
-""" @package business.mall.shopping_cart
+"""@package business.mall.shopping_cart
 购物车业务对象
+
 """
 
 import json

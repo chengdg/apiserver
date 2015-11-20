@@ -12,7 +12,7 @@ from core.exceptionutil import unicode_full_stack
 from utils.url_helper import complete_get_request_url
 #from core.weixin_media_saver import save_weixin_user_head_img
 
-#from watchdog.utils import watchdog_error, watchdog_info
+from watchdog.utils import watchdog_error, watchdog_info
 
 #from weixin.user.access_token import update_access_token
 from util import ObjectAttrWrapedInDict
@@ -195,18 +195,23 @@ def call_api(weixin_api, api_instance_class):
 
 		result = api_response
 
-		try:
-			#watchdog_info('call weixin api: {} , result:{}'.format(api_instance_class.__class__.__name__, result))
+		"""
+			TODO:
+				记录微信api调用记录
+		"""
 
-			from weixin.message.message_handler.tasks import record_call_weixin_api
-			if hasattr(result, 'errcode'):
-				success = False
-				#watchdog_error('call weixin api: {} , result:{}'.format(api_instance_class.__class__.__name__, result))	
-			else:
-				success = True
-			record_call_weixin_api.delay(api_instance_class.__class__.__name__, success)
-		except:
-			pass
+		# try:
+		# 	#watchdog_info('call weixin api: {} , result:{}'.format(api_instance_class.__class__.__name__, result))
+
+		# 	from weixin.message.message_handler.tasks import record_call_weixin_api
+		# 	if hasattr(result, 'errcode'):
+		# 		success = False
+		# 		#watchdog_error('call weixin api: {} , result:{}'.format(api_instance_class.__class__.__name__, result))	
+		# 	else:
+		# 		success = True
+		# 	record_call_weixin_api.delay(api_instance_class.__class__.__name__, success)
+		# except:
+		# 	pass
 		
 		if hasattr(result, 'errcode'):
 			try:
@@ -298,7 +303,7 @@ class WeixinApi(object):
 
 	def _notify_api_request_error(self, apierror, api_name='' ,user_id=0):
 		notify_msg = u"微信api调用失败，api:{}\n错误信息:{}".format(api_name, apierror.__unicode__())
-		#watchdog_error(notify_msg,user_id=user_id)
+		watchdog_error(notify_msg,user_id=user_id)
 
 	def _raise_request_error(self, response, api_name='' , user_id=0):
 		error_response = WeixinErrorResponse(response)
@@ -312,7 +317,7 @@ class WeixinApi(object):
 
 		self._notify_api_request_error(apierror, api_name, user_id)
 
-		raise apierror
+		#raise apierror
 
 	def _raise_system_error(self, api_name='', user_id=0):
 		system_error_response = build_system_exception_response()

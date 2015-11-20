@@ -9,6 +9,8 @@ from core.watchdog.utils import watchdog_fatal
 import settings
 from utils import area_util
 
+DEFAULT_DATETIME = datetime.strptime('2000-01-01', '%Y-%m-%d')
+
 
 #########################################################################
 # 商城相关Model
@@ -1002,6 +1004,19 @@ class ProductSales(models.Model):
 		db_table = 'mall_product_sales'
 
 
+class MemberProductWishlist(models.Model):
+	owner = models.ForeignKey(User)
+	member_id = models.IntegerField(default=0) #会员ID
+	product_id = models.IntegerField(default=0) #商品ID
+	is_collect = models.BooleanField(default=False) #商品是否被收藏
+	add_time = models.DateTimeField(auto_now_add=True) #商品收藏的时间
+	delete_time = models.DateTimeField(default=DEFAULT_DATETIME) #商品取消收藏的时间
+	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间
+
+	class Meta(object):
+		db_table = 'mall_member_product_wishlist'
+
+
 PAY_INTERFACE_ALIPAY = 0
 PAY_INTERFACE_TENPAY = 1
 PAY_INTERFACE_WEIXIN_PAY = 2
@@ -1362,7 +1377,6 @@ ORDERSTATUS2MOBILETEXT = copy.copy(ORDERSTATUS2TEXT)
 ORDERSTATUS2MOBILETEXT[ORDER_STATUS_PAYED_SHIPED] = u'待收货'
 
 PAYMENT_INFO = u'下单'
-DEFAULT_DATETIME = datetime.strptime('2000-01-01', '%Y-%m-%d')
 
 THANKS_CARD_ORDER = 'thanks_card'  # 感恩贺卡类型的订单
 

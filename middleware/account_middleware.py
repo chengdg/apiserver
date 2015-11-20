@@ -38,7 +38,7 @@ class AccountsMiddleware(object):
 		member = Member.from_model(req.context['webapp_owner'], member_accounts['member'])
 		webapp_user = WebAppUser.from_model(req.context['webapp_owner'], member_accounts['webapp_user'])
 		webapp_user.member = member
+		member.webapp_user = webapp_user
 		member_accounts['member'] = member
 		member_accounts['webapp_user'] = webapp_user
-		print member_accounts
 		req.context.update(member_accounts)

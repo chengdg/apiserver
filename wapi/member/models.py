@@ -436,343 +436,6 @@ class Member(models.Model):
 	def __unicode__(self):
 		return u'<member: %s %s>' % (self.webapp_id, self.username)
 
-	@property
-	def get_webapp_user_ids(self):
-		return [webapp_user.id for webapp_user in WebAppUser.select().dj_where(member_id=self.id)]
-
-
-	@staticmethod
-	def from_webapp_user(webapp_user):
-		if (webapp_user is None) or (not webapp_user.is_member):
-			return None
-
-		try:
-			return Member.select().dj_where(id=webapp_user.member_id)
-		except:
-			#TODO 进行异常处理？？
-			return None
-
-	@staticmethod
-	def members_from_webapp_user_ids(webapp_user_ids):
-		if not webapp_user_ids:
-			return []
-
-		webappuser2member = dict([(u.id, u.member_id) for u in WebAppUser.select().dj_where(id__in=webapp_user_ids)])
-		member_ids = set(webappuser2member.values())
-		id2member = dict([(m.id, m) for m in Member.select().dj_where(id__in=member_ids)])
-
-		for webapp_user_id, member_id in webappuser2member.items():
-			webappuser2member[webapp_user_id] = id2member.get(member_id, None)
-
-		return webappuser2member
-
-	@staticmethod
-	def update_last_visit_time(member):
-		if member is None:
-			return
-
-		member.last_visit_time = datetime.now()
-		member.save()
-
-	@property
-	def username(self):
-		if hasattr(self, '_username'):
-			return self._username
-
-		self._username = hex_to_byte(self.username_hexstr)
-		return self._username
-
-	@username.setter
-	def username(self, username):
-		self.username_hexstr = byte_to_hex(username)
-
-	@staticmethod
-	def get_by_username(username):
-		hexstr = byte_to_hex(username)
-		return list(Member.select().dj_where(username_hexstr=hexstr))
-
-	@cached_property
-	def username_for_html(self):
-		if hasattr(self, '_username_for_html'):
-			return self._username_for_html
-
-		if (self.username_hexstr is not None) and (len(self.username_hexstr) > 0):
-			self._username_for_html = encode_emojicons_for_html(self.username_hexstr, is_hex_str=True)
-		else:
-			self._username_for_html = encode_emojicons_for_html(self.username)
-
-		try:
-			#解决用户名本身就是字节码串导致不能正常转换得问题，例如ae
-			self._username_for_html.decode('utf8')
-		except:
-			self._username_for_html = self.username_hexstr
-
-		return self._username_for_html
-
-	@cached_property
-	def username_for_title(self):
-		try:
-			username = unicode(self.username_for_html, 'utf8')
-			username = re.sub('<[^<]+?>', '', username)
-			return username
-		except:
-			return self.username_for_html
-
-	@cached_property
-	def username_truncated(self):
-		try:
-			username = unicode(self.username_for_html, 'utf8')
-			_username = re.sub('<[^<]+?><[^<]+?>', ' ', username)
-			if len(_username) <= 5:
-				return username
-			else:
-				name_str = username
-				span_list = re.findall(r'<[^<]+?><[^<]+?>', name_str) #保存表情符
-
-				output_str = ""
-				count = 0
-
-				if not span_list:
-					return u'%s...' % name_str[:5]
-
-				for span in span_list:
-				    length = len(span)
-				    while not span == name_str[:length]:
-				        output_str += name_str[0]
-				        count += 1
-				        name_str = name_str[1:]
-				        if count == 5:
-				            break
-				    else:
-				        output_str += span
-				        count += 1
-				        name_str = name_str[length:]
-				        if count == 5:
-				            break
-				    if count == 5:
-				        break
-				return u'%s...' % output_str
-		except:
-			return self.username_for_html[:5]
-
-	@cached_property
-	def username_size_ten(self):
-		try:
-			username = unicode(self.username_for_html, 'utf8')
-			_username = re.sub('<[^<]+?><[^<]+?>', ' ', username)
-			if len(_username) <= 10:
-				return username
-			else:
-				name_str = username
-				span_list = re.findall(r'<[^<]+?><[^<]+?>', name_str) #保存表情符
-
-				output_str = ""
-				count = 0
-
-				if not span_list:
-					return u'%s...' % name_str[:10]
-
-				for span in span_list:
-				    length = len(span)
-				    while not span == name_str[:length]:
-				        output_str += name_str[0]
-				        count += 1
-				        name_str = name_str[1:]
-				        if count == 10:
-				            break
-				    else:
-				        output_str += span
-				        count += 1
-				        name_str = name_str[length:]
-				        if count == 10:
-				            break
-				    if count == 10:
-				        break
-				return u'%s...' % output_str
-		except:
-			return self.username_for_html[:10]
-
-	@property
-	def friends(self):
-		if hasattr(self, '_friends'):
-			return self._friends
-
-		self._friends = MemberFollowRelation.get_follow_members_for(self.id)
-		return self._friends
-
-	@staticmethod
-	def count(webapp_id):
-		return Member.select().dj_where(webapp_id=webapp_id, status__in=[CANCEL_SUBSCRIBED, SUBSCRIBED], is_for_test=False).count()
-
-	@staticmethod
-	def update_factor(member):
-		friends_count =len(MemberFollowRelation.get_follow_members_for(member.id, '1'))
-		friends_from_qrcodes = len(MemberFollowRelation.get_follow_members_for(member.id, '1', True))
-		#总点击数
-		click_counts = MemberSharedUrlInfo.select().dj_where(member=member).aggregate(Sum("pv"))
-
-		if click_counts["pv__sum"]:
-			click_counts = float(click_counts["pv__sum"])
-		else:
-			click_counts = 0
-
-		if (click_counts + friends_from_qrcodes) != 0:
-			factor =  float('%.2f' % (float(friends_count + friends_from_qrcodes) / float(friends_from_qrcodes + click_counts)))
-			if member.factor != factor:
-				Member.select().dj_where(id=member.id).update(factor=factor)
-
-
-	def consume_integral(self, count, type):
-		if type is None:
-			return
-
-		from integral import increase_member_integral
-		increase_member_integral(self, -count, type, to_task=False)
-
-	def update_member_info(self, username, phone_number):
-		if (username is None) or (phone_number is None):
-			return
-
-		MemberInfo.select().dj_where(member=self).update(
-			name = username,
-			phone_number = phone_number
-		)
-
-	@property
-	def member_info(self):
-		try:
-			return MemberInfo.objects.get(member=self)
-		except:
-			return MemberInfo.objects.create(
-				member = Member.objects.get(id=self.id),
-				name = ''
-				)
-
-
-	@staticmethod
-	def increase_friend_count(member_ids):
-		from django.db import connection, transaction
-		cursor = connection.cursor()
-		cursor.execute('update member_member set friend_count = friend_count + 1 where id in (%s);' % (member_ids))
-		transaction.commit_unless_managed()
-
-	@property
-	def member_open_id(self):
-		try:
-			return MemberHasSocialAccount.select().dj_where(member=self)[0].account.openid
-		except:
-			return None
-
-	@staticmethod
-	def get_members(webapp_id):
-		return list(Member.select().dj_where(webapp_id=webapp_id, is_subscribed=True, is_for_test=False))
-
-	@staticmethod
-	def get_member_list_by_grade_id(grade_id):
-		return list(Member.select().dj_where(grade_id=grade_id, is_subscribed=True, is_for_test=False))
-
-	@staticmethod
-	def get_member_by_weixin_user_id(id):
-		try:
-			weixin_user = WeixinUser.objects.get(id=id)
-			social_account = SocialAccount.objects.get(openid=weixin_user.username, webapp_id=weixin_user.webapp_id)
-			if MemberHasSocialAccount.select().dj_where(account=social_account).count() > 0:
-				return MemberHasSocialAccount.select().dj_where(account=social_account)[0].member
-			else:
-				return None
-		except:
-			return None
-
-	@staticmethod
-	def update_member_grade(member, grade_id):
-		"""
-		updated by zhu tianqi,修改为会员等级高于目标等级时不降级
-		"""
-		if member.grade_id < grade_id:
-			from django.db import connection, transaction
-			cursor = connection.cursor()
-			cursor.execute('update member_member set grade_id = %d where id = %d;' % (grade_id, member.id))
-			transaction.commit_unless_managed()
-
-	@property
-	def is_binded(self):
-		if MemberInfo.select().dj_where(member_id=self.id).count() > 0:
-			member_info = MemberInfo.select().dj_where(member_id=self.id)[0]
-			return member_info.is_binded
-		else:
-			MemberInfo.objects.create(
-				member=self,
-				name='',
-				weibo_nickname=''
-				)
-			return False
-
-
-	@staticmethod
-	def create_member(openid, webapp_id, for_oauthed=False):
-		token = md5('%s_%s' % (webapp_id, openid)).hexdigest()
-		sure_created = False		
-		try:
-			social_account = SocialAccount.get(webapp_id = webapp_id, openid = openid)
-			print 'get_social_account>>>>>>>>>>>>>>>>>:',social_account
-		except:
-			social_account, sure_created = SocialAccount.get_or_create(
-				platform = 0,
-				webapp_id = webapp_id,
-				openid = openid,
-				token = token,
-				is_for_test = False,
-				access_token = '',
-				uuid=''
-			)
-			print 'create_social_account>>>>>>>>>>>>>>>>>:',social_account
-		if not sure_created and MemberHasSocialAccount.filter(webapp_id=webapp_id, account=social_account).count() >  0:
-			return True, False
-		#默认等级
-		member_grade = MemberGrade.get_default_grade(webapp_id)
-
-		if for_oauthed:
-			is_subscribed = False
-			status = NOT_SUBSCRIBED
-		else:
-			is_subscribed = True
-			status = SUBSCRIBED
-
-		#temporary_token = _create_random()
-		member_token = _generate_member_token(social_account, social_account)
-		member = Member.create(
-			webapp_id = social_account.webapp_id,
-			user_icon = '',#social_account_info.head_img if social_account_info else '',
-			username_hexstr = '',
-			grade = member_grade,
-			remarks_name = '',
-			token = member_token,
-			is_for_test = social_account.is_for_test,
-			is_subscribed = is_subscribed,
-			status = status
-		)
-		if not member:
-			return None
-
-		MemberHasSocialAccount.create(
-					member = member,
-					account = social_account,
-					webapp_id = webapp_id
-					)
-
-		WebAppUser.create(
-			token = member.token,
-			webapp_id = webapp_id,
-			member_id = member.id
-			)
-
-		#添加默认分组
-		#try:
-		default_member_tag = MemberTag.get_default_tag(webapp_id)
-		MemberHasTag.add_tag_member_relation(member, [default_member_tag.id])
-		return member, True
-		# except:
-		# 	pass
 
 
 
@@ -796,6 +459,55 @@ class MemberHasSocialAccount(models.Model):
 
 	class Meta(object):
 		db_table = 'member_has_social_account'
+
+
+SEX_TYPE_MEN = 1
+SEX_TYPE_WOMEN = 2
+SEX_TYPE_UNKOWN = 0
+SEX_TYPES = (
+	(SEX_TYPE_MEN, '男'),
+	(SEX_TYPE_WOMEN, '女'),
+	(SEX_TYPE_UNKOWN, '未知')
+	)
+
+class MemberInfo(models.Model):
+	"""
+	会员信息
+	"""
+	member = models.ForeignKey(Member)
+	name = models.CharField(max_length=8, verbose_name='会员姓名')
+	sex = models.IntegerField(choices=SEX_TYPES, verbose_name='性别')
+	age = models.IntegerField(default=-1, verbose_name='年龄')
+	address = models.CharField(max_length=32, verbose_name='地址')
+	phone_number = models.CharField(max_length=11)
+	qq_number = models.CharField(max_length=13)
+	weibo_nickname = models.CharField(max_length=16, verbose_name='微博昵称')
+	member_remarks = models.TextField()
+	#new add by bert
+	is_binded = models.BooleanField(default=False)
+	session_id = models.CharField(max_length=1024)
+	captcha = models.CharField(max_length=11) #验证码
+	binding_time = models.DateTimeField() #绑定时间
+
+	class Meta(object):
+		db_table = 'member_info'
+
+	@staticmethod
+	def get_member_info(member_id):
+		if member_id is None or member_id <= 0:
+			return None
+		try:
+			return MemberInfo.objects.filter(member_id=member_id)[0]
+		except:
+			return MemberInfo.objects.create(
+					member_id=member_id,
+					name='',
+					weibo_nickname='',
+					sex=0
+					)
+	@staticmethod
+	def is_can_binding(phone_number, member_id, webapp_id):
+		return not MemberInfo.objects.filter(member__webapp_id=webapp_id, is_binded=True, phone_number=phone_number).count() > 0
 
 
 class MemberFollowRelation(models.Model):

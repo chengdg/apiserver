@@ -43,6 +43,8 @@ class Order(business_model.Model):
 		'coupon_id',
 		'status',
 		'origin_order_id',
+		'express_number',
+		'created_at'
 	)
 
 	@staticmethod
@@ -54,6 +56,28 @@ class Order(business_model.Model):
 		"""
 		order = Order(args['webapp_owner'], args['webapp_user'], args['order_id'])
 		return order
+
+	@staticmethod
+	@param_required(['webapp_owner', 'webapp_user'])
+	def get_orders_for_webapp_user(args):
+		"""工厂方法，创建Order对象
+
+		@return Order对象
+		"""
+		webapp_owner = args['webapp_owner']
+		webapp_user = args['webapp_user']
+		order_models = list(mall_models.Order.select().dj_where(webapp_user_id=webapp_user.id))
+		order_models.sort(lambda x,y: cmp(y.id, x.id))
+
+		orders = []
+		for order_model in order_models:
+			order = Order(webapp_owner, webapp_user, None)
+			order.context['order'] = order_model
+			order._init_slot_from_model(order_model)
+			order.context['is_valid'] = True
+			orders.append(order)
+
+		return orders
 
 	@staticmethod
 	def empty_order():

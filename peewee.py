@@ -357,8 +357,10 @@ def django_where_returns_clone(func):
                 elif op == '__notin':
                     args.append(db_field.not_in(value))
                 elif op == '__in':
-                    if len(value) > 0:
-                        args.append(db_field.in_(value))
+                    if len(value) == 0:
+                        #TODO2: handle situations like "select * from table where id in ()"
+                        value = ['-98765']
+                    args.append(db_field.in_(value))
         kwargs = {}
             
         clone = self.clone()  # Assumes object implements `clone`.
@@ -625,6 +627,9 @@ class Expression(Node):
 
     def clone_base(self):
         return Expression(self.lhs, self.op, self.rhs, self.flat)
+
+    def __repr__(self):
+        return '<expression op:%s, lhs:%s, rhs:%s>' % (self.op, self.lhs, self.rhs)
 
 class Param(Node):
     """
@@ -2482,6 +2487,9 @@ class Query(Node):
     @django_where_returns_clone
     def dj_where(self, *expressions):
         self._where = self._add_query_clauses(self._where, expressions)
+        print '-*-' * 20
+        print self._where
+        print '-*-' * 20
 
     @returns_clone
     def orwhere(self, *expressions):

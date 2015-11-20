@@ -39,18 +39,36 @@ class OrderProducts(business_model.Model):
 
 		@return OrderProducts对象
 		"""
-		order_products = OrderProducts()
-		order_products.get_products(args['webapp_owner'], args['webapp_user'], args['purchase_info'])
+		order_products = OrderProducts(args['webapp_owner'], args['webapp_user'])
+		order_products.get_products_from_purchase_info(args['purchase_info'])
 
 		return order_products
 
-	def __init__(self):
+	@staticmethod
+	@param_required(['webapp_owner', 'webapp_user', 'order'])
+	def get_for_order(args):
+		"""工厂方法，根据Order创建OrderProducts对象
+
+		@param[in] order: 购买信息PurchaseInfo对象
+
+		@return OrderProducts对象
+		"""
+		order_products = OrderProducts(args['webapp_owner'], args['webapp_user'])
+		order_products.get_products_for_order(args['order'])
+
+		return order_products
+
+	def __init__(self, webapp_owner, webapp_user):
 		business_model.Model.__init__(self)
 
-	def get_products(self, webapp_owner, webapp_user, purchase_info):
+		self.context['webapp_owner'] = webapp_owner
+		self.context['webapp_user'] = webapp_user
+
+	def get_products_from_purchase_info(self, purchase_info):
 		'''获取商品集合
 		'''
-		member = webapp_user.member
+		webapp_owner = self.context['webapp_owner']
+		webapp_user = self.context['webapp_user']
 
 		product_ids = purchase_info.product_ids
 		promotion_ids = purchase_info.promotion_ids
@@ -86,3 +104,25 @@ class OrderProducts(business_model.Model):
 		for product in self.products:
 			if product.id in forbidden_coupon_product_ids:
 				product.can_use_coupon = False
+
+	def get_products_for_order(self, order):
+		'''根据order获取订单商品集合
+		'''
+		webapp_owner = self.context['webapp_owner']
+		webapp_user = self.context['webapp_user']
+
+		self.products = []
+
+		order_product_infos = [{
+			'id': r.product_id,
+			'model_name': r.product_model_name,
+			'count': r.number,
+			'promotion_id': r.promotion_id
+		} for r in mall_models.OrderHasProduct.select().dj_where(order=order.id)]
+	
+		for order_product_info in order_product_infos:
+			self.products.append(OrderProduct.get({
+				"webapp_owner": webapp_owner,
+				"webapp_user": webapp_user,
+				"product_info": order_product_info
+			}))

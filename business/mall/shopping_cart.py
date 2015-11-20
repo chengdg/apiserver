@@ -62,7 +62,7 @@ class ShoppingCart(business_model.Model):
 	@property
 	def product_count(self):
 		"""
-		[property] 商品数量
+		[property] 购物车中的商品数量
 
 		@return 不同商品的数量，注意：如果有商品A（1个），商品B（3个），则返回2，而不是4
 		"""

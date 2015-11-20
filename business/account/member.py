@@ -20,13 +20,18 @@ from business import model as business_model
 import settings
 from business.decorator import cached_context_property
 from utils import emojicons_util
+from business.account.member_order_info import MemberOrderInfo
+from business.mall.shopping_cart import ShoppingCart
 
 class Member(business_model.Model):
 	"""会员
 	"""
 	__slots__ = (
+		'id',
 		'grade_id',
-		'username_hexstr'
+		'username_hexstr',
+
+		'webapp_user'
 	)
 
 	@staticmethod
@@ -54,21 +59,6 @@ class Member(business_model.Model):
 		self.context['webapp_owner'] = webapp_owner
 		self.context['db_model'] = model
 
-	@property
-	def discount(self):
-		"""
-		[property] 会员折扣
-		"""
-		member_model = self.context['db_model']
-		if not member_model:
-			return -1, 100
-
-		member_grade = self.__grade
-		if member_grade:
-			return member_model.grade_id, member_grade.shop_discount
-		else:
-			return member_model.grade_id, 100
-
 	@cached_context_property
 	def __grade(self):
 		"""
@@ -84,10 +74,89 @@ class Member(business_model.Model):
 		member_grade = webapp_owner.member2grade.get(member_grade_id, '')
 		return member_grade
 
+	@property
+	def discount(self):
+		"""
+		[property] 会员折扣
+		"""
+		member_model = self.context['db_model']
+		if not member_model:
+			return -1, 100
+
+		member_grade = self.__grade
+		if member_grade:
+			return member_model.grade_id, member_grade.shop_discount
+		else:
+			return member_model.grade_id, 100
+
+	@property
+	def grade(self):
+		"""
+		[property] 会员等级
+		"""
+		return self.__grade
+
+	@cached_context_property
+	def __info(self):
+		"""
+		[property] 与会员对应的MemberInfo model对象
+		"""
+		member_model = self.context['db_model']
+		if not member_model:
+			return None
+
+		try:
+			member_info = member_models.MemberInfo.get(member=member_model.id)
+		except:
+			member_info = member_models.MemberInfo()
+			member_info.member_id = member_model.id
+			member_info.name = ''
+			member_info.weibo_name = ''
+			member_info.phone_number = None
+			member_info.sex = member_models.SEX_TYPE_UNKOWN
+			member_info.is_binded = False
+
+		if member_info.phone_number and len(member_info.phone_number) > 10:
+			member_info.phone =  '%s****%s' % (member_info.phone_number[:3], member_info.phone_number[-4:])
+
+		return member_info
+
+	@property
+	def phone(self):
+		"""
+		[property] 会员绑定的手机号码
+		"""
+
+		return self.__info.phone
+
+	@property
+	def name(self):
+		"""
+		[property] 会员名
+		"""
+
+		return self.__info.name
+
+	@property
+	def is_binded(self):
+		"""
+		[property] 会员是否进行了绑定
+		"""
+		return self.__info.is_binded
+
+	@cached_context_property
+	def user_icon(self):
+		"""
+		[property] 会员头像
+		"""
+		#TODO2: 实现获取会员头像
+		print u'TODO2: 实现获取会员头像'
+		return ''
+
 	@cached_context_property
 	def integral_info(self):
 		"""
-		积分信息
+		[property] 会员积分信息
 		"""
 		member_model = self.context['db_model']
 		if member_model:
@@ -109,6 +178,15 @@ class Member(business_model.Model):
 			'usable_integral_or_conpon' : integral_strategy_settings.usable_integral_or_conpon
 		}
 
+	@property
+	def integral(self):
+		"""
+		[property] 会员积分数值
+		"""
+		member_model = self.context['db_model']
+
+		return member_model.integral
+
 	@cached_context_property
 	def username_for_html(self):
 		if (self.username_hexstr is not None) and (len(self.username_hexstr) > 0):
@@ -122,3 +200,71 @@ class Member(business_model.Model):
 			username = self.username_hexstr
 
 		return username
+
+	@cached_context_property
+	def __order_info(self):
+		"""
+		[property] 与会员对应的订单信息(MemberOrderInfo)对象
+		"""
+		member_order_info = MemberOrderInfo.get_for({
+			'webapp_user': self.webapp_user
+		})
+
+		return member_order_info
+
+	@property
+	def history_order_count(self):
+		return self.__order_info.history_order_count
+
+	@property
+	def not_payed_order_count(self):
+		return self.__order_info.not_payed_order_count
+
+	@property
+	def not_ship_order_count(self):
+		return self.__order_info.not_ship_order_count
+	
+	@property
+	def shiped_order_count(self):
+		return self.__order_info.shiped_order_count
+
+	@property
+	def review_count(self):
+		return self.__order_info.review_count
+
+	@cached_context_property
+	def __shopping_cart(self):
+		"""
+		[property] 与会员对应的购物车(ShoppingCart)对象
+		"""
+		return ShoppingCart.get_for_webapp_user({
+			'webapp_user': self.webapp_user
+		})
+
+	@property
+	def shopping_cart_product_count(self):
+		"""
+		[property] 会员购物车中的商品数量
+		"""
+		return self.__shopping_cart.product_count
+
+	@cached_context_property
+	def wishlist_product_count(self):
+		"""
+		[property] 会员收藏商品的数量
+		"""
+		webapp_owner = self.context['webapp_owner']
+		return mall_models.MemberProductWishlist.select().dj_where(
+			owner_id = webapp_owner.id,
+			member_id = self.id,
+			is_collect=True
+		).count()
+
+	@cached_context_property
+	def market_tools(self):
+		"""
+		[property] 会员参与的营销工具集合
+		"""
+		#TODO2: 实现营销工具集合
+		print u'TODO2: 实现营销工具集合'
+		return []

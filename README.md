@@ -79,3 +79,9 @@ server {
     }
 }
 ```
+
+## services celery ##
+1、增加serices celery
+***(1) 测试方法： start_celery.bat python handlers/test.py
+***(2) python services/send_task.py "services.example_service.tasks.example_log_service" {} "{\"id\": 0}"
+

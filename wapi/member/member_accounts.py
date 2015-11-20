@@ -6,6 +6,7 @@ from wapi.decorators import param_required
 import resource
 
 
+
 class MemberAccounts(api_resource.ApiResource):
 	"""
 	会员相关账号
@@ -20,6 +21,17 @@ class MemberAccounts(api_resource.ApiResource):
 
 		@param id 商品ID
 		"""
+
+		"""
+			微信api和watchdog 测试
+			TODO：删掉
+		"""
+		# from wapi.user.weixin_models import WeixinMpUserAccessToken
+		# from core.wxapi.weixin_api import weixin_api
+		# mp_access_token = WeixinMpUserAccessToken.get(id=3)
+		# wxapi = weixin_api(mp_access_token)
+		# userinfo = wxapi.get_user_info(args['openid'])
+
 		return resource.get('member', 'member_accounts', {
 			"openid": args['openid'],
 			"wid": args['wid']
@@ -37,6 +49,7 @@ class MemberAccounts(api_resource.ApiResource):
 		@param for_oauth 是否是授权是调用
 		
 		"""
+
 		return resource.post('member', 'member_accounts', {
 			"openid": args['openid'],
 			"wid": args['wid'],

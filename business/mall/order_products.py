@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-
-"""订单商品集合
+"""@package business.mall.order_products
+订单商品集合
 
 """
 

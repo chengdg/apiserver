@@ -16,6 +16,15 @@ DATABASES = {
         'HOST': 'db.weapp.com',
         'PORT': '',
         'CONN_MAX_AGE': 100
+    },
+    'watchdog': {
+        'ENGINE': 'mysql',
+        'NAME': 'weapp',
+        'USER': 'weapp',                      # Not used with sqlite3.
+        'PASSWORD': 'weizoom',                  # Not used with sqlite3.
+        'HOST': 'db.operation.com',
+        'PORT': '',
+        'CONN_MAX_AGE': 100
     }
 }
 
@@ -58,8 +67,16 @@ REDIS_CACHES_DB = 2
 #BDD相关配置
 WEAPP_DIR = '../weapp'
 
+#watchdog相关
+WATCH_DOG_DEVICE = 'mysql'
+WATCH_DOG_LEVEL = 200
+IS_UNDER_BDD = False
+# 是否开启TaskQueue(基于Celery)
+TASKQUEUE_ENABLED = True
+
 
 INSTALLED_TASKS = [
     # Celery for Falcon
-    'resource.member.tasks'
+    'resource.member.tasks',
+    'watchdog.tasks'
     ]

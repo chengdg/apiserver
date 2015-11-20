@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+"""@package business.mall.product_stocks
+商品库存?
+
+"""
 
 import json
 from bs4 import BeautifulSoup

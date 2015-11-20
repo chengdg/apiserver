@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+"""@package business.account.webapp_user
+WebApp User
+
+"""
 
 import json
 from bs4 import BeautifulSoup
@@ -21,7 +25,7 @@ from business.decorator import cached_context_property
 
 class WebAppUser(business_model.Model):
 	"""
-	商品
+	WebApp User
 	"""
 	__slots__ = (
 		'id',

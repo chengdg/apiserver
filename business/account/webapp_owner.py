@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+"""@package business.account.webapp_owner
+WebApp Owner
+
+"""
 
 import json
 from bs4 import BeautifulSoup

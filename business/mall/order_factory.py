@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-
-"""订单生成器
+"""@package business.mall.order_factory
+订单生成器
 
 """
 

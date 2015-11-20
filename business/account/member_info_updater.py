@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
+"""@package business.account.member_info_updater
+会员信息定时更新器
 
-"""会员
 """
 
 import json

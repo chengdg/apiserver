@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+"""@package business.mall.simple_products
+携带基础商品信息的商品集合
+"""
 
 import json
 from bs4 import BeautifulSoup

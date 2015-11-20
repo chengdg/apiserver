@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-
-"""商品分组器
+"""@package business.mall.product_grouper
+商品分组器
 
 """
 

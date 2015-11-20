@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
+"""@package business.mall.order_checker
+订单有效性的判断器
 
-"""订单有效性的判断器
 """
 
 import json

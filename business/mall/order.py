@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-
-"""订单
+"""@package business.mall.order
+订单
 
 """
 

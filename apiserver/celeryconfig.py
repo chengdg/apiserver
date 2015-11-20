@@ -16,7 +16,6 @@ else:
 	BROKER_URL = 'amqp://rmq.weapp.com//'
 
 CELERY_RESULT_BACKEND = 'redis://redis.weapp.com/3/'
-
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT=['json']
@@ -56,4 +55,3 @@ class Router(object):
 
 # CELERY_ROUTES本来也可以用一个大的含有多个字典的字典,但是不如直接对它做一个名称统配
 CELERY_ROUTES = (Router(), )
-

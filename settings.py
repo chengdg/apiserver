@@ -39,6 +39,8 @@ MIDDLEWARES = [
     'middleware.account_middleware.WebAppOwnerMiddleware',
 	'middleware.account_middleware.AccountsMiddleware'
 ]
+#sevice celery 相关
+EVENT_DISPATCHER = 'redis'
 
 # settings for WAPI Logger
 if MODE == 'develop':
@@ -48,6 +50,8 @@ if MODE == 'develop':
     WAPI_LOGGER_DB = 'wapi'
     IMAGE_HOST = 'http://dev.weapp.com'
     PAY_HOST = 'api.weapp.com'
+    #sevice celery 相关
+    EVENT_DISPATCHER = 'local'
 else:
     # 真实环境暂时关闭
     #WAPI_LOGGER_ENABLED = False
@@ -78,5 +82,9 @@ TASKQUEUE_ENABLED = True
 INSTALLED_TASKS = [
     # Celery for Falcon
     'resource.member.tasks',
-    'watchdog.tasks'
+    'watchdog.tasks',
+    'services.example_service.tasks.example_log_service'
     ]
+
+#redis celery相关
+REDIS_SERVICE_DB = 2

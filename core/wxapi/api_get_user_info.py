@@ -2,7 +2,6 @@
 
 __author__ = 'paco bert'
 
-#from core.weixin_media_saver import save_weixin_user_head_img
 from utils.url_helper import complete_get_request_url
 import api_settings
 from util import ObjectAttrWrapedInDict
@@ -35,13 +34,10 @@ class WeixinUserApi(object):
 		if mpuser_access_token is None:
 			raise ValueError(u'WeixinUserInfo get_get_request_url_and_api_info：mpuser_access_token is None')
 		return self._complete_weixin_api_get_request_url(mpuser_access_token, varargs), u'获取用户信息 openid %s' % varargs[0]
-		#return USER_INFO_URL.format(mpuser_access_token.access_token, varargs[0], 'zh_CN'), u'获取用户信息'
 
 	def parse_response(self, api_response):
 		user_info = WeixinUserInfo(api_response)
-		#保存微信用户头像，使用本地地址
 		if hasattr(user_info, 'headimgurl'):
-			#head_img_url = save_weixin_user_head_img(user_info.headimgurl)
 			pass
 		else:
 			user_info.headimgurl = ''

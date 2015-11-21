@@ -79,3 +79,13 @@ server {
     }
 }
 ```
+
+## services celery ##
+测试方法： 
+```
+（1）start_celery.bat python handlers/test.py
+```
+```
+(2)python services/send_task.py "services.example_service.tasks.example_log_service" {} "{\"id\": 0}"
+```
+

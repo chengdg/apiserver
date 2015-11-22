@@ -56,12 +56,20 @@ class AProductStocks(api_resource.ApiResource):
 
 		# 代码来自 get_member_product_info(request) mall/module_api.py
 		if 'need_member_info' in args:
-			member_info_data = resource.get('member', 'member_product_info', {
-				"woid": args['woid'],
-				"wuid": args['wuid'],
-				"product_id": product_id,
-				"member": None
-			})
-			result_data = dict(result_data, **member_info_data)
+			member = args['webapp_user'].member
+			if member:
+				result_data['count'] = member.shopping_cart_product_count
+				result_data['member_grade_id'] = member.grade_id
+				_, result_data['discount'] = member.discount
+				result_data['usable_integral'] = member.integral
+				result_data['is_collect'] = member.is_collect_product(product_id)
+				result_data['is_subscribed'] = member.is_subscribed
+			else:
+				result_data['count'] = 0
+				result_data['is_collect'] = False
+				result_data['member_grade_id'] = -1
+				result_data['discount'] = 100
+				result_data['usable_integral'] = 0
+				result_data['is_subscribed'] = False
 
 		return result_data

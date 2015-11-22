@@ -33,7 +33,8 @@ class Member(business_model.Model):
 		'grade_id',
 		'username_hexstr',
 
-		'webapp_user'
+		'webapp_user',
+		'is_subscribed'
 	)
 
 	@staticmethod
@@ -263,6 +264,17 @@ class Member(business_model.Model):
 			member_id = self.id,
 			is_collect=True
 		).count()
+
+	def is_collect_product(self, product_id):
+		"""是否收藏了product_id对应的商品
+		"""
+		webapp_owner = self.context['webapp_owner']
+		return mall_models.MemberProductWishlist.select().dj_where(
+			owner_id = webapp_owner.id,
+			member_id = self.id,
+			product_id = product_id,
+			is_collect=True
+		).count() > 0
 
 	@cached_context_property
 	def market_tools(self):

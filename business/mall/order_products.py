@@ -13,10 +13,10 @@ from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
 from wapi.mall import models as mall_models
-import resource
 from core.watchdog.utils import watchdog_alert
 from business import model as business_model 
 from business.mall.order_product import OrderProduct 
+from business.mall.forbidden_coupon_product_ids import ForbiddenCouponProductIds
 import settings
 
 
@@ -97,10 +97,9 @@ class OrderProducts(business_model.Model):
 			}))
 		
 		#TODO2：目前对商品是否可使用优惠券的设置放在了order_products中，主要是出于目前批量处理的考虑，后续应该将r_forbidden_coupon_product_ids资源进行优化，将判断逻辑放入到order_product中
-		forbidden_coupon_product_ids = resource.get('mall', 'forbidden_coupon_product_ids', {
-			'woid': webapp_owner.id
-		})
-		forbidden_coupon_product_ids = set(forbidden_coupon_product_ids)
+		forbidden_coupon_product_ids = ForbiddenCouponProductIds.get_for_webapp_owner({
+			'webapp_owner': webapp_owner
+		}).ids
 		for product in self.products:
 			if product.id in forbidden_coupon_product_ids:
 				product.can_use_coupon = False

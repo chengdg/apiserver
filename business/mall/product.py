@@ -14,10 +14,10 @@ from wapi import wapi_utils
 from core.cache import utils as cache_util
 from wapi.mall import models as mall_models
 from wapi.mall import promotion_models
-import resource
 from core.watchdog.utils import watchdog_alert
 from business import model as business_model
 import settings
+from business.mall.forbidden_coupon_product_ids import ForbiddenCouponProductIds
 
 
 class CachedProduct(object):
@@ -42,12 +42,17 @@ class CachedProduct(object):
 				
 				#product.created_at = product.created_at.strftime("%Y-%m-%d %H:%M:%S")
 
-				product = Product.from_model(webapp_owner_id, product_model, {
-					"with_price": True,
-					"with_product_model": True,
-					"with_model_property_info": True,
-					"with_image": True,
-					"with_property": True
+				product = Product.from_model({
+					'webapp_owner': CachedProduct.webapp_owner, 
+					'model': product_model, 
+					'fill_options': {
+						"with_price": True,
+						"with_product_model": True,
+						"with_model_property_info": True,
+						"with_image": True,
+						"with_property": True,
+						"with_product_promotion": True
+					}
 				})
 
 				#获取商品的评论
@@ -94,6 +99,7 @@ class CachedProduct(object):
 		data = cache_util.get_from_cache(key, CachedProduct.__get_from_db(woid, product_id))
 
 		product = Product.from_dict(data)
+		product.context['webapp_owner'] = CachedProduct.webapp_owner
 
 		# Set member's discount of the product
 		if hasattr(product, 'integral_sale') and product.integral_sale \
@@ -123,6 +129,8 @@ class CachedProduct(object):
 	@staticmethod
 	@param_required(['webapp_owner', 'member', 'product_id'])
 	def get(args):
+		#TODO2: 临时解决方案，后续去除
+		CachedProduct.webapp_owner = args['webapp_owner']
 		webapp_owner_id = args['webapp_owner'].id
 		product_id = args['product_id']
 		member = args['member']
@@ -236,9 +244,9 @@ class Product(business_model.Model):
 		'shelve_start_time',
 		'shelve_end_time',
 		'detail',
-		'thumbnails_url',
+		'_thumbnails_url',
 		'order_thumbnails_url',
-		'pic_url',
+		'_pic_url',
 		'swipe_images',
 		'detail_link',
 		'user_code',
@@ -283,13 +291,19 @@ class Product(business_model.Model):
 
 	@staticmethod
 	def from_models(query):
-		pass
+		1/0
 
 	@staticmethod
-	def from_model(webapp_owner_id, model, fill_options):
+	@param_required(['webapp_owner', 'model', 'fill_options'])
+	def from_model(args):
+		webapp_owner = args['webapp_owner']
+		model = args['model']
+		fill_options = args.get('fill_options', {})
+
 		product = Product(model)
-		Product.__fill_details(webapp_owner_id, [product], fill_options)
+		Product.__fill_details(webapp_owner.id, [product], fill_options)
 		product.__set_image_to_lazy_load()
+		product.context['webapp_owner'] = webapp_owner
 
 		return product
 
@@ -314,6 +328,8 @@ class Product(business_model.Model):
 		if model:
 			self._init_slot_from_model(model)
 			self.owner_id = model.owner_id
+			self._thumbnails_url = model.thumbnails_url
+			self._pic_url = model.pic_url
 
 	def __set_image_to_lazy_load(self):
 		# 商品详情图片lazyload
@@ -399,13 +415,30 @@ class Product(business_model.Model):
 		self.context['order_thumbnails_url'] = url
 
 	@property
+	def thumbnails_url(self):
+		return self._thumbnails_url if 'http:' in self._thumbnails_url else '%s%s' % (settings.IMAGE_HOST, self._thumbnails_url)
+
+	@thumbnails_url.setter
+	def thumbnails_url(self, url):
+		self._thumbnails_url = url
+
+	@property
+	def pic_url(self):
+		return self._pic_url if 'http:' in self._pic_url else '%s%s' % (settings.IMAGE_HOST, self._pic_url)
+
+	@pic_url.setter
+	def pic_url(self, url):
+		self._pic_url = url
+
+	@property
 	def hint(self):
 		"""
 		判断商品是否被禁止使用全场优惠券
 		"""
-		forbidden_coupon_product_ids = resource.get('mall', 'forbidden_coupon_product_ids', {
-			'woid': self.owner_id
-		})
+		webapp_owner = self.context['webapp_owner']
+		forbidden_coupon_product_ids = ForbiddenCouponProductIds.get_for_webapp_owner({
+			'webapp_owner': webapp_owner
+		}).ids
 		if self.id in forbidden_coupon_product_ids:
 			return u'该商品不参与全场优惠券使用！'
 		else:
@@ -1060,9 +1093,9 @@ class Product(business_model.Model):
 			'shelve_start_time': self.shelve_start_time,
 			'shelve_end_time': self.shelve_end_time,
 			'detail': self.detail,
-			'thumbnails_url': self.thumbnails_url if 'http:' in self.thumbnails_url else '%s%s' % (settings.IMAGE_HOST, self.thumbnails_url),
+			'thumbnails_url': self.thumbnails_url,
 			'order_thumbnails_url': self.order_thumbnails_url if 'http:' in self.order_thumbnails_url else '%s%s' % (settings.IMAGE_HOST, self.order_thumbnails_url),
-			'pic_url': self.pic_url if 'http:' in self.pic_url else '%s%s' % (settings.IMAGE_HOST, self.pic_url),
+			'pic_url': self.pic_url,
 			'detail_link': '/mall2/product/?id=%d&source=onshelf' % self.id,
 			'categories': getattr(self, 'categories', []),
 			'properties': getattr(self, 'properties', []),

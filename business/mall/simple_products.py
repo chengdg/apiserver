@@ -12,10 +12,10 @@ from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
 from wapi.mall import models as mall_models
-import resource
 from core.watchdog.utils import watchdog_alert
 from business import model as business_model 
 import settings
+from business.mall.product import Product
 
 
 class SimpleProducts(business_model.Model):
@@ -28,31 +28,35 @@ class SimpleProducts(business_model.Model):
 	)
 
 	@staticmethod
-	@param_required(['webapp_owner', 'category_id', 'is_access_weizoom_mall'])
+	@param_required(['webapp_owner', 'webapp_user', 'category_id', 'is_access_weizoom_mall'])
 	def get(args):
 		"""
 		factory方法
 		"""
 		webapp_owner = args['webapp_owner']
+		webapp_user = args['webapp_user']
 		category_id = int(args['category_id'])
 		is_access_weizoom_mall = args['is_access_weizoom_mall']
 		
-		products = SimpleProducts(webapp_owner, is_access_weizoom_mall, category_id)
+		products = SimpleProducts(webapp_owner, webapp_user, is_access_weizoom_mall, category_id)
 		return products
 
-	def __init__(self, webapp_owner, is_access_weizoom_mall, category_id):
+	def __init__(self, webapp_owner, webapp_user, is_access_weizoom_mall, category_id):
 		business_model.Model.__init__(self)
-		self.category, self.products = self.__get_from_cache(webapp_owner, is_access_weizoom_mall, category_id)
 
-	def __iter__(self):
-		return self.products.__iter__()
+		self.context['webapp_owner'] = webapp_owner
+		self.context['webapp_user'] = webapp_user
 
-	def __get_from_cache(self, webapp_owner, is_access_weizoom_mall, category_id):
+		self.category, self.products = self.__get_from_cache(is_access_weizoom_mall, category_id)
+
+	def __get_from_cache(self, is_access_weizoom_mall, category_id):
 		"""
 		从缓存中获取数据
 		"""
+		webapp_owner = self.context['webapp_owner']
+		webapp_user = self.context['webapp_user']
 		key = 'webapp_products_categories_{wo:%s}' % webapp_owner.id
-		data = cache_util.get_from_cache(key, self.__get_from_db(webapp_owner, is_access_weizoom_mall))
+		data = cache_util.get_from_cache(key, self.__get_from_db(webapp_owner, webapp_user, is_access_weizoom_mall))
 
 		if category_id == 0:
 			category = mall_models.ProductCategory()
@@ -69,21 +73,22 @@ class SimpleProducts(business_model.Model):
 				category.is_deleted = True
 				category.name = u'已删除分类'
 
-		products = mall_models.Product.from_list(data['products'])
+		#products = mall_models.Product.from_list(data['products'])
+		products = data['products']
 		if category_id != 0:
-			products = [product for product in products if category_id in product.categories]
+			products = [product for product in products if category_id in product['categories']]
 
 			# 分组商品排序
-			products_id = map(lambda p: p.id, products)
+			products_id = map(lambda p: p['id'], products)
 			chp_list = mall_models.CategoryHasProduct.select().dj_where(category_id=category_id, product__in=products_id)
 			product_id2chp = dict(map(lambda chp: (chp.product_id, chp), chp_list))
 			for product in products:
-				product.display_index = product_id2chp[product.id].display_index
-				product.join_category_time = product_id2chp[product.id].created_at
+				product['display_index'] = product_id2chp[product.id].display_index
+				product['join_category_time'] = product_id2chp[product.id].created_at
 
 			# 1.shelve_type, 2.display_index, 3.id
-			products_is_0 = filter(lambda p: p.display_index == 0, products)
-			products_not_0 = filter(lambda p: p.display_index != 0, products)
+			products_is_0 = filter(lambda p: p['display_index'] == 0, products)
+			products_not_0 = filter(lambda p: p['display_index'] != 0, products)
 			products_is_0 = sorted(products_is_0, key=attrgetter('join_category_time'), reverse=True)
 			products_not_0 = sorted(products_not_0, key=attrgetter('display_index'))
 
@@ -92,7 +97,7 @@ class SimpleProducts(business_model.Model):
 		return category, products
 
 
-	def __get_from_db(self, webapp_owner, is_access_weizoom_mall):
+	def __get_from_db(self, webapp_owner, webapp_user, is_access_weizoom_mall):
 		"""
 		从数据库中获取需要存储到缓存中的数据
 		"""
@@ -100,11 +105,11 @@ class SimpleProducts(business_model.Model):
 			webapp_id = webapp_owner.webapp_id
 			webapp_owner_id = webapp_owner.id
 
-			_, products = self.__get_products(webapp_id, is_access_weizoom_mall, webapp_owner_id, 0)
+			_, product_models = self.__get_products(webapp_id, is_access_weizoom_mall, webapp_owner_id, 0)
 
 			categories = mall_models.ProductCategory.select().dj_where(owner=webapp_owner_id)
 
-			product_ids = [product.id for product in products]
+			product_ids = [product_model.id for product_model in product_models]
 			category_has_products = mall_models.CategoryHasProduct.select().dj_where(product__in=product_ids)
 			product2categories = dict()
 			for relation in category_has_products:
@@ -112,28 +117,35 @@ class SimpleProducts(business_model.Model):
 
 			try:
 				categories = [{"id": category.id, "name": category.name} for category in categories]
-				product_dicts = []
 
 				# Fill detail
-				new_products = []
-				import resource
-				for product in products:
-					new_product = resource.get('mall', 'product_detail', {
-						"woid": webapp_owner_id,
-						"product_id": product.id
+				product_datas = []
+				member = webapp_user.member
+				for product_model in product_models:
+					product = Product.from_model({
+						'webapp_owner': webapp_owner,
+						'model': product_model,
+						'fill_options': {
+							"with_price": True,
+							"with_product_promotion": True
+						}
 					})
-					#new_product = get_webapp_product_detail(webapp_owner_id, product.id)
-					new_products.append(new_product)
 
-				#mall_models.Product.fill_display_price(new_products)
+					product_datas.append({
+						"id": product.id,
+						"name": product.name,
+						"is_member_product": product.is_member_product,
+						"display_price": product.display_price,
+						"promotion_js": json.dumps(product.promotion),
+						"thumbnails_url": product.thumbnails_url
+					})
 
-				for product_dict in new_products:
-					product_dict['categories'] = product2categories.get(product_dict['id'], [])
-					product_dicts.append(product_dict)
+				for product_data in product_datas:
+					product_data['categories'] = product2categories.get(product_data['id'], [])
 
 				return {
 					'value': {
-						"products": product_dicts,
+						"products": product_datas,
 						"categories": categories
 					}
 				}

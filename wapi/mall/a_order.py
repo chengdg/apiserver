@@ -45,23 +45,6 @@ class AOrder(api_resource.ApiResource):
 			"purchase_info": purchase_info,
 		})
 
-		# products = resource.get('mall', 'order_products', {
-		# 	"woid": webapp_owner_id,
-		# 	"webapp_owner_info": webapp_owner_info,
-		# 	"webapp_user": webapp_user,
-		# 	"member": member,
-		# 	"product_info": product_info
-		# })
-
-		# pre_order = BPreOrder.get({
-		# 	'woid': webapp_owner_id,
-		# 	'webapp_owner_info': webapp_owner_info,
-		# 	'webapp_user': webapp_user,
-		# 	'member': member,
-		# 	'products': products,
-		# 	'request_args': args
-		# })
-
 		order_validation = order_factory.validate()
 
 		if (not order_validation['is_valid']):

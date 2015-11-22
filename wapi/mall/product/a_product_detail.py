@@ -28,9 +28,5 @@ class ProductDetail(api_resource.ApiResource):
 			'member': args['member'],
 			'product_id': args['product_id']
 		})
-		# product_detail = resource.get('mall', 'product_detail', {
-		# 	'woid': args['woid'],
-		# 	'product_id': args['product_id']
-		# })
-
+		
 		return product.to_dict()

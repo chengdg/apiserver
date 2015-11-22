@@ -13,7 +13,7 @@ from datetime import datetime
 import urlparse
 
 import settings
-from apiserver import celeryconfig
+from core.celery import celeryconfig
 #from weapp.settings import TASKQUEUE_ENABLED
 from watchdog.utils import watchdog_fatal
 from celery.execute import send_task

@@ -4,7 +4,7 @@ from __future__ import absolute_import
 import settings
 from core.exceptionutil import full_stack
 
-from apiserver.celery import task
+from core.celery.celery import task
 from .models import Message, WeappMessage
 from .models import WATCHDOG_ALERT,WATCHDOG_DEBUG,WATCHDOG_EMERGENCY,WATCHDOG_ERROR,WATCHDOG_FATAL,WATCHDOG_INFO,WATCHDOG_NOTICE,WATCHDOG_WARNING
 

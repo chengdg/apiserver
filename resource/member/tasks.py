@@ -2,7 +2,7 @@
 
 __author__ = 'bert'
 
-from apiserver.celery import task
+from core.celery.celery import task
 
 @task
 def add(x):

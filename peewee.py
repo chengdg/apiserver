@@ -2434,6 +2434,9 @@ class Query(Node):
 
         self.model_class = model_class
         self.database = model_class._meta.database
+        print '-*-' * 20
+        print self.database
+        print '-*-' * 20
 
         self._dirty = True
         self._query_ctx = model_class

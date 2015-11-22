@@ -6,8 +6,8 @@
 from core import api_resource
 from wapi.decorators import param_required
 from utils import dateutil as utils_dateutil
-from wapi.mall import models as mall_models
-from wapi.user import models as auth_models
+from db.mall import models as mall_models
+from db.account import models as auth_models
 
 class ProductCategories(api_resource.ApiResource):
 	"""
@@ -39,3 +39,5 @@ class ProductCategories(api_resource.ApiResource):
 			data.append(ProductCategories.category_to_dict(category))
 
 		return data
+
+

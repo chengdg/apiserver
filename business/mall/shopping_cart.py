@@ -12,8 +12,8 @@ from datetime import datetime
 from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
-from wapi.mall import models as mall_models
-from wapi.mall import promotion_models
+from db.mall import models as mall_models
+from db.mall import promotion_models
 import resource
 from core.watchdog.utils import watchdog_alert
 from business import model as business_model
@@ -67,4 +67,6 @@ class ShoppingCart(business_model.Model):
 		@return 不同商品的数量，注意：如果有商品A（1个），商品B（3个），则返回2，而不是4
 		"""
 		return mall_models.ShoppingCart.select().dj_where(webapp_user_id=self.webapp_user.id).count()
+
+
 

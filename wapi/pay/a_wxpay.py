@@ -5,8 +5,8 @@ from datetime import datetime
 
 from core import api_resource
 from wapi.decorators import param_required
-from wapi.mall import models as mall_models
-from wapi.mall import promotion_models
+from db.mall import models as mall_models
+from db.mall import promotion_models
 from utils import dateutil as utils_dateutil
 import resource
 from wapi.mall.a_purchasing import APurchasing as PurchasingApiResource
@@ -89,3 +89,5 @@ class AWXPay(api_resource.ApiResource):
 		webapp_owner = args['webapp_owner']
 		
 		return {}
+
+

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from wapi.user import models as account_models
+from db.account import models as account_models
 import resource
 from business.account.webapp_owner import WebAppOwner
 from business.account.member import Member
@@ -42,3 +42,4 @@ class AccountsMiddleware(object):
 		member_accounts['member'] = member
 		member_accounts['webapp_user'] = webapp_user
 		req.context.update(member_accounts)
+

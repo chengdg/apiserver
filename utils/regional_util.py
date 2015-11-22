@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from wapi.mall import models as mall_models
+from db.mall import models as mall_models
 
 def _get_all_provinces():
 	provinces = {}
@@ -91,3 +91,4 @@ def get_str_value_by_string_ids_new(str_ids):
 		return u'{}'.format(ship_address.strip())
 	else:
 		return None
+

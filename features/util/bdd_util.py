@@ -4,7 +4,7 @@ import time
 
 import settings
 from client import Client
-from wapi.user.models import User
+from db.account.models import User
 
 tc = None
 
@@ -195,3 +195,4 @@ def table2dict(context):
 			data[real_heading] = value
 		expected.append(data)
 	return expected
+

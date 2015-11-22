@@ -12,7 +12,7 @@ import itertools
 from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
-from wapi.mall import models as mall_models
+from db.mall import models as mall_models
 import resource
 from core.watchdog.utils import watchdog_alert
 from business import model as business_model 
@@ -156,3 +156,4 @@ class PurchaseInfo(business_model.Model):
 			return True
 		else:
 			return False
+

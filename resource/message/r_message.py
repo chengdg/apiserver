@@ -11,9 +11,9 @@ from core import inner_resource
 from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
-from wapi.mall import models as mall_models
-from wapi.member import models as member_models
-from wapi.user import models as user_models
+from db.mall import models as mall_models
+from db.member import models as member_models
+from db.account import models as user_models
 import settings
 
 class RMessage(inner_resource.Resource):
@@ -33,3 +33,6 @@ class RMessage(inner_resource.Resource):
 	def post(args):
 		
 		return {"result": "SUCCESS"}
+
+
+

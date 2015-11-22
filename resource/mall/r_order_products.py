@@ -8,7 +8,7 @@ from core import inner_resource
 from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
-from wapi.mall import models as mall_models
+from db.mall import models as mall_models
 import settings
 import resource
 from core.watchdog.utils import watchdog_alert
@@ -129,4 +129,5 @@ class ROrderProducts(inner_resource.Resource):
 		member = args['member']
 		product_info = args['product_info']
 		return ROrderProducts.get_products(webapp_owner_id, webapp_owner_info, webapp_user, member, product_info)
+
 

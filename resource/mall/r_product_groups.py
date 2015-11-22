@@ -8,8 +8,8 @@ from core import inner_resource
 from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
-from wapi.mall import models as mall_models
-from wapi.mall import promotion_models
+from db.mall import models as mall_models
+from db.mall import promotion_models
 import settings
 import resource
 from core.watchdog.utils import watchdog_alert
@@ -278,4 +278,6 @@ class RProductGroup(inner_resource.Resource):
 	@param_required(['webapp_owner_info', 'member', 'products'])
 	def get(args):
 		return RProductGroup.group_product_by_promotion(args['webapp_owner_info'], args['member'], args['products'])
+
+
 

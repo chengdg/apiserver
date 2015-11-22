@@ -12,9 +12,9 @@ from datetime import datetime
 from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
-from wapi.mall import models as mall_models
-from wapi.mall import promotion_models
-from wapi.user import models as account_models
+from db.mall import models as mall_models
+from db.mall import promotion_models
+from db.account import models as account_models
 import resource
 from core.watchdog.utils import watchdog_alert
 from business.decorator import cached_context_property
@@ -139,3 +139,6 @@ class WebAppOwner(business_model.Model):
 		[property] <member_grade_id, member_grade>映射集合
 		"""
 		return self.__webapp_owner_info.member2grade
+
+
+

@@ -4,7 +4,7 @@ from core import api_resource
 from wapi.decorators import param_required
 import resource
 
-from wapi.mall import models as mall_models
+from db.mall import models as mall_models
 from business.mall.product_stocks import ProductStocks
 
 class AProductStocks(api_resource.ApiResource):
@@ -73,3 +73,4 @@ class AProductStocks(api_resource.ApiResource):
 				result_data['is_subscribed'] = False
 
 		return result_data
+

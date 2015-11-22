@@ -5,7 +5,7 @@ from behave import *
 
 from features.util import bdd_util
 from features.util.helper import WAIT_SHORT_TIME
-from wapi.user import models as user_models
+from db.account import models as user_models
 
 @given(u"{user}获得访问'{webapp_owner_name}'数据的授权")
 def step_impl(context, user, webapp_owner_name):

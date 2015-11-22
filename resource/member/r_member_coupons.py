@@ -9,8 +9,8 @@ from datetime import datetime
 from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
-from wapi.mall import models as mall_models
-from wapi.mall import promotion_models
+from db.mall import models as mall_models
+from db.mall import promotion_models
 import settings
 import resource
 from core import inner_resource
@@ -78,4 +78,6 @@ class RMemberCoupons(inner_resource.Resource):
 		else:
 			coupons = [coupon.to_dict() for coupon in coupons]
 			return coupons
+
+
 

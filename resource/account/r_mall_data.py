@@ -8,12 +8,12 @@ from core import inner_resource
 from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
-from wapi.mall import models as mall_models
-from wapi.mall import promotion_models
-from wapi.user import models as account_models
-from wapi.user import weixin_models as weixin_user_models
-from wapi.user import webapp_models as webapp_models
-from wapi.member import models as member_models
+from db.mall import models as mall_models
+from db.mall import promotion_models
+from db.account import models as account_models
+from db.account import weixin_models as weixin_user_models
+from db.account import webapp_models as webapp_models
+from db.member import models as member_models
 import settings
 from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
 from core.exceptionutil import unicode_full_stack
@@ -165,4 +165,8 @@ class RMallData(inner_resource.Resource):
 	def get(args):
 		data = RMallData.get_from_cache(args['woid'])
 		return data
+
+
+
+
 

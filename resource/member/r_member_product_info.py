@@ -8,7 +8,7 @@ from core import inner_resource
 from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
-from wapi.mall import models as mall_models
+from db.mall import models as mall_models
 import settings
 
 class RMemberProductInfo(inner_resource.Resource):
@@ -55,4 +55,5 @@ class RMemberProductInfo(inner_resource.Resource):
 			result_data['usable_integral'] = 0
 			result_data['is_subscribed'] = False
 		return result_data
+
 

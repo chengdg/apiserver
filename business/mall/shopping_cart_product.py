@@ -13,7 +13,7 @@ from datetime import datetime
 from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
-from wapi.mall import models as mall_models
+from db.mall import models as mall_models
 import resource
 from core.watchdog.utils import watchdog_alert
 from business import model as business_model 
@@ -126,4 +126,5 @@ class ShoppingCartProduct(business_model.Model):
 		data = business_model.Model.to_dict(self)
 		data['postage_config'] = self.postage_config
 		return data
+
 

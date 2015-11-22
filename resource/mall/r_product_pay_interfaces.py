@@ -8,7 +8,7 @@ from core import inner_resource
 from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
-from wapi.mall import models as mall_models
+from db.mall import models as mall_models
 import settings
 from core.watchdog.utils import watchdog_alert
 
@@ -48,4 +48,5 @@ class RProductPayInterfaces(inner_resource.Resource):
 		else:
 			# return pay_interfaces.filter(type__in = ONLINE_PAY_INTERFACE)
 			return [pay_interface for pay_interface in pay_interfaces if pay_interface.type in mall_models.ONLINE_PAY_INTERFACE]
+
 

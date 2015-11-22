@@ -3,7 +3,7 @@
 from core import api_resource
 from wapi.decorators import param_required
 #from wapi.wapi_utils import create_json_response
-from wapi.mall import models as mall_models
+from db.mall import models as mall_models
 from utils import dateutil as utils_dateutil
 from business.mall.shopping_cart_products import ShoppingCartProducts
 from business.mall.product_grouper import ProductGrouper

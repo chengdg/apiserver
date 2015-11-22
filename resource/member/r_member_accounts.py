@@ -8,9 +8,9 @@ from core import inner_resource
 from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
-from wapi.mall import models as mall_models
-from wapi.member import models as member_models
-from wapi.user import models as user_models
+from db.mall import models as mall_models
+from db.member import models as member_models
+from db.account import models as user_models
 from r_member_relations import RMemberRelations
 import settings
 
@@ -111,3 +111,6 @@ class RMemberAccounts(inner_resource.Resource):
 			RMemberRelations.post({'mt': return_model['member']['token'], 'fmt': fmt, 'is_fans': is_fans, 'r_url': r_url})
 
 		return return_model
+
+
+

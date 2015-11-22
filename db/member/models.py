@@ -2,7 +2,7 @@
 from datetime import datetime
 
 from core.db import models
-from wapi.user.models import User
+from db.account.models import User
 from core.decorator import cached_property
 from utils.string_util import hex_to_byte, byte_to_hex
 import resource
@@ -761,3 +761,4 @@ class MallOrderFromSharedRecord(models.Model):
 		verbose_name = "通过分享链接订单"
 		verbose_name_plural = "通过分享链接订单"
 		db_table = "mall_order_from_shared_record"
+

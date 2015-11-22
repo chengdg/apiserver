@@ -4,11 +4,11 @@ from datetime import datetime
 import json
 
 from core.db import models
-from wapi.user.models import User
-from wapi.mall import models as mall_models
+from db.account.models import User
+from db.mall import models as mall_models
 from core.watchdog.utils import watchdog_fatal
 import settings
-from wapi.mall import models as mall_models
+from db.mall import models as mall_models
 
 DEFAULT_DATETIME = datetime.strptime('2000-01-01', '%Y-%m-%d')
 
@@ -686,3 +686,5 @@ class RedEnvelopeRule(models.Model):
 					# 商品价格+运费应大于等于红包规则订单金额设置
 					return True
 		return False
+
+

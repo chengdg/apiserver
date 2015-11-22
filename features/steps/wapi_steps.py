@@ -7,7 +7,7 @@ from behave import given, then, when
 #from features.testenv.model_factory import ProductFactory, ProductCategoryFactory
 
 from features.util import bdd_util
-from wapi.mall import models as mall_models
+from db.mall import models as mall_models
 import wapi as wapi_resource
 from wapi import wapi_utils
 from utils import dateutil as utils_dateutil
@@ -97,3 +97,4 @@ def step_impl(context):
 	for i in range(0, len(expected)):
 		expected[i] = _process_param(expected[i])
 	bdd_util.assert_list(expected, data)
+

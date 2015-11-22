@@ -3,7 +3,7 @@
 from core import inner_resource
 from wapi.decorators import param_required
 from core.cache import utils as cache_util
-from wapi.mall import promotion_models
+from db.mall import promotion_models
 import resource
 
 
@@ -38,4 +38,5 @@ class ProductHint(inner_resource.Resource):
 		if ProductHint.is_forbidden_coupon(webapp_owner_id, product_id):
 			hint = u'该商品不参与全场优惠券使用！'
 		return {"woid": webapp_owner_id, "hint": hint}
+
 

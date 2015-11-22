@@ -8,7 +8,7 @@ import math
 from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
-from wapi.mall import models as mall_models
+from db.mall import models as mall_models
 import settings
 import resource
 from core import inner_resource
@@ -205,3 +205,4 @@ RPreOrder.checkers = [
 	RPreOrder.check_products,
 	RPreOrder.check_coupon,
 ]
+

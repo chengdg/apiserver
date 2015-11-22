@@ -5,7 +5,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 #os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'polaris.settings')
 
 from wapi.mall.models import *
-from wapi.user.models import User # 对应 django.auth.models.User
+from db.account.models import User # 对应 django.auth.models.User
 
 def dump(categories):
 	print("============================")
@@ -39,3 +39,4 @@ if __name__ == "__main__":
 
 	product = Product.get(id=10)
 	print(product)
+

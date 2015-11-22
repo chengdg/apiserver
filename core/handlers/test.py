@@ -9,7 +9,7 @@ import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from wapi.user.models import User, UserProfile
+from db.account.models import User, UserProfile
 from wapi.member.models import Member, SocialAccount, MemberHasSocialAccount, WebAppUser
 user = User.get(username='jobs')
 user_id = user.id
@@ -44,3 +44,4 @@ def test_local_handle():
 
 if __name__=="__main__":
 	test_local_handle()
+

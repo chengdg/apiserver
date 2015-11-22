@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from wapi.user.models import User, UserProfile
+from db.account.models import User, UserProfile
 from wapi.member.models import WebAppUser, Member
 from wapi.member.models import SocialAccount
 
@@ -60,3 +60,4 @@ def create_request(args):
 def call_service(event, args):
 	print("deprecated!")
 	EVENT2SERVICE[event](create_request(args), args)
+

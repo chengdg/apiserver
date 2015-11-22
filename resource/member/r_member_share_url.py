@@ -11,9 +11,9 @@ from core import inner_resource
 from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
-from wapi.mall import models as mall_models
-from wapi.member import models as member_models
-from wapi.user import models as user_models
+from db.mall import models as mall_models
+from db.member import models as member_models
+from db.account import models as user_models
 import settings
 
 class RMemberShareUrl(inner_resource.Resource):
@@ -145,3 +145,6 @@ class RMemberShareUrl(inner_resource.Resource):
 	@staticmethod
 	def url_hexdigest(url):
 		return hashlib.md5(url).hexdigest()
+
+
+

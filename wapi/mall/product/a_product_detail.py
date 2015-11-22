@@ -2,7 +2,7 @@
 
 from core import api_resource
 from wapi.decorators import param_required
-from wapi.mall import models as mall_models
+from db.mall import models as mall_models
 from utils import dateutil as utils_dateutil
 import resource
 from business.mall.product import Product
@@ -30,3 +30,4 @@ class ProductDetail(api_resource.ApiResource):
 		})
 		
 		return product.to_dict()
+

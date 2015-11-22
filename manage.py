@@ -55,7 +55,11 @@ if __name__ == "__main__":
                 module_name = 'commands.%s' % command
                 module = __import__(module_name, {}, {}, ['*',])
                 instance = getattr(module, 'Command')()
-                instance.handle(*sys.argv[2:])
+                try:
+                    instance.handle(*sys.argv[2:])
+                except TypeError, e:
+                    print '[ERROR]: wrong command arguments, usages:'
+                    print instance.help
 
     if not found_command:
         print 'no command named: ', command

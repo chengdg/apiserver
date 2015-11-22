@@ -5,7 +5,7 @@ import peewee
 import json
 import copy
 
-import cache
+from core import cache
 
 class SqlMonitorMiddleware(object):
 	def process_request(self, request, response):

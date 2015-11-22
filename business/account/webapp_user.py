@@ -11,7 +11,7 @@ from datetime import datetime
 
 from wapi.decorators import param_required
 from wapi import wapi_utils
-from cache import utils as cache_util
+from core.cache import utils as cache_util
 from wapi.mall import models as mall_models
 from wapi.mall import promotion_models
 from wapi.member import models as member_models
@@ -99,3 +99,4 @@ class WebAppUser(business_model.Model):
 		"""
 		if not self.has_purchased:
 			member_models.WebAppUser.update(has_purchased=True).dj_where(id=self.id).execute()
+

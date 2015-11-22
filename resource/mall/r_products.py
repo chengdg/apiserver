@@ -5,7 +5,7 @@ import itertools
 
 from core import inner_resource
 from core import auth
-from cache import utils as cache_util
+from core.cache import utils as cache_util
 import cache
 from wapi.decorators import param_required
 from wapi.mall import models as mall_models
@@ -265,3 +265,4 @@ class RProducts(inner_resource.Resource):
 			data = product.format_to_dict()
 			result.append(data)
 		return result
+

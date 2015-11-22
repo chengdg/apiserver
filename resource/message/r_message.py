@@ -10,7 +10,7 @@ from urlparse import parse_qs, urlparse
 from core import inner_resource
 from wapi.decorators import param_required
 from wapi import wapi_utils
-from cache import utils as cache_util
+from core.cache import utils as cache_util
 from wapi.mall import models as mall_models
 from wapi.member import models as member_models
 from wapi.user import models as user_models

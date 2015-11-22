@@ -12,7 +12,7 @@ from datetime import datetime
 
 from wapi.decorators import param_required
 from wapi import wapi_utils
-from cache import utils as cache_util
+from core.cache import utils as cache_util
 from wapi.mall import models as mall_models
 from wapi.mall import promotion_models
 import resource
@@ -120,3 +120,4 @@ class PromotionProductGroup(business_model.Model):
 			self.context['_price_factor'] = factor
 
 		return factor
+

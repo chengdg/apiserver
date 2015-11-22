@@ -11,7 +11,7 @@ from datetime import datetime
 
 from wapi.decorators import param_required
 from wapi import wapi_utils
-from cache import utils as cache_util
+from core.cache import utils as cache_util
 from wapi.mall import models as mall_models
 from wapi.mall import promotion_models
 from wapi.user import models as account_models
@@ -219,3 +219,4 @@ class WebAppOwnerInfo(business_model.Model):
 			obj.qrcode_img = ''
 
 		return obj
+

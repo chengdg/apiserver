@@ -7,7 +7,7 @@ from datetime import timedelta
 from core import inner_resource
 from wapi.decorators import param_required
 from wapi import wapi_utils
-from cache import utils as cache_util
+from core.cache import utils as cache_util
 from wapi.mall import models as mall_models
 import settings
 
@@ -30,3 +30,4 @@ class RTopProductReview(inner_resource.Resource):
 			if (after_15_days <= now):
 				review.status = 1
 				mall_models.ProductReview.update(status=1, top_time=DEFAULT_DATETIME).dj_where(id=review.id)
+

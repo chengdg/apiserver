@@ -7,7 +7,7 @@ import array
 
 from utils.command import BaseCommand
 
-from cache import utils as cache_util
+from core.cache import utils as cache_util
 from bson import json_util
 import json
 
@@ -40,4 +40,5 @@ class Command(BaseCommand):
 			for key in del_keys:
 				value[key] = []
 			return value
+
 

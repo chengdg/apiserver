@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from core import inner_resource
 from wapi.decorators import param_required
 from wapi import wapi_utils
-from cache import utils as cache_util
+from core.cache import utils as cache_util
 from wapi.mall import models as mall_models
 from wapi.mall import promotion_models
 from wapi.user import models as account_models
@@ -165,3 +165,4 @@ class RMallData(inner_resource.Resource):
 	def get(args):
 		data = RMallData.get_from_cache(args['woid'])
 		return data
+

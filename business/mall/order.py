@@ -15,7 +15,7 @@ from datetime import datetime
 
 from wapi.decorators import param_required
 from wapi import wapi_utils
-from cache import utils as cache_util
+from core.cache import utils as cache_util
 from wapi.mall import models as mall_models
 import resource
 from core.watchdog.utils import watchdog_alert

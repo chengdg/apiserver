@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from core import inner_resource
 from wapi.decorators import param_required
 from wapi import wapi_utils
-from cache import utils as cache_util
+from core.cache import utils as cache_util
 from wapi.mall import models as mall_models
 from wapi.mall import promotion_models
 import settings
@@ -282,3 +282,4 @@ class RProductDetail(inner_resource.Resource):
 			return product
 		else:
 			return product.format_to_dict()
+

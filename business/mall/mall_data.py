@@ -11,7 +11,7 @@ from datetime import datetime
 
 from wapi.decorators import param_required
 from wapi import wapi_utils
-from cache import utils as cache_util
+from core.cache import utils as cache_util
 from wapi.mall import models as mall_models
 from wapi.mall import promotion_models
 from wapi.user import models as account_models
@@ -174,4 +174,5 @@ class MallData(business_model.Model):
 		self.postage_configs = data[postage_configs_key]
 		self.product_model_properties = data[product_model_properties_key]
 		self.mall_config = data[mall_config_key]
+
 

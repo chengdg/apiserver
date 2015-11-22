@@ -6,7 +6,7 @@ import itertools
 from core import inner_resource
 from core import auth
 from core.cache import utils as cache_util
-import cache
+from core import cache
 from wapi.decorators import param_required
 from wapi.mall import models as mall_models
 import settings

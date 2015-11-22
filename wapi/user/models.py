@@ -1,5 +1,5 @@
 #coding: utf8
-from db import models
+from core.db import models
 
 import datetime
 
@@ -173,5 +173,6 @@ class TemplateGlobalNavbar(models.Model):
 			return global_navbar
 		else:
 			return None
+
 
 

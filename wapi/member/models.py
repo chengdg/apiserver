@@ -1,7 +1,7 @@
 #coding: utf8
 from datetime import datetime
 
-from db import models
+from core.db import models
 from wapi.user.models import User
 from core.decorator import cached_property
 from utils.string_util import hex_to_byte, byte_to_hex

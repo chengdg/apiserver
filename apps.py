@@ -13,7 +13,7 @@ import resource as resource_module
 import resource.resources
 import wapi.resources
 import wapi as wapi_resource
-from db import models
+from core.db import models
 
 class ThingsResource:
 	def on_get(self, req, resp):
@@ -142,3 +142,4 @@ def create_app():
 	falcon_app.add_route('/__cmd/apilist/', ApiListerResource())
 
 	return falcon_app
+

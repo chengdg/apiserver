@@ -6,7 +6,7 @@
 
 import settings
 
-from db import models
+from core.db import models
 from playhouse.db_url import connect
 #from core.exceptionutil import full_stack
 
@@ -154,3 +154,4 @@ watchdog_notice = show_deprecation("watchdog_notice")
 #watchdog_alert = watchdog_util.watchdog_alert
 #watchdog_emergency = watchdog_util.watchdog_emergency
 #watchdog_notice = watchdog_util.watchdog_notice
+

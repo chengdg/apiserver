@@ -3,7 +3,7 @@ import copy
 from datetime import datetime
 import json
 
-from db import models
+from core.db import models
 from wapi.user.models import User, UserProfile
 from core.watchdog.utils import watchdog_fatal
 import settings
@@ -1909,3 +1909,4 @@ class WeizoomMallHasOtherMallProduct(models.Model):
 
 	class Meta(object):
 		db_table = 'weizoom_mall_has_other_mall_product'
+

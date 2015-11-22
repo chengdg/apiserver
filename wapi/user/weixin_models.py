@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from db import models
+from core.db import models
 from models import User
 
 
@@ -194,3 +194,4 @@ class ComponentAuthedAppidInfo(models.Model):
 		db_table = 'component_authed_appid_info'
 		verbose_name = '委托授权帐号详细信息'
 		verbose_name_plural = '委托授权帐号详细信息'
+

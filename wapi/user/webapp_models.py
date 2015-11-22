@@ -2,7 +2,7 @@
 
 import datetime
 
-from db import models
+from core.db import models
 from models import User
 
 

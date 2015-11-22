@@ -3,7 +3,7 @@ import copy
 from datetime import datetime
 import json
 
-from db import models
+from core.db import models
 from wapi.user.models import User
 from wapi.mall import models as mall_models
 from core.watchdog.utils import watchdog_fatal

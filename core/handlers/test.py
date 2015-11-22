@@ -21,7 +21,7 @@ webapp_user = WebAppUser.get(webapp_id=user_profile.webapp_id, member_id=member.
 
 def test_local_handle():
 	# 测试本地情况的handle
-	from handlers.event_handler_util import *
+	from core.handlers.event_handler_util import *
 	args = {
 		'GET': {'get1':'value1', 'get2':'value2'},
 		'COOKIES': '<cookie>',

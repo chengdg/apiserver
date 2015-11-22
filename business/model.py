@@ -22,8 +22,6 @@ class Model(object):
 		instance = cls()
 		for slot in cls.__slots__:
 			value = dict.get(slot, None)
-			if not value and slot[0] == '_':
-				value = dict.get(slot[1:], None)
 
 			setattr(instance, slot, value)
 		return instance

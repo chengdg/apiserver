@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """@package business.mall.product
-商品的业务对象
+商品
 
 """
 
@@ -328,8 +328,8 @@ class Product(business_model.Model):
 		if model:
 			self._init_slot_from_model(model)
 			self.owner_id = model.owner_id
-			self._thumbnails_url = model.thumbnails_url
-			self._pic_url = model.pic_url
+			self.thumbnails_url = '%s%s' % (settings.IMAGE_HOST, model.thumbnails_url)
+			self.pic_url = '%s%s' % (settings.IMAGE_HOST, model.pic_url)
 
 	def __set_image_to_lazy_load(self):
 		# 商品详情图片lazyload
@@ -413,22 +413,6 @@ class Product(business_model.Model):
 	@order_thumbnails_url.setter
 	def order_thumbnails_url(self, url):
 		self.context['order_thumbnails_url'] = url
-
-	@property
-	def thumbnails_url(self):
-		return self._thumbnails_url if 'http:' in self._thumbnails_url else '%s%s' % (settings.IMAGE_HOST, self._thumbnails_url)
-
-	@thumbnails_url.setter
-	def thumbnails_url(self, url):
-		self._thumbnails_url = url
-
-	@property
-	def pic_url(self):
-		return self._pic_url if 'http:' in self._pic_url else '%s%s' % (settings.IMAGE_HOST, self._pic_url)
-
-	@pic_url.setter
-	def pic_url(self, url):
-		self._pic_url = url
 
 	@property
 	def hint(self):

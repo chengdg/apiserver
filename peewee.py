@@ -2487,9 +2487,6 @@ class Query(Node):
     @django_where_returns_clone
     def dj_where(self, *expressions):
         self._where = self._add_query_clauses(self._where, expressions)
-        print '-*-' * 20
-        print self._where
-        print '-*-' * 20
 
     @returns_clone
     def orwhere(self, *expressions):

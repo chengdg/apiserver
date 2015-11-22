@@ -185,7 +185,7 @@ class OrderFactory(business_model.Model):
 		#处理订单中的促销优惠金额
 		promotion_saved_money = 0.0
 		for product_group in product_groups:
-			promotion_result = product_group['promotion_result']
+			promotion_result = product_group.promotion_result
 			if promotion_result:
 				saved_money = promotion_result.get('promotion_saved_money', 0.0)
 				promotion_saved_money += saved_money
@@ -243,25 +243,25 @@ class OrderFactory(business_model.Model):
 
 		#建立<order, promotion>的关系
 		for product_group in product_groups:
-			promotion_result = product_group.get('promotion_result', None)
-			if promotion_result or product_group.get('integral_sale_rule', None):
+			promotion_result = product_group.promotion_result
+			if promotion_result or product_group.integral_sale_rule:
 				try:
-					promotion_id = product_group['promotion']['id']
-					promotion_type = product_group['promotion_type']
+					promotion_id = product_group.promotion['id']
+					promotion_type = product_group.promotion_type
 				except:
 					promotion_id = 0
 					promotion_type = 'integral_sale'
 				try:
 					if not promotion_result:
 						promotion_result = dict()
-					promotion_result['integral_product_info'] = product_group['integral_sale_rule']['integral_product_info']
+					promotion_result['integral_product_info'] = product_group.integral_sale_rule['integral_product_info']
 				except:
 					pass
 				integral_money = 0
 				integral_count = 0
-				if product_group['integral_sale_rule'] and product_group['integral_sale_rule'].get('result'):
-					integral_money = product_group['integral_sale_rule']['result']['final_saved_money']
-					integral_count = product_group['integral_sale_rule']['result']['use_integral']
+				if product_group.integral_sale_rule and product_group.integral_sale_rule.get('result'):
+					integral_money = product_group.integral_sale_rule['result']['final_saved_money']
+					integral_count = product_group.integral_sale_rule['result']['use_integral']
 				OrderHasPromotion.objects.create(
 					order=order,
 					webapp_user_id=webapp_user.id,

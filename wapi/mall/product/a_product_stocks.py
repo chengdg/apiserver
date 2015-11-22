@@ -15,12 +15,12 @@ class AProductStocks(api_resource.ApiResource):
 	resource = 'product_stocks'
 
 
-	@param_required(['woid', 'wuid', 'product_id'])
+	@param_required(['woid', 'wuid'])
 	def get(args):
 		"""
 		@param product_id 商品ID
 		"""
-		product_id = args['product_id']
+		product_id = args.get('product_id', None)
 		model_ids = args.get('model_ids', None)
 		need_member_info = args.get('need_member_info', False)
 
@@ -45,7 +45,7 @@ class AProductStocks(api_resource.ApiResource):
 			})
 		elif model_ids:
 			model_ids = model_ids.split(",")
-			product_stocks = ProductStocks.from_product_id({
+			product_stocks = ProductStocks.from_product_model_ids({
 				'model_ids': model_ids
 			})
 		else:

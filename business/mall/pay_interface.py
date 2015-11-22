@@ -23,7 +23,6 @@ from business.mall.product import Product
 import settings
 from business.decorator import cached_context_property
 from business.mall.order_products import OrderProducts
-from business.mall.product_grouper import ProductGrouper
 from business.mall.order_checker import OrderChecker
 
 

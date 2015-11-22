@@ -41,6 +41,7 @@ class ProductStocks(business_model.Model):
 	@staticmethod
 	@param_required(['model_ids'])
 	def from_product_model_ids(args):
+		model_ids = args['model_ids']
 		models = mall_models.ProductModel.select().dj_where(id__in=model_ids, is_deleted=False)
 		product_stocks = ProductStocks()
 		product_stocks.init(models)

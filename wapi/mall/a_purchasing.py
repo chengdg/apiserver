@@ -173,7 +173,7 @@ class APurchasing(api_resource.ApiResource):
 		mall_config = webapp_owner.mall_config
 		use_ceiling = webapp_owner.integral_strategy_settings.use_ceiling
 
-		product_groups = APurchasing.__format_product_group_price_factor(order.product_groups)
+		product_group_datas = [group.to_dict(with_price_factor=True) for group in order.promotion_product_groups]
 
 		order_info = {
 			'type': order.type,
@@ -184,14 +184,8 @@ class APurchasing(api_resource.ApiResource):
 			'ship_area': order.ship_info['area'],
 			'display_ship_area': order.ship_info['display_area'],
 			'pay_interfaces': order.pay_interfaces,
-			'product_groups': order.product_groups
+			'product_groups': product_group_datas
 		}
-		#将product_groups中的order_product转化为dict
-		for product_group in order_info['product_groups']:
-			new_products = []
-			for product in product_group['products']:
-				new_products.append(product.to_dict())
-			product_group['products'] = new_products
 
 		return {
 			'order': order_info,
@@ -200,6 +194,5 @@ class APurchasing(api_resource.ApiResource):
 			'coupons': coupons,
 			'limit_coupons': limit_coupons,
 			'use_ceiling': use_ceiling,
-			'postage_factor': postage_factor,
-			'product_groups': product_groups
+			'postage_factor': postage_factor
 		}

@@ -22,12 +22,15 @@ from business.mall.product import Product
 import settings
 from business.decorator import cached_context_property
 from business.mall.order_products import OrderProducts
+from business.mall.promotion_product_group import PromotionProductGroup
 
 
 class ProductGrouper(business_model.Model):
 	"""商品分组器
 	"""
-	__slots__ = ()
+	__slots__ = (
+		'product_groups',
+	)
 
 	def __get_promotion_name(self, product):
 		"""
@@ -164,7 +167,7 @@ class ProductGrouper(business_model.Model):
 			promotion = products[0].promotion
 			# 商品没有参加促销
 			if not promotion or promotion_id <= 0:
-				product_groups.append({
+				promotion_product_group = PromotionProductGroup({
 					"id": group_id,
 					"uid": group_unified_id,
 					'products': products,
@@ -175,23 +178,26 @@ class ProductGrouper(business_model.Model):
 					'can_use_promotion': False,
 					'member_grade_id': member_grade_id
 				})
+				product_groups.append(promotion_product_group)
 				continue
 
 
 			# 如果促销对此会员等级的用户不开放
 			if not self.__has_promotion(member_grade_id, promotion.get('member_grade_id')):
-				product_groups.append({
-									  "id": group_id,
-									  "uid": group_unified_id,
-									  'products': products,
-									  'promotion': {},
-									  "promotion_type": '',
-									  'promotion_result': '',
-									  'integral_sale_rule': integral_sale_rule,
-									  'can_use_promotion': False,
-									  'member_grade_id': member_grade_id
-									  })
+				promotion_product_group = PromotionProductGroup({
+					"id": group_id,
+					"uid": group_unified_id,
+					'products': products,
+					'promotion': {},
+					"promotion_type": '',
+					'promotion_result': '',
+					'integral_sale_rule': integral_sale_rule,
+					'can_use_promotion': False,
+					'member_grade_id': member_grade_id
+				})
+				product_groups.append(promotion_product_group)
 				continue
+
 			promotion_type = promotion.get('type', 0)
 			if promotion_type == 0:
 				type_name = 'none'
@@ -263,7 +269,8 @@ class ProductGrouper(business_model.Model):
 					"subtotal": subtotal,
 					"price_threshold": promotion_round_count*promotion_detail['price_threshold']
 				}
-			product_groups.append({
+
+			promotion_product_group = PromotionProductGroup({
 				"id": group_id,
 				"uid": group_unified_id,
 				"promotion_type": type_name,
@@ -272,7 +279,9 @@ class ProductGrouper(business_model.Model):
 				'promotion_result': promotion_result,
 				'integral_sale_rule': integral_sale_rule,
 				'can_use_promotion': can_use_promotion,
-				'promotion_json': json.dumps(promotion),
 				'member_grade_id': member_grade_id
 			})
+			product_groups.append(promotion_product_group)
+
+		self.product_groups = product_groups
 		return product_groups

@@ -32,7 +32,7 @@ class PurchaseOrder(business_model.Model):
 		'ship_info',
 		'products',
 		'postage',
-		'product_groups',
+		'promotion_product_groups',
 		'pay_interfaces',
 		'usable_integral'
 	)
@@ -86,7 +86,7 @@ class PurchaseOrder(business_model.Model):
 
 		#按促销进行product分组
 		product_grouper = ProductGrouper()
-		self.product_groups = product_grouper.group_product_by_promotion(webapp_user.member, self.products)
+		self.promotion_product_groups = product_grouper.group_product_by_promotion(webapp_user.member, self.products)
 
 		#获取订单可用积分
 		integral_info = webapp_user.integral_info

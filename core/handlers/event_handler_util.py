@@ -7,22 +7,24 @@
 @todo 将service调用相关的函数移到services中。
 
 """
-
+from __future__ import absolute_import
 import time
 from datetime import datetime
 import urlparse
 
+import celery
+
 import settings
-from core.celery import celeryconfig
+from core.service import celeryconfig
 #from weapp.settings import TASKQUEUE_ENABLED
 from core.watchdog.utils import watchdog_fatal
-from celery.execute import send_task
+
 #if settings.MODE == 'develop' and celeryconfig.CELERY_ALWAYS_EAGER:
 if celeryconfig.CELERY_ALWAYS_EAGER:
 	print("CELERY_ALWAYS_EAGER=True, use 'services.celery.send_task_test' instead")
 	from .celery_util import send_task_test as send_task
 else:
-	from celery.execute import send_task
+	from core.celery.execute import send_task
 
 import redis
 redis_cli = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_SERVICE_DB)

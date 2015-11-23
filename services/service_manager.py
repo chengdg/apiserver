@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from db.account.models import User, UserProfile
-from wapi.member.models import WebAppUser, Member
-from wapi.member.models import SocialAccount
+from db.member.models import WebAppUser, Member
+from db.member.models import SocialAccount
 
 EVENT2SERVICE = {}
 

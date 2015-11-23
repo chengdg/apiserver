@@ -26,6 +26,13 @@ class ShoppingCart(business_model.Model):
 	@staticmethod
 	@param_required(['webapp_user'])
 	def get_for_webapp_user(args):
+		"""
+		工厂方法，获取webapp_user对应的ShoppingCart业务对象
+
+		@param[in] webapp_user
+
+		@return ShoppingCart业务对象
+		"""
 		shopping_cart = ShoppingCart(args['webapp_user'])
 
 		return shopping_cart
@@ -37,7 +44,7 @@ class ShoppingCart(business_model.Model):
 
 	def add_product(self, product_id, product_model_name, count):
 		"""
-		向购物车中增加一个商品
+		向购物车中增加一个商品项
 
 		@param[in] product_id: 商品id
 		@param[in] product_model_name: 商品规格名

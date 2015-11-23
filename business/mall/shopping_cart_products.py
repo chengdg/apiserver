@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-"""@package business.mall.shopping_cart_products
-购物车商品集合
+"""购物车商品(ShoppingCartPdocut)集合
+
+ShoppingCartProducts用于构建一组ShoppingCartProduct，ShoppingCartProducts存在的目的是为了后续优化，以最少的数据库访问次数对商品信息进行批量填充
 
 """
 
@@ -30,10 +31,10 @@ class ShoppingCartProducts(business_model.Model):
 	@staticmethod
 	@param_required(['webapp_owner', 'webapp_user'])
 	def get_for_webapp_user(args):
-		"""工厂方法，创建ShoppingCartProducts对象
+		"""工厂方法，获取webapp_user对应的ShoppingCartProducts对象
 
-		@param[in] webapp_user
 		@param[in] webapp_owner
+		@param[in] webapp_user
 
 		@return ShoppingCartProducts对象
 		"""

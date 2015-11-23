@@ -34,7 +34,18 @@ class WebAppUser(business_model.Model):
 	)
 
 	@staticmethod
-	def from_model(webapp_owner, model):
+	@param_required(['webapp_owner', 'model'])
+	def from_model(args):
+		"""
+		工厂方法，根据webapp user model获取WebAppUser业务对象
+
+		@param[in] webapp_owner
+		@param[in] webapp user model
+
+		@return WebAppUser业务对象
+		"""
+		webapp_owner = args['webapp_owner']
+		model = args['model']
 		webapp_user = WebAppUser(webapp_owner, model)
 		
 		return webapp_user
@@ -45,13 +56,16 @@ class WebAppUser(business_model.Model):
 		if model:
 			self._init_slot_from_model(model)
 
-		self.member = Member.from_id(model.member_id, webapp_owner)
+		self.member = Member.from_id({
+			'webapp_owner': webapp_owner,
+			'member_id': model.member_id
+		})
 		self.context['webapp_owner'] = webapp_owner
 
 	@property
 	def integral_info(self):
 		"""
-		积分信息
+		[property] 积分信息
 		"""
 		if self.member:
 			return self.member.integral_info
@@ -67,7 +81,7 @@ class WebAppUser(business_model.Model):
 	@property
 	def ship_info(self):
 		"""
-		收货地址
+		[property] 收货地址
 		"""
 		ship_infos = list(member_models.ShipInfo.select().dj_where(webapp_user_id=self.id, is_deleted=False, is_selected=True))
 		if len(ship_infos) > 0:
@@ -86,7 +100,7 @@ class WebAppUser(business_model.Model):
 	@property
 	def ship_infos(self):
 		"""
-		收货地址集合
+		[property] 收货地址集合
 		"""
 		try:
 			return list(member_models.ShipInfo.select().dj_where(webapp_user_id=self.id, is_deleted=False))
@@ -95,7 +109,7 @@ class WebAppUser(business_model.Model):
 
 	def set_purchased(self):
 		"""
-		设置已购买标识
+		设置webapp user的已购买标识
 		"""
 		if not self.has_purchased:
 			member_models.WebAppUser.update(has_purchased=True).dj_where(id=self.id).execute()

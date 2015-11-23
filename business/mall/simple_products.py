@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """@package business.mall.simple_products
-携带基础商品信息的商品集合
+携带基础商品信息的商品集合，用于商品列表页面的展示
 """
 
 import json
@@ -31,7 +31,14 @@ class SimpleProducts(business_model.Model):
 	@param_required(['webapp_owner', 'webapp_user', 'category_id', 'is_access_weizoom_mall'])
 	def get(args):
 		"""
-		factory方法
+		工厂方法，获得与category_id对应的SimpleProducts业务对象
+
+		@param[in] webapp_owner
+		@param[in] webapp_user
+		@param[in] category_id: 商品分类的id
+		@param[in] is_access_weizoom_mall: 是否访问微众商城
+
+		@return SimpleProducts业务对象
 		"""
 		webapp_owner = args['webapp_owner']
 		webapp_user = args['webapp_user']

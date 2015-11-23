@@ -42,17 +42,43 @@ class Member(business_model.Model):
 		pass
 
 	@staticmethod
-	def from_model(webapp_owner, model):
+	@param_required(['webapp_owner', 'model'])
+	def from_model(args):
+		"""
+		工厂对象，根据member model获取Member业务对象
+
+		@param[in] webapp_owner
+		@param[in] model: member model
+
+		@return Member业务对象
+		"""
+		webapp_owner = args['webapp_owner']
+		model = args['model']
+
 		member = Member(webapp_owner, model)
 		member._init_slot_from_model(model)
 
 		return member
 
 	@staticmethod
-	def from_id(member_id, webapp_owner):
+	@param_required(['webapp_owner', 'member_id'])
+	def from_id(args):
+		"""
+		工厂对象，根据member id获取Member业务对象
+
+		@param[in] webapp_owner
+		@param[in] member_id: 会员的id
+
+		@return Member业务对象
+		"""
+		webapp_owner = args['webapp_owner']
+		member_id = args['member_id']
 		try:
 			member_db_model = member_models.Member.get(id=member_id)
-			return Member.from_model(member_db_model, webapp_owner)
+			return Member.from_model({
+				'webapp_owner': webapp_owner,
+				'model': member_db_model
+			})
 		except:
 			return None
 
@@ -194,6 +220,9 @@ class Member(business_model.Model):
 
 	@cached_context_property
 	def username_for_html(self):
+		"""
+		[property] 兼容html显示的会员名
+		"""
 		if (self.username_hexstr is not None) and (len(self.username_hexstr) > 0):
 			username = emojicons_util.encode_emojicons_for_html(self.username_hexstr, is_hex_str=True)
 		else:
@@ -211,7 +240,7 @@ class Member(business_model.Model):
 		"""
 		[property] 与会员对应的订单信息(MemberOrderInfo)对象
 		"""
-		member_order_info = MemberOrderInfo.get_for({
+		member_order_info = MemberOrderInfo.get_for_webapp_user({
 			'webapp_user': self.webapp_user
 		})
 
@@ -219,22 +248,37 @@ class Member(business_model.Model):
 
 	@property
 	def history_order_count(self):
+		"""
+		[property] 会员总订单数
+		"""
 		return self.__order_info.history_order_count
 
 	@property
 	def not_payed_order_count(self):
+		"""
+		[property] 会员待支付订单数
+		"""
 		return self.__order_info.not_payed_order_count
 
 	@property
 	def not_ship_order_count(self):
+		"""
+		[property] 会员待发货订单数
+		"""
 		return self.__order_info.not_ship_order_count
 	
 	@property
 	def shiped_order_count(self):
+		"""
+		[property] 会员待收获订单数
+		"""
 		return self.__order_info.shiped_order_count
 
 	@property
 	def review_count(self):
+		"""
+		[property] 会员待评论订单数
+		"""
 		return self.__order_info.review_count
 
 	@cached_context_property

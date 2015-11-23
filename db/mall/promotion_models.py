@@ -660,8 +660,8 @@ class RedEnvelopeRule(models.Model):
 	@staticmethod
 	def can_show_red_envelope(order, red_envelope):
 		"""判断订单是否能显示分享红包
-		@params order: 需要判断的订单，需要使用订单商品价格，订单运费等价格信息
-		@params red_envelope: 红包规则，注意是从request.webapp_owner_info缓存中获取
+		@param[in] order: 需要判断的订单，需要使用订单商品价格，订单运费等价格信息
+		@param[in] red_envelope: 红包规则，注意是从request.webapp_owner_info缓存中获取
 			由缓存抓取时判断红包状态、优惠券库存问题
 
 		@return

@@ -33,6 +33,13 @@ class WebAppOwner(business_model.Model):
 	@staticmethod
 	@param_required(['woid'])
 	def get(args):
+		"""
+		工厂方法，根据webapp owner id获取WebAppOwner业务对象
+
+		@param[in] woid
+
+		@return WebAppOwner业务对象
+		"""
 		webapp_owner_id = args['woid']
 
 		webapp_owner = WebAppOwner(webapp_owner_id)
@@ -46,12 +53,18 @@ class WebAppOwner(business_model.Model):
 
 	@cached_context_property
 	def __mall_data(self):
+		"""
+		[property] 与webapp owner id关联的MallData业务对象
+		"""
 		return MallData.get({
 			'woid': self.id
 		})
 
 	@cached_context_property
 	def __webapp_owner_info(self):
+		"""
+		[property] 与webapp owner id关联的WebAppOwerInfo业务对象
+		"""
 		return WebAppOwnerInfo.get({
 			'woid': self.id
 		})

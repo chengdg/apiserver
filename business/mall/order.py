@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """@package business.mall.order
-订单
+订单，代表数据库中已经创建完成后的一个订单
 
 """
 
@@ -46,7 +46,7 @@ class Order(business_model.Model):
 	@staticmethod
 	@param_required(['webapp_owner', 'webapp_user', 'order_id'])
 	def from_id(args):
-		"""工厂方法，创建Order对象
+		"""工厂方法，根据订单id创建Order对象
 
 		@return Order对象
 		"""
@@ -56,9 +56,9 @@ class Order(business_model.Model):
 	@staticmethod
 	@param_required(['webapp_owner', 'webapp_user'])
 	def get_orders_for_webapp_user(args):
-		"""工厂方法，创建Order对象
+		"""工厂方法，获取webapp_user对应的Order对象集合
 
-		@return Order对象
+		@return Order对象列表
 		"""
 		webapp_owner = args['webapp_owner']
 		webapp_user = args['webapp_user']
@@ -105,6 +105,10 @@ class Order(business_model.Model):
 
 	@cached_context_property
 	def product_outlines(self):
+		"""订单中的商品概况，只包含最基本的商品信息
+
+		TODO2：这里返回的依然是存储层的Product对象，需要返回业务层的Product业务对象
+		"""
 		product_ids = [r.product_id for r in mall_models.OrderHasProduct.select().dj_where(order=self.id)]
 		products = list(mall_models.Product.select().dj_where(id__in=product_ids))
 
@@ -113,19 +117,29 @@ class Order(business_model.Model):
 	@property
 	def has_sub_order(self):
 		"""
-		判断该订单是否有子订单
+		[property] 该订单是否有子订单
 		"""
 		return self.origin_order_id == -1 and self.status > mall_models.ORDER_STATUS_NOT #未支付的订单按未拆单显示
 
 	@property
 	def pay_interface_name(self):
+		"""
+		[property] 订单使用的支付接口名
+		"""
 		return mall_models.PAYTYPE2NAME[self.pay_interface_type]
 
 	def is_valid(self):
+		"""
+		判断订单是否有效
+
+		@return True: 有效订单; False: 无效订单
+		"""
 		return self.context['is_valid']
 
 	def pay(self, pay_interface_type):
-		"""支付订单
+		"""对订单进行支付
+
+		@param[in] pay_interface_type: 支付所使用的支付接口的type
 		"""
 		pay_result = False
 

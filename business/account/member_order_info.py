@@ -33,7 +33,14 @@ class MemberOrderInfo(business_model.Model):
 
 	@staticmethod
 	@param_required(['webapp_user'])
-	def get_for(args):
+	def get_for_webapp_user(args):
+		"""
+		工厂方法，获取与webapp_user关联的会员订单信息
+
+		@param[in] webapp_user
+
+		@return MemberOrderInfo业务对象
+		"""
 		order_info = MemberOrderInfo(args['webapp_user'])
 
 		return order_info

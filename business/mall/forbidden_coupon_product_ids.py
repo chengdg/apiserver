@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """@package business.mall.forbidden_coupon_product_ids
-禁用优惠券的商品id集合
+禁用优惠券的商品id集合，从redis缓存中获取相应数据
 """
 
 import json

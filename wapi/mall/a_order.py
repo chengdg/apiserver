@@ -48,7 +48,7 @@ class AOrder(api_resource.ApiResource):
 		order_validation = order_factory.validate()
 
 		if (not order_validation['is_valid']):
-			return 500, pre_order_validation['reason']
+			return 500, order_validation['reason']
 
 		order = order_factory.save()
 		if order:

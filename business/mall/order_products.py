@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """@package business.mall.order_products
-订单商品集合
+订单商品(OrderPdocut)集合
+
+OrderProducts用于构建一组OrderProduct，OrderProducts存在的目的是为了后续优化，以最少的数据库访问次数对商品信息进行批量填充
 
 """
 
@@ -32,15 +34,12 @@ class OrderProducts(business_model.Model):
 	def get(args):
 		"""工厂方法，创建OrderProducts对象
 
-		@param[in] woid
-		@param[in] webapp_user
-		@param[in] webapp_owner_info
 		@param[in] purchase_info: 购买信息PurchaseInfo对象
 
 		@return OrderProducts对象
 		"""
 		order_products = OrderProducts(args['webapp_owner'], args['webapp_user'])
-		order_products.get_products_from_purchase_info(args['purchase_info'])
+		order_products.__get_products_from_purchase_info(args['purchase_info'])
 
 		return order_products
 
@@ -54,7 +53,7 @@ class OrderProducts(business_model.Model):
 		@return OrderProducts对象
 		"""
 		order_products = OrderProducts(args['webapp_owner'], args['webapp_user'])
-		order_products.get_products_for_order(args['order'])
+		order_products.__get_products_for_order(args['order'])
 
 		return order_products
 
@@ -64,8 +63,8 @@ class OrderProducts(business_model.Model):
 		self.context['webapp_owner'] = webapp_owner
 		self.context['webapp_user'] = webapp_user
 
-	def get_products_from_purchase_info(self, purchase_info):
-		'''获取商品集合
+	def __get_products_from_purchase_info(self, purchase_info):
+		'''根据purchase info获取订单商品集合
 		'''
 		webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user']
@@ -104,7 +103,7 @@ class OrderProducts(business_model.Model):
 			if product.id in forbidden_coupon_product_ids:
 				product.can_use_coupon = False
 
-	def get_products_for_order(self, order):
+	def __get_products_for_order(self, order):
 		'''根据order获取订单商品集合
 		'''
 		webapp_owner = self.context['webapp_owner']

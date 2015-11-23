@@ -5,7 +5,7 @@ from wapi.decorators import param_required
 import resource
 
 from db.mall import models as mall_models
-from business.mall.product_stocks import ProductStocks
+from business.mall.realtime_stock import RealtimeStock
 
 class AProductStocks(api_resource.ApiResource):
 	"""
@@ -40,19 +40,19 @@ class AProductStocks(api_resource.ApiResource):
 
 		#获取商品的库存信息
 		if product_id:
-			product_stocks = ProductStocks.from_product_id({
+			realtime_stock = RealtimeStock.from_product_id({
 				'product_id': product_id
 			})
 		elif model_ids:
 			model_ids = model_ids.split(",")
-			product_stocks = ProductStocks.from_product_model_ids({
+			realtime_stock = RealtimeStock.from_product_model_ids({
 				'model_ids': model_ids
 			})
 		else:
-			product_stocks = None
+			realtime_stock = None
 
-		if product_stocks:
-			result_data.update(product_stocks.model2stock)
+		if realtime_stock:
+			result_data.update(realtime_stock.model2stock)
 
 		# 代码来自 get_member_product_info(request) mall/module_api.py
 		if 'need_member_info' in args:

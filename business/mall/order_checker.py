@@ -2,6 +2,21 @@
 """@package business.mall.order_checker
 订单有效性的判断器
 
+在下单过程中，对待生成的订单进行一系列的检查，比如检查是否购买的商品已下家、检查会员当前的积分是否足以抵扣订单中的积分等等
+
+通常，我们通过以下的方式使用OrderChecker
+```python
+order_checker = OrderChecker(webapp_owner, webapp_user, order)
+check_result = order_checker.check()
+
+if check_result['is_valid']:
+	#订单通过检查，继续下单流程
+	...
+else:
+	#订单没有通过检查，返回失败原因
+	return check_result['reason']
+```
+
 """
 
 import json

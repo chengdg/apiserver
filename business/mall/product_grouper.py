@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """@package business.mall.product_grouper
-商品分组器
+商品分组器，根据促销信息对商品进行分组
 
 """
 
@@ -61,6 +61,13 @@ class ProductGrouper(business_model.Model):
 		return name
 
 	def __get_group_name(self, group_products):
+		"""
+		获取商品分组名
+
+		@param[in] group_product: 分组中的商品集合
+
+		@return 生成的分组名，格式为"id1_modelname1-id2_modelname2..."
+		"""
 		items = []
 		for product in group_products:
 			items.append('%s_%s' % (product.id, product.model['name']))
@@ -120,24 +127,12 @@ class ProductGrouper(business_model.Model):
 
 	def group_product_by_promotion(self, member, products):
 		"""
-		mall_api:group_product_by_promotion
 		根据商品促销类型对商品进行分类
-		Args:
-		  products -
 
-		Return:
-		  list - [
-					  {'id': ,
-					   'uid': ,
-					   'products':,
-					   'promotion':,
-					   'promotion_type': (str),
-					   'promotion_result':,
-					   'integral_sale_rule':,
-					   'can_use_promotion':,
-					   'member_grade_id': }
-					  ...
-				   ]
+		@param[in] member: Member业务对象
+		@param[in] products: 待分组的商品集合
+
+		@return PromotionProductGroup业务对象的list
 		"""
 		member_grade_id = member.grade_id
 		#按照促销对product进行聚类

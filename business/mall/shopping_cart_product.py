@@ -2,6 +2,10 @@
 """@package business.mall.shopping_cart_product
 购物车商品
 
+一个**购物车商品**是在商品业务对象的基础上，加上购物车的相关信息，比如购物车中商品的数量等，形成的新的业务对象。
+
+与购物车相关的业务流程，比如获取购物车列表详情等等，都不直接使用Product，而是使用ShoppingCartProduct
+
 """
 
 import json
@@ -23,7 +27,7 @@ from business.decorator import cached_context_property
 
 
 class ShoppingCartProduct(business_model.Model):
-	"""订单商品
+	"""购物车商品
 	"""
 	__slots__ = (
 		'id',
@@ -51,6 +55,14 @@ class ShoppingCartProduct(business_model.Model):
 	def get(args):
 		"""工厂方法，创建ShoppingCartProduct对象
 
+		@param[in] product_info 商品信息
+			{
+				id: 商品id,
+				model_name: 商品规格名,
+				shopping_cart_id: 购物车项的id,
+				count: 商品数量
+			}
+
 		@return ShoppingCartProduct对象
 		"""
 		shopping_cart_product = ShoppingCartProduct(args['webapp_owner'], args['webapp_user'], args['product_info'])
@@ -67,7 +79,7 @@ class ShoppingCartProduct(business_model.Model):
 		
 	def __fill_detail(self, webapp_user, product_info):
 		"""
-		获得指定规格的商品详情
+		填充购物车商品的详情
 		"""
 		product = Product.from_id({
 			"webapp_owner": self.context['webapp_owner'],
@@ -107,7 +119,7 @@ class ShoppingCartProduct(business_model.Model):
 	@cached_context_property
 	def postage_config(self):
 		"""
-		[property] 订单商品的运费策略
+		[property] 购物车商品的运费策略
 		"""
 		product = self.context['product']
 		webapp_owner = self.context['webapp_owner']

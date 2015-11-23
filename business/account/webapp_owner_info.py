@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """@package business.account.webapp_owner_info
-webapp owner的信息
+业务层内部使用的业务对象，webapp owner的信息，主要与redis缓存中的webapp_owner_info数据对应
 
 """
 

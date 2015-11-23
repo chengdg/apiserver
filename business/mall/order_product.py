@@ -2,6 +2,10 @@
 """@package business.mall.order_product
 订单商品
 
+一个订单商品是在商品业务对象的基础上，加上订单的相关信息，比如订单中商品的数量等，形成的新的业务对象。
+
+与订单相关的业务流程，比如下单，获取订单详情等等，都不直接使用Product，而是使用OrderProduct
+
 """
 
 import json
@@ -63,6 +67,14 @@ class OrderProduct(business_model.Model):
 	def get(args):
 		"""工厂方法，创建OrderProduct对象
 
+		@param[in] product_info 商品信息
+			{
+				id: 商品id,
+				model_name: 商品规格名,
+				promotion_id: 商品促销id,
+				count: 商品数量
+			}
+
 		@return OrderProduct对象
 		"""
 		order_product = OrderProduct(args['webapp_owner'], args['webapp_user'], args['product_info'])
@@ -79,8 +91,7 @@ class OrderProduct(business_model.Model):
 
 	def __fill_detail(self, webapp_user, product_info):
 		"""
-		mall_api:get_product_details_with_model
-		获得指定规格的商品详情
+		根据商品信息填充相应的商品详情
 		"""
 		product = Product.from_id({
 			"webapp_owner": self.context['webapp_owner'],
@@ -147,12 +158,10 @@ class OrderProduct(business_model.Model):
 			return webapp_owner.system_postage_config
 
 	def is_on_shelve(self):
+		"""
+		[property] 订单商品是否处于上架状态
+		"""
 		return self.context['product'].is_on_shelve()
-
-	def to_dict(self):
-		data = business_model.Model.to_dict(self)
-		data['postage_config'] = data['_postage_config']
-		return data
 
 	@cached_context_property
 	def __current_model(self):
@@ -214,11 +223,22 @@ class OrderProduct(business_model.Model):
 
 	@cached_context_property
 	def discount_money(self):
+		"""
+		[property] 订单商品的折扣金额
+		"""
 		# 目前product.member_discount_money 只有限时抢购会设置成0，不用乘商品数量
 		return self.total_price * self.member_discount
 
 	@property
 	def supplier(self):
+		"""
+		[property] 订单商品的供应商
+		"""
 		return self.context['product'].owner_id
+
+	def to_dict(self):
+		data = business_model.Model.to_dict(self)
+		data['postage_config'] = data['_postage_config']
+		return data
 
 

@@ -2,6 +2,8 @@
 """@package business.mall.product
 商品
 
+Product是商品业务对象的实现，内部使用CachedProduct对象进行redis的读写操作。
+OrderProduct，ShoppingCartProduct等更特定的商品业务对象都在内部使用Product业务对象实现。
 """
 
 import json
@@ -244,9 +246,9 @@ class Product(business_model.Model):
 		'shelve_start_time',
 		'shelve_end_time',
 		'detail',
-		'_thumbnails_url',
+		'thumbnails_url',
 		'order_thumbnails_url',
-		'_pic_url',
+		'pic_url',
 		'swipe_images',
 		'detail_link',
 		'user_code',
@@ -332,6 +334,8 @@ class Product(business_model.Model):
 			self.pic_url = '%s%s' % (settings.IMAGE_HOST, model.pic_url)
 
 	def __set_image_to_lazy_load(self):
+		"""将商品详情图片设置微lazy load
+		"""
 		# 商品详情图片lazyload
 		# TODO: 将这个逻辑改成字符串处理，不用xml解析
 		soup = BeautifulSoup(self.detail)
@@ -347,16 +351,22 @@ class Product(business_model.Model):
 	@property
 	def is_sellout(self):
 		"""
-		是否卖光
+		[property] 是否卖光
 		"""
 		return self.total_stocks <= 0
 
 	@is_sellout.setter
 	def is_sellout(self, value):
+		"""
+		[property setter] 是否卖光
+		"""
 		pass
 
 	@property
 	def total_stocks(self):
+		"""
+		[property] 商品总库存
+		"""
 		context = self.context
 		if not 'total_stocks' in context:
 			context['total_stocks'] = 0
@@ -382,10 +392,16 @@ class Product(business_model.Model):
 
 	@total_stocks.setter
 	def total_stocks(self, value):
+		"""
+		[property setter] 商品总库存
+		"""
 		self.context['total_stocks'] = value
 
 	@property
 	def is_use_custom_model(self):
+		"""
+		[property] 是否使用了定制规格
+		"""
 		context = self.context
 		if not 'is_use_custom_model' in context:
 			context['is_use_custom_model'] = (
@@ -394,11 +410,17 @@ class Product(business_model.Model):
 
 	@is_use_custom_model.setter
 	def is_use_custom_model(self, value):
+		"""
+		[property setter] 是否使用了定制规格
+		"""
 		self.context['is_use_custom_model'] = value
 
 	# 如果规格有图片就显示，如果没有，使用缩略图
 	@property
 	def order_thumbnails_url(self):
+		"""
+		[property] 订单中的缩略图
+		"""
 		'''
 		if hasattr(self, 'custom_model_properties') and self.custom_model_properties:
 			for model in self.custom_model_properties:
@@ -412,12 +434,15 @@ class Product(business_model.Model):
 
 	@order_thumbnails_url.setter
 	def order_thumbnails_url(self, url):
+		"""
+		[property setter] 订单中的缩略图
+		"""
 		self.context['order_thumbnails_url'] = url
 
 	@property
 	def hint(self):
 		"""
-		判断商品是否被禁止使用全场优惠券
+		[property] 判断商品是否被禁止使用全场优惠券
 		"""
 		webapp_owner = self.context['webapp_owner']
 		forbidden_coupon_product_ids = ForbiddenCouponProductIds.get_for_webapp_owner({
@@ -430,7 +455,7 @@ class Product(business_model.Model):
 
 	def is_on_shelve(self):
 		"""
-		判断商品是否是商家状态
+		判断商品是否是上架状态
 		"""
 		return self.shelve_type == mall_models.PRODUCT_SHELVE_TYPE_ON
 
@@ -457,29 +482,29 @@ class Product(business_model.Model):
 		else:
 			return None
 
-	def fill_specific_model(self, model_name, models=None):
-		if not models:
-			models = self.models
+	# def fill_specific_model(self, model_name, models=None):
+	# 	if not models:
+	# 		models = self.models
 
-		candidate_models = filter(lambda m: m['name'] == model_name, models)
-		if len(candidate_models) > 0:
-			model = candidate_models[0]
-			product = self
-			product.price = model['price']
-			product.weight = model['weight']
-			product.stock_type = model['stock_type']
-			if not hasattr(product, 'min_limit'):
-				product.min_limit = product.stocks
-			product.stocks = model['stocks']
-			product.model_name = model_name
-			product.model = model
-			product.is_model_deleted = False
-			product.market_price = model.get('market_price', 0.0)
+	# 	candidate_models = filter(lambda m: m['name'] == model_name, models)
+	# 	if len(candidate_models) > 0:
+	# 		model = candidate_models[0]
+	# 		product = self
+	# 		product.price = model['price']
+	# 		product.weight = model['weight']
+	# 		product.stock_type = model['stock_type']
+	# 		if not hasattr(product, 'min_limit'):
+	# 			product.min_limit = product.stocks
+	# 		product.stocks = model['stocks']
+	# 		product.model_name = model_name
+	# 		product.model = model
+	# 		product.is_model_deleted = False
+	# 		product.market_price = model.get('market_price', 0.0)
 
-			if model_name == 'standard':
-				product.custom_model_properties = None
-			else:
-				product.custom_model_properties = [{'property_value': property_value['name']} for property_value in model['property_values']]
+	# 		if model_name == 'standard':
+	# 			product.custom_model_properties = None
+	# 		else:
+	# 			product.custom_model_properties = [{'property_value': property_value['name']} for property_value in model['property_values']]
 
 	# def fill_standard_model(self):
 	# 	"""
@@ -679,6 +704,8 @@ class Product(business_model.Model):
 
 	@staticmethod
 	def __fill_model_detail(webapp_owner_id, products, product_ids, id2property={}, id2propertyvalue={}, is_enable_model_property_info=False):
+		"""填充商品规格相关细节
+		"""
 		_id2property = {}
 		_id2propertyvalue = {}
 		if is_enable_model_property_info:
@@ -836,6 +863,8 @@ class Product(business_model.Model):
 
 	@staticmethod
 	def __fill_image_detail(webapp_owner_id, products, product_ids):
+		"""填充商品轮播图相关细节
+		"""
 		for product in products:
 			product.swipe_images = [{
 				'id': img.id, 
@@ -847,6 +876,8 @@ class Product(business_model.Model):
 
 	@staticmethod
 	def __fill_property_detail(webapp_owner_id, products, product_ids):
+		"""填充商品属性相关细节
+		"""
 		for product in products:
 			product.properties = [{
 				"id": property.id, 
@@ -856,6 +887,8 @@ class Product(business_model.Model):
 
 	@staticmethod
 	def __fill_category_detail(webapp_owner_id, products, product_ids, only_selected_category=False):
+		"""填充商品分类信息相关细节
+		"""
 		categories = list(Promall_models.ductCategory.select().dj_where(owner=webapp_owner_id).order_by('id'))
 
 		# 获取product关联的category集合
@@ -938,6 +971,8 @@ class Product(business_model.Model):
 
 	@staticmethod
 	def __fill_promotion_detail(webapp_owner, products, product_ids):
+		"""填充商品促销相关细节
+		"""
 		for product in products:
 			product.promotion = None
 		'''
@@ -990,6 +1025,8 @@ class Product(business_model.Model):
 
 	@staticmethod
 	def __fill_sales_detail(webapp_owner_id, products, product_ids):
+		"""填充商品销售情况相关细节
+		"""
 		id2product = dict([(product.id, product) for product in products])
 		for product in products:
 			product.sales = 0
@@ -1001,8 +1038,20 @@ class Product(business_model.Model):
 
 	@staticmethod
 	def __fill_details(webapp_owner_id, products, options):
-		"""
-		填充各种细节信息
+		"""填充各种细节信息
+
+		此方法会根据options中的各种填充选项，填充相应的细节信息
+
+		@param[in] products: Product业务对象集合
+		@param[in] options: 填充选项
+			with_price: 填充价格信息
+			with_product_model: 填充所有商品规格信息
+			with_product_promotion: 填充商品促销信息
+			with_image: 填充商品轮播图信息
+			with_property: 填充商品属性信息
+			with_selected_category: 填充选中的分类信息
+			with_all_category: 填充所有商品分类详情
+			with_sales: 填充商品销售详情
 		"""
 		id2property = None
 		id2propertyvalue = None

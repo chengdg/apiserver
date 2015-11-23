@@ -1,6 +1,51 @@
 # -*- coding: utf-8 -*-
 """@package business.mall.mall_data
-商城配置数据
+业务层内部使用的业务对象，商城配置数据，从redis中获取相应数据
+
+MallData业务对象统一了存放在redis中的postage_configs, mall_config, product_model_properties三种数据
+其中
+
+postage_config在redis中的数据为:
+```javascript
+
+```
+
+mall_config在redis中的数据为:
+```javascript
+{
+	"max_product_count": 100, 
+	"is_enable_bill": false, 
+	"created_at": [], 
+	"order_expired_day": 0, 
+	"owner": 3, 
+	"id": 2
+}
+```
+
+product_model_properties在redis中的数据为:
+```javascript
+{
+ "id2property": {
+  "1": {
+   "id": 1, 
+   "name": "\u989c\u8272"
+  }, 
+  "2": {
+   "id": 2, 
+   "name": "\u5c3a\u5bf8"
+  }
+ }, 
+ "id2value": {
+  "1": {
+   "name": "\u7ea2\u8272", 
+   "pic_url": "/standard_static/test_resource_img/icon_color/icon_1.png", 
+   "property_id": 1, 
+   "id": 1
+  }, 
+  ......
+ }
+}
+```
 
 """
 

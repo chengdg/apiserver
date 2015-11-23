@@ -37,11 +37,11 @@ class PayInterface(business_model.Model):
 	@staticmethod
 	@param_required(['webapp_owner', 'interface_id'])
 	def from_id(args):
-		"""工厂方法，创建PayInterface对象
+		"""工厂方法，根据支付接口的id创建PayInterface对象
 
-		@param [in] pay_interface_type : 支付接口的类型
+		@param [in] interface_id : 支付接口的id
 
-		@return Order对象
+		@return PayInterface业务对象
 		"""
 		pay_interface = PayInterface(args['webapp_owner'], interface_id=int(args['interface_id']))
 		return pay_interface
@@ -49,11 +49,11 @@ class PayInterface(business_model.Model):
 	@staticmethod
 	@param_required(['webapp_owner', 'pay_interface_type'])
 	def from_type(args):
-		"""工厂方法，创建PayInterface对象
+		"""工厂方法，根据支付接口类型创建PayInterface对象
 
 		@param [in] pay_interface_type : 支付接口的类型
 
-		@return Order对象
+		@return PayInterface业务对象
 		"""
 		pay_interface = PayInterface(args['webapp_owner'], pay_interface_type=int(args['pay_interface_type']))
 		return pay_interface
@@ -73,6 +73,12 @@ class PayInterface(business_model.Model):
 		self.related_config_id = interface['related_config_id']
 
 	def get_pay_url_for_order(self, order):
+		"""获取订单的支付链接
+
+		@param[in] order: 代支付的订单
+
+		@return 支付链接
+		"""
 		interface = self.context['interface']
 		interface_type = interface['type']
 		webapp_owner_id = self.context['webapp_owner'].id
@@ -114,7 +120,8 @@ class PayInterface(business_model.Model):
 
 	@cached_context_property
 	def pay_config(self):
-		"""与支付接口关联的具体支付配置
+		"""
+		[property] 与支付接口关联的具体支付配置
 		"""
 		interface = self.context['interface']
 		if interface['type'] == mall_models.PAY_INTERFACE_WEIXIN_PAY:
@@ -125,6 +132,8 @@ class PayInterface(business_model.Model):
 
 	def parse_pay_result(self, pay_result):
 		"""解析支付结果
+
+		@param[in] pay_result: 第三方支付接口返回的支付结果信息
 
 		@return 支付结果
 			is_success: 支付是否成功

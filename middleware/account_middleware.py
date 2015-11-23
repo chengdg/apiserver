@@ -35,8 +35,14 @@ class AccountsMiddleware(object):
 			"return_model": True
 		})
 		print 'get member in AccountsMiddleware...'
-		member = Member.from_model(req.context['webapp_owner'], member_accounts['member'])
-		webapp_user = WebAppUser.from_model(req.context['webapp_owner'], member_accounts['webapp_user'])
+		member = Member.from_model({
+			'webapp_owner': req.context['webapp_owner'], 
+			'model': member_accounts['member']
+		})
+		webapp_user = WebAppUser.from_model({
+			'webapp_owner': req.context['webapp_owner'],
+			'model': member_accounts['webapp_user']
+		})
 		webapp_user.member = member
 		member.webapp_user = webapp_user
 		member_accounts['member'] = member

@@ -2,6 +2,21 @@
 """@package business.mall.order_factory
 订单生成器
 
+订单生成器根据购买信息(PurchaseInfo对象)，生成一个订单
+
+通常下单的流程为:
+```python
+order_factory = OrderFactory.create({
+	'webapp_owner': webapp_owner,
+	'webapp_user': webapp_user,
+	'purchase_info': purchase_info
+})
+
+validate_result = order_factory.validate()
+if validate_result['is_valid']:
+	order = order_factory.save()
+```
+
 """
 
 import json
@@ -77,6 +92,11 @@ class OrderFactory(business_model.Model):
 		return order_checker.check()
 
 	def __create_order_id(self):
+		"""创建订单id
+
+		目前采用基于时间戳＋随机数的算法生成订单id，在确定id可使用之前，通过查询mall_order表里是否有相同id来判断是否可以使用id
+		这种方式比较低效，同时存在id重复的潜在隐患，后续需要改进
+		"""
 		#TODO2: 使用uuid替换这里的算法
 		order_id = time.strftime("%Y%m%d%H%M%S", time.localtime())
 		order_id = '%s%03d' % (order_id, random.randint(1, 999))
@@ -84,61 +104,6 @@ class OrderFactory(business_model.Model):
 			return self.__create_order_id()
 		else:
 			return order_id
-
-	def pay(self, order_id, is_success, pay_interface_type):
-		"""支付订单
-		"""
-		pass
-		try:
-			order = get_order(webapp_user, order_id, is_need_area=False)
-		except:
-			watchdog_fatal(u"本地获取订单信息失败：order_id:{}, cause:\n{}".format(order_id, unicode_full_stack()))
-			return None, False
-
-		pay_result = False
-
-		if is_success and order.status == ORDER_STATUS_NOT: #支付成功
-			pay_result = True
-
-			# jz 2015-10-20
-			# Order.objects.filter(order_id=order_id).update(status=ORDER_STATUS_PAYED_NOT_SHIP, pay_interface_type=pay_interface_type, payment_time=datetime.now())
-			#order.status = ORDER_STATUS_PAYED_SUCCESSED
-			#order.status = ORDER_STATUS_PAYED_NOT_SHIP
-			# 修改子订单的订单状态，该处有逻辑状态的校验
-			# origin_order_id = Order.objects.get(order_id=order_id).id
-			# Order.objects.filter()
-			if order.origin_order_id < 0:
-				Order.objects.filter(origin_order_id=order.id).update(status=ORDER_STATUS_PAYED_NOT_SHIP, pay_interface_type=pay_interface_type, payment_time=datetime.now())
-
-			order.status = ORDER_STATUS_PAYED_NOT_SHIP
-			order.pay_interface_type = pay_interface_type
-			order.payment_time = datetime.now()
-			order.save()
-
-			#记录日志
-			record_operation_log(order_id, u'客户', u'支付')
-			record_status_log(order_id, u'客户', ORDER_STATUS_NOT, ORDER_STATUS_PAYED_NOT_SHIP)
-			# jz 2015-10-20
-			#记录购买统计项
-			# PurchaseDailyStatistics.objects.create(
-			# 	webapp_id = webapp_id,
-			# 	webapp_user_id = webapp_user.id,
-			# 	order_id = order_id,
-			# 	order_price = order.final_price,
-			# 	date = dateutil.get_today()
-			# )
-
-			#更新webapp_user的has_purchased字段
-			webapp_user.set_purchased()
-
-			try:
-				mall_util.email_order(order=order)
-			except:
-				notify_message = u"订单状态为已付款时发邮件失败，order_id={}, webapp_id={}, cause:\n{}".format(order_id, webapp_id, unicode_full_stack())
-				watchdog_alert(notify_message)
-			# 重新查询订单
-			# order = get_order(webapp_user, order_id, True)
-		return order, pay_result
 
 	def save(self):
 		"""保存订单

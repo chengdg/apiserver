@@ -81,11 +81,15 @@ server {
 ```
 
 ## services celery ##
-测试方法： 
+测试及启动方法： 
 ```
-（1）start_celery.bat python handlers/test.py
+（1）start_celery.bat 或者 python run_celery 或者start_celery.sh
 ```
 ```
-(2)python services/send_task.py "services.example_service.tasks.example_log_service" {} "{\"id\": 0}"
+（2）python services/send_task.py "services.example_service.tasks.example_log_service" {} "{\"id\": 0}" 
 ```
+```
+（3）python core/handlers/test.py
+```
+
 

@@ -12,9 +12,8 @@ import time
 from datetime import datetime
 import urlparse
 
-import celery
-
 import settings
+from core.service import celery
 from core.service import celeryconfig
 #from weapp.settings import TASKQUEUE_ENABLED
 from core.watchdog.utils import watchdog_fatal
@@ -24,7 +23,7 @@ if celeryconfig.CELERY_ALWAYS_EAGER:
 	print("CELERY_ALWAYS_EAGER=True, use 'services.celery.send_task_test' instead")
 	from .celery_util import send_task_test as send_task
 else:
-	from core.celery.execute import send_task
+	from celery.execute import send_task
 
 import redis
 redis_cli = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_SERVICE_DB)
@@ -118,7 +117,7 @@ def handle(request, event):
 		print("found sepecial event '{}'".format(event))
 		return result
 
-	if settings.TASKQUEUE_ENABLED and REGISTERED_EVENTS.has_key(event):
+	if celeryconfig.CELERY_ALWAYS_EAGER and REGISTERED_EVENTS.has_key(event):
 		# 如果event是测试的service，以Celery方式处理
 		task_name = REGISTERED_EVENTS[event]
 		print("found sepecial event '{}'".format(event))

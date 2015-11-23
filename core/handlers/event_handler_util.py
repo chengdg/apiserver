@@ -15,7 +15,6 @@ import urlparse
 import settings
 from core.service import celery
 from core.service import celeryconfig
-#from weapp.settings import TASKQUEUE_ENABLED
 from core.watchdog.utils import watchdog_fatal
 
 #if settings.MODE == 'develop' and celeryconfig.CELERY_ALWAYS_EAGER:

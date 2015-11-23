@@ -15,7 +15,7 @@ from business.mall.purchase_order import PurchaseOrder
 
 class APurchasing(api_resource.ApiResource):
 	"""
-	购物车项目
+	下单页数据
 	"""
 	app = 'mall'
 	resource = 'purchasing'

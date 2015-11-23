@@ -70,6 +70,8 @@ REDIS_CACHES_DB = 2
 
 #BDD相关配置
 WEAPP_DIR = '../weapp'
+WEAPP_BDD_SERVER_HOST = '127.0.0.1'
+WEAPP_BDD_SERVER_PORT = 8170
 
 #watchdog相关
 WATCH_DOG_DEVICE = 'mysql'

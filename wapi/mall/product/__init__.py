@@ -4,3 +4,4 @@ import a_product_detail
 import a_products
 import a_product_stocks
 import a_product
+import a_product_categories

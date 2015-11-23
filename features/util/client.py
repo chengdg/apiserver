@@ -133,6 +133,7 @@ class FakeResponse(object):
         buf = []
         buf.append('===== start response =====')
         buf.append('*** body ***')
+        del self.body['queries']
         buf.append(json.dumps(self.body))
         buf.append('*** status ***')
         buf.append(self.status)

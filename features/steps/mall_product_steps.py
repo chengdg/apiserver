@@ -13,6 +13,9 @@ def step_impl(context, user):
 		'woid':context.client.woid
 	})
 	
+	print '-*-' * 20
+	print response
+	print '-*-' * 20
 	expected = json.loads(context.text)
 	actual = response.body['data']
 

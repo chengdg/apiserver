@@ -5,6 +5,7 @@ import member
 import message
 import pay
 import user_center
+import user
 #import stats
 
 #import views

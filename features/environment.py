@@ -49,11 +49,11 @@ def before_all(context):
 	context.tc = unittest.TestCase('__init__')
 	bdd_util.tc = context.tc
 
-	#为model instance安装__getitem__，方便测试
-	enhance_model_class()
-
 	#设置bdd模式
 	settings.IS_UNDER_BDD = True
+
+	#启动weapp下的bdd server
+	print u'TODO2: 启动weapp下的bdd server'
 
 	#登录添加App
 	#client = bdd_util.login('manager')
@@ -98,21 +98,3 @@ def after_scenario(context, scenario):
 		print('[after scenario]: close webapp browser driver')
 		context.webapp_driver.quit()
 
-
-#
-# 为Model添加__getitem__
-#
-def enhance_model_class():
-	from db.models import Model
-
-	#def model_getitem(self, key):
-	#	return getattr(self, key)
-	#Model.__getitem__ = model_getitem
-
-	def model_todict(self):
-		columns = [field.get_attname() for field in self._meta.fields]
-		result = {}
-		for field in self._meta.fields:
-			result[field.get_attname()] = field.value_to_string(self)
-		return result
-	Model.to_dict = model_todict

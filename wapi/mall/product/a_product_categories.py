@@ -9,7 +9,7 @@ from utils import dateutil as utils_dateutil
 from db.mall import models as mall_models
 from db.account import models as auth_models
 
-class ProductCategories(api_resource.ApiResource):
+class AProductCategories(api_resource.ApiResource):
 	"""
 	获取WebAPP ID
 	"""
@@ -33,10 +33,10 @@ class ProductCategories(api_resource.ApiResource):
 
 		@param oid 分类所属user的id
 		"""
-		categories = mall_models.ProductCategory.select().where(mall_models.ProductCategory.owner == args['woid'])
+		categories = mall_models.ProductCategory.select().dj_where(owner_id = args['woid'])
 		data = []
 		for category in categories:
-			data.append(ProductCategories.category_to_dict(category))
+			data.append(AProductCategories.category_to_dict(category))
 
 		return data
 

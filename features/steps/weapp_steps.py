@@ -7,18 +7,25 @@ from datetime import datetime, timedelta
 import subprocess
 
 from behave import *
+import requests
 
 import settings
 
-@When(u"{ignore}:weapp")
-def step_impl(context, ignore):
-	import sys
-	print >> sys.stderr, u'ignore weapp operation: %s' % ignore
+def _run_weapp_step(step, context):
+	url = 'http://%s:%s' % (settings.WEAPP_BDD_SERVER_HOST, settings.WEAPP_BDD_SERVER_PORT)
+	data = {
+		'step': step,
+		'context': context
+	}
+	requests.post(url, data={'data':json.dumps(data)})
 
-@Given(u"{ignore}:weapp")
-def step_impl(context, ignore):
-	import sys
-	print >> sys.stderr, u'ignore weapp operation: %s' % ignore
+@When(u"{command}:weapp")
+def step_impl(context, command):
+	_run_weapp_step(u'When %s' % command, context.text)
+
+@Given(u"{command}:weapp")
+def step_impl(context, command):
+	_run_weapp_step(u'Given %s' % command, context.text)
 
 @Then(u"{ignore}:weapp")
 def step_impl(context, ignore):
@@ -28,6 +35,10 @@ def step_impl(context, ignore):
 @When(u"执行weapp操作:skip")
 def step_impl(context):
 	pass
+
+@when(u"重置weapp的bdd环境")
+def step_impl(context):
+	_run_weapp_step('__reset__', None)
 
 @When(u"执行weapp操作")
 def step_impl(context):

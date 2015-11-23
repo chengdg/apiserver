@@ -5,7 +5,7 @@ Feature: 添加商品分组
 """
 
 Background:
-	When 执行weapp操作
+	When 重置weapp的bdd环境
 
 @mall @mall.product_category @wip
 Scenario:1 添加商品分类

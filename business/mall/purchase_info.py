@@ -38,7 +38,7 @@ class PurchaseInfo(business_model.Model):
 	@staticmethod
 	@param_required(['request_args'])
 	def parse(args):
-		"""解析REST参数，创建PurchaseInfo对象
+		"""解析http请求的参数，创建PurchaseInfo对象
 
 		@return PurchaseInfo对象
 		"""

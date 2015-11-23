@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """@package business.mall.promotion_product_group
-按照促销对product进行聚类
+一个PromotionProductGroup是一组product的集合，它们拥有同一个促销信息
 
 """
 
@@ -25,7 +25,7 @@ from business.mall.order_products import OrderProducts
 
 
 class PromotionProductGroup(business_model.Model):
-	"""按促销进行分组的商品分组
+	"""按促销分组的商品group
 	"""
 	__slots__ = (
 		"id",

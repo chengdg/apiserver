@@ -2,6 +2,10 @@
 """@package business.mall.purchase_order
 用于支持购买过程中进行订单编辑的订单
 
+**购买订单**与**订单**在系统中是两个不同的业务对象，购买订单表示未下单之前的订单，而订单表示已成功下单后的订单。
+
+两者的区别可以举一个例子：在购买订单中，支付方式是在下单时可以选用的所有支付方式的集合；而在订单中，支付方式是下单时选择的支付方式。
+
 """
 
 import json
@@ -40,7 +44,11 @@ class PurchaseOrder(business_model.Model):
 	@staticmethod
 	@param_required(['webapp_owner', 'webapp_user', 'purchase_info'])
 	def create(args):
-		"""工厂方法，创建PurchaseOrder对象
+		"""工厂方法，创建PurchaseOrder业务对象
+
+		@param[in] webapp_owner
+		@param[in] webapp_user
+		@param[in] purchase_info: PurchaseInfo业务对象
 
 		@return PurchaseOrder对象
 		"""

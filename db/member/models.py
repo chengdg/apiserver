@@ -464,11 +464,7 @@ class MemberHasSocialAccount(models.Model):
 SEX_TYPE_MEN = 1
 SEX_TYPE_WOMEN = 2
 SEX_TYPE_UNKOWN = 0
-SEX_TYPES = (
-	(SEX_TYPE_MEN, '男'),
-	(SEX_TYPE_WOMEN, '女'),
-	(SEX_TYPE_UNKOWN, '未知')
-	)
+
 
 class MemberInfo(models.Model):
 	"""
@@ -476,38 +472,20 @@ class MemberInfo(models.Model):
 	"""
 	member = models.ForeignKey(Member)
 	name = models.CharField(max_length=8, verbose_name='会员姓名')
-	sex = models.IntegerField(choices=SEX_TYPES, verbose_name='性别')
+	sex = models.IntegerField(default=SEX_TYPE_UNKOWN, verbose_name='性别')
 	age = models.IntegerField(default=-1, verbose_name='年龄')
-	address = models.CharField(max_length=32, verbose_name='地址')
-	phone_number = models.CharField(max_length=11)
-	qq_number = models.CharField(max_length=13)
+	address = models.CharField(max_length=32, verbose_name='地址', default='')
+	phone_number = models.CharField(max_length=11, default='')
+	qq_number = models.CharField(max_length=13, default='')
 	weibo_nickname = models.CharField(max_length=16, verbose_name='微博昵称')
-	member_remarks = models.TextField()
-	#new add by bert
+	member_remarks = models.CharField(max_length=255, default='')
 	is_binded = models.BooleanField(default=False)
-	session_id = models.CharField(max_length=1024)
-	captcha = models.CharField(max_length=11) #验证码
+	session_id = models.CharField(max_length=1024, default='')
+	captcha = models.CharField(max_length=11,default='') #验证码
 	binding_time = models.DateTimeField() #绑定时间
 
 	class Meta(object):
 		db_table = 'member_info'
-
-	@staticmethod
-	def get_member_info(member_id):
-		if member_id is None or member_id <= 0:
-			return None
-		try:
-			return MemberInfo.objects.filter(member_id=member_id)[0]
-		except:
-			return MemberInfo.objects.create(
-					member_id=member_id,
-					name='',
-					weibo_nickname='',
-					sex=0
-					)
-	@staticmethod
-	def is_can_binding(phone_number, member_id, webapp_id):
-		return not MemberInfo.objects.filter(member__webapp_id=webapp_id, is_binded=True, phone_number=phone_number).count() > 0
 
 
 class MemberFollowRelation(models.Model):

@@ -41,7 +41,8 @@ class WebAppOwnerInfo(business_model.Model):
 		'is_weizoom_card_permission',
 		'qrcode_img',
 		'member2grade',
-		'member_grades'
+		'member_grades',
+		'default_member_tag'
 	)
 
 	@staticmethod
@@ -157,8 +158,13 @@ class WebAppOwnerInfo(business_model.Model):
 				auth_appid_info = weixin_user_models.ComponentAuthedAppidInfo.select().dj_where(auth_appid=auth_appid)[0]
 			except:
 				auth_appid_info = weixin_user_models.ComponentAuthedAppidInfo()
-				
-		
+			
+			#member default tags
+			try:
+				default_member_tag = member_models.MemberTag.get_default_tag(webapp_id)
+			except:
+				default_member_tag = member_models.MemberTag()
+			
 			return {
 				'value': {
 					'weixin_mp_user_access_token': weixin_mp_user_access_token.to_dict(),
@@ -172,7 +178,8 @@ class WebAppOwnerInfo(business_model.Model):
 					'has_permission': has_permission,
 					'operation_settings': operation_settings.to_dict(),
 					'global_navbar': global_navbar.to_dict(),
-					'auth_appid_info': auth_appid_info.to_dict()
+					'auth_appid_info': auth_appid_info.to_dict(),
+					'default_member_tag': default_member_tag.to_dict()
 				}
 			}
 		return inner_func
@@ -218,6 +225,7 @@ class WebAppOwnerInfo(business_model.Model):
 		else:
 			obj.qrcode_img = ''
 
+		obj.default_member_tag = member_models.MemberTag.from_dict(data['default_member_tag'])	
 		return obj
 
 

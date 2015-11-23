@@ -34,7 +34,8 @@ class Member(business_model.Model):
 		'username_hexstr',
 
 		'webapp_user',
-		'is_subscribed'
+		'is_subscribed',
+		'created'
 	)
 
 	@staticmethod
@@ -329,6 +330,13 @@ class Member(business_model.Model):
 		print u'TODO2: 实现营销工具集合'
 		return []
 
+	@staticmethod
+	def empty_member():
+		"""工厂方法，创建空的member对象
 
+		@return Member对象
+		"""
+		member = Member(None, None)
+		return member
 
 

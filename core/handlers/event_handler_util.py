@@ -7,16 +7,16 @@
 @todo 将service调用相关的函数移到services中。
 
 """
-
+from __future__ import absolute_import
 import time
 from datetime import datetime
 import urlparse
 
 import settings
-from core.celery import celeryconfig
-#from weapp.settings import TASKQUEUE_ENABLED
-from watchdog.utils import watchdog_fatal
-from celery.execute import send_task
+from core.service import celery
+from core.service import celeryconfig
+from core.watchdog.utils import watchdog_fatal
+
 #if settings.MODE == 'develop' and celeryconfig.CELERY_ALWAYS_EAGER:
 if celeryconfig.CELERY_ALWAYS_EAGER:
 	print("CELERY_ALWAYS_EAGER=True, use 'services.celery.send_task_test' instead")
@@ -116,7 +116,7 @@ def handle(request, event):
 		print("found sepecial event '{}'".format(event))
 		return result
 
-	if settings.TASKQUEUE_ENABLED and REGISTERED_EVENTS.has_key(event):
+	if celeryconfig.CELERY_ALWAYS_EAGER and REGISTERED_EVENTS.has_key(event):
 		# 如果event是测试的service，以Celery方式处理
 		task_name = REGISTERED_EVENTS[event]
 		print("found sepecial event '{}'".format(event))

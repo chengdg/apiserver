@@ -14,14 +14,19 @@ source bin/activate或者 Scripts\activate.bat
 
 安装必要的组件：
 ```
-pip install --upgrade falcon peewee "pymongo==2.5" beautifulsoup4 redis PyMySQL
+pip install -U falcon "peewee<2.7" "pymongo==2.5" beautifulsoup4 redis PyMySQL celery
 ```
 
-像Django一样启动falcon API server：
+需要有的hosts
+```
+127.0.0.1 db.weapp.com db.operation.com mongo.weapp.com redis.weapp.com
+```
+
+像Django一样启动falcon API server, 注意不能省略ip地址，默认端口是8000，可能会和weapp冲突：
 ```
 python manage.py runserver 0.0.0.0 8001
 ```
-或者使用runserver.sh or runserver.bat
+建议使用runserver.sh or runserver.bat
 
 ## API调试Console ##
 
@@ -56,6 +61,9 @@ BDD测试需要behave、selenium等Python包的支持。
 ```
 127.0.0.1 api.weapp.com
 ```
+```
+127.0.0.1 db.operation.com
+```
 2. 编辑Nginx的`nginx.conf`文件，添加如下配置
 ```py
 server {
@@ -81,11 +89,15 @@ server {
 ```
 
 ## services celery ##
-测试方法： 
+测试及启动方法： 
 ```
-（1）start_celery.bat python handlers/test.py
+（1）start_celery.bat 或者 python run_celery 或者start_celery.sh
 ```
 ```
-(2)python services/send_task.py "services.example_service.tasks.example_log_service" {} "{\"id\": 0}"
+（2）python services/send_task.py "services.example_service.tasks.example_log_service" {} "{\"id\": 0}" 
 ```
+```
+（3）python core/handlers/test.py
+```
+
 

@@ -10,8 +10,6 @@ from core.db import models
 from playhouse.db_url import connect
 #from core.exceptionutil import full_stack
 
-#from weapp.settings import TASKQUEUE_ENABLED
-#from .utils import raw_watchdog_debug, _watchdog_info, _watchdog_error, _watchdog_warning, _watchdog_notice, _watchdog_fatal, _watchdog_emergency
 
 # 异步service
 #if TASKQUEUE_ENABLED:

@@ -153,5 +153,12 @@ class WebAppOwner(business_model.Model):
 		"""
 		return self.__webapp_owner_info.member2grade
 
+	@property
+	def default_member_tag(self):
+		"""
+		[property] 默认会员等级
+		"""
+		return self.__webapp_owner_info.default_member_tag
+
 
 

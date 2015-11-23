@@ -10,7 +10,7 @@ encode_emojicons_for_html 处理字符串，解码出包含的表情icon并做ht
 from core.emojicons import UTF82EMOJIICONS
 from utils.string_util import byte_to_hex, hex_to_byte
 
-from watchdog.utils import watchdog_warning
+from core.watchdog.utils import watchdog_warning
 
 #
 # 建立所有表情icon的utf编码的所有前缀集合，由于表情icon数量较少，且编码长度

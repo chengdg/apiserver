@@ -3,7 +3,7 @@
 import upyun
 import settings
 from core.exceptionutil import unicode_full_stack
-#from watchdog.utils import watchdog_alert,watchdog_error,watchdog_debug
+from core.watchdog.utils import watchdog_alert,watchdog_error,watchdog_debug
 import urllib2
 # ------------------ CONFIG ---------------------
 

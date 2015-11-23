@@ -3,7 +3,6 @@
 service示例
 """
 
-#from watchdog.utils import watchdog_info
 from celery import task
 
 def some_other_func(request, args):

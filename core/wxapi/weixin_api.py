@@ -12,7 +12,7 @@ from core.exceptionutil import unicode_full_stack
 from utils.url_helper import complete_get_request_url
 #from core.weixin_media_saver import save_weixin_user_head_img
 
-from watchdog.utils import watchdog_error, watchdog_info
+from core.watchdog.utils import watchdog_error, watchdog_info
 
 #from weixin.user.access_token import update_access_token
 from util import ObjectAttrWrapedInDict

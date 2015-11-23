@@ -7,6 +7,7 @@ import sys
 import logging
 
 PROJECT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+PROJECT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 sys.path.insert(0, PROJECT_DIR)
 from celery import Celery
 from celery.utils.log import get_logger

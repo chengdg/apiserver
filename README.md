@@ -14,14 +14,19 @@ source bin/activate或者 Scripts\activate.bat
 
 安装必要的组件：
 ```
-pip install --upgrade falcon peewee "pymongo==2.5" beautifulsoup4 redis PyMySQL
+pip install -U falcon "peewee<2.7" "pymongo==2.5" beautifulsoup4 redis PyMySQL celery
 ```
 
-像Django一样启动falcon API server：
+需要有的hosts
+```
+127.0.0.1 db.weapp.com db.operation.com mongo.weapp.com redis.weapp.com
+```
+
+像Django一样启动falcon API server, 注意不能省略ip地址，默认端口是8000，可能会和weapp冲突：
 ```
 python manage.py runserver 0.0.0.0 8001
 ```
-或者使用runserver.sh or runserver.bat
+建议使用runserver.sh or runserver.bat
 
 ## API调试Console ##
 

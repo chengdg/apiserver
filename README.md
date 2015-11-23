@@ -56,6 +56,9 @@ BDD测试需要behave、selenium等Python包的支持。
 ```
 127.0.0.1 api.weapp.com
 ```
+```
+127.0.0.1 db.operation.com
+```
 2. 编辑Nginx的`nginx.conf`文件，添加如下配置
 ```py
 server {

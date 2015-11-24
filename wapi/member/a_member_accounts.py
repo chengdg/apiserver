@@ -57,7 +57,7 @@ class AMemberAccounts(api_resource.ApiResource):
 		@param openid 公众号粉丝唯一标识
 		@param wid wid
 		@param fmt 分享会员token
-		@param r_url 当前url
+		@param url 当前url
 		@param for_oauth 是否是授权是调用
 		
 		"""
@@ -123,4 +123,3 @@ class AMemberAccounts(api_resource.ApiResource):
 
 
 
-		

@@ -27,7 +27,7 @@ class AccountsMiddleware(object):
 		if not 'webapp_owner' in req.context:
 			return
 
-		openid = req.params.get('oauth', 'bill_jobs')
+		openid = req.params.get('access_token', 'bill_jobs')
 		if openid:
 			social_account_info_obj = SocialAccountInfo.get({
 				'webapp_owner':  req.context['webapp_owner'],

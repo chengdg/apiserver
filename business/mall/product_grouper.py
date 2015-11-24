@@ -134,7 +134,7 @@ class ProductGrouper(business_model.Model):
 
 		@return PromotionProductGroup业务对象的list
 		"""
-		member_grade_id = member.grade_id
+		member_grade_id, discount = member.discount
 		#按照促销对product进行聚类
 		# global NO_PROMOTION_ID
 		# NO_PROMOTION_ID = -1  # 负数的promotion id表示商品没有promotion
@@ -144,7 +144,7 @@ class ProductGrouper(business_model.Model):
 		for product in products:
 			product.original_price = product.price
 			if product.is_member_product:
-				product.price = round(product.price * member.discount / 100, 2)
+				product.price = round(product.price * discount / 100, 2)
 			#对于满减，同一活动中不同规格的商品不能分开，其他活动，需要分开
 			group_id += 1
 			default_products = {"group_id": group_id, "products": []}

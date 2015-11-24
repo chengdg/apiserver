@@ -23,7 +23,8 @@ from core.service.celery import celery_logger
 from celery.utils.log import ensure_process_aware_logger
 from celery import task
 from json import dumps,loads
-from db.svsmon.models import Svsmon,  TASK_ACCEPTED, TASK_REVOKED, TASK_ERROR, TASK_SUCCESS, TASK_TIMEOUT, TASK_RETRY, TASK_FAILURE, TASK_UNKNOWN
+# jz 2015-11-24
+# from db.svsmon.models import Svsmon,  TASK_ACCEPTED, TASK_REVOKED, TASK_ERROR, TASK_SUCCESS, TASK_TIMEOUT, TASK_RETRY, TASK_FAILURE, TASK_UNKNOWN
 #from django.core.mail import send_mail
 
 ensure_process_aware_logger()
@@ -54,8 +55,9 @@ for k,v in CELERY_BUILTINS.iteritems():
 
 print("in run_celery.py")
 
-def svslog(t, pid, task_id, status, message):
-    obj=Svsmon.create(task=t, pid=pid, task_id=task_id, status = status, message=(message  and dumps(message) or ''))
+# jz 2015-11-24
+# def svslog(t, pid, task_id, status, message):
+#     obj=Svsmon.create(task=t, pid=pid, task_id=task_id, status = status, message=(message  and dumps(message) or ''))
     #obj.save(using=settings.WATCHDOG_DB)
 
 class CeleryTaskMonitor(logging.Filter):
@@ -135,7 +137,8 @@ class CeleryTaskMonitor(logging.Filter):
                     if ctx:
                         if ctx['task'] in SERVICE_BLACKLIST:
                             return False
-                        svslog(ctx['task'], r.process, ctx['id'], status=TASK_UNKNOWN, message=s)
+                        # jz 2015-11-24
+                        # svslog(ctx['task'], r.process, ctx['id'], status=TASK_UNKNOWN, message=s)
                     subject = u'测试邮件：　服务异常: Celery收到未注册Task: %s' % ctx['task']
                     message = u'1. 请确认该Task已经添加到 settings.py:INSTALLED_TASKS;\n2. Celery重启完毕以加载该Task；\n3. 参数和异常信息:\n4. %s' % r.args[1]
                     print message
@@ -170,7 +173,8 @@ class CeleryTaskMonitor(logging.Filter):
         self.pairs[tid] = (pid, task)
         if r.task in SERVICE_BLACKLIST:
             return False
-        svslog(task, tid, pid, status = TASK_ACCEPTED)
+        # jz 2015-11-24
+        # svslog(task, tid, pid, status = TASK_ACCEPTED)
         if self.loggers.has_key(task):
             real_logger = self.loggers[task]
             real_logger.handle(r)
@@ -198,7 +202,8 @@ class CeleryTaskMonitor(logging.Filter):
             r.process, r.task = self.pairs.pop(tid)
             if r.task in SERVICE_BLACKLIST:
                 return False
-            svslog(r.task, r.process, tid, status, message=(hasattr(r, 'args') and r.args) and dumps(r.args) or None)
+            # jz 2015-11-24
+            # svslog(r.task, r.process, tid, status, message=(hasattr(r, 'args') and r.args) and dumps(r.args) or None)
             if self.loggers.has_key(r.task):
                 real_logger = self.loggers[r.task]
                 real_logger.handle(r)

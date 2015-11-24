@@ -7,7 +7,7 @@ Feature: 添加商品分组
 Background:
 	When 重置weapp的bdd环境
 
-@mall @mall.product_category @wip
+@mall @mall.product_category
 Scenario:1 添加商品分类
 	Jobs添加一组"商品分类"后，"商品分类列表"会按照添加的顺序倒序排列
 

@@ -12,11 +12,10 @@ from bson import json_util
 import json
 
 class Command(BaseCommand):
-	help = "json.dumps cached value"
+	help = "python manage.py view_redis [cache key]"
 	args = ''
 	
 	def handle(self, key, **options):
-		print key
 		value = cache_util.get_cache(key)
 
 		if value:

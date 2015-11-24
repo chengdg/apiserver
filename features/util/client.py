@@ -16,6 +16,8 @@ from simplecookie import SimpleCookie
 from features.util.http import urlencode
 from features.util.encoding import force_str, force_bytes
 
+import settings
+
 __all__ = ('Client', 'encode_file', 'encode_multipart')
 
 
@@ -123,23 +125,34 @@ def closing_iterator_wrapper(iterable, close):
 #         return response
 
 class FakeResponse(object):
-    def __init__(self):
+    def __init__(self, url=None):
         self.body = None
         self.status = None
         self.headers = None
         self.cookies = None
+        self.url = url
 
     def __str__(self):
         buf = []
-        buf.append('===== start response =====')
+        buf.append('\n===== start response =====')
+        buf.append('URL: %s' % self.url)
         buf.append('*** body ***')
-        del self.body['queries']
-        buf.append(json.dumps(self.body))
+        if self.body and 'queries' in self.body:
+            del self.body['queries']
+        buf.append(json.dumps(self.body, indent=2))
         buf.append('*** status ***')
         buf.append(self.status)
         buf.append('*** headers ***')
-        buf.append('===== end response =====')
+        buf.append('===== end response =====\n')
         return '\n'.join(buf)
+
+    @property
+    def status_code(self):
+        return self.status
+
+    @property
+    def data(self):
+        return self.body['data']
 
 class ClientHandler(object):
     def __init__(self, enforce_csrf_checks=True, *args, **kwargs):
@@ -148,8 +161,14 @@ class ClientHandler(object):
         self.app = create_app()
 
     def __call__(self, environ):
-        self.response = FakeResponse()
-        self.response.body = json.loads(''.join(self.app(environ, self.start_response)))
+        url = u'%s?%s' % (environ['PATH_INFO'], environ['QUERY_STRING'])
+        self.response = FakeResponse(url)
+        response_text = ''.join(self.app(environ, self.start_response))
+        try:
+            self.response.body = json.loads(response_text)
+        except:
+            print '>>>>>>>>>>>>>>>> invalid api response <<<<<<<<<<<<<<<<'
+            print response_text
 
         return self.response
 
@@ -316,9 +335,22 @@ class RequestFactory(object):
         else:
             return path + ('?_method=%s' % method)
 
+    def __set_nocache_query_string(self, path):
+        if '__nocache' in path:
+            return path
+        else:
+            if '?' in path:
+                return '%s&__nocache=1' % path
+            else:
+                if path[-1] == '/':
+                    return '%s?__nocache=1' % path
+                else:
+                    return '%s/?__nocache=1' % path
+
     def get(self, path, data={}, **extra):
         "Construct a GET request."
 
+        path = self.__set_nocache_query_string(path)
         parsed = urlparse(path)
         query_string = urlencode(data, doseq=True) or force_str(parsed[4])
         if six.PY3:
@@ -336,6 +368,7 @@ class RequestFactory(object):
              **extra):
         "Construct a POST request."
 
+        data['__nocache'] = 1
         post_data = self._encode_data(data, content_type)
 
         parsed = urlparse(path)
@@ -519,6 +552,8 @@ class Client(RequestFactory):
         Requests a response from the server using GET.
         """
         response = super(Client, self).get(path, data=data, **extra)
+        if settings.ENABLE_BDD_DUMP_RESPONSE:
+            print response
         if follow:
             response = self._handle_redirects(response, **extra)
         return response
@@ -531,6 +566,8 @@ class Client(RequestFactory):
         response = super(Client, self).post(path, data=data, content_type=content_type, **extra)
         if follow:
             response = self._handle_redirects(response, **extra)
+        if settings.ENABLE_BDD_DUMP_RESPONSE:
+            print response
         return response
 
     def head(self, path, data={}, follow=False, **extra):
@@ -562,6 +599,8 @@ class Client(RequestFactory):
                 data=data, content_type=content_type, **extra)
         if follow:
             response = self._handle_redirects(response, **extra)
+        if settings.ENABLE_BDD_DUMP_RESPONSE:
+            print response
         return response
 
     def patch(self, path, data='', content_type='application/octet-stream',

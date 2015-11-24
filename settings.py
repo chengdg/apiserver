@@ -52,6 +52,7 @@ if MODE == 'develop':
     PAY_HOST = 'api.weapp.com'
     #sevice celery 相关
     EVENT_DISPATCHER = 'local'
+    ENABLE_SQL_LOG = False
 else:
     # 真实环境暂时关闭
     #WAPI_LOGGER_ENABLED = False
@@ -61,6 +62,7 @@ else:
     WAPI_LOGGER_DB = 'wapi'
     IMAGE_HOST = 'http://dev.weapp.com'
     PAY_HOST = 'api.weapp.com'
+    ENABLE_SQL_LOG = False
 
 
 #缓存相关配置
@@ -72,6 +74,7 @@ REDIS_CACHES_DB = 2
 WEAPP_DIR = '../weapp'
 WEAPP_BDD_SERVER_HOST = '127.0.0.1'
 WEAPP_BDD_SERVER_PORT = 8170
+ENABLE_BDD_DUMP_RESPONSE = True
 
 #watchdog相关
 WATCH_DOG_DEVICE = 'mysql'

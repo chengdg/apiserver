@@ -7,6 +7,7 @@ import json
 from bs4 import BeautifulSoup
 import math
 import itertools
+from operator import attrgetter
 
 from wapi.decorators import param_required
 from wapi import wapi_utils
@@ -90,14 +91,14 @@ class SimpleProducts(business_model.Model):
 			chp_list = mall_models.CategoryHasProduct.select().dj_where(category_id=category_id, product__in=products_id)
 			product_id2chp = dict(map(lambda chp: (chp.product_id, chp), chp_list))
 			for product in products:
-				product['display_index'] = product_id2chp[product.id].display_index
-				product['join_category_time'] = product_id2chp[product.id].created_at
+				product['display_index'] = product_id2chp[product['id']].display_index
+				product['join_category_time'] = product_id2chp[product['id']].created_at
 
 			# 1.shelve_type, 2.display_index, 3.id
 			products_is_0 = filter(lambda p: p['display_index'] == 0, products)
 			products_not_0 = filter(lambda p: p['display_index'] != 0, products)
-			products_is_0 = sorted(products_is_0, key=attrgetter('join_category_time'), reverse=True)
-			products_not_0 = sorted(products_not_0, key=attrgetter('display_index'))
+			products_is_0 = sorted(products_is_0, key=lambda x: x['join_category_time'], reverse=True)
+			products_not_0 = sorted(products_not_0, key=lambda x: x['display_index'])
 
 			products = products_not_0 + products_is_0
 
@@ -148,7 +149,7 @@ class SimpleProducts(business_model.Model):
 					})
 
 				for product_data in product_datas:
-					product_data['categories'] = product2categories.get(product_data['id'], [])
+					product_data['categories'] = list(product2categories.get(product_data['id'], []))
 
 				return {
 					'value': {

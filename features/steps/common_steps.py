@@ -32,3 +32,24 @@ def step_impl(context, user, product_name ,error):
 	context.tc.assertEquals(error, detail[0]['short_msg'])
 	pro_id = ProductFactory(name=product_name).id
 	context.tc.assertEquals(pro_id, detail[0]['id'])
+
+@when(u"{user}关注{mp_user_name}的公众号")
+def step_impl(context, user, mp_user_name):
+	weapp_steps._run_weapp_step(u'When %s关注%s的公众号' % (user, mp_user_name), None)
+
+@given(u"{user}关注{mp_user_name}的公众号")
+def step_impl(context, user, mp_user_name):
+	weapp_steps._run_weapp_step(u'Given %s关注%s的公众号' % (user, mp_user_name), None)
+
+@when(u"{user}访问{mp_user_name}的webapp")
+def step_impl(context, user, mp_user_name):
+	weapp_steps._run_weapp_step(u'When %s访问%s的webapp' % (user, mp_user_name), None)
+
+	user = user_models.User.get(username=mp_user_name)
+	bdd_util.login(user, None, context=context)
+	
+	context.webapp_owner_id = user.id
+	context.client.woid = context.webapp_owner_id
+	context.webapp_user = user
+
+

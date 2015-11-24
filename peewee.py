@@ -2589,8 +2589,9 @@ class Query(Node):
     def _execute(self):
         sql, params = self.sql()
         # added by Victor
-        logger.info("SQL: {}".format(sql))
-        logger.info("PARMS: {}".format(params))
+        if settings.ENABLE_SQL_LOG:
+            logger.info("SQL: {}".format(sql))
+            logger.info("PARMS: {}".format(params))
         return self.database.execute_sql(sql, params, self.require_commit)
 
     def execute(self):

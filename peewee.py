@@ -2923,6 +2923,13 @@ class SelectQuery(Query):
         def __hash__(self):
             return id(self)
 
+    # add len for peewee
+    def __len__(self):
+        if self._qr:
+            return len(list(self._qr))
+        else:
+            return len(list(self.execute()))
+
 class CompoundSelect(SelectQuery):
     _node_type = 'compound_select_query'
 

@@ -32,10 +32,10 @@ class Member(business_model.Model):
 		'id',
 		'grade_id',
 		'username_hexstr',
-
 		'webapp_user',
 		'is_subscribed',
-		'created'
+		'created',
+		'token'
 	)
 
 	@staticmethod
@@ -58,7 +58,6 @@ class Member(business_model.Model):
 
 		member = Member(webapp_owner, model)
 		member._init_slot_from_model(model)
-
 		return member
 
 	@staticmethod
@@ -82,6 +81,28 @@ class Member(business_model.Model):
 			})
 		except:
 			return None
+
+	@staticmethod
+	@param_required(['webapp_owner', 'token'])
+	def from_token(args):
+		"""
+		工厂对象，根据member id获取Member业务对象
+
+		@param[in] webapp_owner
+		@param[in] token: 会员的token
+
+		@return Member业务对象
+		"""
+		webapp_owner = args['webapp_owner']
+		token = args['token']
+		#try:
+		member_db_model = member_models.Member.get(webapp_id=webapp_owner.webapp_id,token=token)
+		return Member.from_model({
+			'webapp_owner': webapp_owner,
+			'model': member_db_model
+		})
+		#except:
+		#	return None	
 
 	def __init__(self, webapp_owner, model):
 		business_model.Model.__init__(self)
@@ -339,4 +360,10 @@ class Member(business_model.Model):
 		member = Member(None, None)
 		return member
 
+	# @property
+	# def token(self):
+	# 	"""
+	# 	[property] 会员购物车中的商品数量
+	# 	"""
+	# 	return self.token
 

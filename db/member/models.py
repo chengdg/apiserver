@@ -434,7 +434,7 @@ class Member(models.Model):
 		db_table = 'member_member'
 
 	def __unicode__(self):
-		return u'<member: %s %s>' % (self.webapp_id, self.username)
+		return u'<member: %s %s>' % (self.webapp_id, self.token)
 
 
 

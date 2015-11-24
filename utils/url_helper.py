@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
+import urllib
+import hashlib
+from urlparse import parse_qs, urlparse
 
-__author__ = 'chuter'
+__author__ = 'chuter bert'
 
 def get_path_digest(path):
 	if path is None:
 		return None
 	return md5.new(path).hexdigest()
+
 
 def add_query_part_to_request_url(url, key, value):
 	if url is None or len(url) == 0:
@@ -18,6 +22,7 @@ def add_query_part_to_request_url(url, key, value):
 			return "?{}={}".format(key, value)	
 		else:
 			return "/?{}={}".format(key, value)	
+
 
 def remove_querystr_filed_from_request_url(request, remove_filed):
 	if type(request) == str:
@@ -53,7 +58,7 @@ def remove_querystr_filed_from_request_url(request, remove_filed):
 		else:
 			return path
 
-import urllib
+
 def complete_get_request_url(protocol, domain, url_path, param_dict={}):
 	query_str_parts = []
 	for key, value in param_dict.items():
@@ -70,7 +75,7 @@ def complete_get_request_url(protocol, domain, url_path, param_dict={}):
 	else:
 		return "{}://{}{}".format(protocol, domain, url_path)
 
-#add by bert
+
 def remove_querystr_filed_from_request_path(orig_full_path, remove_filed):
 
 	path_and_query = orig_full_path.split('?')
@@ -97,7 +102,7 @@ def remove_querystr_filed_from_request_path(orig_full_path, remove_filed):
 		else:
 			return path
 
-from urlparse import urlparse
+
 def get_market_tool_name_from(path):
 	query_str = urlparse(path).query
 	name = None
@@ -111,3 +116,28 @@ def get_market_tool_name_from(path):
 		return name
 	else:
 		return None
+
+
+def remove_querystr_filed_from_request_url(url):
+	if url.find('?') != -1:
+		path_list = url.split('?')
+		path_url = url.split('?')[0]
+		query_str = url.split('?')[1]
+	else:
+		path_url = url
+		query_str = ''
+
+	ignore_key = ['from', 'isappinstalled', 'code', 'state', 'appid', 'workspace_id']
+	parse_dict = parse_qs(urlparse(query_str).query)
+	if not parse_dict:
+		return url
+	new_data = {}
+	for key, value in parse_dict.items():
+		if key not in ignore_key:
+			new_data[key] = value
+
+	sorted(new_data.iteritems(), key=lambda a:a[0])
+	return '%s?%s' % (path_url, urllib.urlencode(new_data, doseq=True))
+
+def url_hexdigest(url):
+	return hashlib.md5(url).hexdigest()

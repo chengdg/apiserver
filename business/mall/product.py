@@ -272,6 +272,7 @@ class Product(business_model.Model):
 		'stock_type',
 		'stocks',
 		'total_stocks',
+		'price',
 		'display_price',
 		'display_price_range',
 		'purchase_price',

@@ -65,13 +65,12 @@ class WebAppOwnerInfo(business_model.Model):
 
 	def __get_red_envelope_for_cache(self, webapp_owner_id):
 		def inner_func():
-			red_envelope = list(promotion_models.RedEnvelopeRule.select().dj_where(owner=webapp_owner_id, status=True,receive_method=False))
+			red_envelope = promotion_models.RedEnvelopeRule.select().dj_where(owner=webapp_owner_id, status=True,receive_method=False).first()
 			result = {}
-			if len(red_envelope):
-				red_envelope = red_envelope[0]
-				coupon_rule = promotion_models.CouponRule.select().dj_where(id=red_envelope.coupon_rule_id)
-				if len(coupon_rule) and coupon_rule[0].remained_count > 0:
-					red_envelope.coupon_rule = {'end_date': coupon_rule[0].end_date}
+			if red_envelope:
+				coupon_rule = promotion_models.CouponRule.select().dj_where(id=red_envelope.coupon_rule_id).first()
+				if coupon_rule:
+					red_envelope.coupon_rule = {'end_date': coupon_rule.end_date}
 				else:
 					red_envelope.coupon_rule = None
 				result = red_envelope.to_dict('coupon_rule')

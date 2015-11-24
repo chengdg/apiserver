@@ -4,7 +4,9 @@
 
 请细读[开发指南](http://git.weizzz.com:8082/weapp/apiserver/wikis/home)！
 
-重构任务按照feature场景划分，即一个feature对应一个[看板](http://newproject.weizoom.com:8088/project/maintaince/?project_id=37)“需求”。
+重构实践：
+ * 重构任务按照feature场景划分，即一个feature对应一个[看板](http://newproject.weizoom.com:8088/project/maintaince/?project_id=37)“需求”。
+ * 增加资源及时在钉钉群“商城重构沟通”中通知所有人。
 
 
 ## 源码文档 ##

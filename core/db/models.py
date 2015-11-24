@@ -1,7 +1,8 @@
 #coding: utf8
 
 import peewee
-from playhouse.db_url import connect
+# from playhouse.db_url import connect
+from core.hack_peewee import connect
 import settings
 import datetime
 

@@ -9,7 +9,7 @@ MODE = 'develop'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'mysql',
+        'ENGINE': 'mysql+retry',
         'NAME': 'weapp',
         'USER': 'weapp',                      # Not used with sqlite3.
         'PASSWORD': 'weizoom',                  # Not used with sqlite3.
@@ -18,7 +18,7 @@ DATABASES = {
         'CONN_MAX_AGE': 100
     },
     'watchdog': {
-        'ENGINE': 'mysql',
+        'ENGINE': 'mysql+retry',
         'NAME': 'weapp',
         'USER': 'weapp',                      # Not used with sqlite3.
         'PASSWORD': 'weizoom',                  # Not used with sqlite3.

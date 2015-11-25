@@ -246,21 +246,20 @@ def step_impl(context, webapp_user_name):
 
     # order = Order.objects.get(order_id=order_id)
 
-    url = '/workbench/jqm/preview/?woid=%s&module=mall&model=order&action=pay&order_id=%s' % (
-        context.webapp_owner_id, order_id)
+    url = '/wapi/mall/order/?woid=%s&order_id=%s' % (context.webapp_owner_id, order_id)
     response = context.client.get(bdd_util.nginx(url), follow=True)
 
-    actual_order = response.context['order']
-    actual_order.order_no = actual_order.order_id
-    actual_order.ship_area = actual_order.area
-    actual_order.status = ORDERSTATUS2TEXT[actual_order.status]
+    actual_order = response.data['order']
+    actual_order['order_no'] = actual_order['order_id']
+    actual_order['status'] = actual_order['status_text']
     # 获取coupon规则名
-    if (actual_order.coupon_id != 0) and (actual_order.coupon_id != -1):
+    if (actual_order['coupon_id'] != 0) and (actual_order['coupon_id'] != -1):
         # coupon = Coupon.objects.get(id=actual_order.coupon_id)
         coupon = steps_db_util.get_coupon_by_id(actual_order.coupon_id)
         actual_order.coupon_id = coupon.coupon_rule.name
 
-    for product in actual_order.products:
+    for product in actual_order['products']:
+    	product['count'] = product['purchase_count']
         if 'custom_model_properties' in product and product['custom_model_properties']:
             product['model'] = ' '.join([property['property_value'] for property in product['custom_model_properties']])
 

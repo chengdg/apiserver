@@ -14,6 +14,7 @@ from core.cache import utils as cache_utils
 from business.mall.order_factory import OrderFactory
 from business.mall.purchase_info import PurchaseInfo
 from business.mall.pay_interface import PayInterface
+from business.mall.order import Order
 
 
 class AOrder(api_resource.ApiResource):
@@ -70,4 +71,14 @@ class AOrder(api_resource.ApiResource):
 
 		return data
 
+	@param_required(['woid', 'order_id'])
+	def get(args):
+		order = Order.from_id({
+			'webapp_owner': args['webapp_owner'],
+			'webapp_user': args['webapp_user'],
+			'order_id': args['order_id']
+		})
 
+		return {
+			'order': order.to_dict('latest_express_detail', 'products')
+		}

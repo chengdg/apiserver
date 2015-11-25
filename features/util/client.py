@@ -140,7 +140,7 @@ class FakeResponse(object):
         if self.body and 'queries' in self.body:
             del self.body['queries']
         traceback = None
-        if 'Traceback' in self.body['innerErrMsg']:
+        if self.body and 'Traceback' in self.body['innerErrMsg']:
             traceback = self.body['innerErrMsg']
             self.body['innerErrMsg'] = 'see traceback underneath...'
         buf.append(json.dumps(self.body, indent=2))

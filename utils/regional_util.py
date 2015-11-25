@@ -4,19 +4,19 @@ from db.mall import models as mall_models
 
 def _get_all_provinces():
 	provinces = {}
-	for province in mall_models.Province.objects.all():
+	for province in mall_models.Province.select():
 		provinces[province.id] = province.name
 	return provinces
 
 def _get_cities_for_province(province_id):
 	cities = {}
-	for city in mall_models.City.objects.filter(province_id=province_id):
+	for city in mall_models.City.select().dj_where(province_id=province_id):
 		cities[city.id] = city.name
 	return cities
 
 def _get_districts_for_city(city_id):
 	districts = {}
-	for district in District.objects.filter(city_id=city_id):
+	for district in mall_models.District.select().dj_where(city_id=city_id):
 		districts[district.id] =district.name
 	return districts
 
@@ -34,11 +34,11 @@ def get_str_value_by_string_ids(str_ids):
 			for index, area in enumerate(area_args):
 
 				if index == 0:
-					curren_area = Province.objects.get(id=int(area))
+					curren_area = mall_models.Province.get(id=int(area))
 				elif index == 1:
-					curren_area = City.objects.get(id=int(area))
+					curren_area = mall_models.City.get(id=int(area))
 				elif index == 2:
-					curren_area = District.objects.get(id=int(area))
+					curren_area = mall_models.District.get(id=int(area))
 				ship_address =  ship_address + ' ' + curren_area.name
 			#cache.set(str_ids, ship_address)
 		return u'{}'.format(ship_address.strip())
@@ -52,10 +52,10 @@ def get_str_value_by_string_ids_(str_ids):
 
 		provinces = cache.get('province')
 		if not province:
-			cache.set('province', Province.objects.all())
+			cache.set('province', mall_models.Province.objects.all())
 		cities = cache.get('cite')
 		if not cite:
-			cache.set('cite', City.objects.all())
+			cache.set('cite', mall_models.City.objects.all())
 		districts = cache.get('district')
 		if not district:
 			cache.set('district', objects.all())
@@ -69,9 +69,9 @@ def get_str_value_by_string_ids_(str_ids):
 
 
 try:
-	ID2PROVINCE = dict([(p.id, p.name) for p in Province.objects.all()])
-	ID2CITY = dict([(c.id, c.name) for c in City.objects.all()])
-	ID2DISTRICT = dict([(d.id, d.name) for d in District.objects.all()])
+	ID2PROVINCE = dict([(p.id, p.name) for p in mall_models.Province.objects.all()])
+	ID2CITY = dict([(c.id, c.name) for c in mall_models.City.objects.all()])
+	ID2DISTRICT = dict([(d.id, d.name) for d in mall_models.District.objects.all()])
 except:
 	pass
 

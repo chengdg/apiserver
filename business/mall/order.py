@@ -21,8 +21,10 @@ import resource
 from core.watchdog.utils import watchdog_alert
 from business import model as business_model 
 from business.mall.product import Product
+from business.mall.order_products import OrderProducts
 import settings
 from business.decorator import cached_context_property
+from utils import regional_util
 
 class Order(business_model.Model):
 	"""订单
@@ -30,9 +32,15 @@ class Order(business_model.Model):
 	__slots__ = (
 		'id',
 		'order_id',
+		'type',
 		'pay_interface_type',
 		'final_price',
 		'edit_money',
+
+		'ship_name',
+		'ship_tel',
+		'ship_area',
+		'ship_address',
 
 		'postage',
 		'integral',
@@ -40,6 +48,7 @@ class Order(business_model.Model):
 		'status',
 		'origin_order_id',
 		'express_number',
+		'customer_message',
 		'created_at'
 	)
 
@@ -70,6 +79,8 @@ class Order(business_model.Model):
 			order = Order(webapp_owner, webapp_user, None)
 			order.context['order'] = order_model
 			order._init_slot_from_model(order_model)
+			#TODO2: this is ugly, need moved into __init__
+			order.ship_area = regional_util.get_str_value_by_string_ids(order_model.area)
 			order.context['is_valid'] = True
 			orders.append(order)
 
@@ -96,6 +107,7 @@ class Order(business_model.Model):
 				self.context['order'] = order_db_model
 				self._init_slot_from_model(order_db_model)
 				self.context['is_valid'] = True
+				self.ship_area = regional_util.get_str_value_by_string_ids(order_db_model.area)
 			except:
 				webapp_owner_id = webapp_owner.id
 				error_msg = u"获得order_id('{}')对应的Order model失败, cause:\n{}"\
@@ -114,6 +126,20 @@ class Order(business_model.Model):
 
 		return products
 
+	@cached_context_property
+	def products(self):
+		"""订单中的商品，包含商品的信息
+
+		TODO2：这里返回的依然是存储层的Product对象，需要返回业务层的OrderProduct业务对象，或者直接返回dict数据
+		"""
+		products = OrderProducts.get_for_order({
+			'webapp_owner': self.context['webapp_owner'],
+			'webapp_user': self.context['webapp_user'],
+			'order': self,
+		}).products
+
+		return [product.to_dict() for product in products]
+
 	@property
 	def has_sub_order(self):
 		"""
@@ -127,6 +153,21 @@ class Order(business_model.Model):
 		[property] 订单使用的支付接口名
 		"""
 		return mall_models.PAYTYPE2NAME[self.pay_interface_type]
+
+	@property
+	def status_text(self):
+		"""
+		[property] 订单状态文本
+		"""
+		return mall_models.STATUS2TEXT[self.status]
+
+	@cached_context_property
+	def latest_express_detail(self):
+		"""
+		[property] 订单的最新物流详情
+		"""
+		#TODO2: 实现物流详情
+		return None
 
 	def is_valid(self):
 		"""
@@ -329,6 +370,9 @@ class Order(business_model.Model):
 			notify_message = u"发送邮件失败user_id（{}）, cause:\n{}".format(user.id,unicode_full_stack())
 			watchdog_warning(notify_message)
 
-	def to_dict(self):
-		return business_model.Model.to_dict(self, 'has_sub_order', 'pay_interface_name')
+	def to_dict(self, *extras):
+		properties = ['has_sub_order', 'pay_interface_name', 'status_text']
+		if extras:
+			properties.extend(extras)
+		return business_model.Model.to_dict(self, *properties)
 

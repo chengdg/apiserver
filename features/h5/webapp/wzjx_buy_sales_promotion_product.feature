@@ -80,14 +80,6 @@ Background:
 		}]
 		"""
 	Given bill关注jobs的公众号
-	When bill访问jobs的webapp
-	And bill设置jobs的webapp的收货地址
-		"""
-		{
-			"area": "北京市,北京市,海淀区",
-			"ship_address": "泰兴大厦"
-		}
-		"""
 
 
 @todo @mall2 @buy   @supplier 
@@ -408,13 +400,6 @@ Scenario: 3 使用积分购买不同供货商的商品
 		"""
 	When tom关注jobs的公众号
 	When tom访问jobs的webapp
-	And tom设置jobs的webapp的收货地址
-		"""
-		{
-			"area": "北京市,北京市,海淀区",
-			"ship_address": "泰兴大厦"
-		}
-		"""
 	Given jobs已有的会员
 		"""
 		[{

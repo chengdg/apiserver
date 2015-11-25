@@ -501,15 +501,6 @@ Scenario:5 不同等级的会员购买有会员价同时有单品券的商品
 		"""
 	When bill访问jobs的webapp
 	#使用单品券，商品金额就是原价
-	And bill设置jobs的webapp的收货地址
-		"""
-		{
-			"ship_name": "bill",
-			"ship_tel": "13811223344",
-			"area": "北京市,北京市,海淀区",
-			"ship_address": "泰兴大厦"
-		}
-		"""
 	When bill购买jobs的商品
 		"""
 		{

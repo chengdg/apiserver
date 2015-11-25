@@ -525,15 +525,6 @@ Scenario: 10 会员购买的商品同时参加多个活动，然后下架商品
 	Given jobs登录系统
 	When jobs-下架商品'商品1'
 	When bill访问jobs的webapp
-	And bill设置jobs的webapp的收货地址
-		"""
-		{
-			"ship_name": "bill",
-			"ship_tel": "13811223344",
-			"area": "北京市,北京市,海淀区",
-			"ship_address": "泰兴大厦"
-		}
-		"""
 	When bill购买jobs的商品
 		"""
 		{
@@ -618,15 +609,6 @@ Scenario: 11 会员购买的商品同时参加多个活动，然后删除商品
 
 	Then bill获得'商品1'错误提示'已删除'
 	When bill访问jobs的webapp
-	And bill设置jobs的webapp的收货地址
-		"""
-		{
-			"ship_name": "bill",
-			"ship_tel": "13811223344",
-			"area": "北京市,北京市,海淀区",
-			"ship_address": "泰兴大厦"
-		}
-		"""
 	When bill加入jobs的商品到购物车
 		"""
 		[{

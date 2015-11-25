@@ -1,5 +1,6 @@
 #author: benchi
 #editor: 师帅 2015.10.19
+#editor: 王丽 2015.11.25
 
 Feature: 在webapp中购买参与积分应用活动的商品
 	jobs 设置 use_ceiling 后 用户能在webapp中能够对所有商品使用积分购买

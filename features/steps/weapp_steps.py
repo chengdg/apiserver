@@ -36,7 +36,7 @@ def step_impl(context, ignore):
 def step_impl(context):
 	pass
 
-@when(u"重置weapp的bdd环境")
+@given(u"重置weapp的bdd环境")
 def step_impl(context):
 	_run_weapp_step('__reset__', None)
 

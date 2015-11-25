@@ -5,6 +5,8 @@ import time
 import settings
 from client import Client
 from db.account.models import User
+from utils import string_util
+from db.member import models as member_models
 
 tc = None
 
@@ -79,6 +81,21 @@ def login(user, password=None, **kwargs):
 def get_user_id_for(username):
 	return User.get(User.username == username).id
 
+
+def get_member_for(username, webapp_id):
+	"""
+	获取username对应的会员
+	"""
+	if isinstance(username, unicode):
+		member_nickname_str = username.encode('utf-8')
+	else:
+		member_nickname_str = username
+	username_hexstr = string_util.byte_to_hex(member_nickname_str)
+	try:
+		return member_models.Member.get(webapp_id=webapp_id, username_hexstr=username_hexstr)
+	except:
+		member = member_models.Member(id=1, grade_id=0)
+		return member
 
 
 ###########################################################################

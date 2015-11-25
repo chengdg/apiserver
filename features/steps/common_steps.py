@@ -5,7 +5,7 @@ from behave import *
 
 from features.util import bdd_util
 from features.util.helper import WAIT_SHORT_TIME
-from db.account import models as user_models
+from db.account import models as account_models
 
 from features.steps import weapp_steps 
 
@@ -17,10 +17,15 @@ def step_impl(context, user, webapp_owner_name):
 
 	bdd_util.login(user, None, context=context)
 
-	webapp_owner = user_models.User.get(user_models.User.username==webapp_owner_name)
-	context.client.woid = webapp_owner.id
-	print(context.client.woid)
+	webapp_owner = account_models.User.get(username=webapp_owner_name)
+	user = account_models.User.get(username=mp_user_name)
+	profile = account_models.UserProfile.get(user=user.id)
 
+	context.client.woid = webapp_owner.id
+	context.webapp_owner_id = weapp_owner.id
+	context.webapp_user = user
+	context.webapp_id = profile.webapp_id
+	
 
 @then(u"{user}获得错误提示'{error}'")
 def step_impl(context, user, error):
@@ -45,11 +50,12 @@ def step_impl(context, user, mp_user_name):
 def step_impl(context, user, mp_user_name):
 	weapp_steps._run_weapp_step(u'When %s访问%s的webapp' % (user, mp_user_name), None)
 
-	user = user_models.User.get(username=mp_user_name)
+	user = account_models.User.get(username=mp_user_name)
+	profile = account_models.UserProfile.get(user=user.id)
 	bdd_util.login(user, None, context=context)
 	
 	context.webapp_owner_id = user.id
 	context.client.woid = context.webapp_owner_id
 	context.webapp_user = user
-
+	context.webapp_id = profile.webapp_id
 

@@ -1,10 +1,10 @@
-@func:webapp.modules.mall.views.list_products
 Feature: 在webapp中浏览商品列表
 	bill能在webapp中看到jobs添加的"商品列表"
 
 Background:
-	Given jobs登录系统
-	And jobs已添加商品分类
+	Given 重置weapp的bdd环境
+	Given jobs登录系统:weapp
+	And jobs已添加商品分类:weapp
 		"""
 		[{
 			"name": "分类1"
@@ -16,7 +16,7 @@ Background:
 			"name": "分类4"
 		}]	
 		"""
-	And jobs已添加商品
+	And jobs已添加商品:weapp
 		"""
 		[{
 			"name": "商品11",
@@ -36,7 +36,7 @@ Background:
 		"""
 	And bill关注jobs的公众号
 
-@mall2 @buy @productList   @mall @mall.webapp
+@buy @productList @mall @mall.webapp
 Scenario:1 浏览全部商品列表
 	jobs添加商品后
 	1. bill能在webapp中看到jobs添加的商品列表
@@ -45,8 +45,7 @@ Scenario:1 浏览全部商品列表
 	
 	When bill访问jobs的webapp
 	And bill浏览jobs的webapp的'全部'商品列表页
-	Then webapp页面标题为'商品列表'
-	And bill获得webapp商品列表
+	Then bill获得webapp商品列表
 		"""
 		[{
 			"name": "商品3"
@@ -59,7 +58,7 @@ Scenario:1 浏览全部商品列表
 		}]
 		"""
 
-@mall2 @buy @productList   @mall.webapp
+@mall2 @buy @productList @mall.webapp
 Scenario:2 按分类浏览商品
 	jobs添加多个商品后
 	1. bill能在webapp中按分类浏览商品
@@ -67,8 +66,7 @@ Scenario:2 按分类浏览商品
 	
 	When bill访问jobs的webapp
 	And bill浏览jobs的webapp的'分类1'商品列表页
-	Then webapp页面标题为'商品列表'
-	And bill获得webapp商品列表
+	Then bill获得webapp商品列表
 		"""
 		[{
 			"name": "商品12"
@@ -77,8 +75,7 @@ Scenario:2 按分类浏览商品
 		}]
 		"""
 	When bill浏览jobs的webapp的'分类2'商品列表页
-	Then webapp页面标题为'商品列表'
-	And bill获得webapp商品列表
+	Then bill获得webapp商品列表
 		"""
 		[{
 			"name": "商品2"
@@ -89,8 +86,7 @@ Scenario:2 按分类浏览商品
 		}]
 		"""
 	When bill浏览jobs的webapp的'分类3'商品列表页
-	Then webapp页面标题为'商品列表'
-	And bill获得webapp商品列表
+	Then bill获得webapp商品列表
 		"""
 		[{
 			"name": "商品2"
@@ -99,8 +95,7 @@ Scenario:2 按分类浏览商品
 		}]
 		"""
 	When bill浏览jobs的webapp的'分类4'商品列表页
-	Then webapp页面标题为'商品列表'
-	And bill获得webapp商品列表
+	Then bill获得webapp商品列表
 		"""
 		[]
 		"""

@@ -14,9 +14,6 @@ class WebAppOwnerMiddleware(object):
 	获取webapp owner的中间件
 	"""
 	def process_request(sel, req, resp):
-		# if not 'woid' in req.params:
-		# 	return
-
 		if 'access_token' in req.params:
 			crypt = msg_crypt.MsgCrypt(settings.CTYPT_INFO['token'], settings.CTYPT_INFO['encodingAESKey'], settings.CTYPT_INFO['id'])
 
@@ -35,6 +32,8 @@ class WebAppOwnerMiddleware(object):
 			})
 			req.context['webapp_owner'] = webapp_owner
 
+			if openid == 'notopenid':
+				return
 			#填充会员帐号信息
 			social_account_info_obj = SocialAccountInfo.get({
 				'webapp_owner':  webapp_owner,
@@ -49,6 +48,8 @@ class WebAppOwnerMiddleware(object):
 			req.context.update(social_account_info_obj)
 
 		elif settings.MODE == "develop":
+			if not 'woid' in req.params:
+				return
 			webapp_owner_id = req.params['woid']
 			webapp_owner = WebAppOwner.get({
 				'woid': webapp_owner_id

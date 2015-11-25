@@ -108,7 +108,7 @@ class PayInterface(business_model.Model):
 		elif mall_models.PAY_INTERFACE_COD == interface_type:
 			return '/mall/pay_result/?woid={}&pay_interface_type={}&order_id={}'.format(
 				webapp_owner_id,
-				PAY_INTERFACE_COD,
+				mall_models.PAY_INTERFACE_COD,
 				order.order_id)
 		elif mall_models.PAY_INTERFACE_WEIXIN_PAY == interface_type:
 			return '/mall/wxpay/?woid={}&order_id={}&pay_id={}&showwxpaytitle=1'.format(

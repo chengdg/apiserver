@@ -6,6 +6,7 @@ from business.account.webapp_owner import WebAppOwner
 from business.account.member import Member
 from business.account.webapp_user import WebAppUser
 from business.account.social_account_info import SocialAccountInfo
+#from utils import msg_crypt
 
 class WebAppOwnerMiddleware(object):
 	"""
@@ -21,13 +22,18 @@ class WebAppOwnerMiddleware(object):
 		})
 		req.context['webapp_owner'] = webapp_owner
 
+		# if 'access_token' in req.params:
+		# 	msg_crypt.
+
+
+
 
 class AccountsMiddleware(object):
 	def process_request(sel, req, resp):
 		if not 'webapp_owner' in req.context:
 			return
 
-		openid = req.params.get('access_token', 'bill_jobs')
+		openid = None
 		if openid:
 			social_account_info_obj = SocialAccountInfo.get({
 				'webapp_owner':  req.context['webapp_owner'],

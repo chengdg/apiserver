@@ -92,7 +92,7 @@ class SocialAccountInfo(business_model.Model):
 		date_str = datetime.today().strftime('%Y-%m-%d') 
 		if data['date_time'] != date_str:
 			cache_util.delete_pattern(key)
-			data = cache_util.get_from_cache(key, RMemberAccounts.get_accounts_for_cache(openid, webapp_id))
+			data = cache_util.get_from_cache(key, SocialAccountInfo.get_accounts_for_cache(openid, webapp_id))
 
 		obj = cache_util.Object()
 		obj.member = member_models.Member.from_dict(data['member'])

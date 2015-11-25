@@ -129,7 +129,7 @@ Background:
 		}
 		"""
 
-@todo @mall2 @member_product
+@mall2 @member_product
 Scenario:1 购买单个会员价商品
 	jobs添加商品后
 	1. tom能在webapp中购买jobs添加的会员价商品
@@ -184,7 +184,7 @@ Scenario:1 购买单个会员价商品
 		}
 		"""
 
-@todo @mall2 @member_product
+@mall2 @member_product
 Scenario:2 购买多个会员价商品
 	jobs添加商品后
 	1. bill能在webapp中把jobs添加的会员价商品添加到购物车
@@ -192,15 +192,6 @@ Scenario:2 购买多个会员价商品
 	3. bill能从购物车进行购买jobs的商品
 
 	When bill访问jobs的webapp
-	And bill设置jobs的webapp的收货地址
-		"""
-		{
-			"ship_name": "bill",
-			"ship_tel": "13811223344",
-			"area": "北京市,北京市,海淀区",
-			"ship_address": "泰兴大厦"
-		}
-		"""
 	And bill加入jobs的商品到购物车
 		"""
 		[{
@@ -300,15 +291,6 @@ Scenario:3 购买多个商品包括会员价商品
 	2. bill购买的商品中有普通商品和会员价商品
 	
 	When bill访问jobs的webapp
-	And bill设置jobs的webapp的收货地址
-		"""
-		{
-			"ship_name": "bill",
-			"ship_tel": "13811223344",
-			"area": "北京市,北京市,海淀区",
-			"ship_address": "泰兴大厦"
-		}
-		"""
 	And bill加入jobs的商品到购物车
 		"""
 		[{

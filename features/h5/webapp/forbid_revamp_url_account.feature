@@ -42,7 +42,7 @@ Background:
 	And bill关注tom的公众号
 
 
-@mall2
+@todo @mall2
 Scenario: 1 修改本商户商品ID，进行访问
 	1. bill在webapp把jobs的商品1链接的商品ID修改成商品2的商品ID
 	2. bill访问修改后的链接
@@ -89,7 +89,7 @@ Scenario: 1 修改本商户商品ID，进行访问
 		"""
 
 
-@mall2
+@todo @mall2
 Scenario: 2 修改其他商户商品ID，进行访问
 	1. bill在webapp把jobs的商品1链接的商品ID修改成商品2的商品ID
 	2. bill访问修改后的链接，获得错误提示信息'404页面'

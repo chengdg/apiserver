@@ -2,7 +2,7 @@ Feature: 在webapp中浏览商品列表
 	bill能在webapp中看到jobs添加的"商品列表"
 
 Background:
-	Given 重置weapp的bdd环境
+	When 重置weapp的bdd环境
 	Given jobs登录系统:weapp
 	And jobs已添加商品分类:weapp
 		"""
@@ -36,7 +36,7 @@ Background:
 		"""
 	And bill关注jobs的公众号
 
-@mall2 @buy @productList @mall @mall.webapp
+@buy @productList @mall @mall.webapp
 Scenario:1 浏览全部商品列表
 	jobs添加商品后
 	1. bill能在webapp中看到jobs添加的商品列表
@@ -58,7 +58,7 @@ Scenario:1 浏览全部商品列表
 		}]
 		"""
 
-@mall2 @buy @productList @mall.webapp
+@todo @mall2 @buy @productList @mall.webapp @wip
 Scenario:2 按分类浏览商品
 	jobs添加多个商品后
 	1. bill能在webapp中按分类浏览商品

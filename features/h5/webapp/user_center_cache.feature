@@ -48,7 +48,7 @@ Background:
 		"""
 	And bill关注jobs的公众号
 
-@mall2 @wip.cache 
+@todo @mall2 @wip.cache 
 Scenario:1 bill增加订单数再访问个人中心
 	bill下单(影响订单数)之后会影响订单数。检查个人中心订单数是否正确。
 
@@ -89,14 +89,14 @@ Scenario:1 bill增加订单数再访问个人中心
 	Then '个人中心'中'待支付'数为1
 	Then '个人中心'中'购物车'数为0
 
-@mall2 @wip.cache
+@todo @mall2 @wip.cache
 Scenario:2 检查'个人中心'的市场工具数量
 
 	When bill访问jobs的webapp
 	And bill访问个人中心
 	Then '个人中心'中市场工具的数量为3
 
-@mall2
+@todo @mall2
 Scenario:3 添加订单
 	bill下单
 

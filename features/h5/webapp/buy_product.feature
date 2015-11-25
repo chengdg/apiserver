@@ -96,7 +96,7 @@ Background:
 		"""
 	And bill关注jobs的公众号
 
-@mall2 @mall.webapp @zy_bp01
+@todo @mall2 @mall.webapp @zy_bp01
 Scenario: 购买单个商品
 	jobs添加商品后
 	1. bill能在webapp中购买jobs添加的商品
@@ -134,7 +134,7 @@ Scenario: 购买单个商品
 		"""
 
 
-@mall.webapp @mall2 @zy_bp02
+@mall.webapp @todo @mall2 @zy_bp02
 Scenario:1 购买商品时，使用订单备注
 	bill在购买jobs添加的商品时
 	1. 添加了"订单备注"，则jobs能在管理系统中看到该"订单备注"
@@ -185,7 +185,7 @@ Scenario:1 购买商品时，使用订单备注
 		}
 		"""
 
-@mall.webapp @mall2 @zy_bp03
+@mall.webapp @todo @mall2 @zy_bp03
 Scenario:2 购买有规格的商品
 	jobs添加商品后
 	1. bill能在webapp中购买jobs添加的商品
@@ -226,7 +226,7 @@ Scenario:2 购买有规格的商品
 		"""
 
 
-@mall.webapp @mall2 @zy_bp04
+@mall.webapp @todo @mall2 @zy_bp04
 Scenario:3 购买已经下架的商品
 	bill可能会在以下情景下购买已下架的商品A：
 	1. bill打开商品A的详情页面
@@ -248,7 +248,7 @@ Scenario:3 购买已经下架的商品
 		"""
 	Then bill获得错误提示'商品已下架<br/>2秒后返回商城首页'
 
-@mall.webapp @mall2 @zy_bp05
+@mall.webapp @todo @mall2 @zy_bp05
 Scenario:4 购买的商品数量等于库存数量
 	jobs添加有限商品后
 	1. bill能在webapp中购买jobs添加的商品
@@ -294,7 +294,7 @@ Scenario:4 购买的商品数量等于库存数量
 		}
 		"""
 
-@mall.webapp @mall2 @zy_bp06
+@mall.webapp @todo @mall2 @zy_bp06
 Scenario:5 购买库存不足的商品
 	bill可能会在以下情景下购买库存不足的商品A：
 	1. bill打开商品A的详情页面
@@ -331,7 +331,7 @@ Scenario:5 购买库存不足的商品
 		}
 		"""
 
-@mall.webapp @mall2 @zy_bp07
+@mall.webapp @todo @mall2 @zy_bp07
 Scenario:6 货到付款的商品有两种支付方式
 	bill购买jobs配有'货到付款'的商品时
 	1.bill可以使用'在线支付'进行支付
@@ -350,7 +350,7 @@ Scenario:6 货到付款的商品有两种支付方式
 	Then bill'能'使用支付方式'微众卡支付'进行支付
 	Then bill'能'使用支付方式'货到付款'进行支付
 
-@mall.webapp @mall2 @zy_bp08
+@mall.webapp @todo @mall2 @zy_bp08
 Scenario:7 没有货到付款的商品只有一种支付方式
 	bill购买jobs没有配'货到付款'的商品时
 	1.bill可以使用'在线支付'进行支付
@@ -372,7 +372,7 @@ Scenario:7 没有货到付款的商品只有一种支付方式
 
 
 #后续补充.雪静
-@mall.webapp @mall2 @zy_bp09
+@mall.webapp @todo @mall2 @zy_bp09
 Scenario:8 购买库存为零的商品
 	bill可能会在以下情景下购买库存不足的商品A：
 	1. bill打开商品A的详情页面
@@ -415,7 +415,7 @@ Scenario:8 购买库存为零的商品
 		"""
 	Then bill获得错误提示'有商品库存不足<br/>2秒后返回购物车<br/>请重新下单'
 
-@allOrder @mall2
+@allOrder @todo @mall2
 Scenario: 9 会员购买商品后，获取订单列表
 	bill成功创建订单多个订单后，获取订单列表
 
@@ -497,7 +497,7 @@ Scenario: 9 会员购买商品后，获取订单列表
 
 
 #根据需求4985新增场景
-@mall.webapp @mall2
+@mall.webapp @todo @mall2
 Scenario: 10 会员购买的商品同时参加多个活动，然后下架商品
 	bill购买商品时，jobs下架此商品，bill获得错误提示信息
 
@@ -579,7 +579,7 @@ Scenario: 10 会员购买的商品同时参加多个活动，然后下架商品
 
 
 
-@mall.webapp @mall2
+@mall.webapp @todo @mall2
 Scenario: 11 会员购买的商品同时参加多个活动，然后删除商品
 	bill购买商品时，jobs删除此商品，bill获得错误提示信息
 

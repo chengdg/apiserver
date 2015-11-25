@@ -43,7 +43,7 @@ Background:
 		}]
 		"""
 
-@mall2 @app @buy @cart   @mall @mall.webapp @mall.webapp.shopping_cart @bb1
+@todo @mall2 @app @buy @cart   @mall @mall.webapp @mall.webapp.shopping_cart @bb1
 Scenario:1 从购物车中删除商品
 	bill在购物车中删除商品后
 	1. bill能获得更新后的购物车

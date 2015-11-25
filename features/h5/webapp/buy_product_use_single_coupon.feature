@@ -162,7 +162,7 @@ Background:
 		}]
 		"""
 
-@mall2 @mall.webapp @mall.coupon
+@todo @mall2 @mall.webapp @mall.coupon
 Scenario:1 使用单品优惠劵进行购买，该单品券适用于商品1，如果商品2使用，则，购买失败
 
 	Given jobs登录系统
@@ -235,7 +235,7 @@ Scenario:1 使用单品优惠劵进行购买，该单品券适用于商品1，�
 		}
 		"""
 
-@mall2 @mall.webapp @mall.coupon
+@todo @mall2 @mall.webapp @mall.coupon
 Scenario:2 使用单品优惠劵进行购买，该单品券适用于商品3并且商品3满50元才可以使用，而不是订单满50可用
 	1 买3件商品3，共60元，满足条件，可用单品劵；
 	2 买1件商品3，买一件商品2，订单满50，但单品不满50，不可以使用该单品卷
@@ -313,7 +313,7 @@ Scenario:2 使用单品优惠劵进行购买，该单品券适用于商品3并�
 		}
 		"""
 
-@mall2 @mall.webapp @mall.coupon
+@todo @mall2 @mall.webapp @mall.coupon
 Scenario:3 购买多规格商品，买1个商品的两个规格，总价格满足优惠劵使用条件
 	Given jobs登录系统
 	Then jobs能获得优惠券'优惠券5'的码库
@@ -363,7 +363,7 @@ Scenario:3 购买多规格商品，买1个商品的两个规格，总价格满�
 		}
 		"""
 
-@mall2 @mall.webapp @mall.coupon
+@todo @mall2 @mall.webapp @mall.coupon
 Scenario:4 使用多于商品价格的单品券进行购买，该单品券只适用于商品6
 	且不抵扣其他商品金额和运费金额
 
@@ -422,7 +422,7 @@ Scenario:4 使用多于商品价格的单品券进行购买，该单品券只适
 		"""
 
 #后续补充.雪静
-@mall2
+@todo @mall2
 Scenario:5 不同等级的会员购买有会员价同时有单品券的商品
 	1. 单品券和会员价不能同时使用
 	2. 选择单品券，商品价格变回原价，取消使用单品券，价格变回会员价

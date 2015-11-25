@@ -47,7 +47,7 @@ Background:
 	And bill关注jobs的公众号
 	And tom关注jobs的公众号
 
-@mall2 @weapp.mall.collect.product
+@todo @mall2 @weapp.mall.collect.product
 Scenario:1 收藏单个无规格商品
 	jobs添加商品后
 	1. bill能在webapp中将jobs添加的商品收藏
@@ -74,7 +74,7 @@ Scenario:1 收藏单个无规格商品
 		[]
 		"""
 
-@mall2 @weapp.mall.collect.product @zy_cp02
+@todo @mall2 @weapp.mall.collect.product @zy_cp02
 Scenario:2 收藏多个商品，包括无规格和有规格的商品
 	jobs添加商品后
 	1. bill能在webapp中将jobs添加的商品收藏
@@ -112,7 +112,7 @@ Scenario:2 收藏多个商品，包括无规格和有规格的商品
 		}]
 		"""
 
-@mall2 @weapp.mall.collect.product
+@todo @mall2 @weapp.mall.collect.product
 Scenario:3 从我的收藏里面取消收藏商品
 	bill在webapp收藏jobs的商品后
 	1. bill能取消收藏已收藏的商品
@@ -193,7 +193,7 @@ Scenario:3 从我的收藏里面取消收藏商品
 		}]
 		"""
 
-@mall2 @weapp.mall.collect.product
+@todo @mall2 @weapp.mall.collect.product
 Scenario:4 收藏商品后，后台对此商品进行修改
 	bill在webapp收藏jobs的商品后
 	1. jobs对此商品进行修改价格

@@ -27,7 +27,7 @@ Background:
 		"""
 	And bill关注jobs的公众号
 
-@mall2 @mall.manager_cancel_status
+@todo @mall2 @mall.manager_cancel_status
 Scenario:1 取消订单后,手机端订单状态为'已取消'
 	1.jobs取消订单,bill可以获取订单状态为'已取消'
 	2.bill可获取'取消原因'

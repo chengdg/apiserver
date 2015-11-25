@@ -101,7 +101,7 @@ Background:
 		"""
 	And bill关注jobs的公众号
 
-@mall2 @buy @cart   @mall.webapp @mall.webapp.shopping_cart
+@todo @mall2 @buy @cart   @mall.webapp @mall.webapp.shopping_cart
 Scenario: 1 放入多个商品到购物车，商品的限时抢购活动为进行中
 	bill将商品放入到购物车后
 	1. bill能看到购物车中商品的详情
@@ -181,7 +181,7 @@ Scenario: 1 放入多个商品到购物车，商品的限时抢购活动为进�
 		}
 		"""
 
-@mall2 @buy @cart   @mall.webapp @mall.webapp.shopping_cart
+@todo @mall2 @buy @cart   @mall.webapp @mall.webapp.shopping_cart
 Scenario:2 放入多个商品到购物车，商品的限时抢购活动为进行中
 	bill将商品放入到购物车后
 	1. bill能看到购物车中商品的详情
@@ -242,7 +242,7 @@ Scenario:2 放入多个商品到购物车，商品的限时抢购活动为进行
 		}
 		"""
 
-@mall2 @buy @cart   @mall.webapp @mall.webapp.shopping_cart
+@todo @mall2 @buy @cart   @mall.webapp @mall.webapp.shopping_cart
 Scenario:3 放入多规格商品到购物车，无限购
 
 	Given jobs登录系统

@@ -70,7 +70,7 @@ Background:
 		}]
 		"""
 
-@mall2
+@todo @mall2
 Scenario:1 购买会员价，买赠（全部会员）和积分抵扣（分级设置）活动的商品
 	Given jobs登录系统
 	When jobs创建买赠活动
@@ -149,7 +149,7 @@ Scenario:1 购买会员价，买赠（全部会员）和积分抵扣（分级设
 		"""
 	Then bill在jobs的webapp中拥有0会员积分
 
-@mall2
+@todo @mall2
 Scenario:2 购买会员价，买赠（全部会员）和积分抵扣（统一设置）活动的商品
 	Given jobs登录系统
 	When jobs创建买赠活动
@@ -219,7 +219,7 @@ Scenario:2 购买会员价，买赠（全部会员）和积分抵扣（统一设
 		"""
 	Then bill2在jobs的webapp中拥有100会员积分
 
-@mall2
+@todo @mall2
 Scenario:3 购买会员价，买赠（某一等级）和积分抵扣（分级设置）活动的商品
 	Given jobs登录系统
 	When jobs创建买赠活动
@@ -331,7 +331,7 @@ Scenario:3 购买会员价，买赠（某一等级）和积分抵扣（分级设
 			"""
 		Then bill3在jobs的webapp中拥有72会员积分
 
-@mall2
+@todo @mall2
 Scenario:4 购买会员价，买赠（某一等级）和积分抵扣（统一设置）活动的商品
 	Given jobs登录系统
 	When jobs创建买赠活动

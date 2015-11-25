@@ -90,7 +90,7 @@ Background:
 		"""
 
 
-@mall2 @buy   @supplier 
+@todo @mall2 @buy   @supplier 
 Scenario: 1 不同供货商的商品进行促销
 	设置促销活动进行购买
 
@@ -265,7 +265,7 @@ Scenario: 1 不同供货商的商品进行促销
 		}]
 		"""
 
-@mall2 @buy   @supplier
+@todo @mall2 @buy   @supplier
 Scenario: 2 不同供货商的商品进行会员价购买
 	设置会员等级价的商品进行购买
 
@@ -393,7 +393,7 @@ Scenario: 2 不同供货商的商品进行会员价购买
 		}]
 		"""
 
-@mall2 @buy   @supplier
+@todo @mall2 @buy   @supplier
 Scenario: 3 使用积分购买不同供货商的商品
 	使用积分进行购买
 

@@ -7,7 +7,7 @@ Feature: 购买买赠活动的商品，手机端订单可以看到买赠商品�
 	购买买赠活动的商品，在手机端的"待付款"、"待发货"、"待收货"、"待评价"中的订单，订单详情可以展示赠品的数量
 """
 
-@mall2 @promotion @promotionPremium @order @allOrder
+@todo @mall2 @promotion @promotionPremium @order @allOrder
 Scenario:1 购买买赠活动的商品，在手机端的"待付款"、"待发货"、"待收货"、"待评价"中的订单，订单详情可以展示赠品的数量
 
 	Given jobs登录系统

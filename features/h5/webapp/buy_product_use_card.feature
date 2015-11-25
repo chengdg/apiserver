@@ -65,7 +65,7 @@ Background:
 		"""
 	And bill关注jobs的公众号
 
-@mall2 @mall.pay_weizoom_card
+@todo @mall2 @mall.pay_weizoom_card
 Scenario:1 微众卡金额大于订单金额时进行支付
 	bill用微众卡购买jobs的商品时,微众卡金额大于订单金额
 	1.自动扣除微众卡金额
@@ -110,7 +110,7 @@ Scenario:1 微众卡金额大于订单金额时进行支付
 		}
 		"""
 
-@mall2 @mall.pay_weizoom_card
+@todo @mall2 @mall.pay_weizoom_card
 Scenario:2 微众卡金额等于订单金额时进行支付
 	bill用微众卡购买jobs的商品时,微众卡金额等于订单金额
 	1.自动扣除微众卡金额
@@ -156,7 +156,7 @@ Scenario:2 微众卡金额等于订单金额时进行支付
 		}
 		"""
 
-@mall2 @mall.pay_weizoom_card
+@todo @mall2 @mall.pay_weizoom_card
 Scenario:3 微众卡金额小于订单金额时进行支付
 	bill用微众卡购买jobs的商品时,微众卡金额小于订单金额
 	1.创建订单成功，订单状态为“等待支付”
@@ -202,7 +202,7 @@ Scenario:3 微众卡金额小于订单金额时进行支付
 		}
 		"""
 
-@mall2 @mall.pay_weizoom_card
+@todo @mall2 @mall.pay_weizoom_card
 Scenario:4 用微众卡购买商品时，输入错误的卡号密码
 	bill用微众卡购买jobs的商品时,输入错误的卡号密码
 	1.创建订单成功，订单状态为“等待支付”
@@ -259,7 +259,7 @@ Scenario:4 用微众卡购买商品时，输入错误的卡号密码
 		}
 		"""
 
-@mall2 @mall.pay_weizoom_card
+@todo @mall2 @mall.pay_weizoom_card
 Scenario:5 用已用完的微众卡购买商品时
 	bill用已用完的微众卡购买jobs的商品时
 	1.创建订单成功，订单状态为“等待支付”
@@ -303,7 +303,7 @@ Scenario:5 用已用完的微众卡购买商品时
 		}
 		"""
 
-@mall2 @mall.pay_weizoom_card
+@todo @mall2 @mall.pay_weizoom_card
 Scenario:6 用未激活的微众卡购买商品时
 	bill用未激活的微众卡购买jobs的商品时
 	1.创建订单失败，提示"微众卡未激活"
@@ -358,7 +358,7 @@ Scenario:6 用未激活的微众卡购买商品时
 		}
 		"""
 
-@mall2 @mall.pay_weizoom_card
+@todo @mall2 @mall.pay_weizoom_card
 Scenario:7 用已过期的微众卡购买商品时
 	bill用已用过期的微众卡购买jobs的商品时
 	1.提示"微众卡已过期"
@@ -413,7 +413,7 @@ Scenario:7 用已过期的微众卡购买商品时
 		}
 		"""
 
-@mall2 @mall.pay_weizoom_card
+@todo @mall2 @mall.pay_weizoom_card
 Scenario:8 用已使用过的微众卡购买商品时
 	1.创建订单成功，订单状态为“待发货”
 	2.扣除微众卡金额,状态为“已用完”
@@ -457,7 +457,7 @@ Scenario:8 用已使用过的微众卡购买商品时
 		}
 		"""
 
-@mall2 @mall.pay_weizoom_card
+@todo @mall2 @mall.pay_weizoom_card
 Scenario:9 用10张微众卡共同支付
 	1.创建订单成功，订单状态为“待支付”
 	2.扣除微众卡金额,状态为“已用完”
@@ -642,7 +642,7 @@ Scenario:9 用10张微众卡共同支付
 		}]
 		"""
 
-@mall2 @mall.pay_weizoom_card
+@todo @mall2 @mall.pay_weizoom_card
 Scenario:10 用11张微众卡共同支付
 	1.创建订单失败错误提示：只能使用10张微众卡
 	2.微众卡金额,状态不变
@@ -817,7 +817,7 @@ Scenario:10 用11张微众卡共同支付
 		}]
 		"""
 
-@mall2 @mall.pay_weizoom_card
+@todo @mall2 @mall.pay_weizoom_card
 Scenario:11 用微众卡购买商品时，输入两张同样的卡号密码
 	bill用微众卡购买jobs的商品时,输入错误的卡号密码
 	1.创建订单失败，错误提示"该微众卡已经添加"
@@ -854,7 +854,7 @@ Scenario:11 用微众卡购买商品时，输入两张同样的卡号密码
 		}
 		"""
 
-@mall2 @mall @mall.pay_weizoom_card
+@todo @mall2 @mall @mall.pay_weizoom_card
 Scenario:12 用已用完的微众卡购买商品时
 	bill用已用完的微众卡购买jobs的商品时
 	1.创建订单成功，订单状态为“等待支付”

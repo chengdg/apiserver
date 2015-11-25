@@ -23,7 +23,7 @@ source bin/activate或者 Scripts\activate.bat
 
 安装必要的组件：
 ```
-pip install -U falcon "peewee<2.7" "pymongo==2.5" beautifulsoup4 redis PyMySQL celery
+pip install -U falcon "peewee<2.7" "pymongo==2.5" beautifulsoup4 redis PyMySQL celery pycrypto
 ```
 
 需要有的hosts

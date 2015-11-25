@@ -14,8 +14,8 @@ class WebAppOwnerMiddleware(object):
 	获取webapp owner的中间件
 	"""
 	def process_request(sel, req, resp):
-		if not 'woid' in req.params:
-			return
+		# if not 'woid' in req.params:
+		# 	return
 
 		if 'access_token' in req.params:
 			crypt = msg_crypt.MsgCrypt(settings.CTYPT_INFO['token'], settings.CTYPT_INFO['encodingAESKey'], settings.CTYPT_INFO['id'])
@@ -74,7 +74,7 @@ class WebAppOwnerMiddleware(object):
 			member.webapp_user = webapp_user
 			member_accounts['member'] = member
 			member_accounts['webapp_user'] = webapp_user
-			req.context.update(member_accounts)
+			req.context.update(member_accounts) 
 		else:
 			raise "error access_token"
 

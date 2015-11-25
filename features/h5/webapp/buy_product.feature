@@ -22,6 +22,8 @@ Background:
 			"type": "微众卡支付"
 		}, {
 			"type": "货到付款"
+		}, {
+			"type": "微信支付"
 		}]
 		"""
 	And jobs已添加商品规格
@@ -110,6 +112,7 @@ Scenario: 购买单个商品
 			"ship_tel": "13811223344",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
+			"pay_type":"微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 2
@@ -144,6 +147,7 @@ Scenario:1 购买商品时，使用订单备注
 	And bill购买jobs的商品
 		"""
 		{
+			"pay_type":"微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 2
@@ -199,6 +203,7 @@ Scenario:2 购买有规格的商品
 			"ship_tel": "13811223344",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
+			"pay_type":"微信支付",
 			"products": [{
 				"name": "商品3",
 				"model": "黑色 M",
@@ -259,6 +264,7 @@ Scenario:4 购买的商品数量等于库存数量
 	And bill购买jobs的商品
 		"""
 		{
+			"pay_type":"微信支付",
 			"products": [{
 				"name": "商品5",
 				"count": 2
@@ -385,6 +391,7 @@ Scenario:8 购买库存为零的商品
 	And bill购买jobs的商品
 		"""
 		{
+			"pay_type":"微信支付",
 			"products": [{
 				"name": "商品5",
 				"count": 2
@@ -424,6 +431,7 @@ Scenario: 9 会员购买商品后，获取订单列表
 	And bill购买jobs的商品
 		"""
 		{
+			"pay_type":"微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 1
@@ -433,6 +441,7 @@ Scenario: 9 会员购买商品后，获取订单列表
 	And bill购买jobs的商品
 		"""
 		{
+			"pay_type":"微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 2
@@ -442,6 +451,7 @@ Scenario: 9 会员购买商品后，获取订单列表
 	And bill购买jobs的商品
 		"""
 		{
+			"pay_type":"微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 1
@@ -525,15 +535,6 @@ Scenario: 10 会员购买的商品同时参加多个活动，然后下架商品
 	Given jobs登录系统
 	When jobs-下架商品'商品1'
 	When bill访问jobs的webapp
-	And bill设置jobs的webapp的收货地址
-		"""
-		{
-			"ship_name": "bill",
-			"ship_tel": "13811223344",
-			"area": "北京市,北京市,海淀区",
-			"ship_address": "泰兴大厦"
-		}
-		"""
 	When bill购买jobs的商品
 		"""
 		{
@@ -618,15 +619,6 @@ Scenario: 11 会员购买的商品同时参加多个活动，然后删除商品
 
 	Then bill获得'商品1'错误提示'已删除'
 	When bill访问jobs的webapp
-	And bill设置jobs的webapp的收货地址
-		"""
-		{
-			"ship_name": "bill",
-			"ship_tel": "13811223344",
-			"area": "北京市,北京市,海淀区",
-			"ship_address": "泰兴大厦"
-		}
-		"""
 	When bill加入jobs的商品到购物车
 		"""
 		[{

@@ -101,16 +101,6 @@ Background:
 		}]
 		"""
 	Given bill关注jobs的公众号
-	When bill访问jobs的webapp
-	And bill设置jobs的webapp的收货地址
-		"""
-		{
-			"ship_name": "bill",
-			"ship_tel": "13811223344",
-			"area": "北京市,北京市,海淀区",
-			"ship_address": "泰兴大厦"
-		}
-		"""
 
 
 
@@ -161,6 +151,10 @@ Scenario:1 从购物车购买单个商品
 	And bill在购物车订单编辑中点击提交订单
 		"""
 		{
+			"ship_name": "bill",
+			"ship_tel": "13811223344",
+			"ship_area": "北京市 北京市 海淀区",
+			"ship_address": "泰兴大厦",
 			"pay_type": "货到付款"
 		}
 		"""
@@ -263,6 +257,10 @@ Scenario:2 从购物车购买全部商品
 	And bill在购物车订单编辑中点击提交订单
 		"""
 		{
+			"ship_name": "bill",
+			"ship_tel": "13811223344",
+			"ship_area": "北京市 北京市 海淀区",
+			"ship_address": "泰兴大厦",
 			"pay_type": "货到付款"
 		}
 		"""
@@ -377,6 +375,10 @@ Scenario:3 从购物车购买部分商品
 	And bill在购物车订单编辑中点击提交订单
 		"""
 		{
+			"ship_name": "bill",
+			"ship_tel": "13811223344",
+			"ship_area": "北京市 北京市 海淀区",
+			"ship_address": "泰兴大厦",
 			"pay_type": "货到付款"
 		}
 		"""
@@ -751,15 +753,6 @@ Scenario:8 从购物车购买多个"有特殊运费"的商品
 	Given jobs登录系统
 	When jobs选择'EMS'运费配置
 	When bill访问jobs的webapp
-	And bill设置jobs的webapp的收货地址
-		"""
-		{
-			"ship_name": "bill",
-			"ship_tel": "13811223344",
-			"area": "河北省 秦皇岛市 山海关区",
-			"ship_address": "泰兴大厦"
-		}
-		"""
 	And bill加入jobs的商品到购物车
 		"""
 		[{
@@ -807,6 +800,10 @@ Scenario:8 从购物车购买多个"有特殊运费"的商品
 	And bill在购物车订单编辑中点击提交订单
 		"""
 		{
+			"ship_name": "bill",
+			"ship_tel": "13811223344",
+			"ship_area": "河北省 秦皇岛市 山海关区",
+			"ship_address": "泰兴大厦",
 			"pay_type": "货到付款"
 		}
 		"""

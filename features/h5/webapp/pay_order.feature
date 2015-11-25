@@ -3,8 +3,9 @@ Feature: 在webapp中支付订单
 	bill能在webapp中支付订单
 
 Background:
-	Given jobs登录系统
-	And jobs已添加支付方式
+	Given 重置weapp的bdd环境
+	Given jobs登录系统:weapp
+	And jobs已添加支付方式:weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -15,7 +16,7 @@ Background:
 			"type": "货到付款"
 		}]
 		"""
-	And jobs已添加商品
+	And jobs已添加商品:weapp
 		"""
 		[{
 			"name": "商品1",
@@ -27,7 +28,7 @@ Background:
 		"""
 	And bill关注jobs的公众号
 
-@todo @mall2 @mall @mall.webapp @mall.pay_order
+@mall2 @mall @mall.webapp @mall.pay_order @wip
 Scenario:1 使用货到付款支付
 	bill在下单购买jobs的商品后，能使用货到付款进行支付，支付后
 	1. bill的订单中变为"待发货"
@@ -47,19 +48,6 @@ Scenario:1 使用货到付款支付
 		"""
 		{
 			"status": "待支付",
-			"final_price": 9.9,
-			"products": [{
-				"name": "商品1",
-				"price": 9.9,
-				"count": 1
-			}]
-		}
-		"""
-	When bill使用支付方式'货到付款'进行支付
-	Then bill支付订单成功
-		"""
-		{
-			"status": "待发货",
 			"final_price": 9.9,
 			"products": [{
 				"name": "商品1",

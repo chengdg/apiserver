@@ -86,7 +86,6 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 		promotion_ids = []
 		product_model_names = []
 
-
 		products = context.response.context['order'].products
 		integral = 0
 		integral_group_items = []
@@ -122,7 +121,7 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 		for product in products:
 			product_counts.append(str(product['count']))
 			product_name = product['name']
-			product_obj = mall_models.Product.get(owner_id=webapp_owner_id, name=product_name)
+			product_obj = mall_models.Product.get(owner=webapp_owner_id, name=product_name)
 			product_ids.append(str(product_obj.id))
 			if product.has_key('promotion'):
 				promotion = promotion_models.Promotion.get(name=product['promotion']['name'])
@@ -184,6 +183,8 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 		data["orderIntegralInfo"] = json.JSONEncoder().encode(orderIntegralInfo)
 	if order_type == u'测试购买':
 		data['order_type'] = mall_models.PRODUCT_TEST_TYPE
+	else:
+		data['order_type'] = order_type
 	if u'weizoom_card' in args:
 		for card in args[u'weizoom_card']:
 			data['card_name'] += card[u'card_name'] + ','
@@ -202,34 +203,70 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 		data['coupon_id'] = coupon
 
 	url = '/wapi/mall/order/?_method=put'
+	data['woid'] = context.webapp_owner_id
 	response = context.client.post(url, data)
+	bdd_util.assert_api_call_success(response)
 	context.response = response
 	#response结果为: {"errMsg": "", "code": 200, "data": {"msg": null, "order_id": "20140620180559"}}
 
-	# response_json = json.loads(context.response.content)
+	if response.body['code'] == 200:
+		# context.created_order_id为订单ID
+		context.created_order_id = response.data['order_id']
+	else:
+		context.created_order_id = -1
+		context.server_error_msg = response.data['msg']
+		print "buy_error----------------------------",context.server_error_msg,response
 
-	# if response_json['code'] == 200:
-	# 	# context.created_order_id为订单ID
-	# 	context.created_order_id = response_json['data']['order_id']
-	# else:
-	# 	context.created_order_id = -1
-	# 	context.response_json = response_json
-	# 	context.server_error_msg = response_json['data']['msg']
-	# 	print "buy_error----------------------------",context.server_error_msg,response
-	# if context.created_order_id != -1:
-	# 	if 'date' in args:
-	# 		Order.objects.filter(order_id=context.created_order_id).update(created_at=bdd_util.get_datetime_str(args['date']))
-	# 	if 'order_id' in args:
-	# 		db_order = Order.objects.get(order_id=context.created_order_id)
-	# 		db_order.order_id=args['order_id']
-	# 		db_order.save()
-	# 		if db_order.origin_order_id <0:
-	# 			for order in Order.objects.filter(origin_order_id=db_order.id):
-	# 				order.order_id = '%s^%s' % (args['order_id'], order.supplier)
-	# 				order.save()
-	# 		context.created_order_id = args['order_id']
+	if context.created_order_id != -1:
+		if 'date' in args:
+			mall_models.Order.update(created_at=bdd_util.get_datetime_str(args['date'])).dj_where(order_id=context.created_order_id)
+		if 'order_id' in args:
+			db_order = Order.get(order_id=context.created_order_id)
+			db_order.order_id=args['order_id']
+			db_order.save()
+			if db_order.origin_order_id <0:
+				for order in Order.select().dj_where(origin_order_id=db_order.id):
+					order.order_id = '%s^%s' % (args['order_id'], order.supplier)
+					order.save()
+			context.created_order_id = args['order_id']
 
 	context.product_ids = product_ids
 	context.product_counts = product_counts
 	context.product_model_names = product_model_names
 	context.webapp_owner_name = webapp_owner_name
+
+
+@then(u"{webapp_user_name}成功创建订单")
+def step_impl(context, webapp_user_name):
+    order_id = context.created_order_id
+    if order_id == -1:
+        print 'Server Error: ', json.dumps(json.loads(context.response.content), indent=True)
+        assert False, "order_id must NOT be -1"
+        return
+
+    # order = Order.objects.get(order_id=order_id)
+
+    url = '/workbench/jqm/preview/?woid=%s&module=mall&model=order&action=pay&order_id=%s' % (
+        context.webapp_owner_id, order_id)
+    response = context.client.get(bdd_util.nginx(url), follow=True)
+
+    actual_order = response.context['order']
+    actual_order.order_no = actual_order.order_id
+    actual_order.ship_area = actual_order.area
+    actual_order.status = ORDERSTATUS2TEXT[actual_order.status]
+    # 获取coupon规则名
+    if (actual_order.coupon_id != 0) and (actual_order.coupon_id != -1):
+        # coupon = Coupon.objects.get(id=actual_order.coupon_id)
+        coupon = steps_db_util.get_coupon_by_id(actual_order.coupon_id)
+        actual_order.coupon_id = coupon.coupon_rule.name
+
+    for product in actual_order.products:
+        if 'custom_model_properties' in product and product['custom_model_properties']:
+            product['model'] = ' '.join([property['property_value'] for property in product['custom_model_properties']])
+
+
+    expected = json.loads(context.text)
+    if expected.get('actions', None):
+        # TODO 验证订单页面操作
+        del expected['actions']
+    bdd_util.assert_dict(expected, actual_order)

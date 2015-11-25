@@ -51,6 +51,7 @@ class AOrder(api_resource.ApiResource):
 			return 500, order_validation['reason']
 
 		order = order_factory.save()
+		pay_url = None
 		if order:
 			if order.final_price > 0 and purchase_info.used_pay_interface_type != '-1':
 				pay_interface = PayInterface.from_type({

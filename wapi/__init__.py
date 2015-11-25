@@ -30,7 +30,7 @@ def wapi_call(method, app, resource, data, req=None):
 	resource_name = resource
 	key = '%s-%s' % (app, resource)
 	if settings.WAPI_LOGGER_ENABLED:
-		print("called WAPI: {}/{}, param: {}".format(app, resource, data))
+		print("called WAPI: {} {}/{}, param: {}".format(method, app, resource, data))
 
 	#start_at = dt.datetime.now()
 	start_at = time.clock()

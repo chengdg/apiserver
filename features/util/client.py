@@ -139,7 +139,14 @@ class FakeResponse(object):
         buf.append('*** body ***')
         if self.body and 'queries' in self.body:
             del self.body['queries']
+        traceback = None
+        if 'Traceback' in self.body['innerErrMsg']:
+            traceback = self.body['innerErrMsg']
+            self.body['innerErrMsg'] = 'see traceback underneath...'
         buf.append(json.dumps(self.body, indent=2))
+
+        if traceback:
+            buf.append(traceback)
         buf.append('*** status ***')
         buf.append(self.status)
         buf.append('*** headers ***')
@@ -163,6 +170,7 @@ class ClientHandler(object):
     def __call__(self, environ):
         url = u'%s?%s' % (environ['PATH_INFO'], environ['QUERY_STRING'])
         self.response = FakeResponse(url)
+        print environ
         response_text = ''.join(self.app(environ, self.start_response))
         try:
             self.response.body = json.loads(response_text)
@@ -558,7 +566,7 @@ class Client(RequestFactory):
             response = self._handle_redirects(response, **extra)
         return response
 
-    def post(self, path, data={}, content_type=MULTIPART_CONTENT,
+    def post(self, path, data={}, content_type=X_WWW_FORM_URLENCODED,
              follow=False, **extra):
         """
         Requests a response from the server using POST.

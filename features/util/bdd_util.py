@@ -108,6 +108,21 @@ def nginx(url):
 		return url
 
 
+def get_date_str(str):
+	date = get_date(str)
+	return date.strftime('%Y-%m-%d')
+
+def get_datetime_str(str):
+	"""保留小时数
+	"""
+	date = get_date(str)
+	return '%s 00:00:00' % date.strftime('%Y-%m-%d')
+
+def get_datetime_no_second_str(str):
+	date = get_date(str)
+	return '%s 00:00' % date.strftime('%Y-%m-%d')
+	
+
 ###########################################################################
 # assert_dict: 验证expected中的数据都出现在了actual中
 ###########################################################################
@@ -179,12 +194,7 @@ def assert_expected_list_in_actual(expected, actual):
 # assert_api_call_success: 验证api调用成功
 ###########################################################################
 def assert_api_call_success(response):
-	if '<!DOCTYPE html>' in response.content:
-		assert False, "NOT a valid json string, call api FAILED!!!!"
-	else:
-		content = json.loads(response.content)
-		print content
-		assert 200 == content['code'], "code != 200, call api FAILED!!!!"
+	assert 200 == response.body['code'], "code != 200, call api FAILED!!!!"
 
 
 ###########################################################################

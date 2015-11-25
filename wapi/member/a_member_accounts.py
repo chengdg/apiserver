@@ -61,7 +61,6 @@ class AMemberAccounts(api_resource.ApiResource):
 		@param for_oauth 是否是授权是调用
 		
 		"""
-
 		#创建会员
 		member = MemberFactory.create({
 			"webapp_owner": args['webapp_owner'],
@@ -70,7 +69,7 @@ class AMemberAccounts(api_resource.ApiResource):
 			}).save()
 		created = member.created
 		#创建关系
-		if args['fmt'] and args['fmt'] != 'nofmt' and args['fmt'] != member.token:
+		if args['fmt'] and args['fmt'] != 'notfmt' and args['fmt'] != member.token:
 			followed_member = Member.from_token({
 				"webapp_owner": args['webapp_owner'],
 				'token': args['fmt']

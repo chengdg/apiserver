@@ -37,7 +37,7 @@ MIDDLEWARES = [
 
     #账号信息中间件
     'middleware.account_middleware.WebAppOwnerMiddleware',
-	'middleware.account_middleware.AccountsMiddleware'
+	#'middleware.account_middleware.AccountsMiddleware'
 ]
 #sevice celery 相关
 EVENT_DISPATCHER = 'redis'
@@ -93,3 +93,9 @@ INSTALLED_TASKS = [
 
 #redis celery相关
 REDIS_SERVICE_DB = 2
+
+CTYPT_INFO = {
+    'id': 'weizoom_h5',
+    'token': '2950d602ffb613f47d7ec17d0a802b',
+    'encodingAESKey': 'BPQSp7DFZSs1lz3EBEoIGe6RVCJCFTnGim2mzJw5W4I'
+}

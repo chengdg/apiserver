@@ -48,7 +48,6 @@ class MemberSharedUrlFactory(business_model.Model):
 		self.url = url
 		self.shared_url_digest = shared_url_digest
 		self.followed = followed
-		print '>>>>>>>>>>>>>>>>>>>>>>>>123,',followed
 
 	def save(self):
 		"""创建分享链接

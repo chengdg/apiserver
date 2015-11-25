@@ -129,7 +129,7 @@ Background:
 		}
 		"""
 
-@mall2 @member_product
+@todo @mall2 @member_product
 Scenario:1 购买单个会员价商品
 	jobs添加商品后
 	1. tom能在webapp中购买jobs添加的会员价商品
@@ -184,7 +184,7 @@ Scenario:1 购买单个会员价商品
 		}
 		"""
 
-@mall2 @member_product
+@todo @mall2 @member_product
 Scenario:2 购买多个会员价商品
 	jobs添加商品后
 	1. bill能在webapp中把jobs添加的会员价商品添加到购物车
@@ -293,7 +293,7 @@ Scenario:2 购买多个会员价商品
 		}
 		"""
 
-@mall2 @member_product
+@todo @mall2 @member_product
 Scenario:3 购买多个商品包括会员价商品
 	jobs添加商品后
 	1. bill能在webapp中购买jobs的商品
@@ -370,7 +370,7 @@ Scenario:3 购买多个商品包括会员价商品
 		}
 		"""
 
-@mall2 @meberGrade
+@todo @mall2 @meberGrade
 Scenario:4 订单完成后，达到自动升级的条件
 	jobs添加商品后
 	1. tom能在webapp中购买jobs的商品后，完成订单后
@@ -528,7 +528,7 @@ Scenario:4 订单完成后，达到自动升级的条件
 		}]
 		"""
 
-@mall2 @integral_experience
+@todo @mall2 @integral_experience
 Scenario:5 使用积分购买商品后，取消订单，积分返回
 	jobs添加商品后
 	1. bill能在webapp中使用积分购买jobs的商品后，创建订单后

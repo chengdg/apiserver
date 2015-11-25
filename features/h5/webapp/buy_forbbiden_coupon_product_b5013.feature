@@ -87,7 +87,7 @@ Background:
 		}]
 		"""
 
-@mall2 @promotion @promotionForbiddenCoupon @online_bug
+@todo @mall2 @promotion @promotionForbiddenCoupon @online_bug
 Scenario:1 购买禁用优惠券商品和非禁用优惠券商品,禁用优惠券商品同时参与限时抢购
 	#非禁用优惠券商品的价格和-限时抢购带来的总优惠金额<优惠券金额(50+60-70=40)
 	Given jobs登录系统
@@ -330,7 +330,7 @@ Scenario:1 购买禁用优惠券商品和非禁用优惠券商品,禁用优惠�
 		}
 		"""
 
-@mall2 @promotion @promotionForbiddenCoupon @online_bug
+@todo @mall2 @promotion @promotionForbiddenCoupon @online_bug
 Scenario:2 购买禁用优惠券商品和非禁用优惠券商品,禁用优惠券商品同时参与会员折扣
 	#非禁用优惠券商品的价格和-会员折扣带来的总优惠金额<优惠券金额(50+60-70=40)
 	Given jobs登录系统

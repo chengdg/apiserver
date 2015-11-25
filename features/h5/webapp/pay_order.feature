@@ -27,7 +27,7 @@ Background:
 		"""
 	And bill关注jobs的公众号
 
-@mall2 @mall @mall.webapp @mall.pay_order
+@todo @mall2 @mall @mall.webapp @mall.pay_order
 Scenario:1 使用货到付款支付
 	bill在下单购买jobs的商品后，能使用货到付款进行支付，支付后
 	1. bill的订单中变为"待发货"
@@ -69,7 +69,7 @@ Scenario:1 使用货到付款支付
 		}
 		"""
 	
-@mall2 @mall @mall.webapp @mall.pay_order
+@todo @mall2 @mall @mall.webapp @mall.pay_order
 Scenario:2 使用V2版微信支付进行同步支付
 	bill在下单购买jobs的商品后，能使用微信支付进行支付，支付后
 	1. bill的订单中变为"待发货"
@@ -116,7 +116,7 @@ Scenario:2 使用V2版微信支付进行同步支付
 		}
 		"""
 
-@mall2 @mall @mall.webapp @mall.pay_order
+@todo @mall2 @mall @mall.webapp @mall.pay_order
 Scenario:3 使用V2版微信支付进行异步支付
 	bill在下单购买jobs的商品后，能使用微信支付进行支付，支付后
 	1. bill的订单中变为"待发货"

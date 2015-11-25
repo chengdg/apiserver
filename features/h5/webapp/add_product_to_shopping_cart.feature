@@ -70,7 +70,7 @@ Background:
 	And bill关注jobs的公众号
 	And tom关注jobs的公众号
 
-@mall2 @mall.webapp @mall.webapp.shopping_cart
+@todo @mall2 @mall.webapp @mall.webapp.shopping_cart
 Scenario:1 放入单个商品到购物车
 	jobs添加商品后
 	1. bill能在webapp中将jobs添加的商品放入购物车
@@ -140,7 +140,7 @@ Scenario:1 放入单个商品到购物车
 		}
 		"""
 
-@mall2 @mall.webapp @mall.webapp.shopping_cart
+@todo @mall2 @mall.webapp @mall.webapp.shopping_cart
 Scenario:2 放入多个商品到购物车
 	jobs添加商品后
 	1. bill能在webapp中将jobs添加的商品放入购物车
@@ -196,7 +196,7 @@ Scenario:2 放入多个商品到购物车
 		}
 		"""
 
-@mall2 @mall.webapp @mall.webapp.shopping_cart
+@todo @mall2 @mall.webapp @mall.webapp.shopping_cart
 Scenario:3 商品添加到购物车后，后台对商品进行上下架管理
 	bill在webapp中将jobs的商品加入到购物车后，jobs对此商品进行删除操作
 	1.bill查看jobs的webapp购物车，此商品已无效
@@ -272,7 +272,7 @@ Scenario:3 商品添加到购物车后，后台对商品进行上下架管理
 		}
 		"""
 
-@mall2 @mall.webapp @mall.webapp.shopping_cart
+@todo @mall2 @mall.webapp @mall.webapp.shopping_cart
 Scenario:4 商品添加到购物车后，后台对商品规格进行修改
 	bill在webapp中将jobs的商品加入到购物车后，jobs将此商品的商品规格进行修改
 	1.bill查看jobs的webapp购物车，此商品已无效
@@ -582,7 +582,7 @@ Scenario:4 商品添加到购物车后，后台对商品规格进行修改
 		}
 		"""
 
-@mall2 @mall.webapp @mall.webapp.shopping_cart
+@todo @mall2 @mall.webapp @mall.webapp.shopping_cart
 Scenario: 5 商品添加到购物车后，进行删除
 	bill加入jobs的商品到购物车后
 	1.可以对购物车的商品进行删除
@@ -638,7 +638,7 @@ Scenario: 5 商品添加到购物车后，进行删除
 		}
 		"""
 
-@mall2 @mall.webapp @mall.webapp.shopping_cart @bc
+@todo @mall2 @mall.webapp @mall.webapp.shopping_cart @bc
 Scenario:6 商品添加到购物车后，后台对商品的价格，库存进行修改（库存数量不为0）
 	bill在webapp中将jobs的商品加入到购物车后，jobs将此商品的商品规格进行修改
 	1.bill查看jobs的webapp购物车，此商品有效，价格与库存为更改后的值

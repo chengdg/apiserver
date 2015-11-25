@@ -31,7 +31,7 @@ Background:
 		"""
 	And bill关注jobs的公众号
 
-@mall2 @mall.webapp @mall.pay_order @p1
+@todo @mall2 @mall.webapp @mall.pay_order @p1
 Scenario: 1 bill在下单购买jobs的商品后，使用货到付款进行支付，支付后
 	1. bill的订单中变为 待发货
 	2. jobs在后台看到订单变为待发货
@@ -213,7 +213,7 @@ Scenario: 1 bill在下单购买jobs的商品后，使用货到付款进行支付
 		}]
 		"""
 
-@mall2 @mall.webapp @mall.pay_order @p2 
+@todo @mall2 @mall.webapp @mall.pay_order @p2 
 Scenario: 2 bill在下单购买jobs的商品后，又取消订单
 	1. bill的订单中变为已取消
 	2. jobs在后台看到订单变为已取消
@@ -318,7 +318,7 @@ Scenario: 2 bill在下单购买jobs的商品后，又取消订单
 		}]
 		"""
 
-@mall2 @mall.webapp @mall.pay_order @p3
+@todo @mall2 @mall.webapp @mall.pay_order @p3
 Scenario: 3 bill在下单购买jobs的商品后，jobs发货方式为"不需要物流"，bill的订单状态变为"已发货"
 
 	When bill访问jobs的webapp
@@ -462,7 +462,7 @@ Scenario: 3 bill在下单购买jobs的商品后，jobs发货方式为"不需要�
 		}]
 		"""
 
-@mall2 @mall @mall.webapp @mall.pay_order
+@todo @mall2 @mall @mall.webapp @mall.pay_order
 Scenario: 4 bill 在不同时段下订单，订单列表按下订单的时间倒序排列
 	When bill访问jobs的webapp
 	When bill购买jobs的商品

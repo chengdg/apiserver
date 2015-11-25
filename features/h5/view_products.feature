@@ -58,7 +58,7 @@ Scenario:1 浏览全部商品列表
 		}]
 		"""
 
-@mall2 @buy @productList @mall.webapp @wip
+@todo @mall2 @buy @productList @mall.webapp @wip
 Scenario:2 按分类浏览商品
 	jobs添加多个商品后
 	1. bill能在webapp中按分类浏览商品

@@ -8,10 +8,13 @@ from business.account.webapp_user import WebAppUser
 from business.account.social_account_info import SocialAccountInfo
 from utils import msg_crypt,auth_util
 import settings
+import logging
 
 class WebAppOAuthMiddleware(object):
 	"""
-	获取webapp owner的中间件
+	获取webapp owner的中间件(填充`webapp_owner`对象)
+
+	@note 优先通过access_token获取 WebAppOwner。开发模式下，优先用`woid`。
 	"""
 	def process_request(sel, req, resp):
 		if 'access_token' in req.params:
@@ -60,7 +63,7 @@ class WebAppOAuthMiddleware(object):
 				"wid": webapp_id,
 				"return_model": True
 			})
-			print 'get member in AccountsMiddleware...'
+			logging.info('get member in WebAppOAuthMiddleware...')
 			member = Member.from_model({
 				'webapp_owner': req.context['webapp_owner'], 
 				'model': member_accounts['member']

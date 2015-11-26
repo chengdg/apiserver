@@ -9,8 +9,9 @@ Feature: bill在webapp中某个商品详情中能够看到对商品评价信息
 
 
 Background:
-    Given jobs登录系统
-    And jobs已添加商品
+    Given 重置weapp的bdd环境
+    Given jobs登录系统:weapp
+    And jobs已添加商品:weapp
         """
         [{
             "name": "商品1",
@@ -24,7 +25,7 @@ Background:
         }]
         """
     Given bill关注jobs的公众号
-    And jobs已有的订单
+    Given jobs已有的订单
         """
         [{
             "order_no":"1",
@@ -64,6 +65,29 @@ Background:
             }]
         }]
         """
+# TODO: Recommend to change to scenarios like these:        
+#    When bill访问jobs的webapp
+#    And bill购买jobs的商品
+#        """
+#        {
+#            "products": [{
+#                "name": "商品1",
+#                "price": 10.00,
+#                "count": 1
+#            }]
+#        }
+#        """
+#    And bill购买jobs的商品
+#        """
+#        {
+#            "products": [{
+#                "name":"商品2",
+#                "price": 20.00,
+#                "count": 1
+#            }]
+#        }
+#        """
+
     When bill访问jobs的webapp
     When bill完成订单'1'中'商品1'的评价包括'文字与晒图'
         """
@@ -168,7 +192,7 @@ Background:
         """
 
 
-@todo @mall2 @mall.webapp.comment.bb @ProductDetail
+@wip.comment @todo @mall2 @mall.webapp.comment.bb @ProductDetail
 Scenario: 1在weapp的商品详情中如果多余两条评价，只显示两条评价信息，如果只有一条评价信息，就显示一条，如果没有评价信息则不显示,只显示审核通过的评价
     1）该评价信息，如果是后台进行了置顶操作，则显示出来，
     2）否则把最后两条信息显示出来

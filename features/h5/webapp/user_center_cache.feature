@@ -44,6 +44,8 @@ Background:
 		"""
 		[{
 			"type":"货到付款"
+		}, {
+			"type":"微信支付"
 		}]
 		"""
 	And bill关注jobs的公众号
@@ -61,6 +63,7 @@ Scenario:1 bill增加订单数再访问个人中心
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "货到付款",
 			"products": [{
 				"name": "商品1",
 				"count": 1
@@ -68,7 +71,6 @@ Scenario:1 bill增加订单数再访问个人中心
 			"customer_message": "bill购买'商品1'"
 		}
 		"""
-	And bill使用支付方式'货到付款'进行支付
 	And bill访问个人中心
 	Then '个人中心'中'全部订单'数为1
 	Then '个人中心'中'待支付'数为0
@@ -77,6 +79,7 @@ Scenario:1 bill增加订单数再访问个人中心
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品2",
 				"count": 1
@@ -103,6 +106,7 @@ Scenario:3 添加订单
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "货到付款",
 			"products": [{
 				"name": "商品1",
 				"count": 1
@@ -110,7 +114,6 @@ Scenario:3 添加订单
 			"customer_message": "bill购买'商品1'"
 		}
 		"""
-	And bill使用支付方式'货到付款'进行支付
 	Given jobs登录系统
 	Then jobs可以看到订单列表
 		"""

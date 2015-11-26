@@ -24,7 +24,7 @@ class AOrder(api_resource.ApiResource):
 	app = 'mall'
 	resource = 'order'
 
-	@param_required(['woid', 'ship_name', 'ship_address', 'ship_tel', 'order_type', 'xa-choseInterfaces'])
+	@param_required(['ship_name', 'ship_address', 'ship_tel', 'order_type', 'xa-choseInterfaces'])
 	def put(args):
 		"""
 		获取购物车项目
@@ -71,7 +71,7 @@ class AOrder(api_resource.ApiResource):
 
 		return data
 
-	@param_required(['woid', 'order_id'])
+	@param_required(['order_id'])
 	def get(args):
 		order = Order.from_id({
 			'webapp_owner': args['webapp_owner'],

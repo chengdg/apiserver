@@ -26,7 +26,7 @@ class AProductCategories(api_resource.ApiResource):
 			"created_at": utils_dateutil.datetime2string(category.created_at)
 		}
 
-	@param_required(['woid'])
+	@param_required([])
 	def get(args):
 		"""
 		获得分类集合

@@ -188,6 +188,7 @@ Scenario:1 使用单品优惠劵进行购买，该单品券适用于商品1，�
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 1
@@ -263,6 +264,7 @@ Scenario:2 使用单品优惠劵进行购买，该单品券适用于商品3并�
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品3",
 				"count": 3
@@ -330,6 +332,7 @@ Scenario:3 购买多规格商品，买1个商品的两个规格，总价格满�
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品5",
 				"count": 1,
@@ -389,6 +392,7 @@ Scenario:4 使用多于商品价格的单品券进行购买，该单品券只适
 	When tom购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品3",
 				"count": 1
@@ -504,6 +508,7 @@ Scenario:5 不同等级的会员购买有会员价同时有单品券的商品
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 1
@@ -529,6 +534,7 @@ Scenario:5 不同等级的会员购买有会员价同时有单品券的商品
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 1

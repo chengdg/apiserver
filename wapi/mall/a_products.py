@@ -12,7 +12,7 @@ class AProducts(api_resource.ApiResource):
 	app = 'mall'
 	resource = 'products'
 
-	@param_required(['woid', 'category_id'])
+	@param_required(['category_id'])
 	def get(args):
 		"""
 		获取商品详情

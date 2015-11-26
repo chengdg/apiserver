@@ -185,6 +185,7 @@ Scenario: 1 购买单个限时抢购商品，限时抢购进行中
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 2
@@ -214,6 +215,7 @@ Scenario: 1 购买单个限时抢购商品，限时抢购进行中
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 1
@@ -271,6 +273,7 @@ Scenario:3 购买单个限时抢购商品，限时抢购活动没开始，按原
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品4",
 				"count": 2
@@ -292,6 +295,7 @@ Scenario:4 购买多个商品，带有限时抢购商品
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 2
@@ -345,6 +349,7 @@ Scenario:5 购买单个限时抢购商品，超出库存限制
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 2
@@ -397,6 +402,7 @@ Scenario:6 购买单个限时抢购商品，未超过库存限制，但超过单
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品4",
 				"count": 2
@@ -428,6 +434,7 @@ Scenario:7 在限购周期内连续购买限时抢购商品
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品2",
 				"count": 1
@@ -479,6 +486,7 @@ Scenario:8 购买多规格限时抢购商品
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品5",
 				"count": 1,
@@ -543,6 +551,7 @@ Scenario:9 购买多规格限时抢购商品同时适用于积分规则
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"integral_money":10.00,
 			"integral":20.00,
 			"products": [{
@@ -645,6 +654,7 @@ Scenario:11 购买单个限时抢购商品，未支付然后取消订单，还�
 	And bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品4",
 				"count": 1,
@@ -688,6 +698,7 @@ Scenario:11 购买单个限时抢购商品，未支付然后取消订单，还�
 	And bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品4",
 				"count": 2,
@@ -736,6 +747,7 @@ Scenario:12 不同等级的会员购买有会员价同时有限时抢购的商�
 	And bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 2
@@ -767,6 +779,7 @@ Scenario:12 不同等级的会员购买有会员价同时有限时抢购的商�
 	And tom购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 2
@@ -827,6 +840,7 @@ Scenario:13 不同等级的会员购买有会员价同时有会员等级限时�
 	And bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 2
@@ -853,6 +867,7 @@ Scenario:13 不同等级的会员购买有会员价同时有会员等级限时�
 	And tom购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 2
@@ -879,6 +894,7 @@ Scenario:13 不同等级的会员购买有会员价同时有会员等级限时�
 	And sam购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 2
@@ -940,6 +956,7 @@ Scenario:14 不同等级的会员购买原价有会员等级限时抢购的商�
 	And bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 2
@@ -966,6 +983,7 @@ Scenario:14 不同等级的会员购买原价有会员等级限时抢购的商�
 	And tom购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 2
@@ -992,6 +1010,7 @@ Scenario:14 不同等级的会员购买原价有会员等级限时抢购的商�
 	And sam购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 2
@@ -1072,6 +1091,7 @@ Scenario:15 购买多规格限时抢购商品同时适用于积分规则和会�
 	And bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"integral_money":40.00,
 			"integral":80.00,
 			"products": [{
@@ -1112,6 +1132,7 @@ Scenario:15 购买多规格限时抢购商品同时适用于积分规则和会�
 	And tom购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"integral_money":36.00,
 			"integral":72.00,
 			"products": [{
@@ -1152,6 +1173,7 @@ Scenario:15 购买多规格限时抢购商品同时适用于积分规则和会�
 	And sam购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"integral_money":10.00,
 			"integral":20.00,
 			"products": [{

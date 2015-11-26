@@ -354,8 +354,12 @@ def django_where_returns_clone(func):
                     args.append(db_field.__ne__(value))
                 elif op == '__lt':
                     args.append(db_field.__lt__(value))
+                elif op == '__lte':
+                    args.append(db_field.__le__(value))
                 elif op == '__gt':
                     args.append(db_field.__gt__(value))
+                elif op == '__gte':
+                    args.append(db_field.__ge__(value))
                 elif op == '__notin':
                     args.append(db_field.not_in(value))
                 elif op == '__in':

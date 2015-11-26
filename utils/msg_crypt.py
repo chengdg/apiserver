@@ -108,6 +108,14 @@ class Prpcrypt(object):
 		# except Exception, e:
 		# 	raise e
 
+	def get_random_str(self):
+		""" 随机生成16位字符串
+		@return: 16位字符串
+		"""
+		rule = string.letters + string.digits
+		str = random.sample(rule, 16)
+		return "".join(str)
+
 
 class MsgCrypt(object):
 
@@ -120,11 +128,14 @@ class MsgCrypt(object):
 		self.token = token
 		self.id = id
 
-	def EncryptMsg(self, encrypt):
-		pass
+	def EncryptMsg(self, text):
+		pc = Prpcrypt(self.key)
+		encrypt = pc.encrypt(text, self.id)
+		return encrypt
 
 	def DecryptMsg(self, encrypt):
 		pc = Prpcrypt(self.key)
 		ret,content = pc.decrypt(encrypt,self.id)
 		return ret, content
+
 

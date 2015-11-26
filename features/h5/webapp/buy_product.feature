@@ -4,8 +4,9 @@ Feature: 在webapp中购买商品
 	bill能在webapp中购买jobs添加的"商品"
 
 Background:
-	Given jobs登录系统
-	Given jobs已添加商品分类
+	Given 重置weapp的bdd环境
+	Given jobs登录系统:weapp
+	Given jobs已添加商品分类:weapp
 		"""
 		[{
 			"name": "分类1"
@@ -15,8 +16,8 @@ Background:
 			"name": "分类3"
 		}]
 		"""
-	And jobs已有微众卡支付权限
-	And jobs已添加支付方式
+	And jobs已有微众卡支付权限:weapp
+	And jobs已添加支付方式:weapp
 		"""
 		[{
 			"type": "微众卡支付"
@@ -26,7 +27,7 @@ Background:
 			"type": "微信支付"
 		}]
 		"""
-	And jobs已添加商品规格
+	And jobs已添加商品规格:weapp
 		"""
 		[{
 			"name": "颜色",
@@ -48,7 +49,7 @@ Background:
 			}]
 		}]
 		"""
-	And jobs已添加商品
+	And jobs已添加商品:weapp
 		"""
 		[{
 			"name": "商品1",
@@ -98,7 +99,7 @@ Background:
 		"""
 	And bill关注jobs的公众号
 
-@todo @mall2 @mall.webapp @zy_bp01
+@mall3 @mall.webapp @zy_bp01
 Scenario: 购买单个商品
 	jobs添加商品后
 	1. bill能在webapp中购买jobs添加的商品
@@ -137,7 +138,7 @@ Scenario: 购买单个商品
 		"""
 
 
-@mall.webapp @todo @mall2 @zy_bp02
+@mall.webapp @mall3 @zy_bp02
 Scenario:1 购买商品时，使用订单备注
 	bill在购买jobs添加的商品时
 	1. 添加了"订单备注"，则jobs能在管理系统中看到该"订单备注"
@@ -162,7 +163,6 @@ Scenario:1 购买商品时，使用订单备注
 			"status": "待支付"
 		}
 		"""
-	Given jobs登录系统
 	Then jobs能获取订单
 		"""
 		{
@@ -181,7 +181,6 @@ Scenario:1 购买商品时，使用订单备注
 			"ship_area": "北京市 北京市 海淀区"
 		}
 		"""
-	Given jobs登录系统
 	Then jobs能获取订单
 		"""
 		{
@@ -189,7 +188,7 @@ Scenario:1 购买商品时，使用订单备注
 		}
 		"""
 
-@mall.webapp @todo @mall2 @zy_bp03
+@mall.webapp @mall2 @zy_bp03 @todo
 Scenario:2 购买有规格的商品
 	jobs添加商品后
 	1. bill能在webapp中购买jobs添加的商品

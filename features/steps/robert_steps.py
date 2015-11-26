@@ -11,9 +11,12 @@ from db.member import models as member_models
 from .steps_db_util import (
     get_custom_model_id_from_name, get_product_model_keys, get_area_ids
 )
+import logging
 
-# 获取规格ids, 根据名称
 def _get_product_model_ids_from_name(webapp_owner_id, model_name):
+	"""
+	获取规格ids, 根据名称
+	"""
 	if model_name is None or model_name == "standard":
 		return "standard"
 	return get_custom_model_id_from_name(webapp_owner_id ,model_name)
@@ -230,6 +233,8 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 					order.save()
 			context.created_order_id = args['order_id']
 
+	logging.info("[Order Created] webapp_owner_id: {}, created_order_id: {}".format(webapp_owner_id, context.created_order_id))
+	
 	context.product_ids = product_ids
 	context.product_counts = product_counts
 	context.product_model_names = product_model_names
@@ -247,6 +252,7 @@ def step_impl(context, webapp_user_name):
     # order = Order.objects.get(order_id=order_id)
 
     url = '/wapi/mall/order/?woid=%s&order_id=%s' % (context.webapp_owner_id, order_id)
+    logging.info('URL: {}'.format(url))
     response = context.client.get(bdd_util.nginx(url), follow=True)
 
     actual_order = response.data['order']

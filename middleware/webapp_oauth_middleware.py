@@ -6,21 +6,19 @@ from business.account.webapp_owner import WebAppOwner
 from business.account.member import Member
 from business.account.webapp_user import WebAppUser
 from business.account.social_account_info import SocialAccountInfo
-from utils import msg_crypt
+from utils import msg_crypt,auth_util
 import settings
+import logging
 
-class WebAppOwnerMiddleware(object):
+class WebAppOAuthMiddleware(object):
 	"""
-	获取webapp owner的中间件
+	获取webapp owner的中间件(填充`webapp_owner`对象)
+
+	@note 优先通过access_token获取 WebAppOwner。开发模式下，优先用`woid`。
 	"""
 	def process_request(sel, req, resp):
 		if 'access_token' in req.params:
-			crypt = msg_crypt.MsgCrypt(settings.CTYPT_INFO['token'], settings.CTYPT_INFO['encodingAESKey'], settings.CTYPT_INFO['id'])
-
-			result,access_token = crypt.DecryptMsg(req.params['access_token'])
-
-			if not result:
-				raise 'error access_token' 
+			access_token = auth_util.decrypt_access_token(req.params['access_token']) 
 			#access_token = '3_weizoom_jobs_test'
 			access_token_list = access_token.split('_weizoom_')
 			if len(access_token_list) != 2:
@@ -31,7 +29,6 @@ class WebAppOwnerMiddleware(object):
 				'woid': webapp_owner_id
 			})
 			req.context['webapp_owner'] = webapp_owner
-
 			if openid == 'notopenid':
 				return
 			#填充会员帐号信息
@@ -39,17 +36,13 @@ class WebAppOwnerMiddleware(object):
 				'webapp_owner':  webapp_owner,
 				'openid': openid
 				}).to_dict()
-			# webapp_user = social_account_info_obj['webapp_user']
-			webapp_user = WebAppUser.from_model({
-				'webapp_owner': req.context['webapp_owner'],
-				'model': social_account_info_obj['webapp_user']
-			})
-			# member = social_account_info_obj['member']
-			member = Member.from_model({
-				'webapp_owner': webapp_owner, 
-				'model': social_account_info_obj['member']
-			})
-			member.webapp_user = webapp_user
+			webapp_user = social_account_info_obj['webapp_user']
+			member = social_account_info_obj['member']
+			# member = Member.from_model({
+			# 	'webapp_owner': webapp_owner, 
+			# 	'model': social_account_info_obj['member']
+			# })
+			#member.webapp_user = webapp_user
 			webapp_user.member = member
 			social_account_info_obj['member'] = member
 			social_account_info_obj['webapp_user'] = webapp_user
@@ -70,7 +63,7 @@ class WebAppOwnerMiddleware(object):
 				"wid": webapp_id,
 				"return_model": True
 			})
-			print 'get member in AccountsMiddleware...'
+			logging.info('get member in WebAppOAuthMiddleware...')
 			member = Member.from_model({
 				'webapp_owner': req.context['webapp_owner'], 
 				'model': member_accounts['member']
@@ -80,47 +73,9 @@ class WebAppOwnerMiddleware(object):
 				'model': member_accounts['webapp_user']
 			})
 			webapp_user.member = member
-			member.webapp_user = webapp_user
-			member_accounts['member'] = member
+			#member.webapp_user = webapp_user
+			#member_accounts['member'] = member
 			member_accounts['webapp_user'] = webapp_user
 			req.context.update(member_accounts) 
 		else:
 			raise "error access_token"
-
-
-class AccountsMiddleware(object):
-	def process_request(sel, req, resp):
-		if not 'webapp_owner' in req.context:
-			return
-
-		openid = None
-		if openid:
-			social_account_info_obj = SocialAccountInfo.get({
-				'webapp_owner':  req.context['webapp_owner'],
-				'openid': openid
-				})
-
-			req.context.update(social_account_info_obj.to_dict())
-		else:
-			openid = 'bill_jobs'
-			webapp_id = req.context['webapp_owner'].webapp_id
-			member_accounts = resource.get('member', 'member_accounts', {
-				"openid": openid,
-				"wid": webapp_id,
-				"return_model": True
-			})
-			print 'get member in AccountsMiddleware...'
-			member = Member.from_model({
-				'webapp_owner': req.context['webapp_owner'], 
-				'model': member_accounts['member']
-			})
-			webapp_user = WebAppUser.from_model({
-				'webapp_owner': req.context['webapp_owner'],
-				'model': member_accounts['webapp_user']
-			})
-			webapp_user.member = member
-			member.webapp_user = webapp_user
-			member_accounts['member'] = member
-			member_accounts['webapp_user'] = webapp_user
-			req.context.update(member_accounts)
-

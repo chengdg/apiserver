@@ -115,5 +115,8 @@ class WebAppUser(business_model.Model):
 			member_models.WebAppUser.update(has_purchased=True).dj_where(id=self.id).execute()
 
 
-
-
+	# def to_dict(self, *extras):
+	# 	properties = ['ship_infos', 'ship_info', 'integral_info', 'is_binded']
+	# 	if extras:
+	# 		properties.extend(extras)
+	# 	return business_model.Model.to_dict(self, *properties)

@@ -41,12 +41,14 @@ class AMemberAccounts(api_resource.ApiResource):
 		# wxapi = weixin_api(mp_access_token)
 		# userinfo = wxapi.get_user_info(args['openid'])
 
-		#return {}
-
-		return SocialAccountInfo.get({
-				'webapp_owner': args['webapp_owner'],
-				'openid': args['openid']
-			}).to_dict()
+		data = {}
+		webapp_user = args['webapp_user']
+		member =webapp_user.member
+		webapp_user.member = member.to_dict()
+		social_account = args['social_account']
+		data['webapp_user'] = webapp_user.to_dict()
+		data['social_account'] = social_account.to_dict()
+		return data
 
 
 	@param_required(['openid', 'woid', 'for_oauth', 'fmt', 'url'])
@@ -70,11 +72,13 @@ class AMemberAccounts(api_resource.ApiResource):
 		created = member.created
 		#创建关系
 		if args['fmt'] and args['fmt'] != 'notfmt' and args['fmt'] != member.token:
-			followed_member = Member.from_token({
-				"webapp_owner": args['webapp_owner'],
-				'token': args['fmt']
-			})
-
+			try:
+				followed_member = Member.from_token({
+					"webapp_owner": args['webapp_owner'],
+					'token': args['fmt']
+				})
+			except:
+				followed_member = None
 
 			"""
 				将会员关系创建和url处理放到celery
@@ -115,10 +119,18 @@ class AMemberAccounts(api_resource.ApiResource):
 							'followed': created
 							}).update()
 
-		return SocialAccountInfo.get({
+		social_account_obj = SocialAccountInfo.get({
 				'webapp_owner': args['webapp_owner'],
 				'openid': args['openid']
-			}).to_dict()
+			})
+		data = {}
+		webapp_user = social_account_obj.webapp_user
+		webapp_user.member = webapp_user.member.to_dict()
+
+		data['webapp_user'] = webapp_user.to_dict()
+		data['social_account'] = social_account_obj.social_account.to_dict()
+
+		return data
 
 
 

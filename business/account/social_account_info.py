@@ -26,7 +26,9 @@ import settings
 from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
 from core.exceptionutil import unicode_full_stack
 from business import model as business_model
-
+from business.account.social_account import SocialAccount
+from business.account.member import Member
+from business.account.webapp_user import WebAppUser
 
 
 class SocialAccountInfo(business_model.Model):
@@ -55,7 +57,7 @@ class SocialAccountInfo(business_model.Model):
 
 	def __init__(self, webapp_owner, openid):
 		business_model.Model.__init__(self)
-		obj = self.__get_from_cache(webapp_owner.webapp_id, openid)
+		obj = self.__get_from_cache(webapp_owner, openid)
 		for slot in self.__slots__:
 			setattr(self, slot, getattr(obj, slot, None))
 
@@ -67,23 +69,25 @@ class SocialAccountInfo(business_model.Model):
 				webapp_user = member_models.WebAppUser.select().dj_where(webapp_id=webapp_id, member_id=member.id, father_id=0, token=member.id)
 			else:
 				webapp_user = member_models.WebAppUser.select().dj_where(webapp_id=webapp_id, member_id=member.id, father_id=0)[0]
+
 			today = datetime.today()
 			date_str = datetime.today().strftime('%Y-%m-%d') 
 			return {
 				'value': {
-					'member': member.to_dict(),
-					'webapp_user': webapp_user.to_dict(),
-					'social_account': social_account.to_dict(),
+					'member': member,
+					'webapp_user': webapp_user,
+					'social_account': social_account,
 					'date_time':date_str
 				}
 			}
 
 		return inner_func
 
-	def __get_from_cache(self, webapp_id, openid):
+	def __get_from_cache(self, webapp_owner, openid):
 		"""
 		social_account cache
 		"""
+		webapp_id = webapp_owner.webapp_id
 		key = 'social_{webapp:%s}_{openid:%s}' % (webapp_id, openid)
 
 		data = cache_util.get_from_cache(key, self.__get_accounts_for_cache(openid, webapp_id))
@@ -92,13 +96,33 @@ class SocialAccountInfo(business_model.Model):
 		date_str = datetime.today().strftime('%Y-%m-%d') 
 		if data['date_time'] != date_str:
 			cache_util.delete_pattern(key)
-			data = cache_util.get_from_cache(key, SocialAccountInfo.get_accounts_for_cache(openid, webapp_id))
+			data = cache_util.get_from_cache(key, elf.__get_accounts_for_cache(openid, webapp_id))
 
 		obj = cache_util.Object()
-		obj.member = member_models.Member.from_dict(data['member'])
-		obj.social_account = member_models.SocialAccount.from_dict(data['social_account'])
-		obj.webapp_user = member_models.WebAppUser.from_dict(data['webapp_user'])
+
+		webapp_user = WebAppUser.from_model({
+				'webapp_owner': webapp_owner,
+				'model': data['webapp_user']
+		})
+		member = Member.from_model({
+			'webapp_owner': webapp_owner,
+			'model': data['member']
+		})
+
+		social_account = SocialAccount.from_model({
+			'webapp_owner': webapp_owner,
+			'model': data['social_account']
+		})
+		# webapp_user.member = member
+		# member.webapp_user = webapp_user
+
+		obj.member = member
+		obj.webapp_user = webapp_user
+		obj.social_account = social_account
+
 		return obj
+
+
 
 
 

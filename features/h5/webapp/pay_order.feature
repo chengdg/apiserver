@@ -1,3 +1,4 @@
+#editor 新新 2015.11.26
 @func:webapp.modules.mall.views.list_products
 Feature: 在webapp中支付订单
 	bill能在webapp中支付订单
@@ -13,7 +14,8 @@ Background:
 			"description": "我的微信支付V2",
 			"is_active": "启用"
 		},{
-			"type": "货到付款"
+			"type": "货到付款",
+			"is_active": "启用"
 		}]
 		"""
 	And jobs已添加商品:weapp
@@ -38,6 +40,7 @@ Scenario:1 使用货到付款支付
 	And bill购买jobs的商品
 		"""
 		{
+			"pay_type": "货到付款",
 			"products": [{
 				"name": "商品1",
 				"count": 1
@@ -47,7 +50,7 @@ Scenario:1 使用货到付款支付
 	Then bill成功创建订单
 		"""
 		{
-			"status": "待支付",
+			"status": "待发货",
 			"final_price": 9.9,
 			"products": [{
 				"name": "商品1",
@@ -56,19 +59,7 @@ Scenario:1 使用货到付款支付
 			}]
 		}
 		"""
-	#When bill使用支付方式'货到付款'进行支付
-	#Then bill支付订单成功
-	#	"""
-	#	{
-	#		"status": "待发货",
-	#		"final_price": 9.9,
-	#		"products": [{
-	#			"name": "商品1",
-	#			"price": 9.9,
-	#			"count": 1
-	#		}]
-	#	}
-	#	"""
+	
 @todo @mall2 @mall @mall.webapp @mall.pay_order
 Scenario:2 使用V2版微信支付进行同步支付
 	bill在下单购买jobs的商品后，能使用微信支付进行支付，支付后
@@ -79,6 +70,7 @@ Scenario:2 使用V2版微信支付进行同步支付
 	And bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 1
@@ -126,6 +118,7 @@ Scenario:3 使用V2版微信支付进行异步支付
 	And bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 1
@@ -154,6 +147,31 @@ Scenario:3 使用V2版微信支付进行异步支付
 		"""
 		{
 			"status": "待发货",
+			"final_price": 9.9,
+			"products": [{
+				"name": "商品1",
+				"price": 9.9,
+				"count": 1
+			}]
+		}
+		"""
+Scenario:4 使用微信支付,没有支付
+	
+	When bill访问jobs的webapp
+	And bill购买jobs的商品
+		"""
+		{
+			"pay_type": "微信支付",
+			"products": [{
+				"name": "商品1",
+				"count": 1
+			}]
+		}
+		"""
+	Then bill成功创建订单
+		"""
+		{
+			"status": "待支付",
 			"final_price": 9.9,
 			"products": [{
 				"name": "商品1",

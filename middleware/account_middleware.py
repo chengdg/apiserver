@@ -39,7 +39,11 @@ class WebAppOwnerMiddleware(object):
 				'webapp_owner':  webapp_owner,
 				'openid': openid
 				}).to_dict()
-			webapp_user = social_account_info_obj['webapp_user']
+			# webapp_user = social_account_info_obj['webapp_user']
+			webapp_user = WebAppUser.from_model({
+				'webapp_owner': req.context['webapp_owner'],
+				'model': social_account_info_obj['webapp_user']
+			})
 			# member = social_account_info_obj['member']
 			member = Member.from_model({
 				'webapp_owner': webapp_owner, 

@@ -157,6 +157,7 @@ Scenario: 1 购买买赠商品，不满足买赠基数
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type":"微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 1
@@ -183,6 +184,7 @@ Scenario: 2 购买买赠活动商品，满足买赠基数
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type":"微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 2
@@ -225,6 +227,7 @@ Scenario: 3 购买多个买赠活动商品，满足买赠基数，并满足循�
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type":"微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 2
@@ -281,6 +284,7 @@ Scenario: 4 购买单个买赠商品，超出库存限制
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type":"微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 2
@@ -345,6 +349,7 @@ Scenario: 6 购买多个 有规格的参与买赠的商品
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type":"微信支付",
 			"products": [{
 				"name": "商品5",
 				"model": "M",
@@ -427,6 +432,7 @@ Scenario: 7  创建多规格商品 非循环买赠活动，购买多个 有规�
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type":"微信支付",
 			"products": [{
 				"name": "商品6",
 				"model": "M",
@@ -510,6 +516,7 @@ Scenario: 8  多规格商品，买2赠1 循环买赠
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type":"微信支付",
 			"products": [{
 				"name": "商品8",
 				"model": "M",
@@ -579,6 +586,7 @@ Scenario: 9  创建买赠活动，但活动时间没开始，按原有商品销�
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type":"微信支付",
 			"products": [{
 				"name": "商品9",
 				"count": 1
@@ -626,6 +634,7 @@ Scenario: 10  创建买赠活动，但活动时间没开始，按原有商品销
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type":"微信支付",
 			"products": [{
 				"name": "商品9",
 				"count": 1
@@ -908,6 +917,7 @@ Scenario: 13 不同等级的会员购买会员价，同时有会员等级买赠�
 	And marry1购买jobs的商品
 		"""
 		{
+			"pay_type":"微信支付",
 			"ship_name": "marry1",
 			"ship_tel": "12345678911",
 			"ship_area": "北京市 北京市 海淀区",
@@ -941,6 +951,7 @@ Scenario: 13 不同等级的会员购买会员价，同时有会员等级买赠�
 	And marry2购买jobs的商品
 		"""
 		{
+			"pay_type":"微信支付",
 			"ship_name": "marry2",
 			"ship_tel": "12345678912",
 			"ship_area": "北京市 北京市 海淀区",
@@ -979,6 +990,7 @@ Scenario: 13 不同等级的会员购买会员价，同时有会员等级买赠�
 	And marry2购买jobs的商品
 		"""
 		{
+			"pay_type":"微信支付",
 			"ship_name": "marry2",
 			"ship_tel": "12345678912",
 			"ship_area": "北京市 北京市 海淀区",
@@ -1012,6 +1024,7 @@ Scenario: 13 不同等级的会员购买会员价，同时有会员等级买赠�
 	And marry4购买jobs的商品
 		"""
 		{
+			"pay_type":"微信支付",
 			"ship_name": "marry4",
 			"ship_tel": "12345678914",
 			"ship_area": "北京市 北京市 海淀区",
@@ -1053,6 +1066,7 @@ Scenario: 13 不同等级的会员购买会员价，同时有会员等级买赠�
 	And marry2购买jobs的商品
 		"""
 		{
+			"pay_type":"微信支付",
 			"ship_name": "marry2",
 			"ship_tel": "12345678912",
 			"ship_area": "北京市 北京市 海淀区",
@@ -1087,6 +1101,7 @@ Scenario: 13 不同等级的会员购买会员价，同时有会员等级买赠�
 	And marry3购买jobs的商品
 		"""
 		{
+			"pay_type":"微信支付",
 			"ship_name": "marry3",
 			"ship_tel": "12345678913",
 			"ship_area": "北京市 北京市 海淀区",
@@ -1134,6 +1149,7 @@ Scenario: 13 不同等级的会员购买会员价，同时有会员等级买赠�
 	And marry4购买jobs的商品
 		"""
 		{
+			"pay_type":"微信支付",
 			"ship_name": "marry4",
 			"ship_tel": "12345678914",
 			"ship_area": "北京市 北京市 海淀区",

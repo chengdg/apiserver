@@ -34,10 +34,10 @@ class AProduct(api_resource.ApiResource):
 		"""
 		product_id = args['product_id']
 		webapp_owner = args['webapp_owner']
-		webapp_user = args['webapp_user']
-
-		member = args.get('member', None)
-		member_grade_id = member.grade_id if member else None
+		# jz 2015-11-26
+		# webapp_user = args['webapp_user']
+		# member = args.get('member', None)
+		# member_grade_id = member.grade_id if member else None
 		
 		# 检查置顶评论是否过期
 		# TODO: 是否每次都需要去进行检查？还是交给service每天凌晨进行更新
@@ -47,7 +47,7 @@ class AProduct(api_resource.ApiResource):
 
 		product = Product.from_id({
 			'webapp_owner': webapp_owner,
-			'member': member,
+			# 'member': member,
 			'product_id': args['product_id']
 		})
 

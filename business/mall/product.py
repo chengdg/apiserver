@@ -129,13 +129,13 @@ class CachedProduct(object):
 		return product
 
 	@staticmethod
-	@param_required(['webapp_owner', 'member', 'product_id'])
+	@param_required(['webapp_owner', 'product_id'])
 	def get(args):
 		#TODO2: 临时解决方案，后续去除
 		CachedProduct.webapp_owner = args['webapp_owner']
 		webapp_owner_id = args['webapp_owner'].id
 		product_id = args['product_id']
-		member = args['member']
+		member = args.get('member', None)
 		member_grade_id = member.grade_id if member else None
 
 		try:
@@ -311,7 +311,7 @@ class Product(business_model.Model):
 		return product
 
 	@staticmethod
-	@param_required(['webapp_owner', 'member', 'product_id'])
+	@param_required(['webapp_owner', 'product_id'])
 	def from_id(args):
 		return CachedProduct.get(args)
 

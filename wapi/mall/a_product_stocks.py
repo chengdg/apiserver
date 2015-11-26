@@ -15,7 +15,7 @@ class AProductStocks(api_resource.ApiResource):
 	resource = 'product_stocks'
 
 
-	@param_required(['woid', 'wuid'])
+	@param_required([])
 	def get(args):
 		"""
 		@param product_id 商品ID

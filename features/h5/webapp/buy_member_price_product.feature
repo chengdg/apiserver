@@ -142,6 +142,7 @@ Scenario:1 购买单个会员价商品
 	And tom购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 1
@@ -165,6 +166,7 @@ Scenario:1 购买单个会员价商品
 	And bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 1
@@ -264,7 +266,7 @@ Scenario:2 购买多个会员价商品
 	Then bill成功创建订单
 		"""
 		{
-			"status": "待支付",
+			"status": "待发货",
 			"final_price": 630.00,
 			"products": [{
 				"name": "商品1",
@@ -338,7 +340,7 @@ Scenario:3 购买多个商品包括会员价商品
 	Then bill成功创建订单
 		"""
 		{
-			"status": "待支付",
+			"status": "待发货",
 			"final_price": 290.00,
 			"products": [{
 				"name": "商品1",
@@ -422,6 +424,7 @@ Scenario:4 订单完成后，达到自动升级的条件
 			"ship_tel": "13811223344",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
+			"pay_type": "货到付款",
 			"products": [{
 				"name": "商品2",
 				"model": "M",
@@ -429,8 +432,7 @@ Scenario:4 订单完成后，达到自动升级的条件
 			}]
 		}
 		"""
-	When tom使用支付方式'货到付款'进行支付
-	Then tom支付订单成功
+	Then tom成功创建订单
 		"""
 		{
 			"status": "待发货",
@@ -521,6 +523,7 @@ Scenario:5 使用积分购买商品后，取消订单，积分返回
 		"""
 		{
 			"order_id":"0000001",
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 1

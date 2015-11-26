@@ -37,16 +37,16 @@ class APurchasing(api_resource.ApiResource):
 		# productIds2price = dict()
 		productIds2original_price = dict()
 		is_forbidden_coupon = True
-		from resource.mall import r_product_hint
+		# from resource.mall import r_product_hint
 		for product in products:
 			product_ids.append(product.id)
 			product_total_price = product.price * product.purchase_count
 			product_total_original_price = product.original_price * product.purchase_count
 			# TODO: 去掉ProductHint的直接调用
-			if not r_product_hint.ProductHint.is_forbidden_coupon(webapp_owner_id, product.id):
-				#不是被禁用全场优惠券的商品 duhao 20150908
-				total_price += product_total_price
-				is_forbidden_coupon = False
+			# if not r_product_hint.ProductHint.is_forbidden_coupon(webapp_owner_id, product.id):
+			# 	#不是被禁用全场优惠券的商品 duhao 20150908
+			# 	total_price += product_total_price
+			# 	is_forbidden_coupon = False
 			# jz 2015-10-09
 			# if not productIds2price.get(product.id):
 			# 	productIds2price[product.id] = 0
@@ -137,7 +137,7 @@ class APurchasing(api_resource.ApiResource):
 
 		return factors
 
-	@param_required(['woid'])
+	@param_required([])
 	def get(args):
 		"""
 		获取购物车项目

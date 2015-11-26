@@ -166,6 +166,7 @@ Scenario:3 微众卡金额小于订单金额时进行支付
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products":[{
 				"name":"商品1",
 				"price":50,
@@ -229,6 +230,7 @@ Scenario:4 用微众卡购买商品时，输入错误的卡号密码
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products":[{
 				"name":"商品1",
 				"price":50,
@@ -269,6 +271,7 @@ Scenario:5 用已用完的微众卡购买商品时
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products":[{
 				"name":"商品1",
 				"price":50,
@@ -329,6 +332,7 @@ Scenario:6 用未激活的微众卡购买商品时
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products":[{
 				"name":"商品1",
 				"price":50,
@@ -384,6 +388,7 @@ Scenario:7 用已过期的微众卡购买商品时
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products":[{
 				"name":"商品1",
 				"price":50,
@@ -528,6 +533,7 @@ Scenario:9 用10张微众卡共同支付
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products":[{
 				"name":"商品1",
 				"price":50,
@@ -864,6 +870,7 @@ Scenario:12 用已用完的微众卡购买商品时
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products":[{
 				"name":"商品1",
 				"price":50,

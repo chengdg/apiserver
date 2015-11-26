@@ -25,6 +25,19 @@ Feature:在webapp中购买禁用优惠券商品
 
 Background:
 	Given jobs登录系统
+	When jobs已添加支付方式
+		"""
+		[{
+			"type": "微信支付",
+			"is_active": "启用"
+		}, {
+			"type": "货到付款",
+			"is_active": "启用"
+		}, {
+			"type": "支付宝",
+			"is_active": "启用"
+		}]
+		"""
 	When jobs添加会员等级
 		"""
 		[{
@@ -43,8 +56,6 @@ Background:
 			"integral_each_yuan": 2
 		}
 		"""
-	Given bill关注jobs的公众号
-	And jobs登录系统
 	And jobs已添加商品
 		"""
 			[{
@@ -112,6 +123,7 @@ Background:
 			"is_permanant_active": false
 		}]
 		"""
+	Given bill关注jobs的公众号
 
 @todo @mall2 @promotion @promotionForbiddenCoupon
 Scenario:1 购买单个禁用优惠券商品,该商品无单品券
@@ -147,6 +159,7 @@ Scenario:2 购买单个禁用优惠券商品,该商品有单品券
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type":"微信支付",
 			"products": [{
 				"name": "商品2",
 				"count": 2
@@ -219,6 +232,7 @@ Scenario:3 购买多个商品,包含禁用优惠券商品,不满足全体券使�
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type":"微信支付",
 			"products": [{
 				"name": "商品2",
 				"count": 1
@@ -268,6 +282,7 @@ Scenario:4 购买多个商品,包含禁用优惠券商品,满足全体券使用�
 		When bill购买jobs的商品
 			"""
 			{
+				"pay_type":"微信支付",
 				"products": [{
 					"name": "商品1",
 					"count": 1
@@ -317,6 +332,7 @@ Scenario:4 购买多个商品,包含禁用优惠券商品,满足全体券使用�
 		When bill购买jobs的商品
 			"""
 				{
+					"pay_type":"微信支付",
 					"products": [{
 						"name": "商品1",
 						"count": 1
@@ -388,26 +404,27 @@ Scenario:5 购买多个商品,包含禁用优惠券商品,全体券使用金额�
 		"""
 	When tom访问jobs的webapp
 	When tom购买jobs的商品
-			"""
-			{
-				"products": [{
-					"name": "商品1",
-					"count": 1
-				},{
-					"name": "商品3",
-					"count": 1
-				}],
-			"coupon": "coupon3_id_1"
-			}
-			"""
+		"""
+		{
+			"pay_type":"微信支付",
+			"products": [{
+				"name": "商品1",
+				"count": 1
+			},{
+				"name": "商品3",
+				"count": 1
+			}],
+		"coupon": "coupon3_id_1"
+		}
+		"""
 	Then tom成功创建订单
 		"""
-			{
-				"status": "待支付",
-				"final_price": 100.0,
-				"product_price": 200.0,
-				"coupon_money": 100.0
-			}
+		{
+			"status": "待支付",
+			"final_price": 100.0,
+			"product_price": 200.0,
+			"coupon_money": 100.0
+		}
 		"""
 	Given jobs登录系统
 	Then jobs能获得优惠券'全体券2'的码库
@@ -597,6 +614,7 @@ Scenario:9 购买禁用优惠券商品,该商品同时参与积分应用
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type":"微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 2,
@@ -713,6 +731,7 @@ Scenario:10 购买禁用优惠券多规格商品,一个商品的2个规格,总�
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type":"微信支付",
 			"products": [{
 				"name": "多规格禁用",
 				"count": 1,

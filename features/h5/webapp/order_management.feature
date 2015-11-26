@@ -43,6 +43,7 @@ Scenario: 1 bill在下单购买jobs的商品后，使用货到付款进行支付
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 1
@@ -124,31 +125,31 @@ Scenario: 1 bill在下单购买jobs的商品后，使用货到付款进行支付
 		"""
 
 	Given jobs已有的订单
-	    """
-	    [{
-	        "order_no":"20150423161112",
-	        "member":"bill",
-	        "type":"普通订单",
-	        "status":"待发货",
-	        "sources":"本店",
-	        "order_price":30.00,
-	        "payment_price":30.00,
-	        "freight":0,
-	        "ship_name":"bill",
-	        "ship_tel":"13013013011",
-	        "ship_area":"北京市,北京市,海淀区",
-	        "ship_address":"泰兴大厦",
-	        "products":[{
-	            "name":"商品1",
-	            "price": "10.00",
-	            "count": 1
-	        },{
-	            "name":"商品2",
-	            "price": "20.00",
-	            "count": 1
-	        }]
-	    }]
-	    """
+		"""
+		[{
+			"order_no":"20150423161112",
+			"member":"bill",
+			"type":"普通订单",
+			"status":"待发货",
+			"sources":"本店",
+			"order_price":30.00,
+			"payment_price":30.00,
+			"freight":0,
+			"ship_name":"bill",
+			"ship_tel":"13013013011",
+			"ship_area":"北京市,北京市,海淀区",
+			"ship_address":"泰兴大厦",
+			"products":[{
+				"name":"商品1",
+				"price": "10.00",
+				"count": 1
+			},{
+				"name":"商品2",
+				"price": "20.00",
+				"count": 1
+			}]
+		]
+		"""
 
 	When jobs填写发货信息
 		"""
@@ -222,6 +223,7 @@ Scenario: 2 bill在下单购买jobs的商品后，又取消订单
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 1
@@ -255,27 +257,27 @@ Scenario: 2 bill在下单购买jobs的商品后，又取消订单
 		"""
 
 	Given jobs已有的订单
-	    """
-	    [{
-	        "order_no":"20150423161112",
-	        "member":"bill",
-	        "type":"普通订单",
-	        "status":"已取消",
-	        "sources":"本店",
-	        "order_price":10.00,
-	        "payment_price":10.00,
-	        "freight":0,
-	        "ship_name":"bill",
-	        "ship_tel":"13013013011",
-	        "ship_area":"北京市,北京市,海淀区",
-	        "ship_address":"泰兴大厦",
-	        "products":[{
-	            "name":"商品1",
-	            "price": "10.00",
-	            "count": 1
-	        }]
-	    }]
-	    """
+		"""
+		[{
+			"order_no":"20150423161112",
+			"member":"bill",
+			"type":"普通订单",
+			"status":"已取消",
+			"sources":"本店",
+			"order_price":10.00,
+			"payment_price":10.00,
+			"freight":0,
+			"ship_name":"bill",
+			"ship_tel":"13013013011",
+			"ship_area":"北京市,北京市,海淀区",
+			"ship_address":"泰兴大厦",
+			"products":[{
+				"name":"商品1",
+				"price": "10.00",
+				"count": 1
+			}]
+		}]
+		"""
 
 	When bill取消订单'20150423161112'
 	Then jobs可以看到订单列表
@@ -325,6 +327,7 @@ Scenario: 3 bill在下单购买jobs的商品后，jobs发货方式为"不需要�
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 1
@@ -385,30 +388,30 @@ Scenario: 3 bill在下单购买jobs的商品后，jobs发货方式为"不需要�
 		"""
 
 	Given jobs已有的订单
-	    """
-	    [{
-	        "order_no":"20150423161112",
-	        "member":"bill",
-	        "status":"待发货",
-	        "sources":"本店",
-	        "order_price":30.00,
-	        "payment_price":30.00,
-	        "freight":0,
-	        "ship_name":"bill",
-	        "ship_tel":"13013013011",
-	        "ship_area":"北京市,北京市,海淀区",
-	        "ship_address":"泰兴大厦",
-	        "products":[{
-	            "name":"商品1",
-	            "price": "10.00",
-	            "count": 1
-	        },{
-	            "name":"商品2",
-	            "price": "20.00",
-	            "count": 1
-	        }]
-	    }]
-	    """
+		"""
+		[{
+			"order_no":"20150423161112",
+			"member":"bill",
+			"status":"待发货",
+			"sources":"本店",
+			"order_price":30.00,
+			"payment_price":30.00,
+			"freight":0,
+			"ship_name":"bill",
+			"ship_tel":"13013013011",
+			"ship_area":"北京市,北京市,海淀区",
+			"ship_address":"泰兴大厦",
+			"products":[{
+				"name":"商品1",
+				"price": "10.00",
+				"count": 1
+			},{
+				"name":"商品2",
+				"price": "20.00",
+				"count": 1
+			}]
+		}]
+		"""
 	When jobs填写发货信息
 		"""
 		[{
@@ -468,6 +471,7 @@ Scenario: 4 bill 在不同时段下订单，订单列表按下订单的时间倒
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 1
@@ -489,6 +493,7 @@ Scenario: 4 bill 在不同时段下订单，订单列表按下订单的时间倒
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品2",
 				"count": 1

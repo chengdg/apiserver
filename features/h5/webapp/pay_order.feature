@@ -156,9 +156,6 @@ Scenario:3 使用V2版微信支付进行异步支付
 		}
 		"""
 Scenario:4 使用微信支付,没有支付
-	bill在下单购买jobs的商品后，能使用货到付款进行支付，支付后
-	1. bill的订单中变为"待发货"
-	2. jobs在后台看到订单变为"待发货"
 	
 	When bill访问jobs的webapp
 	And bill购买jobs的商品

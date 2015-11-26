@@ -1,5 +1,6 @@
 # __author__ : "刘海鹏"
 #editor 新新 2015.10.20
+#editor 新新 2015.11.26
 
 Feature: 后台取消订单,后台可获取订单状态,取消原因
 """
@@ -38,6 +39,7 @@ Scenario:1 取消订单后,手机端订单状态为'已取消'
 	And bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"ship_name": "bill",
 			"ship_tel": "13811223344",
 			"ship_area": "北京市 北京市 海淀区",

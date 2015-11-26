@@ -31,25 +31,20 @@ class WebAppOwnerMiddleware(object):
 				'woid': webapp_owner_id
 			})
 			req.context['webapp_owner'] = webapp_owner
-
 			if openid == 'notopenid':
 				return
 			#填充会员帐号信息
 			social_account_info_obj = SocialAccountInfo.get({
 				'webapp_owner':  webapp_owner,
 				'openid': openid
-				}).to_dict()
-			# webapp_user = social_account_info_obj['webapp_user']
-			webapp_user = WebAppUser.from_model({
-				'webapp_owner': req.context['webapp_owner'],
-				'model': social_account_info_obj['webapp_user']
-			})
-			# member = social_account_info_obj['member']
-			member = Member.from_model({
-				'webapp_owner': webapp_owner, 
-				'model': social_account_info_obj['member']
-			})
-			member.webapp_user = webapp_user
+				})
+			webapp_user = social_account_info_obj['webapp_user']
+			member = social_account_info_obj['member']
+			# member = Member.from_model({
+			# 	'webapp_owner': webapp_owner, 
+			# 	'model': social_account_info_obj['member']
+			# })
+			#member.webapp_user = webapp_user
 			webapp_user.member = member
 			social_account_info_obj['member'] = member
 			social_account_info_obj['webapp_user'] = webapp_user
@@ -80,8 +75,8 @@ class WebAppOwnerMiddleware(object):
 				'model': member_accounts['webapp_user']
 			})
 			webapp_user.member = member
-			member.webapp_user = webapp_user
-			member_accounts['member'] = member
+			#member.webapp_user = webapp_user
+			#member_accounts['member'] = member
 			member_accounts['webapp_user'] = webapp_user
 			req.context.update(member_accounts) 
 		else:

@@ -16,7 +16,7 @@ class ProductDetail(api_resource.ApiResource):
 	resource = 'product_detail'
 
 
-	@param_required(['woid', 'member', 'product_id'])
+	@param_required(['member', 'product_id'])
 	def get(args):
 		"""
 		获取商品详情

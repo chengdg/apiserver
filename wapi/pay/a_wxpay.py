@@ -23,7 +23,7 @@ class AWXPay(api_resource.ApiResource):
 	app = 'pay'
 	resource = 'wxpay'
 
-	@param_required(['woid', 'order_id', 'pay_id'])
+	@param_required(['order_id', 'pay_id'])
 	def get(args):
 		"""
 		获取购物车项目

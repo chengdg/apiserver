@@ -25,7 +25,7 @@ class APayResult(api_resource.ApiResource):
 	app = 'pay'
 	resource = 'pay_result'
 
-	@param_required(['woid', 'order_id', 'pay_interface_type'])
+	@param_required(['order_id', 'pay_interface_type'])
 	def put(args):
 		"""
 		获取支付结果

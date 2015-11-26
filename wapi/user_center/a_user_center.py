@@ -22,7 +22,7 @@ class AUserCenter(api_resource.ApiResource):
 	app = 'user_center'
 	resource = 'user_center'
 
-	@param_required(['woid'])
+	@param_required([])
 	def get(args):
 		"""
 		获取个人中心

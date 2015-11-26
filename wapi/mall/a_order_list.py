@@ -22,7 +22,7 @@ class AOrderList(api_resource.ApiResource):
 	app = 'mall'
 	resource = 'order_list'
 
-	@param_required(['woid', 'type'])
+	@param_required(['type'])
 	def get(args):
 		"""
 		会员订单列表

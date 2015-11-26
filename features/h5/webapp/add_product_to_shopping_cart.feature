@@ -1,13 +1,12 @@
 #author: benchi
 #editor: 师帅 2015.10.19
-@func:webapp.modules.mall.views.list_products
-
 Feature: 添加商品到购物车中
 	bill能在webapp中将jobs添加的"商品"放入购物车
 
 Background:
-	Given jobs登录系统
-	And jobs已添加商品规格
+	Given 重置weapp的bdd环境
+	Given jobs登录系统:weapp
+	And jobs已添加商品规格:weapp
 		"""
 		[{
 			"name": "尺寸",
@@ -19,7 +18,7 @@ Background:
 			}]
 		}]
 		"""
-	And jobs已添加商品
+	And jobs已添加商品:weapp
 		"""
 		[{
 			"name": "商品1",
@@ -70,7 +69,7 @@ Background:
 	And bill关注jobs的公众号
 	And tom关注jobs的公众号
 
-@todo @mall2 @mall.webapp @mall.webapp.shopping_cart
+@mall2 @mall.webapp @mall.webapp.shopping_cart @wip
 Scenario:1 放入单个商品到购物车
 	jobs添加商品后
 	1. bill能在webapp中将jobs添加的商品放入购物车

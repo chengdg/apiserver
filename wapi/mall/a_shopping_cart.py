@@ -43,7 +43,8 @@ class AShoppingCart(api_resource.ApiResource):
 
 		data = {
 			'member': member_data,
-			'product_groups': product_group_datas
+			'product_groups': product_group_datas,
+			'invalid_products': []
 		}
 
 		return data

@@ -269,3 +269,143 @@ def step_impl(context, webapp_user_name):
         # TODO 验证订单页面操作
         del expected['actions']
     bdd_util.assert_dict(expected, actual_order)
+
+
+
+
+
+
+
+
+
+@when(u"{webapp_user_name}加入{webapp_owner_name}的商品到购物车")
+def step_impl(context, webapp_user_name, webapp_owner_name):
+	webapp_owner_id = context.webapp_owner_id
+
+	products_info = json.loads(context.text)
+	url = '/wapi/mall/shopping_cart_item/?_method=put'
+	for product_info in products_info:
+		product_name = product_info['name']
+		product_count = product_info.get('count', 1)
+		product = mall_models.Product.get(owner=webapp_owner_id, name=product_name)
+
+		if 'model' in product_info:
+			for key, value in product_info['model']['models'].items():
+				product_model_name = _get_product_model_ids_from_name(webapp_owner_id, key)
+				data = {
+					"woid": webapp_owner_id,
+					"product_id": product.id,
+					"count": value['count'],
+					"product_model_name": product_model_name,
+					"woid": webapp_owner_id
+				}
+
+				response = context.client.post(url, data)
+				bdd_util.assert_api_call_success(response)
+		else:
+			data = {
+				"woid": webapp_owner_id,
+				"product_id": product.id,
+				"count": product_count,
+				"webapp_owner_id": webapp_owner_id,
+			}
+
+			response = context.client.post(url, data)
+			bdd_util.assert_api_call_success(response)
+
+
+@then(u"{webapp_user_name}能获得购物车")
+def step_impl(context, webapp_user_name):
+	"""
+	e.g.:1
+		{
+			"product_groups": [{
+				"promotion": {
+					"type": "premium_sale",
+					"result": {
+						"premium_products": [{
+							"name": "商品4",
+							"premium_count": 3
+						}]
+					}
+				},
+				"can_use_promotion": true,
+				"products": [{
+					"name": "商品5",
+					"model": "M",
+					"price": 7.0,
+					"count": 1
+				}, {
+					"name": "商品5",
+					"model": "S",
+					"price": 8.0,
+					"count": 2
+				}]
+			}],
+			"invalid_products": []
+		}
+	e.g.:2
+		{
+			"product_groups": [{
+				"promotion": null,
+				"can_use_promotion": false,
+				"products": [{
+					"name": "商品1",
+					"count": 1
+				}]
+			}, {
+				"promotion": null,
+				"can_use_promotion": false,
+				"products": [{
+					"name": "商品2",
+					"count": 2
+				}]
+			}],
+			"invalid_products": []
+		}
+	"""
+	url = '/wapi/mall/shopping_cart/?woid=%d' % context.webapp_owner_id
+	response = context.client.get(bdd_util.nginx(url), follow=True)
+	product_groups = response.data['product_groups']
+	invalid_products = response.data['invalid_products']
+
+	def fill_products_model(products):
+		for product in products:
+			model = []
+			if hasattr(product, 'custom_model_properties') and product.custom_model_properties:
+				for property in product.custom_model_properties:
+					model.append('%s' % (property['property_value']))
+			product['model'] = ' '.join(model)
+			product['count'] = product['purchase_count']
+
+	fill_products_model(invalid_products)
+	for product_group in product_groups:
+		from copy import deepcopy
+		promotion = None
+		promotion = product_group['promotion']
+		products = product_group['products']
+
+		if not promotion:
+			product_group['promotion'] = None
+		elif not product_group['can_use_promotion']:
+			product_group['promotion'] = None
+		else:
+			#由于相同promotion产生的不同product group携带着同一个promotion对象，所以这里要通过copy来进行写时复制
+			new_promotion = deepcopy(promotion)
+			product_group['promotion'] = new_promotion
+			new_promotion['type'] = product_group['promotion_type']
+			new_promotion['result'] = product_group['promotion_result']
+			if new_promotion['type'] == 'flash_sale':
+				products[0].price = new_promotion['detail']['promotion_price']
+			if new_promotion['type'] == 'premium_sale':
+				new_promotion['result'] = product_group['promotion']['detail']
+
+		fill_products_model(product_group['products'])
+
+	actual = {
+		'product_groups': product_groups,
+		'invalid_products': invalid_products
+	}
+
+	expected = json.loads(context.text)
+	bdd_util.assert_dict(expected, actual)

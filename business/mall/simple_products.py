@@ -29,43 +29,41 @@ class SimpleProducts(business_model.Model):
 	)
 
 	@staticmethod
-	@param_required(['webapp_owner', 'webapp_user', 'category_id', 'is_access_weizoom_mall'])
+	@param_required(['webapp_owner', 'category_id'])
 	def get(args):
 		"""
 		工厂方法，获得与category_id对应的SimpleProducts业务对象
 
 		@param[in] webapp_owner
-		@param[in] webapp_user
 		@param[in] category_id: 商品分类的id
-		@param[in] is_access_weizoom_mall: 是否访问微众商城
 
 		@return SimpleProducts业务对象
 		"""
 		webapp_owner = args['webapp_owner']
-		# webapp_user = args['webapp_user']
 		category_id = int(args['category_id'])
-		is_access_weizoom_mall = args['is_access_weizoom_mall']
 		
-		products = SimpleProducts(webapp_owner, is_access_weizoom_mall, category_id)
+		products = SimpleProducts(webapp_owner, category_id)
 		return products
 
-	def __init__(self, webapp_owner, is_access_weizoom_mall, category_id):
+	def __init__(self, webapp_owner, category_id):
 		business_model.Model.__init__(self)
 
 		self.context['webapp_owner'] = webapp_owner
+		# jz 2015-11-26
 		# self.context['webapp_user'] = webapp_user
 
-		self.category, self.products = self.__get_from_cache(is_access_weizoom_mall, category_id)
+		self.category, self.products = self.__get_from_cache(category_id)
 
-	def __get_from_cache(self, is_access_weizoom_mall, category_id):
+	def __get_from_cache(self, category_id):
 		"""
 		从缓存中获取数据
 		"""
 		webapp_owner = self.context['webapp_owner']
+		# jz 2015-11-26
 		# webapp_user = self.context['webapp_user']
 		key = 'webapp_products_categories_{wo:%s}' % webapp_owner.id
-		data = cache_util.get_from_cache(key, self.__get_from_db(webapp_owner, is_access_weizoom_mall))
-
+		data = cache_util.get_from_cache(key, self.__get_from_db(webapp_owner))
+		products = data['products']
 		if category_id == 0:
 			category = mall_models.ProductCategory()
 			category.name = u'全部'
@@ -80,10 +78,9 @@ class SimpleProducts(business_model.Model):
 				category = mall_models.ProductCategory()
 				category.is_deleted = True
 				category.name = u'已删除分类'
-
+		# jz 2015-11-26
 		#products = mall_models.Product.from_list(data['products'])
-		products = data['products']
-		if category_id != 0:
+		# if category_id != 0:
 			products = [product for product in products if category_id in product['categories']]
 
 			# 分组商品排序
@@ -105,15 +102,14 @@ class SimpleProducts(business_model.Model):
 		return category, products
 
 
-	def __get_from_db(self, webapp_owner, is_access_weizoom_mall):
+	def __get_from_db(self, webapp_owner):
 		"""
 		从数据库中获取需要存储到缓存中的数据
 		"""
 		def inner_func():
-			webapp_id = webapp_owner.webapp_id
 			webapp_owner_id = webapp_owner.id
 
-			_, product_models = self.__get_products(webapp_id, is_access_weizoom_mall, webapp_owner_id, 0)
+			product_models = self.__get_products(webapp_owner_id, 0)
 
 			categories = mall_models.ProductCategory.select().dj_where(owner=webapp_owner_id)
 
@@ -128,6 +124,7 @@ class SimpleProducts(business_model.Model):
 
 				# Fill detail
 				product_datas = []
+				# jz 2015-11-26
 				# member = webapp_user.member
 				for product_model in product_models:
 					product = Product.from_model({
@@ -164,13 +161,9 @@ class SimpleProducts(business_model.Model):
 					return None
 		return inner_func
 
-	def __get_products(self, webapp_id, is_access_weizoom_mall, webapp_owner_id, category_id, options=dict()):
+	def __get_products(self, webapp_owner_id, category_id):
 		"""
 		get_products: 获得product集合
-
-		options可用参数：
-
-		 1. search_info: 搜索
 
 		最后修改：闫钊
 		"""
@@ -183,11 +176,11 @@ class SimpleProducts(business_model.Model):
 				shelve_type = mall_models.PRODUCT_SHELVE_TYPE_ON, 
 				is_deleted = False,
 				type__not = mall_models.PRODUCT_DELIVERY_PLAN_TYPE).order_by(mall_models.Product.display_index, -mall_models.Product.id)
-
-			if not is_access_weizoom_mall:
-				# 非微众商城
-				product_ids_in_weizoom_mall = self.__get_product_ids_in_weizoom_mall(webapp_id)
-				products.dj_where(id__notin = product_ids_in_weizoom_mall)
+			# jz 2015-11-26
+			# if not is_access_weizoom_mall:
+			# 	# 非微众商城
+			# 	product_ids_in_weizoom_mall = self.__get_product_ids_in_weizoom_mall(webapp_id)
+			# 	products.dj_where(id__notin = product_ids_in_weizoom_mall)
 
 			products_0 = products.dj_where(display_index=0)
 			products_not_0 = products.dj_where(display_index__not=0)
@@ -198,14 +191,15 @@ class SimpleProducts(business_model.Model):
 			category.name = u'全部'
 		else:
 			watchdog_alert('过期的方法分支module_api.get_products_in_webapp else', type='mall')
+			# jz 2015-11-26
 			# try:
-			if not is_access_weizoom_mall:
-				# 非微众商城
-				product_ids_in_weizoom_mall = self.__get_product_ids_in_weizoom_mall(webapp_id)
-				other_mall_product_ids_not_checked = []
-			else:
-				product_ids_in_weizoom_mall = []
-				_, other_mall_product_ids_not_checked = self.__get_not_verified_weizoom_mall_partner_products_and_ids(webapp_id)
+			# if not is_access_weizoom_mall:
+			# 	# 非微众商城
+			# 	product_ids_in_weizoom_mall = self.__get_product_ids_in_weizoom_mall(webapp_id)
+			# 	other_mall_product_ids_not_checked = []
+			# else:
+			# 	product_ids_in_weizoom_mall = []
+			# 	_, other_mall_product_ids_not_checked = self.__get_not_verified_weizoom_mall_partner_products_and_ids(webapp_id)
 
 			category = mall_models.ProductCategory.get(mall_models.ProductCategory.id==category_id)
 			category_has_products = mall_models.CategoryHasProduct.select().dj_where(category=category)
@@ -235,7 +229,7 @@ class SimpleProducts(business_model.Model):
 			# 	category = ProductCategory()
 			# 	category.is_deleted = True
 			# 	category.name = u'全部'
-
+		# jz 2015-11-26
 		#处理search信息
 		# if 'search_info' in options:
 		# 	query = options['search_info']['query']
@@ -243,43 +237,34 @@ class SimpleProducts(business_model.Model):
 		# 		conditions = {}
 		# 		conditions['name__contains'] = query
 		# 		products = products.filter(**conditions)
-		return category, products
-
-	def __get_product_ids_in_weizoom_mall(self, webapp_id):
-		return [weizoom_mall_other_mall_product.product_id for weizoom_mall_other_mall_product in mall_models.WeizoomMallHasOtherMallProduct.select().dj_where(webapp_id=webapp_id)]
-
-	def __get_weizoom_mall_partner_products_and_ids(self, webapp_id):
-		"""
-		获取该微众商城下的合作商家加入到微众商城的商品
-		"""
-		return self.__get_weizoom_mall_partner_products_and_ids_by(webapp_id)
-
-	def __get_verified_weizoom_mall_partner_products_and_ids(self, webapp_id):
-		return self.__get_weizoom_mall_partner_products_and_ids_by(webapp_id, True)
-
-	def __get_not_verified_weizoom_mall_partner_products_and_ids(self, webapp_id):
-		return self.__get_weizoom_mall_partner_products_and_ids_by(webapp_id, False)
-
-	def __get_weizoom_mall_partner_products_and_ids_by(self, webapp_id, is_checked=None):
-		if mall_models.WeizoomMall.select().dj_where(webapp_id=webapp_id).count() > 0:
-			weizoom_mall = mall_models.WeizoomMall.select().dj_where(webapp_id=webapp_id)[0]
-
-			product_ids = []
-			product_check_dict = dict()
-			other_mall_products = mall_models.WeizoomMallHasOtherMallProduct.select().dj_where(weizoom_mall=weizoom_mall)
-			if is_checked != None:
-				 other_mall_products.dj_where(is_checked=is_checked)
-
-			for other_mall_product in other_mall_products:
-				product_check_dict[other_mall_product.product_id] = other_mall_product.is_checked
-				product_ids.append(other_mall_product.product_id)
-
-			products = mall_models.Product.select().dj_where(id__in=product_ids, shelve_type=mall_models.PRODUCT_SHELVE_TYPE_ON, is_deleted=False)
-
-			for product in products:
-				product.is_checked = product_check_dict[product.id]
-
-			return products, product_ids
-		else:
-			return None, None
+		return products
+	# jz 2015-11-26
+	# def __get_product_ids_in_weizoom_mall(self, webapp_id):
+	# 	return [weizoom_mall_other_mall_product.product_id for weizoom_mall_other_mall_product in mall_models.WeizoomMallHasOtherMallProduct.select().dj_where(webapp_id=webapp_id)]
+	# def __get_weizoom_mall_partner_products_and_ids(self, webapp_id):
+	# 	"""
+	# 	获取该微众商城下的合作商家加入到微众商城的商品
+	# 	"""
+	# 	return self.__get_weizoom_mall_partner_products_and_ids_by(webapp_id)
+	# def __get_verified_weizoom_mall_partner_products_and_ids(self, webapp_id):
+	# 	return self.__get_weizoom_mall_partner_products_and_ids_by(webapp_id, True)
+	# def __get_not_verified_weizoom_mall_partner_products_and_ids(self, webapp_id):
+	# 	return self.__get_weizoom_mall_partner_products_and_ids_by(webapp_id, False)
+	# def __get_weizoom_mall_partner_products_and_ids_by(self, webapp_id, is_checked=None):
+	# 	if mall_models.WeizoomMall.select().dj_where(webapp_id=webapp_id).count() > 0:
+	# 		weizoom_mall = mall_models.WeizoomMall.select().dj_where(webapp_id=webapp_id)[0]
+	# 		product_ids = []
+	# 		product_check_dict = dict()
+	# 		other_mall_products = mall_models.WeizoomMallHasOtherMallProduct.select().dj_where(weizoom_mall=weizoom_mall)
+	# 		if is_checked != None:
+	# 			 other_mall_products.dj_where(is_checked=is_checked)
+	# 		for other_mall_product in other_mall_products:
+	# 			product_check_dict[other_mall_product.product_id] = other_mall_product.is_checked
+	# 			product_ids.append(other_mall_product.product_id)
+	# 		products = mall_models.Product.select().dj_where(id__in=product_ids, shelve_type=mall_models.PRODUCT_SHELVE_TYPE_ON, is_deleted=False)
+	# 		for product in products:
+	# 			product.is_checked = product_check_dict[product.id]
+	# 		return products, product_ids
+	# 	else:
+	# 		return None, None
 

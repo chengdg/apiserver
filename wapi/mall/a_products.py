@@ -21,12 +21,9 @@ class AProducts(api_resource.ApiResource):
 		"""
 		category_id = args['category_id']
 		webapp_owner = args['webapp_owner']
-		webapp_user = args['webapp_user']
 
 		simple_products = SimpleProducts.get({
 			"webapp_owner": webapp_owner,
-			"webapp_user": webapp_user,
 			"category_id": category_id,
-			"is_access_weizoom_mall": False
 		})
 		return simple_products.products

@@ -15,14 +15,17 @@ class WebAppOAuthMiddleware(object):
 	获取webapp owner的中间件(填充`webapp_owner`对象)
 
 	@note 优先通过access_token获取 WebAppOwner。开发模式下，优先用`woid`。
+	@note 获取access_token时，如果无openid（会员创建时无openid）,使用notopenid 进行授权取得会员openid后重新发起授权
 	"""
 	def process_request(sel, req, resp):
+		if '/user/access_token' in req.params:
+			return
+
 		if 'access_token' in req.params:
 			access_token = auth_util.decrypt_access_token(req.params['access_token']) 
-			#access_token = '3_weizoom_jobs_test'
 			access_token_list = access_token.split('_weizoom_')
 			if len(access_token_list) != 2:
-				raise 'error access_token' 
+				raise ValueError('error access_token')
 			webapp_owner_id, openid = access_token_list[0], access_token_list[1]
 			#填充webapp_owner
 			webapp_owner = WebAppOwner.get({
@@ -78,4 +81,5 @@ class WebAppOAuthMiddleware(object):
 			member_accounts['webapp_user'] = webapp_user
 			req.context.update(member_accounts) 
 		else:
-			raise "error access_token"
+			raise ValueError("error access_token")
+

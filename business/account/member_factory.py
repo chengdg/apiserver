@@ -33,7 +33,8 @@ class MemberFactory(business_model.Model):
 	__slots__ = (
 		'id',
 		'created',
-		'token'
+		'token',
+		'webapp_id'
 	)
 
 	@staticmethod
@@ -155,4 +156,6 @@ class MemberFactory(business_model.Model):
 		member_business_object.id = member.id
 		member_business_object.created = self.created
 		member_business_object.token = member.token
+		member_business_object.webapp_id = member.webapp_id
+
 		return member_business_object

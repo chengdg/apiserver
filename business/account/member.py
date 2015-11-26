@@ -35,7 +35,8 @@ class Member(business_model.Model):
 		'webapp_user',
 		'is_subscribed',
 		'created',
-		'token'
+		'token',
+		'webapp_id'
 	)
 
 	@staticmethod
@@ -359,6 +360,12 @@ class Member(business_model.Model):
 		"""
 		member = Member(None, None)
 		return member
+
+	# def to_dict(self, *extras):
+	# 	properties = ['username_for_html', 'integral', 'user_icon', 'is_binded']
+	# 	if extras:
+	# 		properties.extend(extras)
+	# 	return business_model.Model.to_dict(self, *properties)
 
 	# @property
 	# def token(self):

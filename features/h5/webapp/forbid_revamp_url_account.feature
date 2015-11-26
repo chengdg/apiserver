@@ -1,4 +1,5 @@
 # __author__ : "冯雪静"
+#editor 新新 2015.11.26
 
 Feature: 禁止修改链接串账号
 	"""
@@ -11,7 +12,7 @@ Background:
 	And jobs已添加支付方式
 		"""
 		[{
-			"type": "货到付款"
+			"type": "微信支付"
 		}]
 		"""
 	And jobs已添加商品
@@ -26,10 +27,10 @@ Background:
 		"""
 	And bill关注jobs的公众号
 	Given tom登录系统
-	And jobs已添加支付方式
+	And tom已添加支付方式
 		"""
 		[{
-			"type": "货到付款"
+			"type": "微信支付"
 		}]
 		"""
 	And tom已添加商品
@@ -55,6 +56,7 @@ Scenario: 1 修改本商户商品ID，进行访问
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品2",
 				"count": 1

@@ -18,16 +18,15 @@ class RMemberProductInfo(inner_resource.Resource):
 	app = 'member'
 	resource = 'member_product_info'
 
-	@param_required(['woid', 'wuid', 'member', 'product_id'])
+	@param_required(['member', 'product_id'])
 	def get(args):
-		woid = args['woid']
-		wuid = args['wuid']
+		webapp_owner_id = args['webapp_owner'].id
+		wuid = args['webapp_user'].id
 		member = args['member']
 
 		result_data = dict()
 		shopping_cart_count = mall_models.ShoppingCart.select().dj_where(webapp_user_id=wuid).count()
 		result_data['count'] = shopping_cart_count
-		webapp_owner_id = args['woid']
 		product_id = args['product_id']
 		if member:
 			member_id = member.id

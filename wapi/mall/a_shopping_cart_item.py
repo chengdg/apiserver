@@ -15,7 +15,7 @@ class AShoppingCartItem(api_resource.ApiResource):
 	app = 'mall'
 	resource = 'shopping_cart_item'
 	
-	@param_required(['woid', 'wuid', 'product_id', 'count'])
+	@param_required(['product_id', 'count'])
 	def put(args):
 		"""
 		创建购物车项目

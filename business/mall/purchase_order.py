@@ -71,6 +71,15 @@ class PurchaseOrder(business_model.Model):
 				"area": ship_info['area'],
 				"display_area": ship_info['area']
 			}
+		else:# TODO 收货地址
+			self.ship_info = {
+				"name": 1,
+				"id": 2,
+				"tel": 3,
+				"address": 4,
+				"area": 5,
+				"display_area": 6
+			}
 
 		#计算折扣
 		#product.original_price = product.price

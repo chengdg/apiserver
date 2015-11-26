@@ -42,18 +42,18 @@ class SimpleProducts(business_model.Model):
 		@return SimpleProducts业务对象
 		"""
 		webapp_owner = args['webapp_owner']
-		webapp_user = args['webapp_user']
+		# webapp_user = args['webapp_user']
 		category_id = int(args['category_id'])
 		is_access_weizoom_mall = args['is_access_weizoom_mall']
 		
-		products = SimpleProducts(webapp_owner, webapp_user, is_access_weizoom_mall, category_id)
+		products = SimpleProducts(webapp_owner, is_access_weizoom_mall, category_id)
 		return products
 
-	def __init__(self, webapp_owner, webapp_user, is_access_weizoom_mall, category_id):
+	def __init__(self, webapp_owner, is_access_weizoom_mall, category_id):
 		business_model.Model.__init__(self)
 
 		self.context['webapp_owner'] = webapp_owner
-		self.context['webapp_user'] = webapp_user
+		# self.context['webapp_user'] = webapp_user
 
 		self.category, self.products = self.__get_from_cache(is_access_weizoom_mall, category_id)
 
@@ -62,9 +62,9 @@ class SimpleProducts(business_model.Model):
 		从缓存中获取数据
 		"""
 		webapp_owner = self.context['webapp_owner']
-		webapp_user = self.context['webapp_user']
+		# webapp_user = self.context['webapp_user']
 		key = 'webapp_products_categories_{wo:%s}' % webapp_owner.id
-		data = cache_util.get_from_cache(key, self.__get_from_db(webapp_owner, webapp_user, is_access_weizoom_mall))
+		data = cache_util.get_from_cache(key, self.__get_from_db(webapp_owner, is_access_weizoom_mall))
 
 		if category_id == 0:
 			category = mall_models.ProductCategory()
@@ -105,7 +105,7 @@ class SimpleProducts(business_model.Model):
 		return category, products
 
 
-	def __get_from_db(self, webapp_owner, webapp_user, is_access_weizoom_mall):
+	def __get_from_db(self, webapp_owner, is_access_weizoom_mall):
 		"""
 		从数据库中获取需要存储到缓存中的数据
 		"""
@@ -128,7 +128,7 @@ class SimpleProducts(business_model.Model):
 
 				# Fill detail
 				product_datas = []
-				member = webapp_user.member
+				# member = webapp_user.member
 				for product_model in product_models:
 					product = Product.from_model({
 						'webapp_owner': webapp_owner,

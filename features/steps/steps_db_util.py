@@ -9,7 +9,8 @@ from db.mall.models import (
 
 from features.util import bdd_util
 from db.member.models import WebAppUser
-from db.mall.promotion_models import Coupon
+from db.mall import promotion_models
+from db.mall import models as mall_models
 
 
 def get_product_model_keys(product_model_name):
@@ -97,7 +98,7 @@ def get_order_by_order_id(order_id):
 
 def get_coupon_by_id(id):
     try:
-        return Coupon.objects.get(id=id)
+        return promotion_models.Coupon.objects.get(id=id)
     except:
         return None
 
@@ -119,7 +120,7 @@ def get_order_has_products(context):
 
 def get_latest_order():
     try:
-        return Order.objects.filter(origin_order_id__lte=0).order_by('-id')[0]
+        return mall_models.Order.select().dj_where(origin_order_id__gte = 0).order_by(mall_models.Order.id.desc())[0]
     except:
         return None
 

@@ -19,7 +19,6 @@ def encrypt_access_token(user_id, openid='notopenid'):
 		raise 'error user_id'
 	access_token_str = str(user_id) + '_weizoom_' + openid
 	encrypt_msg = crypt.EncryptMsg(access_token_str)
-	x = crypt.DecryptMsg(encrypt_msg)
 	return encrypt_msg
 
 

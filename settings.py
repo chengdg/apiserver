@@ -36,8 +36,7 @@ MIDDLEWARES = [
     'middleware.debug_middleware.RedisMiddleware',
 
     #账号信息中间件
-    'middleware.account_middleware.WebAppOwnerMiddleware',
-	#'middleware.account_middleware.AccountsMiddleware'
+    'middleware.webapp_oauth_middleware.WebAppOAuthMiddleware',
 ]
 #sevice celery 相关
 EVENT_DISPATCHER = 'redis'

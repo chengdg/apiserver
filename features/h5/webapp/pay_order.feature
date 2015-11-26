@@ -1,3 +1,4 @@
+#editor 新新 2015.11.26
 @func:webapp.modules.mall.views.list_products
 Feature: 在webapp中支付订单
 	bill能在webapp中支付订单
@@ -38,6 +39,7 @@ Scenario:1 使用货到付款支付
 	And bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 1
@@ -79,6 +81,7 @@ Scenario:2 使用V2版微信支付进行同步支付
 	And bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 1
@@ -126,6 +129,7 @@ Scenario:3 使用V2版微信支付进行异步支付
 	And bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品1",
 				"count": 1

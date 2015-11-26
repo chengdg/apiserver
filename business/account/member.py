@@ -21,8 +21,6 @@ import settings
 from business.decorator import cached_context_property
 from utils import emojicons_util
 from business.account.member_order_info import MemberOrderInfo
-from business.mall.shopping_cart import ShoppingCart
-
 
 class Member(business_model.Model):
 	"""
@@ -303,22 +301,6 @@ class Member(business_model.Model):
 		[property] 会员待评论订单数
 		"""
 		return self.__order_info.review_count
-
-	@cached_context_property
-	def __shopping_cart(self):
-		"""
-		[property] 与会员对应的购物车(ShoppingCart)对象
-		"""
-		return ShoppingCart.get_for_webapp_user({
-			'webapp_user': self.webapp_user
-		})
-
-	@property
-	def shopping_cart_product_count(self):
-		"""
-		[property] 会员购物车中的商品数量
-		"""
-		return self.__shopping_cart.product_count
 
 	@cached_context_property
 	def wishlist_product_count(self):

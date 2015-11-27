@@ -15,7 +15,7 @@ class AccessToken(api_resource.ApiResource):
 	resource = 'access_token'
 
 	@param_required(['woid', 'openid'])
-	def get(args):
+	def put(args):
 		"""
 		获取access_token
 		"""

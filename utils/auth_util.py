@@ -2,7 +2,7 @@
 """@package utils.auth_utils
 	access_token 加密解密工具
 """
-
+import urllib
 from utils import msg_crypt
 import settings
 
@@ -28,6 +28,7 @@ def decrypt_access_token(msg):
 	
 	@param msg 待解密字符串
 	"""
+	msg = urllib.unquote(msg)
 	result,access_token = crypt.DecryptMsg(msg)
 	if not result:
 		raise ValueError('error access_token')

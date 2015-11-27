@@ -18,12 +18,13 @@ class WebAppOAuthMiddleware(object):
 	@note 获取access_token时，如果无openid（会员创建时无openid）,使用notopenid 进行授权取得会员openid后重新发起授权
 	"""
 	def process_request(sel, req, resp):
-		if '/user/access_token' in req.params:
+		if '/user/access_token' in req.path:
 			return
 
 		if 'access_token' in req.params:
 			access_token = auth_util.decrypt_access_token(req.params['access_token']) 
 			access_token_list = access_token.split('_weizoom_')
+
 			if len(access_token_list) != 2:
 				raise ValueError('error access_token')
 			webapp_owner_id, openid = access_token_list[0], access_token_list[1]

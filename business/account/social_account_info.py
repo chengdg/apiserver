@@ -96,7 +96,7 @@ class SocialAccountInfo(business_model.Model):
 		date_str = datetime.today().strftime('%Y-%m-%d') 
 		if data['date_time'] != date_str:
 			cache_util.delete_pattern(key)
-			data = cache_util.get_from_cache(key, elf.__get_accounts_for_cache(openid, webapp_id))
+			data = cache_util.get_from_cache(key, self.__get_accounts_for_cache(openid, webapp_id))
 
 		obj = cache_util.Object()
 

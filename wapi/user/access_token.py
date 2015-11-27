@@ -4,6 +4,9 @@ from core import api_resource
 from wapi.decorators import param_required
 from utils import auth_util
 
+from db.account.models import User
+from utils import error_codes
+
 class AccessToken(api_resource.ApiResource):
 	"""
 	access_token
@@ -11,24 +14,39 @@ class AccessToken(api_resource.ApiResource):
 	app = 'user'
 	resource = 'access_token'
 
-	@param_required(['webapp_owner_id', 'openid'])
+	@param_required(['woid', 'openid'])
 	def get(args):
 		"""
 		获取access_token
 		"""
-		webapp_owner_id = args['webapp_owner_id']
+		woid = args['woid']
 		openid = args['openid']
 
+		#验证woid
+		try:
+			user = User.get(id=woid)
+		except:
+			return {"errorcode": error_codes.ILLEGAL_WOID_CODE, "errmsg": error_codes.code2msg[error_codes.ILLEGAL_WOID_CODE]}
+			
+			
 		"""
-		TODO:
-			1、验证 webapp_owner_id 和 openid是有效
+			TODO:
+				1、openid是有效
 		"""
-		if not webapp_owner_id:
-			raise 'error webapp_owner_id'
-
 		if not openid:
-			raise 'error openid'				
-		access_token = auth_util.encrypt_access_token(str(webapp_owner_id), openid)
-		return {
-			"access_token": access_token
+			return {"errorcode": error_codes.ILLEGAL_OPENID_CODE, "errmsg": error_codes.code2msg[error_codes.ILLEGAL_OPENID_CODE]}
+		
+		access_token = auth_util.encrypt_access_token(str(woid), openid)
+		data = {
+			"access_token": access_token, "expires_in": "100000000"
 		}
+
+		"""
+			TODO:
+				1.创建或者获取会员信息
+				2.存储ac信息和对应会员信息 key-value
+		"""
+
+
+		return data
+

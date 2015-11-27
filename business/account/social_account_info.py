@@ -88,7 +88,7 @@ class SocialAccountInfo(business_model.Model):
 		social_account cache
 		"""
 		webapp_id = webapp_owner.webapp_id
-		key = 'social_{webapp:%s}_{openid:%s}' % (webapp_id, openid)
+		key = 'member_{webapp:%s}_{openid:%s}' % (webapp_id, openid)
 
 		data = cache_util.get_from_cache(key, self.__get_accounts_for_cache(openid, webapp_id))
 

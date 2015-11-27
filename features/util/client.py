@@ -344,6 +344,7 @@ class RequestFactory(object):
             return path + ('?_method=%s' % method)
 
     def __set_nocache_query_string(self, path):
+        #set __nocache
         if '__nocache' in path:
             return path
         else:
@@ -354,6 +355,10 @@ class RequestFactory(object):
                     return '%s?__nocache=1' % path
                 else:
                     return '%s/?__nocache=1' % path
+
+        #set access_token
+        from utils import auth_util
+        webapp_user_id = self.webapp_user.id
 
     def get(self, path, data={}, **extra):
         "Construct a GET request."

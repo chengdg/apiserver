@@ -231,7 +231,7 @@ Scenario:3 商品添加到购物车后，后台对商品进行上下架管理
 		}
 		"""
 	Given jobs登录系统
-	When jobs-下架商品'商品1'
+	When jobs下架商品'商品1'
 	When bill访问jobs的webapp
 	Then bill能获得购物车
 		"""
@@ -252,7 +252,7 @@ Scenario:3 商品添加到购物车后，后台对商品进行上下架管理
 		"""
 
 	Given jobs登录系统
-	When jobs-上架商品'商品1'
+	When jobs上架商品'商品1'
 	When bill访问jobs的webapp
 	Then bill能获得购物车
 		"""

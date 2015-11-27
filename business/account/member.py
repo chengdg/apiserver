@@ -21,6 +21,7 @@ import settings
 from business.decorator import cached_context_property
 from utils import emojicons_util
 from business.account.member_order_info import MemberOrderInfo
+import logging
 
 class Member(business_model.Model):
 	"""
@@ -202,7 +203,7 @@ class Member(business_model.Model):
 		[property] 会员头像
 		"""
 		#TODO2: 实现获取会员头像
-		print u'TODO2: 实现获取会员头像'
+		logging.info(u'TODO2: 实现获取会员头像')
 		return ''
 
 	@cached_context_property

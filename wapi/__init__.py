@@ -7,6 +7,7 @@ import settings
 from wapi_utils import wapi_log
 import datetime as dt
 import time
+import logging
 
 """
 wapi_path = os.path.join(settings.PROJECT_HOME, '..', 'wapi')
@@ -30,7 +31,7 @@ def wapi_call(method, app, resource, data, req=None):
 	resource_name = resource
 	key = '%s-%s' % (app, resource)
 	if settings.WAPI_LOGGER_ENABLED:
-		print("called WAPI: {} {}/{}, param: {}".format(method, app, resource, data))
+		logging.debug("called WAPI: {} {}/{}, param: {}".format(method, app, resource, data))
 
 	#start_at = dt.datetime.now()
 	start_at = time.clock()

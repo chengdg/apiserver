@@ -23,6 +23,8 @@ from core.service.celery import celery_logger
 from celery.utils.log import ensure_process_aware_logger
 from celery import task
 from json import dumps,loads
+import logging
+
 # jz 2015-11-24
 # from db.svsmon.models import Svsmon,  TASK_ACCEPTED, TASK_REVOKED, TASK_ERROR, TASK_SUCCESS, TASK_TIMEOUT, TASK_RETRY, TASK_FAILURE, TASK_UNKNOWN
 #from django.core.mail import send_mail
@@ -53,7 +55,7 @@ for k,v in CELERY_BUILTINS.iteritems():
     if not SERVICE_BLACKLIST.has_key(k):
         SERVICE_BLACKLIST[k] = v
 
-print("in run_celery.py")
+logging.info("in run_celery.py")
 
 # jz 2015-11-24
 # def svslog(t, pid, task_id, status, message):
@@ -141,7 +143,7 @@ class CeleryTaskMonitor(logging.Filter):
                         # svslog(ctx['task'], r.process, ctx['id'], status=TASK_UNKNOWN, message=s)
                     subject = u'测试邮件：　服务异常: Celery收到未注册Task: %s' % ctx['task']
                     message = u'1. 请确认该Task已经添加到 settings.py:INSTALLED_TASKS;\n2. Celery重启完毕以加载该Task；\n3. 参数和异常信息:\n4. %s' % r.args[1]
-                    print message
+                    logging.info("Email Message: "+message)
                     #send_mail(subject,
                               # message, 
                               # 'heyijun@weizoom.com',

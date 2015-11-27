@@ -29,59 +29,42 @@ class WebAppOAuthMiddleware(object):
 			if len(access_token_list) != 2:
 				raise ValueError('error access_token')
 			webapp_owner_id, openid = access_token_list[0], access_token_list[1]
-			#填充webapp_owner
-			webapp_owner = WebAppOwner.get({
-				'woid': webapp_owner_id
-			})
-			req.context['webapp_owner'] = webapp_owner
-			if openid == 'notopenid':
-				return
-			#填充会员帐号信息
-			social_account_info_obj = SocialAccountInfo.get({
-				'webapp_owner':  webapp_owner,
-				'openid': openid
-				}).to_dict()
-			webapp_user = social_account_info_obj['webapp_user']
-			member = social_account_info_obj['member']
-			# member = Member.from_model({
-			# 	'webapp_owner': webapp_owner, 
-			# 	'model': social_account_info_obj['member']
-			# })
-			#member.webapp_user = webapp_user
-			webapp_user.member = member
-			social_account_info_obj['member'] = member
-			social_account_info_obj['webapp_user'] = webapp_user
-			req.context.update(social_account_info_obj)
 
 		elif settings.MODE == "develop":
-			if not 'woid' in req.params:
-				return
-			webapp_owner_id = req.params['woid']
-			webapp_owner = WebAppOwner.get({
-				'woid': webapp_owner_id
-			})
-			req.context['webapp_owner'] = webapp_owner
-			openid = 'bill_jobs'
-			webapp_id = req.context['webapp_owner'].webapp_id
-			member_accounts = resource.get('member', 'member_accounts', {
-				"openid": openid,
-				"wid": webapp_id,
-				"return_model": True
-			})
-			logging.info('get member in WebAppOAuthMiddleware...')
-			member = Member.from_model({
-				'webapp_owner': req.context['webapp_owner'], 
-				'model': member_accounts['member']
-			})
-			webapp_user = WebAppUser.from_model({
-				'webapp_owner': req.context['webapp_owner'],
-				'model': member_accounts['webapp_user']
-			})
-			webapp_user.member = member
-			#member.webapp_user = webapp_user
-			#member_accounts['member'] = member
-			member_accounts['webapp_user'] = webapp_user
-			req.context.update(member_accounts) 
+			# 开发测试支持 不传递woid使用jobs用户，不传递openid使用bill_jobs会员
+			# if not 'woid' in req.params:
+			# 	return
+			webapp_owner_id = req.params.get('woid')
+			if not webapp_owner_id:
+				webapp_owner_id = account_models.User.select().dj_where(username='jobs')[0].id
+			openid = req.params.get('openid')
+			if not openid:
+				openid = 'bill_jobs'
 		else:
 			raise ValueError("error access_token")
+
+		#填充webapp_owner
+		webapp_owner = WebAppOwner.get({
+			'woid': webapp_owner_id
+		})
+		req.context['webapp_owner'] = webapp_owner
+		if openid == 'notopenid':
+			return
+		#填充会员帐号信息
+		social_account_info_obj = SocialAccountInfo.get({
+			'webapp_owner':  webapp_owner,
+			'openid': openid
+			}).to_dict()
+		webapp_user = social_account_info_obj['webapp_user']
+		member = social_account_info_obj['member']
+		# member = Member.from_model({
+		# 	'webapp_owner': webapp_owner, 
+		# 	'model': social_account_info_obj['member']
+		# })
+		#member.webapp_user = webapp_user
+		webapp_user.member = member
+		social_account_info_obj['member'] = member
+		social_account_info_obj['webapp_user'] = webapp_user
+		req.context.update(social_account_info_obj)
+
 

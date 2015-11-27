@@ -90,7 +90,7 @@ __all__ = [
     'Window',
 ]
 
-print("peewee version:"+__version__)
+logging.info("peewee version:"+__version__)
 
 # Set default logging handler to avoid "No handlers could be found for logger
 # "peewee"" warnings.

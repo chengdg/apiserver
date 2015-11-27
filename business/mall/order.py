@@ -306,12 +306,16 @@ class Order(business_model.Model):
 				express_number=express_number
 				)
 
-	#===============================================================================
-	# notify_order : 发送邮件
-	#===============================================================================
+
 	def notify_order(user, member_id, status, order_id, buyed_time, order_status, buy_count, total_price, bill, coupon, product_name, integral, buyer_name, buyer_address, buyer_tel, remark, product_pic_list, postage='0', express_company_name=None, express_number=None):
+		"""
+		发送邮件，通知订单消息
+
+		@todo 用模板改造沟通邮件内容的代码
+		"""
 		order_notifys = UserOrderNotifySettings.objects.filter(user=user, status=status, is_active=True)
 		if order_notifys.count() > 0 and str(member_id) not in order_notifys[0].black_member_ids.split('|') and order_notifys[0].emails != '':
+			# TODO: 可以用模板改造这段代码
 			order_notify = order_notifys[0]
 			content_list = []
 			content_described = u'微商城-%s-订单' % order_status

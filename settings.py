@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import logging
 
 DEBUG = True
 PROJECT_HOME = os.path.dirname(os.path.abspath(__file__))
@@ -52,6 +53,14 @@ if MODE == 'develop':
     #sevice celery 相关
     EVENT_DISPATCHER = 'local'
     ENABLE_SQL_LOG = False
+
+    logging.basicConfig(level=logging.DEBUG,
+        format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s : %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S',
+        #filename='myapp.log',
+        #filemode='w'
+        )
+
 else:
     # 真实环境暂时关闭
     #WAPI_LOGGER_ENABLED = False
@@ -62,6 +71,13 @@ else:
     IMAGE_HOST = 'http://dev.weapp.com'
     PAY_HOST = 'api.weapp.com'
     ENABLE_SQL_LOG = False
+
+    logging.basicConfig(level=logging.INFO,
+        format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s : %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S',
+        filename='apiserver.log',
+        filemode='w+'
+        )
 
 
 #缓存相关配置

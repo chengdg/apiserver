@@ -1,8 +1,11 @@
 #bc
 #editor 新新 2015.10.20
+#editor 三香 2015.11.26
+#备注：此feature与上一版本改动比较大，实现时若有问题请及时沟通
 
 @func:webapp.modules.mall.views.list_products
 Feature: 在webapp中管理订单
+
 Background:
 	Given jobs登录系统
 	And jobs已添加商品
@@ -36,14 +39,15 @@ Scenario: 1 bill在下单购买jobs的商品后，使用货到付款进行支付
 	1. bill的订单中变为 待发货
 	2. jobs在后台看到订单变为待发货
 	3. jobs对该订单进行发货
-		bill在weapp端看到订单状态为"已发货";
+		bill在weapp端看到订单状态为"待收货";
 		jobs在后台看到的订单信息为"已发货";
 
 	When bill访问jobs的webapp
 	When bill购买jobs的商品
 		"""
 		{
-			"pay_type": "微信支付",
+			"order_id":"001",
+			"pay_type": "货到付款",
 			"products": [{
 				"name": "商品1",
 				"count": 1
@@ -56,7 +60,8 @@ Scenario: 1 bill在下单购买jobs的商品后，使用货到付款进行支付
 	Then bill成功创建订单
 		"""
 		{
-			"status": "待支付",
+			"order_no":"001",
+			"status": "待发货",
 			"final_price": 30.00,
 			"products": [{
 				"name": "商品1",
@@ -69,46 +74,12 @@ Scenario: 1 bill在下单购买jobs的商品后，使用货到付款进行支付
 			}]
 		}
 		"""
+
 	Given jobs登录系统
 	Then jobs可以看到订单列表
 		"""
 		[{
-			"status": "待支付",
-			"price": 30.00,
-			"buyer": "bill",
-			"products":[{
-				"product_name": "商品1",
-				"count": 1,
-				"total_price": "10.00"
-			},{
-				"product_name": "商品2",
-				"count": 1,
-				"total_price": "20.00"
-			}]
-		}]
-		"""
-
-	When bill使用支付方式'货到付款'进行支付
-	Then bill支付订单成功
-		"""
-		{
-			"status": "待发货",
-			"final_price": 30.00,
-			"products": [{
-				"name": "商品1",
-				"price": 10.00,
-				"count": 1
-			},{
-				"name": "商品2",
-				"price": 20.00,
-				"count": 1
-			}]
-		}
-		"""
-	Then jobs可以看到订单列表
-		"""
-		[{
-
+			"order_no":"001",
 			"status": "待发货",
 			"price": 30.00,
 			"buyer": "bill",
@@ -122,39 +93,12 @@ Scenario: 1 bill在下单购买jobs的商品后，使用货到付款进行支付
 				"total_price": "20.00"
 			}]
 		}]
-		"""
-
-	Given jobs已有的订单
-		"""
-		[{
-			"order_no":"20150423161112",
-			"member":"bill",
-			"type":"普通订单",
-			"status":"待发货",
-			"sources":"本店",
-			"order_price":30.00,
-			"payment_price":30.00,
-			"freight":0,
-			"ship_name":"bill",
-			"ship_tel":"13013013011",
-			"ship_area":"北京市,北京市,海淀区",
-			"ship_address":"泰兴大厦",
-			"products":[{
-				"name":"商品1",
-				"price": "10.00",
-				"count": 1
-			},{
-				"name":"商品2",
-				"price": "20.00",
-				"count": 1
-			}]
-		]
 		"""
 
 	When jobs填写发货信息
 		"""
 		[{
-			"order_no": "20150423161112",
+			"order_no": "001",
 			"logistics_name":"顺丰速递",
 			"number":"13013013011",
 			"logistics":true,
@@ -164,6 +108,7 @@ Scenario: 1 bill在下单购买jobs的商品后，使用货到付款进行支付
 	Then jobs可以看到订单列表
 		"""
 		[{
+			"order_no": "001",
 			"status": "已发货",
 			"price": 30.00,
 			"buyer": "bill",
@@ -176,21 +121,9 @@ Scenario: 1 bill在下单购买jobs的商品后，使用货到付款进行支付
 				"count": 1,
 				"total_price": "20.00"
 			}]
-		},{
-			"status": "待发货",
-			"price": 30.00,
-			"buyer": "bill",
-			"products":[{
-				"product_name": "商品1",
-				"count": 1,
-				"total_price": "10.00"
-			},{
-				"product_name": "商品2",
-				"count": 1,
-				"total_price": "20.00"
-			}]
 		}]
 		"""
+
 	When bill访问jobs的webapp
 	Then bill查看个人中心全部订单
 		"""
@@ -198,15 +131,6 @@ Scenario: 1 bill在下单购买jobs的商品后，使用货到付款进行支付
 			"status": "待收货",
 			"final_price": 30.00,
 			"products": [{
-				"name": "商品1"
-			},{
-				"name": "商品2"
-
-			}]
-		},{
-			"status": "待发货",
-			"final_price": 30.00,
-			"products":[{
 				"name": "商品1"
 			},{
 				"name": "商品2"
@@ -223,6 +147,7 @@ Scenario: 2 bill在下单购买jobs的商品后，又取消订单
 	When bill购买jobs的商品
 		"""
 		{
+			"order_id":"001",
 			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品1",
@@ -233,6 +158,7 @@ Scenario: 2 bill在下单购买jobs的商品后，又取消订单
 	Then bill成功创建订单
 		"""
 		{
+			"order_no":"001",
 			"status": "待支付",
 			"final_price": 10.00,
 			"products": [{
@@ -242,9 +168,12 @@ Scenario: 2 bill在下单购买jobs的商品后，又取消订单
 			}]
 		}
 		"""
+
+	Given jobs登录系统
 	Then jobs可以看到订单列表
 		"""
 		[{
+			"order_no":"001",
 			"status": "待支付",
 			"price": 10.00,
 			"buyer": "bill",
@@ -256,33 +185,12 @@ Scenario: 2 bill在下单购买jobs的商品后，又取消订单
 		}]
 		"""
 
-	Given jobs已有的订单
-		"""
-		[{
-			"order_no":"20150423161112",
-			"member":"bill",
-			"type":"普通订单",
-			"status":"已取消",
-			"sources":"本店",
-			"order_price":10.00,
-			"payment_price":10.00,
-			"freight":0,
-			"ship_name":"bill",
-			"ship_tel":"13013013011",
-			"ship_area":"北京市,北京市,海淀区",
-			"ship_address":"泰兴大厦",
-			"products":[{
-				"name":"商品1",
-				"price": "10.00",
-				"count": 1
-			}]
-		}]
-		"""
-
-	When bill取消订单'20150423161112'
+	When bill取消订单'001'
+	Given jobs登录系统
 	Then jobs可以看到订单列表
 		"""
 		[{
+			"order_no":"001",
 			"status": "已取消",
 			"price": 10.00,
 			"buyer": "bill",
@@ -291,17 +199,9 @@ Scenario: 2 bill在下单购买jobs的商品后，又取消订单
 				"count": 1,
 				"total_price": "10.00"
 			}]
-		},{
-			"status": "待支付",
-			"price": 10.00,
-			"buyer": "bill",
-			"products":[{
-				"product_name": "商品1",
-				"count": 1,
-				"total_price": "10.00"
-			}]
 		}]
 		"""
+
 	When bill访问jobs的webapp
 	Then bill查看个人中心全部订单
 		"""
@@ -309,12 +209,6 @@ Scenario: 2 bill在下单购买jobs的商品后，又取消订单
 			"status": "已取消",
 			"final_price": 10.00,
 			"products": [{
-				"name": "商品1"
-			}]
-		},{
-			"status": "待支付",
-			"final_price": 10.00,
-			"products":[{
 				"name": "商品1"
 			}]
 		}]
@@ -327,7 +221,8 @@ Scenario: 3 bill在下单购买jobs的商品后，jobs发货方式为"不需要�
 	When bill购买jobs的商品
 		"""
 		{
-			"pay_type": "微信支付",
+			"order_id":"001",
+			"pay_type": "货到付款",
 			"products": [{
 				"name": "商品1",
 				"count": 1
@@ -337,33 +232,7 @@ Scenario: 3 bill在下单购买jobs的商品后，jobs发货方式为"不需要�
 	Then bill成功创建订单
 		"""
 		{
-			"status": "待支付",
-			"final_price": 10.00,
-			"products": [{
-				"name": "商品1",
-				"price": 10.00,
-				"count": 1
-			}]
-		}
-		"""
-	Then jobs可以看到订单列表
-		"""
-		[{
-			"status": "待支付",
-			"price": 10.00,
-			"buyer": "bill",
-			"products":[{
-				"product_name": "商品1",
-				"count": 1,
-				"total_price": "10.00"
-			}]
-		}]
-		"""
-
-	When bill使用支付方式'货到付款'进行支付
-	Then bill支付订单成功
-		"""
-		{
+			"order_no": "001",
 			"status": "待发货",
 			"final_price": 10.00,
 			"products": [{
@@ -373,9 +242,12 @@ Scenario: 3 bill在下单购买jobs的商品后，jobs发货方式为"不需要�
 			}]
 		}
 		"""
+
+	Given jobs登录系统
 	Then jobs可以看到订单列表
 		"""
 		[{
+			"order_no": "001",
 			"status": "待发货",
 			"price": 10.00,
 			"buyer": "bill",
@@ -387,54 +259,17 @@ Scenario: 3 bill在下单购买jobs的商品后，jobs发货方式为"不需要�
 		}]
 		"""
 
-	Given jobs已有的订单
-		"""
-		[{
-			"order_no":"20150423161112",
-			"member":"bill",
-			"status":"待发货",
-			"sources":"本店",
-			"order_price":30.00,
-			"payment_price":30.00,
-			"freight":0,
-			"ship_name":"bill",
-			"ship_tel":"13013013011",
-			"ship_area":"北京市,北京市,海淀区",
-			"ship_address":"泰兴大厦",
-			"products":[{
-				"name":"商品1",
-				"price": "10.00",
-				"count": 1
-			},{
-				"name":"商品2",
-				"price": "20.00",
-				"count": 1
-			}]
-		}]
-		"""
 	When jobs填写发货信息
 		"""
 		[{
-			"order_no": "20150423161112"
+			"order_no": "001"
 		}]
 		"""
 	Then jobs可以看到订单列表
 		"""
 		[{
+			"order_no": "001",
 			"status": "已发货",
-			"price": 30.00,
-			"buyer": "bill",
-			"products":[{
-				"product_name": "商品1",
-				"count": 1,
-				"total_price": "10.00"
-			},{
-				"product_name": "商品2",
-				"count": 1,
-				"total_price": "20.00"
-			}]
-		},{
-			"status": "待发货",
 			"price": 10.00,
 			"buyer": "bill",
 			"products":[{
@@ -444,20 +279,12 @@ Scenario: 3 bill在下单购买jobs的商品后，jobs发货方式为"不需要�
 			}]
 		}]
 		"""
+
 	When bill访问jobs的webapp
 	Then bill查看个人中心全部订单
 		"""
 		[{
 			"status": "待收货",
-			"final_price": 30.00,
-			"products": [{
-				"name": "商品1"
-			},{
-				"name": "商品2"
-
-			}]
-		},{
-			"status": "待发货",
 			"final_price": 10.00,
 			"products":[{
 				"name": "商品1"

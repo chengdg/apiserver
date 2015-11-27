@@ -10,3 +10,4 @@ import a_shopping_cart
 import a_purchasing
 import a_order
 import a_order_list
+import a_member_product_info

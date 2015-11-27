@@ -21,7 +21,6 @@ import settings
 from business.decorator import cached_context_property
 from utils import emojicons_util
 from business.account.member_order_info import MemberOrderInfo
-from business.mall.shopping_cart import ShoppingCart
 
 
 class SocialAccount(business_model.Model):

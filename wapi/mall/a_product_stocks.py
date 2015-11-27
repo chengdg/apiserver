@@ -6,6 +6,7 @@ import resource
 
 from db.mall import models as mall_models
 from business.mall.realtime_stock import RealtimeStock
+from business.mall.shopping_cart import ShoppingCart
 
 class AProductStocks(api_resource.ApiResource):
 	"""
@@ -56,9 +57,12 @@ class AProductStocks(api_resource.ApiResource):
 
 		# 代码来自 get_member_product_info(request) mall/module_api.py
 		if 'need_member_info' in args:
-			member = args['webapp_user'].member
+			webapp_user = args['webapp_user']
+			member = webapp_user.member
 			if member:
-				result_data['count'] = member.shopping_cart_product_count
+				result_data['count'] = ShoppingCart.get_for_webapp_user({
+						'webapp_user': webapp_user
+					}).product_count
 				result_data['member_grade_id'] = member.grade_id
 				_, result_data['discount'] = member.discount
 				result_data['usable_integral'] = member.integral

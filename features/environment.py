@@ -2,6 +2,8 @@
 
 import os
 import sys
+import logging
+
 path = os.path.abspath(os.path.join('.', '..'))
 sys.path.insert(0, path)
 
@@ -53,7 +55,8 @@ def before_all(context):
 	settings.IS_UNDER_BDD = True
 
 	#启动weapp下的bdd server
-	print u'TODO2: 启动weapp下的bdd server'
+	#print u'TODO2: 启动weapp下的bdd server'
+	logging.warning(u'TODO2: 启动weapp下的bdd server')
 
 	#登录添加App
 	#client = bdd_util.login('manager')

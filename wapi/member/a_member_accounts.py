@@ -15,6 +15,7 @@ from business.spread.member_clicked_factory import MemberClickedFactory
 from business.spread.member_shared import MemberSharedUrl
 from business.spread.member_shared_factory import MemberSharedUrlFactory
 
+from wapi.user.access_token import AccessToken
 
 class AMemberAccounts(api_resource.ApiResource):
 	"""
@@ -41,13 +42,25 @@ class AMemberAccounts(api_resource.ApiResource):
 		# wxapi = weixin_api(mp_access_token)
 		# userinfo = wxapi.get_user_info(args['openid'])
 
+		if args.has_key('webapp_user'):
+			data = {}
+			webapp_user = args['webapp_user']
+			member =webapp_user.member
+			webapp_user.member = member.to_dict()
+			social_account = args['social_account']
+		else:
+			social_account_obj = SocialAccountInfo.get({
+				'webapp_owner': args['webapp_owner'],
+				'openid': args['openid']
+			})
+			webapp_user = social_account_obj.webapp_user
+			webapp_user.member = webapp_user.member.to_dict()
+			social_account = social_account_obj.social_account
+
 		data = {}
-		webapp_user = args['webapp_user']
-		member =webapp_user.member
-		webapp_user.member = member.to_dict()
-		social_account = args['social_account']
 		data['webapp_user'] = webapp_user.to_dict()
 		data['social_account'] = social_account.to_dict()
+
 		return data
 
 
@@ -129,6 +142,13 @@ class AMemberAccounts(api_resource.ApiResource):
 
 		data['webapp_user'] = webapp_user.to_dict()
 		data['social_account'] = social_account_obj.social_account.to_dict()
+
+		#创建会员成功后重新设置AccessToken
+		access_token = AccessToken.get({
+			'woid': args['webapp_owner'].id,
+			'openid': args['openid']
+			})
+		data.update(access_token)
 
 		return data
 

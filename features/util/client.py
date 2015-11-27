@@ -343,27 +343,29 @@ class RequestFactory(object):
         else:
             return path + ('?_method=%s' % method)
 
-    def __set_nocache_query_string(self, path):
+    def __fill_query_string(self, path):
         #set __nocache
         if '__nocache' in path:
-            return path
+            pass
         else:
             if '?' in path:
-                return '%s&__nocache=1' % path
+                path = '%s&__nocache=1' % path
             else:
                 if path[-1] == '/':
-                    return '%s?__nocache=1' % path
+                    path = '%s?__nocache=1' % path
                 else:
-                    return '%s/?__nocache=1' % path
+                    path = '%s/?__nocache=1' % path
 
         #set access_token
-        from utils import auth_util
-        webapp_user_id = self.webapp_user.id
+        if hasattr(self.webapp_user, 'access_token'):
+            path = '%s&access_token=%s' % (path, self.webapp_user.access_token)
+
+        return path
 
     def get(self, path, data={}, **extra):
         "Construct a GET request."
 
-        path = self.__set_nocache_query_string(path)
+        path = self.__fill_query_string(path)
         parsed = urlparse(path)
         query_string = urlencode(data, doseq=True) or force_str(parsed[4])
         if six.PY3:
@@ -381,6 +383,7 @@ class RequestFactory(object):
              **extra):
         "Construct a POST request."
 
+        path = self.__fill_query_string(path)
         data['__nocache'] = 1
         post_data = self._encode_data(data, content_type)
 

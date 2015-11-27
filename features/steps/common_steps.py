@@ -52,10 +52,19 @@ def step_impl(context, user, mp_user_name):
 
 	webapp_owner = account_models.User.get(username=mp_user_name)
 	profile = account_models.UserProfile.get(user=webapp_owner.id)
-	bdd_util.login(user, None, context=context)
+	client = bdd_util.login(user, None, context=context)
 	
+	#获得访问mp_user_name数据的access token
+	import logging
+	logging.warn(u'获取access_token')
+	response = client.get('/wapi/user/access_token/', {
+		'woid': webapp_owner.id,
+		'openid': '%s_%s' % (user, mp_user_name)
+	})
+	client.webapp_user.access_token = response.body['data']['access_token']
+	client.woid = webapp_owner.id
+
 	context.webapp_owner_id = webapp_owner.id
-	context.client.woid = context.webapp_owner_id
 	context.webapp_owner = webapp_owner
 	context.webapp_id = profile.webapp_id
 

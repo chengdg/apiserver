@@ -47,6 +47,5 @@ class AccessToken(api_resource.ApiResource):
 				2.存储ac信息和对应会员信息 key-value
 		"""
 
-
 		return data
 

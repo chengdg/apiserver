@@ -54,19 +54,17 @@ def login(user, password=None, **kwargs):
 	if 'context' in kwargs:
 		context = kwargs['context']
 		if hasattr(context, 'client'):
-			if context.client.user.username == user:
+			if context.client.webapp_user and context.client.webapp_user.username == user:
 				#如果已经登录了，且登录用户与user相同，直接返回
 				return context.client
 			else:
 				#如果已经登录了，且登录用户不与user相同，退出登录
-				context.client.user = None
+				context.client.webapp_user = None
 
 	#client = WeappClient(HTTP_USER_AGENT='WebKit MicroMessenger Mozilla')
 	client = Client()
-	response = client.put('/wapi/user/token/', {'wuid':user})
-	client.user = Obj()
-	client.user.username = user
-	client.user.token = response.body['data']['token']
+	client.webapp_user = Obj()
+	client.webapp_user.username = user
 
 	if 'context' in kwargs:
 		context = kwargs['context']

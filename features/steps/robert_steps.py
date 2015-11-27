@@ -378,9 +378,10 @@ def step_impl(context, webapp_user_name):
 	def fill_products_model(products):
 		for product in products:
 			model = []
-			if hasattr(product, 'custom_model_properties') and product.custom_model_properties:
-				for property in product.custom_model_properties:
-					model.append('%s' % (property['property_value']))
+			original_model = product['model']
+			if original_model and 'property_values' in original_model:
+				for property_value in original_model['property_values']:
+					model.append('%s' % (property_value['name']))
 			product['model'] = ' '.join(model)
 			product['count'] = product['purchase_count']
 
@@ -415,3 +416,22 @@ def step_impl(context, webapp_user_name):
 
 	expected = json.loads(context.text)
 	bdd_util.assert_dict(expected, actual)
+
+
+@when(u"{webapp_user_name}从购物车中删除商品")
+def step_impl(context, webapp_user_name):
+	product_names = json.loads(context.text)
+	product_ids = []
+	for product_name in product_names:
+		product = mall_models.Product.get(owner=context.webapp_owner_id, name=product_name)
+		product_ids.append(product.id)
+
+	#忽略model的处理，所以feature中要保证购物车中不包含同一个商品的不同规格
+	shopping_cart_item_ids = [str(item.id) for item in mall_models.ShoppingCart.select().dj_where(webapp_user_id=context.webapp_user.id, product_id__in=product_ids)]
+	data = {
+		"shopping_cart_item_ids": ','.join(shopping_cart_item_ids),
+		"woid": context.webapp_owner_id
+	}
+
+	response = context.client.post('/wapi/mall/shopping_cart_item/?_method=delete', data)
+	bdd_util.assert_api_call_success(response)

@@ -58,11 +58,13 @@ class AProductStocks(api_resource.ApiResource):
 		# 代码来自 get_member_product_info(request) mall/module_api.py
 		if 'need_member_info' in args:
 			webapp_user = args['webapp_user']
+			webapp_owner = args['webapp_owner']
 			member = webapp_user.member
 			if member:
 				result_data['count'] = ShoppingCart.get_for_webapp_user({
-						'webapp_user': webapp_user
-					}).product_count
+					'webapp_owner': webapp_owner,
+					'webapp_user': webapp_user
+				}).product_count
 				result_data['member_grade_id'] = member.grade_id
 				_, result_data['discount'] = member.discount
 				result_data['usable_integral'] = member.integral

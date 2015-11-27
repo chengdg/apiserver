@@ -48,6 +48,12 @@ class ShoppingCartProduct(business_model.Model):
 		'is_member_product',
 		'promotion',
 		'shopping_cart_id',
+
+		'shelve_type',
+		'is_deleted',
+		'stock_type',
+		'stocks',
+		'is_model_deleted'
 	)
 
 	@staticmethod
@@ -91,6 +97,8 @@ class ShoppingCartProduct(business_model.Model):
 		model = product.get_specific_model(product_info['model_name'])
 		self.type = product.type
 		self.id = product.id
+		self.is_deleted = product.is_deleted
+		self.shelve_type = product.shelve_type
 		self.name = product.name
 		self.thumbnails_url = product.thumbnails_url
 		self.is_use_custom_model = product.is_use_custom_model
@@ -102,6 +110,9 @@ class ShoppingCartProduct(business_model.Model):
 		if not hasattr(product, 'min_limit'):
 			self.min_limit = model['stocks']
 		self.model_name = product_info['model_name']
+		self.stock_type = model['stock_type']
+		self.stocks = model['stocks']
+		self.is_model_deleted = False
 		self.model = model
 		self.product_model_id = '%s_%s' % (product_info['id'], product_info['model_name'])
 		self.purchase_count = product_info['count']

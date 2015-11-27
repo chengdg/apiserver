@@ -6,6 +6,7 @@ from behave import *
 from features.util import bdd_util
 #from features.util.helper import WAIT_SHORT_TIME
 from db.account import models as account_models
+from db.member import models as member_models
 
 from features.steps import weapp_steps 
 
@@ -55,9 +56,7 @@ def step_impl(context, user, mp_user_name):
 	client = bdd_util.login(user, None, context=context)
 	
 	#获得访问mp_user_name数据的access token
-	import logging
-	logging.warn(u'获取access_token')
-	response = client.get('/wapi/user/access_token/', {
+	response = client.put('/wapi/user/access_token/', {
 		'woid': webapp_owner.id,
 		'openid': '%s_%s' % (user, mp_user_name)
 	})
@@ -68,3 +67,8 @@ def step_impl(context, user, mp_user_name):
 	context.webapp_owner = webapp_owner
 	context.webapp_id = profile.webapp_id
 
+	#获取数据库中的webapp_user
+	member = bdd_util.get_member_for(user, context.webapp_id)
+	db_webapp_user = member_models.WebAppUser.get(member_id=member.id)
+	client.webapp_user.id = db_webapp_user.id
+	context.webapp_user = client.webapp_user

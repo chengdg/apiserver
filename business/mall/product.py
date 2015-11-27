@@ -476,7 +476,7 @@ class Product(business_model.Model):
 		"""
 		models = self.models
 
-		candidate_models = filter(lambda m: m['name'] == model_name, models)
+		candidate_models = filter(lambda m: m['name'] == model_name if m else False, models)
 		if len(candidate_models) > 0:
 			model = candidate_models[0]
 			return model

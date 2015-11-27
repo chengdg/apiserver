@@ -45,6 +45,11 @@ http://localhost:8001/console/
 
 > **数据**部分的遵循JavaScript语法。变量必须是`data`。
 
+通用参数：
+* access_token 开发环境不需，正式接口使用，包含woid和openid等信息
+* woid 开发环境使用，商户id，不填写默认使用jobs账号的id
+* openid 开发环境使用，会员唯一标示，不填写默认使用bill会员
+> openid BDD环境测试数据格式是bill_jobs、tom_jobs、nokia_jobs等，保存在binding_social_account表中，和member_member表有一个中间关系表member_has_social_account
 
 ## BDD测试 ##
 

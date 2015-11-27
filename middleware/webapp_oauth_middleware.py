@@ -22,9 +22,10 @@ class WebAppOAuthMiddleware(object):
 			return
 
 		if 'access_token' in req.params:
+			if settings.DEBUG:
+				print 'WebAppOAuthMiddleware:access_token:>>>>>>>>>>>>>',req.params['access_token']
 			access_token = auth_util.decrypt_access_token(req.params['access_token']) 
 			access_token_list = access_token.split('_weizoom_')
-
 			if len(access_token_list) != 2:
 				raise ValueError('error access_token')
 			webapp_owner_id, openid = access_token_list[0], access_token_list[1]

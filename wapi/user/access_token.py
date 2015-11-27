@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from urllib import quote
 from core import api_resource
 from wapi.decorators import param_required
 from utils import auth_util
@@ -15,7 +16,7 @@ class AccessToken(api_resource.ApiResource):
 	resource = 'access_token'
 
 	@param_required(['woid', 'openid'])
-	def get(args):
+	def put(args):
 		"""
 		获取access_token
 		"""
@@ -38,7 +39,7 @@ class AccessToken(api_resource.ApiResource):
 		
 		access_token = auth_util.encrypt_access_token(str(woid), openid)
 		data = {
-			"access_token": access_token, "expires_in": "100000000"
+			"access_token": quote(access_token), "expires_in": "100000000"
 		}
 
 		"""

@@ -144,7 +144,7 @@ class AMemberAccounts(api_resource.ApiResource):
 		data['social_account'] = social_account_obj.social_account.to_dict()
 
 		#创建会员成功后重新设置AccessToken
-		access_token = AccessToken.get({
+		access_token = AccessToken.put({
 			'woid': args['webapp_owner'].id,
 			'openid': args['openid']
 			})

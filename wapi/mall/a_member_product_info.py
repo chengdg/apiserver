@@ -6,7 +6,7 @@ from wapi.decorators import param_required
 import resource
 from db.mall import models as mall_models
 
-class MemberProductInfo(api_resource.ApiResource):
+class AMemberProductInfo(api_resource.ApiResource):
 	"""
 	商品
 	"""

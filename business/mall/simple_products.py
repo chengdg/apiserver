@@ -140,7 +140,7 @@ class SimpleProducts(business_model.Model):
 						"id": product.id,
 						"name": product.name,
 						"is_member_product": product.is_member_product,
-						"display_price": product.display_price,
+						"display_price": product.price_info['display_price'],
 						"promotion_js": json.dumps(product.promotion),
 						"thumbnails_url": product.thumbnails_url
 					})

@@ -57,6 +57,8 @@ class WebAppOAuthMiddleware(object):
 			}).to_dict()
 		webapp_user = social_account_info_obj['webapp_user']
 		member = social_account_info_obj['member']
+		#TODO2: h5端开发支持，需要删除这里的硬编码
+		member.is_subscribed = True
 		# member = Member.from_model({
 		# 	'webapp_owner': webapp_owner, 
 		# 	'model': social_account_info_obj['member']

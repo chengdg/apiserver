@@ -30,6 +30,7 @@ class WebAppUser(business_model.Model):
 	__slots__ = (
 		'id',
 		'member',
+		'social_account',
 		'has_purchased'
 	)
 
@@ -114,9 +115,9 @@ class WebAppUser(business_model.Model):
 		if not self.has_purchased:
 			member_models.WebAppUser.update(has_purchased=True).dj_where(id=self.id).execute()
 
+	def to_dict(self, *extras):
+		data = {}
+		data['id'] = self.id
+		data['member'] = self.member.to_dict()
 
-	# def to_dict(self, *extras):
-	# 	properties = ['ship_infos', 'ship_info', 'integral_info', 'is_binded']
-	# 	if extras:
-	# 		properties.extend(extras)
-	# 	return business_model.Model.to_dict(self, *properties)
+		return data

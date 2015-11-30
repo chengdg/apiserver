@@ -7,7 +7,7 @@ from utils import url_helper
 import resource
 from business.account.member_factory import MemberFactory
 from business.account.member import Member
-from business.account.social_account_info import SocialAccountInfo
+from business.account.system_account import SystemAccount
 from business.spread.member_relations import MemberRelation
 from business.spread.member_relations_factory import MemberRelatonFactory
 from business.spread.member_clicked import MemberClickedUrl

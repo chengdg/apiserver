@@ -5,7 +5,7 @@ import resource
 from business.account.webapp_owner import WebAppOwner
 from business.account.member import Member
 from business.account.webapp_user import WebAppUser
-from business.account.social_account_info import SocialAccountInfo
+from business.account.system_account import SystemAccount
 from utils import msg_crypt,auth_util
 import settings
 import logging
@@ -43,6 +43,8 @@ class WebAppOAuthMiddleware(object):
 		else:
 			raise ValueError("error access_token")
 
+		#TODO2: 支持开发的临时解决方案，需要删除
+		openid = 'bill_jobs'
 		#填充webapp_owner
 		webapp_owner = WebAppOwner.get({
 			'woid': webapp_owner_id
@@ -51,22 +53,16 @@ class WebAppOAuthMiddleware(object):
 		if openid == 'notopenid':
 			return
 		#填充会员帐号信息
-		social_account_info_obj = SocialAccountInfo.get({
+		system_account = SystemAccount.get({
 			'webapp_owner':  webapp_owner,
 			'openid': openid
-			}).to_dict()
-		webapp_user = social_account_info_obj['webapp_user']
-		member = social_account_info_obj['member']
-		#TODO2: h5端开发支持，需要删除这里的硬编码
-		member.is_subscribed = True
+		})
 		# member = Member.from_model({
 		# 	'webapp_owner': webapp_owner, 
 		# 	'model': social_account_info_obj['member']
 		# })
 		#member.webapp_user = webapp_user
-		webapp_user.member = member
-		social_account_info_obj['member'] = member
-		social_account_info_obj['webapp_user'] = webapp_user
-		req.context.update(social_account_info_obj)
-
-
+		
+		req.context.update({
+			'webapp_user': system_account.webapp_user
+		})

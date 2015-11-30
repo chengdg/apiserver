@@ -7,7 +7,7 @@ from utils import url_helper
 import resource
 from business.account.member_factory import MemberFactory
 from business.account.member import Member
-from business.account.social_account_info import SocialAccountInfo
+from business.account.system_account import SystemAccount
 from business.spread.member_relations import MemberRelation
 from business.spread.member_relations_factory import MemberRelatonFactory
 from business.spread.member_clicked import MemberClickedUrl
@@ -31,31 +31,8 @@ class AMemberAccounts(api_resource.ApiResource):
 
 		@param id 商品ID
 		"""
-
-		"""
-			微信api和watchdog 测试
-			TODO：删掉
-		"""
-		# from wapi.user.weixin_models import WeixinMpUserAccessToken
-		# from core.wxapi.weixin_api import weixin_api
-		# mp_access_token = WeixinMpUserAccessToken.get(id=3)
-		# wxapi = weixin_api(mp_access_token)
-		# userinfo = wxapi.get_user_info(args['openid'])
-
-		if args.has_key('webapp_user'):
-			data = {}
-			webapp_user = args['webapp_user']
-			member =webapp_user.member
-			webapp_user.member = member.to_dict()
-			social_account = args['social_account']
-		else:
-			social_account_obj = SocialAccountInfo.get({
-				'webapp_owner': args['webapp_owner'],
-				'openid': args['openid']
-			})
-			webapp_user = social_account_obj.webapp_user
-			webapp_user.member = webapp_user.member.to_dict()
-			social_account = social_account_obj.social_account
+		webapp_user = args['webapp_user']
+		social_account = webapp_user.social_account
 
 		data = {}
 		data['webapp_user'] = webapp_user.to_dict()
@@ -132,16 +109,13 @@ class AMemberAccounts(api_resource.ApiResource):
 							'followed': created
 							}).update()
 
-		social_account_obj = SocialAccountInfo.get({
+		system_account = SystemAccount.get({
 				'webapp_owner': args['webapp_owner'],
 				'openid': args['openid']
 			})
 		data = {}
-		webapp_user = social_account_obj.webapp_user
-		webapp_user.member = webapp_user.member.to_dict()
-
-		data['webapp_user'] = webapp_user.to_dict()
-		data['social_account'] = social_account_obj.social_account.to_dict()
+		data['webapp_user'] = system_account.webapp_user.to_dict()
+		data['social_account'] = system_account.social_account.to_dict()
 
 		#创建会员成功后重新设置AccessToken
 		access_token = AccessToken.put({

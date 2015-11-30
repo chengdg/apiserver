@@ -19,6 +19,7 @@ import resource
 from core.watchdog.utils import watchdog_alert
 from business import model as business_model
 from business.account.member import Member
+from business.mall.shopping_cart import ShoppingCart
 import settings
 from business.decorator import cached_context_property
 
@@ -107,6 +108,16 @@ class WebAppUser(business_model.Model):
 			return list(member_models.ShipInfo.select().dj_where(webapp_user_id=self.id, is_deleted=False))
 		except:
 			return None
+
+	@cached_context_property
+	def shopping_cart(self):
+		webapp_owner = self.context['webapp_owner']
+
+		shopping_cart = ShoppingCart.get_for_webapp_user({
+			'webapp_owner': webapp_owner,
+			'webapp_user': self
+		})
+		return shopping_cart
 
 	def set_purchased(self):
 		"""

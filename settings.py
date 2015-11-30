@@ -31,6 +31,7 @@ DATABASES = {
 
 
 MIDDLEWARES = [
+    'middleware.OAuth_middleware.OAuthMiddleware',
     'middleware.core_middleware.ApiAuthMiddleware',
     
     'middleware.debug_middleware.SqlMonitorMiddleware',

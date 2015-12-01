@@ -17,6 +17,12 @@ class Model(object):
 					value = int(value)
 				setattr(self, slot, value)
 
+	def after_from_dict(self):
+		"""
+		from_dict调用结束前的hook函数，允许sub class修改from_dict的结果
+		"""
+		pass
+
 	@classmethod
 	def from_dict(cls, dict):
 		instance = cls()
@@ -24,6 +30,7 @@ class Model(object):
 			value = dict.get(slot, None)
 
 			setattr(instance, slot, value)
+		instance.after_from_dict()
 		return instance
 
 	def to_dict(self, *extras):

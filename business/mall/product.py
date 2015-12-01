@@ -20,6 +20,8 @@ from core.watchdog.utils import watchdog_alert
 from business import model as business_model
 import settings
 from business.mall.forbidden_coupon_product_ids import ForbiddenCouponProductIds
+from business.mall.product_model_generator import ProductModelGenerator
+from business.mall.product_model import ProductModel
 
 
 class CachedProduct(object):
@@ -147,7 +149,7 @@ class CachedProduct(object):
 			for product_model in product.models:
 				#获取折扣后的价格
 				if webapp_owner_id != product.owner_id and product.weshop_sync == 2:
-					product_model['price'] = round(product_model['price'] * 1.1, 2)
+					product_model.price = round(product_model.price * 1.1, 2)
 		except:
 			if settings.DEBUG:
 				raise
@@ -320,24 +322,6 @@ class Product(business_model.Model):
 		"""
 		self.context['total_stocks'] = value
 
-	# @property
-	# def is_use_custom_model(self):
-	# 	"""
-	# 	[property] 是否使用了定制规格
-	# 	"""
-	# 	context = self.context
-	# 	if not 'is_use_custom_model' in context:
-	# 		context['is_use_custom_model'] = (
-	# 			mall_models.ProductModel.select().dj_where(product=self.id, is_standard=False, is_deleted=False).count() > 0)  # 是否使用定制规格
-	# 	return context['is_use_custom_model']
-
-	# @is_use_custom_model.setter
-	# def is_use_custom_model(self, value):
-	# 	"""
-	# 	[property setter] 是否使用了定制规格
-	# 	"""
-	# 	self.context['is_use_custom_model'] = value
-
 	# 如果规格有图片就显示，如果没有，使用缩略图
 	@property
 	def order_thumbnails_url(self):
@@ -398,181 +382,12 @@ class Product(business_model.Model):
 		"""
 		models = self.models
 
-		candidate_models = filter(lambda m: m['name'] == model_name if m else False, models)
+		candidate_models = filter(lambda m: m.name == model_name if m else False, models)
 		if len(candidate_models) > 0:
 			model = candidate_models[0]
 			return model
 		else:
 			return None
-
-	# def fill_specific_model(self, model_name, models=None):
-	# 	if not models:
-	# 		models = self.models
-
-	# 	candidate_models = filter(lambda m: m['name'] == model_name, models)
-	# 	if len(candidate_models) > 0:
-	# 		model = candidate_models[0]
-	# 		product = self
-	# 		product.price = model['price']
-	# 		product.weight = model['weight']
-	# 		product.stock_type = model['stock_type']
-	# 		if not hasattr(product, 'min_limit'):
-	# 			product.min_limit = product.stocks
-	# 		product.stocks = model['stocks']
-	# 		product.model_name = model_name
-	# 		product.model = model
-	# 		product.is_model_deleted = False
-	# 		product.market_price = model.get('market_price', 0.0)
-
-	# 		if model_name == 'standard':
-	# 			product.custom_model_properties = None
-	# 		else:
-	# 			product.custom_model_properties = [{'property_value': property_value['name']} for property_value in model['property_values']]
-
-	# def fill_standard_model(self):
-	# 	"""
-	# 	填充标准商品规格信息
-	# 	"""
-	# 	try:
-	# 		product_model = ProductModel.get(product=self.id, is_standard=True)
-
-	# 		self.price = product_model.price
-	# 		self.weight = product_model.weight
-	# 		self.stock_type = product_model.stock_type
-	# 		self.min_limit = self.stocks
-	# 		self.stocks = product_model.stocks
-	# 		self.market_price = product_model.market_price
-	# 		return product_model
-	# 	except:
-	# 		if settings.DEBUG:
-	# 			raise
-	# 		else:
-	# 			fatal_msg = u"商品填充标准规格信息错误，商品id:{}, cause:\n{}".format(self.id, unicode_full_stack())
-	# 			watchdog_fatal(fatal_msg)
-
-	# def fill_model(self, show_delete=False):
-	# 	"""
-	# 	填充所有商品规格信息
-	# 	"""
-	# 	standard_model = self.fill_standard_model()
-
-	# 	if self.is_use_custom_model:
-	# 		self.custom_models = ProductModel.select().dj_where(product=self.id, name__not='standard', is_deleted=show_delete)
-	# 	else:
-	# 		self.custom_models = []
-
-	# 	self.models = []
-	# 	self.models.append({
-	# 		"id": standard_model.id,
-	# 		"name": "standard",
-	# 		"original_price": self.price,
-	# 		"price": self.price,
-	# 		"weight": self.weight,
-	# 		"stock_type": self.stock_type,
-	# 		"stocks": self.stocks,
-	# 		"market_price": self.market_price,
-	# 		"user_code": self.user_code
-	# 	})
-
-	# 	self.custom_properties = []
-	# 	self.product_model_properties = []
-	# 	recorded_model_property = set()  # 保存已记录的model property
-	# 	if len(self.custom_models) > 0:
-	# 		# 获取系统所有property
-	# 		id2property = dict([(property.id, property) for property in ProductModelProperty.select().dj_where(owner=self.owner_id, is_deleted=False)])
-	# 		properties = id2property.values()
-	# 		properties.sort(lambda x, y: cmp(x.id, y.id))
-	# 		for property in properties:
-	# 			self.custom_properties.append({
-	# 				"id": property.id,
-	# 				"name": property.name
-	# 			})
-	# 		self.custom_properties_json_str = json.dumps(self.custom_properties)
-
-	# 		property_ids = id2property.keys()
-	# 		id2value = dict([(value.id, value) for value in ProductModelPropertyValue.select().dj_where(property_id__in=property_ids, is_deleted=False)])
-
-	# 		# 获取系统所有<property, [values]>
-	# 		id2property = {}
-	# 		for property in properties:
-	# 			id2property[
-	# 				property.id] = {
-	# 				"id": property.id,
-	# 				"name": property.name,
-	# 				"values": []}
-	# 		stock_custom_model_names = []  # 无限库存或库存不为>0的custom_model_name集合
-	# 		property_value_ids = []
-	# 		for custom_model in self.custom_models:
-	# 			if custom_model.stock_type == 0 or custom_model.stocks > 0:
-	# 				stock_custom_model_names.append(str(custom_model.name))
-	# 			for model_property_info in custom_model.name.split('_'):
-	# 				property_id, property_value_id = model_property_info.split(':')
-	# 				property_value_ids.append(int(property_value_id))
-	# 		self.stock_custom_model_names = stock_custom_model_names
-
-	# 		# 解决规格顺序错乱的BUG
-	# 		values = id2value.values()
-	# 		if values:
-	# 			values.sort(lambda x, y: cmp(x.id, y.id))
-
-	# 		for value in values:
-	# 			# 增加该规格值是否属于该产品
-	# 			is_belong_product = (value.id in property_value_ids)
-	# 			id2property[value.property_id]['values'].append({
-	# 				"id": value.id,
-	# 				"name": value.name,
-	# 				"image": value.pic_url,
-	# 				"is_belong_product": is_belong_product
-	# 			})
-	# 		self.model_properties = id2property.values()
-	# 		self.model_properties.sort(lambda x, y: cmp(x['id'], y['id']))
-
-	# 		# 获取商品关联的所有的model和property
-	# 		for custom_model in self.custom_models:
-	# 			if custom_model.name == 'standard':
-	# 				continue
-
-	# 			model_dict = {
-	# 				"id": custom_model.id,
-	# 				"name": custom_model.name,
-	# 				"original_price": custom_model.price,
-	# 				"price": custom_model.price,
-	# 				"weight": custom_model.weight,
-	# 				"stock_type": custom_model.stock_type,
-	# 				"stocks": custom_model.stocks,
-	# 				"user_code": custom_model.user_code,
-	# 				"market_price": custom_model.market_price
-	# 			}
-
-	# 			model_dict['property_values'] = []
-	# 			try:
-	# 				for model_property_info in custom_model.name.split('_'):
-	# 					property_id, property_value_id = model_property_info.split(':')
-	# 					if not id2value.has_key(int(property_value_id)):
-	# 						continue
-	# 					model_dict['property_values'].append({
-	# 						"propertyId": property_id,
-	# 						"propertyName": id2property[int(property_id)]['name'],
-	# 						"id": property_value_id,
-	# 						"name": id2value[int(property_value_id)].name
-	# 					})
-
-	# 					# 记录商品的model property
-	# 					if not property_id in recorded_model_property:
-	# 						model_property = id2property[int(property_id)]
-	# 						self.product_model_properties.append(model_property)
-	# 						recorded_model_property.add(property_id)
-
-	# 				self.models.append(model_dict)
-	# 			except:
-	# 				fatal_msg = u"商品填充所有商品规格信息错误，商品id:{}, 错误的mall_product_model.id:{}, cause:\n{}".format(
-	# 					self.id,
-	# 					custom_model.id,
-	# 					unicode_full_stack())
-	# 				watchdog_fatal(fatal_msg)
-
-	# 	self.models_json_str = json.dumps(self.models)
-	# 	self.product_model_properties_json_str = json.dumps(self.product_model_properties)
 
 	@staticmethod
 	def __fill_display_price(products):
@@ -585,21 +400,21 @@ class Product(business_model.Model):
 					#只有一个custom model，显示custom model的价格信息
 					product_model = custom_models[0]
 					product.price_info = {
-						'display_price': str("%.2f" % product_model['price']),
-						'display_original_price': str("%.2f" % product_model['original_price']),
-						'display_market_price': str("%.2f" % product_model['market_price']),
-						'min_price': product_model['price'],
-						'max_price': product_model['price'],
+						'display_price': str("%.2f" % product_model.price),
+						'display_original_price': str("%.2f" % product_model.original_price),
+						'display_market_price': str("%.2f" % product_model.market_price),
+						'min_price': product_model.price,
+						'max_price': product_model.price,
 					}
 				else:
 					#有多个custom model，显示custom model集合组合后的价格信息
 					prices = []
 					market_prices = []
 					for product_model in custom_models:
-						if product_model['price'] > 0:
-							prices.append(product_model['price'])
-						if product_model['market_price'] > 0:
-							market_prices.append(product_model['market_price'])
+						if product_model.price > 0:
+							prices.append(product_model.price)
+						if product_model.market_price > 0:
+							market_prices.append(product_model.market_price)
 
 					if len(market_prices) == 0:
 						market_prices.append(0.0)
@@ -637,62 +452,15 @@ class Product(business_model.Model):
 			else:
 				standard_model = product.models[0]
 				product.price_info = {
-					'display_price': str("%.2f" % standard_model['price']),
-					'display_original_price': str("%.2f" % standard_model['original_price']),
-					'display_market_price': str("%.2f" % standard_model['market_price']),
-					'min_price': standard_model['price'],
-					'max_price': standard_model['price'],
+					'display_price': str("%.2f" % standard_model.price),
+					'display_original_price': str("%.2f" % standard_model.original_price),
+					'display_market_price': str("%.2f" % standard_model.market_price),
+					'min_price': standard_model.price,
+					'max_price': standard_model.price,
 				}
-		"""
-		product2models = {}
-		product_ids = [product.id for product in products]
-		for model in mall_models.ProductModel.select().dj_where(product__in=product_ids):
-			if model.is_deleted:
-				# model被删除，跳过
-				continue
-
-			product_id = model.product_id
-			if product_id in product2models:
-				models = product2models[product_id]
-			else:
-				models = {
-					'standard_model': None,
-					'custom_models': [],
-					'is_use_custom_model': False
-				}
-				product2models[product_id] = models
-
-			if model.name == 'standard':
-				models['standard_model'] = model
-			else:
-				models['is_use_custom_model'] = True
-				models['custom_models'].append(model)
-
-		# 为每个product确定显示价格
-		for product in products:
-			product_id = product.id
-			if product_id in product2models:
-				models = product2models[product.id]
-				if models['is_use_custom_model']:
-					custom_models = models['custom_models']
-					if len(custom_models) == 1:
-						product.display_price = custom_models[0].price
-					else:
-						prices = sorted(
-							[model.price
-							 for model in custom_models])
-						# 列表页部分显示商品的最小价格
-						# add by liupeiyu at 19.0
-						# product.display_price = '%s-%s' % (prices[0], prices[-1])
-						product.display_price = prices[0]
-				else:
-					product.display_price = models['standard_model'].price
-			else:
-				product.display_price = product.price
-		"""
 
 	@staticmethod
-	def __fill_model_detail(webapp_owner_id, products, product_ids, id2property={}, id2propertyvalue={}, is_enable_model_property_info=False):
+	def __fill_model_detail(webapp_owner_id, products, is_enable_model_property_info=False):
 		"""填充商品规格相关细节
 		向product中添加is_use_custom_model, models, used_system_model_properties三个属性
 		"""
@@ -700,237 +468,14 @@ class Product(business_model.Model):
 			#已经完成过填充，再次进入，跳过填充
 			return
 
-		_id2property = {}
-		_id2propertyvalue = {}
-		if is_enable_model_property_info:
-			for id, property in id2property.items():
-				_id2property[id] = {
-					"id": property.id,
-					"name": property.name,
-					"values": []
-				}
-
-			for id, value in id2propertyvalue.items():
-				_property_id, _value_id = id.split(':')
-				_property = _id2property[_property_id]
-				data = {
-					'propertyId': _property['id'],
-					'propertyName': _property['name'],
-					"id": value.id,
-					"name": value.name,
-					"image": value.pic_url,
-					"is_belong_product": False
-				}
-				_id2propertyvalue[id] = data
-				_property['values'].append(data)
-
-		# 获取所有models
-		product2models = {}
-		for model in mall_models.ProductModel.select().dj_where(product_id__in=product_ids):
-			if model.is_deleted:
-				# model被删除，跳过
-				continue
-
-			model_dict = {
-				"id": model.id,
-				"name": model.name,
-				"price": model.price,
-				"original_price": model.price,
-				"weight": model.weight,
-				"stock_type": model.stock_type,
-				"stocks": model.stocks if model.stock_type == mall_models.PRODUCT_STOCK_TYPE_LIMIT else u'无限',
-				"user_code": model.user_code,
-				"market_price": model.market_price
-			}
-
-			'''
-			获取model关联的property信息
-				model.property_values = [{
-					'propertyId': 1,
-					'propertyName': '颜色',
-					'id': 1,
-					'value': '红'
-				}, {
-					'propertyId': 2,
-					'propertyName': '尺寸',
-					'id': 3,
-					'value': 'S'
-				}]
-
-				model.property2value = {
-					'颜色': '红',
-					'尺寸': 'S'
-				}
-			'''
-			if is_enable_model_property_info and model.name != 'standard':
-				ids = model.name.split('_')
-				property_values = []
-				property2value = {}
-				for id in ids:
-					# id的格式为${property_id}:${value_id}
-					_property_id, _value_id = id.split(':')
-					_property = _id2property[_property_id]
-					_value = _id2propertyvalue[id]
-					property2value[_property['name']] = {
-						'id': _value['id'],
-						'name': _value['name']
-					}
-					property_values.append({
-						'propertyId': _property['id'],
-						'propertyName': _property['name'],
-						'id': _value['id'],
-						'name': _value['name'],
-						'image': 'http://%s%s' % (settings.IMAGE_HOST, _value['image'])
-					})
-					_value['is_belong_product'] = True
-				model_dict['property_values'] = property_values
-				model_dict['property2value'] = property2value
-
-			product_id = model.product_id
-			if product_id in product2models:
-				models = product2models[product_id]
-			else:
-				models = {
-					'standard_model': None,
-					'custom_models': [],
-					'is_use_custom_model': False}
-				product2models[product_id] = models
-
-			if model.name == 'standard':
-				models['standard_model'] = model_dict
-			else:
-				models['is_use_custom_model'] = True
-				models['custom_models'].append(model_dict)
-
-		for product in products:
-			#product.system_model_properties = _id2property.values()
-			product_id = product.id
-			if product_id in product2models:
-				models = product2models[product.id]
-				if models['is_use_custom_model']:
-					product.is_use_custom_model = True
-					product.models = models['custom_models']
-				else:
-					product.is_use_custom_model = False
-					product.models = [models['standard_model']]
-			else:
-				product.is_use_custom_model = False
-				product.models = []
-
-		"""
-		从models中构建used_system_model_properties，
-		加入商品有以下两个规格
-		1. {property:'颜色', value:'红色'}, {property:'尺寸', value:'M'}
-		2. {property:'颜色', value:'黄色'}, {property:'尺寸', value:'M'}
-
-		则合并后的used_system_model_properties为:
-		[{
-			property: '颜色',
-			values: ['红色', '黄色']
-		}, {
-			property: '尺寸',
-			values: ['M']
-		}]
-		"""
-		id2property = {}
-		if product.is_use_custom_model:
-			for model in product.models:
-				if not model:
-					continue
-
-				if model['name'] == 'standard':
-					continue
-
-				model_property_values = model.get('property_values', None)
-				if model_property_values:
-					for model_property_value in model_property_values:
-						model_property_value['type'] = 'product_model_property_value'
-						property_id = model_property_value['propertyId']
-
-						property_info = id2property.get(property_id, None)
-						if property_info:
-							#model_property_value可能会有重复
-							if not model_property_value['id'] in property_info['added_value_set']:
-								property_info['values'].append(model_property_value)
-								property_info['added_value_set'].add(model_property_value['id'])
-						else:
-							added_value_set = set()
-							added_value_set.add(model_property_value['id'])
-							property_info = {
-								"type": "product_model_property",
-								"id": property_id,
-								"name": model_property_value['propertyName'],
-								"added_value_set": added_value_set,
-								"values": [model_property_value]
-							}
-							id2property[property_id] = property_info
-
-			#获得properties，并进行必要的排序
-			properties = id2property.values()
-			for property in properties:
-				del property['added_value_set']
-				property['values'].sort(lambda x,y: cmp(x['id'], y['id']))
-			properties.sort(lambda x,y: cmp(x['id'], y['id']))
-			product.used_system_model_properties = properties
-
-		else:
-			product.used_system_model_properties = None
-
-		"""
-		# 为每个product确定显示信息
-		for product in products:
-			product.sales = -1  # 实现sales逻辑
-			product.system_model_properties = _id2property.values()
-			product_id = product.id
-			if product_id in product2models:
-				models = product2models[product.id]
-				product.models = [models['standard_model']]
-				if models['is_use_custom_model']:
-					product.is_use_custom_model = True
-					product.custom_models = models['custom_models']
-					product.standard_model = models['standard_model']
-					custom_models = models['custom_models']
-					product.models.extend(custom_models)
-					if len(custom_models) == 1:
-						target_model = custom_models[0]
-						display_price_range = target_model['price']
-					else:
-						# 列表页部分显示商品的最小价格那个model的信息
-						custom_models.sort(lambda x, y: cmp(x['price'], y['price']))
-						target_model = custom_models[0]
-						low_price = target_model['price']
-						high_price = custom_models[-1]['price']
-						if low_price == high_price:
-							display_price_range = low_price
-						else:
-							display_price_range = '%s ~ %s' % (low_price, high_price)
-				else:
-					product.is_use_custom_model = False
-					target_model = models['standard_model']
-					product.standard_model = target_model
-					display_price_range = target_model['price']
-
-				product.current_used_model = target_model
-				product.display_price = target_model['price']
-				product.display_price_range = display_price_range
-				product.user_code = target_model['user_code']
-				product.stock_type = target_model['stock_type']
-				product.min_limit = product.stocks
-				product.stocks = u'无限' if target_model[
-					'stock_type'] == mall_models.PRODUCT_STOCK_TYPE_UNLIMIT else target_model['stocks']
-			else:
-				# 所有规格都已经被删除
-				product.is_use_custom_model = False
-				product.current_used_model = {}
-				product.display_price = product.price
-				product.display_price_range = product.price
-				product.user_code = product.user_code
-				product.stock_type = mall_models.PRODUCT_STOCK_TYPE_LIMIT
-				product.stocks = 0
-				product.min_limit = 0
-				product.standard_model = {}
-				product.models = []
-		"""
+		#TODO2: 因为这里是静态方法，所以目前无法使用product.context['webapp_owner']，构造基于Object的临时解决方案，需要优化
+		from core.cache.utils import Object
+		webapp_owner = Object('fake_webapp_owner')
+		webapp_owner.id = webapp_owner_id
+		product_model_generator = ProductModelGenerator.get({
+			'webapp_owner': webapp_owner
+		})
+		product_model_generator.fill_models_for_products(products, is_enable_model_property_info)
 
 	@staticmethod
 	def __fill_image_detail(webapp_owner_id, products, product_ids):
@@ -960,7 +505,7 @@ class Product(business_model.Model):
 	def __fill_category_detail(webapp_owner_id, products, product_ids, only_selected_category=False):
 		"""填充商品分类信息相关细节
 		"""
-		categories = list(Promall_models.ductCategory.select().dj_where(owner=webapp_owner_id).order_by('id'))
+		categories = list(mall_models.ProductCategory.select().dj_where(owner=webapp_owner_id).order_by('id'))
 
 		# 获取product关联的category集合
 		id2product = dict([(product.id, product) for product in products])
@@ -1124,20 +669,7 @@ class Product(business_model.Model):
 			with_all_category: 填充所有商品分类详情
 			with_sales: 填充商品销售详情
 		"""
-		id2property = None
-		id2propertyvalue = None
 		is_enable_model_property_info = options.get('with_model_property_info',False)
-		if is_enable_model_property_info:
-			# 获取model property，为后续使用做准备
-			properties = list(mall_models.ProductModelProperty.select().dj_where(owner_id=webapp_owner_id))
-			property_ids = [property.id for property in properties]
-			id2property = dict([(str(property.id), property)
-							   for property in properties])
-			id2propertyvalue = {}
-			for value in mall_models.ProductModelPropertyValue.select().dj_where(property__in=property_ids):
-				id = '%d:%d' % (value.property_id, value.id)
-				id2propertyvalue[id] = value
-
 		product_ids = [product.id for product in products]
 
 		for product in products:
@@ -1148,9 +680,6 @@ class Product(business_model.Model):
 			Product.__fill_model_detail(
 				webapp_owner_id,
 				products,
-				product_ids,
-				id2property,
-				id2propertyvalue,
 				is_enable_model_property_info)
 			Product.__fill_display_price(products)
 
@@ -1158,9 +687,6 @@ class Product(business_model.Model):
 			Product.__fill_model_detail(
 				webapp_owner_id,
 				products,
-				product_ids,
-				id2property,
-				id2propertyvalue,
 				is_enable_model_property_info)
 
 		if options.get('with_product_promotion', False):
@@ -1214,7 +740,7 @@ class Product(business_model.Model):
 			'min_limit': self.min_limit,
 			'sales': getattr(self, 'sales', 0),
 			'is_use_custom_model': self.is_use_custom_model,
-			'models': self.models,
+			'models': [model.to_dict() for model in self.models],
 			'used_system_model_properties': getattr(self, 'used_system_model_properties', None),
 			'total_stocks': self.total_stocks,
 			'is_sellout': self.is_sellout,
@@ -1234,5 +760,11 @@ class Product(business_model.Model):
 
 		return result
 
+	def after_from_dict(self):
+		product_models = []
+		for model_dict in self.models:
+			product_models.append(ProductModel.from_dict(model_dict))
+
+		self.models = product_models
 
 

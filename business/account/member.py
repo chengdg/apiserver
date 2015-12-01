@@ -245,9 +245,6 @@ class Member(business_model.Model):
 		"""
 		[property] 兼容html显示的会员名
 		"""
-		print '-*-' * 20
-		print self.username_hexstr
-		print '-*-' * 10
 		if (self.username_hexstr is not None) and (len(self.username_hexstr) > 0):
 			username = emojicons_util.encode_emojicons_for_html(self.username_hexstr, is_hex_str=True)
 		else:

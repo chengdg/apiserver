@@ -16,7 +16,7 @@ import logging
 #import math
 #from datetime import datetime
 
-#from wapi.decorators import param_required
+from wapi.decorators import param_required
 #from core.cache import utils as cache_util
 #from db.mall import models as mall_models
 #from db.mall import promotion_models
@@ -32,30 +32,32 @@ class ProductReview(business_model.Model):
 
 
 	@staticmethod
-	def create(order_id, owner_id, product_id, order_review, review_detail, product_score, member_id, order_has_product_id, picture_list):
+	@param_required(['order_id', 'owner_id', 'product_id', 'order_review', 'review_detail', 'product_score', 'member_id', 'order_has_product_id'])
+	def create(args):
 		"""
 		创建商品评论
 		"""
 		product_review, created = mall_models.ProductReview.objects.get_or_create(
-			member_id=member_id,
-			order_review=order_review,
-			order_id=order_id,
-			owner_id=owner_id,
-			product_id=product_id,
-			order_has_product_id=order_has_product_id,
-			product_score=product_score,
-			review_detail=review_detail
+			member_id=args['member_id'],
+			order_review=args['order_review'],
+			order_id=args['order_id'],
+			owner_id=args['owner_id'],
+			product_id=args['product_id'],
+			order_has_product_id=args['order_has_product_id'],
+			product_score=args['product_score'],
+			review_detail=args['review_detail']
 		)
 
+		picture_list = args.get('picture_list')
 		if picture_list:
 			for picture in list(eval(picture_list)):
 				mall_models.ProductReviewPicture(
 					product_review=product_review,
-					order_has_product_id=order_has_product_id,
+					order_has_product_id=args['order_has_product_id'],
 					att_url=picture
 				).save()
 				watchdog_info(u"create_product_review after save img  %s" % (picture), \
-					type="mall", user_id=owner_id)
-			watchdog_info(u"create_product_review end, order_has_product_id is %s" %\
-				(order_has_product_id), type="mall", user_id=owner_id)
+					type="mall", user_id=args['owner_id'])
+			watchdog_info(u"create_product_review end, order_has_product_id is %s" % \
+				(args['order_has_product_id']), type="mall", user_id=args['owner_id'])
 		return

@@ -37,8 +37,9 @@ PAYNAME2ID = {
 
 @when(u"{webapp_user_name}购买{webapp_owner_name}的商品")
 def step_impl(context, webapp_user_name, webapp_owner_name):
-	"""最近修改: yanzhao
-	e.g.:
+	"""
+	举例:
+	```
 		{
 			"order_id": "" # 订单号
 			"ship_area": "",
@@ -60,6 +61,7 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 				},...
 			]
 		}
+	```
 	"""
 	if hasattr(context, 'caller_step_purchase_info') and context.caller_step_purchase_info:
 		args = context.caller_step_purchase_info

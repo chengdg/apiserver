@@ -28,6 +28,7 @@ from wapi.decorators import param_required
 
 class ProductReview(business_model.Model):
 	__slots__ = (
+		'pictures',
 		)
 
 
@@ -61,3 +62,34 @@ class ProductReview(business_model.Model):
 			watchdog_info(u"create_product_review end, order_has_product_id is %s" % \
 				(args['order_has_product_id']), type="mall", user_id=args['owner_id'])
 		return
+
+
+	def has_picture(self, product_review, ProductReviewPictureIds):
+		"""
+		是否有图片
+
+		@see 原始代码位置 `webapp/modules/mall/request_util.py` 
+		@todo 只是代码迁移，还未重构
+		"""
+
+		def _product_review_has_picture(product_review):
+			'''
+			评价是否有晒图
+			'''
+			if product_review.id in ProductReviewPictureIds:
+				return True
+			else:
+				return False
+		return _product_review_has_picture(product_review)
+
+	@property
+	def pictures(self):
+		"""
+		获得product review的图片
+
+		@retrun ProductReviewPicture对象list
+		@todo 改成缓存
+		"""
+		#mall_models.ProductReviewPicture.objects.filter(order_has_product_id__in= orderHasProductIds)		
+		return []
+

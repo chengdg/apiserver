@@ -62,6 +62,8 @@ class AReview(api_resource.ApiResource):
 		@param order_has_product_id
 		@param [IN] send_time
 		@param [IN] detail_time
+
+		@see 原始代码为Weapp的`create_product_review()`
 		"""
 		picture_list = args.get('picture_list')
 

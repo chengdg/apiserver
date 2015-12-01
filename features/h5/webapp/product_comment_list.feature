@@ -65,7 +65,7 @@ Background:
             }]
         }]
         """
-# TODO: Recommend to change to scenarios like these:        
+# TODO: 建议将上面的step改成下面的写法：
 #    When bill访问jobs的webapp
 #    And bill购买jobs的商品
 #        """
@@ -89,7 +89,7 @@ Background:
 #        """
 
     When bill访问jobs的webapp
-    When bill完成订单'1'中'商品1'的评价包括'文字与晒图':weapp
+    When bill完成订单'1'中'商品1'的评价包括'文字与晒图'
         """
         {
             "product_score": "4",

@@ -7,6 +7,8 @@ from client import Client
 from db.account.models import User
 from utils import string_util
 from db.member import models as member_models
+from db.mall import models as mall_models
+
 
 tc = None
 
@@ -226,3 +228,33 @@ def table2dict(context):
 		expected.append(data)
 	return expected
 
+
+def get_order_has_product(order_code, product_name):
+	"""
+	从Weapp `test/bdd_util.py`迁移过来
+
+	@todo 待优化；用业务模型描述
+	"""
+	def _get_product_model_name(product_model_names):
+		if product_model_names != "standard":
+			pro_id, id = product_model_names.split(":")
+			i = mall_models.ProductModelPropertyValue.get(id=id, property_id=pro_id)
+			return i.name
+	order = mall_models.Order.get(order_id=order_code)
+
+	# 商品是否包含规格
+	if ":" in product_name:
+		product_name, product_model_name = product_name.split(":")
+
+	order_has_product_list = mall_models.OrderHasProduct.dj_where(order_id=order.id, product_name=product_name)
+
+	if order_has_product_list.count() == 1:
+		# 如果商品不包含规格
+		return order_has_product_list[0]
+	else:
+		# 如果商品包含规格
+		# 查找到包含此规格的order_has_product
+		for order_has_product in order_has_product_list:
+			if product_model_name in _get_product_model_name(order_has_product.product_model_name):
+				return order_has_product
+	return None

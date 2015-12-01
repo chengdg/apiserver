@@ -104,14 +104,14 @@ class ShoppingCartProduct(business_model.Model):
 		self.is_use_custom_model = product.is_use_custom_model
 		self.shopping_cart_id = product_info['shopping_cart_id']
 
-		self.price = float(model['price'])
-		self.original_price = float(model['price'])
-		self.weight = float(model['weight'])
+		self.price = model.price
+		self.original_price = model.price
+		self.weight = model.weight
 		if not hasattr(product, 'min_limit'):
-			self.min_limit = model['stocks']
+			self.min_limit = model.stocks
 		self.model_name = product_info['model_name']
-		self.stock_type = model['stock_type']
-		self.stocks = model['stocks']
+		self.stock_type = model.stock_type
+		self.stocks = model.stocks
 		self.is_model_deleted = False
 		self.model = model
 		self.product_model_id = '%s_%s' % (product_info['id'], product_info['model_name'])
@@ -148,6 +148,7 @@ class ShoppingCartProduct(business_model.Model):
 	def to_dict(self):
 		data = business_model.Model.to_dict(self)
 		data['postage_config'] = self.postage_config
+		data['model'] = self.model.to_dict()
 		return data
 
 

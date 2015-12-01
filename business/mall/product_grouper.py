@@ -70,7 +70,7 @@ class ProductGrouper(business_model.Model):
 		"""
 		items = []
 		for product in group_products:
-			items.append('%s_%s' % (product.id, product.model['name']))
+			items.append('%s_%s' % (product.id, product.model.name))
 		return '-'.join(items)
 
 	def __collect_integral_sale_rules(self, target_member_grade_id, products):

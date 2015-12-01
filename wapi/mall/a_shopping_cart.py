@@ -23,11 +23,8 @@ class AShoppingCart(api_resource.ApiResource):
 		webapp_owner = args['webapp_owner']
 		webapp_user = args['webapp_user']
 
-		#获取promotion_product_group集合
-		shopping_cart = ShoppingCart.get_for_webapp_user({
-			'webapp_owner': webapp_owner,
-			'webapp_user': webapp_user
-		})
+		#获取购物车商品信息
+		shopping_cart = webapp_user.shopping_cart
 		product_groups = shopping_cart.product_groups
 		invalid_products = shopping_cart.invalid_products
 

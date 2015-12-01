@@ -382,6 +382,10 @@ class Product(business_model.Model):
 		"""
 		models = self.models
 
+		print '-*-' *20
+		for model in models:
+			print 'compare %s to %s = %s' % (model.name, model_name, model.name == model_name)
+		print '-*-' *20
 		candidate_models = filter(lambda m: m.name == model_name if m else False, models)
 		if len(candidate_models) > 0:
 			model = candidate_models[0]

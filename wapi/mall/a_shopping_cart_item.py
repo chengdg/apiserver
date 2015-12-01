@@ -15,11 +15,14 @@ class AShoppingCartItem(api_resource.ApiResource):
 	app = 'mall'
 	resource = 'shopping_cart_item'
 	
-	@param_required(['product_id', 'count'])
+	@param_required(['product_id', 'count', 'product_model_name'])
 	def put(args):
 		"""
 		创建购物车项目
 		"""
+		print '-*-' * 20
+		print args
+		print '-*-' * 20
 		product_id = args['product_id']
 		product_model_name = args.get('product_model_name', 'standard')
 		count = int(args.get('count', 0))

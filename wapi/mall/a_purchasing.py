@@ -106,37 +106,6 @@ class APurchasing(api_resource.ApiResource):
 
 		return result_coupons, limit_coupons
 
-	def __format_product_group_price_factor(product_groups):
-		factors = []
-		for product_group in product_groups:
-			product_factors = []
-			for product in product_group['products']:
-				product_factors.append({
-					"id": product.id,
-					"model": product.model_name,
-					"count": product.purchase_count,
-					"price": product.price,
-					"original_price": product.original_price,
-					"weight": product.weight,
-					"active_integral_sale_rule": getattr(product, 'active_integral_sale_rule', None),
-					"postageConfig": product.postage_config,
-					"forbidden_coupon": (not product.can_use_coupon)
-				})
-
-			factor = {
-				'id': product_group['id'],
-				'uid': product_group['uid'],
-				'products': product_factors,
-				'promotion': product_group['promotion'],
-				'promotion_type': product_group['promotion_type'],
-				'promotion_result': product_group['promotion_result'],
-				'integral_sale_rule': product_group['integral_sale_rule'],
-				'can_use_promotion': product_group['can_use_promotion']
-			}
-			factors.append(factor)
-
-		return factors
-
 	@param_required([])
 	def get(args):
 		"""

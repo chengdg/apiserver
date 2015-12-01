@@ -22,6 +22,7 @@ from core.watchdog.utils import watchdog_alert
 from business import model as business_model 
 from business.mall.product import Product
 import settings
+from utils import regional_util
 from business.decorator import cached_context_property
 from business.mall.order_products import OrderProducts
 from business.mall.product_grouper import ProductGrouper
@@ -69,7 +70,7 @@ class PurchaseOrder(business_model.Model):
 				"tel": ship_info['tel'],
 				"address": ship_info['address'],
 				"area": ship_info['area'],
-				"display_area": ship_info['area']
+				"display_area": regional_util.get_str_value_by_string_ids(ship_info['area'])
 			}
 		else:# TODO 收货地址
 			self.ship_info = {

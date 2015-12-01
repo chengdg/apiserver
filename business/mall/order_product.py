@@ -113,17 +113,17 @@ class OrderProduct(business_model.Model):
 		self.shelve_type = product.shelve_type
 		self.is_use_custom_model = product.is_use_custom_model
 
-		self.price = float(model['price'])
-		self.original_price = float(model['price'])
-		self.weight = model['weight']
-		self.stock_type = model['stock_type']
+		self.price = model.price
+		self.original_price = model.price
+		self.weight = model.weight
+		self.stock_type = model.stock_type
 		if not hasattr(product, 'min_limit'):
-			self.min_limit = model['stocks']
-		self.stocks = model['stocks']
+			self.min_limit = model.stocks
+		self.stocks = model.stocks
 		self.model_name = product_info['model_name']
 		self.model = model
 		self.is_model_deleted = False
-		self.market_price = model.get('market_price', 0.0)
+		self.market_price = model.market_price
 		self.product_model_id = '%s_%s' % (product_info['id'], product_info['model_name'])
 		self.purchase_count = product_info['count']
 		self.used_promotion_id = product_info['promotion_id']
@@ -166,14 +166,13 @@ class OrderProduct(business_model.Model):
 	@cached_context_property
 	def __current_model(self):
 		"""
-		[property] 当前规格的信息
+		[property] 实时的规格信息
 		"""
 		#TODO2: perf - 将这个操作放入OrderProducts进行批量处理
 		product = self.context['product']
 		for model in product.models:
-			if self.model_name == model['name']:
-				model_id = model['id']
-
+			if self.model_name == model.name:
+				model_id = model.id
 
 		db_product_model = mall_models.ProductModel.get(id=model_id)
 
@@ -218,7 +217,7 @@ class OrderProduct(business_model.Model):
 		#TODO2: 库存在self.check_stocks()时，就应该被扣除
 		current_model = self.__current_model
 		if current_model['stock_type'] == mall_models.PRODUCT_STOCK_TYPE_LIMIT:
-			counter=Stat.counter + 1
+			#counter=Stat.counter + 1
 			mall_models.ProductModel.update(stocks=mall_models.ProductModel.stocks-self.purchase_count).dj_where(id=current_model['id']).execute()
 
 	@cached_context_property
@@ -239,6 +238,7 @@ class OrderProduct(business_model.Model):
 	def to_dict(self):
 		data = business_model.Model.to_dict(self)
 		data['postage_config'] = data['_postage_config']
+		data['model'] = self.model.to_dict()
 		return data
 
 

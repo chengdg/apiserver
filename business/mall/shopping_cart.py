@@ -135,13 +135,13 @@ class ShoppingCart(business_model.Model):
 
 		return invalid_products
 
-	def delete_items(self, ids):
+	def delete_items(self, id):
 		"""
 		删除一组购物车项
 
-		@param[in] ids: 购物车项的id集合
+		@param[in] id: 购物车项的id
 		"""
-		mall_models.ShoppingCart.delete().dj_where(id__in=ids).execute()
+		mall_models.ShoppingCart.delete().dj_where(id=id).execute()
 
 
 

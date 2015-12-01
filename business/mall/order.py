@@ -38,6 +38,7 @@ class Order(business_model.Model):
 		'type',
 		'pay_interface_type',
 		'final_price',
+		'product_price',
 		'edit_money',
 
 		'ship_name',

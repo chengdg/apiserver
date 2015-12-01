@@ -228,7 +228,7 @@ class OrderChecker(business_model.Model):
 		real_details = []
 		for failed_result in failed_results:
 			if failed_result['data'].has_key('detail'):
-				for detail in data['data']['detail']:
+				for detail in failed_result['data']['detail']:
 					details.append(detail)
 
 		products_ids = [detail['id'] for detail in details]
@@ -261,7 +261,9 @@ class OrderChecker(business_model.Model):
 		if len(failed_results) > 0:
 			return {
 				'is_valid': False,
-				'reason': self.__create_failed_reason(failed_results)
+				'reason': {
+					'detail': self.__create_failed_reason(failed_results)
+				}
 			}
 		else:
 			return {'is_valid': True}

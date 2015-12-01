@@ -45,7 +45,7 @@ EVENT_DISPATCHER = 'redis'
 
 # settings for WAPI Logger
 if MODE == 'develop':
-    WAPI_LOGGER_ENABLED = True
+    WAPI_LOGGER_ENABLED = False # Debug环境下不记录wapi详细数据
     WAPI_LOGGER_SERVER_HOST = 'mongo.weapp.com'
     WAPI_LOGGER_SERVER_PORT = 27017
     WAPI_LOGGER_DB = 'wapi'
@@ -64,8 +64,8 @@ if MODE == 'develop':
 
 else:
     # 真实环境暂时关闭
-    #WAPI_LOGGER_ENABLED = False
-    WAPI_LOGGER_ENABLED = True
+    WAPI_LOGGER_ENABLED = False
+    #WAPI_LOGGER_ENABLED = True
     WAPI_LOGGER_SERVER_HOST = 'mongo.weapp.com'
     WAPI_LOGGER_SERVER_PORT = 27017
     WAPI_LOGGER_DB = 'wapi'

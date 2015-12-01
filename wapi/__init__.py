@@ -23,15 +23,33 @@ for f in os.listdir(wapi_path):
 """
 
 from core import api_resource
+import json
 
 class ApiNotExistError(Exception):
 	pass
 
+def _param_to_text(param):
+	"""
+	将param转成JSON text，用于调试
+
+	@todo to be optimized
+	"""
+	new_param = {}
+	for key, value in param.items():
+		if key == 'webapp_user':
+			new_param['wid'] = param['webapp_user'].id
+		elif key == 'webapp_owner':
+			new_param['woid'] = param['webapp_owner'].id
+		else:
+			new_param[key] = value
+	return json.dumps(new_param)
+
+
 def wapi_call(method, app, resource, data, req=None):
 	resource_name = resource
 	key = '%s-%s' % (app, resource)
-	if settings.WAPI_LOGGER_ENABLED:
-		logging.debug("called WAPI: {} {}/{}, param: {}".format(method, app, resource, data))
+	#if settings.WAPI_LOGGER_ENABLED:
+	logging.info("called WAPI: {} {}/{}, param: {}".format(method, app, resource, _param_to_text(data)))
 
 	#start_at = dt.datetime.now()
 	start_at = time.clock()

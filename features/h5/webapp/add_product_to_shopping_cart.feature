@@ -271,7 +271,7 @@ Scenario:3 商品添加到购物车后，后台对商品进行上下架管理
 		"""
 	
 
-@wip2 @mall.webapp @mall.webapp.shopping_cart
+@mall3 @mall.webapp @mall.webapp.shopping_cart
 Scenario:4 商品添加到购物车后，后台对商品规格进行修改
 	bill在webapp中将jobs的商品加入到购物车后，jobs将此商品的商品规格进行修改
 	1.bill查看jobs的webapp购物车，此商品已无效
@@ -320,8 +320,8 @@ Scenario:4 商品添加到购物车后，后台对商品规格进行修改
 		}
 		"""
 	#更改规格M的库存为0
-	Given jobs登录系统
-	When jobs更新商品'商品3'
+	Given jobs登录系统:weapp
+	When jobs更新商品'商品3':weapp
 		"""
 		{
 			"name": "商品3",
@@ -341,7 +341,7 @@ Scenario:4 商品添加到购物车后，后台对商品规格进行修改
 			}
 		}
 		"""
-	Then jobs能获取商品'商品3'
+	Then jobs能获取商品'商品3':weapp
 		"""
 		{
 			"name": "商品3",
@@ -419,8 +419,8 @@ Scenario:4 商品添加到购物车后，后台对商品规格进行修改
 			}]
 		}
 		"""
-	Given jobs登录系统
-	When jobs删除商品规格'尺寸'的值'S'
+	Given jobs登录系统:weapp
+	When jobs删除商品规格'尺寸'的值'S':weapp
 	When bill访问jobs的webapp
 	Then bill能获得购物车
 		"""
@@ -483,8 +483,8 @@ Scenario:4 商品添加到购物车后，后台对商品规格进行修改
 			}]
 		}
 		"""
-	Given jobs登录系统
-	When jobs更新商品'商品4'
+	Given jobs登录系统:weapp
+	When jobs更新商品'商品4':weapp
 		"""
 		{
 			"name": "商品4",
@@ -552,8 +552,8 @@ Scenario:4 商品添加到购物车后，后台对商品规格进行修改
 			"invalid_products": []
 		}
 		"""
-	Given jobs登录系统
-	When jobs更新商品'商品1'
+	Given jobs登录系统:weapp
+	When jobs更新商品'商品1':weapp
 		"""
 		{
 			"name": "商品1",
@@ -580,6 +580,7 @@ Scenario:4 商品添加到购物车后，后台对商品规格进行修改
 			}]
 		}
 		"""
+	
 
 @mall3 @mall.webapp @mall.webapp.shopping_cart
 Scenario: 5 商品添加到购物车后，进行删除

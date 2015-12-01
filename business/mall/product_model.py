@@ -24,6 +24,7 @@ class ProductModel(business_model.Model):
 	"""
 	__slots__ = (
 		'id',
+		'is_deleted',
 		'product_id',
 		'name',
 		'weight',

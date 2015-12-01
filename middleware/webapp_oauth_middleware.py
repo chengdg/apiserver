@@ -44,7 +44,7 @@ class WebAppOAuthMiddleware(object):
 			raise ValueError("error access_token")
 
 		#TODO2: 支持开发的临时解决方案，需要删除
-		openid = 'bill_jobs'
+		#openid = 'bill_jobs'
 		#填充webapp_owner
 		webapp_owner = WebAppOwner.get({
 			'woid': webapp_owner_id

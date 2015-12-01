@@ -94,7 +94,6 @@ class ShoppingCartProduct(business_model.Model):
 		})
 		self.context['product'] = product
 
-		model = product.get_specific_model(product_info['model_name'])
 		self.type = product.type
 		self.id = product.id
 		self.is_deleted = product.is_deleted
@@ -104,6 +103,9 @@ class ShoppingCartProduct(business_model.Model):
 		self.is_use_custom_model = product.is_use_custom_model
 		self.shopping_cart_id = product_info['shopping_cart_id']
 
+		#获取商品规格信息
+		model = product.get_specific_model(product_info['model_name'])
+		self.is_model_deleted = model.is_deleted
 		self.price = model.price
 		self.original_price = model.price
 		self.weight = model.weight
@@ -112,8 +114,8 @@ class ShoppingCartProduct(business_model.Model):
 		self.model_name = product_info['model_name']
 		self.stock_type = model.stock_type
 		self.stocks = model.stocks
-		self.is_model_deleted = False
 		self.model = model
+
 		self.product_model_id = '%s_%s' % (product_info['id'], product_info['model_name'])
 		self.purchase_count = product_info['count']
 		
@@ -148,7 +150,7 @@ class ShoppingCartProduct(business_model.Model):
 	def to_dict(self):
 		data = business_model.Model.to_dict(self)
 		data['postage_config'] = self.postage_config
-		data['model'] = self.model.to_dict()
+		data['model'] = self.model.to_dict() if self.model else None
 		return data
 
 

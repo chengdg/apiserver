@@ -104,9 +104,6 @@ class PurchaseInfo(business_model.Model):
         if product_ids:
             product_ids = product_ids.split('_')
         promotion_ids = query_string.get('promotion_ids', None)
-        print '-*-' * 20
-        print product_ids
-        print '-*-' * 20
         if promotion_ids:
             promotion_ids = promotion_ids.split('_')
         else:

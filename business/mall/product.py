@@ -22,6 +22,7 @@ import settings
 from business.mall.forbidden_coupon_product_ids import ForbiddenCouponProductIds
 from business.mall.product_model_generator import ProductModelGenerator
 from business.mall.product_model import ProductModel
+from business.decorator import cached_context_property
 
 
 class CachedProduct(object):
@@ -366,32 +367,33 @@ class Product(business_model.Model):
 		"""
 		return self.shelve_type == mall_models.PRODUCT_SHELVE_TYPE_ON
 
+	@cached_context_property
+	def __deleted_models(self):
+		return list(mall_models.ProductModel.select().dj_where(product_id=self.id, is_deleted=True))
+
 	def get_specific_model(self, model_name):
 		"""
 		获得特定的商品规格信息
 
 		@param [in] model_name: 商品规格名
 
-		@return dict形式的商品规格信息
-		```
-		{
-			"price": 1.0,
-			"weight": 1.0,
-		}
-		```
+		@return ProductModel对象
+
+		注意，这里返回的有可能是被删除的规格，使用者应该通过product_model.is_deleted来判断
 		"""
 		models = self.models
 
-		print '-*-' *20
-		for model in models:
-			print 'compare %s to %s = %s' % (model.name, model_name, model.name == model_name)
-		print '-*-' *20
 		candidate_models = filter(lambda m: m.name == model_name if m else False, models)
 		if len(candidate_models) > 0:
 			model = candidate_models[0]
 			return model
 		else:
-			return None
+			candidate_models = filter(lambda m: m.name == model_name if m else False, self.__deleted_models)
+			if len(candidate_models) > 0:
+				model = candidate_models[0]
+				return model
+			else:
+				return None
 
 	@staticmethod
 	def __fill_display_price(products):

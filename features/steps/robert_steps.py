@@ -316,6 +316,7 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 				"product_id": product.id,
 				"count": product_count,
 				"webapp_owner_id": webapp_owner_id,
+				"product_model_name": 'standard',
 			}
 
 			response = context.client.post(url, data)
@@ -374,6 +375,7 @@ def step_impl(context, webapp_user_name):
 	"""
 	url = '/wapi/mall/shopping_cart/?woid=%d' % context.webapp_owner_id
 	response = context.client.get(bdd_util.nginx(url), follow=True)
+	bdd_util.assert_api_call_success(response)
 	product_groups = response.data['product_groups']
 	invalid_products = response.data['invalid_products']
 
@@ -381,7 +383,7 @@ def step_impl(context, webapp_user_name):
 		for product in products:
 			model = []
 			original_model = product['model']
-			if original_model and 'property_values' in original_model:
+			if original_model and ('property_values' in original_model) and original_model['property_values']:
 				for property_value in original_model['property_values']:
 					model.append('%s' % (property_value['name']))
 			product['model'] = ' '.join(model)
@@ -430,10 +432,11 @@ def step_impl(context, webapp_user_name):
 
 	#忽略model的处理，所以feature中要保证购物车中不包含同一个商品的不同规格
 	shopping_cart_item_ids = [str(item.id) for item in mall_models.ShoppingCart.select().dj_where(webapp_user_id=context.webapp_user.id, product_id__in=product_ids)]
-	data = {
-		"shopping_cart_item_ids": ','.join(shopping_cart_item_ids),
-		"woid": context.webapp_owner_id
-	}
+	for shopping_cart_item_id in shopping_cart_item_ids:
+		data = {
+			"id": shopping_cart_item_id,
+			"woid": context.webapp_owner_id
+		}
 
-	response = context.client.post('/wapi/mall/shopping_cart_item/?_method=delete', data)
-	bdd_util.assert_api_call_success(response)
+		response = context.client.post('/wapi/mall/shopping_cart_item/?_method=delete', data)
+		bdd_util.assert_api_call_success(response)

@@ -12,6 +12,7 @@ from datetime import datetime
 from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
+from core.exceptionutil import unicode_full_stack
 from db.mall import models as mall_models
 from db.mall import promotion_models
 from db.member import models as member_models
@@ -22,7 +23,7 @@ from business.account.member import Member
 from business.mall.shopping_cart import ShoppingCart
 import settings
 from business.decorator import cached_context_property
-
+from utils import regional_util
 
 class WebAppUser(business_model.Model):
 	"""
@@ -81,33 +82,113 @@ class WebAppUser(business_model.Model):
 			}
 
 	@property
-	def ship_info(self):
-		"""
-		[property] 收货地址
-		"""
-		ship_infos = list(member_models.ShipInfo.select().dj_where(webapp_user_id=self.id, is_deleted=False, is_selected=True))
-		if len(ship_infos) > 0:
-			ship_info = ship_infos[0]
-			return {
-				"id": ship_info.id,
-				"name": ship_info.ship_name,
-				"tel": ship_info.ship_tel,
-				"address": ship_info.ship_address,
-				"area": ship_info.area,
-			}
-			return ship_infos[0]
-		else:
-			return None
-
-	@property
 	def ship_infos(self):
 		"""
-		[property] 收货地址集合
+		[property] 收货地址列表
+		"""
+		ship_infos = list(
+			member_models.ShipInfo.select().where(member_models.ShipInfo.webapp_user_id == self.id,
+			                                      member_models.ShipInfo.is_deleted == False))
+		data = {}
+		for ship_info in ship_infos:
+			data_dict = ship_info.to_dict()
+			data_dict['ship_id'] = ship_info.id
+			data_dict.pop('created_at')
+			data_dict.pop('is_deleted')
+			try:
+				data_dict['display_area'] = regional_util.get_str_value_by_string_ids(ship_info.area)
+			except:
+				data_dict['display_area'] = ''
+
+			data[ship_info.id] = data_dict
+		return data
+
+	def select_default_ship(self, ship_id):
+		"""
+		选择默认收货地址
+		Args:
+		    ship_id:
+
+		Returns:
+
 		"""
 		try:
-			return list(member_models.ShipInfo.select().dj_where(webapp_user_id=self.id, is_deleted=False))
+			# 更新收货地址信息
+			member_models.ShipInfo.update(is_selected=False).where(
+				member_models.ShipInfo.webapp_user_id == self.id).execute()
+			member_models.ShipInfo.update(is_selected=True).where(member_models.ShipInfo.id == ship_id).execute()
+			return True
 		except:
-			return None
+			msg = unicode_full_stack()
+			watchdog_alert(msg, type='WAPI')
+			return False
+
+
+	def delete_ship_info(self, ship_info_id):
+		"""
+		删除收货地址
+		Args:
+		    ship_id:
+
+		Returns:
+
+		"""
+		member_models.ShipInfo.update(is_deleted=True).where(member_models.ShipInfo.id == ship_info_id).execute()
+		# 更改默认选中
+		ship_infos = member_models.ShipInfo.select().where(member_models.ShipInfo.webapp_user_id == self.id,
+		                                                   member_models.ShipInfo.is_deleted == False)
+		selected_ships_count = ship_infos.where(member_models.ShipInfo.is_selected == True).count()
+		if ship_infos.count() > 0 and selected_ships_count == 0:
+			ship_info = ship_infos[0]
+			ship_info.is_selected = True
+			ship_info.save()
+			selected_id = ship_info.id
+		else:
+			selected_id = 0
+		return selected_id
+
+	def modify_ship_info(self, ship_info_id, new_ship_info):
+		"""
+		修改收货地址
+		"""
+		try:
+			member_models.ShipInfo.update(is_selected=False).where(member_models.ShipInfo.webapp_user_id == self.id).execute()
+			member_models.ShipInfo.update(
+				ship_tel=new_ship_info['ship_tel'],
+				ship_address=new_ship_info['ship_address'],
+				ship_name=new_ship_info['ship_name'],
+				area=new_ship_info['area'],
+				is_selected=True
+			).dj_where(id=ship_info_id).execute()
+			return True
+		except:
+				msg = unicode_full_stack()
+				watchdog_alert(msg, type='WAPI')
+				return False
+
+	def create_ship_info(self, ship_info):
+		"""
+		创建收货地址
+		Args:
+		    ship_info:
+
+		Returns:
+
+		"""
+		try:
+			member_models.ShipInfo.update(is_selected=0).where(member_models.ShipInfo.webapp_user_id == self.id).execute()
+			ship_info_id = member_models.ShipInfo.create(
+				webapp_user_id=self.id,
+				ship_tel=ship_info['ship_tel'],
+				ship_address=ship_info['ship_address'],
+				ship_name=ship_info['ship_name'],
+				area=ship_info['area']
+			).id
+			return True, ship_info_id
+		except:
+				msg = unicode_full_stack()
+				watchdog_alert(msg, type='WAPI')
+				return False, 0
 
 	@cached_context_property
 	def shopping_cart(self):

@@ -2,25 +2,6 @@
 
 from db.mall import models as mall_models
 
-def _get_all_provinces():
-	provinces = {}
-	for province in mall_models.Province.select():
-		provinces[province.id] = province.name
-	return provinces
-
-def _get_cities_for_province(province_id):
-	cities = {}
-	for city in mall_models.City.select().dj_where(province_id=province_id):
-		cities[city.id] = city.name
-	return cities
-
-def _get_districts_for_city(city_id):
-	districts = {}
-	for district in mall_models.District.select().dj_where(city_id=city_id):
-		districts[district.id] =district.name
-	return districts
-
-
 def get_str_value_by_string_ids(str_ids):
 	if str_ids != '' and str_ids:
 		#cache = get_cache('mem')
@@ -44,29 +25,6 @@ def get_str_value_by_string_ids(str_ids):
 		return u'{}'.format(ship_address.strip())
 	else:
 		return None
-
-
-def get_str_value_by_string_ids_(str_ids):
-	if str_ids:
-		cache = get_cache('area')
-
-		provinces = cache.get('province')
-		if not province:
-			cache.set('province', mall_models.Province.objects.all())
-		cities = cache.get('cite')
-		if not cite:
-			cache.set('cite', mall_models.City.objects.all())
-		districts = cache.get('district')
-		if not district:
-			cache.set('district', objects.all())
-
-		str_ids_list = str_ids.split("_")
-		return u''.join((filter(lambda x: x==str_ids_list[0], provinces) +
-				filter(lambda x: x==str_ids_list[1], cities) +
-				filter(lambda x: x==str_ids_list[2], district)))
-	else:
-		raise Exception("order ship area should not be null")
-
 
 try:
 	ID2PROVINCE = dict([(p.id, p.name) for p in mall_models.Province.objects.all()])

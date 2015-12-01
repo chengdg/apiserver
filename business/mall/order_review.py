@@ -211,9 +211,9 @@ class OrderReview(business_model.Model):
 
 		# 得到会员的所有已完成的订单
 		#orders = mall_models.Order.by_webapp_user_id(webapp_user_id).filter(status=5)
-		orders = Order.get_completed_orders_for_webapp_user({
-			'webapp_user': args.webapp_user,
-			'webapp_owner': args.webapp_owner,
+		orders = Order.get_finished_orders_for_webapp_user({
+			'webapp_user': args['webapp_user'],
+			'webapp_owner': args['webapp_owner'],
 			})
 		
 		# 获取全部订单id

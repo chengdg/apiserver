@@ -21,7 +21,7 @@ from wapi.decorators import param_required
 from business.mall.order_review import OrderReview
 from business.mall.product_review import ProductReview
 import logging
-from core.watchdog.utils import watchdog_info
+#from core.watchdog.utils import watchdog_info
 
 class AReview(api_resource.ApiResource):
 	"""
@@ -39,6 +39,8 @@ class AReview(api_resource.ApiResource):
 		得到个人中心待评价列表的状态，
 		如果所有订单已完成晒图， 返回True
 		否则返回 False
+
+		@todo 待优化
 		"""
 		# 得到个人中心的所用订单
 		#orders = request_util._get_order_review_list(request)
@@ -92,13 +94,12 @@ class AReview(api_resource.ApiResource):
 					  type="mall",
 					  user_id=int(webapp_owner.id))
 
-		data_dict = args
-		product_score = data_dict.get('product_score', None)
-		review_detail = data_dict.get('review_detail', None)
-		serve_score = data_dict.get('serve_score', None)
-		deliver_score = data_dict.get('deliver_score', None)
-		process_score = data_dict.get('process_score', None)
-		picture_list = data_dict.get('picture_list', None)
+		product_score = args.get('product_score', None)
+		review_detail = args.get('review_detail', None)
+		serve_score = args.get('serve_score', None)
+		deliver_score = args.get('deliver_score', None)
+		process_score = args.get('process_score', None)
+		picture_list = args.get('picture_list', None)
 		#创建订单评论
 		"""
 		order_review, created = mall_models.OrderReview.objects.get_or_create(
@@ -120,8 +121,10 @@ class AReview(api_resource.ApiResource):
 
 		# 创建商品评论
 		product_view = ProductReview.create({
+			'webapp_owner': webapp_owner,
+			'webapp_user': webapp_user,
 			'order_id':order_id,
-			'owner_id':owner_id,
+			#'owner_id':owner_id,
 			'product_id':product_id,
 			'order_review':order_review,
 			'review_detail':review_detail,

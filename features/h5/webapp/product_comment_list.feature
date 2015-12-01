@@ -89,7 +89,7 @@ Background:
 #        """
 
     When bill访问jobs的webapp
-    When bill完成订单'1'中'商品1'的评价包括'文字与晒图'
+    When bill完成订单'1'中'商品1'的评价包括'文字与晒图':weapp
         """
         {
             "product_score": "4",
@@ -100,7 +100,7 @@ Background:
             "picture_list": "['/static/upload/webapp/3_20151102/2015_11_02_18_24_49_948000.png']"
         }
         """
-    When bill完成订单'2'中'商品2'的评价包括'文字'
+    When bill完成订单'2'中'商品2'的评价包括'文字':weapp
         """
         {
             "product_score": "4",
@@ -153,7 +153,7 @@ Background:
         }]
         """
     When tom访问jobs的webapp
-    When tom完成订单'3'中'商品1'的评价包括'文字与晒图'
+    When tom完成订单'3'中'商品1'的评价包括'文字与晒图':weapp
         """
         {
             "product_score": "4",
@@ -164,7 +164,7 @@ Background:
             "picture_list": "['/static/upload/webapp/3_20151102/2015_11_02_18_24_49_948000.png']"
         }
         """
-    When tom完成订单'4'中'商品2'的评价包括'文字'
+    When tom完成订单'4'中'商品2'的评价包括'文字':weapp
         """
         {
             "product_score": "4",
@@ -174,9 +174,9 @@ Background:
             "review_detail": "商品2不太好！！！！！！！"
         }
         """
-    Given jobs登录系统
-    When jobs已获取对商品的评价信息
-    And jobs已完成对商品的评价信息审核
+    Given jobs登录系统:weapp
+    When jobs已获取对商品的评价信息:weapp
+    And jobs已完成对商品的评价信息审核:weapp
         """
         [{
             "member": "tom",
@@ -199,10 +199,10 @@ Scenario: 1在weapp的商品详情中如果多余两条评价，只显示两条�
 
     Given bill关注jobs的公众号
     When bill访问jobs的webapp
-    And bill在商城首页点击'商品1'的链接
+    And bill在商城首页点击'商品1'的链接:weapp
     #publish：true为bill可以看到，false 则bill看不到,top为true则置顶，其他按评价时间倒叙排列
     #在详情页只显示两条，信息内容包括，商品名，评价时间，评价内容，注意：置顶
-    Then bill在商品详情页成功获取'商品1'的评价列表
+    Then bill在商品详情页成功获取'商品1'的评价列表:weapp
         """
         [{
             "member": "bill",
@@ -210,17 +210,17 @@ Scenario: 1在weapp的商品详情中如果多余两条评价，只显示两条�
         }]
         """
 
-    When bill在'商品1'的商品详情页点击'更多评价'
+    When bill在'商品1'的商品详情页点击'更多评价':weapp
 
-    Then bill成功获取'商品1'的商品详情的'更多评价'
+    Then bill成功获取'商品1'的商品详情的'更多评价':weapp
         """
         [{
             "member": "bill",
             "review_detail": "商品1还不错！！！！！"
         }]
         """
-    When bill在商城首页点击'商品2'的链接
-    Then bill在商品详情页成功获取'商品2'的评价列表
+    When bill在商城首页点击'商品2'的链接:weapp
+    Then bill在商品详情页成功获取'商品2'的评价列表:weapp
         """
         [{}]
         """

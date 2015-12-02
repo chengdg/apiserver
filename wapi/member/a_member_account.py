@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import urllib
+import urlparse
 from core import api_resource
 from wapi.decorators import param_required
 from utils import url_helper
@@ -17,19 +19,19 @@ from business.spread.member_shared_factory import MemberSharedUrlFactory
 
 from wapi.user.access_token import AccessToken
 
-class AMemberAccounts(api_resource.ApiResource):
+class AMemberAccount(api_resource.ApiResource):
 	"""
 	会员相关账号
 	"""
 	app = 'member'
 	resource = 'member_accounts'
 
-	@param_required(['openid', 'woid'])
+	@param_required(['webapp_user'])
 	def get(args):
 		"""
 		获取会员详情
 
-		@param id 商品ID
+		@param
 		"""
 		webapp_user = args['webapp_user']
 		social_account = webapp_user.social_account
@@ -41,7 +43,7 @@ class AMemberAccounts(api_resource.ApiResource):
 		return data
 
 
-	@param_required(['openid', 'woid', 'for_oauth', 'fmt', 'url'])
+	@param_required(['openid', 'woid', 'fmt','for_oauth', 'url'])
 	def post(args):
 		"""
 		创建会员接口
@@ -53,6 +55,11 @@ class AMemberAccounts(api_resource.ApiResource):
 		@param for_oauth 是否是授权是调用
 		
 		"""
+		# if args.has_key('url'):
+		# 	query_strings = dict(urlparse.parse_qsl(urlparse.urlparse(args['url']).query))
+		# 	fmt = query_strings.get('fmt')
+		# else:
+		# 	fmt = None
 		#创建会员
 		member = MemberFactory.create({
 			"webapp_owner": args['webapp_owner'],
@@ -126,5 +133,51 @@ class AMemberAccounts(api_resource.ApiResource):
 
 		return data
 
+	@staticmethod
+	@param_required(['openid', 'woid', 'for_oauth', 'url'])
+	def process_openid_for(args):
+		"""
+		创建会员接口
 
+		@param openid 公众号粉丝唯一标识
+		@param wid wid
+		@param fmt 分享会员token
+		@param url 当前url
+		@param for_oauth 是否是授权是调用
+		
+		"""
+		query_strings = dict(urlparse.parse_qsl(urlparse.urlparse(args['url']).query))
+		fmt = query_strings.get('fmt', None)
 
+		#创建会员
+		member = MemberFactory.create({
+			"webapp_owner": args['webapp_owner'],
+			"openid": args['openid'],
+			"for_oauth": args['for_oauth']
+			}).save()
+		created = member.created
+		#创建关系
+		if fmt and fmt != 'notfmt' and fmt != member.token:
+			try:
+				followed_member = Member.from_token({
+					"webapp_owner": args['webapp_owner'],
+					'token': fmt
+				})
+			except:
+				followed_member = None
+
+			"""
+				将会员关系创建和url处理放到celery
+			"""
+
+			AMemberSpread.process_member_spread(member, followed_member, args['url'], created)
+
+		system_account = SystemAccount.get({
+				'webapp_owner': args['webapp_owner'],
+				'openid': args['openid']
+			})
+
+		data = {}
+		data['webapp_user'] = system_account.webapp_user.to_dict()
+		data['social_account'] = system_account.social_account.to_dict()
+		return data

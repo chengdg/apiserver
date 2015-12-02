@@ -42,7 +42,8 @@ class WebAppOwnerInfo(business_model.Model):
 		'qrcode_img',
 		'member2grade',
 		'member_grades',
-		'default_member_tag'
+		'default_member_tag',
+		'weixin_mp_user_access_token'
 	)
 
 	@staticmethod
@@ -109,13 +110,14 @@ class WebAppOwnerInfo(business_model.Model):
 				webapp = webapp_models.WebApp()
 
 			#integral strategy
-			try:
-				integral_strategy_settings = member_models.IntegralStrategySttings.get(webapp_id=webapp_id)
-			except:
-				error_msg = u"获得user('{}')对应的IntegralStrategySttings构建cache失败, cause:\n{}"\
-						.format(webapp_owner_id, unicode_full_stack())
-				watchdog_error(error_msg, user_id=webapp_owner_id, noraise=True)
-				integral_strategy_settings = member_models.IntegralStrategySttings()
+			#try:
+			integral_strategy_settings = member_models.IntegralStrategySttings.get(webapp_id=webapp_id)
+			print '>>>>>>>>>>>>>click_shared_url_increase_count>>>', integral_strategy_settings.click_shared_url_increase_count
+			# except:
+			# 	error_msg = u"获得user('{}')对应的IntegralStrategySttings构建cache失败, cause:\n{}"\
+			# 			.format(webapp_owner_id, unicode_full_stack())
+			# 	watchdog_error(error_msg, user_id=webapp_owner_id, noraise=True)
+			# 	integral_strategy_settings = member_models.IntegralStrategySttings()
 
 			#member grade
 			try:

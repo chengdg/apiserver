@@ -34,7 +34,8 @@ class MemberFactory(business_model.Model):
 		'id',
 		'created',
 		'token',
-		'webapp_id'
+		'webapp_id',
+		'integral'
 	)
 
 	@staticmethod

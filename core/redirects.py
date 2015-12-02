@@ -2,6 +2,7 @@
 
 __author__ = 'bert'
 
+import json
 import falcon
 from falcon.http_status import HTTPStatus
 
@@ -25,3 +26,12 @@ class HTTPFound(HTTPStatus):
     def __init__(self, location):
         super(HTTPFound, self).__init__(
             '302 Moved Temporarily', {'location': location})
+
+
+class HTTPMiddlewareError(HTTPStatus):
+    """201
+    用于中间件异常响应
+    """
+    def __init__(self, body, headers=None):
+        super(HTTPMiddlewareError, self).__init__(
+          falcon.HTTP_201, headers,json.dumps(body))    

@@ -160,5 +160,12 @@ class WebAppOwner(business_model.Model):
 		"""
 		return self.__webapp_owner_info.default_member_tag
 
+	@property
+	def weixin_mp_user_access_token(self):
+		"""
+		[property] 默认会员等级
+		"""
+		return self.__webapp_owner_info.weixin_mp_user_access_token
+
 
 

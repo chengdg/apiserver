@@ -19,6 +19,7 @@ def encrypt_access_token(woid, openid='notopenid'):
 		raise ValueError('error woid')
 	access_token_str = str(woid) + '_weizoom_' + openid
 	encrypt_msg = crypt.EncryptMsg(access_token_str)
+	encrypt_msg = urllib.quote(encrypt_msg)
 	return encrypt_msg
 
 

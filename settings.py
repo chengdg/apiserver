@@ -38,7 +38,7 @@ MIDDLEWARES = [
     'middleware.debug_middleware.RedisMiddleware',
 
     #账号信息中间件
-    'middleware.webapp_oauth_middleware.WebAppOAuthMiddleware',
+    'middleware.webapp_account_middleware.WebAppAccountMiddleware',
 ]
 #sevice celery 相关
 EVENT_DISPATCHER = 'redis'
@@ -115,3 +115,7 @@ CTYPT_INFO = {
     'token': '2950d602ffb613f47d7ec17d0a802b',
     'encodingAESKey': 'BPQSp7DFZSs1lz3EBEoIGe6RVCJCFTnGim2mzJw5W4I'
 }
+
+COMPONENT_INFO = {
+        'app_id' : 'wxa823309fb403f661',
+    }

@@ -6,11 +6,14 @@ from business.account.webapp_owner import WebAppOwner
 from business.account.member import Member
 from business.account.webapp_user import WebAppUser
 from business.account.system_account import SystemAccount
+from wapi.user.access_token import AccessToken
 from utils import msg_crypt,auth_util
 import settings
 import logging
 
-class WebAppOAuthMiddleware(object):
+from core.redirects import HTTPMiddlewareError
+
+class WebAppAccountMiddleware(object):
 	"""
 	获取webapp owner的中间件(填充`webapp_owner`对象)
 
@@ -22,32 +25,41 @@ class WebAppOAuthMiddleware(object):
 			return
 
 		if 'access_token' in req.params:
+			access_token = req.params.get('access_token', None)	
+			account_info = AccessToken.get_sys_account({
+				'access_token':access_token
+				})
 			if settings.DEBUG:
 				print 'WebAppOAuthMiddleware:access_token:>>>>>>>>>>>>>',req.params['access_token']
-			access_token = auth_util.decrypt_access_token(req.params['access_token']) 
-			access_token_list = access_token.split('_weizoom_')
-			if len(access_token_list) != 2:
-				raise ValueError('error access_token')
-			webapp_owner_id, openid = access_token_list[0], access_token_list[1]
+				print 'account_info from access_token>>>>>>>>>>>>:', account_info
+
+			if account_info.has_key('errorcode'):
+				raise HTTPMiddlewareError(account_info)
+	
+			woid = account_info['webapp_owner'].id
+			req.context['webapp_owner'] = account_info['webapp_owner']
+			req.context['webapp_user'] = account_info['system_account'].webapp_user
 
 		elif settings.MODE == "develop":
 			# 开发测试支持 不传递woid使用jobs用户，不传递openid使用bill_jobs会员
 			# if not 'woid' in req.params:
 			# 	return
-			webapp_owner_id = req.params.get('woid')
-			if not webapp_owner_id:
-				webapp_owner_id = account_models.User.select().dj_where(username='jobs')[0].id
+			woid = req.params.get('woid')
+			if not woid:
+				woid = account_models.User.select().dj_where(username='jobs')[0].id
 			openid = req.params.get('openid')
 			if not openid:
 				openid = 'bill_jobs'
 		else:
 			raise ValueError("error access_token")
 
+		if req.context.has_key('webapp_owner') and req.context.has_key('webapp_user'):
+			return
 		#TODO2: 支持开发的临时解决方案，需要删除
-		#openid = 'bill_jobs'
+		openid = 'bill_jobs'
 		#填充webapp_owner
 		webapp_owner = WebAppOwner.get({
-			'woid': webapp_owner_id
+			'woid': woid
 		})
 		req.context['webapp_owner'] = webapp_owner
 		if openid == 'notopenid':
@@ -57,11 +69,6 @@ class WebAppOAuthMiddleware(object):
 			'webapp_owner':  webapp_owner,
 			'openid': openid
 		})
-		# member = Member.from_model({
-		# 	'webapp_owner': webapp_owner, 
-		# 	'model': social_account_info_obj['member']
-		# })
-		#member.webapp_user = webapp_user
 		
 		req.context.update({
 			'webapp_user': system_account.webapp_user

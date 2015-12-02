@@ -95,14 +95,14 @@ class Member(business_model.Model):
 		"""
 		webapp_owner = args['webapp_owner']
 		token = args['token']
-		#try:
-		member_db_model = member_models.Member.get(webapp_id=webapp_owner.webapp_id,token=token)
-		return Member.from_model({
-			'webapp_owner': webapp_owner,
-			'model': member_db_model
-		})
-		#except:
-		#	return None	
+		try:
+			member_db_model = member_models.Member.get(webapp_id=webapp_owner.webapp_id,token=token)
+			return Member.from_model({
+				'webapp_owner': webapp_owner,
+				'model': member_db_model
+			})
+		except:
+			return None	
 
 	def __init__(self, webapp_owner, model):
 		business_model.Model.__init__(self)

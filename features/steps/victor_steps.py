@@ -33,17 +33,21 @@ def step_impl(context, web_user):
 		buyer = order['member']
 		if buyer != last_buyer:
 			# login first if not logged-in
-			context.execute_steps(u'When %s访问%s的webapp'% (buyer, web_user))
+			new_step = u'When %s访问%s的webapp'% (buyer, web_user)
+			logging.info("Converted step:\n %s" % new_step)
+			context.execute_steps(new_step)
 			last_buyer = buyer
 
 		products = order['products']
+		order_id = order['order_no']
 		new_step = u'''When %s购买%s的商品
 			"""
 			{
+				"order_id": "%s",
 				"products": %s
 			}
 			"""
-		''' % (buyer, web_user, json.dumps(products))
+		''' % (buyer, web_user, order_id, json.dumps(products))
 		logging.info("Converted step:\n %s" % new_step)
 		context.execute_steps(new_step)
 	return

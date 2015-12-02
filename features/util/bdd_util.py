@@ -8,7 +8,7 @@ from db.account.models import User
 from utils import string_util
 from db.member import models as member_models
 from db.mall import models as mall_models
-
+import logging
 
 tc = None
 
@@ -194,11 +194,11 @@ def assert_expected_list_in_actual(expected, actual):
 # assert_api_call_success: 验证api调用成功
 ###########################################################################
 def assert_api_call_success(response):
-	if 200 != response.body['code']:
+	if 200 != response.body.get('code'):
 		buf = []
 		buf.append('>>>>>>>>>>>>>>> response <<<<<<<<<<<<<<<')
 		buf.append(str(response))
-		print '\n'.join(buf)
+		logging.error("API calling failure: %s" % '\n'.join(buf))
 	assert 200 == response.body['code'], "code != 200, call api FAILED!!!!"
 
 

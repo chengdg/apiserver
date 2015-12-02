@@ -12,6 +12,9 @@ from utils import error_codes
 from business.account.access_token import AccessToken as BusinessAccessToken
 from business.account.webapp_owner import WebAppOwner
 from business.account.system_account import SystemAccount
+from business.account.member_factory import MemberFactory
+
+import settings
 
 class AccessToken(api_resource.ApiResource):
 	"""
@@ -38,10 +41,26 @@ class AccessToken(api_resource.ApiResource):
 			
 		#填充会员帐号信息
 		#进入授权的帐号信息都是已存在的
-		system_account = SystemAccount.get({
-			'webapp_owner':  webapp_owner,
-			'openid': openid
-		})
+		try:
+			system_account = SystemAccount.get({
+				'webapp_owner':  webapp_owner,
+				'openid': openid
+			})
+		except:
+			if settings.MODE == 'develop':
+				#创建会员
+				member = MemberFactory.create({
+					"webapp_owner": webapp_owner,
+					"openid": openid,
+					"for_oauth": 0
+					}).save()
+				system_account = SystemAccount.get({
+					'webapp_owner':  webapp_owner,
+					'openid': openid
+				})
+			else:
+				system_account = None
+
 		if not system_account:
 			return {"errorcode": error_codes.ILLEGAL_OPENID_CODE, "errmsg": error_codes.code2msg[error_codes.ILLEGAL_OPENID_CODE]}
 		

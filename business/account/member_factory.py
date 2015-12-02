@@ -77,7 +77,7 @@ class MemberFactory(business_model.Model):
 
 
 	def save(self):
-		"""保存订单
+		"""保存会员信息
 		"""
 		webapp_owner = self.context['webapp_owner']
 		member_grade = self.context['default_grade']

@@ -39,6 +39,7 @@ class WebAppAccountMiddleware(object):
 			woid = account_info['webapp_owner'].id
 			req.context['webapp_owner'] = account_info['webapp_owner']
 			req.context['webapp_user'] = account_info['system_account'].webapp_user
+			return 
 
 		elif settings.MODE == "develop":
 			# 开发测试支持 不传递woid使用jobs用户，不传递openid使用bill_jobs会员

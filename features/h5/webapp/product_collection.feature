@@ -5,9 +5,9 @@ Feature: 在webapp中收藏商品
 	bill能在webapp中收藏jobs添加的"商品"
 
 Background:
-	Given jobs登录系统
+	Given jobs登录系统:weapp
 	
-	And jobs已添加商品规格
+	And jobs已添加商品规格:weapp
 		"""
 		[{
 			"name": "尺寸",
@@ -19,7 +19,7 @@ Background:
 			}]
 		}]
 		"""
-	And jobs已添加商品
+	And jobs已添加商品:weapp
 		"""
 		[{
 			"name": "商品1",
@@ -44,10 +44,10 @@ Background:
 			"price": 100.00
 		}]
 		"""
-	And bill关注jobs的公众号
-	And tom关注jobs的公众号
+	And bill关注jobs的公众号:weapp
+	And tom关注jobs的公众号:weapp
 
-@todo @mall2 @weapp.mall.collect.product
+@todo @mall2 @weapp.mall.collect.product @gyc
 Scenario:1 收藏单个无规格商品
 	jobs添加商品后
 	1. bill能在webapp中将jobs添加的商品收藏
@@ -65,7 +65,9 @@ Scenario:1 收藏单个无规格商品
 		"""
 		[{
 			"name": "商品1",
-			"price": 100.00
+			"price_info": {
+				"display_price": "100.00"
+			}
 		}]
 		"""
 	When tom访问jobs的webapp

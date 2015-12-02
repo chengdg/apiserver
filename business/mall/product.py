@@ -247,7 +247,8 @@ class Product(business_model.Model):
 
 		@return Product对象集合
 		"""
-		return [Product.from_id(product_id) for product_id in args['product_ids']]
+		#update by bert 
+		return [Product.from_id({"product_id":product_id,"webapp_owner": args['webapp_owner']}).to_dict() for product_id in args['product_ids']]
 
 	def __init__(self, model=None):
 		business_model.Model.__init__(self)

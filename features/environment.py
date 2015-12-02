@@ -4,6 +4,8 @@ import os
 import sys
 import logging
 
+from db.mall import models as mall_models
+
 path = os.path.abspath(os.path.join('.', '..'))
 sys.path.insert(0, path)
 
@@ -35,10 +37,20 @@ def __create_system_user(username):
 
 def before_all(context):
 	cache_utils.clear_db()
+	
+	mall_models.ProductModelHasPropertyValue.delete().execute()
+	mall_models.ProductProperty.delete().execute()
+	mall_models.ProductModel.delete().execute()
+	mall_models.CategoryHasProduct.delete().execute()
+	mall_models.ProductSwipeImage.delete().execute()
+	mall_models.ProductSales.delete().execute()
+	mall_models.Product.delete().execute()
+	mall_models.MemberProductWishlist.delete().execute()
 	# __clear_all_account_data()
 	# __create_system_user('jobs')
 	# __create_system_user('bill')
 	# __create_system_user('tom')
+
 	weapp_working_dir = os.path.join(settings.WEAPP_DIR, 'weapp')
 	if not os.path.exists(weapp_working_dir):
 		info = '* ERROR: CAN NOT do bdd testing. Because bdd need %s be exists!!!' % weapp_working_dir

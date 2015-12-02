@@ -344,16 +344,53 @@ class Member(business_model.Model):
 		member = Member(None, None)
 		return member
 
-	# def to_dict(self, *extras):
-	# 	properties = ['username_for_html', 'integral', 'user_icon', 'is_binded']
-	# 	if extras:
-	# 		properties.extend(extras)
-	# 	return business_model.Model.to_dict(self, *properties)
+	def collect_product(self, product_id):
+		"""收藏了product_id对应的商品
+		"""
+		webapp_owner = self.context['webapp_owner']
+		if mall_models.MemberProductWishlist.select().dj_where(
+				owner_id = webapp_owner.id,
+				member_id = self.id,
+				product_id = product_id,
+			).count() > 0:
 
-	# @property
-	# def token(self):
-	# 	"""
-	# 	[property] 会员购物车中的商品数量
-	# 	"""
-	# 	return self.token
+			update = mall_models.MemberProductWishlist.update(is_collect=True).dj_where(
+				owner_id = webapp_owner.id,
+				member_id = self.id,
+				product_id = product_id,
+			)
+			update.execute()
+		else:
+			
+			mall_models.MemberProductWishlist.create(
+				owner = webapp_owner.id,
+				member_id = self.id,
+				product_id = product_id,
+				is_collect=True
+			)
 
+	def cancel_collect_product(self, product_id):
+		"""取消收藏了product_id对应的商品
+		"""
+		webapp_owner = self.context['webapp_owner']
+		update = mall_models.MemberProductWishlist.update(is_collect=False).dj_where(
+			owner_id = webapp_owner.id,
+			member_id = self.id,
+			product_id = product_id,
+			)
+		update.execute()
+		
+	@cached_context_property
+	def wishlist_product_ids(self):
+		"""
+		[property] 会员收藏商品的数量
+		"""
+		webapp_owner = self.context['webapp_owner']
+		
+		ids = [memner_product_wish.product_id for memner_product_wish in mall_models.MemberProductWishlist.select().dj_where(
+			owner_id = webapp_owner.id,
+			member_id = self.id,
+			is_collect=True
+			)] 
+
+		return ids

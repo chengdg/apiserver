@@ -5,3 +5,5 @@ import member_coupons
 # import a_member_relations
 # import member_share_url
 import a_member_spread
+import a_member_wish_product
+import a_member_wish_products

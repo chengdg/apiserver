@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 import math
 from datetime import datetime
 import time
+import urllib
 
 from wapi.decorators import param_required
 from core.cache import utils as cache_util
@@ -43,8 +44,9 @@ class AccessToken(business_model.Model):
 	@param_required(['access_token'])
 	def get_from_cache(args):
 		access_token = args['access_token']
+		if access_token.find('=') > -1 or access_token.find('+') > -1 or access_token.find('@') > -1:
+			access_token = urllib.quote(access_token)
 		value = cache_util.GET_CACHE(access_token)
-		
 		if value:
 			woid = value['woid']
 			openid = value['openid']

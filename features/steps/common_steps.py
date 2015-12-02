@@ -10,6 +10,8 @@ from db.member import models as member_models
 
 from features.steps import weapp_steps 
 
+import logging
+
 # @given(u"{user}获得访问'{webapp_owner_name}'数据的授权")
 # def step_impl(context, user, webapp_owner_name):
 # 	#进行登录，并获取context.client.user, context.client.woid
@@ -61,6 +63,7 @@ def step_impl(context, user, mp_user_name):
 		'openid': '%s_%s' % (user, mp_user_name)
 	})
 	client.webapp_user.access_token = response.body['data']['access_token']
+	logging.error('>>>>>> ACCESS_TOKEN : %s' % client.webapp_user.access_token)
 	client.woid = webapp_owner.id
 
 	context.webapp_owner_id = webapp_owner.id

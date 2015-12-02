@@ -18,6 +18,7 @@ from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
 from core.exceptionutil import unicode_full_stack
 from business import model as business_model
 from utils import auth_util
+import logging
 
 class AccessToken(business_model.Model):
 	"""
@@ -90,7 +91,7 @@ class AccessToken(business_model.Model):
 				return key
 			except:
 				notify_message = u"AccessToken get_access_token cause:\n{}".format(unicode_full_stack())
-				print notify_message
+				logging.error(notify_message)
 				watchdog_error(notify_message)
 				return None
 			

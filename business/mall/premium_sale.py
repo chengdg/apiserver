@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """@package business.mall.coupon
-优惠券
+促销-买赠
 """
 
 #import json
@@ -15,14 +15,10 @@ from wapi.decorators import param_required
 #import settings
 from business import model as business_model
 
-class Coupon(business_model.Model):
+class PremiumSale(business_model.Model):
 	"""
-	优惠券
+	促销-买赠
 	"""
 
-	@staticmethod
-	@param_required(['webapp_owner', 'coupon_id'])
-	def get(args):
-		pass
-
-
+	pass
+	

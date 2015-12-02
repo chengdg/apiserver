@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
+"""@package business.mall.product_model
 商品规格
 """
 

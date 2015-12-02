@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-"""购物车商品(ShoppingCartPdocut)集合
+"""@package business.mall.shopping_cart_products
+购物车商品(ShoppingCartPdocut)集合
 
 ShoppingCartProducts用于构建一组ShoppingCartProduct，ShoppingCartProducts存在的目的是为了后续优化，以最少的数据库访问次数对商品信息进行批量填充
 
@@ -22,7 +23,8 @@ import settings
 
 
 class ShoppingCartProducts(business_model.Model):
-	"""购物车商品集合
+	"""
+	购物车商品集合
 	"""
 	__slots__ = (
 		'products',

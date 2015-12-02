@@ -28,6 +28,7 @@ from wapi.decorators import param_required
 
 class ProductReview(business_model.Model):
 	__slots__ = (
+		'id',
 		'pictures',
 		)
 

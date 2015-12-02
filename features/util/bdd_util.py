@@ -246,7 +246,7 @@ def get_order_has_product(order_code, product_name):
 	if ":" in product_name:
 		product_name, product_model_name = product_name.split(":")
 
-	order_has_product_list = mall_models.OrderHasProduct.dj_where(order_id=order.id, product_name=product_name)
+	order_has_product_list = mall_models.OrderHasProduct.select().dj_where(order_id=order.id, product_name=product_name)
 
 	if order_has_product_list.count() == 1:
 		# 如果商品不包含规格

@@ -9,7 +9,7 @@ import time
 
 from core import cache
 
-from wapi.user.access_token import AccessToken
+from business.account.access_token import AccessToken 
 
 import logging
 
@@ -37,7 +37,7 @@ class RedisMiddleware(object):
 			access_token = request.params.get('access_token',None)
 			value = None
 			if access_token:
-				account_info = AccessToken.get_sys_account({
+				account_info = AccessToken.get({
 					'access_token':access_token
 				})
 				if account_info:
@@ -54,6 +54,6 @@ class RedisMiddleware(object):
 			cache.utils.clear_db()
 
 			if access_token and value:
-				logging("keys:%s. value:%s" % (access_token, value))
+				logging.info("keys:%s. value:%s" % (access_token, value))
 				cache.utils.SET_CACHE(access_token, value)
 

@@ -85,4 +85,4 @@ def step_finished_a_product_review(context, webapp_user, order_code, product_nam
 	if has_picture:
 		params['picture_list'] = str(has_picture)
 
-	context.client.post(url, param)
+	context.client.post(url, params)

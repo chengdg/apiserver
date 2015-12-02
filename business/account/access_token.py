@@ -81,7 +81,7 @@ class AccessToken(business_model.Model):
 			'times': int(time.time())
 		}
 		self.access_token = key
-		#TODU-bert 修改缓存库不使用公共库
+		#TiDU-bert 修改缓存库不使用公共库
 		try:
 			cache_util.SET_CACHE(key, value)
 			return key

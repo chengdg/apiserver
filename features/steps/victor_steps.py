@@ -50,6 +50,7 @@ def step_impl(context, web_user):
 		''' % (buyer, web_user, order_id, json.dumps(products))
 		logging.info("Converted step:\n %s" % new_step)
 		context.execute_steps(new_step)
+		
 	return
 
 @When(u"{webapp_user}完成订单'{order_code}'中'{product_name}'的评价包括'{has_picture}'")

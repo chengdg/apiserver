@@ -54,6 +54,5 @@ class RedisMiddleware(object):
 			cache.utils.clear_db()
 
 			if access_token and value:
-				logging.info("keys:%s. value:%s" % (access_token, value))
+				logging.debug("access_token:%s. value:%s" % (access_token, value))
 				cache.utils.SET_CACHE(access_token, value)
-

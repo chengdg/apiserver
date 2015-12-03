@@ -8,9 +8,11 @@
 
 from business import model as business_model
 from business.mall.order import Order
+from business.mall.product_review import ProductReview
 from db.mall import models as mall_models
 from core.watchdog.utils import watchdog_info
 from wapi.decorators import param_required
+import logging
 
 #import json
 #from bs4 import BeautifulSoup
@@ -28,7 +30,21 @@ from wapi.decorators import param_required
 
 class OrderReview(business_model.Model):
 	__slots__ = (
-		)
+		'id',
+		'owner_id',
+		'order_id',
+		'member_id',
+		'serve_score',
+		'deliver_score',
+		'process_score'
+	)
+
+
+	def __init__(self, model):
+		business_model.Model.__init__(self)
+
+		if model:
+			self._init_slot_from_model(model)
 
 
 	@staticmethod
@@ -38,14 +54,15 @@ class OrderReview(business_model.Model):
 		创建订单评论
 		"""
 		#创建订单评论
-		order_review, created = mall_models.OrderReview.objects.get_or_create(
+		logging.info("to create an OrderReview...")
+		order_review, created = mall_models.OrderReview.get_or_create(
 			order_id=args['order_id'],
 			owner_id=args['owner_id'],
 			member_id=args['member_id'],
 			serve_score=args['serve_score'],
 			deliver_score=args['deliver_score'],
 			process_score=args['process_score'])
-		return order_review
+		return OrderReview(order_review)
 
 
 	@staticmethod
@@ -89,8 +106,9 @@ class OrderReview(business_model.Model):
 		for order in orders:
 			orderHasProductIds.extend([product.id for product in order.products])
 
-		ProductReviews = mall_models.ProductReview.objects.filter(order_has_product_id__in=orderHasProductIds)
-		return ProductReviews
+		models = mall_models.ProductReview.select().dj_where(order_has_product_id__in=orderHasProductIds)
+		product_reviews = [ProductReview(model) for model in models]
+		return product_reviews
 	
 	@staticmethod
 	@param_required([])
@@ -117,6 +135,7 @@ class OrderReview(business_model.Model):
 
 		@todo  待优化
 		"""
+
 		cache_products = webapp_cache.get_webapp_products_detail(request.webapp_owner_id, totalProductIds)
 		cache_productId2cache_products = dict([(product.id, product) for product in cache_products])
 
@@ -237,11 +256,18 @@ class OrderReview(business_model.Model):
 		#ProductReviewPictureIds = [product_review_picture.product_review_id for product_review_picture in all_product_review_pictures]
 
 		if need_product_detail:
+			# TODO: to be optimized
+			"""
 			OrderReview.__process_with_product_detail({
 				'orders': orders,
 				})
+			"""
+			pass
 		else:
+			# TODO: to be optimized
+			"""
 			OrderReview.__process_without_product_detail({
 				'orders': orders,
 				})
+			"""
 		return orders		

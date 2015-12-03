@@ -54,40 +54,6 @@ class AReview(api_resource.ApiResource):
 		return result
 
 
-
-	########################################################################
-	# get_order_review_list: 会员订单中未评价订单列表
-	########################################################################
-	def get_order_review_list(request):
-		'''
-			得到会员已完成订单中所有未评价的商品列表的订单，
-			或者已评价未晒图的订单
-
-			Precondition: webapp_user
-			PostCondition: RequestContext with the following context:
-				{
-					'orders': [
-						order,
-						order,],
-					'is_hide_weixin_option_menu': ''
-					'page_title': '',
-				}
-
-		'''
-
-		orders = _get_order_review_list(request,need_product_detail=True)
-
-		c = RequestContext(request,
-						   {"orders": orders,
-							'is_hide_weixin_option_menu': True,
-							'page_title': u'待评价列表',
-							})
-		return render_to_response(
-			'%s/order_review_list.html' % request.template_dir, c)
-
-
-
-
 	@param_required(['woid', 'order_id', 'product_id', 'order_has_product_id'])
 	def put(args):
 		"""
@@ -158,7 +124,7 @@ class AReview(api_resource.ApiResource):
 			'process_score': process_score})
 
 		# 创建商品评论
-		product_view = ProductReview.create({
+		product_review = ProductReview.create({
 			'webapp_owner': webapp_owner,
 			'webapp_user': webapp_user,
 			'order_id':order_id,
@@ -175,22 +141,10 @@ class AReview(api_resource.ApiResource):
 		#response = create_response(200)
 		#response.data = get_review_status(request)
 		data = AReview._get_review_status(args)
-		"""
-		if picture_list:
-			for picture in list(eval(picture_list)):
-				mall_models.ProductReviewPicture(
-					product_review=product_review,
-					order_has_product_id=order_has_product_id,
-					att_url=picture
-				).save()
-				watchdog_info(u"create_product_review after save img  %s" %\
-					(picture), type="mall", user_id=request.webapp_owner_id)
+		return {
+			"review_status": data
+		}
 
-			watchdog_info(u"create_product_review end, order_has_product_id is %s" %\
-				(order_has_product_id), type="mall", user_id=owner_id)
-		"""
-		#return response.get_response()
-		return data
 
 	@param_required([])
 	def get(args):

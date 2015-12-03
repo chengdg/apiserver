@@ -30,8 +30,8 @@ class WebAppAccountMiddleware(object):
 				'access_token':access_token
 				})
 			if settings.DEBUG:
-				logging.error( 'WebAppOAuthMiddleware:access_token:>>>>>>>>>>>>>%s' % req.params['access_token'])
-				logging.error( 'account_info from access_token>>>>>>>>>>>>:%s' % account_info)
+				logging.debug( 'WebAppOAuthMiddleware:access_token:>>>>>>>>>>>>>%s' % req.params['access_token'])
+				logging.debug( 'account_info from access_token>>>>>>>>>>>>:%s' % account_info)
 
 			if account_info.has_key('errorcode'):
 				raise HTTPMiddlewareError(account_info)

@@ -27,10 +27,27 @@ from wapi.decorators import param_required
 
 
 class ProductReview(business_model.Model):
+	"""
+	商品评价
+	"""
+
 	__slots__ = (
 		'id',
-		'pictures',
-		)
+
+		'member_id',
+		'order_has_product_id',
+
+		'order_review_id',
+		'order_id',
+		'product_id',
+		'product_score',
+		'review_detail',
+		'created_at',
+		'top_name',
+		'status',
+
+		#'pictures',
+	)
 
 
 	def __init__(self, model):
@@ -41,24 +58,30 @@ class ProductReview(business_model.Model):
 
 
 	@staticmethod
-	@param_required(['order_id', 'owner_id', 'product_id', 'order_review', 'review_detail', 'product_score', 'member_id', 'order_has_product_id'])
+	@param_required(['order_id', 'webapp_owner', 'product_id', 'order_review', 'review_detail', 'product_score', 'member_id', 'order_has_product_id'])
 	def create(args):
 		"""
 		创建商品评论
 		"""
-		product_review, created = mall_models.ProductReview.objects.get_or_create(
+		logging.info("to create a ProductReview")
+		relation = mall_models.OrderHasProduct.get(id=args['order_has_product_id'])
+		model, created = mall_models.ProductReview.get_or_create(
 			member_id=args['member_id'],
-			order_review=args['order_review'],
+			order_review=mall_models.OrderReview.get(id=args['order_review'].id),
 			order_id=args['order_id'],
-			owner_id=args['owner_id'],
+			owner_id=args['webapp_owner'].id,
 			product_id=args['product_id'],
-			order_has_product_id=args['order_has_product_id'],
+			order_has_product=relation,
 			product_score=args['product_score'],
 			review_detail=args['review_detail']
 		)
+		logging.info("created model, created={}".format(created))
+		product_review = ProductReview(model)
+		logging.info("product_review={}".format(product_review.to_dict()))
 
 		picture_list = args.get('picture_list')
 		if picture_list:
+			logging.info("saving product review picture list..., picture_list=%s" % picture_list)
 			for picture in list(eval(picture_list)):
 				mall_models.ProductReviewPicture(
 					product_review=product_review,
@@ -69,7 +92,7 @@ class ProductReview(business_model.Model):
 					type="mall", user_id=args['owner_id'])
 			watchdog_info(u"create_product_review end, order_has_product_id is %s" % \
 				(args['order_has_product_id']), type="mall", user_id=args['owner_id'])
-		return
+		return product_review
 
 
 	def has_picture(self, product_review, ProductReviewPictureIds):

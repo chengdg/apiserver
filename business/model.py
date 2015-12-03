@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 
 class Model(object):
 	__slots__ = ('context', )
@@ -7,6 +8,7 @@ class Model(object):
 		self.context = {}
 
 		for slot in self.__slots__:
+			#logging.info("setting '%s'" % slot)
 			setattr(self, slot, None)
 
 	def _init_slot_from_model(self, model):

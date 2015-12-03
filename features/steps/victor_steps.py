@@ -62,7 +62,7 @@ def step_finished_a_product_review(context, webapp_user, order_code, product_nam
 	"""
 	context_dict = json.loads(context.text)
 
-	url = '/wapi/mall/review/'
+	url = '/wapi/mall/review/?_method=put'
 	#url = '/webapp/api/project_api/call/'
 	# 原始源码在`webapp/modules/mall/request_api_util.py`中的`create_product_review()`。
 	order_has_product = bdd_util.get_order_has_product(order_code, product_name)
@@ -73,7 +73,6 @@ def step_finished_a_product_review(context, webapp_user, order_code, product_nam
 		'order_id': order_has_product.order_id,
 		'product_id': order_has_product.product_id,
 		'order_has_product_id': order_has_product.id,
-		'_method': 'put',
 	})
 	# 输入
 	#data['target_api'] = 'product_review/create'
@@ -81,8 +80,8 @@ def step_finished_a_product_review(context, webapp_user, order_code, product_nam
 	has_picture = context_dict.get('picture_list', None)
 	if has_picture:
 		params['picture_list'] = str(has_picture)
-
-	context.client.post(url, params)
+	bdd_util.assert_api_call_success(context.client.post(url, params))
+	return
 
 
 @Then(u"{webapp_user}在商品详情页成功获取'{product_name}'的评价列表")

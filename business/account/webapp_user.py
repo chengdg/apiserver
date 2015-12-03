@@ -24,6 +24,7 @@ from business.mall.shopping_cart import ShoppingCart
 import settings
 from business.decorator import cached_context_property
 from utils import regional_util
+from business.account.member_order_info import MemberOrderInfo
 
 class WebAppUser(business_model.Model):
 	"""
@@ -206,6 +207,52 @@ class WebAppUser(business_model.Model):
 		"""
 		if not self.has_purchased:
 			member_models.WebAppUser.update(has_purchased=True).dj_where(id=self.id).execute()
+
+	@cached_context_property
+	def __order_info(self):
+		"""
+		[property] 与webapp user对应的订单信息(MemberOrderInfo)对象
+		"""
+		member_order_info = MemberOrderInfo.get_for_webapp_user({
+			'webapp_user': self
+		})
+
+		return member_order_info
+
+	@property
+	def history_order_count(self):
+		"""
+		[property] webapp user总订单数
+		"""
+		return self.__order_info.history_order_count
+
+	@property
+	def not_payed_order_count(self):
+		"""
+		[property] webapp user待支付订单数
+		"""
+		return self.__order_info.not_payed_order_count
+
+	@property
+	def not_ship_order_count(self):
+		"""
+		[property] webapp user待发货订单数
+		"""
+		return self.__order_info.not_ship_order_count
+	
+	@property
+	def shiped_order_count(self):
+		"""
+		[property] webapp user待收获订单数
+		"""
+		return self.__order_info.shiped_order_count
+
+	@property
+	def review_count(self):
+		"""
+		[property] webapp user待评论订单数
+		"""
+		return self.__order_info.review_count
 
 	def to_dict(self, *extras):
 		data = {}

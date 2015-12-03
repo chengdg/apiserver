@@ -262,53 +262,7 @@ class Member(business_model.Model):
 		return username
 
 	@cached_context_property
-	def __order_info(self):
-		"""
-		[property] 与会员对应的订单信息(MemberOrderInfo)对象
-		"""
-		member_order_info = MemberOrderInfo.get_for_webapp_user({
-			'webapp_user': self.webapp_user
-		})
-
-		return member_order_info
-
-	@property
-	def history_order_count(self):
-		"""
-		[property] 会员总订单数
-		"""
-		return self.__order_info.history_order_count
-
-	@property
-	def not_payed_order_count(self):
-		"""
-		[property] 会员待支付订单数
-		"""
-		return self.__order_info.not_payed_order_count
-
-	@property
-	def not_ship_order_count(self):
-		"""
-		[property] 会员待发货订单数
-		"""
-		return self.__order_info.not_ship_order_count
-	
-	@property
-	def shiped_order_count(self):
-		"""
-		[property] 会员待收获订单数
-		"""
-		return self.__order_info.shiped_order_count
-
-	@property
-	def review_count(self):
-		"""
-		[property] 会员待评论订单数
-		"""
-		return self.__order_info.review_count
-
-	@cached_context_property
-	def wishlist_product_count(self):
+	def collected_product_count(self):
 		"""
 		[property] 会员收藏商品的数量
 		"""

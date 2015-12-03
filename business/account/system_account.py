@@ -113,8 +113,6 @@ class SystemAccount(business_model.Model):
 			'webapp_owner': webapp_owner,
 			'model': data['social_account']
 		})
-		# webapp_user.member = member
-		# member.webapp_user = webapp_user
 
 		self.member = member
 		self.webapp_user = webapp_user

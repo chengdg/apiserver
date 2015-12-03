@@ -5,6 +5,7 @@ Feature: 在webapp中收藏商品
 	bill能在webapp中收藏jobs添加的"商品"
 
 Background:
+	Given 重置weapp的bdd环境
 	Given jobs登录系统:weapp
 	
 	And jobs已添加商品规格:weapp

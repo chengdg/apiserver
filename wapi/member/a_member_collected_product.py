@@ -9,31 +9,27 @@ import resource
 from business.mall.product import Product
 
 
-class AMemberWishProduct(api_resource.ApiResource):
+class AMemberCollectedProduct(api_resource.ApiResource):
 	"""
 	会员收藏商品
 	"""
 	app = 'member'
-	resource = 'wish_product'
+	resource = 'collected_product'
 
 	@param_required(['webapp_user', 'product_id'])
 	def put(args):
 		webapp_user = args['webapp_user']
 		product_id = args['product_id']
 		member = webapp_user.member
-		member.collect_product(product_id)
+		member.collected_product(product_id)
 		return {}
 
-	@param_required(['webapp_user', 'product_id', 'wished'])
-	def post(args):
+	@param_required(['webapp_user', 'product_id'])
+	def delete(args):
 		webapp_user = args['webapp_user']
 		product_id = args['product_id']
-		wished = args['wished']
 		member = webapp_user.member
-		if str(wished) == '1':
-			member.collect_product(product_id)
-		else:
-			member.cancel_collect_product(product_id)
+		member.cancel_collected_product(product_id)
 		return {}
 
 

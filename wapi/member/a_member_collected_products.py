@@ -9,12 +9,12 @@ import resource
 from business.mall.product import Product
 
 
-class AMemberWishProduct(api_resource.ApiResource):
+class AMemberCollectedProduct(api_resource.ApiResource):
 	"""
 	会员收藏商品
 	"""
 	app = 'member'
-	resource = 'wish_products'
+	resource = 'collected_products'
 
 
 	@param_required(['webapp_user'])
@@ -30,19 +30,9 @@ class AMemberWishProduct(api_resource.ApiResource):
 		webapp_user = args['webapp_user']
 		member = webapp_user.member
 
-		product_ids = member.wishlist_product_ids
-		products = Product.from_ids({
-			'webapp_owner': webapp_owner,
-			'member': member,
-			'product_ids': product_ids
-		})
-		products_dict_list = []
-		for id in product_ids:
-			for product in products:
-				if product.id == id:
-					products_dict_list.append(product.to_dict())
-					break
-		return {'products':products_dict_list}
+		product_ids = member.collected_products
+		
+		return {'products':product_ids}
 
 
 

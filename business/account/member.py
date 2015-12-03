@@ -10,17 +10,21 @@ from datetime import datetime
 
 from wapi.decorators import param_required
 from wapi import wapi_utils
-from core.cache import utils as cache_util
+
 from db.mall import models as mall_models
 from db.mall import promotion_models
 from db.member import models as member_models
+
 import resource
-from core.watchdog.utils import watchdog_alert
-from business import model as business_model
 import settings
-from business.decorator import cached_context_property
+from core.watchdog.utils import watchdog_alert
+from core.cache import utils as cache_util
 from utils import emojicons_util
+
+from business import model as business_model
+from business.decorator import cached_context_property
 from business.account.member_order_info import MemberOrderInfo
+from business.mall.product import Product
 import logging
 
 class Member(business_model.Model):
@@ -344,7 +348,7 @@ class Member(business_model.Model):
 		member = Member(None, None)
 		return member
 
-	def collect_product(self, product_id):
+	def collected_product(self, product_id):
 		"""收藏了product_id对应的商品
 		"""
 		webapp_owner = self.context['webapp_owner']
@@ -354,12 +358,11 @@ class Member(business_model.Model):
 				product_id = product_id,
 			).count() > 0:
 
-			update = mall_models.MemberProductWishlist.update(is_collect=True).dj_where(
+			mall_models.MemberProductWishlist.update(is_collect=True).dj_where(
 				owner_id = webapp_owner.id,
 				member_id = self.id,
 				product_id = product_id,
-			)
-			update.execute()
+			).execute()
 		else:
 			
 			mall_models.MemberProductWishlist.create(
@@ -369,19 +372,18 @@ class Member(business_model.Model):
 				is_collect=True
 			)
 
-	def cancel_collect_product(self, product_id):
+	def cancel_collected_product(self, product_id):
 		"""取消收藏了product_id对应的商品
 		"""
 		webapp_owner = self.context['webapp_owner']
-		update = mall_models.MemberProductWishlist.update(is_collect=False).dj_where(
+		mall_models.MemberProductWishlist.update(is_collect=False).dj_where(
 			owner_id = webapp_owner.id,
 			member_id = self.id,
 			product_id = product_id,
-			)
-		update.execute()
+			).execute()
 		
 	@cached_context_property
-	def wishlist_product_ids(self):
+	def collected_products(self):
 		"""
 		[property] 会员收藏商品的ids
 		"""
@@ -393,4 +395,17 @@ class Member(business_model.Model):
 			is_collect=True
 			).order_by(-mall_models.MemberProductWishlist.add_time)] 
 
-		return ids
+
+		products = Product.from_ids({
+			'webapp_owner': webapp_owner,
+			'member': self,
+			'product_ids': ids
+		})
+		products_dict_list = []
+		for id in ids:
+			for product in products:
+				if product.id == id:
+					products_dict_list.append(product.to_dict())
+					break
+
+		return products_dict_list

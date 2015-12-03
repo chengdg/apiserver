@@ -33,6 +33,13 @@ class ProductReview(business_model.Model):
 		)
 
 
+	def __init__(self, model):
+		business_model.Model.__init__(self)
+
+		if model:
+			self._init_slot_from_model(model)
+
+
 	@staticmethod
 	@param_required(['order_id', 'owner_id', 'product_id', 'order_review', 'review_detail', 'product_score', 'member_id', 'order_has_product_id'])
 	def create(args):
@@ -94,3 +101,23 @@ class ProductReview(business_model.Model):
 		#mall_models.ProductReviewPicture.objects.filter(order_has_product_id__in= orderHasProductIds)		
 		return []
 
+
+	@staticmethod
+	@param_required(['product_id'])
+	def get_latest_product_reviews(args):
+		"""
+		获得最新limit个商品数量
+
+		@see `mall/module_api.py`中的`get_product_detail_for_cache`。
+		"""
+		#获取商品的评论
+		limit = args.get('limit', 2)
+		reviews = mall_models.ProductReview.select().dj_where(
+									product_id=args['product_id'],
+									status__in=[
+										mall_models.PRODUCT_REVIEW_STATUS_PASSED,
+										mall_models.PRODUCT_REVIEW_STATUS_PASSED_PINNED
+									]).order_by('-top_time', '-id')[:limit]
+		#product.product_review = product_review
+		product_reviews = [ProductReview(model) for model in reviews]
+		return product_reviews

@@ -65,9 +65,6 @@ def step_finished_a_product_review(context, webapp_user, order_code, product_nam
 	url = '/wapi/mall/review/'
 	#url = '/webapp/api/project_api/call/'
 	# 原始源码在`webapp/modules/mall/request_api_util.py`中的`create_product_review()`。
-	"""
-	NOTICE：这里有一个问题：下单流程中没有改写'order_id'，也就是说`order_id`是自然生成的，因此无法通过`oder_id=order_code`定位。需要用新的方式确定订单。
-	"""
 	order_has_product = bdd_util.get_order_has_product(order_code, product_name)
 	params = {}
 	params.update(context_dict)
@@ -86,3 +83,31 @@ def step_finished_a_product_review(context, webapp_user, order_code, product_nam
 		params['picture_list'] = str(has_picture)
 
 	context.client.post(url, params)
+
+
+@Then(u"{webapp_user}在商品详情页成功获取'{product_name}'的评价列表")
+def step_webapp_user_get_product_review(context, webapp_user, product_name):
+	"""
+	@see 原Webapp的`webapp_product_review_steps.py`
+	"""
+	product = bdd_util.get_product_by(product_name)
+	expected = json.loads(context.text)
+	#url = "/workbench/jqm/preview/?woid=%d&module=mall&model=product&rid=%d" % (context.webapp_owner_id, product.id)
+	url = "/wapi/mall/review/"
+	#response = context.client.get(bdd_util.nginx(url), follow=True)
+	response = context.client.get(url, {
+			'woid': context.webapp_owner_id,
+			'product_id': product.id
+		})
+	bdd_util.assert_api_call_success(response)	
+	product_review_list = response.context['product']['product_review']
+	actual = []
+	if product_review_list:
+		for i in product_review_list:
+				data = {}
+				data['member'] = i.member_name
+				data['review_detail'] = i.review_detail
+				actual.append(data)
+	else:
+		actual.append({})
+	bdd_util.assert_list(expected, actual)

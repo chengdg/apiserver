@@ -23,6 +23,9 @@ from business.mall.product_review import ProductReview
 import logging
 #from core.watchdog.utils import watchdog_info
 
+
+
+
 class AReview(api_resource.ApiResource):
 	"""
 	评论
@@ -31,7 +34,6 @@ class AReview(api_resource.ApiResource):
 	"""
 	app = 'mall'
 	resource = 'review'
-
 
 	@staticmethod
 	def _get_review_status(request):
@@ -50,6 +52,40 @@ class AReview(api_resource.ApiResource):
 		for order in orders:
 			result = result & order.order_is_reviewed
 		return result
+
+
+
+	########################################################################
+	# get_order_review_list: 会员订单中未评价订单列表
+	########################################################################
+	def get_order_review_list(request):
+		'''
+			得到会员已完成订单中所有未评价的商品列表的订单，
+			或者已评价未晒图的订单
+
+			Precondition: webapp_user
+			PostCondition: RequestContext with the following context:
+				{
+					'orders': [
+						order,
+						order,],
+					'is_hide_weixin_option_menu': ''
+					'page_title': '',
+				}
+
+		'''
+
+		orders = _get_order_review_list(request,need_product_detail=True)
+
+		c = RequestContext(request,
+						   {"orders": orders,
+							'is_hide_weixin_option_menu': True,
+							'page_title': u'待评价列表',
+							})
+		return render_to_response(
+			'%s/order_review_list.html' % request.template_dir, c)
+
+
 
 
 	@param_required(['woid', 'order_id', 'product_id', 'order_has_product_id'])

@@ -1,6 +1,6 @@
 # __author__ : "冯雪静"
 #editor 新新 2015.10.20
-
+#editor 玉成 2015.12.03
 Feature: 在webapp中收藏商品
 	bill能在webapp中收藏jobs添加的"商品"
 

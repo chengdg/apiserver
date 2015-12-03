@@ -100,7 +100,7 @@ Background:
             "picture_list": "['/static/upload/webapp/3_20151102/2015_11_02_18_24_49_948000.png']"
         }
         """
-    When bill完成订单'2'中'商品2'的评价包括'文字':weapp
+    When bill完成订单'2'中'商品2'的评价包括'文字'
         """
         {
             "product_score": "4",
@@ -153,7 +153,7 @@ Background:
         }]
         """
     When tom访问jobs的webapp
-    When tom完成订单'3'中'商品1'的评价包括'文字与晒图':weapp
+    When tom完成订单'3'中'商品1'的评价包括'文字与晒图'
         """
         {
             "product_score": "4",
@@ -164,7 +164,7 @@ Background:
             "picture_list": "['/static/upload/webapp/3_20151102/2015_11_02_18_24_49_948000.png']"
         }
         """
-    When tom完成订单'4'中'商品2'的评价包括'文字':weapp
+    When tom完成订单'4'中'商品2'的评价包括'文字'
         """
         {
             "product_score": "4",

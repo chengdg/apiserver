@@ -63,13 +63,14 @@ class ProductReview(business_model.Model):
 		"""
 		创建商品评论
 		"""
+		owner_id = args['webapp_owner'].id
 		logging.info("to create a ProductReview")
 		relation = mall_models.OrderHasProduct.get(id=args['order_has_product_id'])
 		model, created = mall_models.ProductReview.get_or_create(
 			member_id=args['member_id'],
 			order_review=mall_models.OrderReview.get(id=args['order_review'].id),
 			order_id=args['order_id'],
-			owner_id=args['webapp_owner'].id,
+			owner_id=owner_id,
 			product_id=args['product_id'],
 			order_has_product=relation,
 			product_score=args['product_score'],
@@ -84,14 +85,14 @@ class ProductReview(business_model.Model):
 			logging.info("saving product review picture list..., picture_list=%s" % picture_list)
 			for picture in list(eval(picture_list)):
 				mall_models.ProductReviewPicture(
-					product_review=product_review,
-					order_has_product_id=args['order_has_product_id'],
+					product_review=model,
+					order_has_product=relation,
 					att_url=picture
 				).save()
 				watchdog_info(u"create_product_review after save img  %s" % (picture), \
-					type="mall", user_id=args['owner_id'])
+					type="mall", user_id=owner_id)
 			watchdog_info(u"create_product_review end, order_has_product_id is %s" % \
-				(args['order_has_product_id']), type="mall", user_id=args['owner_id'])
+				(args['order_has_product_id']), type="mall", user_id=owner_id)
 		return product_review
 
 

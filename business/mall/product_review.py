@@ -68,7 +68,7 @@ class ProductReview(business_model.Model):
 		relation = mall_models.OrderHasProduct.get(id=args['order_has_product_id'])
 		model, created = mall_models.ProductReview.get_or_create(
 			member_id=args['member_id'],
-			order_review=mall_models.OrderReview.get(id=args['order_review'].id),
+			order_review=args['order_review'].id,
 			order_id=args['order_id'],
 			owner_id=owner_id,
 			product_id=args['product_id'],

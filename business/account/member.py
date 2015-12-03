@@ -383,7 +383,7 @@ class Member(business_model.Model):
 	@cached_context_property
 	def wishlist_product_ids(self):
 		"""
-		[property] 会员收藏商品的数量
+		[property] 会员收藏商品的ids
 		"""
 		webapp_owner = self.context['webapp_owner']
 		
@@ -391,6 +391,6 @@ class Member(business_model.Model):
 			owner_id = webapp_owner.id,
 			member_id = self.id,
 			is_collect=True
-			)] 
+			).order_by(-mall_models.MemberProductWishlist.add_time)] 
 
 		return ids

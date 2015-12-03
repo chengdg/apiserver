@@ -26,7 +26,14 @@ def __clear_all_account_data():
 # __clear_all_app_data: 清空应用数据
 ######################################################################################
 def __clear_all_app_data():
-	pass
+	mall_models.ProductModelHasPropertyValue.delete().execute()
+	mall_models.ProductProperty.delete().execute()
+	mall_models.ProductModel.delete().execute()
+	mall_models.CategoryHasProduct.delete().execute()
+	mall_models.ProductSwipeImage.delete().execute()
+	mall_models.ProductSales.delete().execute()
+	mall_models.Product.delete().execute()
+	mall_models.MemberProductWishlist.delete().execute()
 
 ######################################################################################
 # __create_system_user: 创建系统用户
@@ -37,15 +44,7 @@ def __create_system_user(username):
 
 def before_all(context):
 	cache_utils.clear_db()
-	
-	mall_models.ProductModelHasPropertyValue.delete().execute()
-	mall_models.ProductProperty.delete().execute()
-	mall_models.ProductModel.delete().execute()
-	mall_models.CategoryHasProduct.delete().execute()
-	mall_models.ProductSwipeImage.delete().execute()
-	mall_models.ProductSales.delete().execute()
-	mall_models.Product.delete().execute()
-	mall_models.MemberProductWishlist.delete().execute()
+	__clear_all_app_data()
 	# __clear_all_account_data()
 	# __create_system_user('jobs')
 	# __create_system_user('bill')

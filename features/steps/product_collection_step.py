@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
 import json
+import time
 
 from behave import *
 
 from features.util import bdd_util
 from features.util.helper import WAIT_SHORT_TIME
 from db.mall import models as mall_models
-
+import logging
 
 @when(u"{weixin_user}收藏{user}的商品到我的收藏")
 def step_impl(context, weixin_user,user):
+	time.sleep(1)
 	product_info = json.loads(context.text)
 	webapp_owner_id = context.webapp_owner_id
 	product_name = product_info['name']
-	print '>>>>>>>>>>>>>>>>>>>>>',product_name
 	product = mall_models.Product.get(owner=webapp_owner_id, name=product_name)
 
 	response = context.client.put('/wapi/member/wish_product/', {
@@ -33,4 +34,19 @@ def step_impl(context, weixin_user):
 	
 	expected = json.loads(context.text)
 	actual = response.body['data']['products']
+	logging.error(weixin_user)
 	bdd_util.assert_list(expected, actual)
+
+@When(u"{weixin_user}取消收藏已收藏的商品")
+def step_impl(context, weixin_user):
+	product_info = json.loads(context.text)
+	webapp_owner_id = context.webapp_owner_id
+	product_name = product_info['name']
+	product = mall_models.Product.get(owner=webapp_owner_id, name=product_name)
+
+	response = context.client.post('/wapi/member/wish_product/', {
+		'product_id': product.id,
+		'wished': '0'
+	})
+	
+	actual = response.body['data']

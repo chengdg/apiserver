@@ -31,16 +31,18 @@ class AMemberWishProduct(api_resource.ApiResource):
 		member = webapp_user.member
 
 		product_ids = member.wishlist_product_ids
-		print '>>>>>>>>>>>product_ids',product_ids
-		print '>>>>>>>>>>>member',member.id
-		print '>>>>>>>>>>>openid',webapp_user.social_account.openid
 		products = Product.from_ids({
 			'webapp_owner': webapp_owner,
 			'member': member,
 			'product_ids': product_ids
 		})
-
-		return {'products':products}
+		products_dict_list = []
+		for id in product_ids:
+			for product in products:
+				if product.id == id:
+					products_dict_list.append(product.to_dict())
+					break
+		return {'products':products_dict_list}
 
 
 

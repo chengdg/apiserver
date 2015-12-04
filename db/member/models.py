@@ -142,7 +142,7 @@ class WebAppUser(models.Model):
 	"""
 	WebApp的用户
 	"""
-	token = models.CharField(max_length=100)
+	token = models.CharField(max_length=100, default='')
 	webapp_id = models.CharField(max_length=16)
 	member_id = models.IntegerField(default=0) #会员记录的id
 	has_purchased = models.BooleanField(default=False) #是否购买过

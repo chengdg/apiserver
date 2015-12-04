@@ -38,6 +38,27 @@ class WebAppUser(business_model.Model):
 	)
 
 	@staticmethod
+	@param_required(['webapp_owner', 'member_id'])
+	def from_member_id(args):
+		"""
+		工厂方法，根据webapp user model获取WebAppUser业务对象
+
+		@param[in] webapp_owner
+		@param[in] member_id member_id
+
+		@return WebAppUser业务对象
+		"""
+		webapp_owner = args['webapp_owner']
+		member_id = args['member_id']
+		try:
+			mode = member_models.WebAppUser.select().dj_where(webapp_id=webapp_owner.webapp_id, member_id=member_id).first()
+			webapp_user = WebAppUser(webapp_owner, model)
+			return webapp_user
+		except:
+			return None
+		
+
+	@staticmethod
 	@param_required(['webapp_owner', 'model'])
 	def from_model(args):
 		"""

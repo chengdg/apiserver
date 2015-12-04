@@ -10,6 +10,8 @@ from falcon.http_status import HTTPStatus
 from db.account import models as account_models
 from db.account import weixin_models
 from business.account.webapp_owner import WebAppOwner
+from business.account.system_account import SystemAccount
+from business.spread.member_spread import MemberSpread
 from core import redirects
 from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
 from core.exceptionutil import unicode_full_stack
@@ -17,7 +19,7 @@ from utils import msg_crypt, auth_util, error_codes
 import settings
 import resource
 
-from wapi.member import a_member_account
+# from wapi.member import a_member_account
 from wapi.user.access_token import AccessToken
 
 class OAuthMiddleware(object):
@@ -133,14 +135,23 @@ class OAuthMiddleware(object):
 
 			@note 获取openid帐号信息，没有则创建
 		"""
-		member_account = a_member_account.AMemberAccount.process_openid_for({
+		member_account = MemberSpread.process_openid_for({
 			'openid': openid,
 			'for_oauth':'1',
 			'url': callback_uri,
 			'woid': webapp_owner.id,
 			'webapp_owner': webapp_owner
 			})
-		return member_account
+
+		system_account = SystemAccount.get({
+			'webapp_owner': webapp_owner,
+			'openid': openid
+		})
+
+		data = {}
+		data['webapp_user'] = system_account.webapp_user.to_dict()
+		data['social_account'] = system_account.social_account.to_dict()
+		return data
 
 
 	def get_openid_from(self, component_info, appid, code):
@@ -173,7 +184,7 @@ class OAuthMiddleware(object):
 				notify_message = u"oauth2 access_token: cause:\n{}".format(unicode_full_stack())
 				print notify_message
 				watchdog_error(notify_message)
-		print '>>>>>>>>>>>>>>>>>>>>>response_data:',type(response_data)
+		print '>>>>>>>>>>>>>>>>>>>>>response_data:',response_data
 		if response_data.has_key('openid'):
 			return response_data['openid']
 		return 'bill_jobs'

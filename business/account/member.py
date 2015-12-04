@@ -35,7 +35,7 @@ class Member(business_model.Model):
 		'id',
 		'grade_id',
 		'username_hexstr',
-		'webapp_user',
+		#'webapp_user',
 		'is_subscribed',
 		'created',
 		'token',

@@ -20,16 +20,14 @@ class AMemberCollectedProduct(api_resource.ApiResource):
 	def put(args):
 		webapp_user = args['webapp_user']
 		product_id = args['product_id']
-		member = webapp_user.member
-		member.collected_product(product_id)
+		webapp_user.collected_product(product_id)
 		return {}
 
 	@param_required(['webapp_user', 'product_id'])
 	def delete(args):
 		webapp_user = args['webapp_user']
 		product_id = args['product_id']
-		member = webapp_user.member
-		member.cancel_collected_product(product_id)
+		webapp_user.cancel_collected_product(product_id)
 		return {}
 
 

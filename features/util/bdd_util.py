@@ -4,7 +4,7 @@ import time
 
 import settings
 from client import Client
-from db.account.models import User
+from db.account.models import User, UserProfile
 from utils import string_util
 from db.member import models as member_models
 from db.mall import models as mall_models
@@ -258,3 +258,12 @@ def get_order_has_product(order_code, product_name):
 			if product_model_name in _get_product_model_name(order_has_product.product_model_name):
 				return order_has_product
 	return None
+
+
+def get_webapp_id_for(username):
+	"""
+	获取user对应的webapp id
+	"""
+	user = User.get(username=username)
+	profile = UserProfile.get(user=user)
+	return profile.webapp_id

@@ -26,6 +26,7 @@ from business.decorator import cached_context_property
 from business.account.member_order_info import MemberOrderInfo
 from business.mall.product import Product
 import logging
+from utils.string_util import hex_to_byte, byte_to_hex
 
 class Member(business_model.Model):
 	"""
@@ -207,8 +208,7 @@ class Member(business_model.Model):
 		[property] 会员头像
 		"""
 		#TODO2: 实现获取会员头像
-		logging.info(u'TODO2: 实现获取会员头像')
-		return self.user_icon
+		return self.context['db_model'].user_icon
 
 	@cached_context_property
 	def integral_info(self):
@@ -280,3 +280,7 @@ class Member(business_model.Model):
 		return member
 
 
+	@property
+	def username(self):
+		 
+		return hex_to_byte(self.username_hexstr)

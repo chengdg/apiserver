@@ -26,6 +26,7 @@ import settings
 from business.decorator import cached_context_property
 from utils import regional_util
 from business.account.member_order_info import MemberOrderInfo
+from business.account.social_account import SocialAccount
 
 class WebAppUser(business_model.Model):
 	"""
@@ -51,12 +52,12 @@ class WebAppUser(business_model.Model):
 		"""
 		webapp_owner = args['webapp_owner']
 		member_id = args['member_id']
-		try:
-			mode = member_models.WebAppUser.select().dj_where(webapp_id=webapp_owner.webapp_id, member_id=member_id).first()
-			webapp_user = WebAppUser(webapp_owner, model)
-			return webapp_user
-		except:
-			return None
+		#try:
+		model = member_models.WebAppUser.select().dj_where(webapp_id=webapp_owner.webapp_id, member_id=member_id).first()
+		webapp_user = WebAppUser(webapp_owner, model)
+		return webapp_user
+		# except:
+		# 	return None
 		
 
 	@staticmethod
@@ -419,3 +420,22 @@ class WebAppUser(business_model.Model):
 		[property] 兼容html显示的会员名
 		"""
 		return self.member.username_for_html
+
+	@cached_context_property
+	def cleanup_cache(self):
+		"""
+		[property] 清除缓存
+		"""
+		key = 'member_{webapp:%s}_{openid:%s}' % (self.member.webapp_id, self.openid)
+		cache_util.delete_cache(key)
+
+	@cached_context_property
+	def openid(self):
+		"""
+		[property] 兼容html显示的会员名
+		"""
+		social_account = SocialAccount.from_member_id({
+			'webapp_owner': self.context['webapp_owner'],
+			'member_id': self.member.id
+			})
+		return social_account.openid

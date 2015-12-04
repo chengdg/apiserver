@@ -6,8 +6,9 @@ Feature: 在webapp中购买参与积分应用活动的商品
 	jobs 设置 use_ceiling 后 用户能在webapp中能够对所有商品使用积分购买
 
 Background:
-	Given jobs登录系统
-	And jobs已添加商品规格
+	Given 重置weapp的bdd环境
+	Given jobs登录系统:weapp
+	And jobs已添加商品规格:weapp
 		"""
 		[{
 			"name": "尺寸",
@@ -19,7 +20,7 @@ Background:
 			}]
 		}]
 		"""
-	And jobs已添加商品
+	And jobs已添加商品:weapp
 		"""
 		[{
 			"name": "商品1",
@@ -67,7 +68,7 @@ Background:
 			}
 		}]
 		"""
-	Given jobs设定会员积分策略
+	Given jobs设定会员积分策略:weapp
 		"""
 		{
 			"integral_each_yuan": 2,
@@ -75,7 +76,7 @@ Background:
 		}
 		"""
 	#支付方式
-	Given jobs已添加支付方式
+	Given jobs已添加支付方式:weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -89,7 +90,7 @@ Background:
 	Given bill关注jobs的公众号
 	And tom关注jobs的公众号
 
-@todo @mall2 @mall.promotion @mall.webapp.promotion
+@todo @mall2 @mall.promotion @mall.webapp.promotion @gyc
 Scenario:1 购买单种一个商品，积分金额小于最大折扣金额
 	When bill访问jobs的webapp
 	When bill获得jobs的50会员积分

@@ -105,6 +105,25 @@ class WebAppUser(business_model.Model):
 			}
 
 	@property
+	def selected_ship_info(self):
+		"""
+		[property] 收货地址
+		"""
+		ship_infos = list(member_models.ShipInfo.select().dj_where(webapp_user_id=self.id, is_deleted=False, is_selected=True))
+		if len(ship_infos) > 0:
+			ship_info = ship_infos[0]
+			return {
+				"id": ship_info.id,
+				"name": ship_info.ship_name,
+				"tel": ship_info.ship_tel,
+				"address": ship_info.ship_address,
+				"area": ship_info.area,
+			}
+			return ship_infos[0]
+		else:
+			return None
+
+	@property
 	def ship_infos(self):
 		"""
 		[property] 收货地址列表

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+import urllib
 
 from behave import *
 
@@ -212,6 +213,19 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 	response = context.client.post(url, data)
 	bdd_util.assert_api_call_success(response)
 	context.response = response
+
+	#访问支付结果链接
+	pay_url_info = response.data['pay_url_info']
+	pay_type = pay_url_info['type']
+	del pay_url_info['type']
+	if pay_type == 'cod':
+		pay_url = '/wapi/pay/pay_result/?_method=put'
+		data = {
+			'pay_interface_type': pay_url_info['pay_interface_type'],
+			'order_id': pay_url_info['order_id']
+		}
+		context.client.post(pay_url, data)
+	
 	#response结果为: {"errMsg": "", "code": 200, "data": {"msg": null, "order_id": "20140620180559"}}
 
 	if response.body['code'] == 200:

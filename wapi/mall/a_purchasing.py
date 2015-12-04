@@ -146,6 +146,12 @@ class APurchasing(api_resource.ApiResource):
 
 		order_info = {
 			'type': order.type,
+			'ship_name': order.ship_info['name'],
+			'ship_tel': order.ship_info['tel'],
+			'ship_address': order.ship_info['address'],
+			'ship_id': order.ship_info['id'],
+			'ship_area': order.ship_info['area'],
+			'display_ship_area': order.ship_info['display_area'],
 			'pay_interfaces': order.pay_interfaces,
 			'product_groups': product_group_datas
 		}

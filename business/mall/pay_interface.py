@@ -72,7 +72,7 @@ class PayInterface(business_model.Model):
 		self.type = interface['type']
 		self.related_config_id = interface['related_config_id']
 
-	def get_pay_url_for_order(self, order):
+	def get_pay_url_info_for_order(self, order):
 		"""获取订单的支付链接
 
 		@param[in] order: 代支付的订单
@@ -106,15 +106,28 @@ class PayInterface(business_model.Model):
 			#不再支持财付通
 			return ''
 		elif mall_models.PAY_INTERFACE_COD == interface_type:
-			return '/mall/pay_result/?woid={}&pay_interface_type={}&order_id={}'.format(
-				webapp_owner_id,
-				mall_models.PAY_INTERFACE_COD,
-				order.order_id)
+			return {
+				'type': 'cod',
+				'woid': webapp_owner_id,
+				'order_id': order.order_id,
+				'pay_interface_type': mall_models.PAY_INTERFACE_COD
+			}
+			# return '/wapi/mall/pay_result/?woid={}&pay_interface_type={}&order_id={}'.format(
+			# 	webapp_owner_id,
+			# 	mall_models.PAY_INTERFACE_COD,
+			# 	order.order_id)
 		elif mall_models.PAY_INTERFACE_WEIXIN_PAY == interface_type:
-			return '/mall/wxpay/?woid={}&order_id={}&pay_id={}&showwxpaytitle=1'.format(
-				webapp_owner_id,
-				order.order_id,
-				interface['id'])
+			return {
+				'type': 'wxpay',
+				'woid': webapp_owner_id,
+				'order_id': order.order_id,
+				'pay_id': interface['id'],
+				'showwxpaytitle': 1
+			}
+			# return '/wapi/mall/wxpay/?woid={}&order_id={}&pay_id={}&showwxpaytitle=1'.format(
+			# 	webapp_owner_id,
+			# 	order.order_id,
+			# 	interface['id'])
 		else:
 			return ''
 

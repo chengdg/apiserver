@@ -207,7 +207,6 @@ class Member(business_model.Model):
 		"""
 		[property] 会员头像
 		"""
-		#TODO2: 实现获取会员头像
 		return self.context['db_model'].user_icon
 
 	@cached_context_property

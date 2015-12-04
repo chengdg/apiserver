@@ -42,7 +42,7 @@ class AUserCenter(api_resource.ApiResource):
 			'shiped_order_count': webapp_user.shiped_order_count,
 			'review_count': webapp_user.review_count,
 			'integral': member.integral,
-			'wishlist_product_count': member.collected_product_count,
+			'wishlist_product_count': webapp_user.collected_product_count,
 			'market_tools': member.market_tools
 		}
 

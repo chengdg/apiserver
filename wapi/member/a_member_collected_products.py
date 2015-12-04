@@ -28,11 +28,11 @@ class AMemberCollectedProduct(api_resource.ApiResource):
 
 		webapp_owner = args['webapp_owner']
 		webapp_user = args['webapp_user']
-		member = webapp_user.member
-
-		product_ids = member.collected_products
+		#member = webapp_user.member
+		products = webapp_user.collected_products
+		#products = member.collected_products
 		
-		return {'products':product_ids}
+		return {'products':products}
 
 
 

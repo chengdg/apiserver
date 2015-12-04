@@ -208,7 +208,7 @@ class Member(business_model.Model):
 		"""
 		#TODO2: 实现获取会员头像
 		logging.info(u'TODO2: 实现获取会员头像')
-		return ''
+		return self.user_icon
 
 	@cached_context_property
 	def integral_info(self):
@@ -262,29 +262,6 @@ class Member(business_model.Model):
 		return username
 
 	@cached_context_property
-	def collected_product_count(self):
-		"""
-		[property] 会员收藏商品的数量
-		"""
-		webapp_owner = self.context['webapp_owner']
-		return mall_models.MemberProductWishlist.select().dj_where(
-			owner_id = webapp_owner.id,
-			member_id = self.id,
-			is_collect=True
-		).count()
-
-	def is_collect_product(self, product_id):
-		"""是否收藏了product_id对应的商品
-		"""
-		webapp_owner = self.context['webapp_owner']
-		return mall_models.MemberProductWishlist.select().dj_where(
-			owner_id = webapp_owner.id,
-			member_id = self.id,
-			product_id = product_id,
-			is_collect=True
-		).count() > 0
-
-	@cached_context_property
 	def market_tools(self):
 		"""
 		[property] 会员参与的营销工具集合
@@ -302,63 +279,4 @@ class Member(business_model.Model):
 		member = Member(None, None)
 		return member
 
-	def collected_product(self, product_id):
-		"""收藏了product_id对应的商品
-		"""
-		webapp_owner = self.context['webapp_owner']
-		if mall_models.MemberProductWishlist.select().dj_where(
-				owner_id = webapp_owner.id,
-				member_id = self.id,
-				product_id = product_id,
-			).count() > 0:
 
-			mall_models.MemberProductWishlist.update(is_collect=True).dj_where(
-				owner_id = webapp_owner.id,
-				member_id = self.id,
-				product_id = product_id,
-			).execute()
-		else:
-			
-			mall_models.MemberProductWishlist.create(
-				owner = webapp_owner.id,
-				member_id = self.id,
-				product_id = product_id,
-				is_collect=True
-			)
-
-	def cancel_collected_product(self, product_id):
-		"""取消收藏了product_id对应的商品
-		"""
-		webapp_owner = self.context['webapp_owner']
-		mall_models.MemberProductWishlist.update(is_collect=False).dj_where(
-			owner_id = webapp_owner.id,
-			member_id = self.id,
-			product_id = product_id,
-			).execute()
-		
-	@cached_context_property
-	def collected_products(self):
-		"""
-		[property] 会员收藏商品的集合
-		"""
-		webapp_owner = self.context['webapp_owner']
-		
-		ids = [memner_product_wish.product_id for memner_product_wish in mall_models.MemberProductWishlist.select().dj_where(
-			owner_id = webapp_owner.id,
-			member_id = self.id,
-			is_collect=True
-			).order_by(-mall_models.MemberProductWishlist.add_time)] 
-
-		products = Product.from_ids({
-			'webapp_owner': webapp_owner,
-			'member': self,
-			'product_ids': ids
-		})
-		products_dict_list = []
-		for id in ids:
-			for product in products:
-				if product.id == id:
-					products_dict_list.append(product.to_dict())
-					break
-
-		return products_dict_list

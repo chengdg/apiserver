@@ -21,6 +21,7 @@ from core.watchdog.utils import watchdog_alert
 from business import model as business_model
 from business.account.member import Member
 from business.mall.shopping_cart import ShoppingCart
+from business.mall.product import Product
 import settings
 from business.decorator import cached_context_property
 from utils import regional_util
@@ -281,3 +282,140 @@ class WebAppUser(business_model.Model):
 		data['member'] = self.member.to_dict()
 
 		return data
+
+	def collected_product(self, product_id):
+		"""收藏了product_id对应的商品
+		"""
+		webapp_owner = self.context['webapp_owner']
+		if mall_models.MemberProductWishlist.select().dj_where(
+				owner_id = webapp_owner.id,
+				member_id = self.member.id,
+				product_id = product_id,
+			).count() > 0:
+
+			mall_models.MemberProductWishlist.update(is_collect=True).dj_where(
+				owner_id = webapp_owner.id,
+				member_id = self.member.id,
+				product_id = product_id,
+			).execute()
+		else:
+			
+			mall_models.MemberProductWishlist.create(
+				owner = webapp_owner.id,
+				member_id = self.member.id,
+				product_id = product_id,
+				is_collect=True
+			)
+
+	def cancel_collected_product(self, product_id):
+		"""取消收藏了product_id对应的商品
+		"""
+		webapp_owner = self.context['webapp_owner']
+		mall_models.MemberProductWishlist.update(is_collect=False).dj_where(
+			owner_id = webapp_owner.id,
+			member_id = self.member.id,
+			product_id = product_id,
+			).execute()
+		
+	@cached_context_property
+	def collected_products(self):
+		"""
+		[property] 会员收藏商品的集合
+		"""
+		webapp_owner = self.context['webapp_owner']
+		
+		ids = [memner_product_wish.product_id for memner_product_wish in mall_models.MemberProductWishlist.select().dj_where(
+			owner_id = webapp_owner.id,
+			member_id = self.member.id,
+			is_collect=True
+			).order_by(-mall_models.MemberProductWishlist.add_time)] 
+
+		products = Product.from_ids({
+			'webapp_owner': webapp_owner,
+			'member': self.member,
+			'product_ids': ids
+		})
+		products_dict_list = []
+		for id in ids:
+			for product in products:
+				if product.id == id:
+					products_dict_list.append(product.to_dict())
+					break
+
+		return products_dict_list
+
+	@cached_context_property
+	def collected_product_count(self):
+		"""
+		[property] 会员收藏商品的数量
+		"""
+		webapp_owner = self.context['webapp_owner']
+		return mall_models.MemberProductWishlist.select().dj_where(
+			owner_id = webapp_owner.id,
+			member_id = self.member.id,
+			is_collect=True
+		).count()
+
+	def is_collect_product(self, product_id):
+		"""是否收藏了product_id对应的商品
+		"""
+		webapp_owner = self.context['webapp_owner']
+		return mall_models.MemberProductWishlist.select().dj_where(
+			owner_id = webapp_owner.id,
+			member_id = self.member.id,
+			product_id = product_id,
+			is_collect=True
+		).count() > 0
+
+	@property
+	def discount(self):
+		return self.member.discount
+
+	@property
+	def grade(self):
+		"""
+		[property] 会员等级
+		"""
+		return self.member.grade
+
+	@property
+	def phone(self):
+		"""
+		[property] 会员绑定的手机号码
+		"""
+		return self.member.phone
+
+	@property
+	def name(self):
+		"""
+		[property] 会员名
+		"""
+		return self.member.name
+
+	@cached_context_property
+	def user_icon(self):
+		"""
+		[property] 会员头像
+		"""
+		return self.member.user_icon
+
+	@cached_context_property
+	def integral_info(self):
+		"""
+		[property] 会员积分信息
+		"""
+		return self.member.integral_info
+
+	@property
+	def integral(self):
+		"""
+		[property] 会员积分数值
+		"""
+		return self.member.integral
+
+	@cached_context_property
+	def username_for_html(self):
+		"""
+		[property] 兼容html显示的会员名
+		"""
+		return self.member.username_for_html

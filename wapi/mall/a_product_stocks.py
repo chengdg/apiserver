@@ -68,7 +68,7 @@ class AProductStocks(api_resource.ApiResource):
 				result_data['member_grade_id'] = member.grade_id
 				_, result_data['discount'] = member.discount
 				result_data['usable_integral'] = member.integral
-				result_data['is_collect'] = member.is_collect_product(product_id)
+				result_data['is_collect'] = webapp_user.is_collect_product(product_id)
 				result_data['is_subscribed'] = member.is_subscribed
 			else:
 				result_data['count'] = 0

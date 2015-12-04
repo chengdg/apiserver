@@ -107,7 +107,6 @@ class SystemAccount(business_model.Model):
 		})
 
 		#TODO2: h5端开发支持，需要删除这里的硬编码
-		member.is_subscribed = True
 
 		social_account = SocialAccount.from_model({
 			'webapp_owner': webapp_owner,

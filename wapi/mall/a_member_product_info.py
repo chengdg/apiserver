@@ -32,7 +32,7 @@ class AMemberProductInfo(api_resource.ApiResource):
 		member = webapp_user.member
 		if member:
 			if product_id:
-				result_data['is_collect'] = member.is_collect_product(product_id)
+				result_data['is_collect'] = webapp_user.is_collect_product(product_id)
 			result_data['member_grade_id'] = member.id
 			result_data['discount'] = member.discount
 			result_data['usable_integral'] = member.integral

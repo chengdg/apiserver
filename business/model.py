@@ -11,8 +11,11 @@ class Model(object):
 			#logging.info("setting '%s'" % slot)
 			setattr(self, slot, None)
 
-	def _init_slot_from_model(self, model):
-		for slot in self.__slots__:
+	def _init_slot_from_model(self, model, slots=None):
+		if not slots:
+			slots = self.__slots__
+			
+		for slot in slots:
 			value = getattr(model, slot, None)
 			if value != None:
 				if 'id' == slot:
@@ -26,18 +29,24 @@ class Model(object):
 		pass
 
 	@classmethod
-	def from_dict(cls, dict):
+	def from_dict(cls, dict, slots=None):
 		instance = cls()
-		for slot in cls.__slots__:
+		if not slots:
+			slots = cls.__slots__
+
+		for slot in slots:
 			value = dict.get(slot, None)
 
 			setattr(instance, slot, value)
 		instance.after_from_dict()
 		return instance
 
-	def to_dict(self, *extras):
+	def to_dict(self, slots=None, *extras):
 		result = dict()
-		for slot in self.__slots__:
+		if not slots:
+			slots = self.__slots__
+
+		for slot in slots:
 			result[slot] = getattr(self, slot, None)
 
 		for item in extras:

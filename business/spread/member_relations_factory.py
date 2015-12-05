@@ -21,10 +21,6 @@ from core.watchdog.utils import watchdog_alert
 from business import model as business_model 
 import settings
 from business.decorator import cached_context_property
-# from business.mall.order_products import OrderProducts
-# from business.mall.product_grouper import ProductGrouper
-# from business.mall.order_checker import OrderChecker
-
 
 class MemberRelatonFactory(business_model.Model):
 	"""会员关系成器

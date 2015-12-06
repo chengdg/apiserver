@@ -22,11 +22,6 @@ class AShoppingCart(api_resource.ApiResource):
 		"""
 		webapp_owner = args['webapp_owner']
 		webapp_user = args['webapp_user']
-		buf = []
-		buf.append('-*-' * 20)
-		buf.append(webapp_user.social_account.openid)
-		buf.append('-*-' * 20)
-		print '\n'.join(buf)
 
 		#获取购物车商品信息
 		shopping_cart = webapp_user.shopping_cart

@@ -42,3 +42,16 @@ class FlashSale(promotion.Promotion):
 			'promotion_price': self.promotion_price,
 			'count_per_purchase': self.count_per_purchase
 		}
+
+	def apply_promotion(self, products):
+		#限时抢购只有一个product
+		product = products[0]
+		product.price = self.promotion_price
+		#TODO2: 会员价不和限时抢购叠加
+		#product.member_discount_money = 0
+		promotion_result = {
+			"saved_money": product.original_price - self.promotion_price,
+			"subtotal": product.purchase_count * product.price
+		}
+
+		return True, promotion_result

@@ -34,29 +34,26 @@ class ProductGrouper(business_model.Model):
 
 	def __get_promotion_name(self, product):
 		"""
-		mall_api:__get_promotion_name
-		判断商品是否促销， 没有返回None, 有返回促销ID与商品的规格名.
+		为product生成一个包含promotion信息的name
 
-		Args:
-		  product -
+		Parameters
+			[in] product: 商品
 
-		Return:
-		  None - 商品没有促销
-		  'int_str' - 商品有促销
+		Returns
+			包含promotion信息的name
 		"""
-		name = None
-		if product.promotion:
-			promotion = product.promotion
-			now = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
+		name = 'no_promotion'
+		promotion = product.promotion
+		if promotion:
 			# 已过期或未开始活动的商品，做为 普通商品
-			if promotion['start_date'] > now or promotion['end_date'] < now:
-				name = '%d_%s' % (promotion['id'], product.model['name'])
-			elif promotion['type'] == promotion_models.PROMOTION_TYPE_PRICE_CUT or promotion['type'] == promotion_models.PROMOTION_TYPE_PREMIUM_SALE:
-				name = promotion['id']
+			if promotion.type == promotion_models.PROMOTION_TYPE_PRICE_CUT or promotion.type == promotion_models.PROMOTION_TYPE_PREMIUM_SALE:
+				name = promotion.id
 			else:
-				name = '%d_%s' % (promotion['id'], product.model['name'])
+				name = '%d_%s' % (promotion.id, product.model.name)
+		'''
 		elif hasattr(product, 'integral_sale'):
 			return '%d_%s' % (product.integral_sale['id'], product.model['name'])
+		'''
 
 		return name
 
@@ -64,13 +61,16 @@ class ProductGrouper(business_model.Model):
 		"""
 		获取商品分组名
 
-		@param[in] group_product: 分组中的商品集合
+		Parameters
+			[in] group_products: 分组中的商品集合
 
-		@return 生成的分组名，格式为"id1_modelname1-id2_modelname2..."
+		Returns
+			生成的分组名，格式为"id1_modelname1-id2_modelname2..."
 		"""
 		items = []
 		for product in group_products:
 			items.append('%s_%s' % (product.id, product.model.name))
+
 		return '-'.join(items)
 
 	def __collect_integral_sale_rules(self, target_member_grade_id, products):
@@ -107,68 +107,50 @@ class ProductGrouper(business_model.Model):
 		else:
 			return None
 
-	def __has_promotion(self, user_member_grade_id=None, promotion_member_grade_id=0):
-		"""判断促销是否对用户开放.
-
-		Args:
-			user_member_grade_id(int): 用户会员等价
-			promotion_member_grade_id(int): 促销制定的会员等级
-
-		Return:
-			True - if 促销对用户开放
-			False - if 促销不对用户开放
-		"""
-		if promotion_member_grade_id <= 0:
-			return True
-		elif promotion_member_grade_id == user_member_grade_id:
-			return True
-		else:
-			return False
-
 	def group_product_by_promotion(self, member, products):
 		"""
 		根据商品促销类型对商品进行分类
 
-		@param[in] member: Member业务对象
-		@param[in] products: 待分组的商品集合
+		Parameters
+			[in] member: Member业务对象
+			[in] products: 待分组的商品集合
 
-		@return PromotionProductGroup业务对象的list
+		Returns
+			PromotionProductGroup业务对象的list
 		"""
 		member_grade_id, discount = member.discount
-		#按照促销对product进行聚类
-		# global NO_PROMOTION_ID
-		# NO_PROMOTION_ID = -1  # 负数的promotion id表示商品没有promotion
+		#按照促销对product进行聚类, 生成<product_promotion_name, <product, product, ...]>映射
 		product_groups = []
 		promotion2products = {}
 		group_id = 0
 		for product in products:
-			product.original_price = product.price
-			if product.is_member_product:
-				product.price = round(product.price * discount / 100, 2)
 			#对于满减，同一活动中不同规格的商品不能分开，其他活动，需要分开
 			group_id += 1
 			default_products = {"group_id": group_id, "products": []}
 			promotion_name = self.__get_promotion_name(product)
 			promotion2products.setdefault(promotion_name, default_products)['products'].append(product)
-		now = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
+
 		items = promotion2products.items()
 		items.sort(lambda x, y: cmp(x[1]['group_id'], y[1]['group_id']))
-		for promotion_id, group_info in items:
+		for product_promotion_name, group_info in items:
 			products = group_info['products']
 			group_id = group_info['group_id']
 			group_unified_id = self.__get_group_name(products)
-			integral_sale_rule = self.__collect_integral_sale_rules(member_grade_id, products) if member_grade_id != -1 else None
+			#integral_sale_rule = self.__collect_integral_sale_rules(member_grade_id, products) if member_grade_id != -1 else None
+			integral_sale_rule = None
 
+			#products是相同promotion的集合，所以从第一个product中获取promotion就能得到promotion对象了
 			promotion = products[0].promotion
-			# 商品没有参加促销
-			if not promotion or promotion_id <= 0:
+
+			# 商品没有参加促销，
+			if not promotion:
 				promotion_product_group = PromotionProductGroup({
 					"id": group_id,
 					"uid": group_unified_id,
 					'products': products,
-					'promotion': {},
+					'promotion': None,
 					"promotion_type": '',
-					'promotion_result': '',
+					'promotion_result': None,
 					'integral_sale_rule': integral_sale_rule,
 					'can_use_promotion': False,
 					'member_grade_id': member_grade_id
@@ -176,54 +158,31 @@ class ProductGrouper(business_model.Model):
 				product_groups.append(promotion_product_group)
 				continue
 
-
-			# 如果促销对此会员等级的用户不开放
-			if not self.__has_promotion(member_grade_id, promotion.get('member_grade_id')):
-				promotion_product_group = PromotionProductGroup({
-					"id": group_id,
-					"uid": group_unified_id,
-					'products': products,
-					'promotion': {},
-					"promotion_type": '',
-					'promotion_result': '',
-					'integral_sale_rule': integral_sale_rule,
-					'can_use_promotion': False,
-					'member_grade_id': member_grade_id
-				})
-				product_groups.append(promotion_product_group)
-				continue
-
-			promotion_type = promotion.get('type', 0)
+			promotion_type = promotion.type
 			if promotion_type == 0:
 				type_name = 'none'
 			else:
-				type_name = promotion_models.PROMOTION2TYPE[promotion_type]['name']
+				type_name = promotion.type_name
 
-			promotion_result = None
-			can_use_promotion = False
-			# #判断promotion状态
-			# 促销活动还未开始，或已结束
-			if promotion['start_date'] > now or promotion['end_date'] < now:
-				promotion['status'] = promotion_models.PROMOTION_STATUS_NOT_START if promotion['start_date'] > now else promotion_models.PROMOTION_STATUS_FINISHED
-			# 限时抢购
-			elif promotion_type == promotion_models.PROMOTION_TYPE_FLASH_SALE:
+			'''
+			if promotion_type == promotion_models.PROMOTION_TYPE_FLASH_SALE:
 				product = products[0]
-				promotion_price = product.promotion['detail'].get('promotion_price', 0)
+				promotion_price = product.promotion.detail.get('promotion_price', 0)
 				product.price = promotion_price
-				# 会员价不和限时抢购叠加
-				product.member_discount_money = 0
+				#TODO2: 会员价不和限时抢购叠加
+				#product.member_discount_money = 0
 				promotion_result = {
 					"saved_money": product.original_price - promotion_price,
 					"subtotal": product.purchase_count * product.price
 				}
 
-				can_use_promotion = (promotion['status'] == promotion_models.PROMOTION_STATUS_STARTED)
+				can_use_promotion = (promotion.status == promotion_models.PROMOTION_STATUS_STARTED)
 			# 买赠
 			elif promotion_type == promotion_models.PROMOTION_TYPE_PREMIUM_SALE:
 				first_product = products[0]
 				promotion = first_product.promotion
-				promotion_detail = promotion['detail']
-				can_use_promotion = (promotion['status'] == promotion_models.PROMOTION_STATUS_STARTED)
+				promotion_detail = promotion.detail
+				can_use_promotion = (promotion.status == promotion_models.PROMOTION_STATUS_STARTED)
 
 				total_purchase_count = 0
 				total_product_price = 0.0
@@ -238,7 +197,7 @@ class ProductGrouper(business_model.Model):
 					for product in products:
 						product.price = product.original_price
 					if promotion_detail['is_enable_cycle_mode']:
-						premium_round_count = total_purchase_count / promotion['detail']['count']
+						premium_round_count = total_purchase_count / promotion.detail['count']
 						for premium_product in promotion_detail['premium_products']:
 							premium_product['original_premium_count'] = premium_product['premium_count']
 							premium_product['premium_count'] = premium_product['premium_count'] * premium_round_count
@@ -248,7 +207,7 @@ class ProductGrouper(business_model.Model):
 			# 满减
 			elif promotion_type == promotion_models.PROMOTION_TYPE_PRICE_CUT:
 				promotion = products[0].promotion
-				promotion_detail = promotion['detail']
+				promotion_detail = promotion.detail
 				total_price = 0.0
 				for product in products:
 					total_price += product.price * product.purchase_count
@@ -264,16 +223,17 @@ class ProductGrouper(business_model.Model):
 					"subtotal": subtotal,
 					"price_threshold": promotion_round_count*promotion_detail['price_threshold']
 				}
+			'''
 
 			promotion_product_group = PromotionProductGroup({
 				"id": group_id,
 				"uid": group_unified_id,
-				"promotion_type": type_name,
+				"promotion_type": promotion.type_name,
 				'products': products,
 				'promotion': promotion,
-				'promotion_result': promotion_result,
+				'promotion_result': None,
 				'integral_sale_rule': integral_sale_rule,
-				'can_use_promotion': can_use_promotion,
+				'can_use_promotion': True,
 				'member_grade_id': member_grade_id
 			})
 			product_groups.append(promotion_product_group)

@@ -22,7 +22,6 @@ from business.decorator import cached_context_property
 from business.mall.shopping_cart_products import ShoppingCartProducts
 from business.mall.product_grouper import ProductGrouper
 
-
 class ShoppingCart(business_model.Model):
 	__slots__ = [
 		'items', 
@@ -118,11 +117,17 @@ class ShoppingCart(business_model.Model):
 		"""
 		valid_products, _ = self.__products
 
+		promotion_product_group_datas = []
 		product_grouper = ProductGrouper()
 		promotion_product_groups = product_grouper.group_product_by_promotion(self.webapp_user.member, valid_products)
-		product_group_datas = [group.to_dict(with_price_factor=True) for group in promotion_product_groups]
+		for promotion_product_group in promotion_product_groups:
+			promotion_product_group.apply_promotion()
+			promotion_product_group_data = promotion_product_group.to_dict(with_price_factor=True)
+			promotion_product_group_datas.append(promotion_product_group_data) 
 
-		return product_group_datas
+		promotion_product_group_datas.sort(lambda x,y: cmp(y['id'], x['id']))
+
+		return promotion_product_group_datas
 
 	@cached_context_property
 	def invalid_products(self):

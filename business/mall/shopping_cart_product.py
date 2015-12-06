@@ -120,13 +120,20 @@ class ShoppingCartProduct(business_model.Model):
 		self.purchase_count = product_info['count']
 		
 		self.is_member_product = product.is_member_product
-		self.promotion = product.promotion
+
+		#获取促销
+		product_promotion = product.promotion
+		if product_promotion and product_promotion.is_active() and product.promotion.can_use_for(webapp_user):
+			self.promotion = product.promotion
+		else:
+			self.promotion = None
 
 		if product.is_member_product:
-			_, self.member_discount = webapp_user.member.discount
+			_, discount_value = webapp_user.member.discount
+			self.member_discount = member_discount / 100.0
 		else:
 			self.member_discount = 1.00
-		self.price = self.price * self.member_discount #折扣后的价格
+		self.price = round(self.price * self.member_discount, 2) #折扣后的价格
 		#TODO2: 为微众商城增加1.1的价格因子
 
 	@cached_context_property
@@ -151,6 +158,7 @@ class ShoppingCartProduct(business_model.Model):
 		data = business_model.Model.to_dict(self)
 		data['postage_config'] = self.postage_config
 		data['model'] = self.model.to_dict() if self.model else None
+		data['promotion'] = self.promotion.to_dict() if self.promotion else None
 		return data
 
 

@@ -100,6 +100,7 @@ class PromotionRepository(business_model.Model):
 				'id': product.id,
 				'name': product.name,
 				'thumbnails_url': '%s%s' % (settings.IMAGE_HOST, product.thumbnails_url),
+				'original_premium_count': premium_sale_product.count,
 				'premium_count': premium_sale_product.count,
 				'premium_unit': premium_sale_product.unit
 			}
@@ -189,9 +190,6 @@ class PromotionRepository(business_model.Model):
 	def get_promotion_from_dict_data(data):
 		promotion_type = data['type']
 
-		print '-*-' * 20
-		print promotion_type
-		print '-*-' * 20
 		if promotion_type == promotion_models.PROMOTION_TYPE_FLASH_SALE:
 			DetailClass = FlashSale
 		# elif promotion_type == promotion_models.PROMOTION_TYPE_PRICE_CUT:

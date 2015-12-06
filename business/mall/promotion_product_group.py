@@ -52,7 +52,14 @@ class PromotionProductGroup(business_model.Model):
 		self.promotion_result = group_info['promotion_result']
 		self.integral_sale_rule = group_info['integral_sale_rule']
 		self.member_grade_id = group_info['member_grade_id']
-		self.promotion_json = json.dumps(self.promotion)
+		self.promotion_json = json.dumps(self.promotion.to_dict()) if self.promotion else json.dumps(None)
+
+	def apply_promotion(self):
+		"""
+		执行促销活动
+		"""
+		if self.can_use_promotion and self.promotion:
+			self.can_use_promotion, self.promotion_result = self.promotion.apply_promotion(self.products)
 
 	def to_dict(self, with_price_factor=False, with_coupon_info=False):
 		"""获取promotion product group的json数据
@@ -66,7 +73,7 @@ class PromotionProductGroup(business_model.Model):
 				'id': self.id,
 				'promotion_type': self.promotion_type,
 				'can_use_promotion': self.can_use_promotion,
-				'promotion': self.promotion,
+				'promotion': self.promotion.to_dict() if self.promotion else None,
 				'promotion_result': self.promotion_result,
 				'integral_sale_rule': self.integral_sale_rule
 			}
@@ -111,7 +118,7 @@ class PromotionProductGroup(business_model.Model):
 				'id': self.id,
 				'uid': self.uid,
 				'products': product_factors,
-				'promotion': self.promotion,
+				'promotion': self.promotion.to_dict() if self.promotion else None,
 				'promotion_type': self.promotion_type,
 				'promotion_result': self.promotion_result,
 				'integral_sale_rule': self.integral_sale_rule,

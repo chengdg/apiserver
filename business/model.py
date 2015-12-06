@@ -2,6 +2,9 @@
 import logging
 
 class Model(object):
+	"""
+	领域业务对象的基类
+	"""
 	__slots__ = ('context', )
 	
 	def __init__(self):
@@ -52,4 +55,18 @@ class Model(object):
 		for item in extras:
 			result[item] = getattr(self, item, None)
 			
-		return result		
+		return result
+
+
+class Service(object):
+	"""
+	领域服务的基类
+	"""
+	__slots__ = ('context', )
+
+	@classmethod
+	def get(cls):
+		return cls()
+	
+	def __init__(self):
+		self.context = {}

@@ -98,3 +98,6 @@ class IntegralSale(promotion.Promotion):
 
 		self.discount = discount
 		self.discount_money = discount_money
+
+	def apply_promotion(self, products):
+		return True, None

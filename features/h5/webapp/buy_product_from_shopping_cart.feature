@@ -5,8 +5,9 @@ Feature: 在webapp中从购物车中购买商品
 	bill能在webapp中从购物车中购买商品
 
 Background:
-	Given jobs登录系统
-	When jobs已添加支付方式
+	Given 重置weapp的bdd环境
+	Given jobs登录系统:weapp
+	When jobs已添加支付方式:weapp
 		"""
 		[{
 			"type": "货到付款",
@@ -14,8 +15,8 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	When jobs开通使用微众卡权限
-	When jobs添加支付方式
+	When jobs开通使用微众卡权限:weapp
+	When jobs添加支付方式:weapp
 		"""
 		[{
 			"type": "微众卡支付",
@@ -23,7 +24,7 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	When jobs添加邮费配置
+	When jobs添加邮费配置:weapp
 		"""
 		[{
 			"name":"顺丰",
@@ -48,8 +49,8 @@ Background:
 			}]
 		}]
 		"""
-	And jobs选择'顺丰'运费配置
-	And jobs已添加商品
+	And jobs选择'顺丰'运费配置:weapp
+	And jobs已添加商品:weapp
 		"""
 		[{
 			"name": "商品1",
@@ -104,7 +105,7 @@ Background:
 
 
 
-@todo @mall2 @mall @zy_wsc01 @mall.webapp @mall.webapp.shopping_cart
+@todo @mall2 @mall @zy_wsc01 @mall.webapp @mall.webapp.shopping_cart @wip
 Scenario:1 从购物车购买单个商品
 	bill将jobs的一个商品加入购物车后
 	1. bill能从购物车中下单

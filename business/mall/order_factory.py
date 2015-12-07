@@ -156,6 +156,8 @@ class OrderFactory(business_model.Model):
 				promotion_saved_money += saved_money
 		order.promotion_saved_money = promotion_saved_money
 
+		##处理订单中的积分金额
+
 		"""
 		# 订单来自商铺
 		if products[0].owner_id == webapp_owner_id:

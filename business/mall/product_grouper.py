@@ -77,7 +77,7 @@ class ProductGrouper(business_model.Model):
 		"""
 		收集product_group积分规则抵扣规则
 		"""
-		return None
+		# return None
 		merged_rule = {
 			"member_grade_id": target_member_grade_id,
 			"product_model_names": []
@@ -136,8 +136,8 @@ class ProductGrouper(business_model.Model):
 			products = group_info['products']
 			group_id = group_info['group_id']
 			group_unified_id = self.__get_group_name(products)
-			#integral_sale_rule = self.__collect_integral_sale_rules(member_grade_id, products) if member_grade_id != -1 else None
-			integral_sale_rule = None
+			integral_sale_rule = self.__collect_integral_sale_rules(member_grade_id, products) if member_grade_id != -1 else None
+			#integral_sale_rule = None
 
 			#products是相同promotion的集合，所以从第一个product中获取promotion就能得到promotion对象了
 			promotion = products[0].promotion

@@ -44,9 +44,11 @@ class Model(object):
 		instance.after_from_dict()
 		return instance
 
-	def to_dict(self, slots=None, *extras):
+	def to_dict(self, *extras, **kwargs):
 		result = dict()
-		if not slots:
+		if kwargs and 'slots' in kwargs:
+			slots = kwargs['slots']
+		else:
 			slots = self.__slots__
 
 		for slot in slots:

@@ -91,6 +91,12 @@ def get_member_for(username, webapp_id):
 	else:
 		member_nickname_str = username
 	username_hexstr = string_util.byte_to_hex(member_nickname_str)
+	buf = []
+	buf.append('=======================')
+	buf.append(webapp_id)
+	buf.append(username_hexstr)
+	buf.append('=======================')
+	print '\n'.join(buf)
 	try:
 		return member_models.Member.get(webapp_id=webapp_id, username_hexstr=username_hexstr)
 	except:

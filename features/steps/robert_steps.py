@@ -268,7 +268,6 @@ def step_impl(context, webapp_user_name):
     # order = Order.objects.get(order_id=order_id)
 
     url = '/wapi/mall/order/?woid=%s&order_id=%s' % (context.webapp_owner_id, order_id)
-    logging.info('URL: {}'.format(url))
     response = context.client.get(bdd_util.nginx(url), follow=True)
 
     actual_order = response.data['order']

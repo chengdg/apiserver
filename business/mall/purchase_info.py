@@ -51,6 +51,9 @@ class PurchaseInfo(business_model.Model):
 
         self.__parse(request_args)
 
+    def __repr__(self):
+        return str(self.to_dict())
+
     def __parse(self, request_args):
         """解析request参数
         """

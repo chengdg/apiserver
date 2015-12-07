@@ -161,8 +161,8 @@ class Promotion(business_model.Model):
 
 	def to_dict(self):
 		data = {}
-		data.update(super(Promotion, self).to_dict(Promotion.__slots__))
-		data.update(super(Promotion, self).to_dict(self.__slots__))
+		data.update(super(Promotion, self).to_dict({'slots': Promotion.__slots__}))
+		data.update(super(Promotion, self).to_dict({'slots': self.__slots__}))
 		data['detail'] = self.detail
 
 		return data

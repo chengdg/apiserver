@@ -19,12 +19,11 @@ from core.watchdog.utils import watchdog_alert
 from business import model as business_model
 import settings
 from business.decorator import cached_context_property
-from business.mall.shopping_cart_products import ShoppingCartProducts
+from business.mall.reserved_product_repository import ReservedProductRepository
 from business.mall.product_grouper import ProductGrouper
 
 class ShoppingCart(business_model.Model):
 	__slots__ = [
-		'items', 
 		'webapp_user',
 	]
 
@@ -85,12 +84,12 @@ class ShoppingCart(business_model.Model):
 	def __products(self):
 		webapp_owner = self.context['webapp_owner']
 		webapp_user = self.webapp_user
-		shopping_cart_products = ShoppingCartProducts.get_for_webapp_user({
+		reserved_product_repository = ReservedProductRepository.get({
 			'webapp_owner': webapp_owner,
 			'webapp_user': webapp_user
 		})
 
-		products = shopping_cart_products.products
+		products = reserved_product_repository.get_shopping_cart_reserved_products(self)
 
 		valid_products = []
 		invalid_products = []
@@ -148,6 +147,10 @@ class ShoppingCart(business_model.Model):
 		"""
 		mall_models.ShoppingCart.delete().dj_where(id=id).execute()
 
-
-
-
+	@property
+	def items(self):
+		"""
+		[property] items: 购物车项目集合
+		"""
+		webapp_user = self.webapp_user
+		return list(mall_models.ShoppingCart.select().dj_where(webapp_user_id = webapp_user.id))

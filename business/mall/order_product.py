@@ -132,17 +132,14 @@ class OrderProduct(business_model.Model):
 		self.is_member_product = product.is_member_product
 
 		#获取促销
-		if product.promotion and product.promotion.can_use_for(webapp_user):
-			self.promotion = product.promotion
-		else:
-			self.promotion = None
+		self.promotion = product.promotion
 
 		if product.is_member_product:
 			_, discount_value = webapp_user.member.discount
 			self.member_discount = member_discount / 100.0
 		else:
 			self.member_discount = 1.00
-		self.price = round(product.price * self.member_discount, 2) #折扣后的价格
+		self.price = round(self.price * self.member_discount, 2) #折扣后的价格
 		#TODO2: 为微众商城增加1.1的价格因子
 
 	@cached_context_property
@@ -244,7 +241,8 @@ class OrderProduct(business_model.Model):
 	def to_dict(self):
 		data = business_model.Model.to_dict(self)
 		data['postage_config'] = data['_postage_config']
-		data['model'] = self.model.to_dict()
+		data['model'] = self.model.to_dict() if self.model else None
+		data['promotion'] = self.promotion.to_dict() if self.promotion else None
 		return data
 
 

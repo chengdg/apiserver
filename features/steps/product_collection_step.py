@@ -34,7 +34,7 @@ def step_impl(context, weixin_user):
 	
 	expected = json.loads(context.text)
 	actual = response.body['data']['products']
-	logging.error(weixin_user)
+	logging.info("weixin_user: {}".format(weixin_user))
 	bdd_util.assert_list(expected, actual)
 
 @When(u"{weixin_user}取消收藏已收藏的商品")

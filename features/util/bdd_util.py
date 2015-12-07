@@ -9,6 +9,7 @@ from utils import string_util
 from db.member import models as member_models
 from db.mall import models as mall_models
 import logging
+from business.account.member import Member
 
 tc = None
 
@@ -273,3 +274,11 @@ def get_webapp_id_for(username):
 	user = User.get(username=username)
 	profile = UserProfile.get(user=user)
 	return profile.webapp_id
+
+
+def get_product_by(product_name):
+	product = mall_models.Product.get(name=product_name)
+	return product
+
+def get_member_by_id(member_id):
+	return Member.from_id({'webapp_owner': None, 'member_id': member_id})

@@ -359,3 +359,6 @@ class OrderChecker(business_model.Model):
 						'msg': u'积分不足',
 					}
 				}
+		return {
+			'success': True
+		}

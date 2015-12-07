@@ -76,11 +76,11 @@ class OrderReview(business_model.Model):
 		"""
 		order_id = args.get('order_id')
 		if order_id:
-			return mall_models.Order.objects.filter(Q(webapp_user_id__in=webapp_user_id) | Q(id__in=order_id)).filter(origin_order_id__lte=0)
+			return mall_models.Order.filter(Q(webapp_user_id__in=webapp_user_id) | Q(id__in=order_id)).filter(origin_order_id__lte=0)
 		if isinstance(webapp_user_id, int) or isinstance(webapp_user_id, long):
-			return mall_models.Order.objects.filter(webapp_user_id=webapp_user_id, origin_order_id__lte=0)
+			return mall_models.Order.filter(webapp_user_id=webapp_user_id, origin_order_id__lte=0)
 		else:
-			return mall_models.Order.objects.filter(webapp_user_id__in=webapp_user_id, origin_order_id__lte=0)		
+			return mall_models.Order.filter(webapp_user_id__in=webapp_user_id, origin_order_id__lte=0)		
 
 
 	@staticmethod

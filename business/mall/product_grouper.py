@@ -84,7 +84,7 @@ class ProductGrouper(business_model.Model):
 		}
 		for product in products:
 			product.active_integral_sale_rule = None
-			product_model_name = '%s_%s' % (product.id, product.model['name'])
+			product_model_name = '%s_%s' % (product.id, product.model.name)
 			#判断积分应用是否不可用
 			if not product.integral_sale_model:
 				continue

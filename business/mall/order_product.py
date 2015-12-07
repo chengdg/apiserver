@@ -59,7 +59,9 @@ class OrderProduct(business_model.Model):
 		'is_member_product',
 		'promotion',
 		'shelve_type',
-		'promotion_money'
+		'promotion_money',
+		'active_integral_sale_rule',
+		'integral_sale_model'
 	)
 
 	@staticmethod

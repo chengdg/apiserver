@@ -420,7 +420,7 @@ def step_impl(context, webapp_user_name):
 			new_promotion['type'] = product_group['promotion_type']
 			new_promotion['result'] = product_group['promotion_result']
 			if new_promotion['type'] == 'flash_sale':
-				products[0].price = new_promotion['detail']['promotion_price']
+				products[0]['price'] = new_promotion['detail']['promotion_price']
 			if new_promotion['type'] == 'premium_sale':
 				new_promotion['result'] = product_group['promotion']['detail']
 

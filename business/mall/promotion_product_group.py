@@ -54,6 +54,25 @@ class PromotionProductGroup(business_model.Model):
 		self.member_grade_id = group_info['member_grade_id']
 		self.promotion_json = json.dumps(self.promotion.to_dict()) if self.promotion else json.dumps(None)
 
+		if self.promotion and self.promotion.type_name == 'integral_sale':
+			self.integral_sale_rule = True
+
+			#设置每个商品的active_integral_sale_rule
+			active_integral_sale_rule = self.__get_active_integral_sale_rule()
+			
+			for product in self.products:
+				product.active_integral_sale_rule = active_integral_sale_rule
+
+	def __get_active_integral_sale_rule(self):
+		"""
+		收集product_group积分规则抵扣规则
+		"""
+		assert self.promotion.type_name == 'integral_sale'
+		for rule in self.promotion.rules:
+			rule_member_grade_id = int(rule['member_grade_id'])
+			if rule_member_grade_id < 0 or self.member_grade_id == rule_member_grade_id:
+				return rule
+
 	def apply_promotion(self):
 		"""
 		执行促销活动

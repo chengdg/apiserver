@@ -65,7 +65,8 @@ class ReservedProduct(business_model.Model):
 		'stocks',
 		'is_model_deleted',
 
-		'can_use_coupon'
+		'can_use_coupon',
+		'active_integral_sale_rule'
 	)
 
 	@staticmethod

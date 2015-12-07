@@ -73,39 +73,39 @@ class ProductGrouper(business_model.Model):
 
 		return '-'.join(items)
 
-	def __collect_integral_sale_rules(self, target_member_grade_id, products):
-		"""
-		收集product_group积分规则抵扣规则
-		"""
-		return None
-		merged_rule = {
-			"member_grade_id": target_member_grade_id,
-			"product_model_names": []
-		}
-		for product in products:
-			product.active_integral_sale_rule = None
-			product_model_name = '%s_%s' % (product.id, product.model['name'])
-			#判断积分应用是否不可用
-			if not product.integral_sale_model:
-				continue
-			if not product.integral_sale_model.is_active:
-				if product.integral_sale['detail']['is_permanant_active']:
-					pass
-				else:
-					continue
+	# def __collect_integral_sale_rules(self, target_member_grade_id, products):
+	# 	"""
+	# 	收集product_group积分规则抵扣规则
+	# 	"""
+	# 	return None
+	# 	merged_rule = {
+	# 		"member_grade_id": target_member_grade_id,
+	# 		"product_model_names": []
+	# 	}
+	# 	for product in products:
+	# 		product.active_integral_sale_rule = None
+	# 		product_model_name = '%s_%s' % (product.id, product.model['name'])
+	# 		#判断积分应用是否不可用
+	# 		if not product.integral_sale_model:
+	# 			continue
+	# 		if not product.integral_sale_model.is_active:
+	# 			if product.integral_sale['detail']['is_permanant_active']:
+	# 				pass
+	# 			else:
+	# 				continue
 
-			for rule in product.integral_sale['detail']['rules']:
-				member_grade_id = int(rule['member_grade_id'])
-				if member_grade_id <= 0 or member_grade_id == target_member_grade_id:
-					# member_grade_id == -1则为全部会员等级
-					merged_rule['product_model_names'].append(product_model_name)
-					product.active_integral_sale_rule = rule
-					merged_rule['rule'] = rule
-			merged_rule['integral_product_info'] = str(product.id) + '-' + product.model_name
-		if len(merged_rule['product_model_names']) > 0:
-			return merged_rule
-		else:
-			return None
+	# 		for rule in product.integral_sale['detail']['rules']:
+	# 			member_grade_id = int(rule['member_grade_id'])
+	# 			if member_grade_id <= 0 or member_grade_id == target_member_grade_id:
+	# 				# member_grade_id == -1则为全部会员等级
+	# 				merged_rule['product_model_names'].append(product_model_name)
+	# 				product.active_integral_sale_rule = rule
+	# 				merged_rule['rule'] = rule
+	# 		merged_rule['integral_product_info'] = str(product.id) + '-' + product.model_name
+	# 	if len(merged_rule['product_model_names']) > 0:
+	# 		return merged_rule
+	# 	else:
+	# 		return None
 
 	def group_product_by_promotion(self, member, products):
 		"""
@@ -137,7 +137,7 @@ class ProductGrouper(business_model.Model):
 			group_id = group_info['group_id']
 			group_unified_id = self.__get_group_name(products)
 			#integral_sale_rule = self.__collect_integral_sale_rules(member_grade_id, products) if member_grade_id != -1 else None
-			integral_sale_rule = None
+			#integral_sale_rule = None
 
 			#products是相同promotion的集合，所以从第一个product中获取promotion就能得到promotion对象了
 			promotion = products[0].promotion
@@ -151,7 +151,7 @@ class ProductGrouper(business_model.Model):
 					'promotion': None,
 					"promotion_type": '',
 					'promotion_result': None,
-					'integral_sale_rule': integral_sale_rule,
+					'integral_sale_rule': False,
 					'can_use_promotion': False,
 					'member_grade_id': member_grade_id
 				})
@@ -232,7 +232,7 @@ class ProductGrouper(business_model.Model):
 				'products': products,
 				'promotion': promotion,
 				'promotion_result': None,
-				'integral_sale_rule': integral_sale_rule,
+				'integral_sale_rule': False,
 				'can_use_promotion': True,
 				'member_grade_id': member_grade_id
 			})

@@ -28,6 +28,8 @@ class AShoppingCart(api_resource.ApiResource):
 		product_groups = shopping_cart.product_groups
 		invalid_products = shopping_cart.invalid_products
 
+		product_groups.sort(lambda x,y: cmp(x['products'][0]['shopping_cart_id'], y['products'][0]['shopping_cart_id']))
+
 		#获取会员信息
 		member = webapp_user.member
 		_, member_discount = member.discount

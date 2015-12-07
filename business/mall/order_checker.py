@@ -315,7 +315,7 @@ class OrderChecker(business_model.Model):
 				products = uid2group[group_uid]['products']
 				if not group_uid in group2integral_sale_rule.keys() or not group2integral_sale_rule[group_uid]:
 					for product in products:
-	                    fail_msg['data']['detail'].append({
+						fail_msg['data']['detail'].append({
 							'id': product.id,
 							'model_name': product.model_name,
 							'msg': '积分折扣已经过期',
@@ -352,8 +352,8 @@ class OrderChecker(business_model.Model):
 				return fail_msg
 
 
-		 if total_integral > 0 and not webapp_user.can_use_integral(total_integral):
-		 	return {
+		if total_integral > 0 and not webapp_user.can_use_integral(total_integral):
+			return {
 					'success': False,
 					'data': {
 						'msg': u'积分不足',

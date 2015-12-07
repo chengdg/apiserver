@@ -54,8 +54,9 @@ class Model(object):
 		for slot in slots:
 			result[slot] = getattr(self, slot, None)
 
-		for item in extras:
-			result[item] = getattr(self, item, None)
+		if extras:
+			for item in extras:
+				result[item] = getattr(self, item, None)
 			
 		return result
 

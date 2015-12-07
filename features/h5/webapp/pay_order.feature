@@ -30,7 +30,7 @@ Background:
 		"""
 	And bill关注jobs的公众号
 
-@mall3 @mall @mall.webapp @mall.pay_order @wip
+@mall3 @mall @mall.webapp @mall.pay_order
 Scenario:1 使用货到付款支付
 	bill在下单购买jobs的商品后，能使用货到付款进行支付，支付后
 	1. bill的订单中变为"待发货"

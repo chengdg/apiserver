@@ -281,5 +281,4 @@ class Member(business_model.Model):
 
 	@property
 	def username(self):
-		 
 		return hex_to_byte(self.username_hexstr)

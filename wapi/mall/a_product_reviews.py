@@ -23,15 +23,33 @@ from business.mall.product_review import ProductReview
 import logging
 #from core.watchdog.utils import watchdog_info
 
-
-
-
 class AProductReviews(api_resource.ApiResource):
 	"""
-	多条商品评论
+	获取商品的评论列表
 	"""
 	app = 'mall'
 	resource = 'product_reviews'
+
+	@staticmethod
+	def to_dict(product_review):
+		"""
+		将ProductReview转成dict
+		"""
+		# TODO: 实现to_dict()
+		#return product_review.to_dict()
+		return {
+			"status": product_review.status,
+			"order_review_id": product_review.order_review_id,
+			"product_id": product_review.product_id,
+			"order_id": product_review.product_id,
+			"created_at": product_review.created_at,
+			"product_score": product_review.product_score,
+			"review_detail": product_review.review_detail,
+			"order_has_product_id": product_review.order_has_product_id,
+			"member_id": product_review.member_id,
+			"id": product_review.id,
+			"top_name": product_review.top_name
+        	}
 
 	@param_required(['woid', 'product_id'])
 	def get(args):
@@ -46,14 +64,15 @@ class AProductReviews(api_resource.ApiResource):
 		limit = args.get('limit', 2)
 		
 		product_reviews = ProductReview.get_latest_product_reviews({
+				'webapp_owner': webapp_owner,
 				'product_id': product_id,
 				'limit': limit,
 			})
-		product_reviews = ProductReview.from_id({
-			'webapp_owner': webapp_owner,
-			'product_id': product_id
-			})
-		data = [product_review.to_dict() for product_review in product_reviews]
+		#product_reviews = ProductReview.from_id({
+		#	'webapp_owner': webapp_owner,
+		#	'product_id': product_id
+		#	})
+		data = [AProductReviews.to_dict(product_review) for product_review in product_reviews]
 		return {
 			'reviews': data
 		}

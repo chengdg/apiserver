@@ -63,7 +63,7 @@ def step_impl(context, user, mp_user_name):
 		'openid': '%s_%s' % (user, mp_user_name)
 	})
 	client.webapp_user.access_token = response.body['data']['access_token']
-	logging.error('>>>>>> ACCESS_TOKEN : %s' % client.webapp_user.access_token)
+	logging.info('>>>>>> ACCESS_TOKEN : %s' % client.webapp_user.access_token)
 	client.woid = webapp_owner.id
 
 	context.webapp_owner_id = webapp_owner.id

@@ -28,12 +28,25 @@ def step_impl(context, web_user):
 	"""
 	args = json.loads(context.text)
 	# 转换成2个`When xxx购买jobs的商品`的step
+	new_step = u'''
+		Given %s登录系统:weapp
+		And %s已添加支付方式:weapp
+			"""
+			[{
+				"type": "货到付款",
+				"is_active": "启用"
+			}]
+			"""
+		'''% (web_user, web_user)
+	logging.info("Converted step:\n %s" % new_step)
+	context.execute_steps(new_step)
+
 	last_buyer = None
 	for order in args:
 		buyer = order['member']
 		if buyer != last_buyer:
 			# login first if not logged-in
-			new_step = u'When %s访问%s的webapp'% (buyer, web_user)
+			new_step = u'''When %s访问%s的webapp'''% (buyer, web_user)
 			logging.info("Converted step:\n %s" % new_step)
 			context.execute_steps(new_step)
 			last_buyer = buyer
@@ -43,6 +56,7 @@ def step_impl(context, web_user):
 		new_step = u'''When %s购买%s的商品
 			"""
 			{
+				"pay_type": "货到付款",
 				"order_id": "%s",
 				"products": %s
 			}

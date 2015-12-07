@@ -32,7 +32,9 @@ class PurchaseInfo(business_model.Model):
         'ship_info',
         'used_pay_interface_type',
         'customer_message',
-        'order_type'
+        'order_type',
+        'purchase_group2integral_info',
+        'purchase_integral_info'
     )
 
     @staticmethod
@@ -68,6 +70,9 @@ class PurchaseInfo(business_model.Model):
         self.__parse_custom_message(request_args)
 
         self.order_type = request_args.get('order_type', mall_models.PRODUCT_DEFAULT_TYPE)
+
+        self.__parse_purchase_integral_info(request_args) 
+        self.__parse_purchase_group2integral_info(request_args)
 
     def __parse_ship_info(self, request_args):
         """解析收货人信息
@@ -161,4 +166,19 @@ class PurchaseInfo(business_model.Model):
             return True
         else:
             return False
+
+    def __parse_purchase_integral_info(self, request_args):
+        integral_info = request_args.get('orderIntegralInfo', None)
+        if integral_info:
+            self.purchase_integral_info = json.loads(integral_info)
+        else:
+            self.purchase_integral_info = None
+
+    def __parse_purchase_group2integral_info(self, request_args):
+        integral_info = request_args.get('group2integralinfo', None)
+        if integral_info:
+            self.purchase_group2integral_info = json.loads(integral_info)
+        else:
+            self.purchase_group2integral_info = None
+
 

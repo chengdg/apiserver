@@ -27,6 +27,8 @@ from business.decorator import cached_context_property
 from utils import regional_util
 from business.account.member_order_info import MemberOrderInfo
 from business.account.social_account import SocialAccount
+from business.spread.integral import Integral
+
 
 class WebAppUser(business_model.Model):
 	"""
@@ -478,3 +480,12 @@ class WebAppUser(business_model.Model):
 			'member_id': self.member.id
 			})
 		return social_account.openid
+
+	def use_integral(self, integral_count):
+		if integral_count == 0:
+			return 0.0
+
+		return Integral.use_integral_to_buy({
+			'webapp_user': self,
+			'integral_count': -integral_count
+			})

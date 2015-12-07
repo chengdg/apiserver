@@ -48,6 +48,8 @@ class Order(business_model.Model):
 
 		'postage',
 		'integral',
+		'integral_money',
+		
 		'coupon_id',
 		'status',
 		'origin_order_id',

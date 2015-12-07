@@ -104,7 +104,6 @@ class Integral(business_model.Model):
 			webapp_user_id = webapp_user.id
 		else:
 			webapp_user_id = 0
-
 		current_integral = member.integral + integral_increase_count
 		try:
 			#TODO-bert 并发下是否会出现积分日志无法对应上
@@ -125,3 +124,24 @@ class Integral(business_model.Model):
 			notify_message = u"update_member_integral member_id:{}, cause:\n{}".format(member.id, unicode_full_stack())
 			print notify_message
 			watchdog_error(notify_message)
+		if webapp_user:
+			webapp_user.cleanup_cache
+
+	@staticmethod
+	def use_integral_to_buy(args):
+		webapp_user = args['webapp_user']
+		use_count = int(args['integral_count'])
+
+
+		if use_count == 0:
+			return 0.0
+
+		Integral.increase_member_integral({
+			'integral_increase_count': use_count,
+			'member': webapp_user.member,
+			'event_type':  member_models.USE
+			})
+
+		
+
+

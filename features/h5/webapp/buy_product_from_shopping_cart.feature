@@ -105,7 +105,7 @@ Background:
 
 
 
-@todo @mall2 @mall @zy_wsc01 @mall.webapp @mall.webapp.shopping_cart @wip
+@todo @mall2 @mall @zy_wsc01 @mall.webapp @mall.webapp.shopping_cart
 Scenario:1 从购物车购买单个商品
 	bill将jobs的一个商品加入购物车后
 	1. bill能从购物车中下单

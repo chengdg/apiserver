@@ -199,7 +199,7 @@ Scenario: 1在weapp的商品详情中如果多余两条评价，只显示两条�
 
     Given bill关注jobs的公众号
     When bill访问jobs的webapp
-    And bill在商城首页点击'商品1'的链接:weapp
+    And bill在商城首页点击'商品1'的链接
     #publish：true为bill可以看到，false 则bill看不到,top为true则置顶，其他按评价时间倒叙排列
     #在详情页只显示两条，信息内容包括，商品名，评价时间，评价内容，注意：置顶
     Then bill在商品详情页成功获取'商品1'的评价列表
@@ -210,8 +210,8 @@ Scenario: 1在weapp的商品详情中如果多余两条评价，只显示两条�
         }]
         """
 
-    When bill在'商品1'的商品详情页点击'更多评价':weapp
-    Then bill成功获取'商品1'的商品详情的'更多评价':weapp
+    When bill在'商品1'的商品详情页点击'更多评价'
+    Then bill成功获取'商品1'的商品详情的'更多评价'
         """
         [{
             "member": "bill",
@@ -219,7 +219,7 @@ Scenario: 1在weapp的商品详情中如果多余两条评价，只显示两条�
         }]
         """
 
-    When bill在商城首页点击'商品2'的链接:weapp
+    When bill在商城首页点击'商品2'的链接
     Then bill在商品详情页成功获取'商品2'的评价列表
         """
         [{}]

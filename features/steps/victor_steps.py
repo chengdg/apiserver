@@ -136,7 +136,21 @@ def step_impl(context, webapp_user, product_name):
 	"""
 	@todo 后续实现
 	"""
-	new_step = u'''Then %s在商品详情页成功获取'%s'的评价列表''' % (webapp_user, product_name)
+	new_step = u'''	Then %s在商品详情页成功获取'%s'的评价列表
+		"""
+		%s
+		"""
+	''' % (webapp_user, product_name, json.dumps(json.loads(context.text)))
 	logging.info("Converted step:\n %s" % new_step)
 	context.execute_steps(new_step)
 	return
+
+
+@When(u"{webapp_user}在商城首页点击'{product_name}'的链接")
+def step_click_product(context, webapp_user, product_name):
+	pass
+
+
+@when(u"{webapp_user}在'{product_name}'的商品详情页点击'更多评价'")
+def step_click_more(context, webapp_user, product_name):
+	pass

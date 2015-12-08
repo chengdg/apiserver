@@ -34,7 +34,9 @@ class PurchaseInfo(business_model.Model):
         'customer_message',
         'order_type',
         'purchase_group2integral_info',
-        'purchase_integral_info'
+        'purchase_integral_info',
+
+        'is_purchase_from_shopping_cart'
     )
 
     @staticmethod
@@ -70,6 +72,7 @@ class PurchaseInfo(business_model.Model):
         self.__parse_custom_message(request_args)
 
         self.order_type = request_args.get('order_type', mall_models.PRODUCT_DEFAULT_TYPE)
+        self.is_purchase_from_shopping_cart = request_args.get('is_order_from_shopping_cart', False)
 
         self.__parse_purchase_integral_info(request_args) 
         self.__parse_purchase_group2integral_info(request_args)

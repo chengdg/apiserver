@@ -10,7 +10,7 @@ from db.mall import models as mall_models
 from db.mall import promotion_models
 from db.member import models as member_models
 from .steps_db_util import (
-    get_custom_model_id_from_name, get_product_model_keys, get_area_ids
+	get_custom_model_id_from_name, get_product_model_keys, get_area_ids
 )
 import logging
 
@@ -29,11 +29,11 @@ def _get_product_model_name_from_ids(webapp_owner_id, ids):
 	return get_custom_model_id_from_name(webapp_owner_id ,ids)
 
 PAYNAME2ID = {
-    u'全部': -1,
-    u'微信支付': 2,
-    u'货到付款': 9,
-    u'支付宝': 0,
-    u'优惠抵扣': 10
+	u'全部': -1,
+	u'微信支付': 2,
+	u'货到付款': 9,
+	u'支付宝': 0,
+	u'优惠抵扣': 10
 }
 
 @when(u"{webapp_user_name}购买{webapp_owner_name}的商品")
@@ -259,37 +259,37 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 
 @then(u"{webapp_user_name}成功创建订单")
 def step_impl(context, webapp_user_name):
-    order_id = context.created_order_id
-    if order_id == -1:
-        print 'Server Error: ', json.dumps(json.loads(context.response.content), indent=True)
-        assert False, "order_id must NOT be -1"
-        return
+	order_id = context.created_order_id
+	if order_id == -1:
+		print 'Server Error: ', json.dumps(json.loads(context.response.content), indent=True)
+		assert False, "order_id must NOT be -1"
+		return
 
-    # order = Order.objects.get(order_id=order_id)
+	# order = Order.objects.get(order_id=order_id)
 
-    url = '/wapi/mall/order/?woid=%s&order_id=%s' % (context.webapp_owner_id, order_id)
-    response = context.client.get(bdd_util.nginx(url), follow=True)
+	url = '/wapi/mall/order/?woid=%s&order_id=%s' % (context.webapp_owner_id, order_id)
+	response = context.client.get(bdd_util.nginx(url), follow=True)
 
-    actual_order = response.data['order']
-    actual_order['order_no'] = actual_order['order_id']
-    actual_order['status'] = actual_order['status_text']
-    # 获取coupon规则名
-    if (actual_order['coupon_id'] != 0) and (actual_order['coupon_id'] != -1):
-        # coupon = Coupon.objects.get(id=actual_order.coupon_id)
-        coupon = steps_db_util.get_coupon_by_id(actual_order.coupon_id)
-        actual_order.coupon_id = coupon.coupon_rule.name
+	actual_order = response.data['order']
+	actual_order['order_no'] = actual_order['order_id']
+	actual_order['status'] = actual_order['status_text']
+	# 获取coupon规则名
+	if (actual_order['coupon_id'] != 0) and (actual_order['coupon_id'] != -1):
+		# coupon = Coupon.objects.get(id=actual_order.coupon_id)
+		coupon = steps_db_util.get_coupon_by_id(actual_order.coupon_id)
+		actual_order.coupon_id = coupon.coupon_rule.name
 
-    for product in actual_order['products']:
-    	product['count'] = product['purchase_count']
-        if 'custom_model_properties' in product and product['custom_model_properties']:
-            product['model'] = ' '.join([property['property_value'] for property in product['custom_model_properties']])
+	for product in actual_order['products']:
+		product['count'] = product['purchase_count']
+		if 'custom_model_properties' in product and product['custom_model_properties']:
+			product['model'] = ' '.join([property['property_value'] for property in product['custom_model_properties']])
 
 
-    expected = json.loads(context.text)
-    if expected.get('actions', None):
-        # TODO 验证订单页面操作
-        del expected['actions']
-    bdd_util.assert_dict(expected, actual_order)
+	expected = json.loads(context.text)
+	if expected.get('actions', None):
+		# TODO 验证订单页面操作
+		del expected['actions']
+	bdd_util.assert_dict(expected, actual_order)
 
 
 
@@ -453,3 +453,216 @@ def step_impl(context, webapp_user_name):
 
 		response = context.client.post('/wapi/mall/shopping_cart_item/?_method=delete', data)
 		bdd_util.assert_api_call_success(response)
+
+
+@when(u"{webapp_user_name}从购物车发起购买操作")
+def step_impl(context, webapp_user_name):
+	"""
+	action = "click" or "pay"
+
+	e.g.:
+		{
+			"action": "click"
+			"context": [
+				{'name': 'basketball', 'model': "standard"},
+				{...}
+			]
+		}
+	"""
+	# 设置默认收货地址
+	if member_models.ShipInfo.select().count() == 0:
+		context.execute_steps(u"When %s设置%s的webapp的默认收货地址:weapp" % (webapp_user_name, 'jobs'))
+	__i = json.loads(context.text)
+	if __i.get("action") == u"pay":
+		argument = __i.get('context')
+		# 获取购物车参数
+		product_ids, product_counts, product_model_names = _get_shopping_cart_parameters(context.webapp_user.id, argument)
+		url = '/termite/workbench/jqm/preview/?woid=%s&module=mall&model=shopping_cart_order&action=edit&product_ids=%s&product_counts=%s&product_model_names=%s' % (context.webapp_owner_id, product_ids, product_counts, product_model_names)
+		product_infos = {
+			'product_ids': product_ids,
+			'product_counts': product_counts,
+			'product_model_names': product_model_names
+		}
+		if __i.get('coupon'):
+			product_infos['coupon_id'] = __i['coupon']
+	elif __i.get("action") == u"click":
+		argument = __i.get('context')
+		# 获取购物车参数
+		product_ids, product_counts, product_model_names = _get_shopping_cart_parameters(context.webapp_user.id, argument)
+		url = '/wapi/mall/purchasing/?woid=%s&product_ids=%s&product_counts=%s&product_model_names=%s' % (context.webapp_owner_id, product_ids, product_counts, product_model_names)
+		print '==========================================***************************************'
+		print url
+		print '==========================================***************************************'
+		product_infos = {
+			'product_ids': product_ids,
+			'product_counts': product_counts,
+			'product_model_names': product_model_names
+		}
+		if __i.get('coupon'):
+			product_infos['coupon_id'] = __i['coupon']
+
+	response = context.client.get(bdd_util.nginx(url), follow=True)
+	context.product_infos = product_infos
+	context.response = response
+
+@then(u"{webapp_user_name}获得待编辑订单")
+def step_impl(context, webapp_user_name):
+	"""
+		e.g.:
+		[{'name': "asdfasdfa",
+		  'count': "111"
+		},{...}]
+	"""
+	context_text = json.loads(context.text)
+	if context_text == []:
+		actual = []
+		expected_products = []
+	else:
+		actual = []
+		expected_products = context_text['products']
+		product_groups = context.response.data['order']['product_groups']
+		for i in product_groups:
+			for product in i['products']:
+				_a = {}
+				_a['name'] = product['name']
+				_a['count'] = product['purchase_count']
+				actual.append(_a)
+
+	bdd_util.assert_list(expected_products, actual)
+
+def _get_shopping_cart_parameters(webapp_user_id, context):
+	"""
+	webapp_user_id-> int
+	context -> list
+		e.g.:
+			[
+				{'name': "",
+				 'model': },
+				{...},
+			]
+	"""
+
+	shopping_cart_items = mall_models.ShoppingCart.select().dj_where(webapp_user_id=webapp_user_id)
+	if context is not None:
+		product_infos = context
+		product_ids = []
+		product_counts = []
+		product_model_names = []
+		for product_info in product_infos:
+			product_name = product_info['name']
+			product_model_name = product_info.get('model', 'standard')
+			product_model_name = get_product_model_keys(product_model_name)
+
+			product = mall_models.Product.get(name=product_info['name'])
+			cart = mall_models.ShoppingCart.get(webapp_user_id=webapp_user_id, product=product.id, product_model_name=product_model_name)
+			product_ids.append(str(product.id))
+			product_counts.append(str(cart.count))
+			product_model_names.append(product_model_name)
+	else:
+		shopping_cart_items = list(mall_models.ShoppingCart.select().dj_where(webapp_user_id=webapp_user_id))
+		product_ids = [str(item.product_id) for item in shopping_cart_items]
+		product_counts = [str(item.count) for item in shopping_cart_items]
+		product_model_names = [item.product_model_name for item in shopping_cart_items]
+
+	product_ids = '_'.join(product_ids)
+	product_counts = '_'.join(product_counts)
+	product_model_names = '$'.join(product_model_names)
+	return product_ids, product_counts, product_model_names
+
+def _get_prodcut_info(order):
+	product_ids = []
+	product_counts = []
+	product_model_names = []
+	promotion_ids = []
+
+	for product_group in order['product_groups']:
+		for product in product_group['products']:
+			product_ids.append(str(product['id']))
+			product_counts.append(str(product['purchase_count']))
+			product_model_names.append(str(product['model_name']))
+			if product_group['can_use_promotion']:
+				promotion_ids.append(str(product_group['promotion']['id']))
+			else:
+				promotion_ids.append('0')
+	return {'product_ids': '_'.join(product_ids),
+			'product_counts': '_'.join(product_counts),
+			'product_model_names': '$'.join(product_model_names),
+			'promotion_ids': '_'.join(promotion_ids)
+			}
+
+@when(u"{webapp_user_name}在购物车订单编辑中点击提交订单")
+def step_click_check_out(context, webapp_user_name):
+	"""
+	{
+		"pay_type":  "货到付款",
+	}
+	"""
+	argument = json.loads(context.text)
+	pay_type = argument['pay_type']
+
+	order = context.response.data['order']
+	product_info = _get_prodcut_info(order)
+	url = '/wapi/mall/order/?_method=put'
+	data = {
+		'order_type': 'normal',
+		'is_order_from_shopping_cart': 'true',
+		'woid': context.webapp_owner_id,
+		'xa-choseInterfaces': mall_models.PAYNAME2TYPE.get(pay_type, -1),
+		'group2integralinfo': {},
+
+		"ship_name": argument.get('ship_name', "未知姓名"),
+		"area": get_area_ids(argument.get('ship_area')),
+		"ship_address": argument.get('ship_address', "长安大街"),
+		"ship_tel": argument.get('ship_tel', "11111111111"),
+	}
+
+	data.update(product_info)
+	coupon_id = context.product_infos.get('coupon_id', None)
+	if coupon_id:
+		data['is_use_coupon'] = 'true'
+		data['coupon_id'] = coupon_id
+	if argument.get('integral', None):
+		data['orderIntegralInfo'] = json.dumps({
+			'integral': argument['integral'],
+			'money': argument['integral_money']
+		})
+
+	response = context.client.post(url, data)
+
+	bdd_util.assert_api_call_success(response)
+	context.response = response
+
+	#访问支付结果链接
+	pay_url_info = response.data['pay_url_info']
+	pay_type = pay_url_info['type']
+	del pay_url_info['type']
+	if pay_type == 'cod':
+		pay_url = '/wapi/pay/pay_result/?_method=put'
+		data = {
+			'pay_interface_type': pay_url_info['pay_interface_type'],
+			'order_id': pay_url_info['order_id']
+		}
+		context.client.post(pay_url, data)
+	
+	if response.body['code'] == 200:
+		# context.created_order_id为订单ID
+		context.created_order_id = response.data['order_id']
+	else:
+		context.created_order_id = -1
+		context.server_error_msg = response.data['msg']
+		print "buy_error----------------------------",context.server_error_msg,response
+
+	if context.created_order_id != -1:
+		if 'date' in argument:
+			mall_models.Order.update(created_at=bdd_util.get_datetime_str(argument['date'])).dj_where(order_id=context.created_order_id)
+		if 'order_id' in argument:
+			db_order = mall_models.Order.get(order_id=context.created_order_id)
+			db_order.order_id=argument['order_id']
+			db_order.save()
+			if db_order.origin_order_id <0:
+				for order in Order.select().dj_where(origin_order_id=db_order.id):
+					order.order_id = '%s^%s' % (argument['order_id'], order.supplier)
+					order.save()
+			context.created_order_id = argument['order_id']
+
+	logging.info("[Order Created] webapp_owner_id: {}, created_order_id: {}".format(context.webapp_owner_id, context.created_order_id))

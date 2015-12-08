@@ -71,6 +71,15 @@ class ShoppingCart(business_model.Model):
 				count = count
 			)
 
+	def remove_product(self, product):
+		"""
+		从购物车中删除一个ReservedProduct
+
+		Parameters
+			[in] product: 待删除的ReservedProduct对象
+		"""
+		mall_models.ShoppingCart.delete().dj_where(product_id=product.id, webapp_user_id=self.webapp_user.id, product_model_name=product.model_name).execute()
+
 	@property
 	def product_count(self):
 		"""

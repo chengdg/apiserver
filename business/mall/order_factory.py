@@ -178,6 +178,11 @@ class OrderFactory(business_model.Model):
 		for product in products:
 			product.consume_stocks()
 
+		#删除购物车
+		if purchase_info.is_purchase_from_shopping_cart:
+			for product in products:
+				webapp_user.shopping_cart.remove_product(product)
+
 		#建立<order, product>的关系
 		supplier_ids = []
 		for product in products:

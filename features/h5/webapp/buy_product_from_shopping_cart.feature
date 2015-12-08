@@ -105,7 +105,7 @@ Background:
 
 
 
-@todo @mall2 @mall @zy_wsc01 @mall.webapp @mall.webapp.shopping_cart
+@mall3 @mall @zy_wsc01 @mall.webapp @mall.webapp.shopping_cart
 Scenario:1 从购物车购买单个商品
 	bill将jobs的一个商品加入购物车后
 	1. bill能从购物车中下单
@@ -139,17 +139,7 @@ Scenario:1 从购物车购买单个商品
 			}]
 		}
 		"""
-	When bill从购物车发起购买操作
-		"""
-		{
-			"action": "pay",
-			"context": [{
-				"name": "商品1"
-			}]
-		}
-		"""
-
-	And bill在购物车订单编辑中点击提交订单
+	When bill在购物车订单编辑中点击提交订单
 		"""
 		{
 			"ship_name": "bill",
@@ -201,7 +191,8 @@ Scenario:1 从购物车购买单个商品
 		}
 		"""
 
-@todo @mall2 @mall @zy_wsc02 @mall.webapp @mall.webapp.shopping_cart
+
+@mall3 @mall @zy_wsc02 @mall.webapp @mall.webapp.shopping_cart
 Scenario:2 从购物车购买全部商品
 	bill将jobs的多个商品加入购物车后
 	1. bill能从购物车中下单
@@ -243,19 +234,7 @@ Scenario:2 从购物车购买全部商品
 			}]
 		}
 		"""
-	When bill从购物车发起购买操作
-		"""
-		{
-			"action": "pay",
-			"context": [{
-				"name": "商品1"
-			}, {
-				"name": "商品2"
-			}]
-		}
-		"""
-
-	And bill在购物车订单编辑中点击提交订单
+	When bill在购物车订单编辑中点击提交订单
 		"""
 		{
 			"ship_name": "bill",
@@ -311,7 +290,7 @@ Scenario:2 从购物车购买全部商品
 		}
 		"""
 
-@todo @mall2 @mall @zy_wsc03 @mall.webapp @mall.webapp.shopping_cart
+@mall3 @mall @zy_wsc03 @mall.webapp @mall.webapp.shopping_cart
 Scenario:3 从购物车购买部分商品
 	bill将jobs的多个商品加入购物车后
 	1.bill能从购物车中下单,购买部分商品
@@ -364,7 +343,7 @@ Scenario:3 从购物车购买部分商品
 	When bill从购物车发起购买操作
 		"""
 		{
-			"action": "pay",
+			"action": "click",
 			"context": [{
 				"name": "商品1"
 			}, {
@@ -372,7 +351,6 @@ Scenario:3 从购物车购买部分商品
 			}]
 		}
 		"""
-
 	And bill在购物车订单编辑中点击提交订单
 		"""
 		{
@@ -431,109 +409,6 @@ Scenario:3 从购物车购买部分商品
 				"name": "商品2",
 				"count": 2
 			}]
-			}],
-			"invalid_products": []
-		}
-		"""
-
-@todo @mall2 @mall @zy_wsc04 @mall.webapp @mall.webapp.shopping_cart
-Scenario:4 从购物车购买空商品
-	bill将jobs的多个商品加入购物车后
-	1. bill不选中商品去下单
-	2. bill下单失败
-	3. bill的购物车没有变化
-	4. tom的购物车不受影响
-
-	When bill访问jobs的webapp
-	And bill加入jobs的商品到购物车
-		"""
-		[{
-			"name": "商品1",
-			"count": 2
-		}, {
-			"name": "商品2",
-			"count": 1
-		}, {
-			"name": "商品3",
-			"count": 2
-		}]
-		"""
-	When bill从购物车发起购买操作
-		"""
-		{
-			"action": "click",
-			"context": [{
-				"name": "商品1"
-			}, {
-				"name": "商品2"
-			}, {
-				"name": "商品3"
-			}]
-		}
-		"""
-	Then bill能获得待编辑订单
-		"""
-		{
-			"products": [{
-				"name": "商品1",
-				"count": 2
-			}, {
-				"name": "商品2",
-				"count": 1
-			}, {
-				"name": "商品3",
-				"count": 2
-			}]
-		}
-		"""
-	When bill从购物车发起购买操作
-		"""
-		{
-			"action": "pay",
-			"context": []
-		}
-		"""
-	When bill从购物车发起购买操作
-		"""
-		{
-			"action": "pay",
-			"context": []
-		}
-		"""
-	Then bill能获得购物车
-		"""
-		{
-			"product_groups": [{
-				"promotion": null,
-				"can_use_promotion": false,
-				"products": [{
-					"name": "商品1",
-					"count": 2
-				}, {
-					"name": "商品2",
-					"count": 1
-				}, {
-					"name": "商品3",
-					"count": 2
-				}]
-			}],
-			"invalid_products": []
-		}
-		"""
-	When tom访问jobs的webapp
-	Then tom能获得购物车
-		"""
-		{
-			"product_groups": [{
-				"promotion": null,
-				"can_use_promotion": false,
-				"products": [{
-					"name": "商品1",
-					"count": 1
-				}, {
-					"name": "商品2",
-					"count": 2
-				}]
 			}],
 			"invalid_products": []
 		}

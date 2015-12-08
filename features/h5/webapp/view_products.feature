@@ -1,3 +1,5 @@
+#editor 赵磊 2015.11.25代码重构
+
 Feature: 在webapp中浏览商品列表
 	bill能在webapp中看到jobs添加的"商品列表"
 

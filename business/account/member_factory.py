@@ -34,7 +34,8 @@ class MemberFactory(business_model.Model):
 		'id',
 		'created',
 		'token',
-		'webapp_id'
+		'webapp_id',
+		'integral'
 	)
 
 	@staticmethod
@@ -76,7 +77,7 @@ class MemberFactory(business_model.Model):
 
 
 	def save(self):
-		"""保存订单
+		"""保存会员信息
 		"""
 		webapp_owner = self.context['webapp_owner']
 		member_grade = self.context['default_grade']
@@ -108,12 +109,14 @@ class MemberFactory(business_model.Model):
 		else:
 		#默认等级
 			#member_grade = member_models.MemberGrade.get_default_grade(webapp_id)
-			if for_oauth:
+			if int(for_oauth):
 				is_subscribed = False
 				status = member_models.NOT_SUBSCRIBED
+				is_for_test = False
 			else:
 				is_subscribed = True
 				status = member_models.SUBSCRIBED
+				is_for_test = True
 
 			#temporary_token = _create_random()
 			member_token = self._generate_member_token(social_account)
@@ -124,7 +127,7 @@ class MemberFactory(business_model.Model):
 				grade = member_grade,
 				remarks_name = '',
 				token = member_token,
-				is_for_test = social_account.is_for_test,
+				is_for_test = is_for_test,
 				is_subscribed = is_subscribed,
 				status = status
 			)

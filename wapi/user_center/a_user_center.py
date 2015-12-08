@@ -29,20 +29,20 @@ class AUserCenter(api_resource.ApiResource):
 		"""
 		webapp_user = args['webapp_user']
 		webapp_owner = args['webapp_owner']
-
+		print 'webapp_user>>>>>>>>>>>>>>>>>>>>>...id:',webapp_user.id
 		member = webapp_user.member
 		member_data = {
 			'user_icon': member.user_icon,
 			'is_binded': member.is_binded,
 			'username_for_html': member.username_for_html,
 			'grade': member.grade,
-			'history_order_count': member.history_order_count,
-			'not_payed_order_count': member.not_payed_order_count,
-			'not_ship_order_count': member.not_ship_order_count,
-			'shiped_order_count': member.shiped_order_count,
-			'review_count': member.review_count,
+			'history_order_count': webapp_user.history_order_count,
+			'not_payed_order_count': webapp_user.not_payed_order_count,
+			'not_ship_order_count': webapp_user.not_ship_order_count,
+			'shiped_order_count': webapp_user.shiped_order_count,
+			'review_count': webapp_user.review_count,
 			'integral': member.integral,
-			'wishlist_product_count': member.wishlist_product_count,
+			'wishlist_product_count': webapp_user.collected_product_count,
 			'market_tools': member.market_tools
 		}
 

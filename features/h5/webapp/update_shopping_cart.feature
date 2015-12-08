@@ -1,13 +1,13 @@
 #editor: benchi
 #editor: 张三香 2015.10.19
-@func:webapp.modules.mall.views.list_products
 
 Feature: 调整购物车中
 	bill能调整购物车
 
 Background:
-	Given jobs登录系统
-	And jobs已添加商品
+	Given 重置weapp的bdd环境
+	Given jobs登录系统:weapp
+	And jobs已添加商品:weapp
 		"""
 		[{
 			"name": "商品1",
@@ -43,7 +43,7 @@ Background:
 		}]
 		"""
 
-@todo @mall2 @app @buy @cart   @mall @mall.webapp @mall.webapp.shopping_cart @bb1
+@mall3 @app @buy @cart @mall @mall.webapp @mall.webapp.shopping_cart @bb1
 Scenario:1 从购物车中删除商品
 	bill在购物车中删除商品后
 	1. bill能获得更新后的购物车

@@ -38,6 +38,7 @@ class Order(business_model.Model):
 		'type',
 		'pay_interface_type',
 		'final_price',
+		'product_price',
 		'edit_money',
 
 		'ship_name',
@@ -47,6 +48,8 @@ class Order(business_model.Model):
 
 		'postage',
 		'integral',
+		'integral_money',
+		
 		'coupon_id',
 		'status',
 		'origin_order_id',
@@ -88,6 +91,23 @@ class Order(business_model.Model):
 			orders.append(order)
 
 		return orders
+
+
+	@staticmethod
+	@param_required(['webapp_owner', 'webapp_user'])
+	def get_finished_orders_for_webapp_user(args):
+		"""
+		获取会员的所有已完成的订单
+
+		@see Weapp源码`mall/models.py`中`Order.by_webapp_user_id`
+
+		@todo 需要与get_orders_for_webapp_user()合并
+		"""
+		orders = Order.get_orders_for_webapp_user(args)
+		# 改写自`Order.by_webapp_user_id(webapp_user_id).filter(status=5)` 
+		completed = filter(lambda o: o.status==mall_models.ORDER_STATUS_SUCCESSED, orders)
+		return completed
+
 
 	@staticmethod
 	def empty_order():

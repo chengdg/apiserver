@@ -4,6 +4,8 @@ import os
 import sys
 import logging
 
+from db.mall import models as mall_models
+
 path = os.path.abspath(os.path.join('.', '..'))
 sys.path.insert(0, path)
 
@@ -12,7 +14,7 @@ from pymongo import Connection
 
 import settings
 from features.util import bdd_util
-
+from core.cache import utils as cache_utils
 ######################################################################################
 # __clear_all_account_data: 清空账号数据
 ######################################################################################
@@ -34,10 +36,12 @@ def __create_system_user(username):
 
 
 def before_all(context):
+	cache_utils.clear_db()
 	# __clear_all_account_data()
 	# __create_system_user('jobs')
 	# __create_system_user('bill')
 	# __create_system_user('tom')
+
 	weapp_working_dir = os.path.join(settings.WEAPP_DIR, 'weapp')
 	if not os.path.exists(weapp_working_dir):
 		info = '* ERROR: CAN NOT do bdd testing. Because bdd need %s be exists!!!' % weapp_working_dir

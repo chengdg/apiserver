@@ -42,7 +42,8 @@ class WebAppOwnerInfo(business_model.Model):
 		'qrcode_img',
 		'member2grade',
 		'member_grades',
-		'default_member_tag'
+		'default_member_tag',
+		'weixin_mp_user_access_token'
 	)
 
 	@staticmethod

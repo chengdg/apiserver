@@ -5,6 +5,7 @@ __author__ = 'bert'
 import os
 from time import time
 import traceback
+import logging
 # Import the fastest implementation of
 # pickle package. This should be removed
 # when python3 come the unique supported
@@ -67,7 +68,7 @@ def clear_db():
 
 def set_cache_wrapper(key, value, timeout=0):
 	start = time()
-	try:
+	try:	
 		return set_cache(key, value, timeout)
 	except:
 		if settings.DEBUG:

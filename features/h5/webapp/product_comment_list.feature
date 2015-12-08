@@ -65,7 +65,7 @@ Background:
             }]
         }]
         """
-# TODO: Recommend to change to scenarios like these:        
+# TODO: 建议将上面的step改成下面的写法：
 #    When bill访问jobs的webapp
 #    And bill购买jobs的商品
 #        """
@@ -174,9 +174,9 @@ Background:
             "review_detail": "商品2不太好！！！！！！！"
         }
         """
-    Given jobs登录系统
-    When jobs已获取对商品的评价信息
-    And jobs已完成对商品的评价信息审核
+    Given jobs登录系统:weapp
+    When jobs已获取对商品的评价信息:weapp
+    And jobs已完成对商品的评价信息审核:weapp
         """
         [{
             "member": "tom",
@@ -192,7 +192,7 @@ Background:
         """
 
 
-@wip.comment @todo @mall2 @mall.webapp.comment.bb @ProductDetail
+@mall3 @mall2 @wip.comment @ProductDetail
 Scenario: 1在weapp的商品详情中如果多余两条评价，只显示两条评价信息，如果只有一条评价信息，就显示一条，如果没有评价信息则不显示,只显示审核通过的评价
     1）该评价信息，如果是后台进行了置顶操作，则显示出来，
     2）否则把最后两条信息显示出来
@@ -211,7 +211,6 @@ Scenario: 1在weapp的商品详情中如果多余两条评价，只显示两条�
         """
 
     When bill在'商品1'的商品详情页点击'更多评价'
-
     Then bill成功获取'商品1'的商品详情的'更多评价'
         """
         [{
@@ -219,6 +218,7 @@ Scenario: 1在weapp的商品详情中如果多余两条评价，只显示两条�
             "review_detail": "商品1还不错！！！！！"
         }]
         """
+
     When bill在商城首页点击'商品2'的链接
     Then bill在商品详情页成功获取'商品2'的评价列表
         """

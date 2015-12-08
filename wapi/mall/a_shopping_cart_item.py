@@ -15,7 +15,7 @@ class AShoppingCartItem(api_resource.ApiResource):
 	app = 'mall'
 	resource = 'shopping_cart_item'
 	
-	@param_required(['product_id', 'count'])
+	@param_required(['product_id', 'count', 'product_model_name'])
 	def put(args):
 		"""
 		创建购物车项目
@@ -44,7 +44,7 @@ class AShoppingCartItem(api_resource.ApiResource):
 			"action": "post"
 		}
 
-	@param_required(['shopping_cart_item_ids'])
+	@param_required(['id'])
 	def delete(args):
 		"""
 		删除购物车项目
@@ -54,11 +54,11 @@ class AShoppingCartItem(api_resource.ApiResource):
 			'webapp_owner': args['webapp_owner'],
 		})
 
-		shopping_cart_item_ids = args['shopping_cart_item_ids'].split(',')
-		shopping_cart.delete_items(shopping_cart_item_ids)
+		shopping_cart_item_id = args['id']
+		shopping_cart.delete_items(shopping_cart_item_id)
 
 		return {
 			'success': True,
-			'count': len(shopping_cart_item_ids)
+			'count': 1
 		}
 

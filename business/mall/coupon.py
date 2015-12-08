@@ -21,7 +21,7 @@ class Coupon(business_model.Model):
 	"""
 
 	@staticmethod
-	@param_required(['webapp_owner_id', 'coupon_id'])
+	@param_required(['webapp_owner', 'coupon_id'])
 	def get(args):
 		pass
 

@@ -8,6 +8,7 @@ import re
 import mimetypes
 from copy import copy
 from io import BytesIO
+import logging
 
 import six
 from six.moves.urllib.parse import unquote, urlparse, urlsplit, urlencode
@@ -140,7 +141,7 @@ class FakeResponse(object):
         if self.body and 'queries' in self.body:
             del self.body['queries']
         traceback = None
-        if self.body and 'Traceback' in self.body['innerErrMsg']:
+        if self.body and 'Traceback' in self.body.get('innerErrMsg'):
             traceback = self.body['innerErrMsg']
             self.body['innerErrMsg'] = 'see traceback underneath...'
         buf.append(json.dumps(self.body, indent=2))
@@ -175,8 +176,8 @@ class ClientHandler(object):
         try:
             self.response.body = json.loads(response_text)
         except:
-            print '>>>>>>>>>>>>>>>> invalid api response <<<<<<<<<<<<<<<<'
-            print response_text
+            logging.error('>>>>>>>>>>>>>>>> invalid api response <<<<<<<<<<<<<<<<\n%s' % response_text)
+            #print response_text
 
         return self.response
 

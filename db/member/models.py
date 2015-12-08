@@ -142,7 +142,7 @@ class WebAppUser(models.Model):
 	"""
 	WebApp的用户
 	"""
-	token = models.CharField(max_length=100)
+	token = models.CharField(max_length=100, default='')
 	webapp_id = models.CharField(max_length=16)
 	member_id = models.IntegerField(default=0) #会员记录的id
 	has_purchased = models.BooleanField(default=False) #是否购买过
@@ -169,87 +169,23 @@ class WebAppUser(models.Model):
 		except:
 			return None
 
-	@property
-	def ship_info(self):
-		"""
-		收货地址
-		"""
-		if hasattr(self, '_ship_info'):
-			return self._ship_info
-		else:
-			try:
-				_ship_infos = list(self.ship_infos.filter(is_selected=True))
-				if len(_ship_infos) > 0:
-					self._ship_info = _ship_infos[0]
-
-				return self._ship_info
-			except:
-				return None
-
-	@property
-	def ship_infos(self):
-		"""
-		收货地址集合
-		"""
-		if hasattr(self, '_ship_infos'):
-			return self._ship_infos
-		else:
-			try:
-				# 删除空的条目
-				#ShipInfo.select().dj_where(webapp_user_id=self.id, ship_name='').delete()
-				self._ship_infos = ShipInfo.select().dj_where(webapp_user_id=self.id, is_deleted=False)
-				return self._ship_infos
-			except:
-				return None
-
-	def update_ship_info(self, ship_name=None, ship_address=None, ship_tel=None, area=None, ship_id=None):
-		"""
-		更新收货地址
-		"""
-		ship_infos = ShipInfo.select().dj_where(webapp_user_id=self.id, is_selected=True)
-		ShipInfo.select().dj_where(webapp_user_id=self.id).update(is_selected=False)
-		if ship_id > 0:
-			ShipInfo.select().dj_where(id=ship_id).update(
-				ship_tel = ship_tel,
-				ship_address = ship_address,
-				ship_name = ship_name,
-				area = area,
-				is_selected = True
-			)
-		elif ship_infos.count() > 0 and ship_id is None:
-			ship_infos.update(
-				ship_tel = ship_tel,
-				ship_address = ship_address,
-				ship_name = ship_name,
-				area = area,
-				is_selected = True
-			)
-		else:
-			ship_id = ShipInfo.objects.create(
-				webapp_user_id = self.id,
-				ship_tel = ship_tel,
-				ship_address = ship_address,
-				ship_name = ship_name,
-				area = area
-			).id
-		return ship_id
 
 	@property
 	def is_member(self):
 		return self.member_id > 0
 
-	def can_use_integral(self, integral):
-		"""
-		检查是否可用数量为integral的积分
-		"""
-		if not self.is_member:
-			return False
+	# def can_use_integral(self, integral):
+	# 	"""
+	# 	检查是否可用数量为integral的积分
+	# 	"""
+	# 	if not self.is_member:
+	# 		return False
 
-		remianed_integral = Member.get(id=self.member_id).integral
-		if remianed_integral >= integral:
-			return True
-		else:
-			return False
+	# 	remianed_integral = Member.get(id=self.member_id).integral
+	# 	if remianed_integral >= integral:
+	# 		return True
+	# 	else:
+	# 		return False
 
 	@cached_property
 	def integral_info(self):
@@ -740,3 +676,36 @@ class MallOrderFromSharedRecord(models.Model):
 		verbose_name_plural = "通过分享链接订单"
 		db_table = "mall_order_from_shared_record"
 
+
+FIRST_SUBSCRIBE = u'首次关注'
+#FOLLOWER_CLICK_SHARED_URL = u'好友奖励'
+FOLLOWER_CLICK_SHARED_URL = u'好友点击分享链接奖励'
+USE = u'购物抵扣'
+RETURN_BY_SYSTEM = u'积分返还'
+RETURN_BY_CANCEl_ORDER = u'取消订单 返还积分'
+AWARD = u'积分领奖'
+BUY_AWARD = u'购物返利'
+#FOLLOWER_BUYED_VIA_SHARED_URL = u'好友奖励'
+FOLLOWER_BUYED_VIA_SHARED_URL = u'好友通过分享链接购买奖励'
+BRING_NEW_CUSTOMER_VIA_QRCODE = u'推荐扫码奖励'
+MANAGER_MODIFY = '系统管理员修改'
+MANAGER_MODIFY_ADD = '管理员赠送'
+MANAGER_MODIFY_REDUCT = '管理员扣减'
+CHANNEL_QRCODE = u'渠道扫码奖励'
+BUY_INCREST_COUNT_FOR_FATHER = u'推荐关注的好友购买奖励'
+
+class MemberIntegralLog(models.Model):
+	member = models.ForeignKey(Member)
+	webapp_user_id = models.IntegerField(default=0)
+	event_type = models.CharField(max_length=64, verbose_name='引起积分变化事件类型')
+	integral_count = models.IntegerField(default=0, verbose_name='积分量')
+	follower_member_token = models.CharField(max_length=255, null=True, blank=True, verbose_name='所关注的会员的token')
+	reason = models.CharField(max_length=255, default='')
+	current_integral = models.CharField(default='0', max_length=255)
+	manager = models.CharField(default='', max_length=255)
+	created_at = models.DateTimeField(auto_now_add=True, verbose_name='记录时间')
+
+	class Meta(object):
+		db_table = 'member_integral_log'
+		verbose_name = '积分日志'
+		verbose_name_plural = '积分日志'

@@ -4,9 +4,12 @@ import time
 
 import settings
 from client import Client
-from db.account.models import User
+from db.account.models import User, UserProfile
 from utils import string_util
 from db.member import models as member_models
+from db.mall import models as mall_models
+import logging
+from business.account.member import Member
 
 tc = None
 
@@ -89,6 +92,12 @@ def get_member_for(username, webapp_id):
 	else:
 		member_nickname_str = username
 	username_hexstr = string_util.byte_to_hex(member_nickname_str)
+	buf = []
+	buf.append('=======================')
+	buf.append(webapp_id)
+	buf.append(username_hexstr)
+	buf.append('=======================')
+	print '\n'.join(buf)
 	try:
 		return member_models.Member.get(webapp_id=webapp_id, username_hexstr=username_hexstr)
 	except:
@@ -192,6 +201,11 @@ def assert_expected_list_in_actual(expected, actual):
 # assert_api_call_success: 验证api调用成功
 ###########################################################################
 def assert_api_call_success(response):
+	if 200 != response.body.get('code'):
+		buf = []
+		buf.append('>>>>>>>>>>>>>>> response <<<<<<<<<<<<<<<')
+		buf.append(str(response))
+		logging.error("API calling failure: %s" % '\n'.join(buf))
 	assert 200 == response.body['code'], "code != 200, call api FAILED!!!!"
 
 
@@ -221,3 +235,50 @@ def table2dict(context):
 		expected.append(data)
 	return expected
 
+
+def get_order_has_product(order_code, product_name):
+	"""
+	从Weapp `test/bdd_util.py`迁移过来
+
+	@todo 待优化；用业务模型描述
+	"""
+	def _get_product_model_name(product_model_names):
+		if product_model_names != "standard":
+			pro_id, id = product_model_names.split(":")
+			i = mall_models.ProductModelPropertyValue.get(id=id, property_id=pro_id)
+			return i.name
+	order = mall_models.Order.get(order_id=order_code)
+
+	# 商品是否包含规格
+	if ":" in product_name:
+		product_name, product_model_name = product_name.split(":")
+
+	order_has_product_list = mall_models.OrderHasProduct.select().dj_where(order_id=order.id, product_name=product_name)
+
+	if order_has_product_list.count() == 1:
+		# 如果商品不包含规格
+		return order_has_product_list[0]
+	else:
+		# 如果商品包含规格
+		# 查找到包含此规格的order_has_product
+		for order_has_product in order_has_product_list:
+			if product_model_name in _get_product_model_name(order_has_product.product_model_name):
+				return order_has_product
+	return None
+
+
+def get_webapp_id_for(username):
+	"""
+	获取user对应的webapp id
+	"""
+	user = User.get(username=username)
+	profile = UserProfile.get(user=user)
+	return profile.webapp_id
+
+
+def get_product_by(product_name):
+	product = mall_models.Product.get(name=product_name)
+	return product
+
+def get_member_by_id(member_id):
+	return Member.from_id({'webapp_owner': None, 'member_id': member_id})

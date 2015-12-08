@@ -19,13 +19,11 @@ from core.watchdog.utils import watchdog_alert
 from business import model as business_model
 import settings
 from business.decorator import cached_context_property
-from business.mall.shopping_cart_products import ShoppingCartProducts
+from business.mall.reserved_product_repository import ReservedProductRepository
 from business.mall.product_grouper import ProductGrouper
-
 
 class ShoppingCart(business_model.Model):
 	__slots__ = [
-		'items', 
 		'webapp_user',
 	]
 
@@ -73,6 +71,15 @@ class ShoppingCart(business_model.Model):
 				count = count
 			)
 
+	def remove_product(self, product):
+		"""
+		从购物车中删除一个ReservedProduct
+
+		Parameters
+			[in] product: 待删除的ReservedProduct对象
+		"""
+		mall_models.ShoppingCart.delete().dj_where(product_id=product.id, webapp_user_id=self.webapp_user.id, product_model_name=product.model_name).execute()
+
 	@property
 	def product_count(self):
 		"""
@@ -86,12 +93,12 @@ class ShoppingCart(business_model.Model):
 	def __products(self):
 		webapp_owner = self.context['webapp_owner']
 		webapp_user = self.webapp_user
-		shopping_cart_products = ShoppingCartProducts.get_for_webapp_user({
+		reserved_product_repository = ReservedProductRepository.get({
 			'webapp_owner': webapp_owner,
 			'webapp_user': webapp_user
 		})
 
-		products = shopping_cart_products.products
+		products = reserved_product_repository.get_shopping_cart_reserved_products(self)
 
 		valid_products = []
 		invalid_products = []
@@ -118,11 +125,17 @@ class ShoppingCart(business_model.Model):
 		"""
 		valid_products, _ = self.__products
 
+		promotion_product_group_datas = []
 		product_grouper = ProductGrouper()
 		promotion_product_groups = product_grouper.group_product_by_promotion(self.webapp_user.member, valid_products)
-		product_group_datas = [group.to_dict(with_price_factor=True) for group in promotion_product_groups]
+		for promotion_product_group in promotion_product_groups:
+			promotion_product_group.apply_promotion()
+			promotion_product_group_data = promotion_product_group.to_dict(with_price_factor=True)
+			promotion_product_group_datas.append(promotion_product_group_data) 
 
-		return product_group_datas
+		promotion_product_group_datas.sort(lambda x,y: cmp(y['id'], x['id']))
+
+		return promotion_product_group_datas
 
 	@cached_context_property
 	def invalid_products(self):
@@ -135,14 +148,18 @@ class ShoppingCart(business_model.Model):
 
 		return invalid_products
 
-	def delete_items(self, ids):
+	def delete_items(self, id):
 		"""
 		删除一组购物车项
 
-		@param[in] ids: 购物车项的id集合
+		@param[in] id: 购物车项的id
 		"""
-		mall_models.ShoppingCart.delete().dj_where(id__in=ids).execute()
+		mall_models.ShoppingCart.delete().dj_where(id=id).execute()
 
-
-
-
+	@property
+	def items(self):
+		"""
+		[property] items: 购物车项目集合
+		"""
+		webapp_user = self.webapp_user
+		return list(mall_models.ShoppingCart.select().dj_where(webapp_user_id = webapp_user.id))

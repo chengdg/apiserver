@@ -55,23 +55,29 @@ class AOrder(api_resource.ApiResource):
 		if (not order_validation['is_valid']):
 			return 500, order_validation['reason']
 
+		order_validation = order_factory.resource_allocator()
+		if (not order_validation['is_valid']):
+			return 500, order_validation['reason']
+		else:
+			order = order_validation['order']
+
 		order = order_factory.save()
-		pay_url = None
+		pay_url_info = None
 		if order:
 			if order.final_price > 0 and purchase_info.used_pay_interface_type != '-1':
 				pay_interface = PayInterface.from_type({
 					"webapp_owner": webapp_owner,
 					"pay_interface_type": purchase_info.used_pay_interface_type
 				})
-				pay_url = pay_interface.get_pay_url_for_order(order)
+				pay_url_info = pay_interface.get_pay_url_info_for_order(order)
 
 		data = {
 			'order_id' : order.order_id,
 			'id' : order.id,
 			'final_price' : round(order.final_price, 2)
 		}
-		if pay_url:
-			data['pay_url'] = pay_url
+		if pay_url_info:
+			data['pay_url_info'] = pay_url_info
 
 		return data
 

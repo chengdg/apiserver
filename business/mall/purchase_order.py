@@ -22,8 +22,9 @@ from core.watchdog.utils import watchdog_alert
 from business import model as business_model 
 from business.mall.product import Product
 import settings
+from utils import regional_util
 from business.decorator import cached_context_property
-from business.mall.order_products import OrderProducts
+from business.mall.reserved_product_repository import ReservedProductRepository
 from business.mall.product_grouper import ProductGrouper
 
 
@@ -61,15 +62,15 @@ class PurchaseOrder(business_model.Model):
 
 		self.type = mall_models.PRODUCT_DEFAULT_TYPE
 
-		if webapp_user.ship_info:
-			ship_info = webapp_user.ship_info
+		ship_info = webapp_user.selected_ship_info
+		if ship_info:
 			self.ship_info = {
 				"name": ship_info['name'],
 				"id": ship_info['id'],
 				"tel": ship_info['tel'],
 				"address": ship_info['address'],
 				"area": ship_info['area'],
-				"display_area": ship_info['area']
+				"display_area": regional_util.get_str_value_by_string_ids(ship_info['area'])
 			}
 		else:# TODO 收货地址
 			self.ship_info = {
@@ -83,12 +84,11 @@ class PurchaseOrder(business_model.Model):
 
 		#计算折扣
 		#product.original_price = product.price
-		order_products = OrderProducts.get({
-			"webapp_owner": webapp_owner,
-			"webapp_user": webapp_user,
-			"purchase_info": purchase_info
+		reserved_product_repository = ReservedProductRepository.get({
+			'webapp_owner': webapp_owner,
+			'webapp_user': webapp_user
 		})
-		self.products = order_products.products
+		self.products = reserved_product_repository.get_reserved_products_from_purchase_info(purchase_info)
 
 		# 积分订单
 		temp_product = self.products[0]
@@ -105,32 +105,13 @@ class PurchaseOrder(business_model.Model):
 		product_grouper = ProductGrouper()
 		self.promotion_product_groups = product_grouper.group_product_by_promotion(webapp_user.member, self.products)
 
+		#对每一个group应用促销活动
+		for promotion_product_group in self.promotion_product_groups:
+			promotion_product_group.apply_promotion()
+
 		#获取订单可用积分
 		integral_info = webapp_user.integral_info
 		self.usable_integral = self.__get_usable_integral(integral_info)
-
-		# if 'return_model' in args:
-		# 	return order
-		# else:
-		# 	for product_group in order.product_groups:
-		# 		new_products = []
-		# 		for product in products:
-		# 			data = product.to_dict()
-		# 			data['order_thumbnails_url'] = product.order_thumbnails_url
-		# 			data['model_name'] = product.model_name
-		# 			data['purchase_count'] = product.purchase_count
-		# 			data['original_price'] = product.original_price
-		# 			new_products.append(data)
-		# 		product_group['products'] = new_products
-
-		# 	return order.to_dict(
-		# 		'products', 
-		# 		'postage', 
-		# 		'product_groups', 
-		# 		'usable_integral', 
-		# 		'pay_interfaces',
-		# 		'get_str_area'
-		# 	)
 
 	def __get_usable_integral(self, integral_info):
 		"""获得订单中用户可以使用的积分

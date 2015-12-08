@@ -155,6 +155,7 @@ Scenario:3 使用V2版微信支付进行异步支付
 			}]
 		}
 		"""
+
 Scenario:4 使用微信支付,没有支付
 	
 	When bill访问jobs的webapp

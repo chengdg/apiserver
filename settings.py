@@ -38,14 +38,14 @@ MIDDLEWARES = [
     'middleware.debug_middleware.RedisMiddleware',
 
     #账号信息中间件
-    'middleware.webapp_oauth_middleware.WebAppOAuthMiddleware',
+    'middleware.webapp_account_middleware.WebAppAccountMiddleware',
 ]
 #sevice celery 相关
 EVENT_DISPATCHER = 'redis'
 
 # settings for WAPI Logger
 if MODE == 'develop':
-    WAPI_LOGGER_ENABLED = True
+    WAPI_LOGGER_ENABLED = False # Debug环境下不记录wapi详细数据
     WAPI_LOGGER_SERVER_HOST = 'mongo.weapp.com'
     WAPI_LOGGER_SERVER_PORT = 27017
     WAPI_LOGGER_DB = 'wapi'
@@ -64,8 +64,8 @@ if MODE == 'develop':
 
 else:
     # 真实环境暂时关闭
-    #WAPI_LOGGER_ENABLED = False
-    WAPI_LOGGER_ENABLED = True
+    WAPI_LOGGER_ENABLED = False
+    #WAPI_LOGGER_ENABLED = True
     WAPI_LOGGER_SERVER_HOST = 'mongo.weapp.com'
     WAPI_LOGGER_SERVER_PORT = 27017
     WAPI_LOGGER_DB = 'wapi'
@@ -115,3 +115,7 @@ CTYPT_INFO = {
     'token': '2950d602ffb613f47d7ec17d0a802b',
     'encodingAESKey': 'BPQSp7DFZSs1lz3EBEoIGe6RVCJCFTnGim2mzJw5W4I'
 }
+
+COMPONENT_INFO = {
+        'app_id' : 'wxa823309fb403f661',
+    }

@@ -81,7 +81,7 @@ class SocialAccount(business_model.Model):
 	@param_required(['webapp_owner', 'openid'])
 	def from_openid(args):
 		"""
-		工厂对象，根据member id获取Member业务对象
+		工厂对象，根据opend_id获取Member业务对象
 
 		@param[in] webapp_owner
 		@param[in] openid: 会员的openid
@@ -113,5 +113,28 @@ class SocialAccount(business_model.Model):
 		"""
 		social_account = SocialAccount(None, None)
 		return social_account
+
+
+	@staticmethod
+	@param_required(['webapp_owner', 'member_id'])
+	def from_member_id(args):
+		"""
+		工厂对象，根据member id获取Member业务对象
+
+		@param[in] webapp_owner
+		@param[in] member_id: SC的id
+
+		@return Member业务对象
+		"""
+		webapp_owner = args['webapp_owner']
+		member_id = args['member_id']
+		try:
+			member_db_model = member_models.MemberHasSocialAccount.select().dj_where(member_id=member_id).first().account
+			return SocialAccount.from_model({
+				'webapp_owner': webapp_owner,
+				'model': member_db_model
+			})
+		except:
+			return None
 
 

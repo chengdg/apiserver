@@ -1,6 +1,7 @@
 #coding: utf8
 
 from wapi.logger.mongo_logger import MongoAPILogger
+import wapi
 import settings
 import logging
 
@@ -16,14 +17,15 @@ def wapi_log(app, resource, method, params, time_in_s, status=0):
 		if _wapi_logger is None:
 			_wapi_logger = MongoAPILogger()
 		if settings.MODE == 'develop' or settings.MODE == 'test':
-			logging.debug("called WAPI (in {} s): {} {}/{}, param: {}".format(time_in_s, method, app, resource, params))
+			logging.info("called WAPI (in {} s): {} {}/{}, param: {}".format(time_in_s, method, app, resource, wapi._param_to_text(params)))
 		return _wapi_logger.log(app, resource, method, params, time_in_s, status)
+	else:
+		logging.info("called WAPI (in {} s): {} {}/{}, param: {}".format(time_in_s, method, app, resource, wapi._param_to_text(params)))
 	return
 
 
 def get_webapp_id_via_oid(owner_id):
 	"""
-
 	@TODO to be implemented
 	"""
 	return 0

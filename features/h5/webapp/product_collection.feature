@@ -1,13 +1,14 @@
 # __author__ : "冯雪静"
 #editor 新新 2015.10.20
-
+#editor 玉成 2015.12.03
 Feature: 在webapp中收藏商品
 	bill能在webapp中收藏jobs添加的"商品"
 
 Background:
-	Given jobs登录系统
+	Given 重置weapp的bdd环境
+	Given jobs登录系统:weapp
 	
-	And jobs已添加商品规格
+	And jobs已添加商品规格:weapp
 		"""
 		[{
 			"name": "尺寸",
@@ -19,7 +20,7 @@ Background:
 			}]
 		}]
 		"""
-	And jobs已添加商品
+	And jobs已添加商品:weapp
 		"""
 		[{
 			"name": "商品1",
@@ -44,10 +45,10 @@ Background:
 			"price": 100.00
 		}]
 		"""
-	And bill关注jobs的公众号
-	And tom关注jobs的公众号
+	And bill关注jobs的公众号:weapp
+	And tom关注jobs的公众号:weapp
 
-@todo @mall2 @weapp.mall.collect.product
+@todo @mall2 @weapp.mall.collect.product @bert @mall3
 Scenario:1 收藏单个无规格商品
 	jobs添加商品后
 	1. bill能在webapp中将jobs添加的商品收藏
@@ -65,7 +66,9 @@ Scenario:1 收藏单个无规格商品
 		"""
 		[{
 			"name": "商品1",
-			"price": 100.00
+			"price_info": {
+				"min_price": 100.0
+			}
 		}]
 		"""
 	When tom访问jobs的webapp
@@ -74,7 +77,7 @@ Scenario:1 收藏单个无规格商品
 		[]
 		"""
 
-@todo @mall2 @weapp.mall.collect.product @zy_cp02
+@todo @mall2 @weapp.mall.collect.product @bert @mall3
 Scenario:2 收藏多个商品，包括无规格和有规格的商品
 	jobs添加商品后
 	1. bill能在webapp中将jobs添加的商品收藏
@@ -92,7 +95,9 @@ Scenario:2 收藏多个商品，包括无规格和有规格的商品
 		"""
 		[{
 			"name": "商品1",
-			"price": 100.00
+			"price_info": {
+				"min_price": 100.00
+			}
 		}]
 		"""
 	When bill收藏jobs的商品到我的收藏
@@ -105,14 +110,18 @@ Scenario:2 收藏多个商品，包括无规格和有规格的商品
 		"""
 		[{
 			"name": "商品2",
-			"price": 50.00
+			"price_info": {
+				"min_price": 50.0
+			}
 		}, {
 			"name": "商品1",
-			"price": 100.00
+			"price_info": {
+				"min_price": 100.00
+			}
 		}]
 		"""
 
-@todo @mall2 @weapp.mall.collect.product
+@todo @mall2 @weapp.mall.collect.product @bert @mall3
 Scenario:3 从我的收藏里面取消收藏商品
 	bill在webapp收藏jobs的商品后
 	1. bill能取消收藏已收藏的商品
@@ -128,7 +137,9 @@ Scenario:3 从我的收藏里面取消收藏商品
 		"""
 		[{
 			"name": "商品1",
-			"price": 100.00
+			"price_info": {
+				"min_price": 100.00
+			}
 		}]
 		"""
 	When bill取消收藏已收藏的商品
@@ -164,13 +175,19 @@ Scenario:3 从我的收藏里面取消收藏商品
 		"""
 		[{
 			"name": "商品3",
-			"price": 100.00
+			"price_info": {
+				"min_price": 100.00
+			}
 		}, {
 			"name": "商品2",
-			"price": 50.00
+			"price_info": {
+				"min_price": 50.00
+			}
 		}, {
 			"name": "商品1",
-			"price": 100.00
+			"price_info": {
+				"min_price": 100.00
+			}
 		}]
 		"""
 	When bill取消收藏已收藏的商品
@@ -189,11 +206,13 @@ Scenario:3 从我的收藏里面取消收藏商品
 		"""
 		[{
 			"name": "商品3",
-			"price": 100.00
+			"price_info": {
+				"min_price": 100.00
+			}
 		}]
 		"""
 
-@todo @mall2 @weapp.mall.collect.product
+@todo @mall2 @weapp.mall.collect.product @bert @mall3
 Scenario:4 收藏商品后，后台对此商品进行修改
 	bill在webapp收藏jobs的商品后
 	1. jobs对此商品进行修改价格
@@ -209,11 +228,13 @@ Scenario:4 收藏商品后，后台对此商品进行修改
 		"""
 		[{
 			"name": "商品1",
-			"price": 100.00
+			"price_info": {
+				"min_price": 100.00
+			}
 		}]
 		"""
-	Given jobs登录系统
-	When  jobs更新商品'商品1'
+	Given jobs登录系统:weapp
+	When  jobs更新商品'商品1':weapp
 		"""
 		{
 			"name": "商品1",
@@ -225,6 +246,8 @@ Scenario:4 收藏商品后，后台对此商品进行修改
 		"""
 		[{
 			"name": "商品1",
-			"price": 50.00
+			"price_info": {
+				"min_price": 50.00
+			}
 		}]
 		"""

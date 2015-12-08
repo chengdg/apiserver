@@ -126,7 +126,7 @@ class OperationSettings(models.Model):
 
 		settings_list = list(OperationSettings.select().dj_where(owner_id=userid)) 
 		if len(settings_list) == 0:
-			return OperationSettings.create(owner_id=userid)
+			return OperationSettings.create(owner=userid)
 		else:
 			return settings_list[0]
 

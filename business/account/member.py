@@ -10,18 +10,23 @@ from datetime import datetime
 
 from wapi.decorators import param_required
 from wapi import wapi_utils
-from core.cache import utils as cache_util
+
 from db.mall import models as mall_models
 from db.mall import promotion_models
 from db.member import models as member_models
+
 import resource
-from core.watchdog.utils import watchdog_alert
-from business import model as business_model
 import settings
-from business.decorator import cached_context_property
+from core.watchdog.utils import watchdog_alert
+from core.cache import utils as cache_util
 from utils import emojicons_util
+
+from business import model as business_model
+from business.decorator import cached_context_property
 from business.account.member_order_info import MemberOrderInfo
+from business.mall.product import Product
 import logging
+from utils.string_util import hex_to_byte, byte_to_hex
 
 class Member(business_model.Model):
 	"""
@@ -31,7 +36,7 @@ class Member(business_model.Model):
 		'id',
 		'grade_id',
 		'username_hexstr',
-		'webapp_user',
+		#'webapp_user',
 		'is_subscribed',
 		'created',
 		'token',
@@ -95,14 +100,14 @@ class Member(business_model.Model):
 		"""
 		webapp_owner = args['webapp_owner']
 		token = args['token']
-		#try:
-		member_db_model = member_models.Member.get(webapp_id=webapp_owner.webapp_id,token=token)
-		return Member.from_model({
-			'webapp_owner': webapp_owner,
-			'model': member_db_model
-		})
-		#except:
-		#	return None	
+		try:
+			member_db_model = member_models.Member.get(webapp_id=webapp_owner.webapp_id,token=token)
+			return Member.from_model({
+				'webapp_owner': webapp_owner,
+				'model': member_db_model
+			})
+		except:
+			return None	
 
 	def __init__(self, webapp_owner, model):
 		business_model.Model.__init__(self)
@@ -202,9 +207,7 @@ class Member(business_model.Model):
 		"""
 		[property] 会员头像
 		"""
-		#TODO2: 实现获取会员头像
-		logging.info(u'TODO2: 实现获取会员头像')
-		return ''
+		return self.context['db_model'].user_icon
 
 	@cached_context_property
 	def integral_info(self):
@@ -245,9 +248,6 @@ class Member(business_model.Model):
 		"""
 		[property] 兼容html显示的会员名
 		"""
-		print '-*-' * 20
-		print self.username_hexstr
-		print '-*-' * 10
 		if (self.username_hexstr is not None) and (len(self.username_hexstr) > 0):
 			username = emojicons_util.encode_emojicons_for_html(self.username_hexstr, is_hex_str=True)
 		else:
@@ -259,75 +259,6 @@ class Member(business_model.Model):
 			username = self.username_hexstr
 
 		return username
-
-	@cached_context_property
-	def __order_info(self):
-		"""
-		[property] 与会员对应的订单信息(MemberOrderInfo)对象
-		"""
-		member_order_info = MemberOrderInfo.get_for_webapp_user({
-			'webapp_user': self.webapp_user
-		})
-
-		return member_order_info
-
-	@property
-	def history_order_count(self):
-		"""
-		[property] 会员总订单数
-		"""
-		return self.__order_info.history_order_count
-
-	@property
-	def not_payed_order_count(self):
-		"""
-		[property] 会员待支付订单数
-		"""
-		return self.__order_info.not_payed_order_count
-
-	@property
-	def not_ship_order_count(self):
-		"""
-		[property] 会员待发货订单数
-		"""
-		return self.__order_info.not_ship_order_count
-	
-	@property
-	def shiped_order_count(self):
-		"""
-		[property] 会员待收获订单数
-		"""
-		return self.__order_info.shiped_order_count
-
-	@property
-	def review_count(self):
-		"""
-		[property] 会员待评论订单数
-		"""
-		return self.__order_info.review_count
-
-	@cached_context_property
-	def wishlist_product_count(self):
-		"""
-		[property] 会员收藏商品的数量
-		"""
-		webapp_owner = self.context['webapp_owner']
-		return mall_models.MemberProductWishlist.select().dj_where(
-			owner_id = webapp_owner.id,
-			member_id = self.id,
-			is_collect=True
-		).count()
-
-	def is_collect_product(self, product_id):
-		"""是否收藏了product_id对应的商品
-		"""
-		webapp_owner = self.context['webapp_owner']
-		return mall_models.MemberProductWishlist.select().dj_where(
-			owner_id = webapp_owner.id,
-			member_id = self.id,
-			product_id = product_id,
-			is_collect=True
-		).count() > 0
 
 	@cached_context_property
 	def market_tools(self):
@@ -347,16 +278,7 @@ class Member(business_model.Model):
 		member = Member(None, None)
 		return member
 
-	# def to_dict(self, *extras):
-	# 	properties = ['username_for_html', 'integral', 'user_icon', 'is_binded']
-	# 	if extras:
-	# 		properties.extend(extras)
-	# 	return business_model.Model.to_dict(self, *properties)
 
-	# @property
-	# def token(self):
-	# 	"""
-	# 	[property] 会员购物车中的商品数量
-	# 	"""
-	# 	return self.token
-
+	@property
+	def username(self):
+		return hex_to_byte(self.username_hexstr)

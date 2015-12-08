@@ -94,7 +94,6 @@ class ShoppingCartProduct(business_model.Model):
 		})
 		self.context['product'] = product
 
-		model = product.get_specific_model(product_info['model_name'])
 		self.type = product.type
 		self.id = product.id
 		self.is_deleted = product.is_deleted
@@ -104,27 +103,37 @@ class ShoppingCartProduct(business_model.Model):
 		self.is_use_custom_model = product.is_use_custom_model
 		self.shopping_cart_id = product_info['shopping_cart_id']
 
-		self.price = float(model['price'])
-		self.original_price = float(model['price'])
-		self.weight = float(model['weight'])
+		#获取商品规格信息
+		model = product.get_specific_model(product_info['model_name'])
+		self.is_model_deleted = model.is_deleted
+		self.price = model.price
+		self.original_price = model.price
+		self.weight = model.weight
 		if not hasattr(product, 'min_limit'):
-			self.min_limit = model['stocks']
+			self.min_limit = model.stocks
 		self.model_name = product_info['model_name']
-		self.stock_type = model['stock_type']
-		self.stocks = model['stocks']
-		self.is_model_deleted = False
+		self.stock_type = model.stock_type
+		self.stocks = model.stocks
 		self.model = model
+
 		self.product_model_id = '%s_%s' % (product_info['id'], product_info['model_name'])
 		self.purchase_count = product_info['count']
 		
 		self.is_member_product = product.is_member_product
-		self.promotion = product.promotion
+
+		#获取促销
+		product_promotion = product.promotion
+		if product_promotion and product_promotion.is_active() and product.promotion.can_use_for(webapp_user):
+			self.promotion = product.promotion
+		else:
+			self.promotion = None
 
 		if product.is_member_product:
-			_, self.member_discount = webapp_user.member.discount
+			_, discount_value = webapp_user.member.discount
+			self.member_discount = member_discount / 100.0
 		else:
 			self.member_discount = 1.00
-		self.price = self.price * self.member_discount #折扣后的价格
+		self.price = round(self.price * self.member_discount, 2) #折扣后的价格
 		#TODO2: 为微众商城增加1.1的价格因子
 
 	@cached_context_property
@@ -148,6 +157,8 @@ class ShoppingCartProduct(business_model.Model):
 	def to_dict(self):
 		data = business_model.Model.to_dict(self)
 		data['postage_config'] = self.postage_config
+		data['model'] = self.model.to_dict() if self.model else None
+		data['promotion'] = self.promotion.to_dict() if self.promotion else None
 		return data
 
 

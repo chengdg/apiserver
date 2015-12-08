@@ -28,7 +28,37 @@ class AShoppingCart(api_resource.ApiResource):
 		product_groups = shopping_cart.product_groups
 		invalid_products = shopping_cart.invalid_products
 
-		product_groups.sort(lambda x,y: cmp(x['products'][0]['shopping_cart_id'], y['products'][0]['shopping_cart_id']))
+		#对shopping cart item进行排序，要求：
+		#1. 限时抢购排在最前面，多个促销按加入购物车时间顺序排列
+		#2. 买赠排在促销后，多个买赠按加入购物车时间顺序排列
+		#3. 其他按加入购物车时间顺序
+		flash_sales = []
+		premium_sales = []
+		other_promotions = []
+		others = []
+		for product_group in product_groups:
+			if product_group['promotion'] and product_group['can_use_promotion']:
+				promotion = product_group['promotion']
+				if promotion['type_name'] == 'flash_sale':
+					flash_sales.append(product_group)
+				elif promotion['type_name'] == 'premium_sale':
+					premium_sales.append(product_group)
+				else:
+					other_promotions.append(product_group)
+			else:
+				others.append(product_group)
+
+		sort_strategy = lambda x,y: cmp(x['products'][0]['shopping_cart_id'], y['products'][0]['shopping_cart_id'])
+		flash_sales.sort(sort_strategy)
+		premium_sales.sort(sort_strategy)
+		other_promotions.sort(sort_strategy)
+		others.sort(sort_strategy)
+
+		product_groups = []
+		product_groups.extend(flash_sales)
+		product_groups.extend(premium_sales)
+		product_groups.extend(other_promotions)
+		product_groups.extend(others)
 
 		#获取会员信息
 		member = webapp_user.member

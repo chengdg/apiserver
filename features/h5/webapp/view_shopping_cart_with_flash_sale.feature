@@ -2,15 +2,15 @@
 #editor:王丽 2015.10.20
 
 #超出限购数量的验证是在前端进行的，故在ui的feathure进行实现
-@func:webapp.modules.mall.views.list_products
 Feature: 添加限时抢购商品到购物车中
 """
 	bill能在webapp中将jobs添加的"商品"放入购物车
 """
 
 Background:
-	Given jobs登录系统
-	And jobs已添加商品规格
+	Given 重置weapp的bdd环境
+	Given jobs登录系统:weapp
+	And jobs已添加商品规格:weapp
 		"""
 		[{
 			"name": "尺寸",
@@ -22,7 +22,7 @@ Background:
 			}]
 		}]
 		"""
-	And jobs已添加商品
+	And jobs已添加商品:weapp
 		"""
 		[{
 			"name": "商品1",
@@ -70,7 +70,7 @@ Background:
 			}
 		}]	
 		"""
-	When jobs创建限时抢购活动
+	When jobs创建限时抢购活动:weapp
 		"""
 		[{
 			"name": "商品1限时抢购",
@@ -101,7 +101,7 @@ Background:
 		"""
 	And bill关注jobs的公众号
 
-@todo @mall2 @buy @cart   @mall.webapp @mall.webapp.shopping_cart
+@mall3 @buy @cart   @mall.webapp @mall.webapp.shopping_cart
 Scenario: 1 放入多个商品到购物车，商品的限时抢购活动为进行中
 	bill将商品放入到购物车后
 	1. bill能看到购物车中商品的详情
@@ -181,8 +181,8 @@ Scenario: 1 放入多个商品到购物车，商品的限时抢购活动为进�
 		}
 		"""
 
-@todo @mall2 @buy @cart   @mall.webapp @mall.webapp.shopping_cart
-Scenario:2 放入多个商品到购物车，商品的限时抢购活动为进行中
+@mall3 @buy @cart   @mall.webapp @mall.webapp.shopping_cart
+Scenario:2 放入多个商品到购物车，商品的限时抢购活动包括未开始、进行中和已结束
 	bill将商品放入到购物车后
 	1. bill能看到购物车中商品的详情
 	
@@ -223,30 +223,27 @@ Scenario:2 放入多个商品到购物车，商品的限时抢购活动为进行
 					"count": 1
 				}]
 			}, {
-				"can_use_promotion": false,
-				"products": [{
-					"name": "商品4",
-					"price": 9,
-					"count": 2
-				}]
-			}, {
 				"promotion": null,
 				"can_use_promotion": false,
 				"products": [{
 					"name": "商品2",
 					"price": 5,
 					"count": 1
+				}, {
+					"name": "商品4",
+					"price": 9,
+					"count": 2
 				}]
 			}],
 			"invalid_products": []
 		}
 		"""
 
-@todo @mall2 @buy @cart   @mall.webapp @mall.webapp.shopping_cart
+@mall3 @buy @cart   @mall.webapp @mall.webapp.shopping_cart
 Scenario:3 放入多规格商品到购物车，无限购
 
-	Given jobs登录系统
-	And jobs已添加商品
+	Given jobs登录系统:weapp
+	And jobs已添加商品:weapp
 		"""
 		[{
 			"name": "商品7",
@@ -265,7 +262,7 @@ Scenario:3 放入多规格商品到购物车，无限购
 			}
 		}]
 		"""
-	When jobs创建限时抢购活动
+	When jobs创建限时抢购活动:weapp
 		"""
 		{
 			"name": "商品7限时抢购",

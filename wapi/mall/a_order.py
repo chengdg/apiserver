@@ -55,6 +55,12 @@ class AOrder(api_resource.ApiResource):
 		if (not order_validation['is_valid']):
 			return 500, order_validation['reason']
 
+		order_validation = order_factory.resource_allocator()
+		if (not order_validation['is_valid']):
+			return 500, order_validation['reason']
+		else:
+			order = order_validation['order']
+
 		order = order_factory.save()
 		pay_url_info = None
 		if order:

@@ -483,9 +483,25 @@ class WebAppUser(business_model.Model):
 
 	def use_integral(self, integral_count):
 		if integral_count == 0:
-			return 0.0
+			return True, None
 
 		return Integral.use_integral_to_buy({
 			'webapp_user': self,
 			'integral_count': -integral_count
 			})
+
+	def integral_roll_back(self, integral_count, log_id):
+		pass
+
+	def can_use_integral(self, integral):
+		"""
+		检查是否可用数量为integral的积分
+		"""
+		if not self.member:
+			return False
+
+		remianed_integral = member_models.Member.get(id=self.member.id).integral
+		if remianed_integral >= integral:
+			return True
+		else:
+			return False

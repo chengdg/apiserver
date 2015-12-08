@@ -110,7 +110,7 @@ class Integral(business_model.Model):
 			update_member = member_models.Member.update(integral=member_models.Member.integral + integral_increase_count).dj_where(id=member.id)
 			update_member.execute()
 
-			member_models.MemberIntegralLog.create(
+			integral_log = member_models.MemberIntegralLog.create(
 					member = member.id, 
 					follower_member_token = follower_member.token if follower_member else '', 
 					integral_count = integral_increase_count, 
@@ -120,23 +120,25 @@ class Integral(business_model.Model):
 					current_integral=current_integral,
 					manager=manager
 				)
+			if webapp_user:
+				webapp_user.cleanup_cache
+
+			return True, integral_log.id
 		except:
 			notify_message = u"update_member_integral member_id:{}, cause:\n{}".format(member.id, unicode_full_stack())
-			print notify_message
 			watchdog_error(notify_message)
-		if webapp_user:
-			webapp_user.cleanup_cache
+			return False, None
+		
 
 	@staticmethod
 	def use_integral_to_buy(args):
 		webapp_user = args['webapp_user']
 		use_count = int(args['integral_count'])
 
-
 		if use_count == 0:
-			return 0.0
+			return True, None
 
-		Integral.increase_member_integral({
+		return Integral.increase_member_integral({
 			'integral_increase_count': use_count,
 			'member': webapp_user.member,
 			'event_type':  member_models.USE

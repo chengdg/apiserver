@@ -174,18 +174,18 @@ class WebAppUser(models.Model):
 	def is_member(self):
 		return self.member_id > 0
 
-	def can_use_integral(self, integral):
-		"""
-		检查是否可用数量为integral的积分
-		"""
-		if not self.is_member:
-			return False
+	# def can_use_integral(self, integral):
+	# 	"""
+	# 	检查是否可用数量为integral的积分
+	# 	"""
+	# 	if not self.is_member:
+	# 		return False
 
-		remianed_integral = Member.get(id=self.member_id).integral
-		if remianed_integral >= integral:
-			return True
-		else:
-			return False
+	# 	remianed_integral = Member.get(id=self.member_id).integral
+	# 	if remianed_integral >= integral:
+	# 		return True
+	# 	else:
+	# 		return False
 
 	@cached_property
 	def integral_info(self):

@@ -41,6 +41,7 @@ from business.mall.order_products import OrderProducts
 from business.mall.product_grouper import ProductGrouper
 from business.mall.order_checker import OrderChecker
 from business.mall.order import Order
+from business.mall.order_resourc_allocator import OrderResourceAllocator
 
 
 class OrderFactory(business_model.Model):
@@ -50,6 +51,7 @@ class OrderFactory(business_model.Model):
 		'purchase_info',
 		'products',
 		'product_groups',
+		'order'
 	)
 
 	@staticmethod
@@ -60,7 +62,7 @@ class OrderFactory(business_model.Model):
 		@return Order对象
 		"""
 		order_factory = OrderFactory(args['webapp_owner'], args['webapp_user'], args['purchase_info'])
-
+		
 		return order_factory
 
 	def __init__(self, webapp_owner, webapp_user, purchase_info):
@@ -82,6 +84,7 @@ class OrderFactory(business_model.Model):
 		self.product_groups = product_grouper.group_product_by_promotion(webapp_user.member, self.products)
 
 		self.purchase_info = purchase_info
+		self.order = mall_models.Order()
 
 	def validate(self):
 		"""判断订单是否有效
@@ -89,7 +92,16 @@ class OrderFactory(business_model.Model):
 		@return True, None: 订单有效；False, reason: 订单无效, 无效原因
 		"""
 		order_checker = OrderChecker(self.context['webapp_owner'], self.context['webapp_user'], self)
+		
 		return order_checker.check()
+
+	def resource_allocator(self):
+		"""资源分配器
+		@return True, order: 订单有效；False, reason: 订单无效, 无效原因
+		"""
+		order_resourc_allocator = OrderResourceAllocator(self.context['webapp_owner'], self.context['webapp_user'], self)
+		
+		return order_resourc_allocator.allocated_resources()
 
 	def __create_order_id(self):
 		"""创建订单id
@@ -112,7 +124,7 @@ class OrderFactory(business_model.Model):
 		webapp_user = self.context['webapp_user']
 		member = webapp_user.member
 
-		order = mall_models.Order()
+		order = self.order
 		order_business_object = Order.empty_order()
 
 		purchase_info = self.purchase_info
@@ -144,8 +156,10 @@ class OrderFactory(business_model.Model):
 		order.final_price = order.product_price
 		#mall_signals.pre_save_order.send(sender=mall_signals, pre_order=fake_order, order=order, products=products, product_groups=product_groups, owner_id=request.webapp_owner_id)
 		
-		#积分抵扣TODO-bert IntegralAllocator
-		order = self.user_integral(order)
+		# #积分抵扣TODO-bert IntegralAllocator
+		# order = self.user_integral(order)
+		if order.integral > 0:
+			order.final_price = order.final_price - order.integral_money
 
 		order.final_price = round(order.final_price, 2)
 		if order.final_price < 0:
@@ -216,7 +230,6 @@ class OrderFactory(business_model.Model):
 		elif supplier_ids[0] != 0:
 			order.supplier = supplier_ids[0]
 		order.save()
-		webapp_user.use_integral(order.integral)
 		#建立<order, promotion>的关系
 		for product_group in product_groups:
 			promotion_result = product_group.promotion_result
@@ -258,18 +271,16 @@ class OrderFactory(business_model.Model):
 		order_business_object.id = order.id
 		return order_business_object
 
-	def user_integral(self, order):
-		webapp_owner = self.context['webapp_owner']
-		webapp_user = self.context['webapp_user']
+	# def user_integral(self, order):
+	# 	webapp_owner = self.context['webapp_owner']
+	# 	webapp_user = self.context['webapp_user']
 
-		count_per_yuan = webapp_owner.integral_strategy_settings.integral_each_yuan
-
-		if self.purchase_info.purchase_integral_info:
-			total_integral = self.purchase_info.purchase_integral_info['integral']
-			order.integral = total_integral
-			order.integral_money = round(float(self.purchase_info.purchase_integral_info['money']), 2)
-			order.final_price = order.final_price - order.integral_money
-		return order
+	# 	if self.purchase_info.purchase_integral_info:
+	# 		total_integral = self.purchase_info.purchase_integral_info['integral']
+	# 		order.integral = total_integral
+	# 		order.integral_money = round(float(self.purchase_info.purchase_integral_info['money']), 2)
+	# 		order.final_price = order.final_price - order.integral_money
+	# 	return order
 			
 	# 	elif self.purchase_info.purchase_group2integral_info:
 	# 		purchase_group2integral_info =  self.purchase_info.purchase_group2integral_info

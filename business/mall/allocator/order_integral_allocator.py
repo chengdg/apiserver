@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""@package business.inegral_allocator.IntegralAllocator
+"""@package business.inegral_allocator.OrderIntegralAllocator
 请求积分资源
 
 """
@@ -23,7 +23,7 @@ from business.decorator import cached_context_property
 from utils import allocator_type 
 
 
-class IntegralAllocator(business_model.Model):
+class OrderIntegralAllocator(business_model.Model):
 	"""下单使用积分
 	"""
 	__slots__ = (
@@ -49,7 +49,7 @@ class IntegralAllocator(business_model.Model):
 			#TODO-bert 积分返回，积分日志删除
 			pass
 
-	def allocated_integral(self, order, purchase_info):
+	def allocate_resource(self, order, purchase_info):
 		webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user']
 
@@ -62,7 +62,7 @@ class IntegralAllocator(business_model.Model):
 
 			total_integral = purchase_info.purchase_integral_info['integral']
 			integral_money = round(float(purchase_info.purchase_integral_info['money']), 2)
-			product_price = sum([product.price * product.purchase_count for product in products])
+			product_price = sum([product.price * product.purchase_count for product in order.products])
 			if (integral_money - 1) > round(product_price * use_ceiling / 100, 2)\
 				or (total_integral + 1) < (integral_money * count_per_yuan):
 				return False, u'积分使用超限', None

@@ -41,7 +41,8 @@ from business.mall.order_products import OrderProducts
 from business.mall.product_grouper import ProductGrouper
 from business.mall.order_checker import OrderChecker
 from business.mall.order import Order
-from business.mall.order_resourc_allocator import OrderResourceAllocator
+from business.mall.allocator.allocator_order_resource_service import AllocateOrderResourceService
+from utils import allocator_type 
 
 class OrderException(Exception):
 	def __init__(self, value):
@@ -116,9 +117,22 @@ class OrderFactory(business_model.Model):
 		"""资源分配器
 		@return True, order: 订单有效；False, reason: 订单无效, 无效原因
 		"""
-		allocator_order_resource_service = AllocateOrderResourceService(self.context['webapp_owner'], self.context['webapp_user'], self)
+		allocator_order_resource_service = AllocateOrderResourceService(self.context['webapp_owner'], self.context['webapp_user'])
 		
-		return allocator_order_resource_service.allocate_resource_for(self.order, self.purchase_info)
+		successed, reason, resources = allocator_order_resource_service.allocate_resource_for(self, self.purchase_info)
+		
+		print successed,'>>>>>>>>>>>>>>>>>>>>.resourcesresourcesresources:::',resources
+		if successed:
+			self.context['allocator_order_resource_service'] = allocator_order_resource_service
+			for resource in resources:
+				if resource['type'] == allocator_type.ALLOCATOR_INTEGRAL:
+					self.__process_order_integral_for(resource)
+		else:
+			raise OrderException(reason)	
+
+	def __process_order_integral_for(self, resource):
+		self.order.integral = resource['integral']
+		self.order.integral_money = resource['integral_money']
 
 	def __create_order_id(self):
 		"""创建订单id
@@ -152,9 +166,18 @@ class OrderFactory(business_model.Model):
 		self.purchase_info = purchase_info
 		self.order = mall_models.Order()
 
-		#self.resource_allocator()
+		self.resource_allocator()
+		try:
+			return self.save()
+		except:
+			self.release()
+			#TODO 修改提示
+			raise OrderException(u'保存订单失败')
 
-		return self.save()
+	def release(self):
+		allocator_order_resource_service = self.context['allocator_order_resource_service'] 
+		if isinstance(allocator_order_resource_service, AllocateOrderResourceService):
+			allocator_order_resource_service.release()
 
 	def save(self):
 		"""保存订单

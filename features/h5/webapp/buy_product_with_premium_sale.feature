@@ -31,8 +31,9 @@ Feature: 在webapp中购买参与买赠活动的商品
 """
 
 Background:
-	Given jobs登录系统
-	And jobs已添加商品规格
+	Given 重置weapp的bdd环境
+	Given jobs登录系统:weapp
+	And jobs已添加商品规格:weapp
 		"""
 		[{
 			"name": "尺寸",
@@ -44,7 +45,7 @@ Background:
 			}]
 		}]
 		"""
-	And jobs已添加商品
+	And jobs已添加商品:weapp
 		"""
 		[{
 			"name": "商品1",
@@ -94,7 +95,7 @@ Background:
 		}]
 		"""
 	#支付方式
-	Given jobs已添加支付方式
+	Given jobs已添加支付方式:weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -104,7 +105,7 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	When jobs创建买赠活动
+	When jobs创建买赠活动:weapp
 		"""
 		[{
 			"name": "商品1买二赠一",
@@ -150,7 +151,7 @@ Background:
 	And marry3关注jobs的公众号
 	And marry4关注jobs的公众号
 
-@todo @mall2 @promotion @mall.promotion @mall.webapp.promotion
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
 Scenario: 1 购买买赠商品，不满足买赠基数
 
 	When bill访问jobs的webapp
@@ -177,7 +178,7 @@ Scenario: 1 购买买赠商品，不满足买赠基数
 		}
 		"""
 
-@todo @mall2 @promotion @mall.promotion @mall.webapp.promotion
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
 Scenario: 2 购买买赠活动商品，满足买赠基数
 
 	When bill访问jobs的webapp
@@ -218,7 +219,7 @@ Scenario: 2 购买买赠活动商品，满足买赠基数
 		}
 		"""
 
-@todo @mall2 @promotion @mall.promotion @mall.webapp.promotion
+@todo @mall2 @promotion @mall.promotion @mall.webapp.promotion @wip
 Scenario: 3 购买多个买赠活动商品，满足买赠基数，并满足循环买赠
 	商品2满足循环买赠，赠品应该累加
 	赠品数量刚好等于赠品库存

@@ -192,6 +192,15 @@ class ReservedProduct(business_model.Model):
 		if self.promotion:
 			self.promotion.apply_promotion([self])
 
+	def disable_promotion(self):
+		"""
+		禁用商品的促销规则
+		"""
+		self.used_promotion_id = 0
+		self.promotion = None
+		self.promotion_saved_money = 0.0
+		self.promotion_result = None
+
 	def set_promotion_result(self, promotion_result):
 		self.promotion_result = promotion_result
 		self.promotion_saved_money = promotion_result.get('saved_money', 0.0)

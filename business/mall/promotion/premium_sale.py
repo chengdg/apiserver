@@ -65,7 +65,10 @@ class PremiumSale(promotion.Promotion):
 					premium_product['premium_count'] = premium_product['premium_count'] * premium_round_count
 
 		promotion_result = {
-			"subtotal": total_product_price
+			"subtotal": total_product_price,
+			"count": self.count,
+			"is_enable_cycle_mode": self.is_enable_cycle_mode,
+			"premium_products": self.premium_products
 		}
 
 		return can_use_promotion, promotion_result

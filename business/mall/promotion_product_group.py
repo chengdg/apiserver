@@ -90,6 +90,8 @@ class PromotionProductGroup(business_model.Model):
 			if not self.can_use_promotion:
 				self.promotion = None
 				self.promotion_result = None
+				for product in self.products:
+					product.disable_promotion()
 			else:
 				self.promotion_saved_money = self.promotion_result.get('saved_money', 0.0)
 				for product in self.products:

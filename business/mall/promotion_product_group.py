@@ -34,6 +34,7 @@ class PromotionProductGroup(business_model.Model):
 		'products',
 		'promotion',
 		'promotion_result',
+		'promotion_saved_money',
 		'integral_sale_rule',
 		'can_use_promotion',
 		'promotion_json',
@@ -52,6 +53,13 @@ class PromotionProductGroup(business_model.Model):
 		self.promotion_result = group_info['promotion_result']
 		self.integral_sale_rule = group_info['integral_sale_rule']
 		self.member_grade_id = group_info['member_grade_id']
+		
+		self.promotion_saved_money = 0.0
+
+		if not self.can_use_promotion:
+			self.promotion = None
+			self.promotion_result = None
+
 		self.promotion_json = json.dumps(self.promotion.to_dict()) if self.promotion else json.dumps(None)
 
 		if self.promotion and self.promotion.type_name == 'integral_sale':
@@ -79,6 +87,13 @@ class PromotionProductGroup(business_model.Model):
 		"""
 		if self.can_use_promotion and self.promotion:
 			self.can_use_promotion, self.promotion_result = self.promotion.apply_promotion(self.products)
+			if not self.can_use_promotion:
+				self.promotion = None
+				self.promotion_result = None
+			else:
+				self.promotion_saved_money = self.promotion_result.get('saved_money', 0.0)
+				for product in self.products:
+					product.set_promotion_result(self.promotion_result)
 
 	def to_dict(self, with_price_factor=False, with_coupon_info=False):
 		"""获取promotion product group的json数据

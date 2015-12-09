@@ -136,7 +136,7 @@ class Promotion(business_model.Model):
 		if self.member_grade_id <= 0:
 			return True
 
-		if webapp_user.is_match_member_grade():
+		if webapp_user.is_match_member_grade(self.member_grade_id):
 			return True
 		else:
 			return False

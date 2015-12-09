@@ -51,12 +51,16 @@ class ReservedProduct(business_model.Model):
 
 		'price',
 		'original_price',
+		'total_price',
 		'min_limit',
 		'model_name',
 		'member_discount',
 		'model',
 		'is_member_product',
 		'promotion',
+		'used_promotion_id',
+		'promotion_result',
+		'promotion_saved_money', #促销抵扣金额
 		'shopping_cart_id', #兼容h5购物车页面的临时解决方案，后续需要将shopping_cart_id移出
 
 		'shelve_type',
@@ -134,6 +138,7 @@ class ReservedProduct(business_model.Model):
 
 		self.product_model_id = '%s_%s' % (product_info['id'], product_info['model_name'])
 		self.purchase_count = product_info['count']
+		self.total_price = self.original_price * int(self.purchase_count)
 		
 		self.is_member_product = product.is_member_product
 
@@ -144,15 +149,19 @@ class ReservedProduct(business_model.Model):
 			product_promotion = product.promotion
 			if product_promotion and product_promotion.is_active() and product.promotion.can_use_for(webapp_user):
 				self.promotion = product.promotion
+				self.used_promotion_id = self.promotion.id
 			else:
 				self.promotion = None
+				self.used_promotion_id = 0
 		else:
 			#指定了promotion，获取指定的promotion
 			self.promotion = {}
+			self.used_promotion_id = 0
+		self.promotion_saved_money = 0.0
 
 		if product.is_member_product:
 			_, discount_value = webapp_user.member.discount
-			self.member_discount = member_discount / 100.0
+			self.member_discount = discount_value / 100.0
 		else:
 			self.member_discount = 1.00
 		self.price = round(self.price * self.member_discount, 2) #折扣后的价格
@@ -175,6 +184,63 @@ class ReservedProduct(business_model.Model):
 			}
 		else:
 			return webapp_owner.system_postage_config
+
+	def apply_promotion(self):
+		"""
+		对商品应用促销规则
+		"""
+		if self.promotion:
+			self.promotion.apply_promotion([self])
+
+	def set_promotion_result(self, promotion_result):
+		self.promotion_result = promotion_result
+		self.promotion_saved_money = promotion_result.get('saved_money', 0.0)
+
+		if self.promotion.type_name == 'flash_sale':
+			#限时抢购，修改已预订商品购买价
+			self.price = self.promotion.promotion_price
+
+	@cached_context_property
+	def __current_model(self):
+		"""
+		[property] 实时的规格信息
+		"""
+		#TODO2: perf - 将这个操作放入OrderProducts进行批量处理
+		product = self.context['product']
+		for model in product.models:
+			if self.model_name == model.name:
+				model_id = model.id
+
+		db_product_model = mall_models.ProductModel.get(id=model_id)
+
+		return db_product_model.to_dict()
+
+	def consume_stocks(self):
+		"""
+		消耗库存
+		"""
+		#TODO2: 将扣除库存的逻辑放入到ProductResourceAllocator中
+		current_model = self.__current_model
+		if current_model['stock_type'] == mall_models.PRODUCT_STOCK_TYPE_LIMIT:
+			#counter=Stat.counter + 1
+			mall_models.ProductModel.update(stocks=mall_models.ProductModel.stocks-self.purchase_count).dj_where(id=current_model['id']).execute()
+
+	@cached_context_property
+	def discount_money(self):
+		"""
+		[property] 订单商品的折扣金额
+		"""
+		if self.promotion and self.promotion.type_name == 'flash_sale':
+			return 0
+		else:
+			return self.total_price * self.member_discount
+
+	@property
+	def supplier(self):
+		"""
+		[property] 订单商品的供应商
+		"""
+		return self.context['product'].owner_id	
 
 	def to_dict(self):
 		data = business_model.Model.to_dict(self)

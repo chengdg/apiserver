@@ -106,7 +106,7 @@ class WebAppUser(business_model.Model):
 			#不是会员
 			return False
 
-		if self.member_id.member_grade_id == member_grade_id:
+		if self.member.grade_id == member_grade_id:
 			return True
 		else:
 			return False

@@ -115,7 +115,11 @@ class OrderProducts(business_model.Model):
 			'id': r.product_id,
 			'model_name': r.product_model_name,
 			'count': r.number,
-			'promotion_id': r.promotion_id
+			'promotion_id': r.promotion_id,
+			'price': r.price,
+			'total_price': r.total_price,
+			'promotion_money': r.promotion_money,
+			'discount_money': r.grade_discounted_money
 		} for r in mall_models.OrderHasProduct.select().dj_where(order=order.id)]
 	
 		for order_product_info in order_product_infos:

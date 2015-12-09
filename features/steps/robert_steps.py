@@ -284,6 +284,14 @@ def step_impl(context, webapp_user_name):
 		if 'custom_model_properties' in product and product['custom_model_properties']:
 			product['model'] = ' '.join([property['property_value'] for property in product['custom_model_properties']])
 
+	for product in actual_order['products']:
+		if product['promotion']:
+			promotion = product['promotion']
+			promotion['type'] = promotion['type_name']
+			promotion_type = promotion['type']
+			if promotion_type == 'flash_sale':
+				promotion['promotioned_product_price'] = promotion['promotion_price']
+
 
 	expected = json.loads(context.text)
 	if expected.get('actions', None):

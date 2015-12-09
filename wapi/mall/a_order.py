@@ -50,9 +50,7 @@ class AOrder(api_resource.ApiResource):
 				"webapp_user": webapp_user,
 				#"purchase_info": purchase_info,
 			})
-			order = order_factory.create_order({
-				"purchase_info": purchase_info
-				})
+			order = order_factory.create_order(purchase_info)
 		except OrderException as e:
 			return 500, e.value
 

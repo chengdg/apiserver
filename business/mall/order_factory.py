@@ -42,6 +42,7 @@ from business.mall.product_grouper import ProductGrouper
 from business.mall.order_checker import OrderChecker
 from business.mall.order import Order
 from business.mall.order_resourc_allocator import OrderResourceAllocator
+from business.mall.reserved_product_repository import ReservedProductRepository
 
 class OrderException(Exception):
 	def __init__(self, value):
@@ -138,19 +139,25 @@ class OrderFactory(business_model.Model):
 		#获取订单商品集合
 		webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user']
-		order_products = OrderProducts.get({
-			"webapp_owner": webapp_owner,
-			"webapp_user": webapp_user,
-			"purchase_info": purchase_info
-		})
-		self.products = order_products.products
 
+		#获得已预订商品集合
+		reserved_product_repository = ReservedProductRepository.get({
+			'webapp_owner': webapp_owner,
+			'webapp_user': webapp_user
+		})
+		self.products = reserved_product_repository.get_reserved_products_from_purchase_info(purchase_info)
+		
 		#按促销进行product分组
 		product_grouper = ProductGrouper()
 		self.product_groups = product_grouper.group_product_by_promotion(webapp_user.member, self.products)
 
+		#对每一个group应用促销活动
+		for promotion_product_group in self.product_groups:
+			promotion_product_group.apply_promotion()
+
 		self.purchase_info = purchase_info
 		self.order = mall_models.Order()
+		self.order.products = self.products
 
 		#self.resource_allocator()
 
@@ -252,7 +259,7 @@ class OrderFactory(business_model.Model):
 				total_price = product.total_price,
 				price = product.price,
 				promotion_id = product.used_promotion_id,
-				promotion_money = product.promotion_money,
+				promotion_money = product.promotion_saved_money,
 				grade_discounted_money=product.discount_money
 			)
 
@@ -269,35 +276,25 @@ class OrderFactory(business_model.Model):
 		elif supplier_ids[0] != 0:
 			order.supplier = supplier_ids[0]
 		order.save()
+
 		#建立<order, promotion>的关系
 		for product_group in product_groups:
-			promotion_result = product_group.promotion_result
-			if promotion_result or product_group.integral_sale_rule:
-				try:
-					promotion_id = product_group.promotion['id']
-					promotion_type = product_group.promotion_type
-				except:
-					promotion_id = 0
-					promotion_type = 'integral_sale'
-				try:
-					if not promotion_result:
-						promotion_result = dict()
-					promotion_result['integral_product_info'] = product_group.integral_sale_rule['integral_product_info']
-				except:
-					pass
+			if product_group.promotion:
+				promotion = product_group.promotion
+				promotion_result = product_group.promotion_result
 				integral_money = 0
 				integral_count = 0
-				if product_group.integral_sale_rule and product_group.integral_sale_rule.get('result'):
-					integral_money = product_group.integral_sale_rule['result']['final_saved_money']
-					integral_count = product_group.integral_sale_rule['result']['use_integral']
-				OrderHasPromotion.objects.create(
-					order=order,
-					webapp_user_id=webapp_user.id,
-					promotion_id=promotion_id,
-					promotion_type=promotion_type,
-					promotion_result_json=json.dumps(promotion_result),
-					integral_money=integral_money,
-					integral_count=integral_count,
+				if promotion.type_name == 'integral_sale':
+					integral_money = promotion_result['saved_money']
+					integral_count = promotion_result['use_integral']
+				mall_models.OrderHasPromotion.create(
+					order = order,
+					webapp_user_id = webapp_user.id,
+					promotion_id = promotion.id,
+					promotion_type = promotion.type_name,
+					promotion_result_json = json.dumps(promotion_result),
+					integral_money = integral_money,
+					integral_count = integral_count,
 				)
 
 		if order.final_price == 0:

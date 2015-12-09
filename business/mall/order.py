@@ -49,6 +49,7 @@ class Order(business_model.Model):
 		'postage',
 		'integral',
 		'integral_money',
+		'coupon_money',
 		
 		'coupon_id',
 		'status',
@@ -124,6 +125,11 @@ class Order(business_model.Model):
 		self.context['webapp_owner'] = webapp_owner
 		self.context['webapp_user'] = webapp_user
 
+		self.coupon_money = 0.0
+		self.integral_money = 0.0
+		self.postage = 0.0
+		self.edit_money = 0.0
+
 		if order_id:
 			try:
 				order_db_model = mall_models.Order.get(order_id=order_id)
@@ -149,19 +155,33 @@ class Order(business_model.Model):
 
 		return products
 
-	@cached_context_property
+	@property
 	def products(self):
 		"""订单中的商品，包含商品的信息
-
-		TODO2：这里返回的依然是存储层的Product对象，需要返回业务层的OrderProduct业务对象，或者直接返回dict数据
 		"""
-		products = OrderProducts.get_for_order({
-			'webapp_owner': self.context['webapp_owner'],
-			'webapp_user': self.context['webapp_user'],
-			'order': self,
-		}).products
+		products = self.context.get('products', None)
+		if not products:
+			try:
+				products = OrderProducts.get_for_order({
+					'webapp_owner': self.context['webapp_owner'],
+					'webapp_user': self.context['webapp_user'],
+					'order': self,
+				}).products
+			except:
+				import sys
+				a, b, c = sys.exc_info()
+				print a
+				print b
+				import traceback
+				traceback.print_tb(c)
 
-		return [product.to_dict() for product in products]
+			self.context['products'] = products
+
+		return products
+
+	@products.setter
+	def products(self, products):
+		self.context['products'] = products
 
 	@property
 	def has_sub_order(self):
@@ -401,5 +421,11 @@ class Order(business_model.Model):
 		properties = ['has_sub_order', 'pay_interface_name', 'status_text']
 		if extras:
 			properties.extend(extras)
-		return business_model.Model.to_dict(self, *properties)
+		result = business_model.Model.to_dict(self, *properties)
+
+		#因为self.products这个property返回的是ReservedProduct或OrderProduct的对象集合，所以需要再次处理
+		if 'products' in result:
+			result['products'] = [product.to_dict() for product in result['products']]
+
+		return result
 

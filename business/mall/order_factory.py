@@ -136,6 +136,8 @@ class OrderFactory(business_model.Model):
 
 	def create_order(self, purchase_info):
 		#获取订单商品集合
+		webapp_owner = self.context['webapp_owner']
+		webapp_user = self.context['webapp_user']
 		order_products = OrderProducts.get({
 			"webapp_owner": webapp_owner,
 			"webapp_user": webapp_user,

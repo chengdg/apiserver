@@ -18,7 +18,7 @@ from core.cache import utils as cache_utils
 from business.mall.order_factory import OrderFactory, OrderException
 from business.mall.purchase_info import PurchaseInfo
 from business.mall.pay_interface import PayInterface
-from business.mall.order import Orde
+from business.mall.order import Order
 
 
 class AOrder(api_resource.ApiResource):

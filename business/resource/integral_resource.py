@@ -1,0 +1,81 @@
+# -*- coding: utf-8 -*-
+"""@package business.inegral_allocator.IntegralResourceAllocator
+请求积分资源
+
+"""
+import logging
+import json
+from bs4 import BeautifulSoup
+import math
+import itertools
+from datetime import datetime
+
+from wapi.decorators import param_required
+from wapi import wapi_utils
+from core.cache import utils as cache_util
+from db.mall import models as mall_models
+import resource
+from core.watchdog.utils import watchdog_alert
+from business import model as business_model 
+from business.mall.product import Product
+import settings
+from business.decorator import cached_context_property
+
+
+class IntegralResource(business_model.Resource):
+	"""积分资源
+	"""
+	__slots__ = (
+		'type',
+		'integral',
+		'money'
+		)
+
+
+	@staticmethod
+	@param_required(['type', 'webapp_user'])
+	def get(args):
+		"""工厂方法，创建IntegralResource对象
+
+		@return IntegralResource对象
+		"""
+		integral_resource = IntegralResource(args['type'], args['webapp_user'])
+		
+		return integral_resource
+
+	def __init__(self, type, webapp_user):
+		business_model.Resource.__init__(self)
+		self.type = type
+		self.context['webapp_user'] = webapp_user
+
+
+	def release(self):
+		integral = self.integral
+		integral_log_id = self.context['integral_log_id']
+		
+		if integral > 0 and integral_log_id != -1:
+			print u'TODO-bert 返回积分'
+			pass
+
+	def get_type(self):
+		return self.type
+
+	def use_integral(self, integral, integral_money):
+		self.integral = integral
+		self.money = integral_money
+		webapp_user = self.context['webapp_user']
+		self.context['integral_log_id'] = -1
+
+		if integral > 0 and not webapp_user.can_use_integral(integral):
+			return False, u'积分不足'
+		elif integral == 0:
+			return True, u'积分不足'
+		else:
+			successed, integral_log_id = webapp_user.use_integral(integral)
+			self.context['integral_log_id'] = integral_log_id
+			if successed:
+				return True, ''
+			else:
+				return False, u'扣除积分失败'
+
+

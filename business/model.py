@@ -73,3 +73,25 @@ class Service(object):
 	
 	def __init__(self):
 		self.context = {}
+
+RESOURCE_TYPE_INTEGRAL = 'integral'
+RESOURCE_TYPE_COUPON = 'coupon'
+RESOURCE_TYPE_PRODUCT = 'product'
+class Resource(object):
+	"""
+	领域服务的基类
+	"""
+	__slots__ = (
+		'context',
+		)
+
+	#什么用了呢？
+	# @classmethod
+	# def get(cls):
+	# 	return cls()
+	
+	def __init__(self):
+		self.context = {}
+
+	def get_type(self):
+		raise NotImplementedError

@@ -47,8 +47,7 @@ class AOrder(api_resource.ApiResource):
 		try:
 			order_factory = OrderFactory.get({
 				"webapp_owner": webapp_owner,
-				"webapp_user": webapp_user,
-				#"purchase_info": purchase_info,
+				"webapp_user": webapp_user
 			})
 			order = order_factory.create_order(purchase_info)
 		except OrderException as e:

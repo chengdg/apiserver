@@ -41,8 +41,8 @@ from business.mall.order_products import OrderProducts
 from business.mall.product_grouper import ProductGrouper
 from business.mall.order_checker import OrderChecker
 from business.mall.order import Order
-from business.mall.order_resourc_allocator import OrderResourceAllocator
 from business.mall.reserved_product_repository import ReservedProductRepository
+from business.mall.allocator.allocator_order_resource_service import AllocateOrderResourceService
 
 class OrderException(Exception):
 	def __init__(self, value):
@@ -117,9 +117,23 @@ class OrderFactory(business_model.Model):
 		"""资源分配器
 		@return True, order: 订单有效；False, reason: 订单无效, 无效原因
 		"""
-		allocator_order_resource_service = AllocateOrderResourceService(self.context['webapp_owner'], self.context['webapp_user'], self)
+		allocator_order_resource_service = AllocateOrderResourceService(self.context['webapp_owner'], self.context['webapp_user'])
 		
-		return allocator_order_resource_service.allocate_resource_for(self.order, self.purchase_info)
+		successed, reason, resources = allocator_order_resource_service.allocate_resource_for(self, self.purchase_info)
+		
+		if successed:
+			self.context['allocator_order_resource_service'] = allocator_order_resource_service
+
+			#临时方案：TODO使用pricesevice处理
+			for resource in resources:
+				if resource.get_type() == business_model.RESOURCE_TYPE_INTEGRAL:
+					self.__process_order_integral_for(resource)
+		else:
+			raise OrderException(reason)	
+
+	def __process_order_integral_for(self, resource):
+		self.order.integral = resource.integral
+		self.order.integral_money = resource.money
 
 	def __create_order_id(self):
 		"""创建订单id
@@ -159,9 +173,18 @@ class OrderFactory(business_model.Model):
 		self.order = mall_models.Order()
 		self.order.products = self.products
 
-		#self.resource_allocator()
+		self.resource_allocator()
+		try:
+			return self.save()
+		except:
+			self.release()
+			#TODO 修改提示
+			raise OrderException(u'保存订单失败')
 
-		return self.save()
+	def release(self):
+		allocator_order_resource_service = self.context['allocator_order_resource_service'] 
+		if isinstance(allocator_order_resource_service, AllocateOrderResourceService):
+			allocator_order_resource_service.release()
 
 	def save(self):
 		"""保存订单
@@ -200,10 +223,8 @@ class OrderFactory(business_model.Model):
 		#处理订单中的product总价
 		order.product_price = sum([product.price * product.purchase_count for product in products])
 		order.final_price = order.product_price
-		#mall_signals.pre_save_order.send(sender=mall_signals, pre_order=fake_order, order=order, products=products, product_groups=product_groups, owner_id=request.webapp_owner_id)
 		
-		# #积分抵扣TODO-bert IntegralAllocator
-		# order = self.user_integral(order)
+		# #积分抵扣TODO
 		if order.integral > 0:
 			order.final_price = order.final_price - order.integral_money
 

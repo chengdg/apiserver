@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""@package business.inegral_allocator.IntegralAllocator
+"""@package business.inegral_allocator.OrderIntegralResourceAllocator
 请求积分资源
 
 """
@@ -18,43 +18,39 @@ import resource
 from core.watchdog.utils import watchdog_alert
 from business import model as business_model 
 from business.mall.product import Product
+from business.resource.integral_resource import IntegralResource
 import settings
 from business.decorator import cached_context_property
-from utils import allocator_type 
 
 
-class IntegralAllocator(business_model.Model):
+class OrderIntegralResourceAllocator(business_model.Service):
 	"""下单使用积分
 	"""
-	__slots__ = (
-		'order',
-		'result'
-		)
+	__slots__ = ()
 
 	def __init__(self, webapp_owner, webapp_user):
-		business_model.Model.__init__(self)
+		business_model.Service.__init__(self)
 
 		self.context['webapp_owner'] = webapp_owner
 		self.context['webapp_user'] = webapp_user
 
-
 	def release(self, resources):
 		#TODO-bert
-		for_release = []
+		for_release_resources = []
 		for resource in resources:
-			if resource['type'] == allocator_type.ALLOCATOR_INTEGRAL:
-				for_release.append(resource['release'])
+			if resource.get_type() == business_model.RESOURCE_TYPE_INTEGRAL:
+				for_release_resources.append(resource)
 
-		for release_data in for_release:
-			#TODO-bert 积分返回，积分日志删除
-			pass
+		for resource in for_release_resources:
+			resource.release()
 
-	def allocated_integral(self, order, purchase_info):
+	def allocate_resource(self, order, purchase_info):
 		webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user']
 
 		count_per_yuan = webapp_owner.integral_strategy_settings.integral_each_yuan
 		total_integral = 0
+		integral_money = 0
 		if purchase_info.purchase_integral_info:
 			use_ceiling = webapp_owner.integral_strategy_settings.use_ceiling
 			if use_ceiling < 0:
@@ -62,7 +58,7 @@ class IntegralAllocator(business_model.Model):
 
 			total_integral = purchase_info.purchase_integral_info['integral']
 			integral_money = round(float(purchase_info.purchase_integral_info['money']), 2)
-			product_price = sum([product.price * product.purchase_count for product in products])
+			product_price = sum([product.price * product.purchase_count for product in order.products])
 			if (integral_money - 1) > round(product_price * use_ceiling / 100, 2)\
 				or (total_integral + 1) < (integral_money * count_per_yuan):
 				return False, u'积分使用超限', None
@@ -112,45 +108,14 @@ class IntegralAllocator(business_model.Model):
 				return False, fail_msg, None
 
 
-		if total_integral > 0 and not webapp_user.can_use_integral(total_integral):
-			return {
-					'success': False,
-					'data': {
-						'msg': u'积分不足',
-					}
-				}
-		elif total_integral == 0:
-			return True, '', {
-				'type': allocator_type.ALLOCATOR_INTEGRAL,
-				'integral': 0,
-				'integral_money': 0,
-				'release': {
-					'integral': 0,
-					'integral_log_id': None
-				}
-			}
-			
-		else:
-			logging.error(total_integral)
-			successed, integral_log_id = webapp_user.use_integral(total_integral)
-			#TODO-bert 使用积分异常
-			if not successed:
-				return False, u'使用积分异常', {
-					'type': allocator_type.ALLOCATOR_INTEGRAL,
-					'integral': total_integral,
-					'integral_money': integral_money,
-					'release': {
-						'integral': total_integral,
-						'integral_log_id': integral_log_id
-					}
-				}
+		integral_resource = IntegralResource.get({
+					'type': business_model.RESOURCE_TYPE_INTEGRAL,
+					'webapp_user': webapp_user
+				})
 
-			return True, '', {
-				'type': allocator_type.ALLOCATOR_INTEGRAL,
-				'integral': total_integral,
-				'integral_money': integral_money,
-				'release': {
-					'integral': total_integral,
-					'integral_log_id': integral_log_id
-				}
-			}
+		successed,reason = integral_resource.use_integral(total_integral, integral_money)
+
+		if successed:
+			return True, '', integral_resource
+		else:
+			return False, reason, None

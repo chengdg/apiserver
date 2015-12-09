@@ -108,10 +108,10 @@ class Promotion(business_model.Model):
 		Note
 			apply_promotion可能会修改product的price属性
 		"""
-		raise RuntimeError("%s must implement apply_promotion method" % str(self.__class__))
+		raise NotImplementedError("%s must implement apply_promotion method" % str(self.__class__))
 
 	def _get_detail_data(self):
-		raise RuntimeError("_get_detail_data must be implemented by Promotion's subclass " + str(type(self)))
+		raise NotImplementedError("_get_detail_data must be implemented by Promotion's subclass " + str(type(self)))
 
 	@property
 	def detail(self):

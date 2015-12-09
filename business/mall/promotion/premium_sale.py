@@ -68,4 +68,4 @@ class PremiumSale(promotion.Promotion):
 			"subtotal": total_product_price
 		}
 
-		return True, promotion_result
+		return can_use_promotion, promotion_result

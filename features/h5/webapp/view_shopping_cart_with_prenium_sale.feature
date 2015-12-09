@@ -4,8 +4,9 @@
 Feature: 添加参与买赠活动的商品到购物车中
 
 Background:
-	Given jobs登录系统
-	And jobs已添加商品规格
+	Given 重置weapp的bdd环境
+	Given jobs登录系统:weapp
+	And jobs已添加商品规格:weapp
 		"""
 		[{
 			"name": "尺寸",
@@ -17,7 +18,7 @@ Background:
 			}]
 		}]
 		"""
-	And jobs已添加商品
+	And jobs已添加商品:weapp
 		"""
 		[{
 			"name": "商品1",
@@ -70,7 +71,7 @@ Background:
 			}
 		}]	
 		"""
-	When jobs创建买赠活动
+	When jobs创建买赠活动:weapp
 		"""
 		[{
 			"name": "商品1买二赠三",
@@ -123,7 +124,7 @@ Background:
 		"""
 	And bill关注jobs的公众号
 
-@todo @mall2 @buy @cart   @mall.webapp @mall.webapp.shopping_cart
+@mall3 @buy @cart   @mall.webapp @mall.webapp.shopping_cart
 Scenario: 1 放入1个商品到购物车，商品不满足买赠的购买基数
 	bill将商品放入到购物车后
 	1. bill能看到购物车中商品的详情
@@ -152,7 +153,7 @@ Scenario: 1 放入1个商品到购物车，商品不满足买赠的购买基数
 		}
 		"""
 
-@todo @mall2 @buy @cart   @mall.webapp @mall.webapp.shopping_cart
+@mall3 @buy @cart   @mall.webapp @mall.webapp.shopping_cart
 Scenario: 2 放入1个商品到购物车，商品数量等于买赠的购买基数
 	bill将商品放入到购物车后
 	1. bill能看到购物车中商品的详情
@@ -192,7 +193,7 @@ Scenario: 2 放入1个商品到购物车，商品数量等于买赠的购买基�
 		}
 		"""
 
-@todo @mall2 @buy @cart   @mall.webapp @mall.webapp.shopping_cart
+@mall3 @buy @cart   @mall.webapp @mall.webapp.shopping_cart
 Scenario: 3 放入多个商品到购物车，商品数量大于买赠的购买基数，并满足循环买赠
 	bill将商品放入到购物车后
 	1. bill能看到购物车中商品的详情
@@ -232,7 +233,7 @@ Scenario: 3 放入多个商品到购物车，商品数量大于买赠的购买�
 		}
 		"""
 
-@todo @mall2 @buy @cart   @mall.webapp @mall.webapp.shopping_cart 
+@mall3 @buy @cart   @mall.webapp @mall.webapp.shopping_cart
 Scenario: 4 放入多个商品到购物车，商品数量大于买赠的购买基数，但循环买赠没启用
 	bill将商品放入到购物车后
 	1. bill能看到购物车中商品的详情
@@ -269,7 +270,7 @@ Scenario: 4 放入多个商品到购物车，商品数量大于买赠的购买�
 		}
 		"""
 
-@todo @mall2 @buy @cart   @mall.webapp @mall.webapp.shopping_cart 
+@mall3 @buy @cart   @mall.webapp @mall.webapp.shopping_cart
 Scenario: 5 放入多规格商品到购物车
 	
 	When bill访问jobs的webapp
@@ -325,18 +326,18 @@ Scenario: 5 放入多规格商品到购物车
 		}
 		"""
 
-@todo @mall2 @buy @cart   @mall.webapp @mall.webapp.shopping_cart
+@mall3 @buy @cart   @mall.webapp @mall.webapp.shopping_cart
 Scenario: 6 新建买赠活动，买一赠一，买商品6赠 商品6，循环买赠
 	
-	Given jobs登录系统
-	And jobs已添加商品
+	Given jobs登录系统:weapp
+	And jobs已添加商品:weapp
 	"""
 		[{
 			"name": "商品6",
 			"price": 100.00
 		}]
 	"""
-	When jobs创建买赠活动
+	When jobs创建买赠活动:weapp
 	"""
 		[{
 			"name": "商品6买1赠1",

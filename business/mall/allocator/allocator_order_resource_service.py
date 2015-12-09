@@ -15,7 +15,7 @@ from db.mall import models as mall_models
 import resource
 from core.watchdog.utils import watchdog_alert
 from business import model as business_model 
-from business.mall.allocator.order_integral_allocator import OrderIntegralAllocator
+from business.mall.allocator.order_integral_resource_allocator import OrderIntegralResourceAllocator
 
 
 class AllocateOrderResourceService(business_model.Service):
@@ -24,7 +24,7 @@ class AllocateOrderResourceService(business_model.Service):
 	AllocateOrderResourceService
 	"""
 	allocators = [
-		OrderIntegralAllocator
+		OrderIntegralResourceAllocator
 	]
 
 	def __init__(self, webapp_owner, webapp_user):
@@ -57,5 +57,5 @@ class AllocateOrderResourceService(business_model.Service):
 	def release(self):
 		if not self.context['resources']:
 			return 
-		for allocator in self.context['allocators']:
+		for allocator in self.context['resources']:
 			allocator.release(self.context['resources'])

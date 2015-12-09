@@ -27,6 +27,7 @@ import uuid
 import time
 import random
 
+from business.mall.CalculatePriceService.calculate_price_service import CalculatePriceService
 from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
@@ -58,7 +59,9 @@ class OrderFactory(business_model.Model):
 		'purchase_info',
 		'products',
 		'product_groups',
-		'order'
+		'order',
+		'resources',
+		'price_info'
 	)
 
 	@staticmethod
@@ -97,17 +100,22 @@ class OrderFactory(business_model.Model):
 		
 		if successed:
 			self.context['allocator_order_resource_service'] = allocator_order_resource_service
-
-			#临时方案：TODO使用pricesevice处理
-			for resource in resources:
-				if resource.get_type() == business_model.RESOURCE_TYPE_INTEGRAL:
-					self.__process_order_integral_for(resource)
+			self.resources = resources
+			# #临时方案：TODO使用pricesevice处理
+			# for resource in resources:
+			# 	if resource.get_type() == business_model.RESOURCE_TYPE_INTEGRAL:
+			# 		self.__process_order_integral_for(resource)
 		else:
 			raise OrderException(reason)	
 
-	def __process_order_integral_for(self, resource):
-		self.order.integral = resource.integral
-		self.order.integral_money = resource.integral_money
+	# def __process_order_integral_for(self, resource):
+	# 	self.order.integral = resource.integral
+	# 	self.order.integral_money = resource.integral_money
+
+	def calculate_price(self):
+		calculate_price_service = CalculatePriceService(self.context['webapp_owner'], self.context['webapp_user'])
+		self.price_info  = calculate_price_service.calculate_price(self, self.resources)
+
 
 	def __create_order_id(self):
 		"""创建订单id
@@ -148,6 +156,7 @@ class OrderFactory(business_model.Model):
 		self.order.products = self.products
 
 		self.resource_allocator()
+		self.calculate_price()
 		#try:
 		return self.save()
 		# except:
@@ -194,17 +203,13 @@ class OrderFactory(business_model.Model):
 		products = self.products
 		product_groups = self.product_groups
 
-		#处理订单中的product总价
-		order.product_price = sum([product.price * product.purchase_count for product in products])
-		order.final_price = order.product_price
-		
-		# #积分抵扣TODO
-		if order.integral > 0:
-			order.final_price = order.final_price - order.integral_money
+		#处理订单中的product价格信息
+		order.product_price = self.price_info.get('product_price', 0)
+		order.coupon_money = self.price_info.get('coupon', 0)
+		order.integral_money = self.price_info.get('integral', 0)
+		order.final_price = self.price_info.get('final_price', 0)
 
-		order.final_price = round(order.final_price, 2)
-		if order.final_price < 0:
-			order.final_price = 0
+
 
 		#处理订单中的促销优惠金额
 		promotion_saved_money = 0.0

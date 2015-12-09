@@ -4,6 +4,7 @@ import urllib
 
 from behave import *
 
+from features.steps import steps_db_util
 from features.util import bdd_util
 from features.util.helper import WAIT_SHORT_TIME
 from db.mall import models as mall_models
@@ -211,30 +212,30 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 	url = '/wapi/mall/order/?_method=put'
 	data['woid'] = context.webapp_owner_id
 	response = context.client.post(url, data)
-	bdd_util.assert_api_call_success(response)
+	# bdd_util.assert_api_call_success(response)
 	context.response = response
 
-	#访问支付结果链接
-	pay_url_info = response.data['pay_url_info']
-	pay_type = pay_url_info['type']
-	del pay_url_info['type']
-	if pay_type == 'cod':
-		pay_url = '/wapi/pay/pay_result/?_method=put'
-		data = {
-			'pay_interface_type': pay_url_info['pay_interface_type'],
-			'order_id': pay_url_info['order_id']
-		}
-		context.client.post(pay_url, data)
-	
+
 	#response结果为: {"errMsg": "", "code": 200, "data": {"msg": null, "order_id": "20140620180559"}}
 
 	if response.body['code'] == 200:
 		# context.created_order_id为订单ID
 		context.created_order_id = response.data['order_id']
+
+
+		#访问支付结果链接
+		pay_url_info = response.data['pay_url_info']
+		pay_type = pay_url_info['type']
+		del pay_url_info['type']
+		if pay_type == 'cod':
+			pay_url = '/wapi/pay/pay_result/?_method=put'
+			data = {
+				'pay_interface_type': pay_url_info['pay_interface_type'],
+				'order_id': pay_url_info['order_id']
+			}
+			context.client.post(pay_url, data)
 	else:
 		context.created_order_id = -1
-		context.server_error_msg = response.data['msg']
-		print "buy_error----------------------------",context.server_error_msg,response
 
 	if context.created_order_id != -1:
 		if 'date' in args:

@@ -56,6 +56,7 @@ class Order(business_model.Model):
 		'origin_order_id',
 		'express_number',
 		'customer_message',
+		'promotion_saved_money',
 		'created_at'
 	)
 

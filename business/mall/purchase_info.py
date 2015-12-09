@@ -36,7 +36,8 @@ class PurchaseInfo(business_model.Model):
         'purchase_group2integral_info',
         'purchase_integral_info',
 
-        'is_purchase_from_shopping_cart'
+        'is_purchase_from_shopping_cart',
+        'coupon_id'
     )
 
     @staticmethod
@@ -70,6 +71,7 @@ class PurchaseInfo(business_model.Model):
         self.__parse_ship_info(request_args)
         self.__parse_pay_interface(request_args)
         self.__parse_custom_message(request_args)
+        self.__parse_coupon_id(request_args)
 
         self.order_type = request_args.get('order_type', mall_models.PRODUCT_DEFAULT_TYPE)
         self.is_purchase_from_shopping_cart = request_args.get('is_order_from_shopping_cart', False)
@@ -99,6 +101,11 @@ class PurchaseInfo(business_model.Model):
         """解析用户留言
         """
         self.customer_message = request_args.get('message', '')
+
+    def __parse_coupon_id(self, request_args):
+        """解析用户留言
+        """
+        self.coupon_id = request_args.get('coupon_id', '')
 
     def __get_product_param(self, args):
         """获取订单商品id，数量，规格

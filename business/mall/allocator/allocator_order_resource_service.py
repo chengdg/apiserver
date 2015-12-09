@@ -17,6 +17,7 @@ from core.watchdog.utils import watchdog_alert
 from business import model as business_model 
 from business.mall.allocator.order_integral_resource_allocator import OrderIntegralResourceAllocator
 from business.mall.allocator.order_product_resource_allocator import OrderProductResourceAllocator
+from business.mall.allocator.order_coupon_resource_allocator import OrderCouponResourceAllocator
 
 
 class AllocateOrderResourceService(business_model.Service):
@@ -26,7 +27,8 @@ class AllocateOrderResourceService(business_model.Service):
 	"""
 	allocators = [
 		OrderIntegralResourceAllocator,
-		OrderProductResourceAllocator
+		OrderProductResourceAllocator,
+		OrderCouponResourceAllocator
 	]
 
 	def __init__(self, webapp_owner, webapp_user):

@@ -133,7 +133,7 @@ class OrderFactory(business_model.Model):
 
 	def __process_order_integral_for(self, resource):
 		self.order.integral = resource.integral
-		self.order.integral_money = resource.money
+		self.order.integral_money = resource.integral_money
 
 	def __create_order_id(self):
 		"""创建订单id
@@ -174,12 +174,12 @@ class OrderFactory(business_model.Model):
 		self.order.products = self.products
 
 		self.resource_allocator()
-		try:
-			return self.save()
-		except:
-			self.release()
-			#TODO 修改提示
-			raise OrderException(u'保存订单失败')
+		#try:
+		return self.save()
+		# except:
+		# 	self.release()
+		# 	#TODO 修改提示
+		# 	raise OrderException(u'保存订单失败')
 
 	def release(self):
 		allocator_order_resource_service = self.context['allocator_order_resource_service'] 

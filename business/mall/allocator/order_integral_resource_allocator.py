@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""@package business.inegral_allocator.OrderIntegralResourceAllocator
+"""@package business.mall.allocator.order_integral_resource_allocator.OrderIntegralResourceAllocator
 请求积分资源
 
 """
@@ -34,15 +34,15 @@ class OrderIntegralResourceAllocator(business_model.Service):
 		self.context['webapp_owner'] = webapp_owner
 		self.context['webapp_user'] = webapp_user
 
-	def release(self, resources):
-		#TODO-bert
-		for_release_resources = []
-		for resource in resources:
-			if resource.get_type() == business_model.RESOURCE_TYPE_INTEGRAL:
-				for_release_resources.append(resource)
+	# def release(self, resources):
+	# 	#TODO-bert
+	# 	for_release_resources = []
+	# 	for resource in resources:
+	# 		if resource.get_type() == business_model.RESOURCE_TYPE_INTEGRAL:
+	# 			for_release_resources.append(resource)
 
-		for resource in for_release_resources:
-			resource.release()
+	# 	for resource in for_release_resources:
+	# 		resource.release()
 
 	def allocate_resource(self, order, purchase_info):
 		webapp_owner = self.context['webapp_owner']
@@ -110,10 +110,11 @@ class OrderIntegralResourceAllocator(business_model.Service):
 
 		integral_resource = IntegralResource.get({
 					'type': business_model.RESOURCE_TYPE_INTEGRAL,
-					'webapp_user': webapp_user
+					'webapp_user': webapp_user,
+					'webapp_owner': webapp_owner
 				})
 
-		successed,reason = integral_resource.use_integral(total_integral, integral_money)
+		successed,reason = integral_resource.use_integral(total_integral)
 
 		if successed:
 			return True, '', integral_resource

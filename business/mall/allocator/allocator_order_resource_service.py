@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""@package business.mall.order_resource_allocator
+"""@package business.mall.allocator.allocator_order_resource_service.AllocateOrderResourceService
 订单资源分配器
 
 """
@@ -16,6 +16,7 @@ import resource
 from core.watchdog.utils import watchdog_alert
 from business import model as business_model 
 from business.mall.allocator.order_integral_resource_allocator import OrderIntegralResourceAllocator
+from business.mall.allocator.order_product_resource_allocator import OrderProductResourceAllocator
 
 
 class AllocateOrderResourceService(business_model.Service):
@@ -24,7 +25,8 @@ class AllocateOrderResourceService(business_model.Service):
 	AllocateOrderResourceService
 	"""
 	allocators = [
-		OrderIntegralResourceAllocator
+		OrderIntegralResourceAllocator,
+		OrderProductResourceAllocator
 	]
 
 	def __init__(self, webapp_owner, webapp_user):
@@ -49,7 +51,10 @@ class AllocateOrderResourceService(business_model.Service):
 				self.release()
 				break
 			else:
-				resources.append(resource)
+				if isinstance(resource,list):
+					resources.extend(resource)
+				else:
+					resources.append(resource)
 		
 		self.context['resources'] = resources
 		return is_success, reason, resources
@@ -58,4 +63,4 @@ class AllocateOrderResourceService(business_model.Service):
 		if not self.context['resources']:
 			return 
 		for allocator in self.context['resources']:
-			allocator.release(self.context['resources'])
+			allocator.release()

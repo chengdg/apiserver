@@ -1,6 +1,6 @@
 # __edit__ : "benchi"
 #editor:王丽 2015.10.20
-
+#editor:robert 2015.12.09
 Feature: 添加参与买赠活动的商品到购物车中
 
 Background:

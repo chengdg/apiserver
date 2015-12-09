@@ -15,10 +15,10 @@ from utils import dateutil as utils_dateutil
 import resource
 from wapi.mall.a_purchasing import APurchasing as PurchasingApiResource
 from core.cache import utils as cache_utils
-from business.mall.order_factory import OrderFactory
+from business.mall.order_factory import OrderFactory, OrderException
 from business.mall.purchase_info import PurchaseInfo
 from business.mall.pay_interface import PayInterface
-from business.mall.order import Order
+from business.mall.order import Orde
 
 
 class AOrder(api_resource.ApiResource):
@@ -44,24 +44,36 @@ class AOrder(api_resource.ApiResource):
 			'request_args': args
 		})
 
-		order_factory = OrderFactory.create({
-			"webapp_owner": webapp_owner,
-			"webapp_user": webapp_user,
-			"purchase_info": purchase_info,
-		})
+		try:
+			order_factory = OrderFactory.get({
+				"webapp_owner": webapp_owner,
+				"webapp_user": webapp_user,
+				#"purchase_info": purchase_info,
+			})
+			order = order_factory.create_order({
+				"purchase_info": purchase_info
+				})
+		except OrderException as e:
+			return 500, e.value
 
-		order_validation = order_factory.validate()
+		# order_factory = OrderFactory.get({
+		# 	"webapp_owner": webapp_owner,
+		# 	"webapp_user": webapp_user,
+		# 	#"purchase_info": purchase_info,
+		# })
 
-		if (not order_validation['is_valid']):
-			return 500, order_validation['reason']
+		# order_validation = order_factory.validate()
 
-		order_validation = order_factory.resource_allocator()
-		if (not order_validation['is_valid']):
-			return 500, order_validation['reason']
-		else:
-			order = order_validation['order']
+		# if (not order_validation['is_valid']):
+		# 	return 500, order_validation['reason']
 
-		order = order_factory.save()
+		# order_validation = order_factory.resource_allocator()
+		# if (not order_validation['is_valid']):
+		# 	return 500, order_validation['reason']
+		# else:
+		# 	order = order_validation['order']
+
+		# order = order_factory.save()
 		pay_url_info = None
 		if order:
 			if order.final_price > 0 and purchase_info.used_pay_interface_type != '-1':

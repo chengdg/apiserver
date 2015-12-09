@@ -43,6 +43,12 @@ from business.mall.order_checker import OrderChecker
 from business.mall.order import Order
 from business.mall.order_resourc_allocator import OrderResourceAllocator
 
+class OrderException(Exception):
+	def __init__(self, value):
+		self.value = value
+	def __str__(self):
+		return repr(self.value)
+
 
 class OrderFactory(business_model.Model):
 	"""订单生成器
@@ -55,22 +61,80 @@ class OrderFactory(business_model.Model):
 	)
 
 	@staticmethod
-	@param_required(['webapp_owner', 'webapp_user', 'purchase_info'])
-	def create(args):
+	@param_required(['webapp_owner', 'webapp_user'])
+	def get(args):
 		"""工厂方法，创建Order对象
 
 		@return Order对象
 		"""
-		order_factory = OrderFactory(args['webapp_owner'], args['webapp_user'], args['purchase_info'])
+		order_factory = OrderFactory(args['webapp_owner'], args['webapp_user'])
 		
 		return order_factory
 
-	def __init__(self, webapp_owner, webapp_user, purchase_info):
+	# @staticmethod
+	# @param_required(['webapp_owner', 'webapp_user', 'purchase_info'])
+	# def create(args):
+	# 	"""工厂方法，创建Order对象
+
+	# 	@return Order对象
+	# 	"""
+	# 	order_factory = OrderFactory(args['webapp_owner'], args['webapp_user'], args['purchase_info'])
+		
+	# 	return order_factory
+
+	def __init__(self, webapp_owner, webapp_user):
 		business_model.Model.__init__(self)
 
 		self.context['webapp_owner'] = webapp_owner
 		self.context['webapp_user'] = webapp_user
 
+		# #获取订单商品集合
+		# order_products = OrderProducts.get({
+		# 	"webapp_owner": webapp_owner,
+		# 	"webapp_user": webapp_user,
+		# 	"purchase_info": purchase_info
+		# })
+		# self.products = order_products.products
+
+		# #按促销进行product分组
+		# product_grouper = ProductGrouper()
+		# self.product_groups = product_grouper.group_product_by_promotion(webapp_user.member, self.products)
+
+		# self.purchase_info = purchase_info
+		# self.order = mall_models.Order()
+
+	def validate(self):
+		"""判断订单是否有效
+
+		@return True, None: 订单有效；False, reason: 订单无效, 无效原因
+		"""
+		order_checker = OrderChecker(self.context['webapp_owner'], self.context['webapp_user'], self)
+		
+		return order_checker.check()
+
+	def resource_allocator(self):
+		"""资源分配器
+		@return True, order: 订单有效；False, reason: 订单无效, 无效原因
+		"""
+		allocator_order_resource_service = AllocateOrderResourceService(self.context['webapp_owner'], self.context['webapp_user'], self)
+		
+		return allocator_order_resource_service.allocate_resource_for(self.order, self.purchase_info)
+
+	def __create_order_id(self):
+		"""创建订单id
+
+		目前采用基于时间戳＋随机数的算法生成订单id，在确定id可使用之前，通过查询mall_order表里是否有相同id来判断是否可以使用id
+		这种方式比较低效，同时存在id重复的潜在隐患，后续需要改进
+		"""
+		#TODO2: 使用uuid替换这里的算法
+		order_id = time.strftime("%Y%m%d%H%M%S", time.localtime())
+		order_id = '%s%03d' % (order_id, random.randint(1, 999))
+		if mall_models.Order.select().dj_where(order_id=order_id).count() > 0:
+			return self.__create_order_id()
+		else:
+			return order_id
+
+	def create_order(self, purchase_info):
 		#获取订单商品集合
 		order_products = OrderProducts.get({
 			"webapp_owner": webapp_owner,
@@ -86,36 +150,9 @@ class OrderFactory(business_model.Model):
 		self.purchase_info = purchase_info
 		self.order = mall_models.Order()
 
-	def validate(self):
-		"""判断订单是否有效
+		#self.resource_allocator()
 
-		@return True, None: 订单有效；False, reason: 订单无效, 无效原因
-		"""
-		order_checker = OrderChecker(self.context['webapp_owner'], self.context['webapp_user'], self)
-		
-		return order_checker.check()
-
-	def resource_allocator(self):
-		"""资源分配器
-		@return True, order: 订单有效；False, reason: 订单无效, 无效原因
-		"""
-		order_resourc_allocator = OrderResourceAllocator(self.context['webapp_owner'], self.context['webapp_user'], self)
-		
-		return order_resourc_allocator.allocated_resources()
-
-	def __create_order_id(self):
-		"""创建订单id
-
-		目前采用基于时间戳＋随机数的算法生成订单id，在确定id可使用之前，通过查询mall_order表里是否有相同id来判断是否可以使用id
-		这种方式比较低效，同时存在id重复的潜在隐患，后续需要改进
-		"""
-		#TODO2: 使用uuid替换这里的算法
-		order_id = time.strftime("%Y%m%d%H%M%S", time.localtime())
-		order_id = '%s%03d' % (order_id, random.randint(1, 999))
-		if mall_models.Order.select().dj_where(order_id=order_id).count() > 0:
-			return self.__create_order_id()
-		else:
-			return order_id
+		return self.save()
 
 	def save(self):
 		"""保存订单

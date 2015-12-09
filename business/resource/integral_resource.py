@@ -33,20 +33,21 @@ class IntegralResource(business_model.Resource):
 
 
 	@staticmethod
-	@param_required(['type', 'webapp_user'])
+	@param_required(['webapp_owner', 'webapp_user', 'type'])
 	def get(args):
 		"""工厂方法，创建IntegralResource对象
 
 		@return IntegralResource对象
 		"""
-		integral_resource = IntegralResource(args['type'], args['webapp_user'])
+		integral_resource = IntegralResource(args['webapp_owner'], args['webapp_user'], args['type'])
 		
 		return integral_resource
 
-	def __init__(self, type, webapp_user):
+	def __init__(self, webapp_owner, webapp_user, type):
 		business_model.Resource.__init__(self)
 		self.type = type
 		self.context['webapp_user'] = webapp_user
+		self.context['webapp_owner'] = webapp_owner
 
 
 	def release(self):
@@ -60,9 +61,9 @@ class IntegralResource(business_model.Resource):
 	def get_type(self):
 		return self.type
 
-	def use_integral(self, integral, integral_money):
+	def use_integral(self, integral):
 		self.integral = integral
-		self.money = integral_money
+		#self.money = integral_money
 		webapp_user = self.context['webapp_user']
 		self.context['integral_log_id'] = -1
 
@@ -78,4 +79,11 @@ class IntegralResource(business_model.Resource):
 			else:
 				return False, u'扣除积分失败'
 
+	@cached_context_property
+	def integral_money(self):
+		webapp_owner = self.context['webapp_owner']
+		count_per_yuan = webapp_owner.integral_strategy_settings.integral_each_yuan
+
+		integral_money = round(float(count_per_yuan*self.integral), 2)
+		return integral_money
 

@@ -1,3 +1,5 @@
+#editor:robert 2015.12.07
+
 Feature: 添加普通商品，促销商品到购物车中
 	bill能在webapp中将jobs添加的"普通商品，促销商品"放入购物车
 

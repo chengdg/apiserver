@@ -1,5 +1,6 @@
 # __author__ : "benchi"
 #editor 新新 2015.10.20
+#editor 高老师 2015.12.7 重构
 
 Feature: bill在webapp中某个商品详情中能够看到对商品评价信息
     在weapp的商品详情中，只显示两条评价信息；

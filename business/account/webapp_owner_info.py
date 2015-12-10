@@ -185,9 +185,9 @@ class WebAppOwnerInfo(business_model.Model):
 			}
 		return inner_func
 
-	def __get_postage_configs_for_cache(webapp_owner_id):
+	def __get_postage_configs_for_cache(self, webapp_owner_id):
 		def inner_func():
-			postage_configs = mall_models.PostageConfig.objects.filter(owner_id=webapp_owner_id)
+			postage_configs = mall_models.PostageConfig.select().dj_where(owner_id=webapp_owner_id)
 
 			values = []
 			for postage_config in postage_configs:

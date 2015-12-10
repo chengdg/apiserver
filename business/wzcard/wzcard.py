@@ -5,9 +5,9 @@
 
 from business import model as business_model
 
-class WeizoomCard(business_model.Model):
+class WZCard(business_model.Model):
 	"""
-	微众卡业务模型
+	微众卡
 
 	@see WEAPP/market_tools/tools/weizoom_card/models.py
 	"""

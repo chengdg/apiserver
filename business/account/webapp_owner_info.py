@@ -35,6 +35,7 @@ class WebAppOwnerInfo(business_model.Model):
 	"""
 	__slots__ = (
 		'red_envelope',
+		'postage_configs',
 		'global_navbar',
 		'integral_strategy_settings',
 		'pay_interfaces',
@@ -184,6 +185,63 @@ class WebAppOwnerInfo(business_model.Model):
 			}
 		return inner_func
 
+	def __get_postage_configs_for_cache(webapp_owner_id):
+		def inner_func():
+			postage_configs = mall_models.PostageConfig.objects.filter(owner_id=webapp_owner_id)
+
+			values = []
+			for postage_config in postage_configs:
+				factor = {
+					'firstWeight': postage_config.first_weight,
+					'firstWeightPrice': postage_config.first_weight_price,
+					'isEnableAddedWeight': postage_config.is_enable_added_weight,
+				}
+
+				#if postage_config.is_enable_added_weight:
+				factor['addedWeight'] = float(postage_config.added_weight)
+				if postage_config.added_weight_price:
+					factor['addedWeightPrice'] = float(postage_config.added_weight_price)
+				else:
+					factor['addedWeightPrice'] = 0
+
+				# 特殊运费配置
+				special_factor = dict()
+				if postage_config.is_enable_special_config:
+					for special_config in postage_config.get_special_configs():
+						data = {
+							'firstWeight': special_config.first_weight,
+							'firstWeightPrice': special_config.first_weight_price,
+							'addedWeight': float(special_config.added_weight),
+							'addedWeightPrice': float(special_config.added_weight_price)
+						}
+						for province_id in special_config.destination.split(','):
+							special_factor['province_{}'.format(province_id)] = data
+				factor['special_factor'] = special_factor
+
+				# 免运费配置
+				free_factor = dict()
+				if postage_config.is_enable_free_config:
+					for free_config in postage_config.get_free_configs():
+						data = {
+							'condition': free_config.condition
+						}
+						if data['condition'] == 'money':
+							data['condition_value'] = float(free_config.condition_value)
+						else:
+							data['condition_value'] = int(free_config.condition_value)
+						for province_id in free_config.destination.split(','):
+							free_factor.setdefault('province_{}'.format(province_id), []).append(data)
+				factor['free_factor'] = free_factor
+
+				postage_config.factor = factor
+				values.append(postage_config.to_dict('factor'))
+
+			return {
+				'value': values
+			}
+
+		return inner_func
+
 	def __get_from_cache(self, woid):
 		"""
 		webapp_cache.get_webapp_owner_info
@@ -191,6 +249,7 @@ class WebAppOwnerInfo(business_model.Model):
 		webapp_owner_id = woid
 		webapp_owner_info_key = 'webapp_owner_info_{wo:%s}' % webapp_owner_id
 		red_envelope_key = 'red_envelope_{wo:%s}' % webapp_owner_id
+		postage_configs_key = 'webapp_postage_configs_{wo:%s}' % webapp_owner_id
 		key_infos = [{
 			'key': webapp_owner_info_key,
 			'on_miss': self.__get_webapp_owner_info_from_db(webapp_owner_id)
@@ -198,9 +257,13 @@ class WebAppOwnerInfo(business_model.Model):
 			'key': red_envelope_key,
 			'on_miss': self.__get_red_envelope_for_cache(webapp_owner_id)
 
+		}, {
+			'key': postage_configs_key,
+			'on_miss': self.__get_postage_configs_for_cache(webapp_owner_id)
 		}]
 		data = cache_util.get_many_from_cache(key_infos)
 		red_envelope = data[red_envelope_key]
+		postage_configs = data[postage_configs_key]
 		data = data[webapp_owner_info_key]
 
 		obj = cache_util.Object()
@@ -218,6 +281,7 @@ class WebAppOwnerInfo(business_model.Model):
 		obj.is_weizoom_card_permission = data['has_permission']
 		obj.operation_settings = account_models.OperationSettings.from_dict(data['operation_settings'])
 		obj.red_envelope = red_envelope
+		obj.postage_configs = postage_configs
 		obj.global_navbar = account_models.TemplateGlobalNavbar.from_dict(data['global_navbar'])
 		obj.auth_appid_info = weixin_user_models.ComponentAuthedAppidInfo.from_dict(data['auth_appid_info'])
 		if  obj.auth_appid_info:

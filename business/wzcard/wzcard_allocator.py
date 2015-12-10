@@ -5,7 +5,7 @@
 
 from business import model as business_model
 
-class WZCardAllocator(business_model.Model):
+class WZCardAllocator(business_model.Service):
 	"""
 	微众卡资源分配器
 	"""

@@ -27,7 +27,7 @@ Background:
 			"price": 50
 		}]
 		"""
-	And jobs已创建微众卡:weapp
+	And jobs已创建微众卡
 		"""
 		{
 			"cards":[{

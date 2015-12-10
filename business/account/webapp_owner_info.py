@@ -26,12 +26,12 @@ import settings
 from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
 from core.exceptionutil import unicode_full_stack
 from business import model as business_model
-
+import logging
 
 
 class WebAppOwnerInfo(business_model.Model):
 	"""
-	webapp owner的信息
+	WebApp owner的信息
 	"""
 	__slots__ = (
 		'red_envelope',
@@ -44,13 +44,16 @@ class WebAppOwnerInfo(business_model.Model):
 		'member2grade',
 		'member_grades',
 		'default_member_tag',
-		'weixin_mp_user_access_token'
+		'weixin_mp_user_access_token',
+
+		'webapp_owner_id',
 	)
 
 	@staticmethod
 	@param_required(['woid'])
 	def get(args):
-		"""工厂方法
+		"""
+		工厂方法
 
 		@param[in] woid
 
@@ -59,11 +62,14 @@ class WebAppOwnerInfo(business_model.Model):
 		webapp_owner_info = WebAppOwnerInfo(args['woid'])
 		return webapp_owner_info
 
+
 	def __init__(self, webapp_owner_id):
 		business_model.Model.__init__(self)
 		obj = self.__get_from_cache(webapp_owner_id)
 		for slot in self.__slots__:
 			setattr(self, slot, getattr(obj, slot, None))
+		self.webapp_owner_id = webapp_owner_id
+
 
 	def __get_red_envelope_for_cache(self, webapp_owner_id):
 		def inner_func():
@@ -78,6 +84,7 @@ class WebAppOwnerInfo(business_model.Model):
 				result = red_envelope.to_dict('coupon_rule')
 			return { 'value' : result }
 		return inner_func
+
 
 	def __get_webapp_owner_info_from_db(self, webapp_owner_id):
 		def inner_func():
@@ -242,14 +249,44 @@ class WebAppOwnerInfo(business_model.Model):
 
 		return inner_func
 
+	#@property
+	def __get_webapp_owner_info_key(self, webapp_owner_id):
+		return 'webapp_owner_info_{wo:%s}' % webapp_owner_id
+
+	#@property
+	def __get_red_envelope_key(self, webapp_owner_id):
+		return 'red_envelope_{wo:%s}' % webapp_owner_id
+
+	def __get_postage_configs_key(self, webapp_owner_id):
+		return 'webapp_postage_configs_{wo:%s}' % webapp_owner_id
+
+	def purge_cache(self):
+		"""
+		置缓存数据失效
+		"""
+		webapp_owner_info_key = self.__get_webapp_owner_info_key(self.webapp_owner_id)
+		red_envelope_key = self.__get_red_envelope_key(self.webapp_owner_id)
+		postage_configs_key = self.__get_postage_configs_key(self.webapp_owner_id)
+		logging.info("to purge cache for '%s' and '%s'" % (webapp_owner_info_key, red_envelope_key))
+
+		cache_util.delete_cache(webapp_owner_info_key)
+		cache_util.delete_cache(red_envelope_key)
+		cache_util.delete_cache(postage_configs_key)
+		return
+
+
 	def __get_from_cache(self, woid):
 		"""
 		webapp_cache.get_webapp_owner_info
 		"""
 		webapp_owner_id = woid
-		webapp_owner_info_key = 'webapp_owner_info_{wo:%s}' % webapp_owner_id
-		red_envelope_key = 'red_envelope_{wo:%s}' % webapp_owner_id
-		postage_configs_key = 'webapp_postage_configs_{wo:%s}' % webapp_owner_id
+		#webapp_owner_info_key = 'webapp_owner_info_{wo:%s}' % webapp_owner_id
+		#red_envelope_key = 'red_envelope_{wo:%s}' % webapp_owner_id
+		webapp_owner_info_key = self.__get_webapp_owner_info_key(webapp_owner_id)
+		red_envelope_key = self.__get_red_envelope_key(webapp_owner_id)
+		postage_configs_key = self.__get_postage_configs_key(webapp_owner_id)
+		logging.info("to cache for '%s' and '%s'" % (webapp_owner_info_key, red_envelope_key))
+
 		key_infos = [{
 			'key': webapp_owner_info_key,
 			'on_miss': self.__get_webapp_owner_info_from_db(webapp_owner_id)

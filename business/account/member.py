@@ -282,3 +282,40 @@ class Member(business_model.Model):
 	@property
 	def username(self):
 		return hex_to_byte(self.username_hexstr)
+
+	@cached_context_property
+	def username_size_ten(self):
+		try:
+			username = unicode(self.username_for_html, 'utf8')
+			_username = re.sub('<[^<]+?><[^<]+?>', ' ', username)
+			if len(_username) <= 10:
+				return username
+			else:
+				name_str = username
+				span_list = re.findall(r'<[^<]+?><[^<]+?>', name_str) #保存表情符
+
+				output_str = ""
+				count = 0
+
+				if not span_list:
+					return u'%s...' % name_str[:10]
+
+				for span in span_list:
+				    length = len(span)
+				    while not span == name_str[:length]:
+				        output_str += name_str[0]
+				        count += 1
+				        name_str = name_str[1:]
+				        if count == 10:
+				            break
+				    else:
+				        output_str += span
+				        count += 1
+				        name_str = name_str[length:]
+				        if count == 10:
+				            break
+				    if count == 10:
+				        break
+				return u'%s...' % output_str
+		except:
+			return self.username_for_html[:10]

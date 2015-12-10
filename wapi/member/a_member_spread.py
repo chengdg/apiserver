@@ -8,13 +8,13 @@ import resource
 from business.account.member_factory import MemberFactory
 from business.account.member import Member
 from business.account.system_account import SystemAccount
+from business.account.integral import Integral
 from business.spread.member_relations import MemberRelation
 from business.spread.member_relations_factory import MemberRelatonFactory
 from business.spread.member_clicked import MemberClickedUrl
 from business.spread.member_clicked_factory import MemberClickedFactory
 from business.spread.member_shared import MemberSharedUrl
 from business.spread.member_shared_factory import MemberSharedUrlFactory
-from business.spread.integral import Integral
 from business.spread.member_spread import MemberSpread
 
 

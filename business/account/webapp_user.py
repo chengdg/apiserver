@@ -27,7 +27,7 @@ from business.decorator import cached_context_property
 from utils import regional_util
 from business.account.member_order_info import MemberOrderInfo
 from business.account.social_account import SocialAccount
-from business.spread.integral import Integral
+from business.account.integral import Integral
 
 
 class WebAppUser(business_model.Model):

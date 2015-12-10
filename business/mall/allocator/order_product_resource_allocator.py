@@ -40,7 +40,6 @@ class OrderProductResourceAllocator(business_model.Service):
 
 
 	def release(self):
-		#TODO-bert
 		for resource in self.context['resources']:
 			resource.release()
 

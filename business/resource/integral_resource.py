@@ -14,13 +14,14 @@ from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
 from db.mall import models as mall_models
+from db.mall import models as mall_models
 import resource
 from core.watchdog.utils import watchdog_alert
 from business import model as business_model 
 from business.mall.product import Product
 import settings
 from business.decorator import cached_context_property
-
+from business.account.integral import Integral
 
 class IntegralResource(business_model.Resource):
 	"""积分资源
@@ -55,8 +56,13 @@ class IntegralResource(business_model.Resource):
 		integral_log_id = self.context['integral_log_id']
 		
 		if integral > 0 and integral_log_id != -1:
-			print u'TODO-bert 返回积分'
-			pass
+			webapp_user = self.context['webapp_user']
+			Integral.roll_back_integral({
+					'webapp_user': webapp_user,
+					'integral_count': integral,
+					'integral_log_id': integral_log_id
+					})
+			
 
 	def get_type(self):
 		return self.type

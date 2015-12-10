@@ -72,37 +72,11 @@ class OrderFactory(business_model.Model):
 		
 		return order_factory
 
-	# @staticmethod
-	# @param_required(['webapp_owner', 'webapp_user', 'purchase_info'])
-	# def create(args):
-	# 	"""工厂方法，创建Order对象
-
-	# 	@return Order对象
-	# 	"""
-	# 	order_factory = OrderFactory(args['webapp_owner'], args['webapp_user'], args['purchase_info'])
-		
-	# 	return order_factory
-
 	def __init__(self, webapp_owner, webapp_user):
 		business_model.Model.__init__(self)
 
 		self.context['webapp_owner'] = webapp_owner
 		self.context['webapp_user'] = webapp_user
-
-		# #获取订单商品集合
-		# order_products = OrderProducts.get({
-		# 	"webapp_owner": webapp_owner,
-		# 	"webapp_user": webapp_user,
-		# 	"purchase_info": purchase_info
-		# })
-		# self.products = order_products.products
-
-		# #按促销进行product分组
-		# product_grouper = ProductGrouper()
-		# self.product_groups = product_grouper.group_product_by_promotion(webapp_user.member, self.products)
-
-		# self.purchase_info = purchase_info
-		# self.order = mall_models.Order()
 
 	def validate(self):
 		"""判断订单是否有效
@@ -324,56 +298,3 @@ class OrderFactory(business_model.Model):
 		order_business_object.id = order.id
 		return order_business_object
 
-	# def user_integral(self, order):
-	# 	webapp_owner = self.context['webapp_owner']
-	# 	webapp_user = self.context['webapp_user']
-
-	# 	if self.purchase_info.purchase_integral_info:
-	# 		total_integral = self.purchase_info.purchase_integral_info['integral']
-	# 		order.integral = total_integral
-	# 		order.integral_money = round(float(self.purchase_info.purchase_integral_info['money']), 2)
-	# 		order.final_price = order.final_price - order.integral_money
-	# 	return order
-			
-	# 	elif self.purchase_info.purchase_group2integral_info:
-	# 		purchase_group2integral_info =  self.purchase_info.purchase_group2integral_info
-	# 		group2integral_sale_rule = dict((group['uid'], group['integral_sale_rule']) for group in self.order.product_groups)
-	# 		uid2group = dict((group['uid'], group) for group in product_groups)
-	# 		for group_uid, integral_info in purchase_group2integral_info.items():
-	# 			products = uid2group[group_uid]['products']
-	# 			if not group_uid in group2integral_sale_rule.keys() or not group2integral_sale_rule[group_uid]:
-	# 				for product in products:
-	# 					fail_msg['data']['detail'].append({
-	# 						'id': product.id,
-	# 						'model_name': product.model_name,
-	# 						'msg': '积分折扣已经过期',
-	# 						'short_msg': '已经过期'
-	# 					})
-	# 				continue
-	# 			use_integral = int(integral_info['integral'])
-	# 			# integral_info['money'] = integral_info['money'] *
-	# 			integral_money = round(float(integral_info['money']), 2) #round(1.0 * use_integral / count_per_yuan, 2)
-				
-	# 			# 校验前台输入：积分金额不能大于使用上限、积分值不能小于积分金额对应积分值
-	# 			# 根据用户会员与否返回对应的商品价格
-	# 			product_price = sum([product.price * product.purchase_count for product in products])
-	# 			integral_sale_rule = group2integral_sale_rule[group_uid]
-	# 			max_integral_price = round(product_price * integral_sale_rule['rule']['discount'] / 100, 2)
-	# 			if max_integral_price < (integral_money - 0.01) \
-	# 				or (integral_money * count_per_yuan) > (use_integral + 1):
-	# 				for product in products:
-	# 					fail_msg['data']['detail'].append({
-	# 							'id': product.id,
-	# 							'model_name': product.model_name,
-	# 							'msg': '使用积分不能大于促销限额',
-	# 							'short_msg': '积分应用',
-	# 						})
-	# 			integral_sale_rule = group2integral_sale_rule[group_uid]
-	# 			integral_sale_rule['result'] = {
-	# 				'final_saved_money': integral_money,
-	# 				'promotion_saved_money': integral_money,
-	# 				'use_integral': use_integral
-	# 			}
-	# 			total_integral += use_integral
-
-	# 

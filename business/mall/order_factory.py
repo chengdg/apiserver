@@ -255,10 +255,6 @@ class OrderFactory(business_model.Model):
 		"""
 		order.save()
 
-		#更新库存
-		for product in products:
-			product.consume_stocks()
-
 		#删除购物车
 		if purchase_info.is_purchase_from_shopping_cart:
 			for product in products:

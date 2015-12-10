@@ -86,7 +86,7 @@ class IntegralResource(business_model.Resource):
 				return False, u'扣除积分失败'
 
 	@cached_context_property
-	def integral_money(self):
+	def money(self):
 		webapp_owner = self.context['webapp_owner']
 		count_per_yuan = webapp_owner.integral_strategy_settings.integral_each_yuan
 

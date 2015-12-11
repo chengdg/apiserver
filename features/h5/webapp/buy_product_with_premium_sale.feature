@@ -151,7 +151,7 @@ Background:
 	And marry3关注jobs的公众号
 	And marry4关注jobs的公众号
 
-@mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
+@mall3 @promotion @mall.promotion @mall.webapp.promotion
 Scenario: 1 购买买赠商品，不满足买赠基数
 
 	When bill访问jobs的webapp
@@ -178,7 +178,7 @@ Scenario: 1 购买买赠商品，不满足买赠基数
 		}
 		"""
 
-@mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
+@mall3 @promotion @mall.promotion @mall.webapp.promotion
 Scenario: 2 购买买赠活动商品，满足买赠基数
 
 	When bill访问jobs的webapp

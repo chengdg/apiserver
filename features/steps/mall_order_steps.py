@@ -25,9 +25,12 @@ def step_impl(context, user):
 
 @then(u"{webapp_user_name}获得创建订单失败的信息'{error_msg}'")
 def step_impl(context, webapp_user_name, error_msg):
-	error_data = context.response
-	context.tc.assertTrue(200 != error_data.status_code)
-	response_msg = error_data.body['errMsg']
+	context.tc.assertTrue(200 != context.response.body['code'])
+	
+	data = context.response.data
+	response_msg = data.get('msg', None)
+	if not response_msg:
+		response_msg = data['detail'][0]['msg']
 	context.tc.assertEquals(error_msg, response_msg)
 
 

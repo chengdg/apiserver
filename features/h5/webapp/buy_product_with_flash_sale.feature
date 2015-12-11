@@ -230,7 +230,7 @@ Scenario: 1 购买单个限时抢购商品，限时抢购进行中
 		}
 		"""
 
-@todo @mall2 @promotion @mall.promotion @mall.webapp.promotion @wip
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
 Scenario:2 购买单个限时抢购商品，限时抢购已过期（在购物车中是限时抢购商品，但，去提交订单时已经不是限时抢购商品）
 
 	When bill访问jobs的webapp
@@ -386,11 +386,11 @@ Scenario:5 购买单个限时抢购商品，超出库存限制
 		}
 		"""
 
-@todo @mall2 @promotion @mall.promotion @mall.webapp.promotion @zy_fs06
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @zy_fs06 @robert.wip
 Scenario:6 购买单个限时抢购商品，未超过库存限制，但超过单次购买限制
 
-	Given jobs登录系统
-	When jobs创建限时抢购活动
+	Given jobs登录系统:weapp
+	When jobs创建限时抢购活动:weapp
 		"""
 		{
 			"name": "商品4限时抢购",
@@ -422,6 +422,7 @@ Scenario:6 购买单个限时抢购商品，未超过库存限制，但超过单
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品4",
 				"count": 3
@@ -430,7 +431,7 @@ Scenario:6 购买单个限时抢购商品，未超过库存限制，但超过单
 		"""
 	Then bill获得创建订单失败的信息'限购2件'
 
-@todo @mall2 @promotion @mall.promotion @mall.webapp.promotion @zy_fs07
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
 Scenario:7 在限购周期内连续购买限时抢购商品
 
 	When bill访问jobs的webapp
@@ -471,10 +472,10 @@ Scenario:7 在限购周期内连续购买限时抢购商品
 		}
 		"""
 
-@todo @mall2 @promotion @mall.promotion @mall.webapp.promotion @zy_fs08
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @zy_fs08 @robert.wip
 Scenario:8 购买多规格限时抢购商品
-	Given jobs登录系统
-	When jobs创建限时抢购活动
+	Given jobs登录系统:weapp
+	When jobs创建限时抢购活动:weapp
 		"""
 		{
 			"name": "商品5限时抢购",
@@ -592,11 +593,11 @@ Scenario:9 购买多规格限时抢购商品同时适用于积分规则
 		"""
 	Then bill在jobs的webapp中拥有30会员积分
 
-@todo @mall2 @promotion @mall.promotion @mall.webapp.promotion @zy_fs10
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @zy_fs10 @robert.wip
 Scenario:10 购买单个限时抢购商品，购买时活动进行中，提交订单时，该活动被商家手工结束
 
-	Given jobs登录系统
-	When jobs创建限时抢购活动
+	Given jobs登录系统:weapp
+	When jobs创建限时抢购活动:weapp
 		"""
 		{
 			"name": "商品4限时抢购",
@@ -607,7 +608,7 @@ Scenario:10 购买单个限时抢购商品，购买时活动进行中，提交�
 			"promotion_price": 11.5
 		}
 		"""
-	And jobs"结束"促销活动"商品4限时抢购"
+	And jobs"结束"促销活动"商品4限时抢购":weapp
 
 	When bill访问jobs的webapp
 	And bill购买jobs的商品

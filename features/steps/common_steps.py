@@ -53,6 +53,10 @@ def step_impl(context, user, mp_user_name):
 def step_impl(context, user, mp_user_name):
 	weapp_steps._run_weapp_step(u'When %s访问%s的webapp' % (user, mp_user_name), None)
 
+	# from core.db import models as db_models
+	# db_models.db.close()
+	#db_models.db.connect()
+
 	webapp_owner = account_models.User.get(username=mp_user_name)
 	profile = account_models.UserProfile.get(user=webapp_owner.id)
 	client = bdd_util.login(user, None, context=context)

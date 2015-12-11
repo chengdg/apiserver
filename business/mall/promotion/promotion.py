@@ -59,7 +59,7 @@ class Promotion(business_model.Model):
 		self.start_date = self.start_date.strftime("%Y-%m-%d %H:%M:%S")
 		self.end_date = self.end_date.strftime("%Y-%m-%d %H:%M:%S")
 		self.created_at = self.created_at.strftime("%Y-%m-%d %H:%M:%S")
-		self.status = self.__get_real_status()
+		self.status = self.status if self.status == promotion_models.PROMOTION_STATUS_FINISHED else self.__get_real_status()
 		self.display_status = promotion_models.PROMOTIONSTATUS2NAME.get(self.status, u'未知')
 		self.display_type = promotion_models.PROMOTION2TYPE.get(self.type, {'display_name':u'未知'})['display_name']
 		self.type_name = promotion_models.PROMOTION2TYPE.get(self.type, {'name':u'unknown'})['name']
@@ -94,6 +94,19 @@ class Promotion(business_model.Model):
 			return False
 
 		return True
+
+	def check_usablity(self, webapp_user, product):
+		"""
+		检查是否可以使用该促销
+
+		Parameters
+			webapp_user
+			product: ReservedProduct对象
+
+		Returns
+			如果可以使用，返回True；否则，返回False
+		"""
+		raise NotImplementedError("%s must implement check_usablity method" % str(self.__class__))
 
 	def apply_promotion(self, products):
 		"""

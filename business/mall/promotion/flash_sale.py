@@ -7,7 +7,7 @@
 import json
 from bs4 import BeautifulSoup
 import math
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from wapi.decorators import param_required
 from wapi import wapi_utils
@@ -42,6 +42,39 @@ class FlashSale(promotion.Promotion):
 			'promotion_price': self.promotion_price,
 			'count_per_purchase': self.count_per_purchase
 		}
+
+	def check_usablity(self, webapp_user, product):
+		"""
+		检查促销是否可以使用
+		"""
+		#检查count_per_purchase		
+		if product.purchase_count > self.count_per_purchase:
+			return False, {
+				'type': 'promotion:flash_sale:exceed_count_per_purchase',
+				'msg': u'限购%d件' % self.count_per_purchase,
+				'short_msg': u'限购%d件' % self.count_per_purchase,
+			}
+
+		#检查是否超过了限购周期的限制
+		if self.limit_period == 0 or self.limit_period == -1:
+			pass
+		else:
+			delta = datetime.today() - timedelta(days=self.limit_period)
+			purchase_record_count = mall_models.OrderHasPromotion.select().join(mall_models.Order).filter(
+				mall_models.OrderHasPromotion.webapp_user_id==webapp_user.id, 
+				mall_models.OrderHasPromotion.promotion_id==self.id, 
+				mall_models.OrderHasPromotion.created_at>=delta,
+				mall_models.Order.status!=mall_models.ORDER_STATUS_CANCEL
+			).count()
+			# 限购周期内已购买过商品
+			if purchase_record_count > 0:
+				return False, {
+					'type': 'promotion:flash_sale:limit_period',
+					'msg': u'在限购周期内不能多次购买',
+					'short_msg': u'限制购买'
+				}
+
+		return True, {}
 
 	def apply_promotion(self, products):
 		#限时抢购只有一个product

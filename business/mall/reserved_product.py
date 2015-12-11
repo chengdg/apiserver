@@ -28,6 +28,7 @@ from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
 from db.mall import models as mall_models
+from db.mall import promotion_models
 import resource
 from core.watchdog.utils import watchdog_alert
 from business import model as business_model 
@@ -277,6 +278,8 @@ class ReservedProduct(business_model.Model):
 		Returns
 			如果预期促销还在进行中，返回True；否则，返回False
 		"""
+		print self.expected_promotion_id
+		print self.used_promotion_id
 		return self.expected_promotion_id == self.used_promotion_id
 
 

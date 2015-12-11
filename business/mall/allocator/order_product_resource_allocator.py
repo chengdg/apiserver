@@ -5,6 +5,7 @@
 """
 import logging
 import json
+import copy
 from bs4 import BeautifulSoup
 import math
 import itertools
@@ -44,38 +45,76 @@ class OrderProductResourceAllocator(business_model.Service):
 			resource.release()
 
 	def __check_promotion(self, product):
+		print '-*-' * 20
+		print product.has_expected_promotion()
+		print product.is_expected_promotion_active()
+		print '-*-' * 20
 		if product.has_expected_promotion() and not product.is_expected_promotion_active():
-			return {
+			return False, {
 				"is_success": False,
 				"type": 'promotion:expired',
 				"msg": u"该活动已经过期",
 				"short_msg": u"已经过期"
 			}
 
-		return {
+		if not product.promotion:
+			return True, {
+				"is_success": True
+			}
+
+		is_can_use, check_result = product.promotion.check_usablity(self.context['webapp_user'], product)
+		if not is_can_use:
+			check_result['is_success'] = False
+			return False, check_result
+
+		return True, {
 			"is_success": True
 		}
 
-	def __supply_product_info_into_fail_result(self, product, result):
+	def __supply_product_info_into_fail_reason(self, product, result):
 		result['id'] = product.id
 		result['name'] = product.name
 		result['stocks'] = product.stocks
 		result['model_name'] = product.model_name
 		result['pic_url'] = product.thumbnails_url
 
+	def __merge_different_model_product(self, products):
+		"""
+		将同一商品的不同规格的商品进行合并，主要合并: purchase_count
+
+		Parameters
+			[in] products: ReservedProduct对象集合
+
+		Returns
+			合并后的ReservedProduct对象副本的集合
+		"""
+		id2product = {}
+		for product in products:
+			merged_product = id2product.get(product.id, None)
+			if not merged_product:
+				merged_product = copy.copy(product)
+				id2product[product.id] = merged_product
+			else:
+				merged_product.purchase_count += product.purchase_count
+
+		return id2product.values()
+
 	def allocate_resource(self, order, purchase_info):
 		webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user']
 
 		products = order.products
+
+		#检查订单中商品的促销是否可用
+		merged_products = self.__merge_different_model_product(products)
+		for merged_product in merged_products:
+			is_success, reason = self.__check_promotion(merged_product)
+			if not is_success:
+				self.__supply_product_info_into_fail_reason(merged_product, reason)
+				return False, reason, None
+
 		successed = False
 		for product in products:
-			#检查ReservedProduct的期望促销是否可用
-			result = self.__check_promotion(product)
-			if not result["is_success"]:
-				self.__supply_product_info_into_fail_result(product, result)
-				return False, result, None
-
 		 	product_resource = ProductResource.get({
 					'type': business_model.RESOURCE_TYPE_PRODUCT,
 					'webapp_user': webapp_user

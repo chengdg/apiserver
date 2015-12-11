@@ -189,7 +189,7 @@ Background:
 		}]
 		"""
 
-@mall3 @mall.webapp @mall.coupon @bc1
+@mall3_todo @mall.webapp @mall.coupon @bc1
 Scenario:1 使用少于商品价格的优惠券金额进行购买
 	bill购买jobs的商品时，能使用少于商品价格的优惠券
 	1. 创建订单成功，订单状态为“等待支付”
@@ -393,7 +393,7 @@ Scenario:3 使用等于商品价格的优惠券金额进行购买
 		}
 		"""
 
-@mall3 @mall.webapp @mall.coupon
+@mall3_todo @mall.webapp @mall.coupon
 Scenario:4 输入错误的优惠券码进行购买
 	bill购买jobs的商品时，输入错误的优惠券码
 	1. 创建订单失败
@@ -447,7 +447,7 @@ Scenario:4 输入错误的优惠券码进行购买
 		}
 		"""
 
-@mall3 @mall.webapp @mall.coupon
+@mall3_todo @mall.webapp @mall.coupon
 Scenario:5 输入未领取的可用优惠券码进行购买，bill创建订单成功，优惠券状态变为已使用
 
 	When bill访问jobs的webapp
@@ -518,7 +518,7 @@ Scenario:5 输入未领取的可用优惠券码进行购买，bill创建订单�
 		}
 		"""
 
-@mall3 @mall.webapp @mall.coupon
+@mall3_todo @mall.webapp @mall.coupon
 Scenario:6 输入已过期的优惠券码进行购买
 	bill购买jobs的商品时，使用已过期的优惠券进行购买
 	1. 购物失败
@@ -555,7 +555,7 @@ Scenario:6 输入已过期的优惠券码进行购买
 		}
 		"""
 
-@mall3 @mall.webapp @mall.coupon
+@mall3_todo @mall.webapp @mall.coupon
 Scenario:7 输入别人的优惠券码进行购买
 	bill购买jobs的商品时，能使用tom的优惠券进行购买
 	1. 购物失败
@@ -590,7 +590,7 @@ Scenario:7 输入别人的优惠券码进行购买
 		}
 		"""
 
-@mall3 @mall.webapp @mall.coupon
+@mall3_todo @mall.webapp @mall.coupon
 Scenario:8 使用满金额条件的优惠券，购买小于金额条件的商品
 	bill购买jobs的商品时，商品金额小于优惠券使用金额
 	1.购物失败
@@ -631,7 +631,7 @@ Scenario:8 使用满金额条件的优惠券，购买小于金额条件的商品
 		}
 		"""
 
-@mall3 @mall.webapp @mall.coupon
+@mall3_todo @mall.webapp @mall.coupon
 Scenario:9 使用满金额条件的优惠券，购买等于金额条件的商品
 	bill购买jobs的商品时，商品金额等于优惠券使用金额
 	1. 购物成功
@@ -838,7 +838,7 @@ Scenario:12 使用多于商品价格的优惠券进行购买，且不能抵扣�
 		"""
 
 #editor: "新新" "雪静"
-@mall3 @meberGrade @coupon
+@mall3_todo @meberGrade @coupon
 Scenario:13 不同等级的会员购买有会员价同时使用全体券的商品
 	#（全体券和会员价可以同时使用，但是满多少钱可以使用计算的是会员价）
 	Given jobs登录系统:weapp
@@ -1147,7 +1147,7 @@ Scenario:13 不同等级的会员购买有会员价同时使用全体券的商�
 		"""
 
 #editor: "王丽"
-@mall3 @meberGrade @coupon @todo
+@mall3_todo @meberGrade @coupon @todo
 Scenario:14 【优惠券】-未到使用日期，不能使用
 	Given jobs登录系统:weapp
 	And jobs已添加了优惠券规则:weapp

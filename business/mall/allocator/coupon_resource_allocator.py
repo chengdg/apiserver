@@ -36,10 +36,11 @@ class CouponResourceAllocator(business_model.Service):
 
 	@staticmethod
 	def release(resource):
-		promotion_models.Coupon.update(status=resource.context['raw_status'],
-		                               member_id=resource.context['raw_member_id']).where(
-			promotion_models.Coupon.id == resource.coupon.id).execute()
-		if not resource.context['raw_member_id']:
-			promotion_models.CouponRule.update(remained_count=promotion_models.CouponRule.remained_count + 1)
+		if resource.coupon:
+			promotion_models.Coupon.update(status=resource.context['raw_status'],
+			                               member_id=resource.context['raw_member_id']).where(
+				promotion_models.Coupon.id == resource.coupon.id).execute()
+			if not resource.context['raw_member_id']:
+				promotion_models.CouponRule.update(remained_count=promotion_models.CouponRule.remained_count + 1)
 
-		promotion_models.CouponRule.update(use_count=promotion_models.CouponRule.use_count - 1)
+			promotion_models.CouponRule.update(use_count=promotion_models.CouponRule.use_count - 1)

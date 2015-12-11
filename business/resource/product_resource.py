@@ -27,7 +27,9 @@ class ProductResource(business_model.Resource):
 	"""商品资源
 	"""
 	__slots__ = (
-		'type'
+		'type',
+		'model_id',
+		'purchase_count'
 		)
 
 
@@ -45,15 +47,8 @@ class ProductResource(business_model.Resource):
 	def __init__(self, type):
 		business_model.Resource.__init__(self)
 		self.type = type
-		#self.context['webapp_user'] = webapp_user
-		#for release
-		self.context['model_id'] = 0
-		self.context['purchase_count'] = 0
-
-	def release(self):
-		model_id = self.context['model_id']
-		purchase_count = self.context['purchase_count']
-		mall_models.ProductModel.update(stocks=mall_models.ProductModel.stocks+purchase_count).dj_where(id=model_id).execute()
+		self.model_id = 0
+		self.purchase_count = 0
 
 	def get_type(self):
 		return self.type
@@ -90,6 +85,6 @@ class ProductResource(business_model.Resource):
 				return False, 'not_enough_stocks'
 		else:
 			mall_models.ProductModel.update(stocks=mall_models.ProductModel.stocks-product.purchase_count).dj_where(id=current_model_id).execute()			
-			self.context['purchase_count'] = product.purchase_count
-			self.context['model_id'] = current_model_id
+			self.purchase_count = product.purchase_count
+			self.model_id = current_model_id
 			return True, product.purchase_count

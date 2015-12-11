@@ -75,3 +75,7 @@ class OrderCouponResourceAllocator(business_model.Model):
 		empty_coupon_resource.money = 0
 
 		return True, '', empty_coupon_resource
+	
+	#add by bert
+	def release(self,resources):
+		pass

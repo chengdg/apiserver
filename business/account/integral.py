@@ -91,6 +91,7 @@ class Integral(business_model.Model):
 
 	@staticmethod
 	def increase_member_integral(args):
+		#TODO-bert 调整统一参数
 		member = args['member']
 		event_type = args['event_type']
 		integral_increase_count = args.get('integral_increase_count', 0)
@@ -108,6 +109,7 @@ class Integral(business_model.Model):
 			webapp_user_id = webapp_user.id
 		else:
 			webapp_user_id = 0
+		member = member_models.Member.get(id=member.id)
 		current_integral = member.integral + integral_increase_count
 		try:
 			#TODO-bert 并发下是否会出现积分日志无法对应上
@@ -143,7 +145,8 @@ class Integral(business_model.Model):
 
 		return Integral.increase_member_integral({
 			'integral_increase_count': use_count,
-			'member': webapp_user.member,
+			'webapp_user': webapp_user,
+			'member':webapp_user.member,
 			'event_type':  member_models.USE
 			})
 		
@@ -154,4 +157,4 @@ class Integral(business_model.Model):
 		integral_count = args['integral_count']
 		#TODO-bert 增加watchdog
 		member_models.Member.update(integral=member_models.Member.integral + integral_count).dj_where(id=webapp_user.member.id).execute()
-		member_models.MemberIntegralLog.delete().dj_where(id=integral_log_id)
+		member_models.MemberIntegralLog.delete().dj_where(id=integral_log_id).execute()

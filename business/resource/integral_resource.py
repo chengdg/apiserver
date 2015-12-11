@@ -29,7 +29,8 @@ class IntegralResource(business_model.Resource):
 	__slots__ = (
 		'type',
 		'integral',
-		'money'
+		'money',
+		'integral_log_id'
 		)
 
 
@@ -50,20 +51,6 @@ class IntegralResource(business_model.Resource):
 		self.context['webapp_user'] = webapp_user
 		self.context['webapp_owner'] = webapp_owner
 
-
-	def release(self):
-		integral = self.integral
-		integral_log_id = self.context['integral_log_id']
-		
-		if integral > 0 and integral_log_id != -1:
-			webapp_user = self.context['webapp_user']
-			Integral.roll_back_integral({
-					'webapp_user': webapp_user,
-					'integral_count': integral,
-					'integral_log_id': integral_log_id
-					})
-			
-
 	def get_type(self):
 		return self.type
 
@@ -71,15 +58,14 @@ class IntegralResource(business_model.Resource):
 		self.integral = integral
 		#self.money = integral_money
 		webapp_user = self.context['webapp_user']
-		self.context['integral_log_id'] = -1
-
+		self.integral_log_id = -1
 		if integral > 0 and not webapp_user.can_use_integral(integral):
 			return False, u'积分不足'
 		elif integral == 0:
 			return True, u'积分不足'
 		else:
 			successed, integral_log_id = webapp_user.use_integral(integral)
-			self.context['integral_log_id'] = integral_log_id
+			self.integral_log_id = integral_log_id
 			if successed:
 				return True, ''
 			else:

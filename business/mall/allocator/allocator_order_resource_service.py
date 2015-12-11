@@ -16,7 +16,7 @@ import resource
 from core.watchdog.utils import watchdog_alert
 from business import model as business_model 
 from business.mall.allocator.order_integral_resource_allocator import OrderIntegralResourceAllocator
-from business.mall.allocator.order_product_resource_allocator import OrderProductResourceAllocator
+from business.mall.allocator.order_products_resource_allocator import OrderProductsResourceAllocator
 from business.mall.allocator.order_coupon_resource_allocator import OrderCouponResourceAllocator
 
 
@@ -27,7 +27,7 @@ class AllocateOrderResourceService(business_model.Service):
 	"""
 	allocators = [
 		OrderIntegralResourceAllocator,
-		OrderProductResourceAllocator,
+		OrderProductsResourceAllocator,
 		OrderCouponResourceAllocator
 	]
 
@@ -44,14 +44,13 @@ class AllocateOrderResourceService(business_model.Service):
 		is_success = True
 		reasons = []
 		for allocator in self.context['allocators']:
-			#积分: {'type': 'integral', 'integral': 5, 'integral_money': 10}
 			is_success, reason, resource = allocator.allocate_resource(order, purchase_info)
 			if not is_success:
 				reasons.append(reason)
 				self.release(resources)
 				break
 			else:
-				if isinstance(resource,list):
+				if isinstance(resource, list):
 					resources.extend(resource)
 				else:
 					resources.append(resource)

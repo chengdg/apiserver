@@ -129,6 +129,7 @@ class OrderProductsResourceAllocator(business_model.Service):
 		 	successed, reason, resource = product_resource_allocator.allocate_resource(product)
 
 		 	if not successed:
+		 		self.__supply_product_info_into_fail_reason(product, reason)
 		 		self.release(resources)
 		 		break
 		 	else:

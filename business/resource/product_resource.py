@@ -73,18 +73,36 @@ class ProductResource(business_model.Resource):
 		model2stock = realtime_stock.model2stock
 
 		if not model2stock and len(model2stock) != 1:
-			return False, u'商品已删除'
+			return False, {
+				'is_successed': False,
+				'type': 'product:is_deleted',
+				'msg': u'商品已删除',
+				'short_msg': u'商品已删除'
+			}
 
 		current_model_id = model2stock.keys()[0]
 		current_model = model2stock[current_model_id]
 
 		if current_model['stock_type'] == mall_models.PRODUCT_STOCK_TYPE_LIMIT and product.purchase_count > current_model['stocks']:
 			if current_model['stocks'] == 0:
-				return False, 'sellout'
+				return False, {
+					'is_successed': False,
+					'type': 'product:sellout',
+					'msg': u'商品已售罄',
+					'short_msg': u'商品已售罄'
+				}
 			else:
-				return False, 'not_enough_stocks'
+				return False, {
+					'is_successed': False,
+					'type': 'product:not_enough_stocks',
+					'msg': u'有商品库存不足，请重新下单',
+					'short_msg': u'库存不足'
+				}
 		else:
 			mall_models.ProductModel.update(stocks=mall_models.ProductModel.stocks-product.purchase_count).dj_where(id=current_model_id).execute()			
 			self.purchase_count = product.purchase_count
 			self.model_id = current_model_id
-			return True, product.purchase_count
+			return True, {
+				'is_successed': True,
+				'count': product.purchase_count
+			}

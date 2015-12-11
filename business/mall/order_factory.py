@@ -96,7 +96,7 @@ class OrderFactory(business_model.Model):
 		"""
 		allocator_order_resource_service = AllocateOrderResourceService(self.context['webapp_owner'], self.context['webapp_user'])
 		
-		successed, reason, resources = allocator_order_resource_service.allocate_resource_for(self, self.purchase_info)
+		successed, reasons, resources = allocator_order_resource_service.allocate_resource_for(self, self.purchase_info)
 		
 		if successed:
 			self.context['allocator_order_resource_service'] = allocator_order_resource_service
@@ -106,7 +106,7 @@ class OrderFactory(business_model.Model):
 			# 	if resource.get_type() == business_model.RESOURCE_TYPE_INTEGRAL:
 			# 		self.__process_order_integral_for(resource)
 		else:
-			raise OrderException(reason)	
+			raise OrderException(reasons)	
 
 	# def __process_order_integral_for(self, resource):
 	# 	self.order.integral = resource.integral

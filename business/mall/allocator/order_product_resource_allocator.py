@@ -43,6 +43,26 @@ class OrderProductResourceAllocator(business_model.Service):
 		for resource in self.context['resources']:
 			resource.release()
 
+	def __check_promotion(self, product):
+		if product.has_expected_promotion() and not product.is_expected_promotion_active():
+			return {
+				"is_success": False,
+				"type": 'promotion:expired',
+				"msg": u"该活动已经过期",
+				"short_msg": u"已经过期"
+			}
+
+		return {
+			"is_success": True
+		}
+
+	def __supply_product_info_into_fail_result(self, product, result):
+		result['id'] = product.id
+		result['name'] = product.name
+		result['stocks'] = product.stocks
+		result['model_name'] = product.model_name
+		result['pic_url'] = product.thumbnails_url
+
 	def allocate_resource(self, order, purchase_info):
 		webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user']
@@ -50,6 +70,12 @@ class OrderProductResourceAllocator(business_model.Service):
 		products = order.products
 		successed = False
 		for product in products:
+			#检查ReservedProduct的期望促销是否可用
+			result = self.__check_promotion(product)
+			if not result["is_success"]:
+				self.__supply_product_info_into_fail_result(product, result)
+				return False, result, None
+
 		 	product_resource = ProductResource.get({
 					'type': business_model.RESOURCE_TYPE_PRODUCT,
 					'webapp_user': webapp_user

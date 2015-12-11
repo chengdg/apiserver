@@ -219,7 +219,7 @@ Scenario: 2 购买买赠活动商品，满足买赠基数
 		}
 		"""
 
-@todo @mall2 @promotion @mall.promotion @mall.webapp.promotion @wip
+@todo @mall2 @promotion @mall.promotion @mall.webapp.promotion
 Scenario: 3 购买多个买赠活动商品，满足买赠基数，并满足循环买赠
 	商品2满足循环买赠，赠品应该累加
 	赠品数量刚好等于赠品库存

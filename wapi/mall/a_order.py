@@ -51,7 +51,7 @@ class AOrder(api_resource.ApiResource):
 			})
 			order = order_factory.create_order(purchase_info)
 		except OrderException as e:
-			return 500, e.value
+			return 500, {'detail': e.value}
 
 		# order_factory = OrderFactory.get({
 		# 	"webapp_owner": webapp_owner,

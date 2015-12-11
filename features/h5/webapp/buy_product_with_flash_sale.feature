@@ -230,16 +230,20 @@ Scenario: 1 购买单个限时抢购商品，限时抢购进行中
 		}
 		"""
 
-@todo @mall2 @promotion @mall.promotion @mall.webapp.promotion
+@todo @mall2 @promotion @mall.promotion @mall.webapp.promotion @wip
 Scenario:2 购买单个限时抢购商品，限时抢购已过期（在购物车中是限时抢购商品，但，去提交订单时已经不是限时抢购商品）
 
 	When bill访问jobs的webapp
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品3",
-				"count": 1
+				"count": 1,
+				"promotion": {
+					"name": "商品3限时抢购"
+				} 
 			}]
 		}
 		"""
@@ -725,7 +729,7 @@ Scenario:11 购买单个限时抢购商品，未支付然后取消订单，还�
 		"""
 
 #后续补充会员等级价.师帅
-@mall3 @promotion @wip
+@mall3 @promotion
 Scenario:12 不同等级的会员购买有会员价同时有限时抢购的商品（限时抢购优先于会员价）
 	When jobs更新商品'商品1':weapp
 		"""

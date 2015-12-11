@@ -104,10 +104,13 @@ def get_coupon_by_id(id):
 
 def get_product_by_prouduct_id(owner_id,name):
     try:
-        return Product.objects.get(owner_id=owner_id,name=name)
+        return mall_models.Product.get(owner=owner_id,name=name)
     except:
         return None
 
+def get_product_by_prouduct_name(owner_id,name):
+    return mall_models.Product.get(owner=owner_id,name=name)
+    
 def get_order_has_products(context):
     order = Order.objects.get(order_id=context.pay_order_id)
     order_has_products = None

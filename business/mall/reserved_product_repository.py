@@ -94,18 +94,21 @@ class ReservedProductRepository(business_model.Model):
 		webapp_user = self.context['webapp_user']
 
 		product_ids = purchase_info.product_ids
+		promotion_ids = purchase_info.promotion_ids
 		product_counts = purchase_info.product_counts
 		product_model_names = purchase_info.product_model_names
 		products = []
 		
 		for i in range(len(product_ids)):
 			product_id = int(product_ids[i])
+			expected_promotion_id = int(promotion_ids[i])
 			product_model_name = product_model_names[i]
 			product_count = int(product_counts[i])
 			product_info = {
 				"id": product_id,
 				"model_name": product_model_name,
-				"count": product_count
+				"count": product_count,
+				"expected_promotion_id": expected_promotion_id
 			}
 			products.append(ReservedProduct.get({
 				"webapp_owner": webapp_owner,

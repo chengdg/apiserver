@@ -45,11 +45,12 @@ class AllocateOrderResourceService(business_model.Service):
 	def allocate_resource_for(self, order, purchase_info):
 		resources = []
 		is_success = True
-		reason = ''
+		reasons = []
 		for allocator in self.context['allocators']:
 			#积分: {'type': 'integral', 'integral': 5, 'integral_money': 10}
 			is_success, reason, resource = allocator.allocate_resource(order, purchase_info)
 			if not is_success:
+				reasons.append(reason)
 				self.release()
 				break
 			else:
@@ -59,7 +60,7 @@ class AllocateOrderResourceService(business_model.Service):
 					resources.append(resource)
 		
 		self.context['resources'] = resources
-		return is_success, reason, resources
+		return is_success, reasons, resources
 
 	def release(self):
 		if not self.context['resources']:

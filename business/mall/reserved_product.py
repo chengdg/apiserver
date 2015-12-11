@@ -58,6 +58,7 @@ class ReservedProduct(business_model.Model):
 		'model',
 		'is_member_product',
 		'promotion',
+		'expected_promotion_id',
 		'used_promotion_id',
 		'promotion_result',
 		'promotion_saved_money', #促销抵扣金额
@@ -123,6 +124,12 @@ class ReservedProduct(business_model.Model):
 		self.is_use_custom_model = product.is_use_custom_model
 		self.shopping_cart_id = product_info.get('shopping_cart_id', 0)
 
+		self.model_name = product_info['model_name']
+		self.expected_promotion_id = product_info.get('expected_promotion_id', 0)
+		self.product_model_id = '%s_%s' % (product_info['id'], product_info['model_name'])
+		self.purchase_count = product_info['count']
+		self.is_member_product = product.is_member_product
+
 		#获取商品规格信息
 		model = product.get_specific_model(product_info['model_name'])
 		self.is_model_deleted = model.is_deleted
@@ -131,33 +138,36 @@ class ReservedProduct(business_model.Model):
 		self.weight = model.weight
 		if not hasattr(product, 'min_limit'):
 			self.min_limit = model.stocks
-		self.model_name = product_info['model_name']
 		self.stock_type = model.stock_type
 		self.stocks = model.stocks
 		self.model = model
-
-		self.product_model_id = '%s_%s' % (product_info['id'], product_info['model_name'])
-		self.purchase_count = product_info['count']
 		self.total_price = self.original_price * int(self.purchase_count)
-		
-		self.is_member_product = product.is_member_product
 
-		#获取促销
-		promotion_id = product_info.get('promotion_id', 0)
-		if promotion_id == 0:
-			#没有指定promotion，获取商品当前的promotion
-			product_promotion = product.promotion
-			if product_promotion and product_promotion.is_active() and product.promotion.can_use_for(webapp_user):
-				self.promotion = product.promotion
-				self.used_promotion_id = self.promotion.id
-			else:
-				self.promotion = None
-				self.used_promotion_id = 0
+		#获取商品当前的promotion
+		product_promotion = product.promotion
+		if product_promotion and product_promotion.is_active() and product.promotion.can_use_for(webapp_user):
+			self.promotion = product.promotion
+			self.used_promotion_id = self.promotion.id
 		else:
-			#指定了promotion，获取指定的promotion
-			self.promotion = {}
+			self.promotion = None
 			self.used_promotion_id = 0
 		self.promotion_saved_money = 0.0
+
+		#获取促销
+		# promotion_id = product_info.get('promotion_id', 0)
+		# if promotion_id == 0:
+		# 	#没有指定promotion，获取商品当前的promotion
+		# 	product_promotion = product.promotion
+		# 	if product_promotion and product_promotion.is_active() and product.promotion.can_use_for(webapp_user):
+		# 		self.promotion = product.promotion
+		# 		self.used_promotion_id = self.promotion.id
+		# 	else:
+		# 		self.promotion = None
+		# 		self.used_promotion_id = 0
+		# else:
+		# 	#指定了promotion，获取指定的promotion
+		# 	self.promotion = {}
+		# 	self.used_promotion_id = 0
 
 		if product.is_member_product:
 			_, discount_value = webapp_user.member.discount
@@ -250,6 +260,25 @@ class ReservedProduct(business_model.Model):
 		[property] 订单商品的供应商
 		"""
 		return self.context['product'].owner_id	
+
+	def has_expected_promotion(self):
+		"""
+		判断已预订商品是否拥有预期的促销
+
+		Returns
+			如果拥有预期促销，返回True；否则，返回False
+		"""
+		return self.expected_promotion_id != 0
+
+	def is_expected_promotion_active(self):
+		"""
+		判断预期促销是否还在进行中
+
+		Returns
+			如果预期促销还在进行中，返回True；否则，返回False
+		"""
+		return self.expected_promotion_id == self.used_promotion_id
+
 
 	def to_dict(self):
 		data = business_model.Model.to_dict(self)

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """@package business.mall.allocator.OrderProductResourceAllocator
-请求商品库存资源
+请求订单商品库存资源
 
 """
 import logging
@@ -22,13 +22,13 @@ from business.mall.product import Product
 import settings
 from business.decorator import cached_context_property
 from business.resource.product_resource import ProductResource
+from business.mall.allocator.product_resource_allocator import ProductResourceAllocator
 
 class OrderProductResourceAllocator(business_model.Service):
-	"""请求商品库存资源
+	"""请求订单商品库存资源
 	"""
 	__slots__ = (
-		'order',
-		'result'
+		'order'
 		)
 
 	def __init__(self, webapp_owner, webapp_user):
@@ -37,18 +37,15 @@ class OrderProductResourceAllocator(business_model.Service):
 		self.context['webapp_owner'] = webapp_owner
 		self.context['webapp_user'] = webapp_user
 
-		self.context['resources'] = []
+		self.context['product_resource_allocator'] = []
 
 
-	def release(self):
-		for resource in self.context['resources']:
-			resource.release()
+	def release(self, resources):
+		if not resources:
+			return 
+		ProductResourceAllocator.release(resources)
 
 	def __check_promotion(self, product):
-		print '-*-' * 20
-		print product.has_expected_promotion()
-		print product.is_expected_promotion_active()
-		print '-*-' * 20
 		if product.has_expected_promotion() and not product.is_expected_promotion_active():
 			return False, {
 				"is_success": False,
@@ -114,22 +111,20 @@ class OrderProductResourceAllocator(business_model.Service):
 				return False, reason, None
 
 		successed = False
+		resources = []
 		for product in products:
-		 	product_resource = ProductResource.get({
-					'type': business_model.RESOURCE_TYPE_PRODUCT,
-					'webapp_user': webapp_user
-				})
+		 	product_resource_allocator = ProductResourceAllocator.get()
+		 	successed, reason, resource = product_resource_allocator.allocate_resource(product)
 
-		 	successed,reason = product_resource.get_resources(product)
 		 	if not successed:
-		 		self.release()
+		 		self.release(resources)
 		 		break
 		 	else:
-		 		self.context['resources'].append(product_resource)
+		 		resources.append(resource)
 
 		if not successed:
-			return False, reason, self.context['resources']
+			return False, reason, resources
 		else:
-		 	return True, reason, self.context['resources']
+		 	return True, reason, resources
 
 		

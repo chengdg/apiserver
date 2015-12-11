@@ -31,6 +31,10 @@ class OrderCouponResourceAllocator(business_model.Model):
 		member_id = webapp_user.member.id
 		use_common_coupon = True
 
+		is_success = True
+		reason = ''
+		coupon_resource = None
+
 		if not purchase_info.coupon_id or purchase_info.coupon_id == '0':
 			# 未使用优惠券
 			self.__return_empty_coupon()
@@ -57,10 +61,10 @@ class OrderCouponResourceAllocator(business_model.Model):
 			coupon_resource_allocator = CouponResourceAllocator(webapp_owner, webapp_user)
 			is_success, reason, coupon_resource = coupon_resource_allocator.allocate_resource(coupon)
 
-			if is_success:
-				return True, '', coupon_resource
-			else:
-				return False, reason, None
+		if is_success:
+			return True, '', coupon_resource
+		else:
+			return False, reason, None
 
 	def release(self, resources):
 		for resource in resources:

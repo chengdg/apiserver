@@ -43,7 +43,7 @@ from business.mall.product_grouper import ProductGrouper
 from business.mall.order_checker import OrderChecker
 from business.mall.order import Order
 from business.mall.reserved_product_repository import ReservedProductRepository
-from business.mall.allocator.allocator_order_resource_service import AllocateOrderResourceService
+from business.mall.allocator.allocate_order_resource_service import AllocateOrderResourceService
 
 class OrderException(Exception):
 	def __init__(self, value):
@@ -208,6 +208,7 @@ class OrderFactory(business_model.Model):
 		order.product_price = self.price_info.get('product_price', 0)
 		order.coupon_money = self.price_info.get('coupon', 0)
 		order.integral_money = self.price_info.get('integral', 0)
+		order.integral = self.price_info.get('integral_count', 0)
 		order.final_price = self.price_info.get('final_price', 0)
 		order.postage = self.price_info.get('postage', 0)
 

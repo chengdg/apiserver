@@ -38,7 +38,6 @@ class CalculatePriceService(business_model.Service):
 		order_price_info['postage'] = postage
 
 		final_price = order_price_info['product_price']
-
 		# 优惠券面额
 		coupon_denomination = order_price_info.get('coupon', 0)
 		if final_price < coupon_denomination:
@@ -49,18 +48,22 @@ class CalculatePriceService(business_model.Service):
 
 		# 处理积分抵扣金额
 		final_price -= order_price_info.get('integral', 0)
-
 		#邮费
 		final_price += order_price_info.get('postage', 0)
-
 		# 处理微众卡
 		final_price -= order_price_info.get('weizoom_card', 0)
-
 		# todo 处理promotion_saved_money
 
 		if final_price < 0:
 			final_price = 0
 
 		order_price_info['final_price'] = round(final_price, 2)
+
+		type2resource = dict([(resource.type, resource) for resource in resources if type(resource) in CalculatePriceService.price_resources and getattr(resource, resource.type)])
+
+		#add by bert 临时解决方案 
+		if order_price_info.get('integral', 0):
+			order_price_info['integral_count'] = type2resource.get('integral').integral
+
 
 		return order_price_info

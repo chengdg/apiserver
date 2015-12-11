@@ -4,6 +4,7 @@
 from business import model as business_model
 from business.resource.coupon_resource import CouponResource
 from business.resource.integral_resource import IntegralResource
+from business.mall import postage_calculator
 
 
 class CalculatePriceService(business_model.Service):
@@ -30,6 +31,11 @@ class CalculatePriceService(business_model.Service):
 
 		# 处理商品购买价
 		order_price_info['product_price'] = sum([product.price * product.purchase_count for product in products])
+		# 处理邮费
+		postage_config = self.context['webapp_owner'].system_postage_config
+		calculator = postage_calculator.PostageCalculator(postage_config)
+		postage = calculator.get_postage(order)
+		order_price_info['postage'] = postage
 
 		final_price = order_price_info['product_price']
 
@@ -44,7 +50,7 @@ class CalculatePriceService(business_model.Service):
 		# 处理积分抵扣金额
 		final_price -= order_price_info.get('integral', 0)
 
-		# 处理邮费
+		#邮费
 		final_price += order_price_info.get('postage', 0)
 
 		# 处理微众卡

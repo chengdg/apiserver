@@ -69,7 +69,7 @@ class PostageCalculator(object):
 		added_price = added_count * factor['addedWeightPrice']
 		return price + added_price
 
-	def __get_province_id_by_area(area):
+	def __get_province_id_by_area(self, area):
 	    """
 	    根据area：2_2_22 , 来获取省份id(2)
 	    """
@@ -82,7 +82,9 @@ class PostageCalculator(object):
 		计算运费
 		"""
 		products = order.products
-		province_id = __get_province_id_by_area(order.ship_area)
+		ship_area = order.purchase_info.ship_info['area']
+
+		province_id = self.__get_province_id_by_area(ship_area)
 
 		unified_postage_money = 0.0
 		unified_postage_money_id = []

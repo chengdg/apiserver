@@ -208,6 +208,7 @@ class OrderFactory(business_model.Model):
 		order.coupon_money = self.price_info.get('coupon', 0)
 		order.integral_money = self.price_info.get('integral', 0)
 		order.final_price = self.price_info.get('final_price', 0)
+		order.postage = self.price_info.get('postage', 0)
 
 
 

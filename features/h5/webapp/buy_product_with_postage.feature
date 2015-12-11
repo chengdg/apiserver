@@ -8,8 +8,9 @@ Feature: 在webapp中购买有运费的商品
 """
 
 Background:
-	Given jobs登录系统
-	And jobs已添加商品规格
+	Given 重置weapp的bdd环境
+	Given jobs登录系统:weapp
+	And jobs已添加商品规格:weapp
 		"""
 		[{
 			"name": "尺寸",
@@ -29,7 +30,7 @@ Background:
 			}]
 		}]
 		"""
-	And jobs已添加运费配置
+	And jobs已添加运费配置:weapp
 		"""
 		[{
 			"name":"顺丰",
@@ -55,7 +56,7 @@ Background:
 			}]
 		}]
 		"""
-	And jobs已添加商品
+	And jobs已添加商品:weapp
 		"""
 		[{
 			"name": "商品1",
@@ -125,7 +126,7 @@ Background:
 			}
 		}]
 		"""
-	And jobs已添加支付方式
+	And jobs已添加支付方式:weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -135,12 +136,12 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	When jobs选择'顺丰'运费配置
+	When jobs选择'顺丰'运费配置:weapp
 	Given bill关注jobs的公众号
 	And tom关注jobs的公众号
 
 
-@todo @mall2 @mall.postage @mall.webapp
+@todo @mall2 @mall.postage @mall.webapp @mall3
 Scenario:1 购买单个商品，使用系统运费模板，满足续重
 	
 	When bill访问jobs的webapp

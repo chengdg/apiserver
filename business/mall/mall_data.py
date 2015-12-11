@@ -129,9 +129,9 @@ class MallData(business_model.Model):
 				if postage_config.is_enable_special_config:
 					for special_config in postage_config.get_special_configs():
 						data = {
-							'firstWeight': postage_config.first_weight,
+							'firstWeight': special_config.first_weight,
 							'firstWeightPrice': special_config.first_weight_price,
-							'addedWeight': float(postage_config.added_weight),
+							'addedWeight': float(special_config.added_weight),
 							'addedWeightPrice': float(special_config.added_weight_price)
 						}
 						for province_id in special_config.destination.split(','):

@@ -24,7 +24,7 @@ from business.decorator import cached_context_property
 
 
 class OrderIntegralResourceAllocator(business_model.Service):
-	"""下单使用积分
+	"""订单积分分配器
 	"""
 	__slots__ = ()
 
@@ -33,10 +33,19 @@ class OrderIntegralResourceAllocator(business_model.Service):
 
 		self.context['webapp_owner'] = webapp_owner
 		self.context['webapp_user'] = webapp_user
+		self.context['resource2allocator'] = {}
 
 	def release(self, resources):
-		if resources:
-			IntegralResourceAllocator.release(resources)
+		release_resources = []
+		for resource in resources:
+			if resource.get_type() == business_model.RESOURCE_TYPE_INTEGRAL:
+				release_resources.append(resource)
+
+		for release_resource in release_resources:
+			allocator = self.context['resource2allocator'].get(release_resource, None)
+			#TODO-bert 异常处理
+			if allocator:
+				allocator.release()
 
 	def allocate_resource(self, order, purchase_info):
 		webapp_owner = self.context['webapp_owner']
@@ -52,6 +61,7 @@ class OrderIntegralResourceAllocator(business_model.Service):
 
 			total_integral = purchase_info.purchase_integral_info['integral']
 			integral_money = round(float(purchase_info.purchase_integral_info['money']), 2)
+
 			product_price = sum([product.price * product.purchase_count for product in order.products])
 			if (integral_money - 1) > round(product_price * use_ceiling / 100, 2)\
 				or (total_integral + 1) < (integral_money * count_per_yuan):
@@ -104,10 +114,8 @@ class OrderIntegralResourceAllocator(business_model.Service):
 		integral_resource_allocator = IntegralResourceAllocator(webapp_owner,webapp_user)
 		successed, reason, resource = integral_resource_allocator.allocate_resource(total_integral)
 
-		self.context['integral_resource_allocator'] = integral_resource_allocator
-		#successed,reason = integral_resource.use_integral(total_integral)
-
 		if successed:
+			self.context['resource2allocator'][resource] = integral_resource_allocator
 			return True, '', resource
 		else:
 			return False, reason, None

@@ -70,6 +70,8 @@ class ReservedProduct(business_model.Model):
 		'stock_type',
 		'stocks',
 		'is_model_deleted',
+		'postage_type',
+		'unified_postage_money',
 
 		'can_use_coupon',
 		'active_integral_sale_rule'
@@ -131,6 +133,8 @@ class ReservedProduct(business_model.Model):
 		self.purchase_count = product_info['count']
 		self.is_member_product = product.is_member_product
 
+		self.postage_type = product.postage_type
+		self.unified_postage_money = product.unified_postage_money
 		#获取商品规格信息
 		model = product.get_specific_model(product_info['model_name'])
 		self.is_model_deleted = model.is_deleted

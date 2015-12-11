@@ -5,13 +5,14 @@
 """
 
 from business import model as business_model
+from business.mall.allocator.coupon_resource_allocator import CouponResourceAllocator
 from business.mall.coupon.coupon import Coupon
 from business.mall.coupon.coupon_rule import CouponRule
 from business.resource.coupon_resource import CouponResource
 
 
 class OrderCouponResourceAllocator(business_model.Model):
-	"""下单使用积分
+	"""下单使用优惠券（通用券）
 	"""
 	__slots__ = (
 		'order',
@@ -28,18 +29,11 @@ class OrderCouponResourceAllocator(business_model.Model):
 		webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user']
 		member_id = webapp_user.member.id
-		coupon_resource = CouponResource.get({
-			'type': business_model.RESOURCE_TYPE_COUPON,
-		})
-
-		coupon_resource.coupon = None
-		coupon_resource.money = 0
-
 		use_common_coupon = True
 
 		if not purchase_info.coupon_id or purchase_info.coupon_id == '0':
 			# 未使用优惠券
-			return True, '', coupon_resource
+			self.__return_empty_coupon()
 		else:
 			coupon = Coupon.from_coupon_id({'coupon_id': purchase_info.coupon_id})
 			if not coupon:
@@ -50,21 +44,38 @@ class OrderCouponResourceAllocator(business_model.Model):
 				if coupon_rule.limit_product:
 					use_common_coupon = False
 
-		# 判断是否有通用券
-		if not use_common_coupon:
+			# 使用的优惠券非通用券
+			if not use_common_coupon:
+				self.__return_empty_coupon()
 
-			return True, '', coupon_resource
+			# 判断通用券在订单中是否可用
+			is_success, reason = coupon.check_common_coupon_in_order(order, purchase_info, member_id)
+			if not is_success:
+				return False, reason, None
 
-		is_success, reason = coupon.check_common_coupon_in_order(order, purchase_info, member_id)
-		if not is_success:
-			return False, reason, None
+			# 调用CouponResourceAllocator获得资源
+			coupon_resource_allocator = CouponResourceAllocator(webapp_owner, webapp_user)
+			is_success, reason, coupon_resource = coupon_resource_allocator.allocate_resource(coupon)
 
-		is_success, reason = coupon_resource.use_coupon(coupon, coupon_rule, member_id)
-		if is_success:
-			return True, '', coupon_resource
-		else:
-			return False, reason, None
+			if is_success:
+				return True, '', coupon_resource
+			else:
+				return False, reason, None
 
-	@staticmethod
-	def release(resources):
+	def release(self, resources):
+		for resource in resources:
+			if resource.get_type() == business_model.RESOURCE_TYPE_COUPON:
+				CouponResourceAllocator.release(resource)
+
+	def __return_empty_coupon(self):
+		empty_coupon_resource = CouponResource.get({
+			'type': business_model.RESOURCE_TYPE_COUPON,
+		})
+		empty_coupon_resource.coupon = None
+		empty_coupon_resource.money = 0
+
+		return True, '', empty_coupon_resource
+	
+	#add by bert
+	def release(self,resources):
 		pass

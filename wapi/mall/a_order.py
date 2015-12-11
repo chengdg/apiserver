@@ -73,7 +73,7 @@ class AOrder(api_resource.ApiResource):
 		# order = order_factory.save()
 		pay_url_info = None
 		if order:
-			if order.final_price > 0 and purchase_info.used_pay_interface_type != '-1':
+			if purchase_info.used_pay_interface_type != '-1':
 				pay_interface = PayInterface.from_type({
 					"webapp_owner": webapp_owner,
 					"pay_interface_type": purchase_info.used_pay_interface_type

@@ -8,8 +8,9 @@ Feature: 在webapp中购买有运费的商品
 """
 
 Background:
-	Given jobs登录系统
-	And jobs已添加商品规格
+	Given 重置weapp的bdd环境
+	Given jobs登录系统:weapp
+	And jobs已添加商品规格:weapp
 		"""
 		[{
 			"name": "尺寸",
@@ -29,7 +30,7 @@ Background:
 			}]
 		}]
 		"""
-	And jobs已添加运费配置
+	And jobs已添加运费配置:weapp
 		"""
 		[{
 			"name":"顺丰",
@@ -55,7 +56,7 @@ Background:
 			}]
 		}]
 		"""
-	And jobs已添加商品
+	And jobs已添加商品:weapp
 		"""
 		[{
 			"name": "商品1",
@@ -125,7 +126,7 @@ Background:
 			}
 		}]
 		"""
-	And jobs已添加支付方式
+	And jobs已添加支付方式:weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -135,12 +136,12 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	When jobs选择'顺丰'运费配置
+	When jobs选择'顺丰'运费配置:weapp
 	Given bill关注jobs的公众号
 	And tom关注jobs的公众号
 
 
-@todo @mall2 @mall.postage @mall.webapp
+@mall2 @mall.postage @mall.webapp @mall3
 Scenario:1 购买单个商品，使用系统运费模板，满足续重
 	
 	When bill访问jobs的webapp
@@ -165,7 +166,7 @@ Scenario:1 购买单个商品，使用系统运费模板，满足续重
 		}
 		"""
 
-@todo @mall2 @mall.postage @mall.webapp
+@mall2 @mall.postage @mall.webapp @mall3
 Scenario:2 购买单个商品，使用统一运费商品
 	
 	When bill访问jobs的webapp
@@ -209,7 +210,7 @@ Scenario:2 购买单个商品，使用统一运费商品
 		}
 		"""
 
-@todo @mall2 @mall.postage @mall.webapp
+@mall2 @mall.postage @mall.webapp @mall3
 Scenario:3 购买单个商品，使用系统运费模板，满足金额包邮条件
 	
 	When bill访问jobs的webapp
@@ -234,7 +235,7 @@ Scenario:3 购买单个商品，使用系统运费模板，满足金额包邮条
 		}
 		"""
 
-@todo @mall2 @mall.postage @mall.webapp 
+@mall2 @mall.postage @mall.webapp @mall3
 Scenario:4 购买单个商品，使用系统运费模板，满足数量包邮条件
 	
 	When bill访问jobs的webapp
@@ -259,7 +260,7 @@ Scenario:4 购买单个商品，使用系统运费模板，满足数量包邮条
 		}
 		"""
 
-@todo @mall2 @mall.postage @mall.webapp 
+@mall2 @mall.postage @mall.webapp @mall3
 Scenario:5 购买多种商品，使用统一运费
 	
 	When bill访问jobs的webapp
@@ -309,7 +310,7 @@ Scenario:5 购买多种商品，使用统一运费
 		}
 		"""
 
-@todo @mall2 @mall.postage @mall.webapp 
+@mall2 @mall.postage @mall.webapp @mall3
 Scenario:6 购买多种商品，使用系统运费模板，满足普通续重
 	顺丰，河北，2公斤，运费18元
 	
@@ -338,7 +339,7 @@ Scenario:6 购买多种商品，使用系统运费模板，满足普通续重
 		}
 		"""
 
-@todo @mall2 @mall.postage @mall.webapp 
+@mall2 @mall.postage @mall.webapp @mall3
 Scenario:7 购买多种商品，使用系统运费模板，满足特殊地区续重
 	顺丰，北京，1.6公斤，运费30元
 	
@@ -367,7 +368,7 @@ Scenario:7 购买多种商品，使用系统运费模板，满足特殊地区续
 		}
 		"""
 
-@todo @mall2 @mall.postage @mall.webapp
+@mall2 @mall.postage @mall.webapp @mall3
 Scenario:8 购买多种商品，使用系统运费模板，合起来满足数量包邮
 	顺丰，北京，3件商品，包邮
 	
@@ -396,7 +397,7 @@ Scenario:8 购买多种商品，使用系统运费模板，合起来满足数量
 		}
 		"""
 
-@todo @mall2 @mall.postage @mall.webapp
+@mall2 @mall.postage @mall.webapp @mall3
 Scenario:9 购买多种商品，使用系统运费模板，合起来满足金额包邮
 	顺丰，北京，商品金额200元，包邮
 	
@@ -425,7 +426,7 @@ Scenario:9 购买多种商品，使用系统运费模板，合起来满足金额
 		}
 		"""
 
-@todo @mall2 @mall.postage @mall.webapp
+@mall2 @mall.postage @mall.webapp @mall3
 Scenario:10 购买多种商品，使用统一运费+系统运费模板，普通运费
 	
 	When bill访问jobs的webapp
@@ -453,7 +454,7 @@ Scenario:10 购买多种商品，使用统一运费+系统运费模板，普通�
 		}
 		"""
 
-@todo @mall2 @mall.postage @mall.webapp
+@mall2 @mall.postage @mall.webapp @mall3
 Scenario:11 购买多种商品，使用统一运费+系统运费模板，特殊地区运费
 	合起来数量满足包邮，但商品5不是使用系统运费模板，所以不包邮
 	
@@ -482,7 +483,7 @@ Scenario:11 购买多种商品，使用统一运费+系统运费模板，特殊�
 		}
 		"""
 
-@todo @mall2 @mall.postage @mall.webapp
+@mall2 @mall.postage @mall.webapp @mall3
 Scenario:12 购买多种商品，使用统一运费+系统运费模板，特殊地区运费
 	使用系统运费模板的商品满足数量包邮，运费为使用统一运费商品的运费
 	
@@ -514,7 +515,7 @@ Scenario:12 购买多种商品，使用统一运费+系统运费模板，特殊�
 		}
 		"""
 
-@todo @mall2 @mall.postage @mall.webapp
+@mall2 @mall.postage @mall.webapp @mall3
 Scenario:13 购买多种商品，使用统一运费+系统运费模板，特殊地区运费
 	使用系统运费模板的商品满足金额包邮，运费为使用统一运费商品的运费
 	
@@ -546,7 +547,7 @@ Scenario:13 购买多种商品，使用统一运费+系统运费模板，特殊�
 		}
 		"""
 
-@todo @mall2 @mall.postage @mall.webapp
+@mall2 @mall.postage @mall.webapp @mall3
 Scenario:14 购买多规格商品，使用系统运费模板，特殊地区，满足续重
 	
 	When bill访问jobs的webapp
@@ -576,7 +577,7 @@ Scenario:14 购买多规格商品，使用系统运费模板，特殊地区，�
 		}
 		"""
 
-@todo @mall2 @mall.postage @mall.webapp
+@mall2 @mall.postage @mall.webapp @mall3
 Scenario:15 购买两个多规格商品
 	1 商品7使用系统运费模板，特殊地区，满足续重
 	2 商品8使用统一运费10元
@@ -617,10 +618,10 @@ Scenario:15 购买两个多规格商品
 		}
 		"""
 
-@todo @mall2 @mall.postage @mall.webapp
+@mall2 @mall.postage @mall.webapp @mall3
 Scenario:16 jobs选择'免运费'运费配置
-	Given jobs登录系统
-	When jobs选择'免运费'运费配置
+	Given jobs登录系统:weapp
+	When jobs选择'免运费'运费配置:weapp
 	When bill访问jobs的webapp
 	When bill购买jobs的商品
 		"""
@@ -644,15 +645,15 @@ Scenario:16 jobs选择'免运费'运费配置
 		}
 		"""
 
-@todo @mall2 @mall.postage @mall.webapp
+@mall2 @mall.postage @mall.webapp @mall3
 Scenario:17 更新邮费配置后进行购买
 	jobs更改邮费配置后bill进行购买
 	1.去掉特殊地区和指定地区
 	2.bill创建订单成功，邮费正常
 
 	#去掉特殊地区和指定地区
-	Given jobs登录系统
-	When jobs修改'顺丰'运费配置
+	Given jobs登录系统:weapp
+	When jobs修改'顺丰'运费配置:weapp
 		"""
 		{
 			"name":"顺丰",
@@ -662,7 +663,7 @@ Scenario:17 更新邮费配置后进行购买
 			"added_weight_price": 5.00
 		}
 		"""
-	Then jobs能获取'顺丰'运费配置
+	Then jobs能获取'顺丰'运费配置:weapp
 		"""
 		{
 			"name":"顺丰",
@@ -714,11 +715,11 @@ Scenario:17 更新邮费配置后进行购买
 		}
 		"""
 # _edit_ : "新新"
-@todo @mall2
+@mall2 @mall3 @mall.postage
 Scenario:18 不同等级的会员购买有会员价同时有运费配置
 	#包邮条件:金额取商品原价的金额
-	Given jobs登录系统
-	And jobs已添加商品
+	Given jobs登录系统:weapp
+	And jobs已添加商品:weapp
 		"""
 		[{
 			"name": "商品14",
@@ -729,7 +730,7 @@ Scenario:18 不同等级的会员购买有会员价同时有运费配置
 			"is_member_product": "on"
 		}]
 		"""
-	When jobs添加会员等级
+	When jobs添加会员等级:weapp
 		"""
 		[{
 			"name": "铜牌会员",
@@ -737,14 +738,14 @@ Scenario:18 不同等级的会员购买有会员价同时有运费配置
 			"discount": "9"
 		}]
 		"""
-	And jobs更新"bill"的会员等级
+	And jobs更新"bill"的会员等级:weapp
 		"""
 		{
 			"name": "bill",
 			"member_rank": "铜牌会员"
 		}
 		"""
-	Then jobs能获取会员等级列表
+	Then jobs能获取会员等级列表:weapp
 		"""
 		[{
 			"name": "普通会员",
@@ -756,7 +757,7 @@ Scenario:18 不同等级的会员购买有会员价同时有运费配置
 			"discount": "9"
 		}]
 		"""
-	And jobs可以获得会员列表
+	And jobs可以获得会员列表:weapp
 		"""
 		[{
 			"name": "tom",
@@ -825,13 +826,13 @@ Scenario:18 不同等级的会员购买有会员价同时有运费配置
 
 
 #根据bug6023后续补充.雪静
-@todo @mall2
+@mall2 @mall3 @mall.postage
 Scenario: 19 设置首重大于1的运费模板，进行购买商品
 	1.jobs设置首重大于1的运费模板
 	2.bill进行购买jobs的商品
 
-	Given jobs登录系统
-	And jobs已添加运费配置
+	Given jobs登录系统:weapp
+	And jobs已添加运费配置:weapp
 		"""
 		[{
 			"name":"天天",
@@ -857,7 +858,7 @@ Scenario: 19 设置首重大于1的运费模板，进行购买商品
 			}]
 		}]
 		"""
-	And jobs已添加商品
+	And jobs已添加商品:weapp
 		"""
 		[{
 			"name": "商品9",
@@ -879,7 +880,7 @@ Scenario: 19 设置首重大于1的运费模板，进行购买商品
 			}
 		}]
 		"""
-	When jobs选择'天天'运费配置
+	When jobs选择'天天'运费配置:weapp
 	When bill访问jobs的webapp
 	When bill购买jobs的商品
 		"""

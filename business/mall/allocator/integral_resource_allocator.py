@@ -18,6 +18,7 @@ import resource
 from core.watchdog.utils import watchdog_alert
 from business import model as business_model 
 from business.mall.product import Product
+from business.account.integral import Integral
 from business.resource.integral_resource import IntegralResource
 import settings
 from business.decorator import cached_context_property
@@ -34,16 +35,27 @@ class IntegralResourceAllocator(business_model.Service):
 		self.context['webapp_owner'] = webapp_owner
 		self.context['webapp_user'] = webapp_user
 
-	@staticmethod
-	def release(resources):
-		#TODO-bert
-		for_release_resources = []
-		for resource in resources:
-			if resource.get_type() == business_model.RESOURCE_TYPE_INTEGRAL:
-				for_release_resources.append(resource)
+		self.context['resource'] = None
 
-		for resource in for_release_resources:
-			resource.release()
+	
+	def release(self):
+		webapp_user = self.context['webapp_user']
+		release_resource = self.context['resource']
+		# release_resources = []
+		# for resource in resources:
+		# 	if resource.get_type() == business_model.RESOURCE_TYPE_INTEGRAL:
+		# 		release_resources.append(resource)
+
+		if release_resource:
+			integral = release_resource.integral
+			integral_log_id = release_resource.integral_log_id
+			if integral > 0 and integral_log_id != -1:
+				Integral.roll_back_integral({
+						'webapp_user': webapp_user,
+						'integral_count': integral,
+						'integral_log_id': integral_log_id
+						})
+
 
 	def allocate_resource(self, integral):
 		webapp_owner = self.context['webapp_owner']
@@ -52,16 +64,15 @@ class IntegralResourceAllocator(business_model.Service):
 		count_per_yuan = webapp_owner.integral_strategy_settings.integral_each_yuan
 		total_integral = 0
 		integral_money = 0
-
 		integral_resource = IntegralResource.get({
 					'type': business_model.RESOURCE_TYPE_INTEGRAL,
 					'webapp_user': webapp_user,
 					'webapp_owner': webapp_owner
 				})
-
 		successed,reason = integral_resource.get_resource(integral)
 
 		if successed:
+			self.context['resource'] = integral_resource
 			return True, '', integral_resource
 		else:
 			return False, reason, None

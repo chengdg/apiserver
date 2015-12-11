@@ -106,6 +106,7 @@ class OrderFactory(business_model.Model):
 			# 	if resource.get_type() == business_model.RESOURCE_TYPE_INTEGRAL:
 			# 		self.__process_order_integral_for(resource)
 		else:
+			allocator_order_resource_service.release(resources)
 			raise OrderException(reasons)	
 
 	# def __process_order_integral_for(self, resource):
@@ -208,6 +209,7 @@ class OrderFactory(business_model.Model):
 		order.coupon_money = self.price_info.get('coupon', 0)
 		order.integral_money = self.price_info.get('integral', 0)
 		order.final_price = self.price_info.get('final_price', 0)
+		order.postage = self.price_info.get('postage', 0)
 
 
 
@@ -295,7 +297,8 @@ class OrderFactory(business_model.Model):
 
 		if order.final_price == 0:
 			# 优惠券或积分金额直接可支付完成，直接调用pay_order，完成支付
-			self.pay_order(order.order_id, True, PAY_INTERFACE_PREFERENCE)
+			pass
+			#self.pay_order(order.order_id, True, PAY_INTERFACE_PREFERENCE)
 			# 支付后的操作
 			#mall_signals.post_pay_order.send(sender=Order, order=order, request=request)
 

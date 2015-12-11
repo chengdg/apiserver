@@ -200,6 +200,7 @@ class Product(business_model.Model):
 		'is_sellout',
 		'postage_id',
 		'postage_type',
+		'unified_postage_money',
 		
 		#促销信息
 		'promotion',
@@ -657,7 +658,9 @@ class Product(business_model.Model):
 			'swipe_images': getattr(self, 'swipe_images', []),
 			'promotion': self.promotion.to_dict() if self.promotion else None,
 			'product_review': getattr(self, 'product_review', None),
-			'price_info': getattr(self, 'price_info', None)
+			'price_info': getattr(self, 'price_info', None),
+			'postage_type': self.postage_type, 
+			'unified_postage_money': self.unified_postage_money
 		}
 
 		if 'extras' in kwargs:

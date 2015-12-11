@@ -30,17 +30,15 @@ class ProductResourceAllocator(business_model.Service):
 
 	def __init__(self):
 		business_model.Service.__init__(self)
-		self.context['resources'] = []
+		self.context['resource'] = None
 
-	@staticmethod
-	def release(resources):
-		if not resources:
-			return 
-
-		for resource in resources:
-			#TODO-bert 异常处理
-			if resource.get_type() == business_model.RESOURCE_TYPE_PRODUCT:
-				resource.release()
+	def release(self):
+		if self.context['resource']:
+			resource = self.context['resource']
+			#TODo-bert 异常处理
+			model_id = resource.model_id
+			purchase_count = resource.purchase_count
+			mall_models.ProductModel.update(stocks=mall_models.ProductModel.stocks+purchase_count).dj_where(id=model_id).execute()
 
 	def allocate_resource(self, product):
 	 	product_resource = ProductResource.get({
@@ -48,10 +46,10 @@ class ProductResourceAllocator(business_model.Service):
 			})
 
 		successed, reason = product_resource.get_resources(product)
-
 		if not successed:
 			return False, reason, None
 		else:
+			self.context['resource'] = product_resource
 			return True, reason, product_resource
 
 		

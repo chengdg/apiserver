@@ -90,7 +90,7 @@ Background:
 	Given bill关注jobs的公众号
 	And tom关注jobs的公众号
 
-@todo @mall2 @mall.promotion @mall.webapp.promotion @bert @gyc11
+@todo @mall2 @mall.promotion @mall.webapp.promotion @bert @mall3
 Scenario:1 购买单种一个商品，积分金额小于最大折扣金额
 	When bill访问jobs的webapp
 	When bill获得jobs的50会员积分
@@ -123,7 +123,7 @@ Scenario:1 购买单种一个商品，积分金额小于最大折扣金额
 		"""
 	Then bill在jobs的webapp中拥有0会员积分
 
-@todo @mall2 @mall.promotion @mall.webapp.promotion @bert @gyc
+@todo @mall2 @mall.promotion @mall.webapp.promotion @bert @mall3
 Scenario:2 购买单种多个商品，积分金额等于最大折扣金额
 	When bill访问jobs的webapp
 	When bill获得jobs的400会员积分
@@ -156,7 +156,7 @@ Scenario:2 购买单种多个商品，积分金额等于最大折扣金额
 		"""
 	Then bill在jobs的webapp中拥有0会员积分
 
-@todo @mall2 @mall.promotion @mall.webapp.promotion @bert @gyc1
+@todo @mall2 @mall.promotion @mall.webapp.promotion @bert @mall3
 Scenario:3 购买多个商品，已有总积分金额大于最大折扣金额
 	When bill访问jobs的webapp
 	When bill获得jobs的160会员积分

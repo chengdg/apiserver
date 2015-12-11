@@ -178,7 +178,7 @@ Background:
 			}]
 		"""
 
-@mall3 @promotion @mall.promotion @mall.webapp.promotion
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
 Scenario: 1 购买单个限时抢购商品，限时抢购进行中
 	没有设置限购周期，可以连续购买
 
@@ -292,7 +292,7 @@ Scenario:3 购买单个限时抢购商品，限时抢购活动没开始，按原
 		}
 		"""
 
-@mall3 @promotion @mall.promotion @mall.webapp.promotion
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip @wip
 Scenario:4 购买多个商品，带有限时抢购商品
 
 	When bill访问jobs的webapp

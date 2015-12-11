@@ -134,11 +134,13 @@ class OrderProducts(business_model.Model):
 				'discount_money': r.grade_discounted_money,
 				'promotion_result': promotion_result
 			})
+		order_product_infos.sort(lambda x,y: cmp(x['id'], y['id']))
 	
 		#按商品id收集购买商品集合{id1: [product1_model1, product1_model2, ...], id2: []}
 		id2products = {}
-		index = 1
+		index = 0
 		for order_product_info in order_product_infos:
+			index += 1
 			order_product = OrderProduct.get({
 				"webapp_owner": webapp_owner,
 				"webapp_user": webapp_user,
@@ -157,6 +159,12 @@ class OrderProducts(business_model.Model):
 		#根据promotion_id获取promotion_result
 		items = id2products.items()
 		items.sort(lambda x,y: cmp(x[1]["index"], y[1]["index"]))
+		buf = []
+		buf.append('-$$-' * 20)
+		for item in items:
+			buf.append(item[1]['products'][0].name)
+		buf.append('-$$-' * 20)
+		print '\n'.join(buf)
 		for product_id, products_info in items:
 			products = products_info["products"]
 			self.products.extend(products)

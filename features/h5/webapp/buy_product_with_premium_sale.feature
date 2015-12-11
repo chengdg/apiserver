@@ -277,7 +277,7 @@ Scenario: 3 购买多个买赠活动商品，满足买赠基数，并满足循�
 		}
 		"""
 
-@todo @mall2 @promotion @mall.promotion @mall.webapp.promotion @wip
+@todo @mall2 @promotion @mall.promotion @mall.webapp.promotion
 Scenario: 4 购买单个买赠商品，超出库存限制
 	第一次购买2个，成功；第二次购买4个，超出商品库存，确保缓存更新
 

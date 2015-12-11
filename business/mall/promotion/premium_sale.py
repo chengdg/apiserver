@@ -70,9 +70,11 @@ class PremiumSale(promotion.Promotion):
 					premium_product['premium_count'] = premium_product['premium_count'] * premium_round_count
 
 		promotion_result = {
+			"version": 2,
 			"subtotal": total_product_price,
 			"count": self.count,
 			"is_enable_cycle_mode": self.is_enable_cycle_mode,
+			'promotion_price': -1,
 			"premium_products": self.premium_products
 		}
 

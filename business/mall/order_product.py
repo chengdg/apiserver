@@ -112,7 +112,8 @@ class OrderProduct(business_model.Model):
 			#self.promotion = {PromotionRepository.get_promotion_from_dict_data(product_info['promotion_result'])}
 			promotion_result = product_info['promotion_result']
 			self.promotion = {
-				'type_name': promotion_result['type']
+				'type_name': promotion_result['type'],
+				'promotioned_product_price': promotion_result.get('promotion_price', -1),
 			}
 
 		self.id = product.id

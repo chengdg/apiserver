@@ -81,6 +81,7 @@ class FlashSale(promotion.Promotion):
 		#限时抢购只有一个product
 		product = products[0]
 		promotion_result = {
+			"version": 2,
 			"saved_money": product.original_price - self.promotion_price,
 			"subtotal": product.purchase_count * product.price,
 			'limit_period': self.limit_period,

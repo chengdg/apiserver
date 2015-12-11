@@ -266,8 +266,6 @@ def step_impl(context, webapp_user_name):
 		assert False, "order_id must NOT be -1"
 		return
 
-	# order = Order.objects.get(order_id=order_id)
-
 	url = '/wapi/mall/order/?woid=%s&order_id=%s' % (context.webapp_owner_id, order_id)
 	response = context.client.get(bdd_util.nginx(url), follow=True)
 
@@ -282,32 +280,14 @@ def step_impl(context, webapp_user_name):
 
 	for product in actual_order['products']:
 		product['count'] = product['purchase_count']
-		if 'custom_model_properties' in product and product['custom_model_properties']:
-			product['model'] = ' '.join([property['property_value'] for property in product['custom_model_properties']])
-
-	new_products = []
-	for product in actual_order['products']:
 		if product['promotion']:
 			promotion = product['promotion']
 			promotion['type'] = promotion['type_name']
-			promotion_type = promotion['type']
-			if promotion_type == 'flash_sale':
-				promotion['promotioned_product_price'] = promotion['promotion_price']
-				new_products.append(product)
-			elif promotion_type == 'premium_sale':
-				new_products.append(product)
-				for premium_product in promotion['premium_products']:
-					premium_product['count'] = premium_product['premium_count'];
-					premium_product['promotion'] = {
-						'type': 'premium_sale:premium_product'
-					}
-					new_products.append(premium_product)
-			else:
-				new_products.append(product)
-		else:
-			new_products.append(product)
 
-	actual_order['products'] = new_products
+		if product['model']:
+			model = product['model']
+			if model['property_values']:
+				product['model'] = ''.join(property_value['name'] for property_value in model['property_values'])
 
 	expected = json.loads(context.text)
 	if expected.get('actions', None):

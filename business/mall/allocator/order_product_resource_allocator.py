@@ -59,7 +59,7 @@ class OrderProductResourceAllocator(business_model.Service):
 				"is_success": True
 			}
 
-		is_can_use, check_result = product.promotion.check_usablity(self.context['webapp_user'], product)
+		is_can_use, check_result = product.promotion.check_usability(self.context['webapp_user'], product)
 		if not is_can_use:
 			check_result['is_success'] = False
 			return False, check_result

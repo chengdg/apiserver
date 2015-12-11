@@ -80,11 +80,12 @@ class OrderProduct(business_model.Model):
 
 		return order_product
 
-	def __init__(self, webapp_owner, webapp_user, product_info):
+	def __init__(self, webapp_owner, webapp_user, product_info=None):
 		business_model.Model.__init__(self)
 
 		self.context['webapp_owner'] = webapp_owner
-		self.__fill_detail(webapp_user, product_info)
+		if product_info:
+			self.__fill_detail(webapp_user, product_info)
 
 	def __fill_detail(self, webapp_user, product_info):
 		"""
@@ -106,7 +107,13 @@ class OrderProduct(business_model.Model):
 		self.product_model_id = '%s_%s' % (product_info['id'], product_info['model_name'])
 		self.purchase_count = product_info['count']
 		self.used_promotion_id = product_info['promotion_id']
-		self.promotion = PromotionRepository.from_id(product_info['promotion_id'])
+
+		if product_info['promotion_result']:
+			#self.promotion = {PromotionRepository.get_promotion_from_dict_data(product_info['promotion_result'])}
+			promotion_result = product_info['promotion_result']
+			self.promotion = {
+				'type_name': promotion_result['type']
+			}
 
 		self.id = product.id
 		self.type = product.type
@@ -124,6 +131,11 @@ class OrderProduct(business_model.Model):
 		self.stocks = model.stocks
 		
 		self.model = model
+
+	def has_premium_sale(self):
+		"""
+		订单商品是否使用了买赠促销
+		"""
 		
 	@cached_context_property
 	def postage_config(self):
@@ -147,7 +159,6 @@ class OrderProduct(business_model.Model):
 		data = business_model.Model.to_dict(self)
 		data['postage_config'] = data['_postage_config']
 		data['model'] = self.model.to_dict() if self.model else None
-		data['promotion'] = self.promotion.to_dict() if self.promotion else None
 		return data
 
 

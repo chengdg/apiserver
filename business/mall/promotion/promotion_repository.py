@@ -208,14 +208,15 @@ class PromotionRepository(business_model.Model):
 	@staticmethod
 	def get_promotion_from_dict_data(data):
 		promotion_type = data['type']
+		type_name = 'unknown'
 
-		if promotion_type == promotion_models.PROMOTION_TYPE_FLASH_SALE:
+		if promotion_type == promotion_models.PROMOTION_TYPE_FLASH_SALE or promotion_type == 'flash_sale':
 			DetailClass = FlashSale
 		# elif promotion_type == promotion_models.PROMOTION_TYPE_PRICE_CUT:
 		# 	DetailClass = promotion_models.PriceCut
-		elif promotion_type == promotion_models.PROMOTION_TYPE_INTEGRAL_SALE:
+		elif promotion_type == promotion_models.PROMOTION_TYPE_INTEGRAL_SALE or promotion_type == 'integral_sale':
 		 	DetailClass = IntegralSale
-		elif promotion_type == promotion_models.PROMOTION_TYPE_PREMIUM_SALE:
+		elif promotion_type == promotion_models.PROMOTION_TYPE_PREMIUM_SALE or promotion_type == 'premium_sale':
 		 	DetailClass = PremiumSale
 		# elif promotion_type == promotion_models.PROMOTION_TYPE_COUPON:
 		# 	DetailClass = promotion_models.CouponRule

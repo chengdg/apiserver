@@ -36,12 +36,17 @@ class PremiumSale(promotion.Promotion):
 		if promotion_model:
 			self._init_promotion_slot_from_model(promotion_model)
 
+		self.type_name = 'premium_sale'
+
 	def _get_detail_data(self):
 		return {
 			'count': self.count,
 			'is_enable_cycle_mode': self.is_enable_cycle_mode,
 			'premium_products': self.premium_products
 		}
+
+	def check_usability(self, webapp_user, product):
+		return True, {}		
 
 	def apply_promotion(self, products):
 		first_product = products[0]
@@ -72,3 +77,6 @@ class PremiumSale(promotion.Promotion):
 		}
 
 		return can_use_promotion, promotion_result
+
+	def after_from_dict(self):
+		self.type_name = 'premium_sale'

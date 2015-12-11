@@ -65,3 +65,6 @@ class OrderCouponResourceAllocator(business_model.Model):
 		else:
 			return False, reason, None
 
+	@staticmethod
+	def release(resources):
+		pass

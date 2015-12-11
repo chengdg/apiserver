@@ -46,6 +46,11 @@ class Promotion(business_model.Model):
 		"""
 		根据当前时间与start_date, end_date的关系，获取真实的status
 		"""
+
+		#TODO2: 处理promotion从数据库promotion_result加载的情况，后续将去掉这里的对self.start_date的判断逻辑
+		if not self.start_date:
+			return promotion_models.PROMOTION_STATUS_FINISHED
+
 		now = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
 		if self.start_date > now:
 			return promotion_models.PROMOTION_STATUS_NOT_START
@@ -95,7 +100,7 @@ class Promotion(business_model.Model):
 
 		return True
 
-	def check_usablity(self, webapp_user, product):
+	def check_usability(self, webapp_user, product):
 		"""
 		检查是否可以使用该促销
 
@@ -106,7 +111,7 @@ class Promotion(business_model.Model):
 		Returns
 			如果可以使用，返回True；否则，返回False
 		"""
-		raise NotImplementedError("%s must implement check_usablity method" % str(self.__class__))
+		raise NotImplementedError("%s must implement check_usability method" % str(self.__class__))
 
 	def apply_promotion(self, products):
 		"""
@@ -192,7 +197,6 @@ class Promotion(business_model.Model):
 		instance = cls()
 		for slot in slots:
 			value = dict.get(slot, None)
-
 			setattr(instance, slot, value)
 		instance.after_from_dict()
 		return instance

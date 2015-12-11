@@ -39,9 +39,6 @@ class AllocateOrderResourceService(business_model.Service):
 		self.context['webapp_owner'] = webapp_owner
 		self.context['webapp_user'] = webapp_user
 
-		self.context['resources'] = []
-
-
 	def allocate_resource_for(self, order, purchase_info):
 		resources = []
 		is_success = True
@@ -59,7 +56,6 @@ class AllocateOrderResourceService(business_model.Service):
 				else:
 					resources.append(resource)
 		
-		self.context['resources'] = resources
 		return is_success, reasons, resources
 
 	def release(self, resources):

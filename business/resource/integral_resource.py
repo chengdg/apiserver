@@ -67,7 +67,7 @@ class IntegralResource(business_model.Resource):
 	def get_type(self):
 		return self.type
 
-	def use_integral(self, integral):
+	def get_resource(self, integral):
 		self.integral = integral
 		#self.money = integral_money
 		webapp_user = self.context['webapp_user']

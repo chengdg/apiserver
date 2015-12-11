@@ -18,7 +18,7 @@ import resource
 from core.watchdog.utils import watchdog_alert
 from business import model as business_model 
 from business.mall.product import Product
-from business.resource.integral_resource import IntegralResource
+from business.mall.allocator.integral_resource_allocator import IntegralResourceAllocator
 import settings
 from business.decorator import cached_context_property
 
@@ -34,15 +34,9 @@ class OrderIntegralResourceAllocator(business_model.Service):
 		self.context['webapp_owner'] = webapp_owner
 		self.context['webapp_user'] = webapp_user
 
-	# def release(self, resources):
-	# 	#TODO-bert
-	# 	for_release_resources = []
-	# 	for resource in resources:
-	# 		if resource.get_type() == business_model.RESOURCE_TYPE_INTEGRAL:
-	# 			for_release_resources.append(resource)
-
-	# 	for resource in for_release_resources:
-	# 		resource.release()
+	def release(self, resources):
+		if resources:
+			IntegralResourceAllocator.release(resources)
 
 	def allocate_resource(self, order, purchase_info):
 		webapp_owner = self.context['webapp_owner']
@@ -107,16 +101,13 @@ class OrderIntegralResourceAllocator(business_model.Service):
 			if fail_msg:
 				return False, fail_msg, None
 
+		integral_resource_allocator = IntegralResourceAllocator(webapp_owner,webapp_user)
+		successed, reason, resource = integral_resource_allocator.allocate_resource(total_integral)
 
-		integral_resource = IntegralResource.get({
-					'type': business_model.RESOURCE_TYPE_INTEGRAL,
-					'webapp_user': webapp_user,
-					'webapp_owner': webapp_owner
-				})
-
-		successed,reason = integral_resource.use_integral(total_integral)
+		self.context['integral_resource_allocator'] = integral_resource_allocator
+		#successed,reason = integral_resource.use_integral(total_integral)
 
 		if successed:
-			return True, '', integral_resource
+			return True, '', resource
 		else:
 			return False, reason, None

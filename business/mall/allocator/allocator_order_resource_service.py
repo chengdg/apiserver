@@ -51,7 +51,7 @@ class AllocateOrderResourceService(business_model.Service):
 			is_success, reason, resource = allocator.allocate_resource(order, purchase_info)
 			if not is_success:
 				reasons.append(reason)
-				self.release()
+				self.release(resources)
 				break
 			else:
 				if isinstance(resource,list):
@@ -62,8 +62,8 @@ class AllocateOrderResourceService(business_model.Service):
 		self.context['resources'] = resources
 		return is_success, reasons, resources
 
-	def release(self):
-		if not self.context['resources']:
+	def release(self, resources):
+		if not resources:
 			return 
-		for allocator in self.context['resources']:
-			allocator.release()
+		for allocator in self.context['allocators']:
+			allocator.release(resources)

@@ -91,14 +91,14 @@ class OrderFactory(business_model.Model):
 		successed, reasons, resources = allocate_order_resource_service.allocate_resource_for(self, self.purchase_info)
 		
 		if successed:
-			self.context['allocator_order_resource_service'] = allocator_order_resource_service
+			self.context['allocator_order_resource_service'] = allocate_order_resource_service
 			self.resources = resources
 			# #临时方案：TODO使用pricesevice处理
 			# for resource in resources:
 			# 	if resource.get_type() == business_model.RESOURCE_TYPE_INTEGRAL:
 			# 		self.__process_order_integral_for(resource)
 		else:
-			allocator_order_resource_service.release(resources)
+			allocate_order_resource_service.release(resources)
 			raise OrderException(reasons)	
 
 	# def __process_order_integral_for(self, resource):

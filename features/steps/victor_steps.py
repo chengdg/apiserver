@@ -151,6 +151,59 @@ def step_click_product(context, webapp_user, product_name):
 	pass
 
 
-@when(u"{webapp_user}在'{product_name}'的商品详情页点击'更多评价'")
+@When(u"{webapp_user}在'{product_name}'的商品详情页点击'更多评价'")
 def step_click_more(context, webapp_user, product_name):
 	pass
+
+@Given(u"{webapp_owner}已创建微众卡")
+def step_impl(context, webapp_owner):
+	"""
+	输入示例：
+	```
+	{
+		"cards":[{
+			"id":"0000001",
+			"password":"1234567",
+			"status":"未激活",
+			"price":5.00
+		},{
+			"id":"0000002",
+			"password":"1231231",
+			"status":"已过期",
+			"price":5.00
+		}]
+	}	
+	```
+	@see `weapp/features/steps/market_tools_weizoom_card_steps.py` 
+	"""
+	data = json.loads(context.text)
+	url = "/wapi/wzcard/wzcard/"
+	success = 0
+	for card in data['cards']:
+		# 创建1个微众卡
+		response = context.client.put(url, {
+				'woid': context.webapp_owner_id,
+				'wzcard_id': card['id'],
+				'status': card['status'],
+				'balance': card['price']
+			})
+		bdd_util.assert_api_call_success(response)	
+		success+=1
+	context.tc.assertEquals(len(data['cards']), success)
+
+
+@Then(u"{webapp_owner}能获取微众卡'{wzcard_id}'")
+def step_impl(context, webapp_owner, wzcard_id):
+	expected = json.loads(context.text)
+	url = "/wapi/wzcard/wzcard/"
+	response = context.client.get(url, {
+			'woid': context.webapp_owner_id,
+			'wzcard_id': wzcard_id
+		})
+	bdd_util.assert_api_call_success(response)
+
+	real = {
+		'status': response.data['readable_status'],
+		'money': response.data['balance']
+	}
+	bdd_util.assert_dict(expected, real)

@@ -458,7 +458,7 @@ Scenario: 3 购买多个供货商的多个商品,使用微信支付
 		}
 		"""
 	When bill访问jobs的webapp
-	Then bill手机端获取订单"001"
+	Then bill手机端获取订单'001'
 		"""
 		{
 			"order_id": "001",

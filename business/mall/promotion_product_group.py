@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 """@package business.mall.promotion_product_group
-一个PromotionProductGroup是一组product的集合，它们拥有同一个促销信息
+
+一个PromotionProductGroup是一组product的集合，它们拥有同一个促销信息。
+
+比如购买同一个商品的不同规格，它们都拥有同一个促销活动，因此在一个PromotionProductGroup中。
 
 """
 

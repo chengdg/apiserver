@@ -37,7 +37,7 @@ PAYNAME2ID = {
 	u'优惠抵扣': 10
 }
 
-@when(u"{webapp_user_name}购买{webapp_owner_name}的商品")
+@When(u"{webapp_user_name}购买{webapp_owner_name}的商品")
 def step_impl(context, webapp_user_name, webapp_owner_name):
 	"""
 	举例:
@@ -61,7 +61,11 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 					"promotion": {"name": ""},
 					integral: ""
 				},...
-			]
+			],
+			"weizoom_card":[{
+				"card_name":"0000001",
+				"card_pass":"1234567"
+			}]
 		}
 	```
 	"""

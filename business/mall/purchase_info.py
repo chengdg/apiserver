@@ -13,10 +13,11 @@ from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
 from db.mall import models as mall_models
-import resource
+#import resource
 from core.watchdog.utils import watchdog_alert
 from business import model as business_model 
 import settings
+import logging
 
 
 class PurchaseInfo(business_model.Model):
@@ -37,13 +38,15 @@ class PurchaseInfo(business_model.Model):
         'order_integral_info',
 
         'is_purchase_from_shopping_cart',
-        'coupon_id'
+        'coupon_id',
+        'wzcard_info', # 微众卡信息
     )
 
     @staticmethod
     @param_required(['request_args'])
     def parse(args):
-        """解析http请求的参数，创建PurchaseInfo对象
+        """
+        解析http请求的参数，创建PurchaseInfo对象
 
         @return PurchaseInfo对象
         """
@@ -72,6 +75,8 @@ class PurchaseInfo(business_model.Model):
         self.__parse_pay_interface(request_args)
         self.__parse_custom_message(request_args)
         self.__parse_coupon_id(request_args)
+        # 解析微众卡信息
+        self.__parse_wzcard_info(request_args)
 
         self.order_type = request_args.get('order_type', mall_models.PRODUCT_DEFAULT_TYPE)
         self.is_purchase_from_shopping_cart = request_args.get('is_order_from_shopping_cart', False)
@@ -79,7 +84,8 @@ class PurchaseInfo(business_model.Model):
         self.__parse_integral_info(request_args) 
 
     def __parse_ship_info(self, request_args):
-        """解析收货人信息
+        """
+        解析收货人信息
         """
         if 'ship_name' in request_args:
             self.ship_info = {
@@ -91,23 +97,47 @@ class PurchaseInfo(business_model.Model):
         else:
             self.ship_info = None
 
+    def __parse_wzcard_info(self, request_args):
+        """
+        解析微众卡信息
+
+        @return 微众卡信息的list        
+        """
+        card_names = request_args.get('card_name', '').split(',')
+        card_passwords = request_args.get('card_pass', '').split(',')
+        wzcard_info = []
+        if len(card_names) == len(card_passwords):
+            # 微众卡卡号和密码数量应该相等
+            for i in range(0, len(card_names)):
+                if len(card_names[i])>0:
+                    wzcard_info.append({
+                            "card_name": card_names[i],
+                            "card_pass": card_passwords[i],
+                        })
+        self.wzcard_info = wzcard_info
+        logging.info("ProductInfo.wzcard_info: {}".format(self.wzcard_info))
+
     def __parse_pay_interface(self, request_args):
-        """解析支付方式
+        """
+        解析支付方式
         """
         self.used_pay_interface_type = request_args.get('xa-choseInterfaces', '-1')
 
     def __parse_custom_message(self, request_args):
-        """解析用户留言
+        """
+        解析用户留言
         """
         self.customer_message = request_args.get('message', '')
 
     def __parse_coupon_id(self, request_args):
-        """解析用户留言
+        """
+        解析用户留言
         """
         self.coupon_id = request_args.get('coupon_id', '')
 
     def __get_product_param(self, args):
-        """获取订单商品id，数量，规格
+        """
+        获取订单商品id，数量，规格
         供_get_products调用
         """
         if 'redirect_url_query_string' in args:

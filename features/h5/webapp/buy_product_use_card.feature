@@ -6,6 +6,7 @@ Feature:使用微众卡购买商品
 	feathure里要加一个  "weizoom_card_money":50.00,的字段
 
 Background:
+	Given 重置weapp的bdd环境
 	Given jobs登录系统:weapp
 	And jobs已有微众卡支付权限:weapp
 	And jobs已添加支付方式:weapp
@@ -27,7 +28,7 @@ Background:
 			"price": 50
 		}]
 		"""
-	And jobs已创建微众卡
+	And jobs已创建微众卡:weapp
 		"""
 		{
 			"cards":[{
@@ -72,10 +73,20 @@ Scenario:1 微众卡金额大于订单金额时进行支付
 	2.创建订单成功，订单状态为“等待发货”，支付方式为“微众卡支付”
 	3.微众卡金额减少,状态为“已使用”
 
-	When bill访问jobs的webapp:weapp
-	When bill购买jobs的商品:weapp
+	Given jobs登录系统:weapp
+	Then jobs能获取微众卡'0000001':weapp
 		"""
 		{
+			"status":"未使用",
+			"price":50.00
+		}
+		"""
+
+	When bill访问jobs的webapp
+	When bill购买jobs的商品
+		"""
+		{
+			"pay_type": "微信支付",
 			"products":[{
 				"name":"商品1",
 				"price":50,
@@ -87,7 +98,7 @@ Scenario:1 微众卡金额大于订单金额时进行支付
 			}]
 		}
 		"""
-	Then bill成功创建订单:weapp
+	Then bill成功创建订单
 		"""
 		{
 			"status": "待发货",
@@ -117,10 +128,11 @@ Scenario:2 微众卡金额等于订单金额时进行支付
 	2.创建订单成功，订单状态为“等待发货”，支付方式为“微众卡支付”
 	3.微众卡金额减少,状态为“已用完”
 
-	When bill访问jobs的webapp:weapp
-	When bill购买jobs的商品:weapp
+	When bill访问jobs的webapp
+	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "货到付款",
 			"products":[{
 				"name":"商品1",
 				"price":50,

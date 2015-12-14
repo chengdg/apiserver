@@ -76,7 +76,7 @@ Background:
 		"""
 	And bill关注jobs的公众号
 
-@order
+@personCenter @appallOrder
 Scenario:1 会员成功购买商品后,浏览订单列表
 
 	When bill访问jobs的webapp

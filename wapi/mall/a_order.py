@@ -12,7 +12,7 @@ from wapi.decorators import param_required
 from db.mall import models as mall_models
 from db.mall import promotion_models
 from utils import dateutil as utils_dateutil
-import resource
+#import resource
 from wapi.mall.a_purchasing import APurchasing as PurchasingApiResource
 from core.cache import utils as cache_utils
 from business.mall.order_factory import OrderFactory, OrderException
@@ -31,7 +31,7 @@ class AOrder(api_resource.ApiResource):
 	@param_required(['ship_name', 'ship_address', 'ship_tel', 'order_type', 'xa-choseInterfaces'])
 	def put(args):
 		"""
-		获取购物车项目
+		下单接口
 
 		@param id 商品ID
 		"""

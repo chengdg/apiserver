@@ -240,7 +240,7 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 
 	if context.created_order_id != -1:
 		if 'date' in args:
-			mall_models.Order.update(created_at=bdd_util.get_datetime_str(args['date'])).dj_where(order_id=context.created_order_id)
+			mall_models.Order.update(created_at=bdd_util.get_datetime_str(args['date'])).dj_where(order_id=context.created_order_id).execute()
 		if 'order_id' in args:
 			db_order = mall_models.Order.get(order_id=context.created_order_id)
 			db_order.order_id=args['order_id']
@@ -296,6 +296,52 @@ def step_impl(context, webapp_user_name):
 		# TODO 验证订单页面操作
 		del expected['actions']
 	bdd_util.assert_dict(expected, actual_order)
+
+
+@then(u'{webapp_usr_name}手机端获取订单"{order_id}"')
+def step_impl(context, webapp_usr_name, order_id):
+	# 为获取完可顺利支付
+	context.created_order_id = order_id
+
+	url = '/wapi/mall/order/?woid=%s&order_id=%s' % (context.webapp_owner_id, order_id)
+	response = context.client.get(bdd_util.nginx(url), follow=True)
+
+	actual = response.data['order']
+
+	has_sub_order = actual['has_sub_order']
+	actual['order_no'] = actual['order_id']
+	actual['order_time'] = (str(actual['created_at']))
+	actual['methods_of_payment'] = actual['pay_interface_name']
+	#actual.member = actual.buyer_name
+	actual['status'] = actual['status_text']
+	actual['ship_area'] = actual['ship_area']
+
+	if has_sub_order:
+		products = []
+		orders = response.context['orders']
+		for i, order in enumerate(orders):
+			product_dict = {
+				u"包裹" + str(i + 1): order.products,
+				'status': ORDERSTATUS2MOBILETEXT[order.status]
+			}
+			products.append(product_dict)
+
+		actual.products = products
+
+	for product in actual['products']:
+		product['count'] = product['purchase_count']
+		product['grade_discounted_money'] = product['discount_money']
+		if product['promotion']:
+			promotion = product['promotion']
+			promotion['type'] = promotion['type_name']
+
+		if product['model']:
+			model = product['model']
+			if model['property_values']:
+				product['model'] = ''.join(property_value['name'] for property_value in model['property_values'])
+
+	expected = json.loads(context.text)
+	bdd_util.assert_dict(expected, actual)
 
 
 

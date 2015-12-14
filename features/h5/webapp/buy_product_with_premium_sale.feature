@@ -756,7 +756,7 @@ Scenario: 12 购买单个买赠活动商品，购买时活动进行中，提交�
 		"""
 
 # __edit__ : 王丽   补充 "雪静"
-@todo @mall2 @promotion @promotionPremium @meberGrade @wip
+@mall3 @promotion @promotionPremium @meberGrade @robert.wip
 Scenario: 13 不同等级的会员购买会员价，同时有会员等级买赠活动的商品
 	Given jobs登录系统:weapp
 	When jobs添加会员等级:weapp

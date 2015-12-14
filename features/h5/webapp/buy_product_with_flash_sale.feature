@@ -1034,7 +1034,7 @@ Scenario:14 不同等级的会员购买原价有会员等级限时抢购的商�
 		}
 		"""
 
-@todo @mall2 @promotion @robert.wip
+@mall3 @promotion @robert.wip
 Scenario:15 购买多规格限时抢购商品同时适用于积分规则和会员等级
 
 	Given jobs登录系统:weapp

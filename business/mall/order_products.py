@@ -124,6 +124,7 @@ class OrderProducts(business_model.Model):
 				promotion_result = None
 
 			order_product_infos.append({
+				'rid': r.id,
 				'id': r.product_id,
 				'model_name': r.product_model_name,
 				'count': r.number,
@@ -134,7 +135,7 @@ class OrderProducts(business_model.Model):
 				'discount_money': r.grade_discounted_money,
 				'promotion_result': promotion_result
 			})
-		order_product_infos.sort(lambda x,y: cmp(x['id'], y['id']))
+		order_product_infos.sort(lambda x,y: cmp(x['rid'], y['rid']))
 	
 		#按商品id收集购买商品集合{id1: [product1_model1, product1_model2, ...], id2: []}
 		id2products = {}

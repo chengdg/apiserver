@@ -44,3 +44,15 @@ def step_impl(context, webapp_user_name, webapp_owner_name, integral_count):
 		'member_id': member.id
 		})
 	webapp_user.cleanup_cache()
+
+@then(u'{webapp_user_name}在{webapp_owner_name}的webapp中获得积分日志')
+def step_impl(context, webapp_user_name, webapp_owner_name):
+	webapp_id = bdd_util.get_webapp_id_for(webapp_owner_name)
+	member = bdd_util.get_member_for(webapp_user_name, webapp_id)
+	integral_logs = list(member_models.MemberIntegralLog.select().dj_where(member_id=member.id).order_by(-member_models.MemberIntegralLog.id))
+	json_data = json.loads(context.text)
+	actual_list = []
+	for data in integral_logs:
+		actual_list.append({"content": data.event_type, "integral": data.integral_count})
+
+	bdd_util.assert_list(actual_list, json_data)

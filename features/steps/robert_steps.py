@@ -529,7 +529,10 @@ def step_impl(context, webapp_user_name):
 		argument = __i.get('context')
 		# 获取购物车参数
 		product_ids, product_counts, product_model_names = _get_shopping_cart_parameters(context.webapp_user.id, argument)
-		url = '/termite/workbench/jqm/preview/?woid=%s&module=mall&model=shopping_cart_order&action=edit&product_ids=%s&product_counts=%s&product_model_names=%s' % (context.webapp_owner_id, product_ids, product_counts, product_model_names)
+		url = '/wapi/mall/purchasing/?woid=%s&product_ids=%s&product_counts=%s&product_model_names=%s' % (context.webapp_owner_id, product_ids, product_counts, product_model_names)
+		print '==========================================***************************************'
+		print url
+		print '==========================================***************************************'
 		product_infos = {
 			'product_ids': product_ids,
 			'product_counts': product_counts,

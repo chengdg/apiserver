@@ -19,7 +19,7 @@ def get_product_model_keys(product_model_name):
     @return 规格key，类似于12:58_13:62_14:59
     """
     if product_model_name and product_model_name != 'standard':
-        values = ProductModelPropertyValue.objects.filter(name__in=product_model_name.split(','))
+        values = mall_models.ProductModelPropertyValue.select().dj_where(name__in=product_model_name.split(','))
         values = ['%s:%s' % (value.property_id, value.id) for value in values]
         return '_'.join(values)
     return 'standard'

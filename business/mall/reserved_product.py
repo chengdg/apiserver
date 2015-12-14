@@ -300,10 +300,6 @@ class ReservedProduct(business_model.Model):
 		"""
 		self.context['is_disable_discount'] = True
 		self.price = self.original_price
-		print '-**-' * 20
-		print 'reset sefl.price = ', self.original_price
-		print id(self)
-		print '-**-' * 20
 
 	def to_dict(self):
 		data = business_model.Model.to_dict(self)

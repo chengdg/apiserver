@@ -184,7 +184,10 @@ class PromotionRepository(business_model.Model):
 			if not product:
 				continue
 
-			product.promotion = promotion
+			if promotion.type_name == 'integral_sale':
+				product.integral_sale = promotion
+			else:
+				product.promotion = promotion
 
 	@staticmethod
 	def from_id(promotion_id):

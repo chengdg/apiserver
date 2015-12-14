@@ -25,9 +25,11 @@ class AllocateOrderResourceService(business_model.Service):
 	"""
 	AllocateOrderResourceService
 	"""
+	#这里的顺序非常重要，OrderProductsResourceAllocator，必须要在OrderIntegralResourceAlloctor之前
+	#因为买赠会修改积分应用计算积分金额限额的价格基数（当有买赠时，按原价计算；当没有买赠时，按会员价计算）
 	allocators = [
-		OrderIntegralResourceAllocator,
 		OrderProductsResourceAllocator,
+		OrderIntegralResourceAllocator,
 		OrderCouponResourceAllocator
 	]
 

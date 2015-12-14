@@ -44,6 +44,9 @@ class ProductGrouper(business_model.Model):
 		"""
 		name = 'no_promotion'
 		promotion = product.promotion
+		if not promotion:
+			promotion = product.integral_sale
+			
 		if promotion:
 			# 已过期或未开始活动的商品，做为 普通商品
 			if promotion.type == promotion_models.PROMOTION_TYPE_PRICE_CUT or promotion.type == promotion_models.PROMOTION_TYPE_PREMIUM_SALE:
@@ -139,6 +142,7 @@ class ProductGrouper(business_model.Model):
 
 			#products是相同promotion的集合，所以从第一个product中获取promotion就能得到promotion对象了
 			promotion = products[0].promotion
+			integral_sale = products[0].integral_sale
 
 			# 商品没有参加促销，
 			if not promotion:
@@ -147,6 +151,7 @@ class ProductGrouper(business_model.Model):
 					"uid": group_unified_id,
 					'products': products,
 					'promotion': None,
+					'integral_sale': integral_sale,
 					"promotion_type": '',
 					'member_grade_id': member_grade_id
 				})
@@ -226,6 +231,7 @@ class ProductGrouper(business_model.Model):
 				"promotion_type": promotion.type_name,
 				'products': products,
 				'promotion': promotion,
+				'integral_sale': integral_sale,
 				'member_grade_id': member_grade_id
 			})
 			product_groups.append(promotion_product_group)

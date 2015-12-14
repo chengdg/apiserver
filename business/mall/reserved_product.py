@@ -74,6 +74,7 @@ class ReservedProduct(business_model.Model):
 		'unified_postage_money',
 
 		'can_use_coupon',
+		'integral_sale',
 		'active_integral_sale_rule'
 	)
 
@@ -126,6 +127,7 @@ class ReservedProduct(business_model.Model):
 		self.thumbnails_url = product.thumbnails_url
 		self.is_use_custom_model = product.is_use_custom_model
 		self.shopping_cart_id = product_info.get('shopping_cart_id', 0)
+		self.integral_sale = product.integral_sale
 
 		self.model_name = product_info['model_name']
 		self.expected_promotion_id = product_info.get('expected_promotion_id', 0)
@@ -306,6 +308,7 @@ class ReservedProduct(business_model.Model):
 		data['postage_config'] = self.postage_config
 		data['model'] = self.model.to_dict() if self.model else None
 		data['promotion'] = self.promotion.to_dict() if self.promotion else None
+		data['integral_sale'] = self.integral_sale.to_dict() if self.integral_sale else None
 		return data
 
 

@@ -35,6 +35,7 @@ class PromotionProductGroup(business_model.Model):
 		'promotion',
 		'promotion_result',
 		'promotion_saved_money',
+		'integral_sale',
 		'integral_sale_rule',
 		'active_integral_sale_rule',
 		'can_use_promotion',
@@ -51,6 +52,7 @@ class PromotionProductGroup(business_model.Model):
 		self.can_use_promotion = False
 		self.promotion_type = group_info['promotion_type']
 		self.promotion = group_info['promotion']
+		self.integral_sale = group_info['integral_sale']
 		self.promotion_result = None
 		self.integral_sale_rule = False
 		self.member_grade_id = group_info['member_grade_id']
@@ -59,11 +61,11 @@ class PromotionProductGroup(business_model.Model):
 
 		self.promotion_json = json.dumps(self.promotion.to_dict()) if self.promotion else json.dumps(None)
 
-		if self.promotion and self.promotion.type_name == 'integral_sale':
+		if self.integral_sale:
 			self.integral_sale_rule = True
 
 			#设置每个商品的active_integral_sale_rule
-			self.active_integral_sale_rule = self.promotion.get_rule_for(self.member_grade_id)
+			self.active_integral_sale_rule = self.integral_sale.get_rule_for(self.member_grade_id)
 			for product in self.products:
 				product.active_integral_sale_rule = self.active_integral_sale_rule
 

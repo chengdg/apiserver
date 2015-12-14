@@ -108,12 +108,12 @@ class CachedProduct(object):
 		product.context['webapp_owner'] = CachedProduct.webapp_owner
 
 		# Set member's discount of the product
-		if hasattr(product, 'integral_sale') and product.integral_sale \
-			and product.integral_sale['detail'].get('rules', None):
-			for i in product.integral_sale['detail']['rules']:
-				if i['member_grade_id'] == member_grade_id:
-					product.integral_sale['detail']['discount'] = str(i['discount'])+"%"
-					break
+		# if hasattr(product, 'integral_sale') and product.integral_sale \
+		# 	and product.integral_sale['detail'].get('rules', None):
+		# 	for i in product.integral_sale['detail']['rules']:
+		# 		if i['member_grade_id'] == member_grade_id:
+		# 			product.integral_sale['detail']['discount'] = str(i['discount'])+"%"
+		# 			break
 
 		# integral_sale_data = data.get('integral_sale', None)
 		# if integral_sale_data and len(integral_sale_data) > 0:
@@ -204,6 +204,7 @@ class Product(business_model.Model):
 		
 		#促销信息
 		'promotion',
+		'integral_sale',
 		'product_review',
 	)
 
@@ -657,6 +658,7 @@ class Product(business_model.Model):
 			'is_member_product': self.is_member_product,
 			'swipe_images': getattr(self, 'swipe_images', []),
 			'promotion': self.promotion.to_dict() if self.promotion else None,
+			'integral_sale': self.integral_sale.to_dict() if self.integral_sale else None,
 			'product_review': getattr(self, 'product_review', None),
 			'price_info': getattr(self, 'price_info', None),
 			'postage_type': self.postage_type, 
@@ -681,3 +683,9 @@ class Product(business_model.Model):
 			if not self.promotion.is_active():
 				#缓存中的促销已过期
 				self.promotion = None
+
+		if self.integral_sale:
+			self.integral_sale = PromotionRepository.get_promotion_from_dict_data(self.integral_sale)
+
+			if not self.integral_sale.is_active():
+				self.integral_sale = None

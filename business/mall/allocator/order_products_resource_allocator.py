@@ -23,6 +23,7 @@ import settings
 from business.decorator import cached_context_property
 from business.resource.products_resource import ProductsResource
 from business.mall.allocator.product_resource_allocator import ProductResourceAllocator
+from business.mall.merged_reserved_product import MergedReservedProduct
 
 class OrderProductsResourceAllocator(business_model.Service):
 	"""请求订单商品库存资源
@@ -91,22 +92,23 @@ class OrderProductsResourceAllocator(business_model.Service):
 
 	def __merge_different_model_product(self, products):
 		"""
-		将同一商品的不同规格的商品进行合并，主要合并: purchase_count
+		将同一商品的不同规格的商品进行合并，主要合并
 
 		Parameters
 			[in] products: ReservedProduct对象集合
 
 		Returns
-			合并后的ReservedProduct对象副本的集合
+			MergedReservedProduct对象集合
 		"""
 		id2product = {}
 		for product in products:
-			merged_product = id2product.get(product.id, None)
-			if not merged_product:
-				merged_product = copy.copy(product)
-				id2product[product.id] = merged_product
+			merged_reserved_product = id2product.get(product.id, None)
+			if not merged_reserved_product:
+				merged_reserved_product = MergedReservedProduct()
+				merged_reserved_product.add_product(product)
+				id2product[product.id] = merged_reserved_product
 			else:
-				merged_product.purchase_count += product.purchase_count
+				merged_reserved_product.add_product(product)
 
 		return id2product.values()
 
@@ -117,11 +119,11 @@ class OrderProductsResourceAllocator(business_model.Service):
 		products = order.products
 
 		#检查订单中商品的促销是否可用
-		merged_products = self.__merge_different_model_product(products)
-		for merged_product in merged_products:
-			is_success, reason = self.__check_promotion(merged_product)
+		merged_reserved_products = self.__merge_different_model_product(products)
+		for merged_reserved_product in merged_reserved_products:
+			is_success, reason = self.__check_promotion(merged_reserved_product)
 			if not is_success:
-				self.__supply_product_info_into_fail_reason(merged_product, reason)
+				self.__supply_product_info_into_fail_reason(merged_reserved_product, reason)
 				return False, reason, None
 
 		successed = False

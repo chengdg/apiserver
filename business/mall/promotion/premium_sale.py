@@ -66,9 +66,7 @@ class PremiumSale(promotion.Promotion):
 			})
 			model2stock = realtime_stock.model2stock
 			for model, stock_info in model2stock.items():
-				print '00000'
 				if stock_info['stock_type'] == 0:
-					print '11111'
 					product2stocks[premium_product_id] = -1
 				else:
 					if premium_product_id in product2stocks:
@@ -98,6 +96,9 @@ class PremiumSale(promotion.Promotion):
 				}
 				self.__supply_product_info_into_fail_reason(premium_product, reason)
 				return False, reason
+
+		#禁用商品会员价
+		product.disable_discount()
 
 		return True, {}		
 

@@ -180,7 +180,8 @@ class ReservedProduct(business_model.Model):
 		else:
 			self.member_discount = 1.00
 		self.price = round(self.price * self.member_discount, 2) #折扣后的价格
-		#TODO2: 为微众商城增加1.1的价格因子
+
+		self.context['is_disable_discount'] = False
 
 	@cached_context_property
 	def postage_config(self):
@@ -260,10 +261,13 @@ class ReservedProduct(business_model.Model):
 		"""
 		[property] 订单商品的折扣金额
 		"""
-		if self.promotion and self.promotion.type_name == 'flash_sale':
+		if self.context['is_disable_discount']:
 			return 0
 		else:
-			return self.total_price * (1 - self.member_discount)
+			if self.promotion and self.promotion.type_name == 'flash_sale':
+				return 0
+			else:
+				return self.total_price * (1 - self.member_discount)
 
 	@property
 	def supplier(self):
@@ -288,10 +292,18 @@ class ReservedProduct(business_model.Model):
 		Returns
 			如果预期促销还在进行中，返回True；否则，返回False
 		"""
-		print self.expected_promotion_id
-		print self.used_promotion_id
 		return self.expected_promotion_id == self.used_promotion_id
 
+	def disable_discount(self):
+		"""
+		禁用会员折扣
+		"""
+		self.context['is_disable_discount'] = True
+		self.price = self.original_price
+		print '-**-' * 20
+		print 'reset sefl.price = ', self.original_price
+		print id(self)
+		print '-**-' * 20
 
 	def to_dict(self):
 		data = business_model.Model.to_dict(self)

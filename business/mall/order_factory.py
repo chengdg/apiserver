@@ -233,6 +233,12 @@ class OrderFactory(business_model.Model):
 			if not supplier in supplier_ids:
 				supplier_ids.append(supplier)
 
+			print '-$-' * 20
+			print product.price
+			print product.context['is_disable_discount']
+			print product.discount_money
+			print id(product)
+			print '-$-' * 20
 			mall_models.OrderHasProduct.create(
 				order = order,
 				product = product.id,

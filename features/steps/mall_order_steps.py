@@ -30,7 +30,7 @@ def step_impl(context, webapp_user_name, error_msg):
 	data = context.response.data
 	response_msg = data.get('msg', None)
 	if not response_msg:
-		response_msg = data['detail'][0]
+		response_msg = data['detail'][0]['msg']
 	context.tc.assertEquals(error_msg, response_msg)
 
 

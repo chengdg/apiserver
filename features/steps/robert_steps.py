@@ -289,7 +289,7 @@ def step_impl(context, webapp_user_name):
 		if product['model']:
 			model = product['model']
 			if model['property_values']:
-				product['model'] = ''.join(property_value['name'] for property_value in model['property_values'])
+				product['model'] = ' '.join(property_value['name'] for property_value in model['property_values'])
 
 	expected = json.loads(context.text)
 	if expected.get('actions', None):

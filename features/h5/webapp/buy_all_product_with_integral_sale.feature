@@ -367,7 +367,7 @@ Scenario:6 购买单个限时抢购商品， 买赠商品，同时使用积分�
 	Then bill在jobs的webapp中拥有90会员积分
 
 #补充：张三香 "雪静"
-@todo @mall2 @integral @meberGrade @mall3 @bert
+@todo @mall2 @integral @meberGrade
 Scenario: 7 不同等级的会员购买有会员价同时有全体积分抵扣50%的商品
 	#会员价和积分抵扣可以同时使用，会员价后再算积分抵扣的比例
 	Given jobs登录系统:weapp

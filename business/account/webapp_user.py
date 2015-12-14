@@ -504,3 +504,6 @@ class WebAppUser(business_model.Model):
 			return True
 		else:
 			return False
+	@cached_context_property
+	def is_binded(self):
+		return self.member.is_binded

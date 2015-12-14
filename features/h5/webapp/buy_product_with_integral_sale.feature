@@ -564,7 +564,7 @@ Scenario: 10 购买单个积分应用活动商品，购买时活动进行中，�
 	When bill获得jobs的150会员积分
 
 	Given jobs登录系统:weapp
-	When jobs"结束"促销活动"商品4积分应用":weapp
+	When jobs'结束'促销活动'商品4积分应用':weapp
 	When bill购买jobs的商品
 		"""
 		{
@@ -637,21 +637,21 @@ Scenario: 11 不同等级的会员购买有会员价同时有积分统一设置�
 			"discount": "7"
 		}]
 		"""
-	When jobs更新"tom2"的会员等级:weapp
+	When jobs更新'tom2'的会员等级:weapp
 		"""
 		{
 			"name": "tom2",
 			"member_rank": "铜牌会员"
 		}
 		"""
-	When jobs更新"tom3"的会员等级:weapp
+	When jobs更新'tom3'的会员等级:weapp
 		"""
 		{
 			"name": "tom4",
 			"member_rank": "银牌会员"
 		}
 		"""
-	When jobs更新"tom4"的会员等级:weapp
+	When jobs更新'tom4'的会员等级:weapp
 		"""
 		{
 			"name": "tom4",
@@ -826,21 +826,21 @@ Scenario: 12 不同等级的会员购买有会员价同时有根据等级设置�
 			"discount": "7"
 		}]
 		"""
-	When jobs更新"bill2"的会员等级:weapp
+	When jobs更新'bill2'的会员等级:weapp
 		"""
 		{
 			"name": "bill2",
 			"member_rank": "铜牌会员"
 		}
 		"""
-	When jobs更新"bill3"的会员等级:weapp
+	When jobs更新'bill3'的会员等级:weapp
 		"""
 		{
 			"name": "bill3",
 			"member_rank": "银牌会员"
 		}
 		"""
-	When jobs更新"bill4"的会员等级:weapp
+	When jobs更新'bill4'的会员等级:weapp
 		"""
 		{
 			"name": "bill4",
@@ -1069,21 +1069,21 @@ Scenario: 13 不同等级的会员购买原价同时有根据等级设置积分�
 			"discount": "7"
 		}]
 		"""
-	When jobs更新"bill2"的会员等级:weapp
+	When jobs更新'bill2'的会员等级:weapp
 		"""
 		{
 			"name": "bill2",
 			"member_rank": "铜牌会员"
 		}
 		"""
-	When jobs更新"bill3"的会员等级:weapp
+	When jobs更新'bill3'的会员等级:weapp
 		"""
 		{
 			"name": "bill3",
 			"member_rank": "银牌会员"
 		}
 		"""
-	When jobs更新"bill4"的会员等级:weapp
+	When jobs更新'bill4'的会员等级:weapp
 		"""
 		{
 			"name": "bill4",

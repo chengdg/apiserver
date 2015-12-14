@@ -608,7 +608,7 @@ Scenario:10 购买单个限时抢购商品，购买时活动进行中，提交�
 			"promotion_price": 11.5
 		}
 		"""
-	And jobs"结束"促销活动"商品4限时抢购":weapp
+	And jobs'结束'促销活动'商品4限时抢购':weapp
 
 	When bill访问jobs的webapp
 	And bill购买jobs的商品
@@ -826,7 +826,7 @@ Scenario:13 不同等级的会员购买有会员价同时有会员等级限时�
 			}
 		}
 		"""
-	And jobs"结束"促销活动"商品1限时抢购":weapp
+	And jobs'结束'促销活动'商品1限时抢购':weapp
 	And jobs创建限时抢购活动:weapp
 	"""
 		[{
@@ -939,7 +939,7 @@ Scenario:14 不同等级的会员购买原价有会员等级限时抢购的商�
 			}
 		}
 		"""
-	And jobs"结束"促销活动"商品1限时抢购":weapp
+	And jobs'结束'促销活动'商品1限时抢购':weapp
 	And jobs创建限时抢购活动:weapp
 		"""
 		[{

@@ -270,7 +270,7 @@ Scenario: 2 不同供货商的商品进行会员价购买
 			"is_member_product": "on"
 		}
 		"""
-	And jobs更新"bill"的会员等级
+	And jobs更新'bill'的会员等级
 		"""
 		{
 			"name": "bill",

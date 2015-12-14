@@ -455,7 +455,7 @@ Scenario:5 从购物车购买商品时有商品下架
 		}
 		"""
 	Given jobs登录系统:weapp
-	When jobs-下架商品'商品1':weapp
+	When jobs'下架'商品'商品1':weapp
 	When bill访问jobs的webapp
 	When bill在购物车订单编辑中点击提交订单
 		"""

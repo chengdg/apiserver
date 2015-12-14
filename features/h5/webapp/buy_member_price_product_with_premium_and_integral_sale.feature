@@ -44,15 +44,15 @@ Background:
 	And bill2关注jobs的公众号
 	And bill3关注jobs的公众号
 
-	Given jobs登录系统:weapp
-	When jobs更新"bill2"的会员等级:weapp
+	Given jobs登录系统
+	When jobs更新'bill2'的会员等级:weapp
 		"""
 		{
 			"name":"bill2",
 			"member_rank":"铜牌会员"
 		}
 		"""
-	When jobs更新"bill3"的会员等级:weapp
+	When jobs更新'bill3'的会员等级:weapp
 		"""
 		{
 			"name":"bill3",

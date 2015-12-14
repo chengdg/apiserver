@@ -122,7 +122,7 @@ Background:
 			"integral": 20
 		}]
 		"""
-	When jobs更新"bill"的会员等级:weapp
+	When jobs更新'bill'的会员等级:weapp
 		"""
 		{
 			"name": "bill",

@@ -59,11 +59,6 @@ class IntegralLogs(business_model.Model):
 		integral_logs = member_models.MemberIntegralLog.select().dj_where(member_id=webapp_user.member.id).order_by('-created_at')
 
 		for integral_log in integral_logs:
-			print '>>>>>>>>>.ddddddd>>>',IntegralLog.from_model({
-					'webapp_user': webapp_user,
-					'webapp_owner': webapp_owner,
-					'model': integral_log
-				}).to_dict()
 			integral_logs_list.append(IntegralLog.from_model({
 					'webapp_user': webapp_user,
 					'webapp_owner': webapp_owner,

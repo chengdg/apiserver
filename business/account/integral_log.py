@@ -21,8 +21,8 @@ from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
 from core.exceptionutil import unicode_full_stack
 from business.account.member import Member
 
-SHOPING_REWARDES_IMGE = '/static_v2/img/webapp/usercenter/Shoppingrewards.jpg'
-SCAN_REWARDES_IMGE = '/static_v2/img/webapp/usercenter/scanReawards.png'
+SHOPING_REWARDES_IMGE = '/static/img/mobile/usercenter/Shoppingrewards.jpg'
+SCAN_REWARDES_IMGE = '/static/img/mobile/usercenter/scanReawards.png'
 
 class IntegralLog(business_model.Model):
 	"""

@@ -18,6 +18,7 @@ from core.watchdog.utils import watchdog_alert
 from business import model as business_model
 import settings
 from business.mall.promotion import promotion
+from business.mall.realtime_stock import RealtimeStock
 
 
 class PremiumSale(promotion.Promotion):
@@ -45,10 +46,63 @@ class PremiumSale(promotion.Promotion):
 			'premium_products': self.premium_products
 		}
 
+	def __supply_product_info_into_fail_reason(self, product, result):
+		result['id'] = product['id']
+		result['name'] = product['name']
+		result['stocks'] = 0
+		result['model_name'] = ""
+		result['pic_url'] = product['thumbnails_url']
+
 	def check_usability(self, webapp_user, product):
+		#收集赠品的所有库存，可能的结果有：
+		#	-1: 无限库存
+		#	-2: 没有库存信息
+		#	n: 有限库存
+		product2stocks = {}
+		for premium_product in self.premium_products:
+			premium_product_id = premium_product['id']
+			realtime_stock = RealtimeStock.from_product_id({
+				'product_id': premium_product_id
+			})
+			model2stock = realtime_stock.model2stock
+			for model, stock_info in model2stock.items():
+				print '00000'
+				if stock_info['stock_type'] == 0:
+					print '11111'
+					product2stocks[premium_product_id] = -1
+				else:
+					if premium_product_id in product2stocks:
+						if product2stocks[premium_product_id] == -1:
+							#已识别出是无限库存
+							pass
+						else:
+							product2stocks[premium_product_id] = product2stocks.get(premium_product_id, 0) + stock_info['stocks']
+					else:
+						product2stocks[premium_product_id] = stock_info['stocks']
+
+		#检查赠品库存是否满足
+		for premium_product in self.premium_products:
+			premium_product_id = premium_product['id']
+			stocks = product2stocks.get(premium_product_id, -2)
+			if stocks == -2:
+				#没有库存信息
+				pass
+			elif stocks == -1:
+				#无限库存
+				pass
+			elif stocks == 0 or premium_product['premium_count'] > stocks:
+				reason = {
+					'type': 'promotion:premium_sale:not_enough_premium_product_stocks',
+					'msg': u'库存不足',
+					'short_msg': u'库存不足'
+				}
+				self.__supply_product_info_into_fail_reason(premium_product, reason)
+				return False, reason
+
 		return True, {}		
 
-	def apply_promotion(self, products):
+	def apply_promotion(self, promotion_product_group, purchase_info=None):
+		products = promotion_product_group.products
 		first_product = products[0]
 		promotion = first_product.promotion
 		promotion_detail = promotion.detail

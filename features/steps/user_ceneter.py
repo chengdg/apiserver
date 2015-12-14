@@ -43,4 +43,4 @@ def step_impl(context, webapp_user_name, webapp_owner_name, integral_count):
 		'webapp_owner': webapp_owner,
 		'member_id': member.id
 		})
-	webapp_user.cleanup_cache
+	webapp_user.cleanup_cache()

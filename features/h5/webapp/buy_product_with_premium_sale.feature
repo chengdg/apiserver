@@ -319,7 +319,7 @@ Scenario: 4 购买单个买赠商品，超出库存限制
 		}
 		"""
 
-@todo @mall2 @promotion @mall.promotion @mall.webapp.promotion
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
 Scenario: 5 购买单个买赠商品，赠品数量超出库存限制
 
 	When bill访问jobs的webapp

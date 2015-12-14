@@ -77,9 +77,9 @@ class FlashSale(promotion.Promotion):
 
 		return True, {}
 
-	def apply_promotion(self, products):
+	def apply_promotion(self, promotion_product_group, purchase_info=None):
 		#限时抢购只有一个product
-		product = products[0]
+		product = promotion_product_group.products[0]
 		promotion_result = {
 			"version": 2,
 			"saved_money": product.original_price - self.promotion_price,

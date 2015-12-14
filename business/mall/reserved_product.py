@@ -217,6 +217,12 @@ class ReservedProduct(business_model.Model):
 		self.promotion_result = None
 
 	def set_promotion_result(self, promotion_result):
+		"""
+		设置商品的促销结果
+
+		Parameters
+			[in] promotion_result: 促销结果
+		"""
 		self.promotion_result = promotion_result
 		self.promotion_saved_money = promotion_result.get('saved_money', 0.0)
 
@@ -257,7 +263,7 @@ class ReservedProduct(business_model.Model):
 		if self.promotion and self.promotion.type_name == 'flash_sale':
 			return 0
 		else:
-			return self.total_price * self.member_discount
+			return self.total_price * (1 - self.member_discount)
 
 	@property
 	def supplier(self):

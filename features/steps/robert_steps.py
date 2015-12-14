@@ -76,7 +76,8 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 		if len(promotions) > 0 and (promotions[0].member_grade_id <= 0 or \
 				promotions[0].member_grade_id == member_grade_id):
 			# 存在促销信息，且促销设置等级对该会员开放
-			return promotions[0].id
+			if promotions[0].type != promotion_models.PROMOTION_TYPE_INTEGRAL_SALE:
+				return promotions[0].id
 		return 0
 
 	settings = member_models.IntegralStrategySttings.select().dj_where(webapp_id=context.webapp_id)
@@ -280,6 +281,7 @@ def step_impl(context, webapp_user_name):
 
 	for product in actual_order['products']:
 		product['count'] = product['purchase_count']
+		product['grade_discounted_money'] = product['discount_money']
 		if product['promotion']:
 			promotion = product['promotion']
 			promotion['type'] = promotion['type_name']

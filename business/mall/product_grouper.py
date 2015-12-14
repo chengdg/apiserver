@@ -148,9 +148,6 @@ class ProductGrouper(business_model.Model):
 					'products': products,
 					'promotion': None,
 					"promotion_type": '',
-					'promotion_result': None,
-					'integral_sale_rule': False,
-					'can_use_promotion': False,
 					'member_grade_id': member_grade_id
 				})
 				product_groups.append(promotion_product_group)
@@ -229,9 +226,6 @@ class ProductGrouper(business_model.Model):
 				"promotion_type": promotion.type_name,
 				'products': products,
 				'promotion': promotion,
-				'promotion_result': None,
-				'integral_sale_rule': False,
-				'can_use_promotion': True,
 				'member_grade_id': member_grade_id
 			})
 			product_groups.append(promotion_product_group)

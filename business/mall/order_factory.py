@@ -3,20 +3,6 @@
 订单生成器
 
 订单生成器根据购买信息(PurchaseInfo对象)，生成一个订单
-
-通常下单的流程为:
-```python
-order_factory = OrderFactory.create({
-	'webapp_owner': webapp_owner,
-	'webapp_user': webapp_user,
-	'purchase_info': purchase_info
-})
-
-validate_result = order_factory.validate()
-if validate_result['is_valid']:
-	order = order_factory.save()
-```
-
 """
 
 import json
@@ -81,14 +67,14 @@ class OrderFactory(business_model.Model):
 		self.context['webapp_owner'] = webapp_owner
 		self.context['webapp_user'] = webapp_user
 
-	def validate(self):
-		"""判断订单是否有效
+	# def validate(self):
+	# 	"""判断订单是否有效
 
-		@return True, None: 订单有效；False, reason: 订单无效, 无效原因
-		"""
-		order_checker = OrderChecker(self.context['webapp_owner'], self.context['webapp_user'], self)
+	# 	@return True, None: 订单有效；False, reason: 订单无效, 无效原因
+	# 	"""
+	# 	order_checker = OrderChecker(self.context['webapp_owner'], self.context['webapp_user'], self)
 		
-		return order_checker.check()
+	# 	return order_checker.check()
 
 	def resource_allocator(self):
 		"""资源分配器
@@ -150,7 +136,7 @@ class OrderFactory(business_model.Model):
 
 		#对每一个group应用促销活动
 		for promotion_product_group in self.product_groups:
-			promotion_product_group.apply_promotion()
+			promotion_product_group.apply_promotion(purchase_info)
 
 		self.purchase_info = purchase_info
 		self.order = mall_models.Order()
@@ -212,14 +198,12 @@ class OrderFactory(business_model.Model):
 		order.final_price = self.price_info.get('final_price', 0)
 		order.postage = self.price_info.get('postage', 0)
 
-
-
 		#处理订单中的促销优惠金额
 		promotion_saved_money = 0.0
 		for product_group in product_groups:
 			promotion_result = product_group.promotion_result
 			if promotion_result:
-				saved_money = promotion_result.get('promotion_saved_money', 0.0)
+				saved_money = promotion_result.get('saved_money', 0.0)
 				promotion_saved_money += saved_money
 		order.promotion_saved_money = promotion_saved_money
 
@@ -284,7 +268,7 @@ class OrderFactory(business_model.Model):
 				integral_money = 0
 				integral_count = 0
 				if promotion.type_name == 'integral_sale':
-					integral_money = promotion_result['saved_money']
+					integral_money = promotion_result['integral_money']
 					integral_count = promotion_result['use_integral']
 				mall_models.OrderHasPromotion.create(
 					order = order,

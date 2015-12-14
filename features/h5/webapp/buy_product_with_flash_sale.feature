@@ -292,7 +292,7 @@ Scenario:3 购买单个限时抢购商品，限时抢购活动没开始，按原
 		}
 		"""
 
-@mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip @wip
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
 Scenario:4 购买多个商品，带有限时抢购商品
 
 	When bill访问jobs的webapp
@@ -525,11 +525,11 @@ Scenario:8 购买多规格限时抢购商品
 		"""
 	Then bill获得创建订单失败的信息'限购2件'
 
-@todo @mall2 @promotion @mall.promotion @mall.webapp.promotion @zy_fs09
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @zy_fs09 @robert.wip
 Scenario:9 购买多规格限时抢购商品同时适用于积分规则
 
-	Given jobs登录系统
-	And jobs设定会员积分策略
+	Given jobs登录系统:weapp
+	And jobs设定会员积分策略:weapp
 		"""
 		{
 			"integral_each_yuan": 2,
@@ -538,7 +538,7 @@ Scenario:9 购买多规格限时抢购商品同时适用于积分规则
 		"""
 
 
-	When jobs创建限时抢购活动
+	When jobs创建限时抢购活动:weapp
 		"""
 		{
 			"name": "商品5限时抢购",
@@ -1034,18 +1034,18 @@ Scenario:14 不同等级的会员购买原价有会员等级限时抢购的商�
 		}
 		"""
 
-@todo @mall2 @promotion
+@todo @mall2 @promotion @robert.wip
 Scenario:15 购买多规格限时抢购商品同时适用于积分规则和会员等级
 
-	Given jobs登录系统
-	And jobs设定会员积分策略
+	Given jobs登录系统:weapp
+	And jobs设定会员积分策略:weapp
 		"""
 		{
 			"integral_each_yuan": 2,
 			"use_ceiling": 50
 		}
 		"""
-	When jobs更新商品'商品5'
+	When jobs更新商品'商品5':weapp
 		"""
 		{
 			"is_member_product": "on",
@@ -1064,7 +1064,7 @@ Scenario:15 购买多规格限时抢购商品同时适用于积分规则和会�
 			}
 		}
 		"""
-	When jobs创建限时抢购活动
+	When jobs创建限时抢购活动:weapp
 		"""
 		{
 			"name": "商品5限时抢购",
@@ -1082,6 +1082,7 @@ Scenario:15 购买多规格限时抢购商品同时适用于积分规则和会�
 	Then tom在jobs的webapp中拥有100会员积分
 	When sam获得jobs的100会员积分
 	Then sam在jobs的webapp中拥有100会员积分
+
 	When bill访问jobs的webapp
 	And bill购买jobs的商品
 		"""
@@ -1123,6 +1124,7 @@ Scenario:15 购买多规格限时抢购商品同时适用于积分规则和会�
 		}
 		"""
 	Then bill在jobs的webapp中拥有20会员积分
+	
 	When tom访问jobs的webapp
 	And tom购买jobs的商品
 		"""
@@ -1164,6 +1166,7 @@ Scenario:15 购买多规格限时抢购商品同时适用于积分规则和会�
 		}
 		"""
 	Then tom在jobs的webapp中拥有28会员积分
+
 	When sam访问jobs的webapp
 	And sam购买jobs的商品
 		"""

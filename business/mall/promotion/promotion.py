@@ -113,18 +113,20 @@ class Promotion(business_model.Model):
 		"""
 		raise NotImplementedError("%s must implement check_usability method" % str(self.__class__))
 
-	def apply_promotion(self, products):
+	def apply_promotion(self, promotion_product_group, purchase_info=None):
 		"""
 		为同属一个PromotionProductGroup的product集合执行促销活动，返回促销结果
 
 		Parameters
-			[in, out] products: 待执行促销活动的商品集合
+			[in, out] promotion_product_group: 待执行促销活动的PromotionProductGroup对象
+			[in] purchase_info: 购买信息(PurchaseInfo对象)
 
 		Returns
 			促销活动结果
 
 		Note
 			apply_promotion可能会修改product的price属性
+			purchase_info中可能会携带前端计算出来的promotion result信息，比如对于integral sale，促销结果就是在前端计算的
 		"""
 		raise NotImplementedError("%s must implement apply_promotion method" % str(self.__class__))
 

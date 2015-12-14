@@ -33,8 +33,8 @@ class PurchaseInfo(business_model.Model):
         'used_pay_interface_type',
         'customer_message',
         'order_type',
-        'purchase_group2integral_info',
-        'purchase_integral_info',
+        'group2integralinfo',
+        'order_integral_info',
 
         'is_purchase_from_shopping_cart',
         'coupon_id'
@@ -76,8 +76,7 @@ class PurchaseInfo(business_model.Model):
         self.order_type = request_args.get('order_type', mall_models.PRODUCT_DEFAULT_TYPE)
         self.is_purchase_from_shopping_cart = request_args.get('is_order_from_shopping_cart', False)
 
-        self.__parse_purchase_integral_info(request_args) 
-        self.__parse_purchase_group2integral_info(request_args)
+        self.__parse_integral_info(request_args) 
 
     def __parse_ship_info(self, request_args):
         """解析收货人信息
@@ -177,18 +176,17 @@ class PurchaseInfo(business_model.Model):
         else:
             return False
 
-    def __parse_purchase_integral_info(self, request_args):
-        integral_info = request_args.get('orderIntegralInfo', None)
-        if integral_info:
-            self.purchase_integral_info = json.loads(integral_info)
+    def __parse_integral_info(self, request_args):
+        #解析整单积分信息
+        order_integral_info = request_args.get('orderIntegralInfo', None)
+        if order_integral_info:
+            self.order_integral_info = json.loads(order_integral_info)
         else:
-            self.purchase_integral_info = None
+            self.order_integral_info = None
 
-    def __parse_purchase_group2integral_info(self, request_args):
-        integral_info = request_args.get('group2integralinfo', None)
-        if integral_info:
-            self.purchase_group2integral_info = json.loads(integral_info)
+        #商品积分应用信息
+        group2integralinfo = request_args.get('group2integralinfo', None)
+        if group2integralinfo:
+            self.group2integralinfo = json.loads(group2integralinfo)
         else:
-            self.purchase_group2integral_info = None
-
-
+            self.group2integralinfo = None

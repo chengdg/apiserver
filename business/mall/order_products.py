@@ -159,12 +159,6 @@ class OrderProducts(business_model.Model):
 		#根据promotion_id获取promotion_result
 		items = id2products.items()
 		items.sort(lambda x,y: cmp(x[1]["index"], y[1]["index"]))
-		buf = []
-		buf.append('-$$-' * 20)
-		for item in items:
-			buf.append(item[1]['products'][0].name)
-		buf.append('-$$-' * 20)
-		print '\n'.join(buf)
 		for product_id, products_info in items:
 			products = products_info["products"]
 			self.products.extend(products)

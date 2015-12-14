@@ -36,6 +36,7 @@ class PromotionProductGroup(business_model.Model):
 		'promotion_result',
 		'promotion_saved_money',
 		'integral_sale_rule',
+		'active_integral_sale_rule',
 		'can_use_promotion',
 		'promotion_json',
 		'member_grade_id'
@@ -47,18 +48,14 @@ class PromotionProductGroup(business_model.Model):
 		self.id = group_info['id']
 		self.uid = group_info['uid']
 		self.products = group_info['products']
-		self.can_use_promotion = group_info['can_use_promotion']
+		self.can_use_promotion = False
 		self.promotion_type = group_info['promotion_type']
 		self.promotion = group_info['promotion']
-		self.promotion_result = group_info['promotion_result']
-		self.integral_sale_rule = group_info['integral_sale_rule']
+		self.promotion_result = None
+		self.integral_sale_rule = False
 		self.member_grade_id = group_info['member_grade_id']
 		
 		self.promotion_saved_money = 0.0
-
-		if not self.can_use_promotion:
-			self.promotion = None
-			self.promotion_result = None
 
 		self.promotion_json = json.dumps(self.promotion.to_dict()) if self.promotion else json.dumps(None)
 
@@ -66,27 +63,16 @@ class PromotionProductGroup(business_model.Model):
 			self.integral_sale_rule = True
 
 			#设置每个商品的active_integral_sale_rule
-			active_integral_sale_rule = self.__get_active_integral_sale_rule()
-			
+			self.active_integral_sale_rule = self.promotion.get_rule_for(self.member_grade_id)
 			for product in self.products:
-				product.active_integral_sale_rule = active_integral_sale_rule
+				product.active_integral_sale_rule = self.active_integral_sale_rule
 
-	def __get_active_integral_sale_rule(self):
-		"""
-		收集product_group积分规则抵扣规则
-		"""
-		assert self.promotion.type_name == 'integral_sale'
-		for rule in self.promotion.rules:
-			rule_member_grade_id = int(rule['member_grade_id'])
-			if rule_member_grade_id < 0 or self.member_grade_id == rule_member_grade_id:
-				return rule
-
-	def apply_promotion(self):
+	def apply_promotion(self, purchase_info=None):
 		"""
 		执行促销活动
 		"""
-		if self.can_use_promotion and self.promotion:
-			self.can_use_promotion, self.promotion_result = self.promotion.apply_promotion(self.products)
+		if self.promotion:
+			self.can_use_promotion, self.promotion_result = self.promotion.apply_promotion(self, purchase_info)
 			if not self.can_use_promotion:
 				self.promotion = None
 				self.promotion_result = None
@@ -96,6 +82,24 @@ class PromotionProductGroup(business_model.Model):
 				self.promotion_saved_money = self.promotion_result.get('saved_money', 0.0)
 				for product in self.products:
 					product.set_promotion_result(self.promotion_result)
+		else:
+			if purchase_info:
+				if purchase_info.group2integralinfo and (self.uid in purchase_info.group2integralinfo):
+					#当前product group存在is_permanant_active的积分应用
+					#TODO2: 在前端react重构完成后，这里要重新设计实现，目前硬编码实现
+					product = self.products[0]
+					promotion_ids = [relation.promotion_id for relation in promotion_models.ProductHasPromotion.select().dj_where(product_id=product.id)]
+					integral_sale_detail_ids = [promotion.detail_id for promotion in promotion_models.Promotion.select().dj_where(type=promotion_models.PROMOTION_TYPE_INTEGRAL_SALE, id__in=promotion_ids)]
+					has_permanant_integral_sale = promotion_models.IntegralSale.select().dj_where(id__in=integral_sale_detail_ids, is_permanant_active=True).count() > 0
+					if has_permanant_integral_sale:
+						integral_info = purchase_info.group2integralinfo[self.uid]
+						self.active_integral_sale_rule = {
+							'discount': 100
+						}
+						self.promotion_result = {
+							'integral_money': integral_info['money'],
+							'use_integral': integral_info['integral']
+						}
 
 	def to_dict(self, with_price_factor=False, with_coupon_info=False):
 		"""获取promotion product group的json数据

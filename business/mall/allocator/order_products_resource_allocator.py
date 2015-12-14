@@ -81,11 +81,13 @@ class OrderProductsResourceAllocator(business_model.Service):
 		}
 
 	def __supply_product_info_into_fail_reason(self, product, result):
-		result['id'] = product.id
-		result['name'] = product.name
-		result['stocks'] = product.stocks
-		result['model_name'] = product.model_name
-		result['pic_url'] = product.thumbnails_url
+		if not 'id' in result:
+			#如果失败原因中没有商品信息，则填充商品信息
+			result['id'] = product.id
+			result['name'] = product.name
+			result['stocks'] = product.stocks
+			result['model_name'] = product.model_name
+			result['pic_url'] = product.thumbnails_url
 
 	def __merge_different_model_product(self, products):
 		"""

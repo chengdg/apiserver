@@ -462,7 +462,6 @@ class WebAppUser(business_model.Model):
 		"""
 		return self.member.username_for_html
 
-	@cached_context_property
 	def cleanup_cache(self):
 		"""
 		[property] 清除缓存

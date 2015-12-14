@@ -38,13 +38,18 @@ class CalculatePriceService(business_model.Service):
 		order_price_info['postage'] = postage
 
 		final_price = order_price_info['product_price']
+
 		# 优惠券面额
 		coupon_denomination = order_price_info.get('coupon', 0)
+		forbidden_coupon_product_price = sum([product.price * product.purchase_count for product in products if not product.can_use_coupon])
+		final_price -= forbidden_coupon_product_price
 		if final_price < coupon_denomination:
 			order_price_info['coupon'] = final_price
 			final_price = 0
 		else:
 			final_price -= coupon_denomination
+
+		final_price += forbidden_coupon_product_price
 
 		# 处理积分抵扣金额
 		final_price -= order_price_info.get('integral', 0)
@@ -64,6 +69,7 @@ class CalculatePriceService(business_model.Service):
 		#add by bert 临时解决方案 
 		if order_price_info.get('integral', 0):
 			order_price_info['integral_count'] = type2resource.get('integral').integral
+
 
 
 		return order_price_info

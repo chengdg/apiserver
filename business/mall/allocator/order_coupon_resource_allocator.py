@@ -29,7 +29,6 @@ class OrderCouponResourceAllocator(business_model.Model):
 		webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user']
 		member_id = webapp_user.member.id
-		use_common_coupon = True
 
 		is_success = True
 		reason = ''
@@ -42,29 +41,26 @@ class OrderCouponResourceAllocator(business_model.Model):
 			coupon = Coupon.from_coupon_id({'coupon_id': purchase_info.coupon_id})
 			if not coupon:
 				reason = u'请输入正确的优惠券号'
-				return False, reason, None
+				is_success = False
 			else:
-				coupon_rule = CouponRule.from_id({"id": coupon.coupon_rule.id})
-				if coupon_rule.limit_product:
-					use_common_coupon = False
+				# 使用的优惠券非通用券
+				if coupon.is_single_coupon:
+					self.__return_empty_coupon()
 
-			# 使用的优惠券非通用券
-			if not use_common_coupon:
-				self.__return_empty_coupon()
-
-			# 判断通用券在订单中是否可用
-			is_success, reason = coupon.check_common_coupon_in_order(order, purchase_info, member_id)
-			if not is_success:
-				return False, reason, None
-
-			# 调用CouponResourceAllocator获得资源
-			coupon_resource_allocator = CouponResourceAllocator(webapp_owner, webapp_user)
-			is_success, reason, coupon_resource = coupon_resource_allocator.allocate_resource(coupon)
+				# 判断通用券在订单中是否可用
+				is_success, reason = coupon.check_common_coupon_in_order(order, purchase_info, member_id)
+				if is_success:
+					# 调用CouponResourceAllocator获得资源
+					coupon_resource_allocator = CouponResourceAllocator(webapp_owner, webapp_user)
+					is_success, reason, coupon_resource = coupon_resource_allocator.allocate_resource(coupon)
 
 		if is_success:
 			return True, '', coupon_resource
 		else:
-			return False, reason, None
+			return False, {
+				"is_success": False,
+				"msg": reason,
+			}, None
 
 	def release(self, resources):
 		for resource in resources:
@@ -79,7 +75,3 @@ class OrderCouponResourceAllocator(business_model.Model):
 		empty_coupon_resource.money = 0
 
 		return True, '', empty_coupon_resource
-	
-	#add by bert
-	def release(self,resources):
-		pass

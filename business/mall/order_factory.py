@@ -13,7 +13,7 @@ import uuid
 import time
 import random
 
-from business.mall.CalculatePriceService.calculate_price_service import CalculatePriceService
+from business.mall.calculate_price_service.calculate_price_service import CalculatePriceService
 from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util

@@ -4,7 +4,9 @@
 """
 from datetime import datetime
 from business import model as business_model
+from business.decorator import cached_context_property
 from business.mall.coupon.coupon_rule import CouponRule
+from business.mall.forbidden_coupon_product_ids import ForbiddenCouponProductIds
 from db.mall import promotion_models
 from wapi.decorators import param_required
 
@@ -73,23 +75,52 @@ class Coupon(business_model.Model):
 			msg = '该优惠券已被他人领取不能使用'
 		return msg
 
+
+	@property
+	def is_single_coupon(self):
+		if self.coupon_rule.limit_product:
+			return True
+
+	def check_single_coupon_in_order(self, order, purchase_info, member_id):
+		msg = self.__check_coupon_status(member_id)
+		if msg:
+			return False, msg
+
+		if self.coupon_rule.limit_product_id not in[product.id for product in order.products]:
+			return False, '该优惠券不能购买订单中的商品'
+
+		for p in order.products:
+			if p.id == self.coupon_rule.limit_product_id:
+				# todo 确认此处取到的价格是原价
+				price = p.price * p.purchase_count
+				break
+
+		if self.coupon_rule.valid_restrictions > price:
+			# 单品券限制购物金额
+				return '该优惠券指定商品金额不满足使用条件', None
+		else:
+			return True, ''
+
 	def check_common_coupon_in_order(self, order, purchase_info, member_id):
 		"""
 		检查通用券在订单中是否可用
 		"""
-
-		coupon_rule = CouponRule.from_id({"id": self.coupon_rule.id})
-
 		msg = self.__check_coupon_status(member_id)
 
 		if msg:
 			return False, msg
-		# todo 处理禁用优惠券
+		product_ids = [product.id for product in order.products if product.can_use_coupon]
+
+		# 订单使用通用券且只有禁用通用券商品
+		if len(product_ids) == 0:
+			msg = '该优惠券不能购买订单中的商品'
 
 		# 判断通用券是否满足金额限制
-		order_price =  sum([product.price * product.purchase_count for product in order.products])
-		if coupon_rule.valid_restrictions > order_price and coupon_rule.valid_restrictions != -1:
-			msg = '该优惠券不满足使用金额限制'
+		else:
+			products_sum_price = sum([product.price * product.purchase_count for product in order.products if product.can_use_coupon])
+
+			if self.coupon_rule.valid_restrictions > products_sum_price and self.coupon_rule.valid_restrictions != -1:
+				msg = '该优惠券不满足使用金额限制'
 
 		if msg:
 			return False, msg

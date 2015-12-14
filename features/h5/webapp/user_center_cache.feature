@@ -2,8 +2,9 @@
 Feature: 测试"个人中心"有缓存的场景
 
 Background:
-	Given jobs登录系统
-	And jobs已添加商品分类
+	Given 重置weapp的bdd环境
+	Given jobs登录系统:weapp
+	And jobs已添加商品分类:weapp
 		"""
 		[{
 			"name": "分类1"
@@ -13,7 +14,7 @@ Background:
 			"name": "分类3"
 		}]	
 		"""
-	And jobs已添加商品
+	And jobs已添加商品:weapp
 		"""
 		[{
 			"name": "商品1",
@@ -40,7 +41,7 @@ Background:
 		}]	
 		"""
 
-	And jobs已添加支付方式
+	And jobs已添加支付方式:weapp
 		"""
 		[{
 			"type":"货到付款"
@@ -48,9 +49,9 @@ Background:
 			"type":"微信支付"
 		}]
 		"""
-	And bill关注jobs的公众号
+	And bill关注jobs的公众号:weapp
 
-@todo @mall2
+@todo @mall2 @mall3 @bert
 Scenario:1 bill增加订单数再访问个人中心
 	bill下单(影响订单数)之后会影响订单数。检查个人中心订单数是否正确。
 
@@ -99,10 +100,10 @@ Scenario:2 检查'个人中心'的市场工具数量
 	And bill访问个人中心
 	Then '个人中心'中市场工具的数量为3
 
-@todo @mall2
+@todo @mall2 @mall3 @bert
 Scenario:3 添加订单
 	bill下单
-
+	When bill访问jobs的webapp
 	When bill购买jobs的商品
 		"""
 		{
@@ -114,8 +115,8 @@ Scenario:3 添加订单
 			"customer_message": "bill购买'商品1'"
 		}
 		"""
-	Given jobs登录系统
-	Then jobs可以看到订单列表
+	Given jobs登录系统:weapp
+	Then jobs可以看到订单列表:weapp
 		"""
 		[{
 			"status": "待发货",

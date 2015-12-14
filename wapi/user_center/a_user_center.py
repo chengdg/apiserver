@@ -14,6 +14,7 @@ from core.cache import utils as cache_utils
 from business.mall.order_factory import OrderFactory
 from business.mall.purchase_info import PurchaseInfo
 from business.mall.pay_interface import PayInterface
+from business.mall.shopping_cart import ShoppingCart
 
 class AUserCenter(api_resource.ApiResource):
 	"""
@@ -31,19 +32,26 @@ class AUserCenter(api_resource.ApiResource):
 		webapp_owner = args['webapp_owner']
 		print 'webapp_user>>>>>>>>>>>>>>>>>>>>>...id:',webapp_user.id
 		member = webapp_user.member
+
+		shopping_cart = ShoppingCart.get_for_webapp_user({
+			'webapp_user': args['webapp_user'],
+			'webapp_owner': args['webapp_owner'],
+		})
+		shopping_cart_product_count = shopping_cart.product_count
 		member_data = {
-			'user_icon': member.user_icon,
-			'is_binded': member.is_binded,
-			'username_for_html': member.username_for_html,
-			'grade': member.grade,
+			'user_icon': webapp_user.user_icon,
+			'is_binded': webapp_user.is_binded,
+			'username_for_html': webapp_user.username_for_html,
+			'grade': webapp_user.grade,
 			'history_order_count': webapp_user.history_order_count,
 			'not_payed_order_count': webapp_user.not_payed_order_count,
 			'not_ship_order_count': webapp_user.not_ship_order_count,
 			'shiped_order_count': webapp_user.shiped_order_count,
 			'review_count': webapp_user.review_count,
-			'integral': member.integral,
+			'integral': webapp_user.integral,
 			'wishlist_product_count': webapp_user.collected_product_count,
-			'market_tools': member.market_tools
+			'market_tools': member.market_tools,
+			'shopping_cart_product_count': shopping_cart_product_count
 		}
 
 		return member_data

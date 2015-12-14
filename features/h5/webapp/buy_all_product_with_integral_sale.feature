@@ -244,7 +244,7 @@ Scenario:4 购买单个多规格商品+一个普通商品
 		"""
 	Then bill在jobs的webapp中拥有20会员积分
 
-@todo @mall2 @mall.promotion @mall.webapp.promotion
+@todo @mall2 @mall.promotion @mall.webapp.promotion @mall3 @bert
 Scenario:5 购买单个限时抢购商品，同时使用积分购买
 	Given jobs登录系统:weapp
 	When jobs创建限时抢购活动:weapp
@@ -290,10 +290,10 @@ Scenario:5 购买单个限时抢购商品，同时使用积分购买
 		"""
 	Then bill在jobs的webapp中拥有40会员积分
 
-@todo @mall2 @mall.promotion @mall.webapp.promotion
+@todo @mall2 @mall.promotion @mall.webapp.promotion @mall3 @bert
 Scenario:6 购买单个限时抢购商品， 买赠商品，同时使用积分购买
-	Given jobs登录系统
-	When jobs创建限时抢购活动
+	Given jobs登录系统:weapp
+	When jobs创建限时抢购活动:weapp
 		"""
 		{
 			"name": "商品1限时抢购",
@@ -304,7 +304,7 @@ Scenario:6 购买单个限时抢购商品， 买赠商品，同时使用积分�
 		}
 		"""
 
-	When jobs创建买赠活动
+	When jobs创建买赠活动:weapp
 		"""
 		{
 			"name": "商品2买一赠一",
@@ -367,7 +367,7 @@ Scenario:6 购买单个限时抢购商品， 买赠商品，同时使用积分�
 	Then bill在jobs的webapp中拥有90会员积分
 
 #补充：张三香 "雪静"
-@todo @mall2 @integral @meberGrade 
+@todo @mall2 @integral @meberGrade @mall3 @bert
 Scenario: 7 不同等级的会员购买有会员价同时有全体积分抵扣50%的商品
 	#会员价和积分抵扣可以同时使用，会员价后再算积分抵扣的比例
 	Given jobs登录系统:weapp

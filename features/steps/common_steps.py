@@ -32,6 +32,13 @@ import logging
 
 @then(u"{user}获得错误提示'{error}'")
 def step_impl(context, user, error):
+	context.tc.assertTrue(200 != context.response.body['code'])
+	
+	data = context.response.data
+	server_error_msg = data.get('msg', None)
+	if not server_error_msg:
+		server_error_msg = data['detail'][0]['msg']
+
 	context.tc.assertEquals(error, context.server_error_msg)
 
 @then(u"{user}获得'{product_name}'错误提示'{error}'")

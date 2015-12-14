@@ -453,7 +453,7 @@ Scenario:5 不同等级的会员购买有会员价同时有单品券的商品
 			"discount": "7"
 		}]
 		"""
-	When jobs更新"bill"的会员等级
+	When jobs更新'bill'的会员等级
 		"""
 		{
 			"name": "bill",

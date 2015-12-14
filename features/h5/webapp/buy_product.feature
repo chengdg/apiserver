@@ -532,7 +532,7 @@ Scenario: 10 会员购买的商品同时参加多个活动，然后下架商品
 		}]
 		"""
 	Given jobs登录系统
-	When jobs下架商品'商品1'
+	When jobs'下架'商品'商品1'
 	When bill访问jobs的webapp
 	When bill购买jobs的商品
 		"""
@@ -556,7 +556,7 @@ Scenario: 10 会员购买的商品同时参加多个活动，然后下架商品
 		"""
 
 	Given jobs登录系统
-	When jobs下架商品'商品2'
+	When jobs'下架'商品'商品2'
 	When bill访问jobs的webapp
 	When bill从购物车发起购买操作
 		"""
@@ -604,7 +604,7 @@ Scenario: 11 会员购买的商品同时参加多个活动，然后删除商品
 			"promotion_price": 8.0
 		}]
 		"""
-	When jobs永久删除商品'商品1'
+	When jobs'永久删除'商品'商品1'
 	When bill访问jobs的webapp
 	When bill购买jobs的商品
 		"""
@@ -629,7 +629,7 @@ Scenario: 11 会员购买的商品同时参加多个活动，然后删除商品
 		}]
 		"""
 	Given jobs登录系统
-	When jobs永久删除商品'商品2'
+	When jobs'永久删除'商品'商品2'
 	When bill访问jobs的webapp
 	When bill从购物车发起购买操作
 		"""

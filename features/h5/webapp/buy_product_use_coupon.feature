@@ -888,14 +888,14 @@ Scenario:13 不同等级的会员购买有会员价同时使用全体券的商�
 		"""
 	When nokia关注jobs的公众号
 	Given jobs登录系统:weapp
-	When jobs更新"nokia"的会员等级:weapp
+	When jobs更新'nokia'的会员等级:weapp
 		"""
 		{
 			"name": "nokia",
 			"member_rank": "金牌会员"
 		}
 		"""
-	When jobs更新"bill"的会员等级:weapp
+	When jobs更新'bill'的会员等级:weapp
 		"""
 		{
 			"name": "bill",

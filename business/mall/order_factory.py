@@ -39,7 +39,8 @@ class OrderException(Exception):
 
 
 class OrderFactory(business_model.Model):
-	"""订单生成器
+	"""
+	订单生成器
 	"""
 	__slots__ = (
 		'purchase_info',
@@ -53,7 +54,8 @@ class OrderFactory(business_model.Model):
 	@staticmethod
 	@param_required(['webapp_owner', 'webapp_user'])
 	def get(args):
-		"""工厂方法，创建Order对象
+		"""
+		工厂方法，创建Order对象
 
 		@return Order对象
 		"""
@@ -76,13 +78,17 @@ class OrderFactory(business_model.Model):
 		
 	# 	return order_checker.check()
 
-	def resource_allocator(self):
-		"""资源分配器
+	def _allocate_resource(self):
+		"""
+		分配订单资源
+
 		@return True, order: 订单有效；False, reason: 订单无效, 无效原因
 		"""
-		allocator_order_resource_service = AllocateOrderResourceService(self.context['webapp_owner'], self.context['webapp_user'])
+		webapp_owner = self.context['webapp_owner']
+		webapp_user = self.context['webapp_user']
+		allocate_order_resource_service = AllocateOrderResourceService(webapp_owner, webapp_user)
 		
-		successed, reasons, resources = allocator_order_resource_service.allocate_resource_for(self, self.purchase_info)
+		successed, reasons, resources = allocate_order_resource_service.allocate_resource_for(self, self.purchase_info)
 		
 		if successed:
 			self.context['allocator_order_resource_service'] = allocator_order_resource_service
@@ -99,7 +105,10 @@ class OrderFactory(business_model.Model):
 	# 	self.order.integral = resource.integral
 	# 	self.order.integral_money = resource.integral_money
 
-	def calculate_price(self):
+	def _calculate_price(self):
+		"""
+		计算订单价格
+		"""
 		calculate_price_service = CalculatePriceService(self.context['webapp_owner'], self.context['webapp_user'])
 		self.price_info  = calculate_price_service.calculate_price(self, self.resources)
 
@@ -119,6 +128,9 @@ class OrderFactory(business_model.Model):
 			return order_id
 
 	def create_order(self, purchase_info):
+		"""
+		由PurchaseInfo创建订单
+		"""
 		#获取订单商品集合
 		webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user']
@@ -142,8 +154,10 @@ class OrderFactory(business_model.Model):
 		self.order = mall_models.Order()
 		self.order.products = self.products
 
-		self.resource_allocator()
-		self.calculate_price()
+		# 分配订单资源
+		self._allocate_resource()
+		# 计算订单价格
+		self._calculate_price()
 		#try:
 		return self.save()
 		# except:

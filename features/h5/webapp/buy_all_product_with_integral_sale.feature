@@ -195,7 +195,7 @@ Scenario:3 购买多个商品，已有总积分金额大于最大折扣金额
 		"""
 	Then bill在jobs的webapp中拥有10会员积分
 
-@todo @mall2 @mall.promotion @mall.webapp.promotion @test1
+@todo @mall2 @mall.promotion @mall.webapp.promotion @mall3 @bert
 Scenario:4 购买单个多规格商品+一个普通商品
 	When bill访问jobs的webapp
 	When bill获得jobs的150会员积分

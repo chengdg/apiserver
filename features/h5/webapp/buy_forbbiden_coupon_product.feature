@@ -450,7 +450,7 @@ Scenario:6 购买禁用优惠券商品,该商品同时参与会员折扣
 			"is_member_product": "on"
 		}
 		"""
-	When jobs更新"bill"的会员等级
+	When jobs更新'bill'的会员等级
 		"""
 		{
 			"name": "bill",
@@ -497,7 +497,7 @@ Scenario:7 购买禁用优惠券商品,该商品同时参与限时抢购
 			"promotion_price": 99.00
 		}]
 		"""
-	When jobs更新"bill"的会员等级
+	When jobs更新'bill'的会员等级
 		"""
 		{
 			"name": "bill",
@@ -600,7 +600,7 @@ Scenario:9 购买禁用优惠券商品,该商品同时参与积分应用
 				}]
 		}]
 		"""
-	When jobs更新"bill"的会员等级
+	When jobs更新'bill'的会员等级
 		"""
 		{
 			"name": "bill",

@@ -1,7 +1,7 @@
 #author: benchi
 #editor: 师帅 2015.10.19
 #editor: 王丽 2015.11.25
-
+#editor: 玉成 2015.12.14
 Feature: 在webapp中购买参与积分应用活动的商品
 	jobs 设置 use_ceiling 后 用户能在webapp中能够对所有商品使用积分购买
 
@@ -405,21 +405,21 @@ Scenario: 7 不同等级的会员购买有会员价同时有全体积分抵扣50
 			"discount": "7"
 		}]
 		"""
-	When jobs更新"tom4"的会员等级:weapp
+	When jobs更新'tom4'的会员等级:weapp
 		"""
 		{
 			"name": "tom4",
 			"member_rank": "金牌会员"
 		}
 		"""
-	And jobs更新"tom3"的会员等级:weapp
+	And jobs更新'tom3'的会员等级:weapp
 		"""
 		{
 			"name": "tom3",
 			"member_rank": "银牌会员"
 		}
 		"""
-	And jobs更新"tom2"的会员等级:weapp
+	And jobs更新'tom2'的会员等级:weapp
 		"""
 		{
 			"name": "tom2",

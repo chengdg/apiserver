@@ -684,27 +684,26 @@ def step_click_check_out(context, webapp_user_name):
 
 	response = context.client.post(url, data)
 
-	bdd_util.assert_api_call_success(response)
+	#bdd_util.assert_api_call_success(response)
 	context.response = response
 
 	#访问支付结果链接
-	pay_url_info = response.data['pay_url_info']
-	pay_type = pay_url_info['type']
-	del pay_url_info['type']
-	if pay_type == 'cod':
-		pay_url = '/wapi/pay/pay_result/?_method=put'
-		data = {
-			'pay_interface_type': pay_url_info['pay_interface_type'],
-			'order_id': pay_url_info['order_id']
-		}
-		context.client.post(pay_url, data)
-	
 	if response.body['code'] == 200:
-		# context.created_order_id为订单ID
+		pay_url_info = response.data['pay_url_info']
+		pay_type = pay_url_info['type']
+		del pay_url_info['type']
+		if pay_type == 'cod':
+			pay_url = '/wapi/pay/pay_result/?_method=put'
+			data = {
+				'pay_interface_type': pay_url_info['pay_interface_type'],
+				'order_id': pay_url_info['order_id']
+			}
+			context.client.post(pay_url, data)
+		
 		context.created_order_id = response.data['order_id']
 	else:
 		context.created_order_id = -1
-		context.server_error_msg = response.data['msg']
+		context.server_error_msg = response.data['detail'][0]['msg']
 		print "buy_error----------------------------",context.server_error_msg,response
 
 	if context.created_order_id != -1:

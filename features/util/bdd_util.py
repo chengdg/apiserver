@@ -254,7 +254,7 @@ def assert_expected_list_in_actual(expected, actual):
 # assert_api_call_success: 验证api调用成功
 ###########################################################################
 def assert_api_call_success(response):
-	if 200 != response.body.get('code'):
+	if 200 != response.body['code']:
 		buf = []
 		buf.append('>>>>>>>>>>>>>>> response <<<<<<<<<<<<<<<')
 		buf.append(str(response))

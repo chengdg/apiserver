@@ -54,12 +54,28 @@ class ProductResource(business_model.Resource):
 		return self.type
 
 	def get_resources(self, product):
+		is_successed, reason = self.__check_shelve_type(product)
+		if not is_successed:
+			return False, reason
+
 		is_successed, reason = self.consume_stocks(product)
 		if not is_successed:
 			return False, reason
 
-		#TODO 促销活动
 		return True, reason
+
+	def __check_shelve_type(self, product):
+		if product.shelve_type == mall_models.PRODUCT_SHELVE_TYPE_OFF:
+			return False, {
+				'is_successed': False,
+				'type': 'product:is_off_shelve',
+				'msg': u'有商品已下架<br/>2秒后返回购物车<br/>请重新下单',
+				'short_msg': u'商品已下架'
+			}
+
+		return True, {
+			'is_successed': True
+		}
 
 	def consume_stocks(self, product):
 		"""

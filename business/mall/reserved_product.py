@@ -235,6 +235,17 @@ class ReservedProduct(business_model.Model):
 			#限时抢购，修改已预订商品购买价
 			self.price = self.promotion.promotion_price
 
+	def use_product_coupon(self, coupon):
+		"""
+		使用针对商品的优惠券(单品券)
+
+		Parameters
+			[in] coupon: 单品券的Coupon对象
+		"""
+		self.disable_discount()
+		#在原价基础上应用单品券
+		self.price = self.price - coupon.money
+
 	@cached_context_property
 	def __current_model(self):
 		"""

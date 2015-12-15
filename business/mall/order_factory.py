@@ -25,7 +25,7 @@ from business.mall.product import Product
 import settings
 from business.decorator import cached_context_property
 from business.mall.order_products import OrderProducts
-from business.mall.product_grouper import ProductGrouper
+from business.mall.group_reserved_product_service import GroupReservedProductService
 from business.mall.order_checker import OrderChecker
 from business.mall.order import Order
 from business.mall.reserved_product_repository import ReservedProductRepository
@@ -143,8 +143,8 @@ class OrderFactory(business_model.Model):
 		self.products = reserved_product_repository.get_reserved_products_from_purchase_info(purchase_info)
 		
 		#按促销进行product分组
-		product_grouper = ProductGrouper()
-		self.product_groups = product_grouper.group_product_by_promotion(webapp_user.member, self.products)
+		group_reserved_product_service = GroupReservedProductService.get(webapp_owner, webapp_user)
+		self.product_groups = group_reserved_product_service.group_product_by_promotion(self.products)
 
 		#对每一个group应用促销活动
 		for promotion_product_group in self.product_groups:

@@ -26,10 +26,11 @@ class ProductResourceAllocator(business_model.Service):
 	"""请求商品库存资源
 	"""
 	__slots__ = (
-		)
+	)
 
-	def __init__(self):
-		business_model.Service.__init__(self)
+	def __init__(self, webapp_owner, webapp_user):
+		business_model.Service.__init__(self, webapp_owner, webapp_user)
+		
 		self.context['resource'] = None
 
 	def release(self):

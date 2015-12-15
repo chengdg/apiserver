@@ -25,7 +25,7 @@ import settings
 from utils import regional_util
 from business.decorator import cached_context_property
 from business.mall.reserved_product_repository import ReservedProductRepository
-from business.mall.product_grouper import ProductGrouper
+from business.mall.group_reserved_product_service import GroupReservedProductService
 
 
 class PurchaseOrder(business_model.Model):
@@ -102,8 +102,8 @@ class PurchaseOrder(business_model.Model):
 		self.pay_interfaces = webapp_owner.pay_interfaces
 
 		#按促销进行product分组
-		product_grouper = ProductGrouper()
-		self.promotion_product_groups = product_grouper.group_product_by_promotion(webapp_user.member, self.products)
+		group_reserved_product_service = GroupReservedProductService.get(webapp_owner, webapp_user)
+		self.promotion_product_groups = group_reserved_product_service.group_product_by_promotion(self.products)
 
 		#对每一个group应用促销活动
 		for promotion_product_group in self.promotion_product_groups:

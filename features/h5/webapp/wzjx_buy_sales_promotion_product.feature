@@ -149,7 +149,7 @@ Scenario: 1 不同供货商的商品进行促销
 	And bill在购物车订单编辑中点击提交订单
 		"""
 		{
-			"pay_type": "货到付款",
+			"pay_type": "微信支付",
 			"order_no": "001"
 		}
 		"""
@@ -310,7 +310,7 @@ Scenario: 2 不同供货商的商品进行会员价购买
 	And bill在购物车订单编辑中点击提交订单
 		"""
 		{
-			"pay_type": "货到付款",
+			"pay_type": "微信支付",
 			"order_no": "001"
 		}
 		"""
@@ -432,7 +432,7 @@ Scenario: 3 使用积分购买不同供货商的商品
 	And tom在购物车订单编辑中点击提交订单
 		"""
 		{
-			"pay_type": "货到付款",
+			"pay_type": "微信支付",
 			"order_no": "001",
 			"integral": 50,
 			"integral_money": 50

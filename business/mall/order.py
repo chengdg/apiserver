@@ -264,14 +264,7 @@ class Order(business_model.Model):
 
 			now = datetime.now()
 			if self.origin_order_id < 0:
-				print '---------------------------'
-				print '---------------------------'
-				print '---------------------------'
-				print '---------------------------'
-				print '---------------------------'
-				print '---------------------------self.id:',self.id
-				aa = mall_models.Order.update(status=mall_models.ORDER_STATUS_PAYED_NOT_SHIP, pay_interface_type=pay_interface_type, payment_time=now).dj_where(origin_order_id=self.id).execute()
-				print '---------',aa
+				mall_models.Order.update(status=mall_models.ORDER_STATUS_PAYED_NOT_SHIP, pay_interface_type=pay_interface_type, payment_time=now).dj_where(origin_order_id=self.id).execute()
 
 			mall_models.Order.update(status=mall_models.ORDER_STATUS_PAYED_NOT_SHIP, pay_interface_type=pay_interface_type, payment_time=now).dj_where(order_id=self.order_id).execute()
 			self.status = mall_models.ORDER_STATUS_PAYED_NOT_SHIP

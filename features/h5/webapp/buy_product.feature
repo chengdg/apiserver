@@ -354,6 +354,7 @@ Scenario:6 货到付款的商品有两种支付方式
 		"""
 	Then bill'能'使用支付方式'微众卡支付'进行支付
 	Then bill'能'使用支付方式'货到付款'进行支付
+	Then bill'能'使用支付方式'微信支付'进行支付
 
 @mall.webapp @todo @mall2 @zy_bp08
 Scenario:7 没有货到付款的商品只有一种支付方式
@@ -372,13 +373,46 @@ Scenario:7 没有货到付款的商品只有一种支付方式
 		}
 		"""
 	Then bill'能'使用支付方式'微众卡支付'进行支付
+	Then bill'能'使用支付方式'微信支付'进行支付
 	Then bill'不能'使用支付方式'货到付款'进行支付
 
 
 
+Scenario: 8 购买多个商品配置不同的支付方式
+	bill购买jobs多个商品时，分别配置不同的支付方式
+	1.bill可以使用'在线支付'进行支付
+	2.bill不可以使用'货到付款'进行支付
+
+	When bill访问jobs的webapp
+	When bill加入jobs的商品到购物车
+		"""
+		[{
+			"name": "商品2",
+			"count": 1
+		}, {
+			"name": "商品6",
+			"count": 1
+		}]
+		"""
+	When bill从购物车发起购买操作
+		"""
+		{
+			"action": "pay",
+			"context": [{
+				"name": "商品2"
+			}, {
+				"name": "商品6"
+			}]
+		}
+		"""
+	Then bill'能'使用支付方式'微众卡支付'进行支付
+	Then bill'能'使用支付方式'微信支付'进行支付
+	Then bill'不能'使用支付方式'货到付款'进行支付
+
+
 #后续补充.雪静
 @mall.webapp @todo @mall2 @zy_bp09
-Scenario:8 购买库存为零的商品
+Scenario:9 购买库存为零的商品
 	bill可能会在以下情景下购买库存不足的商品A：
 	1. bill打开商品A的详情页面
 	2. bill调整数量为2个点击“购买”，进入商品A的订单编辑页面
@@ -422,7 +456,7 @@ Scenario:8 购买库存为零的商品
 	Then bill获得错误提示'有商品库存不足<br/>2秒后返回购物车<br/>请重新下单'
 
 @allOrder @todo @mall2
-Scenario: 9 会员购买商品后，获取订单列表
+Scenario: 10 会员购买商品后，获取订单列表
 	bill成功创建订单多个订单后，获取订单列表
 
 
@@ -467,6 +501,7 @@ Scenario: 9 会员购买商品后，获取订单列表
 			}]
 		}
 		"""
+	#备注：个人中心-全部订单列表页，最多显示三个商品，会显示这个订单商品的总数
 	Then bill查看个人中心全部订单
 		"""
 		[{
@@ -507,7 +542,7 @@ Scenario: 9 会员购买商品后，获取订单列表
 
 #根据需求4985新增场景
 @mall.webapp @todo @mall2
-Scenario: 10 会员购买的商品同时参加多个活动，然后下架商品
+Scenario: 11 会员购买的商品同时参加多个活动，然后下架商品
 	bill购买商品时，jobs下架此商品，bill获得错误提示信息
 
 	Given jobs登录系统
@@ -572,7 +607,7 @@ Scenario: 10 会员购买的商品同时参加多个活动，然后下架商品
 	And bill在购物车订单编辑中点击提交订单
 		"""
 		{
-			"pay_type": "货到付款"
+			"pay_type": "微信支付"
 		}
 		"""
 	Then bill获得'商品2'错误提示'已下架'
@@ -580,7 +615,7 @@ Scenario: 10 会员购买的商品同时参加多个活动，然后下架商品
 
 
 @mall.webapp @todo @mall2
-Scenario: 11 会员购买的商品同时参加多个活动，然后删除商品
+Scenario: 12 会员购买的商品同时参加多个活动，然后删除商品
 	bill购买商品时，jobs删除此商品，bill获得错误提示信息
 
 	Given jobs登录系统
@@ -645,7 +680,7 @@ Scenario: 11 会员购买的商品同时参加多个活动，然后删除商品
 	And bill在购物车订单编辑中点击提交订单
 		"""
 		{
-			"pay_type": "货到付款"
+			"pay_type": "微信支付"
 		}
 		"""
 	Then bill获得'商品2'错误提示'已删除'

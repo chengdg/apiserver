@@ -262,7 +262,7 @@ Scenario: 2 购买一个供货商的多个商品
 		}]
 		"""
 
-@todo @mall2 @buy @supplier @duhao
+@todo @mall2 @buy @supplier
 Scenario: 3 购买多个供货商的多个商品,使用微信支付
 	bill购买商品后，使用微信支付
 	1. 能看到订单详情
@@ -354,7 +354,7 @@ Scenario: 3 购买多个供货商的多个商品,使用微信支付
 		}
 		"""
 	When bill访问jobs的webapp
-	#And bill使用支付方式'微信支付'进行支付:weapp
+	#And bill使用支付方式'微信支付'进行支付
 	Given jobs登录系统:weapp
 	Then jobs可以看到订单列表:weapp
 		"""
@@ -430,14 +430,14 @@ Scenario: 3 购买多个供货商的多个商品,使用微信支付
 
 	
 
-@todo @mall2 @buy @supplier
+@todo @mall2 @buy @supplier @duhao
 Scenario: 4 购买多个供货商的多个商品,使用货到付款
 	bill购买商品后，使用货到付款
 	1. 能看到订单详情
 	2. 能在不同状态下执行各种操作
 
-	Given jobs登录系统
-	When jobs更新商品'商品3'
+	Given jobs登录系统:weapp
+	When jobs更新商品'商品3':weapp
 		"""
 		{
 			"name": "商品3",
@@ -510,8 +510,8 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 			"actions": ["取消订单", "支付"]
 		}
 		"""
-	Given jobs登录系统
-	Then jobs可以获得最新订单详情
+	Given jobs登录系统:weapp
+	Then jobs可以获得最新订单详情:weapp
 		"""
 		{
 			"order_id": "001",
@@ -674,8 +674,8 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 			}]
 		}
 		"""
-	Given jobs登录系统
-	When jobs对订单进行发货
+	Given jobs登录系统:weapp
+	When jobs对订单进行发货:weapp
 		"""
 		{
 			"order_id":"001-土小宝",
@@ -684,7 +684,7 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 			"shipper":"jobs|备注"
 		}
 		"""
-	Then jobs可以看到订单列表
+	Then jobs可以看到订单列表:weapp
 		"""
 		[{
 			"order_id": "001",
@@ -747,9 +747,9 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 			}]
 		}
 		"""
-	Given jobs登录系统
-	When jobs完成订单'001-土小宝'
-	Then jobs可以看到订单列表
+	Given jobs登录系统:weapp
+	When jobs完成订单'001-土小宝':weapp
+	Then jobs可以看到订单列表:weapp
 		"""
 		[{
 			"order_id": "001",
@@ -812,9 +812,9 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 			}]
 		}
 		"""
-	Given jobs登录系统
-	When jobs完成订单'001-丹江湖'
-	Then jobs可以看到订单列表
+	Given jobs登录系统:weapp
+	When jobs完成订单'001-丹江湖':weapp
+	Then jobs可以看到订单列表:weapp
 		"""
 		[{
 			"order_id": "001",

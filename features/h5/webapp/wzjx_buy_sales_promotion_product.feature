@@ -11,8 +11,8 @@ Feature: 购买促销商品
 
 
 Background:
-	Given jobs登录系统
-	And jobs已添加供货商
+	Given jobs登录系统:weapp
+	And jobs已添加供货商:weapp
 		"""
 		[{
 			"name": "土小宝",
@@ -28,7 +28,7 @@ Background:
 			"remark": ""
 		}]
 		"""
-	And jobs已添加支付方式
+	And jobs已添加支付方式:weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -38,7 +38,7 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	And jobs已添加商品
+	And jobs已添加商品:weapp
 		"""
 		[{
 			"supplier": ["土小宝"],
@@ -54,7 +54,7 @@ Background:
 			"price": 100.00
 		}]
 		"""
-	And jobs已添加了优惠券规则
+	And jobs已添加了优惠券规则:weapp
 		"""
 		[{
 			"name": "优惠券1",
@@ -63,7 +63,7 @@ Background:
 			"coupon_id_prefix": "coupon1_id_"
 		}]
 		"""
-	When jobs添加会员等级
+	When jobs添加会员等级:weapp
 		"""
 		[{
 			"name": "铜牌会员",
@@ -87,8 +87,8 @@ Scenario: 1 不同供货商的商品进行促销
 	设置促销活动进行购买
 
 	#同时购买限时抢购，买赠，使用优惠券，不同供货商
-	Given jobs登录系统
-	When jobs创建限时抢购活动
+	Given jobs登录系统:weapp
+	When jobs创建限时抢购活动:weapp
 		"""
 		{
 			"name": "商品1限时抢购",
@@ -100,7 +100,7 @@ Scenario: 1 不同供货商的商品进行促销
 			"promotion_price": 50.00
 		}
 		"""
-	When jobs创建买赠活动
+	When jobs创建买赠活动:weapp
 		"""
 		[{
 			"name": "商品2买一赠一",
@@ -181,8 +181,8 @@ Scenario: 1 不同供货商的商品进行促销
 			"actions": ["取消订单", "支付"]
 		}
 		"""
-	Given jobs登录系统
-	Then jobs可以获得最新订单详情
+	Given jobs登录系统:weapp
+	Then jobs可以获得最新订单详情:weapp
 		"""
 		{
 			"order_no": "001",
@@ -217,8 +217,8 @@ Scenario: 1 不同供货商的商品进行促销
 		# 订单详情里不显示member	"member": "bill",
 	When bill访问jobs的webapp
 	When bill使用支付方式'微信支付'进行支付
-	Given jobs登录系统
-	Then jobs可以看到订单列表
+	Given jobs登录系统:weapp
+	Then jobs可以看到订单列表:weapp
 		"""
 		[{
 			"order_no": "001",
@@ -261,8 +261,8 @@ Scenario: 1 不同供货商的商品进行促销
 Scenario: 2 不同供货商的商品进行会员价购买
 	设置会员等级价的商品进行购买
 
-	Given jobs登录系统
-	When jobs更新商品'商品1'
+	Given jobs登录系统:weapp
+	When jobs更新商品'商品1':weapp
 		"""
 		{
 			"name": "商品1",
@@ -270,7 +270,7 @@ Scenario: 2 不同供货商的商品进行会员价购买
 			"is_member_product": "on"
 		}
 		"""
-	And jobs更新'bill'的会员等级
+	And jobs更新'bill'的会员等级:weapp
 		"""
 		{
 			"name": "bill",
@@ -333,8 +333,8 @@ Scenario: 2 不同供货商的商品进行会员价购买
 			"actions": ["取消订单", "支付"]
 		}
 		"""
-	Given jobs登录系统
-	Then jobs可以获得最新订单详情
+	Given jobs登录系统:weapp
+	Then jobs可以获得最新订单详情:weapp
 		"""
 		{
 			"order_no": "001",
@@ -358,8 +358,8 @@ Scenario: 2 不同供货商的商品进行会员价购买
 		"""
 	When bill访问jobs的webapp
 	And bill使用支付方式'货到付款'进行支付
-	Given jobs登录系统
-	Then jobs可以看到订单列表
+	Given jobs登录系统:weapp
+	Then jobs可以看到订单列表:weapp
 		"""
 		[{
 			"order_no": "001",
@@ -389,8 +389,8 @@ Scenario: 2 不同供货商的商品进行会员价购买
 Scenario: 3 使用积分购买不同供货商的商品
 	使用积分进行购买
 
-	Given jobs登录系统
-	And jobs设定会员积分策略
+	Given jobs登录系统:weapp
+	And jobs设定会员积分策略:weapp
 		"""
 		{
 			"use_ceiling": 50,
@@ -400,7 +400,7 @@ Scenario: 3 使用积分购买不同供货商的商品
 		"""
 	When tom关注jobs的公众号
 	When tom访问jobs的webapp
-	Given jobs已有的会员
+	Given jobs已有的会员:weapp
 		"""
 		[{
 			"name": "tom",
@@ -457,8 +457,8 @@ Scenario: 3 使用积分购买不同供货商的商品
 			"actions": ["取消订单", "支付"]
 		}
 		"""
-	Given jobs登录系统
-	Then jobs可以获得最新订单详情
+	Given jobs登录系统:weapp
+	Then jobs可以获得最新订单详情:weapp
 		"""
 		{
 			"order_no": "001",
@@ -481,7 +481,7 @@ Scenario: 3 使用积分购买不同供货商的商品
 		}
 		"""
 		# "member": "tom",
-	When jobs修改订单'001'的价格
+	When jobs修改订单'001'的价格:weapp
 		"""
 		{
 			"order_no": "001",
@@ -490,8 +490,8 @@ Scenario: 3 使用积分购买不同供货商的商品
 		"""
 	When bill访问jobs的webapp
 	And bill使用支付方式'货到付款'进行支付
-	Given jobs登录系统
-	Then jobs可以看到订单列表
+	Given jobs登录系统:weapp
+	Then jobs可以看到订单列表:weapp
 		"""
 		[{
 			"order_no": "001-500",

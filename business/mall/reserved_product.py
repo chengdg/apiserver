@@ -276,7 +276,7 @@ class ReservedProduct(business_model.Model):
 		"""
 		[property] 订单商品的供应商
 		"""
-		return self.context['product'].owner_id	
+		return self.context['product'].supplier	
 
 	def has_expected_promotion(self):
 		"""

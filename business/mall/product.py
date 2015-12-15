@@ -186,6 +186,7 @@ class Product(business_model.Model):
 		'categories',
 		'properties',
 		'created_at',
+		'supplier',
 
 		#商品规格信息
 		'is_use_custom_model',
@@ -337,7 +338,8 @@ class Product(business_model.Model):
 		"""
 		[property setter] 订单中的缩略图
 		"""
-		self.context['order_thumbnails_url'] = url
+		# self.context['order_thumbnails_url'] = url
+		self.thumbnails_url = url
 
 	@property
 	def hint(self):
@@ -654,6 +656,7 @@ class Product(business_model.Model):
 			'total_stocks': self.total_stocks,
 			'is_sellout': self.is_sellout,
 			'created_at': self.created_at if type(self.created_at) == str else datetime.strftime(self.created_at, '%Y-%m-%d %H:%M'),
+			'supplier': self.supplier,
 			'display_index': self.display_index,
 			'is_member_product': self.is_member_product,
 			'swipe_images': getattr(self, 'swipe_images', []),

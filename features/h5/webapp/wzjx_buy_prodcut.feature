@@ -301,7 +301,7 @@ Scenario: 3 购买多个供货商的多个商品,使用微信支付
 		{
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
-			"pay_type": "货到付款",
+			"pay_type": "微信支付",
 			"order_id": "001"
 		}
 		"""
@@ -354,7 +354,7 @@ Scenario: 3 购买多个供货商的多个商品,使用微信支付
 		}
 		"""
 	When bill访问jobs的webapp
-	And bill使用支付方式'微信支付'进行支付:weapp
+	#And bill使用支付方式'微信支付'进行支付:weapp
 	Given jobs登录系统:weapp
 	Then jobs可以看到订单列表:weapp
 		"""
@@ -390,7 +390,7 @@ Scenario: 3 购买多个供货商的多个商品,使用微信支付
 	When jobs对订单进行发货:weapp
 		"""
 		{
-			"order_id":"001-土小宝",
+			"order_no":"001-土小宝",
 			"logistics":"顺丰速运",
 			"number":"123456789",
 			"shipper":"jobs"
@@ -399,7 +399,7 @@ Scenario: 3 购买多个供货商的多个商品,使用微信支付
 	Then jobs可以看到订单列表:weapp
 		"""
 		[{
-			"order_id": "001",
+			"order_no": "001",
 			"status": "待发货",
 			"final_price": 299.00,
 			"actions": ["申请退款"],
@@ -427,192 +427,10 @@ Scenario: 3 购买多个供货商的多个商品,使用微信支付
 			}]
 		}]
 		"""
-	Then jobs可以获得最新订单详情:weapp
-		"""
-		{
-			"order_id": "001",
-			"status": "待发货",
-			"ship_area": "北京市 北京市 海淀区",
-			"ship_address": "泰兴大厦",
-			"final_price": 299.00,
-			"actions": ["申请退款"],
-			"products": [{
-				"name": "商品1",
-				"price": 100.00,
-				"count": 1,
-				"supplier": "土小宝",
-				"status": "已发货"
-			}, {
-				"name": "商品3",
-				"price": 100.00,
-				"count": 1,
-				"supplier": "土小宝",
-				"status": "已发货"
-			}, {
-				"name": "商品2",
-				"price": 99.00,
-				"count": 1,
-				"supplier": "丹江湖",
-				"status": "待发货"
-			}]
-		}
-		"""
-	When bill访问jobs的webapp
-	Then bill手机端获取订单'001'
-		"""
-		{
-			"order_id": "001",
-			"status": "待发货",
-			"final_price": 299.00,
-			"postage": 0.00,
-			"products": [{
-				"包裹1": [{
-					"name": "商品1",
-					"price": 100.00,
-					"count": 1
-				}, {
-					"name": "商品3",
-					"price": 100.00,
-					"count": 1
-				}],
-				"status": "待收货"
-			}, {
-				"包裹2": [{
-					"name": "商品2",
-					"price": 99.00,
-					"count": 1
-				}],
-				"status": "待发货"
-			}]
-		}
-		"""
-	Given jobs登录系统:weapp
-	When jobs对订单进行发货:weapp
-		"""
-		{
-			"order_id":"001-丹江湖",
-			"logistics":"顺丰速运",
-			"number":"123456789",
-			"shipper":"jobs|备注"
-		}
-		"""
-	Then jobs可以看到订单列表:weapp
-		"""
-		[{
-			"order_id": "001",
-			"status": "已发货",
-			"final_price": 299.00,
-			"postage": 0.00,
-			"actions": ["申请退款"],
-			"products": [{
-				"name": "商品1",
-				"price": 100.00,
-				"count": 1,
-				"supplier": "土小宝",
-				"status": "已发货"
-			}, {
-				"name": "商品3",
-				"price": 100.00,
-				"count": 1,
-				"supplier": "土小宝",
-				"status": "已发货"
-			}, {
-				"name": "商品2",
-				"price": 99.00,
-				"count": 1,
-				"supplier": "丹江湖",
-				"status": "已发货"
-			}]
-		}]
-		"""
-	When bill访问jobs的webapp
-	Then bill手机端获取订单'001'
-		"""
-		{
-			"order_id": "001",
-			"status": "待收货",
-			"ship_area": "北京市 北京市 海淀区",
-			"ship_address": "泰兴大厦",
-			"final_price": 299.00,
-			"postage": 0.00,
-			"products": [{
-				"包裹1": [{
-					"name": "商品1",
-					"price": 100.00,
-					"count": 1
-				}, {
-					"name": "商品3",
-					"price": 100.00,
-					"count": 1
-				}],
-				"status": "待收货"
-			}, {
-				"包裹2": [{
-					"name": "商品2",
-					"price": 99.00,
-					"count": 1
-				}],
-				"status": "待收货"
-			}]
-		}
-		"""
-	Given jobs登录系统:weapp
-	When jobs'申请退款'订单'001':weapp
-  	# 此处看不到退款成功，暂时移出"actions": ["退款成功"],
-	Then jobs可以看到订单列表:weapp
-		"""
-		[{
-			"order_id": "001",
-			"status": "退款中",
-			"final_price": 299.00,
-			"postage": 0.00,
-			"products": [{
-				"name": "商品1",
-				"price": 100.00,
-				"count": 1,
-				"supplier": "土小宝"
-			}, {
-				"name": "商品3",
-				"price": 100.00,
-				"count": 1,
-				"supplier": "土小宝"
-			}, {
-				"name": "商品2",
-				"price": 99.00,
-				"count": 1,
-				"supplier": "丹江湖"
-			}]
-		}]
-		"""
-	When jobs通过财务审核'退款成功'订单'001':weapp
-	Then jobs可以看到订单列表:weapp
-		"""
-		[{
-			"order_id": "001",
-			"status": "退款成功",
-			"final_price": 299.00,
-			"postage": 0.00,
-			"actions": [],
-			"products": [{
-				"name": "商品1",
-				"price": 100.00,
-				"count": 1,
-				"supplier": "土小宝"
-			}, {
-				"name": "商品3",
-				"price": 100.00,
-				"count": 1,
-				"supplier": "土小宝"
-			}, {
-				"name": "商品2",
-				"price": 99.00,
-				"count": 1,
-				"supplier": "丹江湖"
-			}]
-		}]
-		"""
 
-@todo @mall2 @buy   @supplier
+	
+
+@todo @mall2 @buy @supplier
 Scenario: 4 购买多个供货商的多个商品,使用货到付款
 	bill购买商品后，使用货到付款
 	1. 能看到订单详情

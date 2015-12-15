@@ -437,9 +437,8 @@ class Order(business_model.Model):
 
 		return result
 
-
-	@deprecated
 	@property
+	@deprecated
 	def db_model(self):
 		"""
 		临时暴露order model，为了调试方便

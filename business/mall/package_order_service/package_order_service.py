@@ -86,7 +86,7 @@ class PackageOrderService(business_model.Service):
 		order.product_groups = group_reserved_product_service.group_product_by_promotion(order.products)
 
 		#对每一个group应用促销活动
-		for promotion_product_group in self.product_groups:
+		for promotion_product_group in order.product_groups:
 			promotion_product_group.apply_promotion(purchase_info)
 
 		return
@@ -96,7 +96,7 @@ class PackageOrderService(business_model.Service):
 		if coupon_resource:
 			order.db_model.coupon_id = coupon_resource.coupon.id
 
-			forbidden_coupon_product_price = sum([product.price * product.purchase_count for product in self.products if not product.can_use_coupon])
+			forbidden_coupon_product_price = sum([product.price * product.purchase_count for product in order.products if not product.can_use_coupon])
 			final_price -= forbidden_coupon_product_price
 			# 优惠券面额
 			coupon_denomination = coupon_resource.money
@@ -124,13 +124,13 @@ class PackageOrderService(business_model.Service):
 	def __process_postage(self, order, final_price, purchase_info):
 		postage_config = self.context['webapp_owner'].system_postage_config
 		calculator = postage_calculator.PostageCalculator(postage_config)
-		postage = calculator.get_postage(self.products, purchase_info)
+		postage = calculator.get_postage(order.products, purchase_info)
 		order.db_model.postage = postage
 		final_price += postage
 
 	def __process_promotion(self, order):
 		promotion_saved_money = 0.0
-		for product_group in self.product_groups:
+		for product_group in order.product_groups:
 			promotion_result = product_group.promotion_result
 			if promotion_result:
 				saved_money = promotion_result.saved_money
@@ -172,7 +172,7 @@ class PackageOrderService(business_model.Service):
 		self.type2resource = dict([(resource.type, resource) for resource in price_free_resources])
 
 		# 处理通用券 todo 适配单品券
-		final_price = sum([product.price * product.purchase_count for product in self.products])
+		final_price = sum([product.price * product.purchase_count for product in order.products])
 
 		# 处理优惠券
 		final_price = self.__process_coupon(order, final_price)

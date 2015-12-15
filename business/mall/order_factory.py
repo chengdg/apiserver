@@ -284,7 +284,7 @@ class OrderFactory(business_model.Model):
 			5. 保存订单
 			6. 如果需要（比如订单保存失败），释放资源（包括订单价相关资源和订单价无关资源）
 		"""
-		
+		self.purchase_info = purchase_info
 		# 申请订单价无关资源
 		price_free_resources = self._allocate_price_free_resources(purchase_info)
 
@@ -296,7 +296,7 @@ class OrderFactory(business_model.Model):
 		order = self._save_order(order)
 
 		# 如果需要（比如订单保存失败），释放资源
-		if order is None or not order.is_saved():
+		if order is None or not order.is_saved(	self.context['webapp_owner'], self.context['webapp_user']):
 			self.release(price_free_resources)
 			#self.release(price_related_resources)
 

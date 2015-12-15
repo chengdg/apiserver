@@ -838,7 +838,7 @@ Scenario:12 使用多于商品价格的优惠券进行购买，且不能抵扣�
 		"""
 
 #editor: "新新" "雪静"
-@mall3 @meberGrade @coupon
+@mall3 @meberGrade @coupon @ztq
 Scenario:13 不同等级的会员购买有会员价同时使用全体券的商品
 	#（全体券和会员价可以同时使用，但是满多少钱可以使用计算的是会员价）
 	Given jobs登录系统:weapp

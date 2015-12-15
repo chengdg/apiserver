@@ -14,7 +14,6 @@ import time
 import random
 import copy
 
-from business.mall.package_order_service.package_order_service import CalculatePriceService
 from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
@@ -29,7 +28,7 @@ from business.mall.order_products import OrderProducts
 from business.mall.order_checker import OrderChecker
 from business.mall.order import Order
 from business.mall.allocator.allocate_order_resource_service import AllocateOrderResourceService
-from business.mall.package_order_service import PackageOrderService
+from business.mall.package_order_service.package_order_service import PackageOrderService
 
 class OrderException(Exception):
 	def __init__(self, value):

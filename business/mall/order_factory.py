@@ -39,6 +39,33 @@ class OrderException(Exception):
 		return repr(self.value)
 
 
+class PackageOrderService():
+	"""
+	# 放在PackageOrderService内部实现以下几步：
+
+	# 填充订单基本信息（比如与订单资源无关的无关的信息）
+	#order = self._init_order(purchase_info)
+
+	# 计算订单价格，填充订单信息
+	order = self._compute_order_price(order, resources, purchase_info)
+
+	# 申请订单价相关资源
+	price_related_resources = self._allocate_price_related_resource(order, purchase_info)
+
+	# 调整订单价格，填充订单信息
+	order = self._adjust_order_price(order, price_related_resources, purchase_info)
+	"""
+
+	def package_order(self, price_free_resources, purchase_info):
+		pass
+
+	def _init_order(self):
+		"""
+		初始化订单
+		"""
+
+
+
 class OrderFactory(business_model.Model):
 	"""
 	订单生成器
@@ -79,7 +106,7 @@ class OrderFactory(business_model.Model):
 		
 	# 	return order_checker.check()
 
-	def _allocate_resource(self):
+	def __allocate_resource(self):
 		"""
 		分配订单资源
 
@@ -127,6 +154,74 @@ class OrderFactory(business_model.Model):
 			return self.__create_order_id()
 		else:
 			return order_id
+
+	def _allocate_price_free_resources(self, purchase_info):
+		"""
+		申请订单价无关资源
+
+		@return price_free_resources
+		"""
+		
+		# 分配订单资源
+		self.__allocate_resource()
+
+		price_free_resources = {}
+		# TODO: to be implemented
+		return price_free_resources
+
+
+	def _save_order(self, order):
+		"""
+		保存订单
+		"""
+		return order
+
+
+	def create_order_new(self, purchase_info):
+		"""
+		由PurchaseInfo创建订单
+
+		**下单步骤**：
+			1. 申请订单价无关资源（比如：reserved product, coupon, integral）
+			2. 计算订单价格（填充资源信息到订单业务对象中）
+			3. 申请订单价相关资源（比如：微众卡）
+			4. 调整订单价格（填充资源信息到订单业务对象中）
+			5. 保存订单
+			6. 如果需要（比如订单保存失败），释放资源（包括订单价相关资源和订单价无关资源）
+		"""
+		
+		# 申请订单价无关资源
+		price_free_resources = self._allocate_price_free_resources(purchase_info)
+
+		package_order_service = PackageOrderService()
+		order = package_order_service.package_order(price_free_resources, purchase_info)
+
+		"""
+		# 放在PackageOrderService内部实现以下几步：
+
+		# 填充订单基本信息（比如与订单资源无关的无关的信息）
+		#order = self._init_order(purchase_info)
+
+		# 计算订单价格，填充订单信息
+		order = self._compute_order_price(order, resources, purchase_info)
+
+		# 申请订单价相关资源
+		price_related_resources = self._allocate_price_related_resource(order, purchase_info)
+
+		# 调整订单价格，填充订单信息
+		order = self._adjust_order_price(order, price_related_resources, purchase_info)
+		"""
+
+		# 保存订单
+		self._save_order(order)
+
+		# 如果需要（比如订单保存失败），释放资源
+		if order is None or not order.is_saved():
+			self.release(price_free_resources)
+			#self.release(price_related_resources)
+
+		return order			
+
 
 	def create_order(self, purchase_info):
 		"""

@@ -36,10 +36,6 @@ class PackageOrderService(business_model.Service):
 		order.member_grade_id = member.grade_id
 		order.member_grade_discount = member.discount
 		order.buyer_name = member.username_for_html
-		order.customer_message = purchase_info.customer_message
-		order.type = purchase_info.order_type
-		order.pay_interface_type = purchase_info.used_pay_interface_type
-
 
 		# 读取purchase_info信息
 		ship_info = purchase_info.ship_info

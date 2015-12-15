@@ -58,7 +58,15 @@ class Order(business_model.Model):
 		'customer_message',
 		'promotion_saved_money',
 		'created_at',
-		'supplier'
+		'supplier',
+		'integral_each_yuan',
+		'webapp_id',
+		'webapp_user_id',
+		'member_grade_id',
+		'member_grade_discount',
+		'buyer_name',
+
+
 	)
 
 	@staticmethod

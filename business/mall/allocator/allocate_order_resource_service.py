@@ -18,7 +18,9 @@ from business import model as business_model
 from business.mall.allocator.order_integral_resource_allocator import OrderIntegralResourceAllocator
 from business.mall.allocator.order_products_resource_allocator import OrderProductsResourceAllocator
 from business.mall.allocator.order_coupon_resource_allocator import OrderCouponResourceAllocator
+from business.wzcard.wzcard_resource_allocator import WZCardResourceAllocator
 
+import logging
 
 class AllocateOrderResourceService(business_model.Service):
 
@@ -30,7 +32,8 @@ class AllocateOrderResourceService(business_model.Service):
 	allocators = [
 		OrderProductsResourceAllocator,
 		OrderIntegralResourceAllocator,
-		OrderCouponResourceAllocator
+		OrderCouponResourceAllocator,
+		WZCardResourceAllocator,	
 	]
 
 	def __init__(self, webapp_owner, webapp_user):
@@ -46,6 +49,7 @@ class AllocateOrderResourceService(business_model.Service):
 		is_success = True
 		reasons = []
 		for allocator in self.context['allocators']:
+			logging.info("allocating resource using {}".format(allocator))
 			is_success, reason, resource = allocator.allocate_resource(order, purchase_info)
 			if not is_success:
 				reasons.append(reason)

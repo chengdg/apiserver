@@ -89,25 +89,3 @@ class WeizoomCard(models.Model):
 	# @staticmethod
 	# def check_card(weizoom_card_id, password):
 	# 	return WeizoomCard.objects.filter(weizoom_card_id=weizoom_card_id, password=password).count() > 0
-
-
-class AccountHasWeizoomCardPermissions(models.Model):
-	"""
-	账号对应使用微众卡功能权限
-	"""
-	owner_id = models.IntegerField(default=0, verbose_name='账号id')
-	is_can_use_weizoom_card = models.BooleanField(default=False, verbose_name='是否可以使用微众卡')
-	created_at = models.DateTimeField(auto_now_add=True, verbose_name='添加时间')
-
-	class Meta(object):
-		db_table = 'market_tool_weizoom_card_account_has_permissions'
-		verbose_name = '账号对应使用微众卡功能权限'
-		verbose_name_plural = '账号对应使用微众卡功能权限'
-
-	#@staticmethod
-	#def is_can_use_weizoom_card_by_owner_id(owner_id):
-	#	permissions = AccountHasWeizoomCardPermissions.objects.filter(owner_id=owner_id)
-	#	if permissions.count() > 0:
-	#		return permissions[0].is_can_use_weizoom_card
-	#	else:
-	#		return False

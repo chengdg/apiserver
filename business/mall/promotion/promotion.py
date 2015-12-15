@@ -100,18 +100,32 @@ class Promotion(business_model.Model):
 
 		return True
 
-	def check_usability(self, webapp_user, product):
+	def allocate(self, webapp_user, product):
 		"""
-		检查是否可以使用该促销
+		为webapp_user, product分配促销
 
 		Parameters
 			webapp_user
 			product: ReservedProduct对象
 
 		Returns
-			如果可以使用，返回True；否则，返回False
+			is_success: 如果分配成功，返回True；否则，返回False
+			result: 分配成功，返回{}; 否则，返回失败原因
 		"""
-		raise NotImplementedError("%s must implement check_usability method" % str(self.__class__))
+		raise NotImplementedError("%s must implement allocate method" % str(self.__class__))
+
+	def can_apply_promotion(self, promotion_product_group):
+		"""
+		判断是否可以在promotion product group上应用促销
+
+		Parameters
+			[in] promotion_product_group: 待执行促销活动的PromotionProductGroup对象
+
+		Returns
+			如果可以应用促销，返回True; 否则，返回False
+		"""
+
+		raise NotImplementedError("%s must implement can_apply_promotion method" % str(self.__class__))
 
 	def apply_promotion(self, promotion_product_group, purchase_info=None):
 		"""
@@ -122,10 +136,9 @@ class Promotion(business_model.Model):
 			[in] purchase_info: 购买信息(PurchaseInfo对象)
 
 		Returns
-			促销活动结果
+			促销结果
 
 		Note
-			apply_promotion可能会修改product的price属性
 			purchase_info中可能会携带前端计算出来的promotion result信息，比如对于integral sale，促销结果就是在前端计算的
 		"""
 		raise NotImplementedError("%s must implement apply_promotion method" % str(self.__class__))

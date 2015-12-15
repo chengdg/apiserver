@@ -233,7 +233,7 @@ Scenario: 3 购买单个积分折扣商品，积分金额大于最大折扣金�
 	Then bill获得创建订单失败的信息'使用积分不能大于促销限额'
 	Then bill在jobs的webapp中拥有150会员积分
 
-@mall3 @promotion @mall.promotion @mall.webapp.promotion @mall.promotion.integral @robert.wip @wip2
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @mall.promotion.integral @robert.wip
 Scenario: 4 购买多个积分折扣商品，总积分金额小于最大折扣金额
 
 	When bill访问jobs的webapp

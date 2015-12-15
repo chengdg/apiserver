@@ -33,9 +33,7 @@ class GroupReservedProductService(business_model.Service):
 	)
 
 	def __init__(self, webapp_owner, webapp_user):
-		business_model.Service.__init__(self)
-		
-		self.context['webapp_user'] = webapp_user
+		business_model.Service.__init__(self, webapp_owner, webapp_user)
 
 	def __get_promotion_name(self, product):
 		"""

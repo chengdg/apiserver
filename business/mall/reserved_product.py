@@ -59,8 +59,8 @@ class ReservedProduct(business_model.Model):
 		'model',
 		'is_member_product',
 		'promotion',
-		'expected_promotion_id',
-		'used_promotion_id',
+		'expected_promotion_id', #已预订商品期望促销
+		'used_promotion_id', #已预订商品当前促销
 		'promotion_result',
 		'promotion_saved_money', #促销抵扣金额
 		'shopping_cart_id', #兼容h5购物车页面的临时解决方案，后续需要将shopping_cart_id移出
@@ -203,12 +203,12 @@ class ReservedProduct(business_model.Model):
 		else:
 			return webapp_owner.system_postage_config
 
-	def apply_promotion(self):
-		"""
-		对商品应用促销规则
-		"""
-		if self.promotion:
-			self.promotion.apply_promotion([self])
+	# def apply_promotion(self):
+	# 	"""
+	# 	对商品应用促销规则
+	# 	"""
+	# 	if self.promotion:
+	# 		self.promotion.apply_promotion([self])
 
 	def disable_promotion(self):
 		"""
@@ -227,7 +227,7 @@ class ReservedProduct(business_model.Model):
 			[in] promotion_result: 促销结果
 		"""
 		self.promotion_result = promotion_result
-		self.promotion_saved_money = promotion_result.get('saved_money', 0.0)
+		self.promotion_saved_money = promotion_result.saved_money
 
 		if self.promotion.type_name == 'flash_sale':
 			#限时抢购，修改已预订商品购买价
@@ -306,6 +306,7 @@ class ReservedProduct(business_model.Model):
 	def to_dict(self):
 		data = business_model.Model.to_dict(self)
 		data['postage_config'] = self.postage_config
+		data['promotion_result'] = self.promotion_result.to_dict() if self.promotion_result else None
 		data['model'] = self.model.to_dict() if self.model else None
 		data['promotion'] = self.promotion.to_dict() if self.promotion else None
 		data['integral_sale'] = self.integral_sale.to_dict() if self.integral_sale else None

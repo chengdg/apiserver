@@ -25,6 +25,7 @@ from business.mall.product import Product
 import settings
 from business.decorator import cached_context_property
 from business.mall.order_products import OrderProducts
+from business.mall.promotion.promotion_result import PromotionResult
 
 
 class PromotionProductGroup(business_model.Model):
@@ -77,14 +78,15 @@ class PromotionProductGroup(business_model.Model):
 		执行促销活动
 		"""
 		if self.promotion:
-			self.can_use_promotion, self.promotion_result = self.promotion.apply_promotion(self, purchase_info)
+			self.can_use_promotion = self.promotion.can_apply_promotion(self)
 			if not self.can_use_promotion:
 				self.promotion = None
 				self.promotion_result = None
 				for product in self.products:
 					product.disable_promotion()
 			else:
-				self.promotion_saved_money = self.promotion_result.get('saved_money', 0.0)
+				self.promotion_result = self.promotion.apply_promotion(self, purchase_info)
+				self.promotion_saved_money = self.promotion_result.saved_money
 				for product in self.products:
 					product.set_promotion_result(self.promotion_result)
 		else:
@@ -101,10 +103,10 @@ class PromotionProductGroup(business_model.Model):
 						self.active_integral_sale_rule = {
 							'discount': 100
 						}
-						self.promotion_result = {
+						self.promotion_result = PromotionResult(saved_money=0, subtotal=0, detail={
 							'integral_money': integral_info['money'],
 							'use_integral': integral_info['integral']
-						}
+						})
 
 	def to_dict(self, with_price_factor=False, with_coupon_info=False):
 		"""获取promotion product group的json数据
@@ -119,7 +121,7 @@ class PromotionProductGroup(business_model.Model):
 				'promotion_type': self.promotion_type,
 				'can_use_promotion': self.can_use_promotion,
 				'promotion': self.promotion.to_dict() if self.promotion else None,
-				'promotion_result': self.promotion_result,
+				'promotion_result': self.promotion_result.to_dict() if self.promotion_result else None,
 				'integral_sale_rule': self.integral_sale_rule
 			}
 
@@ -165,7 +167,7 @@ class PromotionProductGroup(business_model.Model):
 				'products': product_factors,
 				'promotion': self.promotion.to_dict() if self.promotion else None,
 				'promotion_type': self.promotion_type,
-				'promotion_result': self.promotion_result,
+				'promotion_result': self.promotion_result.to_dict() if self.promotion_result else None,
 				'integral_sale_rule': self.integral_sale_rule,
 				'can_use_promotion': self.can_use_promotion
 			}

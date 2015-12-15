@@ -58,7 +58,7 @@ class OrderProductsResourceAllocator(business_model.Service):
 				if allocator:
 					allocator.release()
 
-	def __check_promotion(self, product):
+	def __allocate_promotion(self, product):
 		if product.has_expected_promotion() and not product.is_expected_promotion_active():
 			return False, {
 				"is_success": False,
@@ -72,10 +72,21 @@ class OrderProductsResourceAllocator(business_model.Service):
 				"is_success": True
 			}
 
-		is_can_use, check_result = product.promotion.check_usability(self.context['webapp_user'], product)
-		if not is_can_use:
-			check_result['is_success'] = False
-			return False, check_result
+		promotion_result = product.promotion.allocate(self.context['webapp_user'], product)
+		if not promotion_result.is_success:
+			reason = {
+				'type': promotion_result.type,
+				'msg': promotion_result.msg,
+				'short_msg': promotion_result.short_msg
+			}
+			if promotion_result.id:
+				#TODO: 失败信息中带有product信息，目前是ugly的解决方案，等待后续优化
+				reason.update(promotion_result.to_dict())
+			return False, reason
+		else:
+			if promotion_result.need_disable_discount:
+				#促销申请的结果要求禁用会员折扣
+				product.disable_discount()
 
 		return True, {
 			"is_success": True
@@ -118,10 +129,10 @@ class OrderProductsResourceAllocator(business_model.Service):
 
 		products = order.products
 
-		#检查订单中商品的促销是否可用
+		#分配促销
 		merged_reserved_products = self.__merge_different_model_product(products)
 		for merged_reserved_product in merged_reserved_products:
-			is_success, reason = self.__check_promotion(merged_reserved_product)
+			is_success, reason = self.__allocate_promotion(merged_reserved_product)
 			if not is_success:
 				self.__supply_product_info_into_fail_reason(merged_reserved_product, reason)
 				return False, reason, None

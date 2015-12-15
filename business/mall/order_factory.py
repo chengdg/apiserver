@@ -217,7 +217,7 @@ class OrderFactory(business_model.Model):
 		for product_group in product_groups:
 			promotion_result = product_group.promotion_result
 			if promotion_result:
-				saved_money = promotion_result.get('saved_money', 0.0)
+				saved_money = promotion_result.saved_money
 				promotion_saved_money += saved_money
 		order.promotion_saved_money = promotion_saved_money
 
@@ -289,7 +289,7 @@ class OrderFactory(business_model.Model):
 					webapp_user_id = webapp_user.id,
 					promotion_id = promotion.id,
 					promotion_type = promotion.type_name,
-					promotion_result_json = json.dumps(promotion_result),
+					promotion_result_json = json.dumps(promotion_result.to_dict()),
 					integral_money = integral_money,
 					integral_count = integral_count,
 				)

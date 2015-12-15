@@ -19,6 +19,8 @@ from business import model as business_model
 import settings
 from business.mall.promotion import promotion
 from business.mall.realtime_stock import RealtimeStock
+from business.mall.promotion.promotion_result import PromotionResult
+from business.mall.promotion.promotion_failure import PromotionFailure
 
 
 class PremiumSale(promotion.Promotion):
@@ -46,14 +48,14 @@ class PremiumSale(promotion.Promotion):
 			'premium_products': self.premium_products
 		}
 
-	def __supply_product_info_into_fail_reason(self, product, result):
-		result['id'] = product['id']
-		result['name'] = product['name']
-		result['stocks'] = 0
-		result['model_name'] = ""
-		result['pic_url'] = product['thumbnails_url']
+	def __supply_product_info_into_fail_reason(self, product, premium_result):
+		premium_result.id = product['id']
+		premium_result.name = product['name']
+		premium_result.stocks = 0
+		premium_result.model_name = ""
+		premium_result.pic_url = product['thumbnails_url']
 
-	def check_usability(self, webapp_user, product):
+	def allocate(self, webapp_user, product):
 		#收集赠品的所有库存，可能的结果有：
 		#	-1: 无限库存
 		#	-2: 没有库存信息
@@ -89,25 +91,38 @@ class PremiumSale(promotion.Promotion):
 				#无限库存
 				pass
 			elif stocks == 0 or premium_product['premium_count'] > stocks:
-				reason = {
+				reason = PromotionFailure({
 					'type': 'promotion:premium_sale:not_enough_premium_product_stocks',
 					'msg': u'库存不足',
 					'short_msg': u'库存不足'
-				}
+				})
 				self.__supply_product_info_into_fail_reason(premium_product, reason)
-				return False, reason
+				return reason
 
 		#禁用商品会员价
-		product.disable_discount()
+		#product.disable_discount()
 
-		return True, {}		
+		result = PromotionResult()
+		result.need_disable_discount = True
+		return result
+
+	def can_apply_promotion(self, promotion_product_group):
+		can_use_promotion = True
+
+		total_purchase_count = 0
+		for product in promotion_product_group.products:
+			total_purchase_count += product.purchase_count
+
+		if total_purchase_count < self.count:
+			can_use_promotion = False
+
+		return can_use_promotion
 
 	def apply_promotion(self, promotion_product_group, purchase_info=None):
 		products = promotion_product_group.products
 		first_product = products[0]
 		promotion = first_product.promotion
 		promotion_detail = promotion.detail
-		can_use_promotion = True
 
 		total_purchase_count = 0
 		total_product_price = 0.0
@@ -115,25 +130,20 @@ class PremiumSale(promotion.Promotion):
 			total_purchase_count += product.purchase_count
 			total_product_price += product.price * product.purchase_count
 
-		if total_purchase_count < self.count:
-			can_use_promotion = False
-		else:
-			#如果满足循环满赠，则调整赠品数量
-			if self.is_enable_cycle_mode:
-				premium_round_count = total_purchase_count / self.count
-				for premium_product in self.premium_products:
-					premium_product['premium_count'] = premium_product['premium_count'] * premium_round_count
+		#如果满足循环满赠，则调整赠品数量
+		if self.is_enable_cycle_mode:
+			premium_round_count = total_purchase_count / self.count
+			for premium_product in self.premium_products:
+				premium_product['premium_count'] = premium_product['premium_count'] * premium_round_count
 
-		promotion_result = {
-			"version": 2,
-			"subtotal": total_product_price,
-			"count": self.count,
-			"is_enable_cycle_mode": self.is_enable_cycle_mode,
+		detail = {
+			'count': self.count,
+			'is_enable_cycle_mode': self.is_enable_cycle_mode,
 			'promotion_price': -1,
-			"premium_products": self.premium_products
+			'premium_products': self.premium_products
 		}
-
-		return can_use_promotion, promotion_result
+		promotion_result = PromotionResult(saved_money=0, subtotal=total_product_price, detail=detail)
+		return promotion_result
 
 	def after_from_dict(self):
 		self.type_name = 'premium_sale'

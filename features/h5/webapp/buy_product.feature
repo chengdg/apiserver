@@ -188,7 +188,7 @@ Scenario:1 购买商品时，使用订单备注
 		}
 		"""
 
-@mall.webapp @mall2 @zy_bp03 @todo @robert.wip @wip
+@mall.webapp @mall2 @zy_bp03 @todo @robert.wip
 Scenario:2 购买有规格的商品
 	jobs添加商品后
 	1. bill能在webapp中购买jobs添加的商品

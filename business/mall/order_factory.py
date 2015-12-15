@@ -13,7 +13,11 @@ import uuid
 import time
 import random
 import copy
+import logging
 
+from business.mall.order import Order
+
+#from business.mall.package_order_service.package_order_service import CalculatePriceService
 from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
@@ -26,9 +30,12 @@ import settings
 from business.decorator import cached_context_property
 from business.mall.order_products import OrderProducts
 from business.mall.order_checker import OrderChecker
-from business.mall.order import Order
 from business.mall.allocator.allocate_order_resource_service import AllocateOrderResourceService
 from business.mall.package_order_service.package_order_service import PackageOrderService
+
+from business.mall.reserved_product_repository import ReservedProductRepository
+from business.mall.group_reserved_product_service import GroupReservedProductService
+
 
 class OrderException(Exception):
 	def __init__(self, value):
@@ -46,10 +53,10 @@ class OrderFactory(business_model.Model):
 	订单生成器
 	"""
 	__slots__ = (
-		'purchase_info',
+		#'purchase_info',
 		#'products',
 		#'product_groups',
-		'order',
+		#'order',
 		'resources',
 		'price_info'
 	)
@@ -81,7 +88,7 @@ class OrderFactory(business_model.Model):
 		
 	# 	return order_checker.check()
 
-	def __allocate_resource(self):
+	def __allocate_resource(self, order, purchase_info):
 		"""
 		分配订单资源
 
@@ -89,21 +96,49 @@ class OrderFactory(business_model.Model):
 		"""
 		webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user']
+
 		allocate_order_resource_service = AllocateOrderResourceService(webapp_owner, webapp_user)
 		
-		successed, reasons, resources = allocate_order_resource_service.allocate_resource_for(self, self.purchase_info)
+		successed, reasons, resources = allocate_order_resource_service.allocate_resource_for(order, purchase_info)
 		
 		if successed:
+			logging.info("Allocated resources successfully. count: {}".format(len(resources)))
+
 			self.context['allocator_order_resource_service'] = allocate_order_resource_service
 			self.resources = resources
 			# #临时方案：TODO使用pricesevice处理
 			# for resource in resources:
 			# 	if resource.get_type() == business_model.RESOURCE_TYPE_INTEGRAL:
 			# 		self.__process_order_integral_for(resource)
+			return resources
 		else:
 			allocate_order_resource_service.release(resources)
 			raise OrderException(reasons)	
 
+
+	def __process_products(self, order, purchase_info):
+		"""
+		@note 从OrderFactory迁移的代码
+		"""
+		webapp_owner = self.context['webapp_owner']
+		webapp_user = self.context['webapp_user']
+
+		#获得已预订商品集合
+		reserved_product_repository = ReservedProductRepository.get({
+			'webapp_owner': webapp_owner,
+			'webapp_user': webapp_user
+		})
+		order.products = reserved_product_repository.get_reserved_products_from_purchase_info(purchase_info)
+
+		#按促销进行product分组
+		group_reserved_product_service = GroupReservedProductService.get(webapp_owner, webapp_user)
+		order.product_groups = group_reserved_product_service.group_product_by_promotion(order.products)
+
+		#对每一个group应用促销活动
+		for promotion_product_group in order.product_groups:
+			promotion_product_group.apply_promotion(purchase_info)
+
+		return
 	# def __process_order_integral_for(self, resource):
 	# 	self.order.integral = resource.integral
 	# 	self.order.integral_money = resource.integral_money
@@ -119,7 +154,34 @@ class OrderFactory(business_model.Model):
 	'''
 
 
-	def _allocate_price_free_resources(self, purchase_info):
+	def __init_order(self, order, purchase_info):
+		"""
+		初始化订单对象
+		"""
+		webapp_owner = self.context['webapp_owner']
+		webapp_user = self.context['webapp_user']
+		member = webapp_user.member
+
+		# 读取基本信息
+		order.db_model.webapp_id = webapp_owner.webapp_id
+		order.db_model.webapp_user_id = webapp_user.id
+		order.db_model.member_grade_id = member.grade_id
+		order.db_model.member_grade_discount = member.discount
+		order.db_model.buyer_name = member.username_for_html
+
+		# 读取purchase_info信息
+		ship_info = purchase_info.ship_info
+		order.db_model.ship_name = ship_info['name']
+		order.db_model.ship_address = ship_info['address']
+		order.db_model.ship_tel = ship_info['tel']
+		order.db_model.area = ship_info['area']
+		order.db_model.customer_message = purchase_info.customer_message
+		order.db_model.type = purchase_info.order_type
+		order.db_model.pay_interface_type = purchase_info.used_pay_interface_type
+		return
+
+
+	def _allocate_price_free_resources(self, order, purchase_info):
 		"""
 		申请订单价无关资源
 
@@ -127,9 +189,7 @@ class OrderFactory(business_model.Model):
 		"""
 		
 		# 分配订单资源
-		self.__allocate_resource()
-
-		price_free_resources = {}
+		price_free_resources = self.__allocate_resource(order, purchase_info)
 		# TODO: to be implemented
 		return price_free_resources
 
@@ -179,6 +239,7 @@ class OrderFactory(business_model.Model):
 		allocator_order_resource_service = self.context['allocator_order_resource_service'] 
 		if isinstance(allocator_order_resource_service, AllocateOrderResourceService):
 			allocator_order_resource_service.release()
+
 
 	def _save_order(self, order):
 		"""
@@ -284,20 +345,32 @@ class OrderFactory(business_model.Model):
 			5. 保存订单
 			6. 如果需要（比如订单保存失败），释放资源（包括订单价相关资源和订单价无关资源）
 		"""
-		self.purchase_info = purchase_info
+		
+		webapp_owner = self.context['webapp_owner']
+		webapp_user = self.context['webapp_user']
+
+		order = Order.empty_order()
+
+		# 初始化，不需要资源信息
+		self.__init_order(order, purchase_info)
+		# 初始化商品信息
+		self.__process_products(order, purchase_info)
+	
+
 		# 申请订单价无关资源
-		price_free_resources = self._allocate_price_free_resources(purchase_info)
+		price_free_resources = self._allocate_price_free_resources(order, purchase_info)
+		logging.info("price_free_resources={}".format(price_free_resources))
 
 		# 填充order
-		package_order_service = PackageOrderService()
-		order,  price_related_resources = package_order_service.package_order(price_free_resources, purchase_info)
+		package_order_service = PackageOrderService(webapp_owner, webapp_user)
+		order,  price_related_resources = package_order_service.package_order(order, price_free_resources, purchase_info)
 
 		# 保存订单
 		order = self._save_order(order)
 
 		# 如果需要（比如订单保存失败），释放资源
-		if order is None or not order.is_saved(	self.context['webapp_owner'], self.context['webapp_user']):
+		if order is None or not order.is_saved():
 			self.release(price_free_resources)
-			#self.release(price_related_resources)
+			self.release(price_related_resources)
 
 		return order

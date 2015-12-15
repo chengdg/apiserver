@@ -33,7 +33,7 @@ class AllocateOrderResourceService(business_model.Service):
 		OrderProductsResourceAllocator,
 		OrderIntegralResourceAllocator,
 		OrderCouponResourceAllocator,
-		WZCardResourceAllocator,	
+		#WZCardResourceAllocator,
 	]
 
 	def __init__(self, webapp_owner, webapp_user):
@@ -55,11 +55,13 @@ class AllocateOrderResourceService(business_model.Service):
 				reasons.append(reason)
 				self.release(resources)
 				break
-			else:
+			elif resource:
 				if isinstance(resource, list):
 					resources.extend(resource)
 				else:
 					resources.append(resource)
+			else:
+				logging.error("`resource` SHOULD NOT be None! Please check it.")
 		
 		return is_success, reasons, resources
 

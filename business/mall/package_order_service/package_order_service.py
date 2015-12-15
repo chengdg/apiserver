@@ -7,10 +7,6 @@ from business.resource.coupon_resource import CouponResource
 from business.resource.integral_resource import IntegralResource
 from business.mall import postage_calculator
 #from business.mall.order import Order as BussinessOrder
-from business.mall.order import Order
-from business.mall.reserved_product_repository import ReservedProductRepository
-from business.mall.group_reserved_product_service import GroupReservedProductService
-
 
 
 class PackageOrderService(business_model.Service):
@@ -41,55 +37,7 @@ class PackageOrderService(business_model.Service):
 		self.context['webapp_user'] = webapp_user
 
 
-	def __init_order(self, order, purchase_info):
-		"""
-		初始化订单对象
-		"""
-		webapp_owner = self.context['webapp_owner']
-		webapp_user = self.context['webapp_user']
-		member = webapp_user.member
 
-		# 读取基本信息
-		order.db_model.webapp_id = webapp_owner.webapp_id
-		order.db_model.webapp_user_id = webapp_user.id
-		order.db_model.member_grade_id = member.grade_id
-		order.db_model.member_grade_discount = member.discount
-		order.db_model.buyer_name = member.username_for_html
-
-		# 读取purchase_info信息
-		ship_info = purchase_info.ship_info
-		order.db_model.ship_name = ship_info['name']
-		order.db_model.ship_address = ship_info['address']
-		order.db_model.ship_tel = ship_info['tel']
-		order.db_model.area = ship_info['area']
-		order.db_model.customer_message = purchase_info.customer_message
-		order.db_model.type = purchase_info.order_type
-		order.db_model.pay_interface_type = purchase_info.used_pay_interface_type
-		return
-
-	def __process_products(self, order, purchase_info):
-		"""
-		@note 从OrderFactory迁移的代码
-		"""
-		webapp_owner = self.context['webapp_owner']
-		webapp_user = self.context['webapp_user']
-
-		#获得已预订商品集合
-		reserved_product_repository = ReservedProductRepository.get({
-			'webapp_owner': webapp_owner,
-			'webapp_user': webapp_user
-		})
-		order.products = reserved_product_repository.get_reserved_products_from_purchase_info(purchase_info)
-
-		#按促销进行product分组
-		group_reserved_product_service = GroupReservedProductService.get(webapp_owner, webapp_user)
-		order.product_groups = group_reserved_product_service.group_product_by_promotion(order.products)
-
-		#对每一个group应用促销活动
-		for promotion_product_group in order.product_groups:
-			promotion_product_group.apply_promotion(purchase_info)
-
-		return
 
 	def __process_coupon(self, order, final_price):
 		coupon_resource = self.type2resource.get('coupon')
@@ -138,15 +86,15 @@ class PackageOrderService(business_model.Service):
 		order.db_model.promotion_saved_money = promotion_saved_money
 
 
-	def __allocate_price_related_resource(order, purchase_info):
+	def __allocate_price_related_resource(self, order, purchase_info):
 		return []
 
 
-	def __adjust_order_price(order, price_related_resources, purchase_info):
+	def __adjust_order_price(self, order, price_related_resources, purchase_info):
 		return order
 
 
-	def package_order(self, price_free_resources, purchase_info):
+	def package_order(self, order, price_free_resources, purchase_info):
 		"""
 		组装订单
 
@@ -156,13 +104,7 @@ class PackageOrderService(business_model.Service):
 		@return price_related_resources
 
 		"""
-		order = Order.empty_order()
 
-		# 初始化，不需要资源信息
-		self.__init_order(order, purchase_info)
-
-		# 初始化商品信息
-		self.__process_products(purchase_info)
 
 		#webapp_owner = self.context['webapp_owner']
 		#webapp_user = self.context['webapp_user']

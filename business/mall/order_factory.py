@@ -14,7 +14,7 @@ import time
 import random
 import copy
 
-from business.mall.calculate_price_service.calculate_price_service import CalculatePriceService
+from business.mall.package_order_service.package_order_service import CalculatePriceService
 from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
@@ -106,12 +106,12 @@ class OrderFactory(business_model.Model):
 	# 	self.order.integral = resource.integral
 	# 	self.order.integral_money = resource.integral_money
 
-	def _calculate_price(self):
+	def _package_order(self):
 		"""
 		计算订单价格
 		"""
-		calculate_price_service = CalculatePriceService(self.context['webapp_owner'], self.context['webapp_user'])
-		self.price_info  = calculate_price_service.calculate_price(self, self.resources)
+		package_order_service = CalculatePriceService.get(self.context['webapp_owner'], self.context['webapp_user'])
+		self.order = package_order_service.package_order(self, self.resources.self.purchase)
 
 
 	def __create_order_id(self):
@@ -152,13 +152,11 @@ class OrderFactory(business_model.Model):
 			promotion_product_group.apply_promotion(purchase_info)
 
 		self.purchase_info = purchase_info
-		self.order = mall_models.Order()
-		self.order.products = self.products
 
 		# 分配订单资源
 		self._allocate_resource()
-		# 计算订单价格
-		self._calculate_price()
+		# 组装订单
+		self._package_order()
 		#try:
 		return self.save()
 		# except:
@@ -176,68 +174,16 @@ class OrderFactory(business_model.Model):
 		"""
 		webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user']
-		member = webapp_user.member
 
 		order = self.order
-		order_business_object = Order.empty_order()
-
-		purchase_info = self.purchase_info
-		ship_info = purchase_info.ship_info
-		order.ship_name = ship_info['name']
-		order.ship_address = ship_info['address']
-		order.ship_tel = ship_info['tel']
-		order.area = ship_info['area']
-
-		order.customer_message = purchase_info.customer_message
-		order.type = purchase_info.order_type
-		order.pay_interface_type = purchase_info.used_pay_interface_type
-		order_business_object.pay_interface_type = order.pay_interface_type
-
-		order.order_id = self.__create_order_id()
-		order_business_object.order_id = order.order_id
-		order.webapp_id = webapp_owner.webapp_id
-		order.webapp_user_id = webapp_user.id
-		order.member_grade_id = member.grade_id
-		_, order.member_grade_discount = member.discount
-
-		order.buyer_name = member.username_for_html
 
 		products = self.products
 		product_groups = self.product_groups
 
-		#处理订单中的product价格信息
-		order.product_price = self.price_info.get('product_price', 0)
-		order.coupon_money = self.price_info.get('coupon', 0)
-		order.integral_money = self.price_info.get('integral', 0)
-		order.integral = self.price_info.get('integral_count', 0)
-		order.final_price = self.price_info.get('final_price', 0)
-		order.postage = self.price_info.get('postage', 0)
-
-		#处理订单中的促销优惠金额
-		promotion_saved_money = 0.0
-		for product_group in product_groups:
-			promotion_result = product_group.promotion_result
-			if promotion_result:
-				saved_money = promotion_result.saved_money
-				promotion_saved_money += saved_money
-		order.promotion_saved_money = promotion_saved_money
-
-		##处理订单中的积分金额
-
-		"""
-		# 订单来自商铺
-		if products[0].owner_id == webapp_owner_id:
-			order.webapp_source_id = webapp_id
-			order.order_source = ORDER_SOURCE_OWN
-		# 订单来自微众商城
-		else:
-			order.webapp_source_id = WebApp.objects.get(owner_id=products[0].owner_id).appid
-			order.order_source = ORDER_SOURCE_WEISHOP
-		"""
 		order.save()
 
 		#删除购物车
-		if purchase_info.is_purchase_from_shopping_cart:
+		if self.purchase_info.is_purchase_from_shopping_cart:
 			for product in products:
 				webapp_user.shopping_cart.remove_product(product)
 
@@ -302,6 +248,9 @@ class OrderFactory(business_model.Model):
 			# 支付后的操作
 			#mall_signals.post_pay_order.send(sender=Order, order=order, request=request)
 
+		order_business_object = Order.empty_order()
+		order_business_object.pay_interface_type = order.pay_interface_type
+		order_business_object.order_id = order.order_id
 		order_business_object.final_price = order.final_price
 		order_business_object.id = order.id
 		return order_business_object

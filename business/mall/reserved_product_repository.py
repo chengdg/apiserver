@@ -84,11 +84,9 @@ class ReservedProductRepository(business_model.Model):
 		'''
 		根据purchase info获取已预订商品集合
 
-		Parameters
-			[in] purchase_info: PurchaseInfo对象
+		@param [in] purchase_info: PurchaseInfo对象
 
-		Returns
-			ReservedProduct对象集合
+		@return ReservedProduct对象集合
 		'''
 		webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user']

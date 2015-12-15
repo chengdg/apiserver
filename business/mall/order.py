@@ -174,7 +174,8 @@ class Order(business_model.Model):
 
 	@property
 	def products(self):
-		"""订单中的商品，包含商品的信息
+		"""
+		订单中的商品，包含商品的信息
 		"""
 		products = self.context.get('products', None)
 		if not products:
@@ -200,6 +201,14 @@ class Order(business_model.Model):
 	def products(self, products):
 		self.context['products'] = products
 
+	@property
+	def product_groups(self):
+		return self.context['product_groups']
+
+	@product_groups.setter
+	def product_groups(self, product_groups):
+		self.context['product_groups'] = product_groups
+		
 	@property
 	def has_sub_order(self):
 		"""
@@ -447,10 +456,17 @@ class Order(business_model.Model):
 		return result
 
 
-	@deprecated
 	@property
+	@deprecated
 	def db_model(self):
 		"""
 		临时暴露order model，为了调试方便
 		"""
 		return self.context['order']
+
+
+	def save(self):
+		"""
+		业务模型序列化
+		"""
+		pass

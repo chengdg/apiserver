@@ -77,12 +77,13 @@ class PostageCalculator(object):
 	        return area.split('_')[0]
 	    return 0
 
-	def get_postage(self, order):
+	def get_postage(self, products, purchase_info):
 		"""
 		计算运费
 		"""
-		products = order.products
-		ship_area = order.purchase_info.ship_info['area']
+		#products = order.products
+		#ship_area = order.purchase_info.ship_info['area']
+		ship_area = purchase_info.ship_info['area']
 
 		province_id = self.__get_province_id_by_area(ship_area)
 

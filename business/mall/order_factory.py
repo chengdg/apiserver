@@ -26,11 +26,10 @@ from business.mall.product import Product
 import settings
 from business.decorator import cached_context_property
 from business.mall.order_products import OrderProducts
-from business.mall.group_reserved_product_service import GroupReservedProductService
 from business.mall.order_checker import OrderChecker
 from business.mall.order import Order
-from business.mall.reserved_product_repository import ReservedProductRepository
 from business.mall.allocator.allocate_order_resource_service import AllocateOrderResourceService
+from business.mall.package_order_service import PackageOrderService
 
 class OrderException(Exception):
 	def __init__(self, value):
@@ -39,30 +38,7 @@ class OrderException(Exception):
 		return repr(self.value)
 
 
-class PackageOrderService():
-	"""
-	# 放在PackageOrderService内部实现以下几步：
 
-	# 填充订单基本信息（比如与订单资源无关的无关的信息）
-	#order = self._init_order(purchase_info)
-
-	# 计算订单价格，填充订单信息
-	order = self._compute_order_price(order, resources, purchase_info)
-
-	# 申请订单价相关资源
-	price_related_resources = self._allocate_price_related_resource(order, purchase_info)
-
-	# 调整订单价格，填充订单信息
-	order = self._adjust_order_price(order, price_related_resources, purchase_info)
-	"""
-
-	def package_order(self, price_free_resources, purchase_info):
-		pass
-
-	def _init_order(self):
-		"""
-		初始化订单
-		"""
 
 
 
@@ -72,8 +48,8 @@ class OrderFactory(business_model.Model):
 	"""
 	__slots__ = (
 		'purchase_info',
-		'products',
-		'product_groups',
+		#'products',
+		#'product_groups',
 		'order',
 		'resources',
 		'price_info'
@@ -133,27 +109,16 @@ class OrderFactory(business_model.Model):
 	# 	self.order.integral = resource.integral
 	# 	self.order.integral_money = resource.integral_money
 
+
+	'''
 	def _package_order(self):
 		"""
 		计算订单价格
 		"""
 		package_order_service = CalculatePriceService.get(self.context['webapp_owner'], self.context['webapp_user'])
 		self.order = package_order_service.package_order(self, self.resources.self.purchase)
+	'''
 
-
-	def __create_order_id(self):
-		"""创建订单id
-
-		目前采用基于时间戳＋随机数的算法生成订单id，在确定id可使用之前，通过查询mall_order表里是否有相同id来判断是否可以使用id
-		这种方式比较低效，同时存在id重复的潜在隐患，后续需要改进
-		"""
-		#TODO2: 使用uuid替换这里的算法
-		order_id = time.strftime("%Y%m%d%H%M%S", time.localtime())
-		order_id = '%s%03d' % (order_id, random.randint(1, 999))
-		if mall_models.Order.select().dj_where(order_id=order_id).count() > 0:
-			return self.__create_order_id()
-		else:
-			return order_id
 
 	def _allocate_price_free_resources(self, purchase_info):
 		"""
@@ -170,60 +135,8 @@ class OrderFactory(business_model.Model):
 		return price_free_resources
 
 
-	def _save_order(self, order):
-		"""
-		保存订单
-		"""
-		return order
-
-
-	def create_order_new(self, purchase_info):
-		"""
-		由PurchaseInfo创建订单
-
-		**下单步骤**：
-			1. 申请订单价无关资源（比如：reserved product, coupon, integral）
-			2. 计算订单价格（填充资源信息到订单业务对象中）
-			3. 申请订单价相关资源（比如：微众卡）
-			4. 调整订单价格（填充资源信息到订单业务对象中）
-			5. 保存订单
-			6. 如果需要（比如订单保存失败），释放资源（包括订单价相关资源和订单价无关资源）
-		"""
-		
-		# 申请订单价无关资源
-		price_free_resources = self._allocate_price_free_resources(purchase_info)
-
-		package_order_service = PackageOrderService()
-		order = package_order_service.package_order(price_free_resources, purchase_info)
-
-		"""
-		# 放在PackageOrderService内部实现以下几步：
-
-		# 填充订单基本信息（比如与订单资源无关的无关的信息）
-		#order = self._init_order(purchase_info)
-
-		# 计算订单价格，填充订单信息
-		order = self._compute_order_price(order, resources, purchase_info)
-
-		# 申请订单价相关资源
-		price_related_resources = self._allocate_price_related_resource(order, purchase_info)
-
-		# 调整订单价格，填充订单信息
-		order = self._adjust_order_price(order, price_related_resources, purchase_info)
-		"""
-
-		# 保存订单
-		self._save_order(order)
-
-		# 如果需要（比如订单保存失败），释放资源
-		if order is None or not order.is_saved():
-			self.release(price_free_resources)
-			#self.release(price_related_resources)
-
-		return order			
-
-
-	def create_order(self, purchase_info):
+	'''
+	def create_order_old(self, purchase_info):
 		"""
 		由PurchaseInfo创建订单
 		"""
@@ -231,6 +144,8 @@ class OrderFactory(business_model.Model):
 		webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user']
 
+		# 改到PackageOrderService中
+		"""
 		#获得已预订商品集合
 		reserved_product_repository = ReservedProductRepository.get({
 			'webapp_owner': webapp_owner,
@@ -247,6 +162,7 @@ class OrderFactory(business_model.Model):
 			promotion_product_group.apply_promotion(purchase_info)
 
 		self.purchase_info = purchase_info
+		"""
 
 		# 分配订单资源
 		self._allocate_resource()
@@ -258,24 +174,28 @@ class OrderFactory(business_model.Model):
 		# 	self.release()
 		# 	#TODO 修改提示
 		# 	raise OrderException(u'保存订单失败')
+	'''
 
 	def release(self):
 		allocator_order_resource_service = self.context['allocator_order_resource_service'] 
 		if isinstance(allocator_order_resource_service, AllocateOrderResourceService):
 			allocator_order_resource_service.release()
 
-	def save(self):
-		"""保存订单
+	def _save_order(self, order):
 		"""
-		webapp_owner = self.context['webapp_owner']
+		保存订单
+
+		@param order Order对象(业务模型)
+		"""
+		#webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user']
 
-		order = self.order
+		#order = self.order
 
-		products = self.products
-		product_groups = self.product_groups
+		products = order.products
+		product_groups = order.product_groups
 
-		order.save()
+		order.db_model.save()
 
 		#删除购物车
 		if self.purchase_info.is_purchase_from_shopping_cart:
@@ -290,7 +210,7 @@ class OrderFactory(business_model.Model):
 				supplier_ids.append(supplier)
 
 			mall_models.OrderHasProduct.create(
-				order = order,
+				order = order.db_model,
 				product = product.id,
 				product_name = product.name,
 				product_model_name = product.model_name,
@@ -304,17 +224,17 @@ class OrderFactory(business_model.Model):
 
 		if len(supplier_ids) > 1:
 			# 进行拆单，生成子订单
-			order.origin_order_id = -1 # 标记有子订单
+			order.db_model.origin_order_id = -1 # 标记有子订单
 			for supplier in supplier_ids:
-				new_order = copy.deepcopy(order)
+				new_order = copy.deepcopy(order.db_model)
 				new_order.id = None
 				new_order.order_id = '%s^%s' % (order.order_id, supplier)
 				new_order.origin_order_id = order.id
 				new_order.supplier = supplier
 				new_order.save()
 		elif supplier_ids[0] != 0:
-			order.supplier = supplier_ids[0]
-		order.save()
+			order.db_model.supplier = supplier_ids[0]
+		order.db_model.save()
 
 		#建立<order, promotion>的关系
 		for product_group in product_groups:
@@ -327,7 +247,7 @@ class OrderFactory(business_model.Model):
 					integral_money = promotion_result['integral_money']
 					integral_count = promotion_result['use_integral']
 				mall_models.OrderHasPromotion.create(
-					order = order,
+					order = order.db_model,
 					webapp_user_id = webapp_user.id,
 					promotion_id = promotion.id,
 					promotion_type = promotion.type_name,
@@ -343,10 +263,42 @@ class OrderFactory(business_model.Model):
 			# 支付后的操作
 			#mall_signals.post_pay_order.send(sender=Order, order=order, request=request)
 
-		order_business_object = Order.empty_order()
-		order_business_object.pay_interface_type = order.pay_interface_type
-		order_business_object.order_id = order.order_id
-		order_business_object.final_price = order.final_price
-		order_business_object.id = order.id
-		return order_business_object
+		#order_business_object = Order.empty_order()
+		#order_business_object.pay_interface_type = order.pay_interface_type
+		#order_business_object.order_id = order.order_id
+		#order_business_object.final_price = order.final_price
+		#order_business_object.id = order.id
+		#return order_business_object
+		return order
 
+
+
+	def create_order(self, purchase_info):
+		"""
+		由PurchaseInfo创建订单
+
+		**下单步骤**：
+			1. 申请订单价无关资源（比如：reserved product, coupon, integral）
+			2. 计算订单价格（填充资源信息到订单业务对象中）
+			3. 申请订单价相关资源（比如：微众卡）
+			4. 调整订单价格（填充资源信息到订单业务对象中）
+			5. 保存订单
+			6. 如果需要（比如订单保存失败），释放资源（包括订单价相关资源和订单价无关资源）
+		"""
+		
+		# 申请订单价无关资源
+		price_free_resources = self._allocate_price_free_resources(purchase_info)
+
+		# 填充order
+		package_order_service = PackageOrderService()
+		order,  price_related_resources = package_order_service.package_order(price_free_resources, purchase_info)
+
+		# 保存订单
+		order = self._save_order(order)
+
+		# 如果需要（比如订单保存失败），释放资源
+		if order is None or not order.is_saved():
+			self.release(price_free_resources)
+			#self.release(price_related_resources)
+
+		return order

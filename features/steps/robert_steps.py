@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 import urllib
+from datetime import datetime
 
 from behave import *
 
@@ -649,6 +650,23 @@ def _get_prodcut_info(order):
 			'promotion_ids': '_'.join(promotion_ids)
 			}
 
+@then(u"{webapp_user_name}'{pay_type}'使用支付方式'{pay_interface}'进行支付")
+def step_impl(context, webapp_user_name, pay_type, pay_interface):
+	response = context.response
+
+	pay_interface_names = [mall_models.PAYTYPE2NAME.get(interface['type']) for interface in response.data['order']['pay_interfaces']]
+
+	if pay_type == u'能':
+		if pay_interface == u"微众卡支付":
+			from db.account.models import AccountHasWeizoomCardPermissions
+			is_can_use_weizoom_card = (AccountHasWeizoomCardPermissions.select().dj_where(owner_id=context.webapp_owner_id).count() > 0)
+			context.tc.assertTrue(is_can_use_weizoom_card)
+			context.tc.assertTrue(pay_interface in pay_interface_names)
+		else:
+			context.tc.assertTrue(pay_interface in pay_interface_names)
+	else:
+		context.tc.assertTrue(pay_interface not in pay_interface_names)
+
 @when(u"{webapp_user_name}在购物车订单编辑中点击提交订单")
 def step_click_check_out(context, webapp_user_name):
 	"""
@@ -724,3 +742,35 @@ def step_click_check_out(context, webapp_user_name):
 			context.created_order_id = argument['order_id']
 
 	logging.info("[Order Created] webapp_owner_id: {}, created_order_id: {}".format(context.webapp_owner_id, context.created_order_id))
+
+
+@then(u"{webapp_user_name}查看个人中心全部订单")
+def step_visit_personal_orders(context, webapp_user_name):
+    expected = json.loads(context.text)
+    actual = []
+
+    url = '/wapi/mall/order_list/?woid=%d&type=-1' % (context.webapp_owner_id)
+    response = context.client.get(bdd_util.nginx(url), follow=True)
+    orders = response.data['orders']
+    import datetime
+    for actual_order in orders:
+        order = {}
+        order['final_price'] = actual_order['final_price']
+        order['products'] = []
+        order['counts'] = actual_order['product_count']
+        order['status'] = mall_models.ORDERSTATUS2MOBILETEXT[actual_order['status']]
+        order['pay_interface'] = mall_models.PAYTYPE2NAME[actual_order['pay_interface_type']]
+        order['created_at'] = actual_order['created_at']
+        # BBD中购买的时间再未指定购买时间的情况下只能为今天
+        created_at = datetime.datetime.strptime(actual_order['created_at'], '%Y.%m.%d %H:%M')
+        if created_at.date() == datetime.date.today():
+            order['created_at'] = u'今天'
+
+        for i, product in enumerate(actual_order['products']):
+            # 列表页面最多显示3个商品
+            a_product = {}
+            a_product['name'] = product['name']
+            # a_product['price'] = product.total_price
+            order['products'].append(a_product)
+        actual.append(order)
+    bdd_util.assert_list(expected, actual)

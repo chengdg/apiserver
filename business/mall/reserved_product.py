@@ -49,6 +49,7 @@ class ReservedProduct(business_model.Model):
 		'product_model_id',
 		'is_use_custom_model',
 		'weight',
+		'is_use_cod_pay_interface',
 
 		'price',
 		'original_price',
@@ -128,6 +129,7 @@ class ReservedProduct(business_model.Model):
 		self.is_use_custom_model = product.is_use_custom_model
 		self.shopping_cart_id = product_info.get('shopping_cart_id', 0)
 		self.integral_sale = product.integral_sale
+		self.is_use_cod_pay_interface = product.is_use_cod_pay_interface
 
 		self.model_name = product_info['model_name']
 		self.expected_promotion_id = product_info.get('expected_promotion_id', 0)

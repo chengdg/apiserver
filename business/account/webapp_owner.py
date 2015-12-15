@@ -127,7 +127,10 @@ class WebAppOwner(business_model.Model):
 		"""
 		[property] 支付方式配置
 		"""
-		return self.__webapp_owner_info.pay_interfaces
+		if self.has_wzcard_permission:
+			return self.__webapp_owner_info.pay_interfaces
+		else:
+			return filter(lambda x: x['type'] != mall_models.PAY_INTERFACE_WEIZOOM_COIN, self.__webapp_owner_info.pay_interfaces)
 
 	@property
 	@deprecated

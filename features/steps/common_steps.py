@@ -39,7 +39,7 @@ def step_impl(context, user, error):
 	if not server_error_msg:
 		server_error_msg = data['detail'][0]['msg']
 
-	context.tc.assertEquals(error, context.server_error_msg)
+	context.tc.assertEquals(error, server_error_msg)
 
 @then(u"{user}获得'{product_name}'错误提示'{error}'")
 def step_impl(context, user, product_name ,error):

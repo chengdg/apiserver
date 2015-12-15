@@ -69,7 +69,7 @@ class ProductResource(business_model.Resource):
 			return False, {
 				'is_successed': False,
 				'type': 'product:is_off_shelve',
-				'msg': u'有商品已下架<br/>2秒后返回购物车<br/>请重新下单',
+				'msg': u'',
 				'short_msg': u'商品已下架'
 			}
 
@@ -111,7 +111,7 @@ class ProductResource(business_model.Resource):
 				return False, {
 					'is_successed': False,
 					'type': 'product:not_enough_stocks',
-					'msg': u'有商品库存不足，请重新下单',
+					'msg': u'',
 					'short_msg': u'库存不足'
 				}
 		else:

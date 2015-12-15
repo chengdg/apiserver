@@ -46,6 +46,7 @@ class AOrderList(api_resource.ApiResource):
 				'id': order.id,
 				'order_id': order.order_id,
 				'status': order.status,
+				'pay_interface_type': order.pay_interface_type,
 				'created_at': order.created_at.strftime('%Y.%m.%d %H:%M'),
 				'final_price': order.final_price,
 				'has_sub_order': order.has_sub_order,
@@ -60,6 +61,7 @@ class AOrderList(api_resource.ApiResource):
 				'order': order
 			})
 
+			total_product_count = 0
 			for order_product in order_products.products:
 				product_data = {
 					'id': order_product.id,
@@ -67,8 +69,10 @@ class AOrderList(api_resource.ApiResource):
 					'purchase_count': order_product.purchase_count,
 					'thumbnails_url': order_product.thumbnails_url
 				}
+				total_product_count += order_product.purchase_count
 				data['products'].append(product_data)
 
+			data['product_count'] = total_product_count
 			order_datas.append(data)
 
 		return {

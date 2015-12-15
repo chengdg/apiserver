@@ -26,7 +26,6 @@ import settings
 from business.decorator import cached_context_property
 from business.mall.order_products import OrderProducts
 from business.mall.group_reserved_product_service import GroupReservedProductService
-from business.mall.order_checker import OrderChecker
 from business.mall.order import Order
 from business.mall.reserved_product_repository import ReservedProductRepository
 from business.mall.allocator.allocate_order_resource_service import AllocateOrderResourceService
@@ -68,15 +67,6 @@ class OrderFactory(business_model.Model):
 
 		self.context['webapp_owner'] = webapp_owner
 		self.context['webapp_user'] = webapp_user
-
-	# def validate(self):
-	# 	"""判断订单是否有效
-
-	# 	@return True, None: 订单有效；False, reason: 订单无效, 无效原因
-	# 	"""
-	# 	order_checker = OrderChecker(self.context['webapp_owner'], self.context['webapp_user'], self)
-		
-	# 	return order_checker.check()
 
 	def _allocate_resource(self):
 		"""

@@ -136,7 +136,7 @@ class WebAppOwnerInfo(business_model.Model):
 
 			#pay interface
 			try:
-				pay_interfaces = [pay_interface.to_dict() for pay_interface in mall_models.PayInterface.select().dj_where(owner_id=webapp_owner_id)]
+				pay_interfaces = [pay_interface.to_dict() for pay_interface in mall_models.PayInterface.select().dj_where(owner_id=webapp_owner_id) if pay_interface.is_active]
 			except:
 				error_msg = u"获得user('{}')对应的PayInterface构建cache失败, cause:\n{}"\
 						.format(webapp_owner_id, unicode_full_stack())

@@ -20,7 +20,7 @@ class WZCard(business_model.Model):
 		'id', # 数据库ID
 		'wzcard_id', # 微众卡卡号
 		'is_expired',
-		'status',
+		#'status',
 
 		'weizoom_card_rule_id',
 		'weizoom_card_id',
@@ -38,6 +38,7 @@ class WZCard(business_model.Model):
 	def __init__(self, webapp_owner, wzcard_id):
 		business_model.Model.__init__(self)
 
+		# webapp_owner是不需要暴露的property，因此放在context中
 		self.context['webapp_owner'] = webapp_owner
 		self.wzcard_id = wzcard_id
 
@@ -55,9 +56,25 @@ class WZCard(business_model.Model):
 	def from_wzcard_id(args):
 		"""
 		获取微众卡对象的工厂方法
+
+		@return 如果不存在此卡，返回None
 		"""
-		wzcard = WZCard(args['webapp_owner'], args['wzcard_id'])
-		return wzcard
+		try:	
+			wzcard = WZCard(args['webapp_owner'], args['wzcard_id'])
+			return wzcard
+		except Exception as e:
+			logging.error(str(e))
+		return None
+
+	'''
+	@staticmethod
+	@param_required(['wzcard_id', 'password'])
+	def get(args):
+		"""
+		用微众卡号和密码获取WZCard对象
+		"""
+		return
+	'''
 
 
 	@property
@@ -82,8 +99,30 @@ class WZCard(business_model.Model):
 		"""
 		[property] 微众卡余额
 		"""
-		logging.info("self.money: {}".format(self.money))
+		#logging.info("self.money: {}".format(self.money))
 		return self.money
+
+	@balance.setter
+	def balance(self, value):
+		"""
+		[setter] 修改微众卡余额
+		"""
+		self.money = value
+		wzcard_db = self.context['wzcard_db']	
+		wzcard_db.money = value
+		return
+
+	@property
+	def status(self):
+		wzcard_db = self.context['wzcard_db']
+		return wzcard_db.status
+
+	@status.setter
+	def status(self, value):
+		#self.status = value
+		wzcard_db = self.context['wzcard_db']	
+		wzcard_db.status = value
+		return
 
 	@staticmethod
 	def _get_status(status_str):
@@ -148,3 +187,38 @@ class WZCard(business_model.Model):
 		微众卡对应的订单
 		"""
 		pass
+
+
+	def check_password(self, password):
+		"""
+		检查密码
+		@todo 待实现
+		"""
+		return True
+
+	def save(self):
+		"""
+		微众卡信息序列化(比如存到数据库)
+		"""
+		wzcard_db = self.context['wzcard_db']	
+		wzcard_db.save()
+		logging.info("saved WZCard DB object, wzcard_id={}, balance={}".format(wzcard_db.weizoom_card_id, wzcard_db.balance))
+		return
+
+
+	def pay(self, price_to_pay):
+		"""
+		用微众卡支付
+
+		@param price_to_pay 最大待付款价格（能付多少付多少）
+
+		@see 参考原Weapp的`def use_weizoom_card()`
+		"""
+		use_price = min(price_to_pay, self.balance)
+		self.balance = self.balance - use_price
+		if self.balance < 1e-3:
+			self.balance = 0
+			self.status = wzcard_models.WEIZOOM_CARD_STATUS_EMPTY
+		else:
+			self.status = wzcard_models.WEIZOOM_CARD_STATUS_USED 
+		return use_price

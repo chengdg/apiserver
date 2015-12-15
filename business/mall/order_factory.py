@@ -12,6 +12,7 @@ import itertools
 import uuid
 import time
 import random
+import copy
 
 from business.mall.calculate_price_service.calculate_price_service import CalculatePriceService
 from wapi.decorators import param_required
@@ -254,7 +255,7 @@ class OrderFactory(business_model.Model):
 			# 进行拆单，生成子订单
 			order.origin_order_id = -1 # 标记有子订单
 			for supplier in supplier_ids:
-				new_order = copy.copy(order)
+				new_order = copy.deepcopy(order)
 				new_order.id = None
 				new_order.order_id = '%s^%s' % (order.order_id, supplier)
 				new_order.origin_order_id = order.id

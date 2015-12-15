@@ -59,6 +59,7 @@ class OrderProduct(business_model.Model):
 		'active_integral_sale_rule',
 		'integral_sale_model',
 		'discount_money',
+		'supplier',
 	)
 
 	@staticmethod
@@ -122,6 +123,7 @@ class OrderProduct(business_model.Model):
 		self.thumbnails_url = product.thumbnails_url
 		self.pic_url = product.pic_url
 		self.shelve_type = product.shelve_type
+		self.supplier = product.supplier
 
 		model = product.get_specific_model(product_info['model_name'])
 		self.original_price = model.price

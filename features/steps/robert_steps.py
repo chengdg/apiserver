@@ -323,17 +323,25 @@ def step_impl(context, webapp_usr_name, order_id):
 
 	if has_sub_order:
 		products = []
-		orders = response.context['orders']
+		orders = actual['sub_orders']
 		for i, order in enumerate(orders):
+			sub_order_products = __fix_field_for(order['products'])
 			product_dict = {
-				u"包裹" + str(i + 1): order.products,
-				'status': ORDERSTATUS2MOBILETEXT[order.status]
+				u"包裹" + str(i + 1): sub_order_products,
+				'status': mall_models.ORDERSTATUS2MOBILETEXT[order['status']]
 			}
 			products.append(product_dict)
 
-		actual.products = products
+		actual['products'] = products
+	else:
+		products = __fix_field_for(actual['products'])
 
-	for product in actual['products']:
+	expected = json.loads(context.text)
+	bdd_util.assert_dict(expected, actual)
+
+
+def __fix_field_for(products):
+	for product in products:
 		product['count'] = product['purchase_count']
 		product['grade_discounted_money'] = product['discount_money']
 		if product['promotion']:
@@ -345,8 +353,7 @@ def step_impl(context, webapp_usr_name, order_id):
 			if model['property_values']:
 				product['model'] = ''.join(property_value['name'] for property_value in model['property_values'])
 
-	expected = json.loads(context.text)
-	bdd_util.assert_dict(expected, actual)
+	return products
 
 
 
@@ -736,7 +743,7 @@ def step_click_check_out(context, webapp_user_name):
 			db_order.order_id=argument['order_id']
 			db_order.save()
 			if db_order.origin_order_id <0:
-				for order in Order.select().dj_where(origin_order_id=db_order.id):
+				for order in mall_models.Order.select().dj_where(origin_order_id=db_order.id):
 					order.order_id = '%s^%s' % (argument['order_id'], order.supplier)
 					order.save()
 			context.created_order_id = argument['order_id']

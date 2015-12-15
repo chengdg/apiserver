@@ -44,7 +44,7 @@ Background:
 	And bill2关注jobs的公众号
 	And bill3关注jobs的公众号
 
-	Given jobs登录系统
+	Given jobs登录系统:weapp
 	When jobs更新'bill2'的会员等级:weapp
 		"""
 		{

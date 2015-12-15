@@ -302,7 +302,7 @@ def step_impl(context, webapp_user_name):
 	bdd_util.assert_dict(expected, actual_order)
 
 
-@then(u'{webapp_usr_name}手机端获取订单"{order_id}"')
+@then(u"{webapp_usr_name}手机端获取订单'{order_id}'")
 def step_impl(context, webapp_usr_name, order_id):
 	# 为获取完可顺利支付
 	context.created_order_id = order_id

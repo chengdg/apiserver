@@ -491,10 +491,12 @@ class Order(business_model.Model):
 		if self.supplier:
 			db_model.supplier = self.supplier
 
-		db_model.origin_order_id = self.origin_order_id
+		if self.origin_order_id:
+			db_model.origin_order_id = self.origin_order_id
 
-		db_model.coupon_id = self.coupon_id
-		db_model.coupon_money = self.coupon_money
+		if self.coupon_id:
+			db_model.coupon_id = self.coupon_id
+			db_model.coupon_money = self.coupon_money
 
 		db_model.integral = self.integral
 		db_model.integral_money = self.integral_money
@@ -503,9 +505,10 @@ class Order(business_model.Model):
 		db_model.postage = self.postage
 		db_model.promotion_saved_money = self.promotion_saved_money
 		
+		logging.info("Order db_model: {}".format(db_model))
+
 		db_model.save()
 
-		logging.info("Order db_model: {}".format(db_model))
 		return
 
 	@property

@@ -506,9 +506,6 @@ class Order(business_model.Model):
 		db_model.promotion_saved_money = self.promotion_saved_money
 		db_model.product_price = self.product_price
 		db_model.final_price = self.final_price
-
-		if self.product_price:
-			db_model.product_price = self.product_price
 		
 		logging.info("Order db_model: {}".format(db_model))
 

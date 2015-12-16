@@ -1,6 +1,8 @@
 #coding: utf8
 """@package business.card.weizoom_card
 微众卡的业务模型
+
+@see 原Weapp的`card_api_view.py`
 """
 
 from business import model as business_model
@@ -195,6 +197,15 @@ class WZCard(business_model.Model):
 		@todo 待实现
 		"""
 		return self.password == password
+
+	@property	
+	def is_activated(self):
+		"""
+		微众卡是否激活
+		"""
+		logging.info("WZCard.status: {}, id: {}".format(self.status, self.id))
+		return self.status != wzcard_models.WEIZOOM_CARD_STATUS_INACTIVE
+
 
 	def save(self):
 		"""

@@ -77,6 +77,10 @@ class WZCardResourceAllocator(business_model.Service):
 				#reason = u"Incorrect password for wzcard `%s`" % (wzcard_id)
 				reason = u'卡号或密码错误'
 				logging.error("{}, wzcard: {}".format(reason, wzcard))
+			elif not wzcard.is_activated:
+				is_success = False
+				reason = u'微众卡未激活'
+				logging.error("{}, wzcard: {}".format(reason, wzcard))	
 			else:
 				# 验证微众卡可用
 				used_amount = wzcard.pay(order.final_price)

@@ -274,7 +274,7 @@ Scenario:4 用微众卡购买商品时，输入错误的卡号密码
 		}
 		"""
 
-@todo @mall2 @mall.pay_weizoom_card
+@mall3 @mall2 @mall.pay_weizoom_card @wip.victor5
 Scenario:5 用已用完的微众卡购买商品时
 	bill用已用完的微众卡购买jobs的商品时
 	1.创建订单成功，订单状态为“等待支付”
@@ -310,8 +310,8 @@ Scenario:5 用已用完的微众卡购买商品时
 			}]
 		}
 		"""
-	Given jobs登录系统
-	Then jobs能获取微众卡'0000003'
+	Given jobs登录系统:weapp
+	Then jobs能获取微众卡'0000003':weapp
 		"""
 		{
 			"status":"已用完",
@@ -319,7 +319,7 @@ Scenario:5 用已用完的微众卡购买商品时
 		}
 		"""
 
-@todo @mall2 @mall.pay_weizoom_card
+@todo @mall2 @mall.pay_weizoom_card @wip.victor6
 Scenario:6 用未激活的微众卡购买商品时
 	bill用未激活的微众卡购买jobs的商品时
 	1.创建订单失败，提示"微众卡未激活"
@@ -366,8 +366,8 @@ Scenario:6 用未激活的微众卡购买商品时
 			}]
 		}
 		"""
-	Given jobs登录系统
-	Then jobs能获取微众卡'0000005'
+	Given jobs登录系统:weapp
+	Then jobs能获取微众卡'0000005':weapp
 		"""
 		{
 			"status":"未激活",

@@ -251,6 +251,7 @@ class Product(business_model.Model):
 		if model:
 			self._init_slot_from_model(model)
 			self.owner_id = model.owner_id
+			self.min_limit = model.stocks
 			self.thumbnails_url = '%s%s' % (settings.IMAGE_HOST, model.thumbnails_url)
 			self.pic_url = '%s%s' % (settings.IMAGE_HOST, model.pic_url)
 

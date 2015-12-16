@@ -187,9 +187,7 @@ class OrderFactory(business_model.Model):
 		order.webapp_id = webapp_owner.webapp_id
 		order.webapp_user_id = webapp_user.id
 		order.member_grade_id = member.grade_id
-		#order.member_grade_discount = member.discount
-		# 'member_grade_discount': '(175, 100)' ?
-		order.member_grade_discount = 100 #member.discount
+		_, order.member_grade_discount = member.discount
 		order.buyer_name = member.username_for_html
 
 		# 读取purchase_info信息

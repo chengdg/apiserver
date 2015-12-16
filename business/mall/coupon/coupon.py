@@ -126,3 +126,12 @@ class Coupon(business_model.Model):
 			return False, msg
 		else:
 			return True, msg
+
+	# @staticmethod
+	# def check_coupon_type(coupon_id):
+	# 	coupon = Coupon.from_coupon_id({'coupon_id': coupon_id})
+	# 	if not coupon:
+	# 		coupon_type = 'invalid'
+	# 	else:
+	# 		coupon_type = 'product' if coupon.is_product_coupon else 'order'
+	# 	return coupon_type

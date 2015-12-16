@@ -362,6 +362,24 @@ class Product(business_model.Model):
 		"""
 		return self.shelve_type == mall_models.PRODUCT_SHELVE_TYPE_ON
 
+	def apply_discount(self, webapp_user):
+		"""
+		执行webapp_user携带的折扣信息
+
+		Parameters
+			[in] webapp_user
+		"""
+		if self.is_member_product:
+			_, discount_value = webapp_user.member.discount
+			discount = discount_value / 100.0
+
+			self.price_info['min_price'] = round(self.price_info['min_price'] * discount, 2) #折扣后的价格
+			self.price_info['max_price'] = round(self.price_info['max_price'] * discount, 2) #折扣后的价格
+			self.price_info['display_price'] = round(float(self.price_info['display_price']) * discount, 2) #折扣后的价格
+
+			for model in self.models:
+				model.price = round(model.price * discount, 2)
+
 	@cached_context_property
 	def __deleted_models(self):
 		return list(mall_models.ProductModel.select().dj_where(product_id=self.id, is_deleted=True))

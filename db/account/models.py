@@ -167,8 +167,8 @@ class TemplateGlobalNavbar(models.Model):
 	@staticmethod
 	def get_object(user_id):
 		if user_id > 0:
-			global_navbar, _ = TemplateGlobalNavbar.objects.get_or_create(
-				owner_id=user_id
+			global_navbar = TemplateGlobalNavbar.get(
+				owner=user_id
 			)
 			return global_navbar
 		else:

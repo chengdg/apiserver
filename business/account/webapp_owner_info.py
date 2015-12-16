@@ -184,6 +184,11 @@ class WebAppOwnerInfo(business_model.Model):
 					'pay_interfaces': pay_interfaces,
 					'has_permission': has_permission,
 					'operation_settings': operation_settings.to_dict(),
+					# 'global_navbar': {
+					# 	'id': global_navbar.id,
+					# 	'owner_id': global_navbar.owner_id,
+					# 	'is_enable': global_navbar.is_enable
+					# },
 					'global_navbar': global_navbar.to_dict(),
 					'auth_appid_info': auth_appid_info.to_dict(),
 					'default_member_tag': default_member_tag.to_dict()
@@ -253,7 +258,13 @@ class WebAppOwnerInfo(business_model.Model):
 		obj.operation_settings = account_models.OperationSettings.from_dict(data['operation_settings'])
 		obj.red_envelope = red_envelope
 
+		# global_navbar = account_models.TemplateGlobalNavbar()
+		# global_navbar.id = data['global_navbar']['id']
+		# global_navbar.owner_id = data['global_navbar']['owner_id']
+		# global_navbar.is_enable = data['global_navbar']['is_enable']
+		# obj.global_navbar = global_navbar
 		obj.global_navbar = account_models.TemplateGlobalNavbar.from_dict(data['global_navbar'])
+
 		obj.auth_appid_info = weixin_user_models.ComponentAuthedAppidInfo.from_dict(data['auth_appid_info'])
 		if  obj.auth_appid_info:
 			obj.qrcode_img = obj.auth_appid_info.qrcode_url

@@ -26,4 +26,8 @@ class AProducts(api_resource.ApiResource):
 			"webapp_owner": webapp_owner,
 			"category_id": category_id,
 		})
-		return simple_products.products
+		return {
+			'categories': simple_products.categories,
+			'products': simple_products.products,
+			'category': simple_products.category
+		}

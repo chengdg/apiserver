@@ -184,6 +184,7 @@ class Product(business_model.Model):
 		'bar_code',
 		'min_limit',
 		'categories',
+		'id2category',
 		'properties',
 		'created_at',
 		'supplier',
@@ -636,7 +637,7 @@ class Product(business_model.Model):
 				True)
 
 		if options.get('with_all_category', False):
-			self.__fill_category_detail(
+			Product.__fill_category_detail(
 				webapp_owner_id,
 				products,
 				product_ids,

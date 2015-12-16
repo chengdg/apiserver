@@ -55,7 +55,7 @@ class Coupon(business_model.Model):
 		coupon._init_slot_from_model(model)
 		return coupon
 
-	def __check_coupon_status(self, member_id):
+	def check_coupon_status(self, member_id=0):
 		"""
 		检查优惠券状态
 		"""
@@ -75,63 +75,55 @@ class Coupon(business_model.Model):
 			msg = '该优惠券已被他人领取不能使用'
 		return msg
 
-
-	@property
+	@cached_context_property
 	def is_single_coupon(self):
 		if self.coupon_rule.limit_product:
 			return True
 
-	def check_single_coupon_in_order(self, order, purchase_info, member_id):
-		msg = self.__check_coupon_status(member_id)
-		if msg:
-			return False, msg
+	def check_coupon_in_order(self, order, purchase_info, member_id):
+			msg = self.check_coupon_status(member_id)
+			if msg:
+				return False, msg
 
-		if self.coupon_rule.limit_product_id not in[product.id for product in order.products]:
-			return False, '该优惠券不能购买订单中的商品'
+			# 处理单品券
+			if self.is_single_coupon:
+				if self.coupon_rule.limit_product_id not in[product.id for product in order.products]:
+					msg ='该优惠券不能购买订单中的商品'
+				else:
+					print('11111111111111111111111111111')
 
-		for p in order.products:
-			if p.id == self.coupon_rule.limit_product_id:
-				# todo 确认此处取到的价格是原价
-				price = p.price * p.purchase_count
-				break
+					price = 0
+					for p in order.products:
+						if p.id == self.coupon_rule.limit_product_id:
+							print('----------------id:',p.id)
+							# todo 确认此处取到的价格是原价
+							# p.price = p.original_price
+							print('----------------,',p.purchase_count)
+							print('----------------all',order.products)
 
-		if self.coupon_rule.valid_restrictions > price:
-			# 单品券限制购物金额
-				return '该优惠券指定商品金额不满足使用条件', None
-		else:
-			return True, ''
+							price += p.original_price * p.purchase_count
 
-	def check_common_coupon_in_order(self, order, purchase_info, member_id):
-		"""
-		检查通用券在订单中是否可用
-		"""
-		msg = self.__check_coupon_status(member_id)
+					print('33333333333333333333333333')
+					if self.coupon_rule.valid_restrictions > price:
+						# 单品券限制购物金额
+							msg = '该优惠券指定商品金额不满足使用条件'
 
-		if msg:
-			return False, msg
-		product_ids = [product.id for product in order.products if product.can_use_coupon]
+			# 处理通用券
+			else:
+				product_ids = [product.id for product in order.products if product.can_use_coupon]
 
-		# 订单使用通用券且只有禁用通用券商品
-		if len(product_ids) == 0:
-			msg = '该优惠券不能购买订单中的商品'
+				# 订单使用通用券且只有禁用通用券商品
+				if len(product_ids) == 0:
+					msg = '该优惠券不能购买订单中的商品'
 
-		# 判断通用券是否满足金额限制
-		else:
-			products_sum_price = sum([product.price * product.purchase_count for product in order.products if product.can_use_coupon])
+				# 判断通用券是否满足金额限制
+				else:
+					products_sum_price = sum([product.price * product.purchase_count for product in order.products if product.can_use_coupon])
 
-			if self.coupon_rule.valid_restrictions > products_sum_price and self.coupon_rule.valid_restrictions != -1:
-				msg = '该优惠券不满足使用金额限制'
+					if self.coupon_rule.valid_restrictions > products_sum_price and self.coupon_rule.valid_restrictions != -1:
+						msg = '该优惠券不满足使用金额限制'
 
-		if msg:
-			return False, msg
-		else:
-			return True, msg
-
-	# @staticmethod
-	# def check_coupon_type(coupon_id):
-	# 	coupon = Coupon.from_coupon_id({'coupon_id': coupon_id})
-	# 	if not coupon:
-	# 		coupon_type = 'invalid'
-	# 	else:
-	# 		coupon_type = 'product' if coupon.is_product_coupon else 'order'
-	# 	return coupon_type
+			if msg:
+				return False, msg
+			else:
+				return True, msg

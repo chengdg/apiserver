@@ -374,8 +374,8 @@ Scenario:3 使用等于商品价格的优惠券金额进行购买
 			"coupon_money": 100.0
 		}
 		"""
-	Given jobs登录系统
-	Then jobs能获得优惠券'优惠券2'的码库
+	Given jobs登录系统:weapp
+	Then jobs能获得优惠券'优惠券2'的码库:weapp
 		"""
 		{
 			"coupon2_id_1": {

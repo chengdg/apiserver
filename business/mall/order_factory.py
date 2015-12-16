@@ -109,11 +109,11 @@ class OrderFactory(business_model.Model):
 			return order_id
 
 
-	def __allocate_resource(self, order, purchase_info):
+	def __allocate_price_free_resources(self, order, purchase_info):
 		"""
-		分配订单资源
+		申请订单价无关资源
 
-		@return True, order: 订单有效；False, reason: 订单无效, 无效原因
+		@return price_free_resources
 		"""
 		webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user']
@@ -201,67 +201,10 @@ class OrderFactory(business_model.Model):
 		order.customer_message = purchase_info.customer_message
 		order.type = purchase_info.order_type
 		order.pay_interface_type = purchase_info.used_pay_interface_type
+
 		order.order_id = self.__create_order_id()
 
-		'''
-		# 读取基本信息
-		order.db_model.webapp_id = webapp_owner.webapp_id
-		order.webapp_id = webapp_owner.webapp_id
-
-		order.db_model.webapp_user_id = webapp_user.id
-		order.webapp_user_id = webapp_user.id
-
-		order.db_model.member_grade_id = member.grade_id
-		order.member_grade_id = member.grade_id
-
-		#order.db_model.member_grade_discount = member.discount
-		# 'member_grade_discount': '(175, 100)' ?
-		order.db_model.member_grade_discount = 100 #member.discount
-		order.member_grade_discount = 100 #member.discount
-
-		order.db_model.buyer_name = member.username_for_html
-		order.buyer_name = member.username_for_html
-
-		# 读取purchase_info信息
-		ship_info = purchase_info.ship_info
-		order.db_model.ship_name = ship_info['name']
-		order.ship_name = ship_info['name']
-
-		order.db_model.ship_address = ship_info['address']
-		order.ship_address = ship_info['address']
-
-		order.db_model.ship_tel = ship_info['tel']
-		order.ship_tel = ship_info['tel']
-
-		order.db_model.area = ship_info['area']
-		order.ship_area = ship_info['area']
-
-		order.db_model.customer_message = purchase_info.customer_message
-		order.customer_message = purchase_info.customer_message
-
-		order.db_model.type = purchase_info.order_type
-		order.type = purchase_info.order_type
-
-		order.db_model.pay_interface_type = purchase_info.used_pay_interface_type
-		order.pay_interface_type = purchase_info.used_pay_interface_type
-
-		order.db_model.order_id = self.__create_order_id()
-		'''
 		return
-
-
-	def __allocate_price_free_resources(self, order, purchase_info):
-		"""
-		申请订单价无关资源
-
-		@return price_free_resources
-		"""
-		
-		# 分配订单资源
-		price_free_resources = self.__allocate_resource(order, purchase_info)
-		# TODO: to be implemented
-		return price_free_resources
-
 
 
 	'''
@@ -360,7 +303,7 @@ class OrderFactory(business_model.Model):
 				new_order.supplier = supplier
 				new_order.save()
 		elif supplier_ids[0] != 0:
-			order.db_model.supplier = supplier_ids[0]
+			order.supplier = supplier_ids[0]
 		order.save()
 		#order.db_model.save()
 

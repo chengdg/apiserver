@@ -145,7 +145,8 @@ class PackageOrderService(business_model.Service):
 		self.type2resource = dict([(resource.type, resource) for resource in price_free_resources])
 
 		# 处理通用券 todo 适配单品券
-		final_price = sum([product.price * product.purchase_count for product in order.products])
+		order.product_price = sum([product.price * product.purchase_count for product in order.products])
+		final_price = order.product_price		
 
 		# 处理优惠券
 		final_price = self.__process_coupon(order, final_price)

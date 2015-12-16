@@ -30,7 +30,7 @@ from business.decorator import cached_context_property
 from utils import regional_util
 
 from core.decorator import deprecated
-
+import logging
 
 class Order(business_model.Model):
 	"""订单
@@ -469,4 +469,35 @@ class Order(business_model.Model):
 		"""
 		业务模型序列化
 		"""
-		pass
+		db_model = self.context['order']
+
+		# 读取基本信息
+		db_model.webapp_id = self.webapp_id
+		db_model.webapp_user_id = self.webapp_user_id
+		db_model.member_grade_id = self.member_grade_id
+		db_model.member_grade_discount = self.member_grade_discount
+		db_model.buyer_name = self.buyer_name
+
+		# 读取purchase_info信息
+		db_model.ship_name = self.ship_name
+		db_model.ship_address = self.ship_address
+		db_model.ship_tel = self.ship_tel
+		db_model.area = self.ship_area
+		db_model.customer_message = self.customer_message
+		db_model.type = self.type
+		db_model.pay_interface_type = self.pay_interface_type
+		db_model.order_id = self.order_id			
+		
+		db_model.save()
+
+		logging.info("Order db_model: {}".format(db_model))
+		return
+
+	@property
+	def is_saved(self):
+		"""
+		是否保存成功
+
+		@todo 待实现
+		"""
+		return True

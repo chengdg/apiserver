@@ -88,6 +88,24 @@ class OrderFactory(business_model.Model):
 		
 	# 	return order_checker.check()
 
+	def __create_order_id(self):
+		"""创建订单id
+
+		目前采用基于时间戳＋随机数的算法生成订单id，在确定id可使用之前，通过查询mall_order表里是否有相同id来判断是否可以使用id
+		这种方式比较低效，同时存在id重复的潜在隐患，后续需要改进
+
+		@todo 可以考虑用时间戳加MD5方式
+		@bug 这里不应该暴露存储层
+		"""
+		# TODO2: 使用uuid替换这里的算法
+		order_id = time.strftime("%Y%m%d%H%M%S", time.localtime())
+		order_id = '%s%03d' % (order_id, random.randint(1, 999))
+		if mall_models.Order.select().dj_where(order_id=order_id).count() > 0:
+			return self.__create_order_id()
+		else:
+			return order_id
+
+
 	def __allocate_resource(self, order, purchase_info):
 		"""
 		分配订单资源
@@ -163,25 +181,73 @@ class OrderFactory(business_model.Model):
 		member = webapp_user.member
 
 		# 读取基本信息
+		order.webapp_id = webapp_owner.webapp_id
+		order.webapp_user_id = webapp_user.id
+		order.member_grade_id = member.grade_id
+		#order.member_grade_discount = member.discount
+		# 'member_grade_discount': '(175, 100)' ?
+		order.member_grade_discount = 100 #member.discount
+		order.buyer_name = member.username_for_html
+
+		# 读取purchase_info信息
+		ship_info = purchase_info.ship_info
+		order.ship_name = ship_info['name']
+		order.ship_address = ship_info['address']
+		order.ship_tel = ship_info['tel']
+		order.ship_area = ship_info['area']
+		order.customer_message = purchase_info.customer_message
+		order.type = purchase_info.order_type
+		order.pay_interface_type = purchase_info.used_pay_interface_type
+		order.order_id = self.__create_order_id()
+
+		'''
+		# 读取基本信息
 		order.db_model.webapp_id = webapp_owner.webapp_id
+		order.webapp_id = webapp_owner.webapp_id
+
 		order.db_model.webapp_user_id = webapp_user.id
+		order.webapp_user_id = webapp_user.id
+
 		order.db_model.member_grade_id = member.grade_id
-		order.db_model.member_grade_discount = member.discount
+		order.member_grade_id = member.grade_id
+
+		#order.db_model.member_grade_discount = member.discount
+		# 'member_grade_discount': '(175, 100)' ?
+		order.db_model.member_grade_discount = 100 #member.discount
+		order.member_grade_discount = 100 #member.discount
+
 		order.db_model.buyer_name = member.username_for_html
+		order.buyer_name = member.username_for_html
 
 		# 读取purchase_info信息
 		ship_info = purchase_info.ship_info
 		order.db_model.ship_name = ship_info['name']
+		order.ship_name = ship_info['name']
+
 		order.db_model.ship_address = ship_info['address']
+		order.ship_address = ship_info['address']
+
 		order.db_model.ship_tel = ship_info['tel']
+		order.ship_tel = ship_info['tel']
+
 		order.db_model.area = ship_info['area']
+		order.ship_area = ship_info['area']
+
 		order.db_model.customer_message = purchase_info.customer_message
+		order.customer_message = purchase_info.customer_message
+
 		order.db_model.type = purchase_info.order_type
+		order.type = purchase_info.order_type
+
 		order.db_model.pay_interface_type = purchase_info.used_pay_interface_type
+		order.pay_interface_type = purchase_info.used_pay_interface_type
+
+		order.db_model.order_id = self.__create_order_id()
+		'''
 		return
 
 
-	def _allocate_price_free_resources(self, order, purchase_info):
+	def __allocate_price_free_resources(self, order, purchase_info):
 		"""
 		申请订单价无关资源
 
@@ -241,7 +307,7 @@ class OrderFactory(business_model.Model):
 			allocator_order_resource_service.release()
 
 
-	def _save_order(self, order):
+	def __save_order(self, order):
 		"""
 		保存订单
 
@@ -255,12 +321,9 @@ class OrderFactory(business_model.Model):
 		products = order.products
 		product_groups = order.product_groups
 
-		order.db_model.save()
-
-		#删除购物车
-		if self.purchase_info.is_purchase_from_shopping_cart:
-			for product in products:
-				webapp_user.shopping_cart.remove_product(product)
+		logging.info("order.db_model={}".format(order.db_model))
+		order.save()
+		#order.db_model.save()
 
 		#建立<order, product>的关系
 		supplier_ids = []
@@ -294,7 +357,8 @@ class OrderFactory(business_model.Model):
 				new_order.save()
 		elif supplier_ids[0] != 0:
 			order.db_model.supplier = supplier_ids[0]
-		order.db_model.save()
+		order.save()
+		#order.db_model.save()
 
 		#建立<order, promotion>的关系
 		for product_group in product_groups:
@@ -358,7 +422,7 @@ class OrderFactory(business_model.Model):
 	
 
 		# 申请订单价无关资源
-		price_free_resources = self._allocate_price_free_resources(order, purchase_info)
+		price_free_resources = self.__allocate_price_free_resources(order, purchase_info)
 		logging.info("price_free_resources={}".format(price_free_resources))
 
 		# 填充order
@@ -366,10 +430,17 @@ class OrderFactory(business_model.Model):
 		order,  price_related_resources = package_order_service.package_order(order, price_free_resources, purchase_info)
 
 		# 保存订单
-		order = self._save_order(order)
+		order = self.__save_order(order)
 
 		# 如果需要（比如订单保存失败），释放资源
-		if order is None or not order.is_saved():
+		if order and order.is_saved:
+			#删除购物车
+			# TODO: 删除购物车不应该放在这里
+			logging.warning('to clean the CART')
+			if purchase_info.is_purchase_from_shopping_cart:
+				for product in order.products:
+					webapp_user.shopping_cart.remove_product(product)
+		else:
 			self.release(price_free_resources)
 			self.release(price_related_resources)
 

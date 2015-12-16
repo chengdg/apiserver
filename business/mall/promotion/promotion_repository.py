@@ -159,8 +159,9 @@ class PromotionRepository(business_model.Model):
 		for relation in product_promotion_relations:
 			promotion_ids.append(relation.promotion_id)
 			promotion2product[relation.promotion_id] = relation.product_id
-
-		promotion_db_models = list(promotion_models.Promotion.select().dj_where(id__in=promotion_ids))
+		# todo 写法优化
+		promotion_db_models = list(promotion_models.Promotion.select().dj_where(id__in=promotion_ids).where(
+			promotion_models.Promotion.type != promotion_models.PROMOTION_TYPE_COUPON))
 		promotions = []
 		for promotion_db_model in promotion_db_models:
 			if promotion_db_model.type == promotion_models.PROMOTION_TYPE_FLASH_SALE:

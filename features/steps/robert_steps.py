@@ -77,7 +77,7 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 
 	def __get_current_promotion_id_for_product(product, member_grade_id):
 		promotion_ids = [r.promotion_id for r in promotion_models.ProductHasPromotion.select().dj_where(product_id=product.id)]
-		promotions = list(promotion_models.Promotion.select().dj_where(id__in=promotion_ids, status=promotion_models.PROMOTION_STATUS_STARTED).where(promotion_models.Promotion.type>3))
+		promotions = list(promotion_models.Promotion.select().dj_where(id__in=promotion_ids, status=promotion_models.PROMOTION_STATUS_STARTED).where(promotion_models.Promotion.type>4))
 		if len(promotions) > 0 and (promotions[0].member_grade_id <= 0 or \
 				promotions[0].member_grade_id == member_grade_id):
 			# 存在促销信息，且促销设置等级对该会员开放

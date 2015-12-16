@@ -130,6 +130,7 @@ class ReservedProduct(business_model.Model):
 		self.shopping_cart_id = product_info.get('shopping_cart_id', 0)
 		self.integral_sale = product.integral_sale
 		self.is_use_cod_pay_interface = product.is_use_cod_pay_interface
+		self.min_limit = product.min_limit
 
 		self.model_name = product_info['model_name']
 		self.expected_promotion_id = product_info.get('expected_promotion_id', 0)
@@ -145,8 +146,6 @@ class ReservedProduct(business_model.Model):
 		self.price = model.price
 		self.original_price = model.price
 		self.weight = model.weight
-		if not hasattr(product, 'min_limit'):
-			self.min_limit = model.stocks
 		self.stock_type = model.stock_type
 		self.stocks = model.stocks
 		self.model = model

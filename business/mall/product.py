@@ -656,7 +656,7 @@ class Product(business_model.Model):
 
 	def to_dict(self, **kwargs):
 		promotion_title = self.promotion_title
-		if self.promotion:
+		if self.promotion and self.promotion.promotion_title:
 			promotion_title = self.promotion.promotion_title
 
 		result = {

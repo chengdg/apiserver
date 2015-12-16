@@ -148,18 +148,3 @@ class PackageOrderService(business_model.Service):
 
 
 	# 读取resource中相关价格信息，计算并填充
-
-
-	def __create_order_id(self):
-		"""创建订单id
-
-		目前采用基于时间戳＋随机数的算法生成订单id，在确定id可使用之前，通过查询mall_order表里是否有相同id来判断是否可以使用id
-		这种方式比较低效，同时存在id重复的潜在隐患，后续需要改进
-		"""
-		# TODO2: 使用uuid替换这里的算法
-		order_id = time.strftime("%Y%m%d%H%M%S", time.localtime())
-		order_id = '%s%03d' % (order_id, random.randint(1, 999))
-		if mall_models.Order.select().dj_where(order_id=order_id).count() > 0:
-			return self.__create_order_id()
-		else:
-			return order_id

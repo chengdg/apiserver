@@ -90,7 +90,7 @@ class OrderFactory(business_model.Model):
 		
 	# 	return order_checker.check()
 
-<<<<<<< HEAD
+
 	def __create_order_id(self):
 		"""创建订单id
 

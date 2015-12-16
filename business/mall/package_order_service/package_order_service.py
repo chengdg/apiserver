@@ -1,4 +1,14 @@
 # -*- coding: utf-8 -*-
+"""@package business.mall.package_order_service.package_order_service
+组装资源创建订单的service
+
+内部实现以下几步：
+
+	* 计算订单价格，填充订单信息
+	* 申请订单价相关资源
+	* 调整订单价格，填充订单信息
+"""
+
 #import time
 #import random
 #from db.mall import models as mall_models
@@ -12,20 +22,6 @@ import logging
 class PackageOrderService(business_model.Service):
 	"""
 	组装资源生成订单的service
-	
-	内部实现以下几步：
-
-		* 填充订单基本信息（比如与订单资源无关的无关的信息）
-		#order = self._init_order(purchase_info)
-
-		* 计算订单价格，填充订单信息
-		order = self._compute_order_price(order, resources, purchase_info)
-
-		* 申请订单价相关资源
-		price_related_resources = self._allocate_price_related_resource(order, purchase_info)
-
-		* 调整订单价格，填充订单信息
-		order = self._adjust_order_price(order, price_related_resources, purchase_info)
 	"""
 
 	price_resources = [IntegralResource, CouponResource]
@@ -37,9 +33,12 @@ class PackageOrderService(business_model.Service):
 		self.context['webapp_user'] = webapp_user
 
 
-
-
 	def __process_coupon(self, order, final_price):
+		"""
+		处理优惠券
+
+		@return final_price 调整后的订单价格
+		"""
 		coupon_resource = self.type2resource.get('coupon')
 		if coupon_resource:
 			#order.db_model.coupon_id = coupon_resource.coupon.id
@@ -63,6 +62,11 @@ class PackageOrderService(business_model.Service):
 
 
 	def __process_integral(self, order, final_price):
+		"""
+		处理积分
+
+		@return final_price 调整后的订单价格
+		"""
 		integral_resource = self.type2resource.get('integral')
 		webapp_owner = self.context['webapp_owner']
 
@@ -77,7 +81,13 @@ class PackageOrderService(business_model.Service):
 		logging.info("`final_price` in __process_integral(): {}".format(final_price))
 		return final_price
 
+
 	def __process_postage(self, order, final_price, purchase_info):
+		"""
+		处理运费
+
+		@return final_price 调整后的订单价格
+		"""
 		postage_config = self.context['webapp_owner'].system_postage_config
 		calculator = postage_calculator.PostageCalculator(postage_config)
 		postage = calculator.get_postage(order.products, purchase_info)
@@ -87,15 +97,20 @@ class PackageOrderService(business_model.Service):
 		logging.info("`final_price` in __process_postage(): {}".format(final_price))
 		return final_price
 
+
 	def __process_promotion(self, order):
+		"""
+		处理促销
+
+		"""
 		promotion_saved_money = 0.0
 		for product_group in order.product_groups:
 			promotion_result = product_group.promotion_result
 			if promotion_result:
 				saved_money = promotion_result.saved_money
 				promotion_saved_money += saved_money
-		#order.db_model.promotion_saved_money = promotion_saved_money
 		order.promotion_saved_money = promotion_saved_money
+		return
 
 
 	def __allocate_price_related_resource(self, order, purchase_info):
@@ -122,19 +137,15 @@ class PackageOrderService(business_model.Service):
 
 		@return order 订单对象(业务层)
 		@return price_related_resources
-
 		"""
 
-		#webapp_owner = self.context['webapp_owner']
-		#webapp_user = self.context['webapp_user']
 
 		# 读取resources中的信息
 		# TODO: 如果有多个resource有同一个type呢？
 		self.type2resource = dict([(resource.type, resource) for resource in price_free_resources])
 
 		# 处理通用券 todo 适配单品券
-		order.product_price = sum([product.price * product.purchase_count for product in order.products])
-		final_price = order.product_price
+		final_price = sum([product.price * product.purchase_count for product in order.products])
 
 		# 处理优惠券
 		final_price = self.__process_coupon(order, final_price)
@@ -143,7 +154,7 @@ class PackageOrderService(business_model.Service):
 		# TODO: 确认积分应用
 		final_price = self.__process_integral(order, final_price)
 
-		# 处理邮费
+		# 处理运费
 		final_price = self.__process_postage(order, final_price, purchase_info)
 
 		# 处理订单中的促销优惠金额
@@ -160,13 +171,9 @@ class PackageOrderService(business_model.Service):
 		price_related_resources = self.__allocate_price_related_resource(order, purchase_info)
 
 		# 根据订单价格相关资源调整待支付价格
-		# todo 处理微众卡
+		# TODO: 处理微众卡
 		order = self.__adjust_order_price(order, price_related_resources, purchase_info)
 
 		order.final_price = round(order.final_price, 2)
 		logging.info("order.final_price={}".format(order.final_price))
 		return order, price_related_resources
-
-
-
-	# 读取resource中相关价格信息，计算并填充

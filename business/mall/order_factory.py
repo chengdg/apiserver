@@ -139,6 +139,8 @@ class OrderFactory(business_model.Model):
 
 	def __process_products(self, order, purchase_info):
 		"""
+		向order中添加products和product_groups
+
 		@note 从OrderFactory迁移的代码
 		"""
 		webapp_owner = self.context['webapp_owner']
@@ -158,21 +160,7 @@ class OrderFactory(business_model.Model):
 		#对每一个group应用促销活动
 		for promotion_product_group in order.product_groups:
 			promotion_product_group.apply_promotion(purchase_info)
-
-		return
-	# def __process_order_integral_for(self, resource):
-	# 	self.order.integral = resource.integral
-	# 	self.order.integral_money = resource.integral_money
-
-
-	'''
-	def _package_order(self):
-		"""
-		计算订单价格
-		"""
-		package_order_service = CalculatePriceService.get(self.context['webapp_owner'], self.context['webapp_user'])
-		self.order = package_order_service.package_order(self, self.resources.self.purchase)
-	'''
+		return order
 
 
 	def __init_order(self, order, purchase_info):
@@ -201,50 +189,8 @@ class OrderFactory(business_model.Model):
 		order.pay_interface_type = purchase_info.used_pay_interface_type
 
 		order.order_id = self.__create_order_id()
+		return order
 
-		return
-
-
-	'''
-	def create_order_old(self, purchase_info):
-		"""
-		由PurchaseInfo创建订单
-		"""
-		#获取订单商品集合
-		webapp_owner = self.context['webapp_owner']
-		webapp_user = self.context['webapp_user']
-
-		# 改到PackageOrderService中
-		"""
-		#获得已预订商品集合
-		reserved_product_repository = ReservedProductRepository.get({
-			'webapp_owner': webapp_owner,
-			'webapp_user': webapp_user
-		})
-		self.products = reserved_product_repository.get_reserved_products_from_purchase_info(purchase_info)
-		
-		#按促销进行product分组
-		group_reserved_product_service = GroupReservedProductService.get(webapp_owner, webapp_user)
-		self.product_groups = group_reserved_product_service.group_product_by_promotion(self.products)
-
-		#对每一个group应用促销活动
-		for promotion_product_group in self.product_groups:
-			promotion_product_group.apply_promotion(purchase_info)
-
-		self.purchase_info = purchase_info
-		"""
-
-		# 分配订单资源
-		self._allocate_resource()
-		# 组装订单
-		self._package_order()
-		#try:
-		return self.save()
-		# except:
-		# 	self.release()
-		# 	#TODO 修改提示
-		# 	raise OrderException(u'保存订单失败')
-	'''
 
 	def release(self):
 		allocator_order_resource_service = self.context['allocator_order_resource_service'] 
@@ -261,14 +207,11 @@ class OrderFactory(business_model.Model):
 		#webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user']
 
-		#order = self.order
-
 		products = order.products
 		product_groups = order.product_groups
 
-		logging.info("order.db_model={}".format(order.db_model))
+		logging.debug("order.db_model={}".format(order.db_model))
 		order.save()
-		#order.db_model.save()
 
 		#建立<order, product>的关系
 		supplier_ids = []
@@ -277,6 +220,7 @@ class OrderFactory(business_model.Model):
 			if not supplier in supplier_ids:
 				supplier_ids.append(supplier)
 
+			# TODO: 将存储隐藏到Order.save()中
 			mall_models.OrderHasProduct.create(
 				order = order.db_model,
 				product = product.id,
@@ -335,12 +279,6 @@ class OrderFactory(business_model.Model):
 			# 支付后的操作
 			#mall_signals.post_pay_order.send(sender=Order, order=order, request=request)
 
-		#order_business_object = Order.empty_order()
-		#order_business_object.pay_interface_type = order.pay_interface_type
-		#order_business_object.order_id = order.order_id
-		#order_business_object.final_price = order.final_price
-		#order_business_object.id = order.id
-		#return order_business_object
 		return order
 
 
@@ -361,13 +299,13 @@ class OrderFactory(business_model.Model):
 		webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user']
 
+		# 创建空订单
 		order = Order.empty_order()
 
 		# 初始化，不需要资源信息
-		self.__init_order(order, purchase_info)
+		order = self.__init_order(order, purchase_info)
 		# 初始化商品信息
-		self.__process_products(order, purchase_info)
-	
+		order = self.__process_products(order, purchase_info)
 
 		# 申请订单价无关资源
 		price_free_resources = self.__allocate_price_free_resources(order, purchase_info)
@@ -389,6 +327,8 @@ class OrderFactory(business_model.Model):
 				for product in order.products:
 					webapp_user.shopping_cart.remove_product(product)
 		else:
+			# 创建订单失败
+			logging.error("Failed to create Order object or save the order! Release all resources. order={}".format(order))
 			self.release(price_free_resources)
 			self.release(price_related_resources)
 

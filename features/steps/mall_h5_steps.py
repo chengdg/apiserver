@@ -28,5 +28,5 @@ def step_impl(context, webapp_user_name):
 			expected.append(promotion)
 	else:
 		expected = json.loads(context.text)
-	actual = context.response.data
+	actual = context.response.data['products']
 	bdd_util.assert_list(expected, actual)

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 import time
+from datetime import datetime
 
 import settings
 from client import Client
@@ -115,6 +116,58 @@ def nginx(url):
 		return url
 
 
+def get_date(str):
+	"""
+		将字符串转成datetime对象
+		今天 -> 2014-4-18
+	"""
+	#处理expected中的参数
+	today = datetime.now()
+	if str == u'今天':
+		delta = 0
+	elif str == u'昨天':
+		delta = -1
+	elif str == u'前天':
+		delta = -2
+	elif str == u'明天':
+		delta = 1
+	elif str == u'后天':
+		delta = 2
+	elif u'天后' in str:
+		delta = int(str[:-2])
+	elif u'天前' in str:
+		delta = 0-int(str[:-2])
+	else:
+		tmp = str.split(' ')
+		if len(tmp) == 1:
+			strp = "%Y-%m-%d"
+		elif len(tmp[1]) == 8:
+			strp = "%Y-%m-%d %H:%M:%S"
+		elif len(tmp[1]) == 5:
+			strp = "%Y-%m-%d %H:%M"
+		return datetime.strptime(str, strp)
+
+	return today + timedelta(delta)
+
+def get_date_to_time_interval (str):
+	"""
+		将如下格式转化为字符串形式的时间间隔
+		今天 -> 2014-2-13|2014-2-14
+		"3天前-1天前" 也转为相同的格式
+	"""
+	date_interval = None
+	if u'-' in str:
+		m = re.match(ur"(\d*)([\u4e00-\u9fa5]{1,2})[-](\d*)([\u4e00-\u9fa5]{1,2})", unicode(str))
+		result = m.group(1, 2, 3, 4)
+		if result:
+			if result[1] == u'天前' and result[3] == u'天前':
+				date_interval = "%s|%s" % (datetime.strftime(datetime.now()-timedelta(days=int(result[0])), "%Y-%m-%d"), datetime.strftime(datetime.now() - timedelta(days=int(result[2])),"%Y-%m-%d"))
+			if result[1] == u'天前' and result[2] == u'' and result[3] == u'今天':
+				date_interval = "%s|%s" % (datetime.strftime(datetime.now() - timedelta(days=int(result[0])),"%Y-%m-%d"), datetime.strftime(datetime.now(),"%Y-%m-%d"))
+			if result[1] == u'今天' and result[3] == u'明天':
+				date_interval = "%s|%s" % (datetime.strftime(datetime.now(), "%Y-%m-%d"), datetime.strftime(datetime.now() + timedelta(days=1),"%Y-%m-%d"))
+	return date_interval
+
 def get_date_str(str):
 	date = get_date(str)
 	return date.strftime('%Y-%m-%d')
@@ -201,7 +254,7 @@ def assert_expected_list_in_actual(expected, actual):
 # assert_api_call_success: 验证api调用成功
 ###########################################################################
 def assert_api_call_success(response):
-	if 200 != response.body.get('code'):
+	if 200 != response.body['code']:
 		buf = []
 		buf.append('>>>>>>>>>>>>>>> response <<<<<<<<<<<<<<<')
 		buf.append(str(response))

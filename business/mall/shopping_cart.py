@@ -20,7 +20,7 @@ from business import model as business_model
 import settings
 from business.decorator import cached_context_property
 from business.mall.reserved_product_repository import ReservedProductRepository
-from business.mall.product_grouper import ProductGrouper
+from business.mall.group_reserved_product_service import GroupReservedProductService
 
 class ShoppingCart(business_model.Model):
 	__slots__ = [
@@ -125,9 +125,12 @@ class ShoppingCart(business_model.Model):
 		"""
 		valid_products, _ = self.__products
 
+		webapp_owner = self.context['webapp_owner']
+		webapp_user = self.webapp_user
+
 		promotion_product_group_datas = []
-		product_grouper = ProductGrouper()
-		promotion_product_groups = product_grouper.group_product_by_promotion(self.webapp_user.member, valid_products)
+		group_reserved_product_service = GroupReservedProductService.get(webapp_owner, webapp_user)
+		promotion_product_groups = group_reserved_product_service.group_product_by_promotion(valid_products)
 		for promotion_product_group in promotion_product_groups:
 			promotion_product_group.apply_promotion()
 			promotion_product_group_data = promotion_product_group.to_dict(with_price_factor=True)

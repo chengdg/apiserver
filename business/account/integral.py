@@ -27,7 +27,11 @@ class Integral(business_model.Model):
 	__slots__ = (
 		'id',
 		'click_shared_url_increase_count',
-		'webapp_id'
+		'be_member_increase_count',
+		'buy_award_count_for_buyer',
+		'buy_via_shared_url_increase_count_for_author',
+		'buy_via_offline_increase_count_for_author',
+		'webapp_id',
 	)
 
 	@staticmethod
@@ -87,6 +91,7 @@ class Integral(business_model.Model):
 
 	@staticmethod
 	def increase_member_integral(args):
+		#TODO-bert 调整统一参数
 		member = args['member']
 		event_type = args['event_type']
 		integral_increase_count = args.get('integral_increase_count', 0)
@@ -104,11 +109,11 @@ class Integral(business_model.Model):
 			webapp_user_id = webapp_user.id
 		else:
 			webapp_user_id = 0
+		member = member_models.Member.get(id=member.id)
 		current_integral = member.integral + integral_increase_count
 		try:
 			#TODO-bert 并发下是否会出现积分日志无法对应上
-			update_member = member_models.Member.update(integral=member_models.Member.integral + integral_increase_count).dj_where(id=member.id)
-			update_member.execute()
+			member_models.Member.update(integral=member_models.Member.integral + integral_increase_count).dj_where(id=member.id).execute()
 
 			integral_log = member_models.MemberIntegralLog.create(
 					member = member.id, 
@@ -121,7 +126,7 @@ class Integral(business_model.Model):
 					manager=manager
 				)
 			if webapp_user:
-				webapp_user.cleanup_cache
+				webapp_user.cleanup_cache()
 
 			return True, integral_log.id
 		except:
@@ -140,10 +145,16 @@ class Integral(business_model.Model):
 
 		return Integral.increase_member_integral({
 			'integral_increase_count': use_count,
-			'member': webapp_user.member,
+			'webapp_user': webapp_user,
+			'member':webapp_user.member,
 			'event_type':  member_models.USE
 			})
-
 		
-
-
+	@staticmethod
+	def roll_back_integral(args):
+		webapp_user = args['webapp_user']
+		integral_log_id = args['integral_log_id']
+		integral_count = args['integral_count']
+		#TODO-bert 增加watchdog
+		member_models.Member.update(integral=member_models.Member.integral + integral_count).dj_where(id=webapp_user.member.id).execute()
+		member_models.MemberIntegralLog.delete().dj_where(id=integral_log_id).execute()

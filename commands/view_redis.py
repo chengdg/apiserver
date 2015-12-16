@@ -17,6 +17,8 @@ class Command(BaseCommand):
 	
 	def handle(self, key, **options):
 		value = cache_util.get_cache(key)
+		print key
+		print value
 
 		if value:
 			value = self.__for_json_dumps(value)

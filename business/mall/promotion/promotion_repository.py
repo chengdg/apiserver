@@ -184,19 +184,42 @@ class PromotionRepository(business_model.Model):
 			if not product:
 				continue
 
-			product.promotion = promotion
+			if promotion.type_name == 'integral_sale':
+				product.integral_sale = promotion
+			else:
+				product.promotion = promotion
+
+	@staticmethod
+	def from_id(promotion_id):
+		if promotion_id <= 0:
+			return None
+			
+		promotion_db_model = promotion_models.Promotion.get(id=promotion_id)
+		if promotion_db_model.type == promotion_models.PROMOTION_TYPE_FLASH_SALE:
+			promotion = FlashSale(promotion_db_model)
+		if promotion_db_model.type == promotion_models.PROMOTION_TYPE_PREMIUM_SALE:
+			promotion = PremiumSale(promotion_db_model)
+		if promotion_db_model.type == promotion_models.PROMOTION_TYPE_INTEGRAL_SALE:
+			promotion = IntegralSale(promotion_db_model)
+		if not promotion.is_active():
+			return None
+
+		PromotionRepository.__fill_specific_details([promotion])
+
+		return promotion
 
 	@staticmethod
 	def get_promotion_from_dict_data(data):
 		promotion_type = data['type']
+		type_name = 'unknown'
 
-		if promotion_type == promotion_models.PROMOTION_TYPE_FLASH_SALE:
+		if promotion_type == promotion_models.PROMOTION_TYPE_FLASH_SALE or promotion_type == 'flash_sale':
 			DetailClass = FlashSale
 		# elif promotion_type == promotion_models.PROMOTION_TYPE_PRICE_CUT:
 		# 	DetailClass = promotion_models.PriceCut
-		elif promotion_type == promotion_models.PROMOTION_TYPE_INTEGRAL_SALE:
+		elif promotion_type == promotion_models.PROMOTION_TYPE_INTEGRAL_SALE or promotion_type == 'integral_sale':
 		 	DetailClass = IntegralSale
-		elif promotion_type == promotion_models.PROMOTION_TYPE_PREMIUM_SALE:
+		elif promotion_type == promotion_models.PROMOTION_TYPE_PREMIUM_SALE or promotion_type == 'premium_sale':
 		 	DetailClass = PremiumSale
 		# elif promotion_type == promotion_models.PROMOTION_TYPE_COUPON:
 		# 	DetailClass = promotion_models.CouponRule

@@ -27,7 +27,7 @@ from business.decorator import cached_context_property
 from utils import regional_util
 from business.account.member_order_info import MemberOrderInfo
 from business.account.social_account import SocialAccount
-from business.spread.integral import Integral
+from business.account.integral import Integral
 
 
 class WebAppUser(business_model.Model):
@@ -106,7 +106,7 @@ class WebAppUser(business_model.Model):
 			#不是会员
 			return False
 
-		if self.member_id.member_grade_id == member_grade_id:
+		if self.member.grade_id == member_grade_id:
 			return True
 		else:
 			return False
@@ -462,7 +462,6 @@ class WebAppUser(business_model.Model):
 		"""
 		return self.member.username_for_html
 
-	@cached_context_property
 	def cleanup_cache(self):
 		"""
 		[property] 清除缓存
@@ -505,3 +504,6 @@ class WebAppUser(business_model.Model):
 			return True
 		else:
 			return False
+	@cached_context_property
+	def is_binded(self):
+		return self.member.is_binded

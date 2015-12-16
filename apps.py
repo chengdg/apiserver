@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+import decimal
 from wsgiref import simple_server
 from datetime import datetime, date
 
@@ -50,10 +51,12 @@ def _default(obj):
 		return obj.strftime('%Y-%m-%d %H:%M:%S') 
 	elif isinstance(obj, date): 
 		return obj.strftime('%Y-%m-%d') 
+	elif isinstance(obj, decimal.Decimal):
+		return str(obj)
 	elif settings.DEBUG and isinstance(obj, models.Model):
 		return obj.to_dict()
 	else: 
-		raise TypeError('%r is not JSON serializable' % obj)
+		raise TypeError('%r is not JSON serializable (type %s)' % (obj, type(obj)))
 
 class FalconResource:
 	def __init__(self):

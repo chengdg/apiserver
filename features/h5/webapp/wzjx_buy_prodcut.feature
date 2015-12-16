@@ -9,8 +9,9 @@ Feature: 购买商品
 	"""
 
 Background:
-	Given jobs登录系统
-	And jobs已添加供货商
+	Given 重置weapp的bdd环境
+	And jobs登录系统:weapp
+	And jobs已添加供货商:weapp
 		"""
 		[{
 			"name": "土小宝",
@@ -26,7 +27,7 @@ Background:
 			"remark": ""
 		}]
 		"""
-	And jobs已添加运费配置
+	And jobs已添加运费配置:weapp
 		"""
 		[{
 			"name":"顺丰",
@@ -52,8 +53,8 @@ Background:
 			}]
 		}]
 		"""
-	When jobs选择'顺丰'运费配置
-	Given jobs已添加支付方式
+	When jobs选择'顺丰'运费配置:weapp
+	Given jobs已添加支付方式:weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -63,7 +64,7 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	And jobs已添加商品
+	And jobs已添加商品:weapp
 		"""
 		[{
 			"supplier": "土小宝",
@@ -99,7 +100,7 @@ Background:
 	And bill关注jobs的公众号
 
 
-@mall2 @buy   @supplier
+@mall2 @buy @supplier @mall3
 Scenario: 1 购买单个商品
 	jobs添加商品后
 	1. bill能在webapp中购买jobs添加的商品
@@ -115,6 +116,7 @@ Scenario: 1 购买单个商品
 				"name": "商品1",
 				"count": 2
 			}],
+			"pay_type":"微信支付",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦"
 		}
@@ -122,7 +124,7 @@ Scenario: 1 购买单个商品
 	Then bill成功创建订单
 		"""
 		{
-			"order_no": "001",
+			"order_id": "001",
 			"status": "待支付",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
@@ -135,11 +137,11 @@ Scenario: 1 购买单个商品
 			"actions": ["取消订单", "支付"]
 		}
 		"""
-	Given jobs登录系统
-	Then jobs可以获得最新订单详情
+	Given jobs登录系统:weapp
+	Then jobs可以获得最新订单详情:weapp
 		"""
 		{
-			"order_no": "001",
+			"order_id": "001",
 			"status": "待支付",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
@@ -156,7 +158,7 @@ Scenario: 1 购买单个商品
 		}
 		"""
 
-@todo @mall2 @buy   @supplier
+@mall2 @buy @supplier @mall3
 Scenario: 2 购买一个供货商的多个商品
 	bill购买商品后
 	1. 能看到订单详情
@@ -190,14 +192,14 @@ Scenario: 2 购买一个供货商的多个商品
 		{
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
-			"pay_type": "货到付款",
-			"order_no": "001"
+			"pay_type": "微信支付",
+			"order_id": "001"
 		}
 		"""
 	Then bill成功创建订单
 		"""
 		{
-			"order_no": "001",
+			"order_id": "001",
 			"status": "待支付",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
@@ -210,15 +212,14 @@ Scenario: 2 购买一个供货商的多个商品
 				"name": "商品3",
 				"price": 100.00,
 				"count": 1
-			}],
-			"actions": ["取消订单", "支付"]
+			}]
 		}
 		"""
-	Given jobs登录系统
-	Then jobs可以获得最新订单详情
+	Given jobs登录系统:weapp
+	Then jobs可以获得最新订单详情:weapp
 		"""
 		{
-			"order_no": "001",
+			"order_id": "001",
 			"status": "待支付",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
@@ -239,12 +240,12 @@ Scenario: 2 购买一个供货商的多个商品
 		}
 		"""
 	When bill访问jobs的webapp
-	And bill使用支付方式'微信支付'进行支付
-	Given jobs登录系统
-	Then jobs可以看到订单列表
+	And bill使用支付方式'微信支付'进行支付:weapp
+	Given jobs登录系统:weapp
+	Then jobs可以看到订单列表:weapp
 		"""
 		[{
-			"order_no": "001",
+			"order_id": "001",
 			"status": "待发货",
 			"final_price": 200.00,
 			"actions": ["发货", "申请退款"],
@@ -262,7 +263,7 @@ Scenario: 2 购买一个供货商的多个商品
 		}]
 		"""
 
-@todo @mall2 @buy   @supplier
+@todo @mall2 @buy @supplier
 Scenario: 3 购买多个供货商的多个商品,使用微信支付
 	bill购买商品后，使用微信支付
 	1. 能看到订单详情
@@ -301,14 +302,14 @@ Scenario: 3 购买多个供货商的多个商品,使用微信支付
 		{
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
-			"pay_type": "货到付款",
-			"order_no": "001"
+			"pay_type": "微信支付",
+			"order_id": "001"
 		}
 		"""
 	Then bill成功创建订单
 		"""
 		{
-			"order_no": "001",
+			"order_id": "001",
 			"status": "待支付",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
@@ -325,15 +326,14 @@ Scenario: 3 购买多个供货商的多个商品,使用微信支付
 				"name": "商品3",
 				"price": 100.00,
 				"count": 1
-			}],
-			"actions": ["取消订单", "支付"]
+			}]
 		}
 		"""
-	Given jobs登录系统
-	Then jobs可以获得最新订单详情
+	Given jobs登录系统:weapp
+	Then jobs可以获得最新订单详情:weapp
 		"""
 		{
-			"order_no": "001",
+			"order_id": "001",
 			"status": "待支付",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
@@ -355,12 +355,12 @@ Scenario: 3 购买多个供货商的多个商品,使用微信支付
 		}
 		"""
 	When bill访问jobs的webapp
-	And bill使用支付方式'微信支付'进行支付
-	Given jobs登录系统
-	Then jobs可以看到订单列表
+	#And bill使用支付方式'微信支付'进行支付
+	Given jobs登录系统:weapp
+	Then jobs可以看到订单列表:weapp
 		"""
 		[{
-			"order_no": "001",
+			"order_id": "001",
 			"status": "待发货",
 			"final_price": 299.00,
 			"actions": ["申请退款"],
@@ -388,7 +388,7 @@ Scenario: 3 购买多个供货商的多个商品,使用微信支付
 			}]
 		}]
 		"""
-	When jobs对订单进行发货
+	When jobs对订单进行发货:weapp
 		"""
 		{
 			"order_no":"001-土小宝",
@@ -397,7 +397,7 @@ Scenario: 3 购买多个供货商的多个商品,使用微信支付
 			"shipper":"jobs"
 		}
 		"""
-	Then jobs可以看到订单列表
+	Then jobs可以看到订单列表:weapp
 		"""
 		[{
 			"order_no": "001",
@@ -428,199 +428,17 @@ Scenario: 3 购买多个供货商的多个商品,使用微信支付
 			}]
 		}]
 		"""
-	Then jobs可以获得最新订单详情
-		"""
-		{
-			"order_no": "001",
-			"status": "待发货",
-			"ship_area": "北京市 北京市 海淀区",
-			"ship_address": "泰兴大厦",
-			"final_price": 299.00,
-			"actions": ["申请退款"],
-			"products": [{
-				"name": "商品1",
-				"price": 100.00,
-				"count": 1,
-				"supplier": "土小宝",
-				"status": "已发货"
-			}, {
-				"name": "商品3",
-				"price": 100.00,
-				"count": 1,
-				"supplier": "土小宝",
-				"status": "已发货"
-			}, {
-				"name": "商品2",
-				"price": 99.00,
-				"count": 1,
-				"supplier": "丹江湖",
-				"status": "待发货"
-			}]
-		}
-		"""
-	When bill访问jobs的webapp
-	Then bill手机端获取订单"001"
-		"""
-		{
-			"order_no": "001",
-			"status": "待发货",
-			"final_price": 299.00,
-			"postage": 0.00,
-			"products": [{
-				"包裹1": [{
-					"name": "商品1",
-					"price": 100.00,
-					"count": 1
-				}, {
-					"name": "商品3",
-					"price": 100.00,
-					"count": 1
-				}],
-				"status": "待收货"
-			}, {
-				"包裹2": [{
-					"name": "商品2",
-					"price": 99.00,
-					"count": 1
-				}],
-				"status": "待发货"
-			}]
-		}
-		"""
-	Given jobs登录系统
-	When jobs对订单进行发货
-		"""
-		{
-			"order_no":"001-丹江湖",
-			"logistics":"顺丰速运",
-			"number":"123456789",
-			"shipper":"jobs|备注"
-		}
-		"""
-	Then jobs可以看到订单列表
-		"""
-		[{
-			"order_no": "001",
-			"status": "已发货",
-			"final_price": 299.00,
-			"postage": 0.00,
-			"actions": ["申请退款"],
-			"products": [{
-				"name": "商品1",
-				"price": 100.00,
-				"count": 1,
-				"supplier": "土小宝",
-				"status": "已发货"
-			}, {
-				"name": "商品3",
-				"price": 100.00,
-				"count": 1,
-				"supplier": "土小宝",
-				"status": "已发货"
-			}, {
-				"name": "商品2",
-				"price": 99.00,
-				"count": 1,
-				"supplier": "丹江湖",
-				"status": "已发货"
-			}]
-		}]
-		"""
-	When bill访问jobs的webapp
-	Then bill手机端获取订单"001"
-		"""
-		{
-			"order_no": "001",
-			"status": "待收货",
-			"ship_area": "北京市 北京市 海淀区",
-			"ship_address": "泰兴大厦",
-			"final_price": 299.00,
-			"postage": 0.00,
-			"products": [{
-				"包裹1": [{
-					"name": "商品1",
-					"price": 100.00,
-					"count": 1
-				}, {
-					"name": "商品3",
-					"price": 100.00,
-					"count": 1
-				}],
-				"status": "待收货"
-			}, {
-				"包裹2": [{
-					"name": "商品2",
-					"price": 99.00,
-					"count": 1
-				}],
-				"status": "待收货"
-			}]
-		}
-		"""
-	Given jobs登录系统
-	When jobs'申请退款'订单'001'
-  	# 此处看不到退款成功，暂时移出"actions": ["退款成功"],
-	Then jobs可以看到订单列表
-		"""
-		[{
-			"order_no": "001",
-			"status": "退款中",
-			"final_price": 299.00,
-			"postage": 0.00,
-			"products": [{
-				"name": "商品1",
-				"price": 100.00,
-				"count": 1,
-				"supplier": "土小宝"
-			}, {
-				"name": "商品3",
-				"price": 100.00,
-				"count": 1,
-				"supplier": "土小宝"
-			}, {
-				"name": "商品2",
-				"price": 99.00,
-				"count": 1,
-				"supplier": "丹江湖"
-			}]
-		}]
-		"""
-	When jobs通过财务审核'退款成功'订单'001'
-	Then jobs可以看到订单列表
-		"""
-		[{
-			"order_no": "001",
-			"status": "退款成功",
-			"final_price": 299.00,
-			"postage": 0.00,
-			"actions": [],
-			"products": [{
-				"name": "商品1",
-				"price": 100.00,
-				"count": 1,
-				"supplier": "土小宝"
-			}, {
-				"name": "商品3",
-				"price": 100.00,
-				"count": 1,
-				"supplier": "土小宝"
-			}, {
-				"name": "商品2",
-				"price": 99.00,
-				"count": 1,
-				"supplier": "丹江湖"
-			}]
-		}]
-		"""
 
-@todo @mall2 @buy   @supplier
+	
+
+@todo @mall2 @buy @supplier @duhao
 Scenario: 4 购买多个供货商的多个商品,使用货到付款
 	bill购买商品后，使用货到付款
 	1. 能看到订单详情
 	2. 能在不同状态下执行各种操作
 
-	Given jobs登录系统
-	When jobs更新商品'商品3'
+	Given jobs登录系统:weapp
+	When jobs更新商品'商品3':weapp
 		"""
 		{
 			"name": "商品3",
@@ -664,14 +482,14 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 		{
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
-			"pay_type": "货到付款",
-			"order_no": "001"
+			"pay_type": "微信支付",
+			"order_id": "001"
 		}
 		"""
 	Then bill成功创建订单
 		"""
 		{
-			"order_no": "001",
+			"order_id": "001",
 			"status": "待支付",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
@@ -693,11 +511,11 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 			"actions": ["取消订单", "支付"]
 		}
 		"""
-	Given jobs登录系统
-	Then jobs可以获得最新订单详情
+	Given jobs登录系统:weapp
+	Then jobs可以获得最新订单详情:weapp
 		"""
 		{
-			"order_no": "001",
+			"order_id": "001",
 			"status": "待支付",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
@@ -720,16 +538,16 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 		}
 		"""
 	When bill访问jobs的webapp
-	And bill使用支付方式'货到付款'进行支付
+	And bill使用支付方式'微信支付'进行支付
 	Given jobs登录系统
 	Then jobs可以看到订单列表
 		"""
 		[{
-			"order_no": "001",
+			"order_id": "001",
 			"status": "待发货",
 			"final_price": 339.00,
 			"postage": 40.00,
-			"actions": ["取消订单"],
+			"actions": ["申请退款"],
 			"products": [{
 				"name": "商品1",
 				"price": 100.00,
@@ -757,7 +575,7 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 	When jobs对订单进行发货
 		"""
 		{
-			"order_no":"001-丹江湖",
+			"order_id":"001-丹江湖",
 			"logistics":"顺丰速运",
 			"number":"123456789",
 			"shipper":"jobs"
@@ -766,11 +584,11 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 	Then jobs可以看到订单列表
 		"""
 		[{
-			"order_no": "001",
+			"order_id": "001",
 			"status": "待发货",
 			"final_price": 339.00,
 			"postage": 40.00,
-			"actions": ["取消订单"],
+			"actions": ["申请退款"],
 			"products": [{
 				"name": "商品1",
 				"price": 100.00,
@@ -798,13 +616,13 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 	Then jobs可以获得最新订单详情
 		"""
 		{
-			"order_no": "001",
+			"order_id": "001",
 			"status": "待发货",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
 			"final_price": 339.00,
 			"postage": 40.00,
-			"actions": ["取消订单"],
+			"actions": ["申请退款"],
 			"products": [{
 				"name": "商品1",
 				"price": 100.00,
@@ -830,7 +648,7 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 	Then bill手机端获取订单"001"
 		"""
 		{
-			"order_no": "001",
+			"order_id": "001",
 			"status": "待发货",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
@@ -857,24 +675,24 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 			}]
 		}
 		"""
-	Given jobs登录系统
-	When jobs对订单进行发货
+	Given jobs登录系统:weapp
+	When jobs对订单进行发货:weapp
 		"""
 		{
-			"order_no":"001-土小宝",
+			"order_id":"001-土小宝",
 			"logistics":"顺丰速运",
 			"number":"123456789",
 			"shipper":"jobs|备注"
 		}
 		"""
-	Then jobs可以看到订单列表
+	Then jobs可以看到订单列表:weapp
 		"""
 		[{
-			"order_no": "001",
+			"order_id": "001",
 			"status": "已发货",
 			"final_price": 339.00,
 			"postage": 40.00,
-			"actions": ["取消订单"],
+			"actions": ["申请退款"],
 			"products": [{
 				"name": "商品1",
 				"price": 100.00,
@@ -900,10 +718,10 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 		}]
 		"""
 	When bill访问jobs的webapp
-	Then bill手机端获取订单"001"
+	Then bill手机端获取订单'001'
 		"""
 		{
-			"order_no": "001",
+			"order_id": "001",
 			"status": "待收货",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
@@ -930,16 +748,16 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 			}]
 		}
 		"""
-	Given jobs登录系统
-	When jobs完成订单"001-土小宝"
-	Then jobs可以看到订单列表
+	Given jobs登录系统:weapp
+	When jobs完成订单'001-土小宝':weapp
+	Then jobs可以看到订单列表:weapp
 		"""
 		[{
-			"order_no": "001",
+			"order_id": "001",
 			"status": "已发货",
 			"final_price": 339.00,
 			"postage": 40.00,
-			"actions": ["取消订单"],
+			"actions": ["申请退款"],
 			"products": [{
 				"name": "商品1",
 				"price": 100.00,
@@ -965,10 +783,10 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 		}]
 		"""
 	When bill访问jobs的webapp
-	Then bill手机端获取订单"001"
+	Then bill手机端获取订单'001'
 		"""
 		{
-			"order_no": "001",
+			"order_id": "001",
 			"status": "待收货",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
@@ -995,12 +813,12 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 			}]
 		}
 		"""
-	Given jobs登录系统
-	When jobs完成订单"001-丹江湖"
-	Then jobs可以看到订单列表
+	Given jobs登录系统:weapp
+	When jobs完成订单'001-丹江湖':weapp
+	Then jobs可以看到订单列表:weapp
 		"""
 		[{
-			"order_no": "001",
+			"order_id": "001",
 			"status": "已完成",
 			"final_price": 339.00,
 			"postage": 40.00,
@@ -1030,10 +848,10 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 		}]
 		"""
 	When bill访问jobs的webapp
-	Then bill手机端获取订单"001"
+	Then bill手机端获取订单'001'
 		"""
 		{
-			"order_no": "001",
+			"order_id": "001",
 			"status": "已完成",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",

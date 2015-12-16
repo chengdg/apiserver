@@ -29,6 +29,9 @@ import settings
 from business.decorator import cached_context_property
 from utils import regional_util
 
+from core.decorator import deprecated
+import logging
+
 class Order(business_model.Model):
 	"""订单
 	"""
@@ -49,13 +52,24 @@ class Order(business_model.Model):
 		'postage',
 		'integral',
 		'integral_money',
+		'coupon_money',
 		
 		'coupon_id',
 		'status',
 		'origin_order_id',
 		'express_number',
 		'customer_message',
-		'created_at'
+		'promotion_saved_money',
+
+		'created_at',
+		
+		'supplier',
+		'integral_each_yuan',
+		'webapp_id',
+		'webapp_user_id',
+		'member_grade_id',
+		'member_grade_discount',
+		'buyer_name',
 	)
 
 	@staticmethod
@@ -124,6 +138,11 @@ class Order(business_model.Model):
 		self.context['webapp_owner'] = webapp_owner
 		self.context['webapp_user'] = webapp_user
 
+		self.coupon_money = 0.0
+		self.integral_money = 0.0
+		self.postage = 0.0
+		self.edit_money = 0.0
+
 		if order_id:
 			try:
 				order_db_model = mall_models.Order.get(order_id=order_id)
@@ -137,6 +156,10 @@ class Order(business_model.Model):
 						.format(webapp_owner_id, unicode_full_stack())
 				watchdog_error(error_msg, user_id=webapp_owner_id, noraise=True)
 				self.context['is_valid'] = False
+		else:
+			# 用于创建空的Order model
+			self.context['order'] = mall_models.Order()
+
 
 	@cached_context_property
 	def product_outlines(self):
@@ -149,20 +172,43 @@ class Order(business_model.Model):
 
 		return products
 
-	@cached_context_property
+	@property
 	def products(self):
-		"""订单中的商品，包含商品的信息
-
-		TODO2：这里返回的依然是存储层的Product对象，需要返回业务层的OrderProduct业务对象，或者直接返回dict数据
 		"""
-		products = OrderProducts.get_for_order({
-			'webapp_owner': self.context['webapp_owner'],
-			'webapp_user': self.context['webapp_user'],
-			'order': self,
-		}).products
+		订单中的商品，包含商品的信息
+		"""
+		products = self.context.get('products', None)
+		if not products:
+			try:
+				products = OrderProducts.get_for_order({
+					'webapp_owner': self.context['webapp_owner'],
+					'webapp_user': self.context['webapp_user'],
+					'order': self,
+				}).products
+			except:
+				import sys
+				a, b, c = sys.exc_info()
+				print a
+				print b
+				import traceback
+				traceback.print_tb(c)
 
-		return [product.to_dict() for product in products]
+			self.context['products'] = products
 
+		return products
+
+	@products.setter
+	def products(self, products):
+		self.context['products'] = products
+
+	@property
+	def product_groups(self):
+		return self.context['product_groups']
+
+	@product_groups.setter
+	def product_groups(self, product_groups):
+		self.context['product_groups'] = product_groups
+		
 	@property
 	def has_sub_order(self):
 		"""
@@ -401,5 +447,78 @@ class Order(business_model.Model):
 		properties = ['has_sub_order', 'pay_interface_name', 'status_text']
 		if extras:
 			properties.extend(extras)
-		return business_model.Model.to_dict(self, *properties)
+		result = business_model.Model.to_dict(self, *properties)
+
+		#因为self.products这个property返回的是ReservedProduct或OrderProduct的对象集合，所以需要再次处理
+		if 'products' in result:
+			result['products'] = [product.to_dict() for product in result['products']]
+
+		return result
+
+
+	@property
+	@deprecated
+	def db_model(self):
+		"""
+		临时暴露order model，为了调试方便
+		"""
+		return self.context['order']
+
+
+	def save(self):
+		"""
+		业务模型序列化
+		"""
+		db_model = self.context['order']
+
+		# 读取基本信息
+		db_model.webapp_id = self.webapp_id
+		db_model.webapp_user_id = self.webapp_user_id
+		db_model.member_grade_id = self.member_grade_id
+		db_model.member_grade_discount = self.member_grade_discount
+		db_model.buyer_name = self.buyer_name
+
+		# 读取purchase_info信息
+		db_model.ship_name = self.ship_name
+		db_model.ship_address = self.ship_address
+		db_model.ship_tel = self.ship_tel
+		db_model.area = self.ship_area
+		db_model.customer_message = self.customer_message
+		db_model.type = self.type
+		db_model.pay_interface_type = self.pay_interface_type
+		db_model.order_id = self.order_id	
+
+		if self.supplier:
+			db_model.supplier = self.supplier
+
+		if self.origin_order_id:
+			db_model.origin_order_id = self.origin_order_id
+
+		if self.coupon_id:
+			db_model.coupon_id = self.coupon_id
+			db_model.coupon_money = self.coupon_money
+
+		db_model.integral = self.integral
+		db_model.integral_money = self.integral_money
+		db_model.integral_each_yuan = self.integral_each_yuan
+
+		db_model.postage = self.postage
+		db_model.promotion_saved_money = self.promotion_saved_money
+		db_model.product_price = self.product_price
+		db_model.final_price = self.final_price
+		
+		logging.info("Order db_model: {}".format(db_model))
+
+		db_model.save()
+
+		return
+
+	@property
+	def is_saved(self):
+		"""
+		是否保存成功
+
+		@todo 待实现
+		"""
+		return True
 

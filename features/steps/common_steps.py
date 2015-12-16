@@ -6,6 +6,7 @@ from behave import *
 from features.util import bdd_util
 #from features.util.helper import WAIT_SHORT_TIME
 from db.account import models as account_models
+from db.mall import models as mall_models
 from db.member import models as member_models
 
 from features.steps import weapp_steps 
@@ -32,14 +33,24 @@ import logging
 
 @then(u"{user}获得错误提示'{error}'")
 def step_impl(context, user, error):
-	context.tc.assertEquals(error, context.server_error_msg)
+	context.tc.assertTrue(200 != context.response.body['code'])
+	
+	data = context.response.data
+	server_error_msg = data.get('msg', None)
+	if not server_error_msg:
+		server_error_msg = data['detail'][0]['msg']
+
+	context.tc.assertEquals(error, server_error_msg)
 
 @then(u"{user}获得'{product_name}'错误提示'{error}'")
 def step_impl(context, user, product_name ,error):
-	detail = context.response_json['data']['detail']
+	context.tc.assertTrue(200 != context.response.body['code'])
+	
+	data = context.response.data
+	detail = data['detail']
 	context.tc.assertEquals(error, detail[0]['short_msg'])
-	pro_id = ProductFactory(name=product_name).id
-	context.tc.assertEquals(pro_id, detail[0]['id'])
+	expected_product_id = mall_models.Product.get(name=product_name).id
+	context.tc.assertEquals(expected_product_id, detail[0]['id'])
 
 @when(u"{user}关注{mp_user_name}的公众号")
 def step_impl(context, user, mp_user_name):
@@ -52,6 +63,10 @@ def step_impl(context, user, mp_user_name):
 @when(u"{user}访问{mp_user_name}的webapp")
 def step_impl(context, user, mp_user_name):
 	weapp_steps._run_weapp_step(u'When %s访问%s的webapp' % (user, mp_user_name), None)
+
+	# from core.db import models as db_models
+	# db_models.db.close()
+	#db_models.db.connect()
 
 	webapp_owner = account_models.User.get(username=mp_user_name)
 	profile = account_models.UserProfile.get(user=webapp_owner.id)

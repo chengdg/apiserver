@@ -19,7 +19,7 @@ def get_product_model_keys(product_model_name):
     @return 规格key，类似于12:58_13:62_14:59
     """
     if product_model_name and product_model_name != 'standard':
-        values = ProductModelPropertyValue.objects.filter(name__in=product_model_name.split(','))
+        values = mall_models.ProductModelPropertyValue.select().dj_where(name__in=product_model_name.split(','))
         values = ['%s:%s' % (value.property_id, value.id) for value in values]
         return '_'.join(values)
     return 'standard'
@@ -98,16 +98,19 @@ def get_order_by_order_id(order_id):
 
 def get_coupon_by_id(id):
     try:
-        return promotion_models.Coupon.objects.get(id=id)
+        return promotion_models.Coupon.get(promotion_models.Coupon.id==id)
     except:
         return None
 
 def get_product_by_prouduct_id(owner_id,name):
     try:
-        return Product.objects.get(owner_id=owner_id,name=name)
+        return mall_models.Product.get(owner=owner_id,name=name)
     except:
         return None
 
+def get_product_by_prouduct_name(owner_id,name):
+    return mall_models.Product.get(owner=owner_id,name=name)
+    
 def get_order_has_products(context):
     order = Order.objects.get(order_id=context.pay_order_id)
     order_has_products = None

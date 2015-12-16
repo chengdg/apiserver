@@ -58,6 +58,7 @@ def get_many(keys):
 
 def delete_cache(key):
 	r.delete(key)
+	#r.delete(':1:'+key)
 
 def delete_pattern(key):
 	keys = r.keys(key)

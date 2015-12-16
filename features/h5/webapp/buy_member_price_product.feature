@@ -13,8 +13,9 @@ Feature: 在webapp中购买有会员折扣的商品
 	"""
 
 Background:
-	Given jobs登录系统
-	And jobs已添加商品规格
+	Given 重置weapp的bdd环境
+	Given jobs登录系统:weapp
+	And jobs已添加商品规格:weapp
 		"""
 		[{
 			"name": "尺寸",
@@ -26,7 +27,7 @@ Background:
 			}]
 		}]
 		"""
-	When jobs添加会员等级
+	When jobs添加会员等级:weapp
 		"""
 		[{
 			"name": "铜牌会员",
@@ -42,7 +43,7 @@ Background:
 			"discount": "7"
 		}]
 		"""
-	When jobs已添加支付方式
+	When jobs已添加支付方式:weapp
 		"""
 		[{
 			"type": "货到付款",
@@ -58,7 +59,7 @@ Background:
 			"weixin_sign": "42345"
 		}]
 		"""
-	And jobs已添加商品
+	And jobs已添加商品:weapp
 		"""
 		[{
 			"name": "商品1",
@@ -95,7 +96,7 @@ Background:
 		}]
 		"""
 	#10积分是一元等于10积分，20积分是首次关注的奖励，30积分是购买商品基础奖励,50积分是订单抵扣上限50%
-	Given jobs设定会员积分策略
+	Given jobs设定会员积分策略:weapp
 		"""
 		{
 			"integral_each_yuan": 10,
@@ -106,22 +107,22 @@ Background:
 		"""
 	And bill关注jobs的公众号
 	And tom关注jobs的公众号
-	Given jobs登录系统
-	Then jobs能获得bill的积分日志
+	Given jobs登录系统:weapp
+	Then jobs能获得bill的积分日志:weapp
 		"""
 		[{
 			"content": "首次关注",
 			"integral": 20
 		}]
 		"""
-	And jobs能获得tom的积分日志
+	And jobs能获得tom的积分日志:weapp
 		"""
 		[{
 			"content": "首次关注",
 			"integral": 20
 		}]
 		"""
-	When jobs更新"bill"的会员等级
+	When jobs更新'bill'的会员等级:weapp
 		"""
 		{
 			"name": "bill",
@@ -129,7 +130,7 @@ Background:
 		}
 		"""
 
-@mall2 @member_product
+@mall3 @member_product @robert.wip
 Scenario:1 购买单个会员价商品
 	jobs添加商品后
 	1. tom能在webapp中购买jobs添加的会员价商品
@@ -186,7 +187,7 @@ Scenario:1 购买单个会员价商品
 		}
 		"""
 
-@mall2 @member_product
+@mall3 @member_product @robert.wip
 Scenario:2 购买多个会员价商品
 	jobs添加商品后
 	1. bill能在webapp中把jobs添加的会员价商品添加到购物车
@@ -286,7 +287,7 @@ Scenario:2 购买多个会员价商品
 		}
 		"""
 
-@todo @mall2 @member_product
+@mall3 @member_product @robert.wip
 Scenario:3 购买多个商品包括会员价商品
 	jobs添加商品后
 	1. bill能在webapp中购买jobs的商品
@@ -354,21 +355,21 @@ Scenario:3 购买多个商品包括会员价商品
 		}
 		"""
 
-@todo @mall2 @meberGrade
+@mall3 @meberGrade @robert.wip
 Scenario:4 订单完成后，达到自动升级的条件
 	jobs添加商品后
 	1. tom能在webapp中购买jobs的商品后，完成订单后
 	2. tom达到自动升级的条件，并升级
 	
-	Given jobs登录系统
-	When jobs开启自动升级
+	Given jobs登录系统:weapp
+	When jobs开启自动升级:weapp
 		"""
 		{
 			"upgrade": "自动升级",
 			"condition": ["满足一个条件即可"]
 		}
 		"""
-	When jobs更新会员等级'铜牌会员'
+	When jobs更新会员等级'铜牌会员':weapp
 		"""
 		{
 			"name": "铜牌会员",
@@ -379,7 +380,7 @@ Scenario:4 订单完成后，达到自动升级的条件
 			"discount": "9"
 		}
 		"""
-	And jobs更新会员等级'银牌会员'
+	And jobs更新会员等级'银牌会员':weapp
 		"""
 		{
 			"name": "银牌会员",
@@ -390,7 +391,7 @@ Scenario:4 订单完成后，达到自动升级的条件
 			"discount": "8"
 		}
 		"""
-	Then jobs能获取会员等级列表
+	Then jobs能获取会员等级列表:weapp
 		"""
 		[{
 			"name": "普通会员",
@@ -445,8 +446,8 @@ Scenario:4 订单完成后，达到自动升级的条件
 			}]
 		}
 		"""
-	Given jobs登录系统
-	Then jobs可以获得最新订单详情
+	Given jobs登录系统:weapp
+	Then jobs可以获得最新订单详情:weapp
 		"""
 		{
 			"status": "待发货",
@@ -464,8 +465,8 @@ Scenario:4 订单完成后，达到自动升级的条件
 			}]
 		}
 		"""
-	When jobs对最新订单进行发货
-	Then jobs可以获得最新订单详情
+	When jobs对最新订单进行发货:weapp
+	Then jobs可以获得最新订单详情:weapp
 		"""
 		{
 			"status": "已发货",
@@ -484,8 +485,8 @@ Scenario:4 订单完成后，达到自动升级的条件
 		}
 		"""
 	#tom已经满足一个升级条件，自动升级为铜牌会员
-	When jobs'完成'最新订单
-	Then jobs能获得tom的积分日志
+	When jobs'完成'最新订单:weapp
+	Then jobs能获得tom的积分日志:weapp
 		"""
 		[{
 			"content": "购物返利",
@@ -495,7 +496,7 @@ Scenario:4 订单完成后，达到自动升级的条件
 			"integral": 20
 		}]
 		"""
-	And jobs可以获得会员列表
+	And jobs可以获得会员列表:weapp
 		"""
 		[{
 			"name": "tom",
@@ -512,7 +513,7 @@ Scenario:4 订单完成后，达到自动升级的条件
 		}]
 		"""
 
-@todo @mall2 @integral_experience
+@mall3 @integral_experience @robert.wip
 Scenario:5 使用积分购买商品后，取消订单，积分返回
 	jobs添加商品后
 	1. bill能在webapp中使用积分购买jobs的商品后，创建订单后
@@ -523,7 +524,7 @@ Scenario:5 使用积分购买商品后，取消订单，积分返回
 		"""
 		{
 			"order_id":"0000001",
-			"pay_type": "微信支付",
+			"pay_type": "货到付款",
 			"products": [{
 				"name": "商品1",
 				"count": 1
@@ -532,20 +533,6 @@ Scenario:5 使用积分购买商品后，取消订单，积分返回
 		}
 		"""
 	Then bill成功创建订单
-		"""
-		{
-			"status": "待支付",
-			"final_price": 88.00,
-			"integral": 20,
-			"products": [{
-				"name": "商品1",
-				"price": 90.00,
-				"count": 1
-			}]
-		}
-		"""
-	When bill使用支付方式'货到付款'进行支付
-	Then bill支付订单成功
 		"""
 		{
 			"status": "待发货",
@@ -558,8 +545,8 @@ Scenario:5 使用积分购买商品后，取消订单，积分返回
 			}]
 		}
 		"""
-	Given jobs登录系统
-	When jobs对订单进行发货
+	Given jobs登录系统:weapp
+	When jobs对订单进行发货:weapp
 		"""
 		{
 			"order_no":"0000001",
@@ -567,7 +554,7 @@ Scenario:5 使用积分购买商品后，取消订单，积分返回
 			"number":"123456789"
 		}
 		"""
-	When jobs'完成'订单'0000001'
+	When jobs'完成'订单'0000001':weapp
 	when bill访问jobs的webapp
 	Then bill在jobs的webapp中拥有30会员积分
 	Then bill在jobs的webapp中获得积分日志
@@ -583,8 +570,8 @@ Scenario:5 使用积分购买商品后，取消订单，积分返回
 			"integral": 20
 		}]
 		"""
-	Given jobs登录系统
-	Then jobs可以获得最新订单详情
+	Given jobs登录系统:weapp
+	Then jobs可以获得最新订单详情:weapp
 		"""
 		{
 			"status": "已完成",
@@ -592,9 +579,9 @@ Scenario:5 使用积分购买商品后，取消订单，积分返回
 			"actions": ["申请退款"]
 		}
 		"""
-	When jobs'申请退款'订单'0000001'
-	When jobs通过财务审核'退款成功'订单'0000001'
-	Then jobs可以获得最新订单详情
+	When jobs'申请退款'订单'0000001':weapp
+	When jobs通过财务审核'退款成功'订单'0000001':weapp
+	Then jobs可以获得最新订单详情:weapp
 		"""
 		{
 			"status": "退款成功",
@@ -602,7 +589,7 @@ Scenario:5 使用积分购买商品后，取消订单，积分返回
 			"actions": []
 		}
 		"""
-	And jobs能获得bill的积分日志
+	And jobs能获得bill的积分日志:weapp
 		"""
 		[{
 			"content": "取消订单 返还积分",
@@ -618,7 +605,7 @@ Scenario:5 使用积分购买商品后，取消订单，积分返回
 			"integral": 20
 		}]
 		"""
-	And jobs可以获得会员列表
+	And jobs可以获得会员列表:weapp
 		"""
 		[{
 			"name": "tom",

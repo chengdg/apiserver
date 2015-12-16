@@ -47,3 +47,14 @@ def parse_date(str):
 # 得到n天后的时间
 def get_date_after_days(date, days):
 	return date + dt.timedelta(days=days)
+
+def cmp_datetime(a, b):
+	a_datetime = dt.datetime.strptime(a, '%Y-%m-%d')
+	b_datetime = dt.datetime.strptime(b, '%Y-%m-%d')
+
+	if a_datetime > b_datetime:
+		return -1
+	elif a_datetime < b_datetime:
+		return 1
+	else:
+		return 0

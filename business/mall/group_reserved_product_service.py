@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""@package business.mall.product_grouper
+"""@package business.mall.group_reserved_product_service
 商品分组器，根据促销信息对商品进行分组
 
 """
@@ -25,12 +25,15 @@ from business.mall.order_products import OrderProducts
 from business.mall.promotion_product_group import PromotionProductGroup
 
 
-class ProductGrouper(business_model.Model):
+class GroupReservedProductService(business_model.Service):
 	"""商品分组器
 	"""
 	__slots__ = (
-		'product_groups',
+		#'product_groups',
 	)
+
+	def __init__(self, webapp_owner, webapp_user):
+		business_model.Service.__init__(self, webapp_owner, webapp_user)
 
 	def __get_promotion_name(self, product):
 		"""
@@ -44,6 +47,9 @@ class ProductGrouper(business_model.Model):
 		"""
 		name = 'no_promotion'
 		promotion = product.promotion
+		if not promotion:
+			promotion = product.integral_sale
+			
 		if promotion:
 			# 已过期或未开始活动的商品，做为 普通商品
 			if promotion.type == promotion_models.PROMOTION_TYPE_PRICE_CUT or promotion.type == promotion_models.PROMOTION_TYPE_PREMIUM_SALE:
@@ -107,7 +113,7 @@ class ProductGrouper(business_model.Model):
 	# 	else:
 	# 		return None
 
-	def group_product_by_promotion(self, member, products):
+	def group_product_by_promotion(self, products):
 		"""
 		根据商品促销类型对商品进行分类
 
@@ -118,6 +124,7 @@ class ProductGrouper(business_model.Model):
 		Returns
 			PromotionProductGroup业务对象的list
 		"""
+		member = self.context['webapp_user'].member
 		member_grade_id, discount = member.discount
 		#按照促销对product进行聚类, 生成<product_promotion_name, <product, product, ...]>映射
 		product_groups = []
@@ -139,6 +146,7 @@ class ProductGrouper(business_model.Model):
 
 			#products是相同promotion的集合，所以从第一个product中获取promotion就能得到promotion对象了
 			promotion = products[0].promotion
+			integral_sale = products[0].integral_sale
 
 			# 商品没有参加促销，
 			if not promotion:
@@ -147,10 +155,8 @@ class ProductGrouper(business_model.Model):
 					"uid": group_unified_id,
 					'products': products,
 					'promotion': None,
+					'integral_sale': integral_sale,
 					"promotion_type": '',
-					'promotion_result': None,
-					'integral_sale_rule': False,
-					'can_use_promotion': False,
 					'member_grade_id': member_grade_id
 				})
 				product_groups.append(promotion_product_group)
@@ -229,14 +235,12 @@ class ProductGrouper(business_model.Model):
 				"promotion_type": promotion.type_name,
 				'products': products,
 				'promotion': promotion,
-				'promotion_result': None,
-				'integral_sale_rule': False,
-				'can_use_promotion': True,
+				'integral_sale': integral_sale,
 				'member_grade_id': member_grade_id
 			})
 			product_groups.append(promotion_product_group)
 
-		self.product_groups = product_groups
+		#self.product_groups = product_groups
 		return product_groups
 
 

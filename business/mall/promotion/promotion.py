@@ -46,6 +46,11 @@ class Promotion(business_model.Model):
 		"""
 		根据当前时间与start_date, end_date的关系，获取真实的status
 		"""
+
+		#TODO2: 处理promotion从数据库promotion_result加载的情况，后续将去掉这里的对self.start_date的判断逻辑
+		if not self.start_date:
+			return promotion_models.PROMOTION_STATUS_FINISHED
+
 		now = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
 		if self.start_date > now:
 			return promotion_models.PROMOTION_STATUS_NOT_START
@@ -59,7 +64,7 @@ class Promotion(business_model.Model):
 		self.start_date = self.start_date.strftime("%Y-%m-%d %H:%M:%S")
 		self.end_date = self.end_date.strftime("%Y-%m-%d %H:%M:%S")
 		self.created_at = self.created_at.strftime("%Y-%m-%d %H:%M:%S")
-		self.status = self.__get_real_status()
+		self.status = self.status if self.status == promotion_models.PROMOTION_STATUS_FINISHED else self.__get_real_status()
 		self.display_status = promotion_models.PROMOTIONSTATUS2NAME.get(self.status, u'未知')
 		self.display_type = promotion_models.PROMOTION2TYPE.get(self.type, {'display_name':u'未知'})['display_name']
 		self.type_name = promotion_models.PROMOTION2TYPE.get(self.type, {'name':u'unknown'})['name']
@@ -95,23 +100,51 @@ class Promotion(business_model.Model):
 
 		return True
 
-	def apply_promotion(self, products):
+	def allocate(self, webapp_user, product):
+		"""
+		为webapp_user, product分配促销
+
+		Parameters
+			webapp_user
+			product: ReservedProduct对象
+
+		Returns
+			is_success: 如果分配成功，返回True；否则，返回False
+			result: 分配成功，返回{}; 否则，返回失败原因
+		"""
+		raise NotImplementedError("%s must implement allocate method" % str(self.__class__))
+
+	def can_apply_promotion(self, promotion_product_group):
+		"""
+		判断是否可以在promotion product group上应用促销
+
+		Parameters
+			[in] promotion_product_group: 待执行促销活动的PromotionProductGroup对象
+
+		Returns
+			如果可以应用促销，返回True; 否则，返回False
+		"""
+
+		raise NotImplementedError("%s must implement can_apply_promotion method" % str(self.__class__))
+
+	def apply_promotion(self, promotion_product_group, purchase_info=None):
 		"""
 		为同属一个PromotionProductGroup的product集合执行促销活动，返回促销结果
 
 		Parameters
-			[in, out] products: 待执行促销活动的商品集合
+			[in, out] promotion_product_group: 待执行促销活动的PromotionProductGroup对象
+			[in] purchase_info: 购买信息(PurchaseInfo对象)
 
 		Returns
-			促销活动结果
+			促销结果
 
 		Note
-			apply_promotion可能会修改product的price属性
+			purchase_info中可能会携带前端计算出来的promotion result信息，比如对于integral sale，促销结果就是在前端计算的
 		"""
-		raise RuntimeError("%s must implement apply_promotion method" % str(self.__class__))
+		raise NotImplementedError("%s must implement apply_promotion method" % str(self.__class__))
 
 	def _get_detail_data(self):
-		raise RuntimeError("_get_detail_data must be implemented by Promotion's subclass " + str(type(self)))
+		raise NotImplementedError("_get_detail_data must be implemented by Promotion's subclass " + str(type(self)))
 
 	@property
 	def detail(self):
@@ -136,7 +169,7 @@ class Promotion(business_model.Model):
 		if self.member_grade_id <= 0:
 			return True
 
-		if webapp_user.is_match_member_grade():
+		if webapp_user.is_match_member_grade(self.member_grade_id):
 			return True
 		else:
 			return False
@@ -179,7 +212,6 @@ class Promotion(business_model.Model):
 		instance = cls()
 		for slot in slots:
 			value = dict.get(slot, None)
-
 			setattr(instance, slot, value)
 		instance.after_from_dict()
 		return instance

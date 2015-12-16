@@ -19,8 +19,8 @@ Feature:在webapp中购买禁用优惠券商品
 	"""
 
 Background:
-	Given jobs登录系统
-	When jobs已添加支付方式
+	Given jobs登录系统:weapp
+	When jobs已添加支付方式:weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -33,7 +33,7 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	When jobs添加会员等级
+	When jobs添加会员等级:weapp
 		"""
 		[{
 			"name": "铜牌会员",
@@ -50,8 +50,8 @@ Background:
 		}]
 		"""
 	Given bill关注jobs的公众号
-	And jobs登录系统
-	And jobs已添加商品
+	And jobs登录系统:weapp
+	And jobs已添加商品:weapp
 		"""
 			[{
 				"name": "商品1",
@@ -67,7 +67,7 @@ Background:
 				"status":"在售"
 			}]
 		"""
-	And jobs已添加了优惠券规则
+	And jobs已添加了优惠券规则:weapp
 		"""
 		[{
 			"name": "全体券1",
@@ -80,7 +80,7 @@ Background:
 			"coupon_id_prefix": "coupon1_id_"
 		}]
 		"""
-	When jobs为会员发放优惠券
+	When jobs为会员发放优惠券:weapp
 		"""
 		{
 			"name": "全体券1",
@@ -88,7 +88,7 @@ Background:
 			"members": ["bill"]
 		}
 		"""
-	When jobs添加禁用优惠券商品
+	When jobs添加禁用优惠券商品:weapp
 		"""
 		[{
 			"products":[{
@@ -103,8 +103,8 @@ Background:
 @todo @mall2 @promotion @promotionForbiddenCoupon @online_bug
 Scenario:1 购买禁用优惠券商品和非禁用优惠券商品,禁用优惠券商品同时参与限时抢购
 	#非禁用优惠券商品的价格和-限时抢购带来的总优惠金额<优惠券金额(50+60-70=40)
-	Given jobs登录系统
-	When jobs创建限时抢购活动
+	Given jobs登录系统:weapp
+	When jobs创建限时抢购活动:weapp
 		"""
 		[{
 			"name": "商品1限时抢购01",
@@ -162,9 +162,9 @@ Scenario:1 购买禁用优惠券商品和非禁用优惠券商品,禁用优惠�
 		"""
 
 	#非禁用优惠券商品的价格和-限时抢购带来的总优惠金额=优惠券金额(50+60-60=50)
-	Given jobs登录系统
-	When jobs"结束"促销活动"商品1限时抢购01"
-	When jobs创建限时抢购活动
+	Given jobs登录系统:weapp
+	When jobs'结束'促销活动'商品1限时抢购01':weapp
+	When jobs创建限时抢购活动:weapp
 		"""
 		[{
 			"name": "商品1限时抢购02",
@@ -222,9 +222,9 @@ Scenario:1 购买禁用优惠券商品和非禁用优惠券商品,禁用优惠�
 		"""
 
 	#非禁用优惠券商品的价格和-限时抢购带来的总优惠金额>优惠券金额(50+60-40=70)
-	Given jobs登录系统
-	When jobs"结束"促销活动"商品1限时抢购02"
-	When jobs创建限时抢购活动
+	Given jobs登录系统:weapp
+	When jobs'结束'促销活动'商品1限时抢购02':weapp
+	When jobs创建限时抢购活动:weapp
 		"""
 		[{
 			"name": "商品1限时抢购03",
@@ -282,15 +282,15 @@ Scenario:1 购买禁用优惠券商品和非禁用优惠券商品,禁用优惠�
 		"""
 
 	#非禁用优惠券商品的价格和-限时抢购带来的总优惠金额<优惠券金额(50+60-120=-10)
-	Given jobs登录系统
-	When jobs"结束"促销活动"商品1限时抢购03"
-	When jobs更新商品'商品1'
+	Given jobs登录系统:weapp
+	When jobs'结束'促销活动'商品1限时抢购03':weapp
+	When jobs更新商品'商品1':weapp
 		"""
 		{
 			"price":200.00
 		}
 		"""
-	When jobs创建限时抢购活动
+	When jobs创建限时抢购活动:weapp
 		"""
 		[{
 			"name": "商品1限时抢购04",
@@ -350,8 +350,8 @@ Scenario:1 购买禁用优惠券商品和非禁用优惠券商品,禁用优惠�
 @todo @mall2 @promotion @promotionForbiddenCoupon @online_bug
 Scenario:2 购买禁用优惠券商品和非禁用优惠券商品,禁用优惠券商品同时参与会员折扣
 	#非禁用优惠券商品的价格和-会员折扣带来的总优惠金额<优惠券金额(50+60-70=40)
-	Given jobs登录系统
-	When jobs更新商品'商品1'
+	Given jobs登录系统:weapp
+	When jobs更新商品'商品1':weapp
 		"""
 		{
 			"name":"商品1",
@@ -359,7 +359,7 @@ Scenario:2 购买禁用优惠券商品和非禁用优惠券商品,禁用优惠�
 			"is_member_product": "on"
 		}
 		"""
-	When jobs更新"bill"的会员等级
+	When jobs更新'bill'的会员等级:weapp
 		"""
 		{
 			"name": "bill",
@@ -409,8 +409,8 @@ Scenario:2 购买禁用优惠券商品和非禁用优惠券商品,禁用优惠�
 		"""
 
 	#非禁用优惠券商品的价格和-会员折扣带来的总优惠金额=优惠券金额(50+60-60=50)
-	Given jobs登录系统
-	When jobs更新"bill"的会员等级
+	Given jobs登录系统:weapp
+	When jobs更新'bill'的会员等级:weapp
 		"""
 		{
 			"name": "bill",
@@ -460,8 +460,8 @@ Scenario:2 购买禁用优惠券商品和非禁用优惠券商品,禁用优惠�
 		"""
 
 	#非禁用优惠券商品的价格和-会员折扣带来的总优惠金额>优惠券金额(50+60-40=70)
-	Given jobs登录系统
-	When jobs更新"bill"的会员等级
+	Given jobs登录系统:weapp
+	When jobs更新'bill'的会员等级:weapp
 		"""
 		{
 			"name": "bill",
@@ -511,8 +511,8 @@ Scenario:2 购买禁用优惠券商品和非禁用优惠券商品,禁用优惠�
 		"""
 
 	#非禁用优惠券商品的价格和-会员折扣带来的总优惠金额<优惠券金额(50+60-120=-10)
-	Given jobs登录系统
-	When jobs更新商品'商品1'
+	Given jobs登录系统:weapp
+	When jobs更新商品'商品1':weapp
 		"""
 		{
 			"name":"商品1",
@@ -520,7 +520,7 @@ Scenario:2 购买禁用优惠券商品和非禁用优惠券商品,禁用优惠�
 			"is_member_product": "on"
 		}
 		"""
-	When jobs更新"bill"的会员等级
+	When jobs更新'bill'的会员等级:weapp
 		"""
 		{
 			"name": "bill",

@@ -68,8 +68,33 @@ class Service(object):
 	__slots__ = ('context', )
 
 	@classmethod
-	def get(cls):
-		return cls()
+	def get(cls, webapp_owner=None, webapp_user=None):
+		return cls(webapp_owner, webapp_user)
+	
+	def __init__(self, webapp_owner=None, webapp_user=None):
+		self.context = {
+			'webapp_user': webapp_user,
+			'webapp_owner': webapp_owner
+		}
+
+RESOURCE_TYPE_INTEGRAL = 'integral'
+RESOURCE_TYPE_COUPON = 'coupon'
+RESOURCE_TYPE_PRODUCT = 'product'
+class Resource(object):
+	"""
+	领域服务的基类
+	"""
+	__slots__ = (
+		'context',
+		)
+
+	#什么用了呢？
+	# @classmethod
+	# def get(cls):
+	# 	return cls()
 	
 	def __init__(self):
 		self.context = {}
+
+	def get_type(self):
+		raise NotImplementedError

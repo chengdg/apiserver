@@ -22,8 +22,9 @@ Feature: 在webapp中购买参与限时抢购活动的商品
 	"""
 
 Background:
-	Given jobs登录系统
-	And jobs已添加商品规格
+	Given 重置weapp的bdd环境
+	Given jobs登录系统:weapp
+	And jobs已添加商品规格:weapp
 		"""
 		[{
 			"name": "尺寸",
@@ -35,7 +36,7 @@ Background:
 			}]
 		}]
 		"""
-	And jobs已添加商品
+	And jobs已添加商品:weapp
 		"""
 		[{
 			"name": "商品1",
@@ -84,7 +85,7 @@ Background:
 		}]
 		"""
 	#支付方式
-	Given jobs已添加支付方式
+	Given jobs已添加支付方式:weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -94,7 +95,7 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	When jobs创建限时抢购活动
+	When jobs创建限时抢购活动:weapp
 		"""
 		[{
 			"name": "商品1限时抢购",
@@ -122,7 +123,7 @@ Background:
 		}]
 		"""
 	#会员等级
-	When jobs添加会员等级
+	When jobs添加会员等级:weapp
 		"""
 		[{
 			"name": "铜牌会员",
@@ -138,7 +139,7 @@ Background:
 			"discount": "7"
 		}]
 		"""
-	Then jobs能获取会员等级列表
+	Then jobs能获取会员等级列表:weapp
 		"""
 		[{
 			"name": "普通会员",
@@ -160,10 +161,10 @@ Background:
 	Given bill关注jobs的公众号
 	And tom关注jobs的公众号
 	And sam关注jobs的公众号
-	And jobs登录系统
-	And jobs调tom等级为铜牌会员
-	And jobs调sam等级为银牌会员
-	Then jobs可以获得会员列表
+	And jobs登录系统:weapp
+	And jobs调tom等级为铜牌会员:weapp
+	And jobs调sam等级为银牌会员:weapp
+	Then jobs可以获得会员列表:weapp
 		"""
 			[{
 				"name": "sam",
@@ -177,7 +178,7 @@ Background:
 			}]
 		"""
 
-@todo @mall2 @promotion @mall.promotion @mall.webapp.promotion
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
 Scenario: 1 购买单个限时抢购商品，限时抢购进行中
 	没有设置限购周期，可以连续购买
 
@@ -198,7 +199,6 @@ Scenario: 1 购买单个限时抢购商品，限时抢购进行中
 			"status": "待支付",
 			"final_price": 23.00,
 			"product_price": 23.00,
-			"promotion_saved_money": 177.0,
 			"postage": 0.00,
 			"integral_money":0.00,
 			"coupon_money":0.00,
@@ -230,16 +230,20 @@ Scenario: 1 购买单个限时抢购商品，限时抢购进行中
 		}
 		"""
 
-@todo @mall2 @promotion @mall.promotion @mall.webapp.promotion @zy_fs02
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
 Scenario:2 购买单个限时抢购商品，限时抢购已过期（在购物车中是限时抢购商品，但，去提交订单时已经不是限时抢购商品）
 
 	When bill访问jobs的webapp
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品3",
-				"count": 1
+				"count": 1,
+				"promotion": {
+					"name": "商品3限时抢购"
+				} 
 			}]
 		}
 		"""
@@ -254,11 +258,11 @@ Scenario:2 购买单个限时抢购商品，限时抢购已过期（在购物车
 		}
 		"""
 
-@todo @mall2 @promotion @mall.promotion @mall.webapp.promotion @zy_fs03
+@mall3 @promotion @mall.promotion @mall.webapp.promotion
 Scenario:3 购买单个限时抢购商品，限时抢购活动没开始，按原价下单
 
-	Given jobs登录系统
-	When jobs创建限时抢购活动
+	Given jobs登录系统:weapp
+	When jobs创建限时抢购活动:weapp
 		"""
 		{
 			"name": "商品4限时抢购",
@@ -288,7 +292,7 @@ Scenario:3 购买单个限时抢购商品，限时抢购活动没开始，按原
 		}
 		"""
 
-@todo @mall2 @promotion @mall.promotion @mall.webapp.promotion @zy_fs04
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
 Scenario:4 购买多个商品，带有限时抢购商品
 
 	When bill访问jobs的webapp
@@ -314,7 +318,6 @@ Scenario:4 购买多个商品，带有限时抢购商品
 			"status": "待支付",
 			"final_price": 65.1,
 			"product_price": 65.1,
-			"promotion_saved_money": 374.9,
 			"postage": 0.00,
 			"integral_money":0.00,
 			"coupon_money":0.00,
@@ -341,7 +344,7 @@ Scenario:4 购买多个商品，带有限时抢购商品
 		}
 		"""
 
-@todo @mall2 @promotion @mall.promotion @mall.webapp.promotion @zy_fs05
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @zy_fs05 @robert.wip
 Scenario:5 购买单个限时抢购商品，超出库存限制
 	第一次购买2个，成功；第二次购买2个，超出商品库存，确保缓存更新
 
@@ -383,11 +386,11 @@ Scenario:5 购买单个限时抢购商品，超出库存限制
 		}
 		"""
 
-@todo @mall2 @promotion @mall.promotion @mall.webapp.promotion @zy_fs06
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @zy_fs06 @robert.wip
 Scenario:6 购买单个限时抢购商品，未超过库存限制，但超过单次购买限制
 
-	Given jobs登录系统
-	When jobs创建限时抢购活动
+	Given jobs登录系统:weapp
+	When jobs创建限时抢购活动:weapp
 		"""
 		{
 			"name": "商品4限时抢购",
@@ -419,6 +422,7 @@ Scenario:6 购买单个限时抢购商品，未超过库存限制，但超过单
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品4",
 				"count": 3
@@ -427,7 +431,7 @@ Scenario:6 购买单个限时抢购商品，未超过库存限制，但超过单
 		"""
 	Then bill获得创建订单失败的信息'限购2件'
 
-@todo @mall2 @promotion @mall.promotion @mall.webapp.promotion @zy_fs07
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
 Scenario:7 在限购周期内连续购买限时抢购商品
 
 	When bill访问jobs的webapp
@@ -468,10 +472,10 @@ Scenario:7 在限购周期内连续购买限时抢购商品
 		}
 		"""
 
-@todo @mall2 @promotion @mall.promotion @mall.webapp.promotion @zy_fs08
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @zy_fs08 @robert.wip
 Scenario:8 购买多规格限时抢购商品
-	Given jobs登录系统
-	When jobs创建限时抢购活动
+	Given jobs登录系统:weapp
+	When jobs创建限时抢购活动:weapp
 		"""
 		{
 			"name": "商品5限时抢购",
@@ -521,11 +525,11 @@ Scenario:8 购买多规格限时抢购商品
 		"""
 	Then bill获得创建订单失败的信息'限购2件'
 
-@todo @mall2 @promotion @mall.promotion @mall.webapp.promotion @zy_fs09
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @zy_fs09 @robert.wip
 Scenario:9 购买多规格限时抢购商品同时适用于积分规则
 
-	Given jobs登录系统
-	And jobs设定会员积分策略
+	Given jobs登录系统:weapp
+	And jobs设定会员积分策略:weapp
 		"""
 		{
 			"integral_each_yuan": 2,
@@ -534,7 +538,7 @@ Scenario:9 购买多规格限时抢购商品同时适用于积分规则
 		"""
 
 
-	When jobs创建限时抢购活动
+	When jobs创建限时抢购活动:weapp
 		"""
 		{
 			"name": "商品5限时抢购",
@@ -589,11 +593,11 @@ Scenario:9 购买多规格限时抢购商品同时适用于积分规则
 		"""
 	Then bill在jobs的webapp中拥有30会员积分
 
-@todo @mall2 @promotion @mall.promotion @mall.webapp.promotion @zy_fs10
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @zy_fs10 @robert.wip
 Scenario:10 购买单个限时抢购商品，购买时活动进行中，提交订单时，该活动被商家手工结束
 
-	Given jobs登录系统
-	When jobs创建限时抢购活动
+	Given jobs登录系统:weapp
+	When jobs创建限时抢购活动:weapp
 		"""
 		{
 			"name": "商品4限时抢购",
@@ -604,7 +608,7 @@ Scenario:10 购买单个限时抢购商品，购买时活动进行中，提交�
 			"promotion_price": 11.5
 		}
 		"""
-	And jobs"结束"促销活动"商品4限时抢购"
+	And jobs'结束'促销活动'商品4限时抢购':weapp
 
 	When bill访问jobs的webapp
 	And bill购买jobs的商品
@@ -633,12 +637,12 @@ Scenario:10 购买单个限时抢购商品，购买时活动进行中，提交�
 
 
 #雪静
-@todo @mall2 @promotion @mall.promotion @mall.webapp.promotion @zy_fs11
+@mall3 @promotion @mall.promotion @mall.webapp.promotion
 Scenario:11 购买单个限时抢购商品，未支付然后取消订单，还可以再次下单
 	有限购周期和限购数量设置
 
-	Given jobs登录系统
-	When jobs创建限时抢购活动
+	Given jobs登录系统:weapp
+	When jobs创建限时抢购活动:weapp
 		"""
 		{
 			"name": "商品4限时抢购",
@@ -671,8 +675,8 @@ Scenario:11 购买单个限时抢购商品，未支付然后取消订单，还�
 			"final_price": 11.5
 		}
 		"""
-	Given jobs登录系统
-	Then jobs可以获得最新订单详情
+	Given jobs登录系统:weapp
+	Then jobs可以获得最新订单详情:weapp
 		"""
 		{
 			"status": "待支付",
@@ -680,13 +684,13 @@ Scenario:11 购买单个限时抢购商品，未支付然后取消订单，还�
 			"actions": ["取消订单", "支付","修改价格"]
 		}
 		"""
-	When jobs'取消'最新订单
+	When jobs'取消'最新订单:weapp
 		"""
 		 {
 		 	"reason": "不想要了"
 		 }
 		"""
-	Then jobs可以获得最新订单详情
+	Then jobs可以获得最新订单详情:weapp
 		"""
 		{
 			"status": "已取消",
@@ -715,8 +719,8 @@ Scenario:11 购买单个限时抢购商品，未支付然后取消订单，还�
 			"final_price": 23.00
 		}
 		"""
-	Given jobs登录系统
-	Then jobs可以获得最新订单详情
+	Given jobs登录系统:weapp
+	Then jobs可以获得最新订单详情:weapp
 		"""
 		{
 			"status": "待支付",
@@ -726,9 +730,9 @@ Scenario:11 购买单个限时抢购商品，未支付然后取消订单，还�
 		"""
 
 #后续补充会员等级价.师帅
-@todo @mall2 @promotion
+@mall3 @promotion
 Scenario:12 不同等级的会员购买有会员价同时有限时抢购的商品（限时抢购优先于会员价）
-	When jobs更新商品'商品1'
+	When jobs更新商品'商品1':weapp
 		"""
 		{
 			"is_member_product": "on",
@@ -760,7 +764,6 @@ Scenario:12 不同等级的会员购买有会员价同时有限时抢购的商�
 			"status": "待支付",
 			"final_price": 23.00,
 			"product_price": 23.00,
-			"promotion_saved_money": 177.0,
 			"postage": 0.00,
 			"integral_money":0.00,
 			"coupon_money":0.00,
@@ -792,7 +795,6 @@ Scenario:12 不同等级的会员购买有会员价同时有限时抢购的商�
 			"status": "待支付",
 			"final_price": 23.00,
 			"product_price": 23.00,
-			"promotion_saved_money": 177.0,
 			"postage": 0.00,
 			"integral_money":0.00,
 			"coupon_money":0.00,
@@ -807,9 +809,9 @@ Scenario:12 不同等级的会员购买有会员价同时有限时抢购的商�
 		}
 		"""
 
-@todo @mall2 @promotion
+@mall3 @promotion
 Scenario:13 不同等级的会员购买有会员价同时有会员等级限时抢购的商品（限时抢购优先于会员价）
-	When jobs更新商品'商品1'
+	When jobs更新商品'商品1':weapp
 		"""
 		{
 			"is_member_product": "on",
@@ -824,8 +826,8 @@ Scenario:13 不同等级的会员购买有会员价同时有会员等级限时�
 			}
 		}
 		"""
-	And jobs"结束"促销活动"商品1限时抢购"
-	And jobs创建限时抢购活动
+	And jobs'结束'促销活动'商品1限时抢购':weapp
+	And jobs创建限时抢购活动:weapp
 	"""
 		[{
 			"name": "商品1限时抢购-50",
@@ -853,7 +855,6 @@ Scenario:13 不同等级的会员购买有会员价同时有会员等级限时�
 			"status": "待支付",
 			"final_price": 200.0,
 			"product_price": 200.0,
-			"promotion_saved_money": 0.00,
 			"postage": 0.00,
 			"integral_money":0.00,
 			"coupon_money":0.00,
@@ -907,7 +908,6 @@ Scenario:13 不同等级的会员购买有会员价同时有会员等级限时�
 			"status": "待支付",
 			"final_price": 100.0,
 			"product_price": 100.0,
-			"promotion_saved_money": 100.0,
 			"postage": 0.00,
 			"integral_money":0.00,
 			"coupon_money":0.00,
@@ -916,16 +916,15 @@ Scenario:13 不同等级的会员购买有会员价同时有会员等级限时�
 				"count": 2,
 				"promotion": {
 					"promotioned_product_price": 50.0,
-					"promotion_saved_money": 100.0,
 					"type": "flash_sale"
 				}
 			}]
 		}
 		"""
 
-@todo @mall2 @promotion
+@mall3 @promotion
 Scenario:14 不同等级的会员购买原价有会员等级限时抢购的商品
-	When jobs更新商品'商品1'
+	When jobs更新商品'商品1':weapp
 		"""
 		{
 			"is_member_product": "off",
@@ -940,8 +939,8 @@ Scenario:14 不同等级的会员购买原价有会员等级限时抢购的商�
 			}
 		}
 		"""
-	And jobs"结束"促销活动"商品1限时抢购"
-	And jobs创建限时抢购活动
+	And jobs'结束'促销活动'商品1限时抢购':weapp
+	And jobs创建限时抢购活动:weapp
 		"""
 		[{
 			"name": "商品1限时抢购-50",
@@ -969,7 +968,6 @@ Scenario:14 不同等级的会员购买原价有会员等级限时抢购的商�
 			"status": "待支付",
 			"final_price": 200.0,
 			"product_price": 200.0,
-			"promotion_saved_money": 0.00,
 			"postage": 0.00,
 			"integral_money":0.00,
 			"coupon_money":0.00,
@@ -996,7 +994,6 @@ Scenario:14 不同等级的会员购买原价有会员等级限时抢购的商�
 			"status": "待支付",
 			"final_price": 200.0,
 			"product_price": 200.0,
-			"promotion_saved_money": 0.00,
 			"postage": 0.00,
 			"integral_money":0.00,
 			"coupon_money":0.00,
@@ -1023,7 +1020,6 @@ Scenario:14 不同等级的会员购买原价有会员等级限时抢购的商�
 			"status": "待支付",
 			"final_price": 100.0,
 			"product_price": 100.0,
-			"promotion_saved_money": 100.0,
 			"postage": 0.00,
 			"integral_money":0.00,
 			"coupon_money":0.00,
@@ -1032,25 +1028,24 @@ Scenario:14 不同等级的会员购买原价有会员等级限时抢购的商�
 				"count": 2,
 				"promotion": {
 					"promotioned_product_price": 50.0,
-					"promotion_saved_money": 100.0,
 					"type": "flash_sale"
 				}
 			}]
 		}
 		"""
 
-@todo @mall2 @promotion
+@mall3 @promotion @robert.wip
 Scenario:15 购买多规格限时抢购商品同时适用于积分规则和会员等级
 
-	Given jobs登录系统
-	And jobs设定会员积分策略
+	Given jobs登录系统:weapp
+	And jobs设定会员积分策略:weapp
 		"""
 		{
 			"integral_each_yuan": 2,
 			"use_ceiling": 50
 		}
 		"""
-	When jobs更新商品'商品5'
+	When jobs更新商品'商品5':weapp
 		"""
 		{
 			"is_member_product": "on",
@@ -1069,7 +1064,7 @@ Scenario:15 购买多规格限时抢购商品同时适用于积分规则和会�
 			}
 		}
 		"""
-	When jobs创建限时抢购活动
+	When jobs创建限时抢购活动:weapp
 		"""
 		{
 			"name": "商品5限时抢购",
@@ -1087,6 +1082,7 @@ Scenario:15 购买多规格限时抢购商品同时适用于积分规则和会�
 	Then tom在jobs的webapp中拥有100会员积分
 	When sam获得jobs的100会员积分
 	Then sam在jobs的webapp中拥有100会员积分
+
 	When bill访问jobs的webapp
 	And bill购买jobs的商品
 		"""
@@ -1128,6 +1124,7 @@ Scenario:15 购买多规格限时抢购商品同时适用于积分规则和会�
 		}
 		"""
 	Then bill在jobs的webapp中拥有20会员积分
+	
 	When tom访问jobs的webapp
 	And tom购买jobs的商品
 		"""
@@ -1169,6 +1166,7 @@ Scenario:15 购买多规格限时抢购商品同时适用于积分规则和会�
 		}
 		"""
 	Then tom在jobs的webapp中拥有28会员积分
+
 	When sam访问jobs的webapp
 	And sam购买jobs的商品
 		"""

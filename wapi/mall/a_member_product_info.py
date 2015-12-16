@@ -33,8 +33,8 @@ class AMemberProductInfo(api_resource.ApiResource):
 		if member:
 			if product_id:
 				result_data['is_collect'] = webapp_user.is_collect_product(product_id)
-			result_data['member_grade_id'] = member.id
-			result_data['discount'] = member.discount
+			result_data['member_grade_id'] = webapp_user.grade.id
+			_,result_data['discount'] = webapp_user.discount
 			result_data['usable_integral'] = member.integral
 			result_data['is_subscribed'] = member.is_subscribed
 		else:

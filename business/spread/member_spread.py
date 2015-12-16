@@ -19,7 +19,7 @@ from business.spread.member_clicked import MemberClickedUrl
 from business.spread.member_clicked_factory import MemberClickedFactory
 from business.spread.member_shared import MemberSharedUrl
 from business.spread.member_shared_factory import MemberSharedUrlFactory
-from business.spread.integral import Integral
+from business.account.integral import Integral
 from business.account.webapp_user_factory import WebAppUserFactory
 from business.account.webapp_user import WebAppUser
 from business.account.system_account import SystemAccount

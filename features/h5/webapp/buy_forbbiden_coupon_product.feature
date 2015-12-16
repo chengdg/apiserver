@@ -24,8 +24,9 @@ Feature:在webapp中购买禁用优惠券商品
 	"""
 
 Background:
-	Given jobs登录系统
-	When jobs已添加支付方式
+	Given 重置weapp的bdd环境
+	Given jobs登录系统:weapp
+	When jobs已添加支付方式:weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -38,7 +39,7 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	When jobs添加会员等级
+	When jobs添加会员等级:weapp
 		"""
 		[{
 			"name": "铜牌会员",
@@ -50,13 +51,13 @@ Background:
 			"discount": "8"
 		}]
 		"""
-	Given jobs设定会员积分策略
+	Given jobs设定会员积分策略:weapp
 		"""
 		{
 			"integral_each_yuan": 2
 		}
 		"""
-	And jobs已添加商品
+	And jobs已添加商品:weapp
 		"""
 			[{
 				"name": "商品1",
@@ -72,7 +73,7 @@ Background:
 				"status":"在售"
 			}]
 		"""
-	And jobs已添加了优惠券规则
+	And jobs已添加了优惠券规则:weapp
 		"""
 		[{
 			"name": "全体券1",
@@ -94,7 +95,7 @@ Background:
 			"coupon_product": "商品2"
 		}]
 		"""
-	When jobs为会员发放优惠券
+	When jobs为会员发放优惠券:weapp
 		"""
 		{
 			"name": "全体券1",
@@ -102,7 +103,7 @@ Background:
 			"members": ["bill"]
 		}
 		"""
-	When jobs为会员发放优惠券
+	When jobs为会员发放优惠券:weapp
 		"""
 		{
 			"name": "单品券2",
@@ -110,7 +111,7 @@ Background:
 			"members": ["bill"]
 		}
 		"""
-	When jobs添加禁用优惠券商品
+	When jobs添加禁用优惠券商品:weapp
 		"""
 		[{
 			"products":[{
@@ -125,7 +126,7 @@ Background:
 		"""
 	Given bill关注jobs的公众号
 
-@todo @mall2 @promotion @promotionForbiddenCoupon
+@mall3 @promotion @promotionForbiddenCoupon
 Scenario:1 购买单个禁用优惠券商品,该商品无单品券
 	#购买商品1,数量2,全体券1不可使用
 	When bill访问jobs的webapp
@@ -140,8 +141,8 @@ Scenario:1 购买单个禁用优惠券商品,该商品无单品券
 		}
 		"""
 	Then bill获得创建订单失败的信息'该优惠券不能购买订单中的商品'
-	Given jobs登录系统
-	Then jobs能获得优惠券'全体券1'的码库
+	Given jobs登录系统:weapp
+	Then jobs能获得优惠券'全体券1'的码库:weapp
 		"""
 		{
 			"coupon1_id_1": {
@@ -176,8 +177,8 @@ Scenario:2 购买单个禁用优惠券商品,该商品有单品券
 			"coupon_money": 110.0
 		}
 		"""
-	Given jobs登录系统
-	Then jobs能获得优惠券'全体券1'的码库
+	Given jobs登录系统:weapp
+	Then jobs能获得优惠券'全体券1'的码库:weapp
 		"""
 		{
 			"coupon1_id_1": {
@@ -187,7 +188,7 @@ Scenario:2 购买单个禁用优惠券商品,该商品有单品券
 			}
 		}
 		"""
-	And jobs能获得优惠券'单品券2'的码库
+	And jobs能获得优惠券'单品券2'的码库:weapp
 		"""
 		{
 			"coupon2_id_1": {
@@ -216,8 +217,8 @@ Scenario:3 购买多个商品,包含禁用优惠券商品,不满足全体券使�
 		}
 		"""
 	Then bill获得创建订单失败的信息'该优惠券不满足使用金额限制'
-	Given jobs登录系统
-	Then jobs能获得优惠券'全体券1'的码库
+	Given jobs登录系统:weapp
+	Then jobs能获得优惠券'全体券1'的码库:weapp
 		"""
 		{
 			"coupon1_id_1": {
@@ -252,8 +253,8 @@ Scenario:3 购买多个商品,包含禁用优惠券商品,不满足全体券使�
 			"coupon_money": 100.0
 		}
 		"""
-	Given jobs登录系统
-	Then jobs能获得优惠券'全体券1'的码库
+	Given jobs登录系统:weapp
+	Then jobs能获得优惠券'全体券1'的码库:weapp
 		"""
 		{
 			"coupon1_id_1": {
@@ -263,7 +264,7 @@ Scenario:3 购买多个商品,包含禁用优惠券商品,不满足全体券使�
 			}
 		}
 		"""
-	And jobs能获得优惠券'单品券2'的码库
+	And jobs能获得优惠券'单品券2'的码库:weapp
 		"""
 		{
 			"coupon2_id_1": {
@@ -305,8 +306,8 @@ Scenario:4 购买多个商品,包含禁用优惠券商品,满足全体券使用�
 				"coupon_money": 200.0
 			}
 			"""
-		Given jobs登录系统
-		Then jobs能获得优惠券'全体券1'的码库
+		Given jobs登录系统:weapp
+		Then jobs能获得优惠券'全体券1'的码库:weapp
 			"""
 			{
 				"coupon1_id_1": {
@@ -316,7 +317,7 @@ Scenario:4 购买多个商品,包含禁用优惠券商品,满足全体券使用�
 				}
 			}
 			"""
-		And jobs能获得优惠券'单品券2'的码库
+		And jobs能获得优惠券'单品券2'的码库:weapp
 			"""
 			{
 				"coupon2_id_1": {
@@ -355,8 +356,8 @@ Scenario:4 购买多个商品,包含禁用优惠券商品,满足全体券使用�
 				"coupon_money": 100.0
 			}
 			"""
-		Given jobs登录系统
-		Then jobs能获得优惠券'全体券1'的码库
+		Given jobs登录系统:weapp
+		Then jobs能获得优惠券'全体券1'的码库:weapp
 			"""
 			{
 				"coupon1_id_1": {
@@ -366,7 +367,7 @@ Scenario:4 购买多个商品,包含禁用优惠券商品,满足全体券使用�
 				}
 			}
 			"""
-		And jobs能获得优惠券'单品券2'的码库
+		And jobs能获得优惠券'单品券2'的码库:weapp
 			"""
 			{
 				"coupon2_id_1": {
@@ -377,12 +378,12 @@ Scenario:4 购买多个商品,包含禁用优惠券商品,满足全体券使用�
 			}
 			"""
 
-@todo @mall2 @promotion @promotionForbiddenCoupon
+@mall3 @promotion @promotionForbiddenCoupon
 Scenario:5 购买多个商品,包含禁用优惠券商品,全体券使用金额无限制
 	#购买商品1和商品3,200元通用券只能抵扣商品3的100元
 	Given tom关注jobs的公众号
-	Given jobs登录系统
-	When jobs添加优惠券规则
+	Given jobs登录系统:weapp
+	When jobs添加优惠券规则:weapp
 		"""
 		[{
 			"name": "全体券2",
@@ -394,7 +395,7 @@ Scenario:5 购买多个商品,包含禁用优惠券商品,全体券使用金额�
 			"coupon_id_prefix": "coupon3_id_"
 		}]
 		"""
-	When jobs为会员发放优惠券
+	When jobs为会员发放优惠券:weapp
 		"""
 		{
 			"name": "全体券2",
@@ -426,8 +427,8 @@ Scenario:5 购买多个商品,包含禁用优惠券商品,全体券使用金额�
 			"coupon_money": 100.0
 		}
 		"""
-	Given jobs登录系统
-	Then jobs能获得优惠券'全体券2'的码库
+	Given jobs登录系统:weapp
+	Then jobs能获得优惠券'全体券2'的码库:weapp
 		"""
 		{
 			"coupon3_id_1": {
@@ -440,8 +441,8 @@ Scenario:5 购买多个商品,包含禁用优惠券商品,全体券使用金额�
 
 @todo @mall2 @promotion @promotionForbiddenCoupon
 Scenario:6 购买禁用优惠券商品,该商品同时参与会员折扣
-	Given jobs登录系统
-	When jobs更新商品'商品1'
+	Given jobs登录系统:weapp
+	When jobs更新商品'商品1':weapp
 		"""
 		{
 			"name": "商品1",
@@ -450,7 +451,8 @@ Scenario:6 购买禁用优惠券商品,该商品同时参与会员折扣
 			"is_member_product": "on"
 		}
 		"""
-	When jobs更新"bill"的会员等级
+
+	When jobs更新'bill'的会员等级:weapp
 		"""
 		{
 			"name": "bill",
@@ -469,8 +471,8 @@ Scenario:6 购买禁用优惠券商品,该商品同时参与会员折扣
 		}
 		"""
 	Then bill获得创建订单失败的信息'该优惠券不能购买订单中的商品'
-	Given jobs登录系统
-	Then jobs能获得优惠券'全体券1'的码库
+	Given jobs登录系统:weapp
+	Then jobs能获得优惠券'全体券1'的码库:weapp
 		"""
 		{
 			"coupon1_id_1": {
@@ -481,10 +483,10 @@ Scenario:6 购买禁用优惠券商品,该商品同时参与会员折扣
 		}
 		"""
 
-@todo @mall2 @promotion @promotionForbiddenCoupon
+@mall3 @promotion @promotionForbiddenCoupon
 Scenario:7 购买禁用优惠券商品,该商品同时参与限时抢购
-	Given jobs登录系统
-	When jobs创建限时抢购活动
+	Given jobs登录系统:weapp
+	When jobs创建限时抢购活动:weapp
 		"""
 		[{
 			"name": "限时抢购活动",
@@ -493,11 +495,12 @@ Scenario:7 购买禁用优惠券商品,该商品同时参与限时抢购
 			"end_date": "1天后",
 			"product_name":"商品1",
 			"member_grade": "铜牌会员",
-			"count_per_purchase": 2,
+			"count_per_purchase": 3,
 			"promotion_price": 99.00
 		}]
 		"""
-	When jobs更新"bill"的会员等级
+
+	When jobs更新'bill'的会员等级:weapp
 		"""
 		{
 			"name": "bill",
@@ -516,8 +519,8 @@ Scenario:7 购买禁用优惠券商品,该商品同时参与限时抢购
 		}
 		"""
 	Then bill获得创建订单失败的信息'该优惠券不能购买订单中的商品'
-	Given jobs登录系统
-	Then jobs能获得优惠券'全体券1'的码库
+	Given jobs登录系统:weapp
+	Then jobs能获得优惠券'全体券1'的码库:weapp
 		"""
 		{
 			"coupon1_id_1": {
@@ -528,10 +531,10 @@ Scenario:7 购买禁用优惠券商品,该商品同时参与限时抢购
 		}
 		"""
 
-@todo @mall2 @promotion @promotionForbiddenCoupon
+@mall3 @mall2 @promotion @promotionForbiddenCoupon
 Scenario:8 购买禁用优惠券商品,该商品同时参与买赠
-	Given jobs登录系统
-	When jobs创建买赠活动
+	Given jobs登录系统:weapp
+	When jobs创建买赠活动:weapp
 		"""
 		[{
 			"name": "买赠活动",
@@ -561,8 +564,8 @@ Scenario:8 购买禁用优惠券商品,该商品同时参与买赠
 		}
 		"""
 	Then bill获得创建订单失败的信息'该优惠券不能购买订单中的商品'
-	Given jobs登录系统
-	Then jobs能获得优惠券'全体券1'的码库
+	Given jobs登录系统:weapp
+	Then jobs能获得优惠券'全体券1'的码库:weapp
 		"""
 		{
 			"coupon1_id_1": {
@@ -573,10 +576,10 @@ Scenario:8 购买禁用优惠券商品,该商品同时参与买赠
 		}
 		"""
 
-@todo @mall2 @promotion @promotionForbiddenCoupon
+@mall3 @mall2 @promotion @promotionForbiddenCoupon
 Scenario:9 购买禁用优惠券商品,该商品同时参与积分应用
-	Given jobs登录系统
-	When jobs创建积分应用活动
+	Given jobs登录系统:weapp
+	When jobs创建积分应用活动:weapp
 		"""
 		[{
 			"name": "积分应用活动",
@@ -600,7 +603,8 @@ Scenario:9 购买禁用优惠券商品,该商品同时参与积分应用
 				}]
 		}]
 		"""
-	When jobs更新"bill"的会员等级
+
+	When jobs更新'bill'的会员等级:weapp
 		"""
 		{
 			"name": "bill",
@@ -648,8 +652,8 @@ Scenario:9 购买禁用优惠券商品,该商品同时参与积分应用
 		}
 		"""
 	Then bill获得创建订单失败的信息'该优惠券不能购买订单中的商品'
-	Given jobs登录系统
-	Then jobs能获得优惠券'全体券1'的码库
+	Given jobs登录系统:weapp
+	Then jobs能获得优惠券'全体券1'的码库:weapp
 		"""
 		{
 			"coupon1_id_1": {
@@ -662,8 +666,8 @@ Scenario:9 购买禁用优惠券商品,该商品同时参与积分应用
 
 @todo @mall2 @promotion @promotionForbiddenCoupon
 Scenario:10 购买禁用优惠券多规格商品,一个商品的2个规格,总价格满足单品券使用
-	Given jobs登录系统
-	And jobs已添加商品规格
+	Given jobs登录系统:weapp
+	And jobs已添加商品规格:weapp
 		"""
 		[{
 			"name": "尺寸",
@@ -675,7 +679,7 @@ Scenario:10 购买禁用优惠券多规格商品,一个商品的2个规格,总�
 			}]
 		}]
 		"""
-	And jobs已添加商品
+	And jobs已添加商品:weapp
 		"""
 		[{
 			"name": "多规格禁用",
@@ -694,7 +698,7 @@ Scenario:10 购买禁用优惠券多规格商品,一个商品的2个规格,总�
 			}
 		}]
 		"""
-	And jobs已添加了优惠券规则
+	And jobs已添加了优惠券规则:weapp
 		"""
 		[{
 			"name": "多规格单品券",
@@ -708,7 +712,7 @@ Scenario:10 购买禁用优惠券多规格商品,一个商品的2个规格,总�
 			"coupon_product": "多规格禁用"
 		}]
 		"""
-	When jobs为会员发放优惠券
+	When jobs为会员发放优惠券:weapp
 		"""
 		{
 			"name": "多规格单品券",
@@ -716,7 +720,7 @@ Scenario:10 购买禁用优惠券多规格商品,一个商品的2个规格,总�
 			"members": ["bill"]
 		}
 		"""
-	When jobs添加禁用优惠券商品
+	When jobs添加禁用优惠券商品:weapp
 		"""
 		[{
 			"products":[{
@@ -753,8 +757,8 @@ Scenario:10 购买禁用优惠券多规格商品,一个商品的2个规格,总�
 			"coupon_money": 10.0
 		}
 		"""
-	Given jobs登录系统
-	Then jobs能获得优惠券'多规格单品券'的码库
+	Given jobs登录系统:weapp
+	Then jobs能获得优惠券'多规格单品券'的码库:weapp
 		"""
 		{
 			"coupon4_id_1": {

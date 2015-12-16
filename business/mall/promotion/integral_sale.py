@@ -19,6 +19,8 @@ from business import model as business_model
 import settings
 from business.mall.promotion import promotion
 from business.mall.promotion.integral_sale_rule import IntegralSaleRule
+from business.mall.promotion.promotion_result import PromotionResult
+from business.mall.promotion.promotion_failure import PromotionFailure
 
 
 class IntegralSale(promotion.Promotion):
@@ -99,5 +101,45 @@ class IntegralSale(promotion.Promotion):
 		self.discount = discount
 		self.discount_money = discount_money
 
-	def apply_promotion(self, products):
-		return True, None
+	def get_rule_for(self, member_grade_id):
+		"""
+		获得会员等级对应的积分规则
+		"""
+		for rule in self.rules:
+			rule_member_grade_id = int(rule['member_grade_id'])
+			if rule_member_grade_id <= 0 or member_grade_id == rule_member_grade_id:
+				return rule
+
+		return None
+
+	def allocate(self, webapp_user, product):
+		"""
+		检查促销是否可以使用
+		"""
+		
+		return PromotionResult()
+
+	def can_apply_promotion(self, promotion_product_group):
+		return True
+
+	def apply_promotion(self, promotion_product_group, purchase_info=None):
+		if not purchase_info.group2integralinfo:
+			detail = {
+				'integral_money': 0.0,
+				'use_integral': 0
+			}
+		else:
+			integral_info = purchase_info.group2integralinfo.get(promotion_product_group.uid, None)
+			if integral_info:
+				detail = {
+					'integral_money': integral_info['money'],
+					'use_integral': integral_info['integral']
+				}
+			else:
+				detail = {
+					'integral_money': 0.0,
+					'use_integral': 0
+				}
+
+		promotion_result = PromotionResult(saved_money=0, subtotal=0, detail=detail)
+		return promotion_result

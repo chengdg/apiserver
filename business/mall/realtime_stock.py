@@ -75,5 +75,24 @@ class RealtimeStock(business_model.Model):
 	def to_dict(self, **kwargs):
 		return self.model2stock
 
+	@staticmethod
+	@param_required(['product_id', 'model_name'])
+	def from_product_model_name(args):
+		"""
+		工厂方法，根据product_id获取相应的库存信息
+
+		@param[in] product_id: 商品id
+		@param[in] model_name: 规格名称
+
+		@return RealtimeStock业务对象
+		"""
+		product_id = args['product_id']
+		model_name = args['model_name']
+		models = mall_models.ProductModel.select().dj_where(product_id=product_id, name=model_name,is_deleted=False)
+		realtime_stock = RealtimeStock()
+		realtime_stock.init(models)
+
+		return realtime_stock
+
 
 

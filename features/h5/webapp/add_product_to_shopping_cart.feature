@@ -230,7 +230,7 @@ Scenario:3 商品添加到购物车后，后台对商品进行上下架管理
 		}
 		"""
 	Given jobs登录系统:weapp
-	When jobs-下架商品'商品1':weapp
+	When jobs'下架'商品'商品1':weapp
 	When bill访问jobs的webapp
 	Then bill能获得购物车
 		"""
@@ -250,7 +250,7 @@ Scenario:3 商品添加到购物车后，后台对商品进行上下架管理
 		}
 		"""
 	Given jobs登录系统:weapp
-	When jobs-上架商品'商品1':weapp
+	When jobs'上架'商品'商品1':weapp
 	When bill访问jobs的webapp
 	Then bill能获得购物车
 		"""
@@ -749,4 +749,4 @@ Scenario:6 商品添加到购物车后，后台对商品的价格，库存进行
 			"invalid_products": []
 		}
 		"""
-	
+

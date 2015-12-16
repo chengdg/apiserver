@@ -453,7 +453,7 @@ Scenario:5 不同等级的会员购买有会员价同时有单品券的商品
 			"discount": "7"
 		}]
 		"""
-	When jobs更新"bill"的会员等级
+	When jobs更新'bill'的会员等级
 		"""
 		{
 			"name": "bill",
@@ -597,7 +597,7 @@ Scenario:5 不同等级的会员购买有会员价同时有单品券的商品
 	And bill在购物车订单编辑中点击提交订单
 		"""
 		{
-			"pay_type": "微信付款"
+			"pay_type": "微信支付"
 		}
 		"""
 	Then bill成功创建订单

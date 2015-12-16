@@ -108,12 +108,12 @@ class CachedProduct(object):
 		product.context['webapp_owner'] = CachedProduct.webapp_owner
 
 		# Set member's discount of the product
-		if hasattr(product, 'integral_sale') and product.integral_sale \
-			and product.integral_sale['detail'].get('rules', None):
-			for i in product.integral_sale['detail']['rules']:
-				if i['member_grade_id'] == member_grade_id:
-					product.integral_sale['detail']['discount'] = str(i['discount'])+"%"
-					break
+		# if hasattr(product, 'integral_sale') and product.integral_sale \
+		# 	and product.integral_sale['detail'].get('rules', None):
+		# 	for i in product.integral_sale['detail']['rules']:
+		# 		if i['member_grade_id'] == member_grade_id:
+		# 			product.integral_sale['detail']['discount'] = str(i['discount'])+"%"
+		# 			break
 
 		# integral_sale_data = data.get('integral_sale', None)
 		# if integral_sale_data and len(integral_sale_data) > 0:
@@ -186,6 +186,7 @@ class Product(business_model.Model):
 		'categories',
 		'properties',
 		'created_at',
+		'supplier',
 
 		#商品规格信息
 		'is_use_custom_model',
@@ -200,9 +201,12 @@ class Product(business_model.Model):
 		'is_sellout',
 		'postage_id',
 		'postage_type',
+		'unified_postage_money',
+		'is_use_cod_pay_interface',
 		
 		#促销信息
 		'promotion',
+		'integral_sale',
 		'product_review',
 	)
 
@@ -335,7 +339,8 @@ class Product(business_model.Model):
 		"""
 		[property setter] 订单中的缩略图
 		"""
-		self.context['order_thumbnails_url'] = url
+		# self.context['order_thumbnails_url'] = url
+		self.thumbnails_url = url
 
 	@property
 	def hint(self):
@@ -356,6 +361,24 @@ class Product(business_model.Model):
 		判断商品是否是上架状态
 		"""
 		return self.shelve_type == mall_models.PRODUCT_SHELVE_TYPE_ON
+
+	def apply_discount(self, webapp_user):
+		"""
+		执行webapp_user携带的折扣信息
+
+		Parameters
+			[in] webapp_user
+		"""
+		if self.is_member_product:
+			_, discount_value = webapp_user.member.discount
+			discount = discount_value / 100.0
+
+			self.price_info['min_price'] = round(self.price_info['min_price'] * discount, 2) #折扣后的价格
+			self.price_info['max_price'] = round(self.price_info['max_price'] * discount, 2) #折扣后的价格
+			self.price_info['display_price'] = round(float(self.price_info['display_price']) * discount, 2) #折扣后的价格
+
+			for model in self.models:
+				model.price = round(model.price * discount, 2)
 
 	@cached_context_property
 	def __deleted_models(self):
@@ -647,17 +670,22 @@ class Product(business_model.Model):
 			'min_limit': self.min_limit,
 			'sales': getattr(self, 'sales', 0),
 			'is_use_custom_model': self.is_use_custom_model,
+			'is_use_cod_pay_interface': self.is_use_cod_pay_interface,
 			'models': [model.to_dict() for model in self.models],
 			'used_system_model_properties': getattr(self, 'used_system_model_properties', None),
 			'total_stocks': self.total_stocks,
 			'is_sellout': self.is_sellout,
 			'created_at': self.created_at if type(self.created_at) == str else datetime.strftime(self.created_at, '%Y-%m-%d %H:%M'),
+			'supplier': self.supplier,
 			'display_index': self.display_index,
 			'is_member_product': self.is_member_product,
 			'swipe_images': getattr(self, 'swipe_images', []),
 			'promotion': self.promotion.to_dict() if self.promotion else None,
+			'integral_sale': self.integral_sale.to_dict() if self.integral_sale else None,
 			'product_review': getattr(self, 'product_review', None),
-			'price_info': getattr(self, 'price_info', None)
+			'price_info': getattr(self, 'price_info', None),
+			'postage_type': self.postage_type, 
+			'unified_postage_money': self.unified_postage_money
 		}
 
 		if 'extras' in kwargs:
@@ -678,3 +706,9 @@ class Product(business_model.Model):
 			if not self.promotion.is_active():
 				#缓存中的促销已过期
 				self.promotion = None
+
+		if self.integral_sale:
+			self.integral_sale = PromotionRepository.get_promotion_from_dict_data(self.integral_sale)
+
+			if not self.integral_sale.is_active():
+				self.integral_sale = None

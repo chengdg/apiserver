@@ -1,6 +1,6 @@
 # __edit__ : "benchi"
 #editor:王丽 2015.10.20
-
+#editor:robert 2015.12.08
 #超出限购数量的验证是在前端进行的，故在ui的feathure进行实现
 Feature: 添加限时抢购商品到购物车中
 """

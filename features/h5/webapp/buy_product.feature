@@ -422,6 +422,38 @@ Scenario: 8 购买多个商品配置不同的支付方式
 	Then bill'不能'使用支付方式'货到付款'进行支付
 
 
+Scenario: 8 购买多个商品配置不同的支付方式
+	bill购买jobs多个商品时，分别配置不同的支付方式
+	1.bill可以使用'在线支付'进行支付
+	2.bill不可以使用'货到付款'进行支付
+
+	When bill访问jobs的webapp
+	When bill加入jobs的商品到购物车
+		"""
+		[{
+			"name": "商品2",
+			"count": 1
+		}, {
+			"name": "商品6",
+			"count": 1
+		}]
+		"""
+	When bill从购物车发起购买操作
+		"""
+		{
+			"action": "pay",
+			"context": [{
+				"name": "商品2"
+			}, {
+				"name": "商品6"
+			}]
+		}
+		"""
+	Then bill'能'使用支付方式'微众卡支付'进行支付
+	Then bill'能'使用支付方式'微信支付'进行支付
+	Then bill'不能'使用支付方式'货到付款'进行支付
+
+
 #后续补充.雪静
 @mall.webapp @mall3 @zy_bp09 @robert.wip
 Scenario:9 购买库存为零的商品

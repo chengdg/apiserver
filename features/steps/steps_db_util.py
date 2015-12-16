@@ -98,7 +98,7 @@ def get_order_by_order_id(order_id):
 
 def get_coupon_by_id(id):
     try:
-        return promotion_models.Coupon.objects.get(id=id)
+        return promotion_models.Coupon.get(promotion_models.Coupon.id==id)
     except:
         return None
 

@@ -76,6 +76,9 @@ class IntegralResource(business_model.Resource):
 		webapp_owner = self.context['webapp_owner']
 		count_per_yuan = webapp_owner.integral_strategy_settings.integral_each_yuan
 
-		integral_money = round(float(self.integral/count_per_yuan), 2)
+		if count_per_yuan == 0:
+			logging.error("ERROR: count_per_yuan SHOULD NOT be ZERO!")
+			integral_money = round(float(self.integral), 2)
+		else:
+			integral_money = round(float(self.integral/count_per_yuan), 2)
 		return integral_money
-

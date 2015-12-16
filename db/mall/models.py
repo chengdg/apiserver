@@ -1665,6 +1665,14 @@ class Order(models.Model):
 	def get_orders_from_webapp_user_ids(webapp_user_ids):
 		return Order.objects.filter(webapp_user_id__in=webapp_user_ids)
 
+	def __str__(self):
+		r = {}
+		for k in self._data.keys():
+			try:
+				 r[k] = str(getattr(self, k))
+			except:
+				 r[k] = json.dumps(getattr(self, k))
+		return str(r)
 
 # def belong_to(webapp_id):
 # 	"""

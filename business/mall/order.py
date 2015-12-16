@@ -504,6 +504,8 @@ class Order(business_model.Model):
 
 		db_model.postage = self.postage
 		db_model.promotion_saved_money = self.promotion_saved_money
+
+		db_model.final_price = self.final_price
 		
 		logging.info("Order db_model: {}".format(db_model))
 

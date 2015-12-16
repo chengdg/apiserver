@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-import time
-import random
-from db.mall import models as mall_models
+#import time
+#import random
+#from db.mall import models as mall_models
 from business import model as business_model
 from business.resource.coupon_resource import CouponResource
 from business.resource.integral_resource import IntegralResource
 from business.mall import postage_calculator
 #from business.mall.order import Order as BussinessOrder
-
+import logging
 
 class PackageOrderService(business_model.Service):
 	"""
@@ -58,6 +58,7 @@ class PackageOrderService(business_model.Service):
 				order.coupon_money = coupon_denomination
 				final_price -= coupon_denomination
 			final_price += forbidden_coupon_product_price
+		logging.info("`final_price` in __process_coupon(): {}".format(final_price))
 		return final_price
 
 
@@ -73,7 +74,8 @@ class PackageOrderService(business_model.Service):
 			order.integral_money = integral_resource.money
 			order.integral_each_yuan = webapp_owner.integral_strategy_settings.integral_each_yuan
 			final_price -= integral_resource.money
-		return final_price		
+		logging.info("`final_price` in __process_integral(): {}".format(final_price))
+		return final_price
 
 	def __process_postage(self, order, final_price, purchase_info):
 		postage_config = self.context['webapp_owner'].system_postage_config
@@ -82,6 +84,8 @@ class PackageOrderService(business_model.Service):
 		#order.db_model.postage = postage
 		order.postage = postage
 		final_price += postage
+		logging.info("`final_price` in __process_postage(): {}".format(final_price))
+		return final_price
 
 	def __process_promotion(self, order):
 		promotion_saved_money = 0.0
@@ -121,7 +125,6 @@ class PackageOrderService(business_model.Service):
 
 		"""
 
-
 		#webapp_owner = self.context['webapp_owner']
 		#webapp_user = self.context['webapp_user']
 
@@ -146,8 +149,9 @@ class PackageOrderService(business_model.Service):
 		self.__process_promotion(order)
 
 		# todo 确认字段是否遗漏
-
+		logging.info("final_price={}".format(final_price))
 		if final_price < 0:
+			logging.error('`final_price` SHOULD NOT be negative! Please check it.')
 			final_price = 0
 		order.final_price = round(final_price, 2)
 
@@ -159,6 +163,7 @@ class PackageOrderService(business_model.Service):
 		order = self.__adjust_order_price(order, price_related_resources, purchase_info)
 
 		order.final_price = round(order.final_price, 2)
+		logging.info("order.final_price={}".format(order.final_price))
 		return order, price_related_resources
 
 

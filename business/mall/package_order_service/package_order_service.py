@@ -145,9 +145,9 @@ class PackageOrderService(business_model.Service):
 		webapp_user = self.context['webapp_user']
 
 		allocate_price_related_resource_service = AllocatePriceRelatedResourceService(webapp_owner, webapp_user)
-		is_success, reasons, price_related_resources = allocate_price_related_resource_service.allocate_resource_for(order, purchase_info)
+		is_success, reason, price_related_resources = allocate_price_related_resource_service.allocate_resource_for(order, purchase_info)
 		logging.info("in __allocate_price_related_resource, price_related_resources: {}".format(price_related_resources))
-		return price_related_resources
+		return is_success, reason, price_related_resources
 
 
 	def __adjust_order_price(self, order, price_related_resources, purchase_info):
@@ -199,12 +199,14 @@ class PackageOrderService(business_model.Service):
 		order.final_price = round(final_price, 2)
 
 		# TODO: 需要实现"订单价格相关资源"分配
-		price_related_resources = self.__allocate_price_related_resource(order, purchase_info)
+		is_success, reason, price_related_resources = self.__allocate_price_related_resource(order, purchase_info)
 
-		# 根据订单价格相关资源调整待支付价格
-		# TODO: 处理微众卡
-		order = self.__adjust_order_price(order, price_related_resources, purchase_info)
+		if is_success:
+			# 根据订单价格相关资源调整待支付价格
+			# TODO: 处理微众卡
+			order = self.__adjust_order_price(order, price_related_resources, purchase_info)
 
-		order.final_price = round(order.final_price, 2)
+			order.final_price = round(order.final_price, 2)
+	
 		logging.info("order.final_price={}".format(order.final_price))
-		return order, price_related_resources
+		return order, is_success, reason

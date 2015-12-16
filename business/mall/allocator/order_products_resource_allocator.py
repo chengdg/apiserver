@@ -3,24 +3,7 @@
 请求订单商品库存资源
 
 """
-import logging
-import json
-import copy
-from bs4 import BeautifulSoup
-import math
-import itertools
-from datetime import datetime
-
-from wapi.decorators import param_required
-from wapi import wapi_utils
-from core.cache import utils as cache_util
-from db.mall import models as mall_models
-import resource
-from core.watchdog.utils import watchdog_alert
 from business import model as business_model 
-from business.mall.product import Product
-import settings
-from business.decorator import cached_context_property
 from business.resource.products_resource import ProductsResource
 from business.mall.allocator.product_resource_allocator import ProductResourceAllocator
 from business.mall.merged_reserved_product import MergedReservedProduct
@@ -124,8 +107,8 @@ class OrderProductsResourceAllocator(business_model.Service):
 		return id2product.values()
 
 	def allocate_resource(self, order, purchase_info):
-		webapp_owner = self.context['webapp_owner']
-		webapp_user = self.context['webapp_user']
+		#webapp_owner = self.context['webapp_owner']
+		#webapp_user = self.context['webapp_user']
 
 		products = order.products
 
@@ -167,4 +150,7 @@ class OrderProductsResourceAllocator(business_model.Service):
 			resource = ProductsResource(resources)
 		 	return True, reason, resource
 
-		
+	@property
+	def resource_type(self):
+		return "order_products"
+	

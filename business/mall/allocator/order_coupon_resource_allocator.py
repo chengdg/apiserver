@@ -63,9 +63,13 @@ class OrderCouponResourceAllocator(business_model.Model):
 
 	def __return_empty_coupon(self):
 		empty_coupon_resource = CouponResource.get({
-			'type': business_model.RESOURCE_TYPE_COUPON,
+			'type': self.resource_type,
 		})
 		empty_coupon_resource.coupon = None
 		empty_coupon_resource.money = 0
 
 		return True, '', empty_coupon_resource
+
+	@property
+	def resource_type(self):
+		return business_model.RESOURCE_TYPE_COUPON

@@ -100,7 +100,6 @@ class WZCard(business_model.Model):
 		"""
 		[property] 微众卡余额
 		"""
-		#logging.info("self.money: {}".format(self.money))
 		return self.money
 
 	@balance.setter
@@ -195,7 +194,7 @@ class WZCard(business_model.Model):
 		检查密码
 		@todo 待实现
 		"""
-		return True
+		return self.password == password
 
 	def save(self):
 		"""
@@ -215,9 +214,11 @@ class WZCard(business_model.Model):
 
 		@return Decimal类型的支付金额
 		@see 参考原Weapp的`def use_weizoom_card()`
+
+		@todo 记录日志
 		"""
-		if isinstance(price_to_pay, float):
-			price_to_pay = Decimal(price_to_pay)
+		# 如果price_to_pay是float/str，转成Decimal
+		price_to_pay = price_to_pay if isinstance(price_to_pay, Decimal) else Decimal(price_to_pay)
 		use_price = min(price_to_pay, self.balance)
 		self.balance = self.balance - use_price
 		if self.balance < 1e-3:
@@ -225,4 +226,31 @@ class WZCard(business_model.Model):
 			self.status = wzcard_models.WEIZOOM_CARD_STATUS_EMPTY
 		else:
 			self.status = wzcard_models.WEIZOOM_CARD_STATUS_USED 
+		# 更新数据库
+		self.save()
 		return use_price
+
+
+	def refund(self, amount, reason=None):
+		"""
+		微众卡退款（用于release）
+
+		@param amount 退款金额
+		@param reason 退款原因
+
+		@return 退款后余额
+		@note 不同于微众卡"充值"
+		"""
+		# 如果amount是float/str，转成Decimal
+		amount = amount if isinstance(amount, Decimal) else Decimal(amount)
+		if amount>0:
+			self.balance += amount
+		# 更新数据库
+		is_success = True
+		try:
+			self.save()
+			# TODO: update log with `reason`
+		except Exception as e:
+			logging.error(str(e))
+			is_success = False
+		return is_success, self.balance

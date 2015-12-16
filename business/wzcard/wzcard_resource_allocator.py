@@ -58,16 +58,27 @@ class WZCardResourceAllocator(business_model.Service):
 		# 遍历微众卡信息，扣除微众卡
 		for wzcard_info in wzcard_info_list:
 			# 根据wzcard_info获取wzcard对象
-			logging.info("wzcard_id: {}".format(wzcard_info['card_name']))
+			wzcard_id = wzcard_info['card_name']
+			logging.info("wzcard_id: {}".format(wzcard_id))
 			wzcard = WZCard.from_wzcard_id({
 				"webapp_owner": webapp_owner,
-				"wzcard_id": wzcard_info['card_name'],
+				"wzcard_id": wzcard_id,
 				})
 			logging.info("wzcard: {}".format(wzcard))
 			# 检查微众卡是否可用
-			if wzcard and wzcard.check_password(wzcard_info['card_pass']):
+			if not wzcard:
+				# 无此微众卡
+				is_success = False
+				reason = u"No such card `%s`" % (wzcard_id)
+				logging.error("{}, wzcard: {}".format(reason, wzcard))
+			elif not wzcard.check_password(wzcard_info['card_pass']):
+				# 密码错误
+				is_success = False
+				#reason = u"Incorrect password for wzcard `%s`" % (wzcard_id)
+				reason = u'卡号或密码错误'
+				logging.error("{}, wzcard: {}".format(reason, wzcard))
+			else:
 				# 验证微众卡可用
-
 				used_amount = wzcard.pay(order.final_price)
 				logging.info("order.final_price={}, used_amount={}".format(order.final_price, used_amount))
 
@@ -77,21 +88,18 @@ class WZCardResourceAllocator(business_model.Service):
 
 				# 保存微众卡号、使用金额
 				used_wzcards.append( (wzcard.wzcard_id,used_amount) )
-			else:
-				# 验证微众卡失败
-				is_success = False
-				reason = u"Failed to pay by wzcard `%s`" % (wzcard.wzcard_id)
-				logging.error("%s, wzcard: {}".format(reason, wzcard))
 
 		if is_success:
 			# TODO: 需要将order.final_price改成Decimal
 			order.final_price -= float(total_used_amount)
 			order.weizoom_card_money = total_used_amount
-			wzcard_resource = WZCardResource('wzcard', used_wzcards)
+			# 分配WZCardResource
+			wzcard_resource = WZCardResource(self.resource_type, used_wzcards)
 			logging.info("total_used_amount: {}, order.final_price: {}".format(total_used_amount, order.final_price))
 		else:
 			# TODO: 释放资源
 			wzcard_resource = None
+			order.weizoom_card_money = Decimal(0)
 		return is_success, reason, wzcard_resource
 
 
@@ -103,4 +111,22 @@ class WZCardResourceAllocator(business_model.Service):
 		@note 退回微众卡账户
 		@todo 待实现
 		"""
-		pass
+		logging.info("calling WZCardResourceAllocator.release() to release resources, resource: {}".format(resource))
+		if isinstance(resource, WZCardResource):
+			used_wzcards = resource.used_wzcards
+			# 退回扣款记录
+			for wzcard_id, used_amount in used_wzcards:
+				# 找到对应的卡
+				wzcard = WZCard.from_wzcard_id({
+					"webapp_owner": self.__webapp_owner,
+					"wzcard_id": wzcard_id,
+					})
+				# 退款
+				is_success, balance = wzcard.refund(used_amount, u'refund')
+				# TODO: 如果退款失败怎么办？
+				logging.info("WZCard refunded: is_success: {}, balance: {}".format(is_success, balance))
+		return
+
+	@property
+	def resource_type(self):
+		return "wzcard"

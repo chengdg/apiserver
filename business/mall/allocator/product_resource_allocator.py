@@ -3,23 +3,9 @@
 请求商品库存资源
 
 """
-import logging
-import json
-from bs4 import BeautifulSoup
-import math
-import itertools
-from datetime import datetime
 
-from wapi.decorators import param_required
-from wapi import wapi_utils
-from core.cache import utils as cache_util
 from db.mall import models as mall_models
-import resource
-from core.watchdog.utils import watchdog_alert
 from business import model as business_model 
-from business.mall.product import Product
-import settings
-from business.decorator import cached_context_property
 from business.resource.product_resource import ProductResource
 
 class ProductResourceAllocator(business_model.Service):
@@ -43,7 +29,7 @@ class ProductResourceAllocator(business_model.Service):
 
 	def allocate_resource(self, product):
 	 	product_resource = ProductResource.get({
-				'type': business_model.RESOURCE_TYPE_PRODUCT
+				'type': self.resource_type
 			})
 
 		successed, reason = product_resource.get_resources(product)
@@ -53,4 +39,6 @@ class ProductResourceAllocator(business_model.Service):
 			self.context['resource'] = product_resource
 			return True, reason, product_resource
 
-		
+	@property
+	def resource_type(self):
+		return business_model.RESOURCE_TYPE_PRODUCT

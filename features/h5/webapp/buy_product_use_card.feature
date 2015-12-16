@@ -86,7 +86,7 @@ Scenario:1 微众卡金额大于订单金额时进行支付
 	When bill购买jobs的商品
 		"""
 		{
-			"pay_type": "微信支付",
+			"pay_type": "货到付款",
 			"products":[{
 				"name":"商品1",
 				"price":50,

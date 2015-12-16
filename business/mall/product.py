@@ -207,6 +207,7 @@ class Product(business_model.Model):
 		
 		#促销信息
 		'promotion',
+		'promotion_title',
 		'integral_sale',
 		'product_review',
 	)
@@ -654,6 +655,10 @@ class Product(business_model.Model):
 		# 	Product.__fill_promotion_detail(webapp_owner_id, products, product_ids)
 
 	def to_dict(self, **kwargs):
+		promotion_title = self.promotion_title
+		if self.promotion:
+			promotion_title = self.promotion.promotion_title
+
 		result = {
 			'id': self.id,
 			'owner_id': self.owner_id,
@@ -686,6 +691,7 @@ class Product(business_model.Model):
 			'is_member_product': self.is_member_product,
 			'swipe_images': getattr(self, 'swipe_images', []),
 			'promotion': self.promotion.to_dict() if self.promotion else None,
+			'promotion_title': promotion_title,
 			'integral_sale': self.integral_sale.to_dict() if self.integral_sale else None,
 			'product_review': getattr(self, 'product_review', None),
 			'price_info': getattr(self, 'price_info', None),

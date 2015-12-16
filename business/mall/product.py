@@ -263,7 +263,10 @@ class Product(business_model.Model):
 		soup = BeautifulSoup(self.detail)
 		for img in soup.find_all('img'):
 			try:
-				img['data-url'] = img['src']
+				if 'http:' in img['src']:
+					img['data-url'] = img['src']
+				else:
+					img['data-url'] = '%s%s' % (settings.IMAGE_HOST, img['src'])
 				del img['src']
 				del img['title']
 			except:

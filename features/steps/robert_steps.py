@@ -296,6 +296,9 @@ def step_impl(context, webapp_user_name):
 			if model['property_values']:
 				product['model'] = ' '.join(property_value['name'] for property_value in model['property_values'])
 
+	# 需要订单中给出微众卡支付金额
+	#actual_order['weizoom_card_money'] = 0.0
+
 	expected = json.loads(context.text)
 	if expected.get('actions', None):
 		# TODO 验证订单页面操作

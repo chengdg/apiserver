@@ -7,7 +7,7 @@ from business import model as business_model
 import logging
 from business.wzcard.wzcard import WZCard
 from business.wzcard.wzcard_resource import WZCardResource
-
+from decimal import Decimal
 
 class WZCardResourceAllocator(business_model.Service):
 	"""
@@ -51,37 +51,47 @@ class WZCardResourceAllocator(business_model.Service):
 		# TODO: 检查微众卡是否超过10张
 		# @see  `def check_weizoom_card_for_order()`
 
-		webapp_owner = self.context['webapp_owner']
+		webapp_owner = self.__webapp_owner
 
 		used_wzcards = []
+		total_used_amount = Decimal(0)
 		# 遍历微众卡信息，扣除微众卡
 		for wzcard_info in wzcard_info_list:
 			# 根据wzcard_info获取wzcard对象
+			logging.info("wzcard_id: {}".format(wzcard_info['card_name']))
 			wzcard = WZCard.from_wzcard_id({
 				"webapp_owner": webapp_owner,
 				"wzcard_id": wzcard_info['card_name'],
 				})
-
+			logging.info("wzcard: {}".format(wzcard))
 			# 检查微众卡是否可用
 			if wzcard and wzcard.check_password(wzcard_info['card_pass']):
 				# 验证微众卡可用
 
-				#used_amount = wzcard.pay(order.final_price)
-				#logging.info("order.final_price={}, used_amount={}".format(order.final_price, used_amount))
+				used_amount = wzcard.pay(order.final_price)
+				logging.info("order.final_price={}, used_amount={}".format(order.final_price, used_amount))
 
 				# 保存微众卡使用的信息，完成扣除微众卡金额动作
-				#wzcard.save()
+				wzcard.save()
+				total_used_amount += used_amount
 
 				# 保存微众卡号、使用金额
-				if wzcard.balance>1e-3:
-					used_wzcards.append([
-						wzcard.wzcard_id,
-						])
+				used_wzcards.append( (wzcard.wzcard_id,used_amount) )
 			else:
 				# 验证微众卡失败
 				is_success = False
+				reason = u"Failed to pay by wzcard `%s`" % (wzcard.wzcard_id)
+				logging.error("%s, wzcard: {}".format(reason, wzcard))
 
-		wzcard_resource = WZCardResource('wzcard', used_wzcards)
+		if is_success:
+			# TODO: 需要将order.final_price改成Decimal
+			order.final_price -= float(total_used_amount)
+			order.weizoom_card_money = total_used_amount
+			wzcard_resource = WZCardResource('wzcard', used_wzcards)
+			logging.info("total_used_amount: {}, order.final_price: {}".format(total_used_amount, order.final_price))
+		else:
+			# TODO: 释放资源
+			wzcard_resource = None
 		return is_success, reason, wzcard_resource
 
 

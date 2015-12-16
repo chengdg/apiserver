@@ -90,6 +90,53 @@ class AOrder(api_resource.ApiResource):
 
 		return data
 
+	@staticmethod
+	def to_dict(order):
+		order_dict = order.to_dict('latest_express_detail', 'products')
+		api_keys = [
+			"buyer_name",
+			"coupon_money",
+			"integral",
+			"ship_area",
+			"member_grade_id",
+			"edit_money",
+			"id",
+			"pay_interface_name",
+			"ship_name",
+			"has_sub_order",
+			"product_price",
+			"member_grade_discount",
+			"supplier",
+			"latest_express_detail",
+			"type",
+			"integral_each_yuan",
+			"final_price",
+			"status",
+			"postage",
+			"ship_address",
+			"pay_interface_type",
+			"order_id",
+			"integral_money",
+			"ship_tel",
+			"origin_order_id",
+			"coupon_id",
+			"customer_message",
+			"webapp_id",
+			"promotion_saved_money",
+			"express_number",
+			"webapp_user_id",
+			"products",
+			"status_text",
+			"created_at",
+			"weizoom_card_money",
+		]
+		data = {}
+		for key in api_keys:
+			data[key] = order_dict.get(key)
+		return {
+			"order": data
+		}
+
 	@param_required(['order_id'])
 	def get(args):
 		order = Order.from_id({
@@ -98,6 +145,4 @@ class AOrder(api_resource.ApiResource):
 			'order_id': args['order_id']
 		})
 
-		return {
-			'order': order.to_dict('latest_express_detail', 'products')
-		}
+		return AOrder.to_dict(order)

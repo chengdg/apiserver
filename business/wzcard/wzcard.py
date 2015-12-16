@@ -8,6 +8,7 @@ from db.wzcard import models as wzcard_models
 from wapi.decorators import param_required
 #from db.wzcard.models import WeizoomCardRule, WeizoomCard
 import logging
+from decimal import Decimal
 
 
 class WZCard(business_model.Model):
@@ -42,13 +43,13 @@ class WZCard(business_model.Model):
 		self.context['webapp_owner'] = webapp_owner
 		self.wzcard_id = wzcard_id
 
-		wzcard_db = wzcard_models.WeizoomCard.get(
+		db_model = wzcard_models.WeizoomCard.get(
 			owner=webapp_owner.id,
 			weizoom_card_id=wzcard_id)
-		self.context['wzcard_db'] = wzcard_db
-		#logging.info('wzcard_db: {}'.format(wzcard_db))
-		logging.info('wzcard_db.money: {}'.format(wzcard_db.money))
-		self._init_slot_from_model(wzcard_db)
+		self.context['db_model'] = db_model
+		#logging.info('db_model: {}'.format(db_model))
+		logging.info('db_model.money: {}'.format(db_model.money))
+		self._init_slot_from_model(db_model)
 
 
 	@staticmethod
@@ -63,7 +64,7 @@ class WZCard(business_model.Model):
 			wzcard = WZCard(args['webapp_owner'], args['wzcard_id'])
 			return wzcard
 		except Exception as e:
-			logging.error(str(e))
+			logging.error("Exception: " + str(e))
 		return None
 
 	'''
@@ -108,20 +109,20 @@ class WZCard(business_model.Model):
 		[setter] 修改微众卡余额
 		"""
 		self.money = value
-		wzcard_db = self.context['wzcard_db']	
-		wzcard_db.money = value
+		db_model = self.context['db_model']	
+		db_model.money = value
 		return
 
 	@property
 	def status(self):
-		wzcard_db = self.context['wzcard_db']
-		return wzcard_db.status
+		db_model = self.context['db_model']
+		return db_model.status
 
 	@status.setter
 	def status(self, value):
 		#self.status = value
-		wzcard_db = self.context['wzcard_db']	
-		wzcard_db.status = value
+		db_model = self.context['db_model']	
+		db_model.status = value
 		return
 
 	@staticmethod
@@ -178,7 +179,7 @@ class WZCard(business_model.Model):
 			expired_time = "3000-12-12 00:00:00",
 			is_expired = is_expired
 		)
-		return
+		return wzcard
 
 
 	@property
@@ -200,9 +201,9 @@ class WZCard(business_model.Model):
 		"""
 		微众卡信息序列化(比如存到数据库)
 		"""
-		wzcard_db = self.context['wzcard_db']	
-		wzcard_db.save()
-		logging.info("saved WZCard DB object, wzcard_id={}, balance={}".format(wzcard_db.weizoom_card_id, wzcard_db.balance))
+		db_model = self.context['db_model']	
+		db_model.save()
+		logging.info("saved WZCard DB object, wzcard_id={}, balance={}".format(db_model.weizoom_card_id, db_model.money))
 		return
 
 
@@ -210,14 +211,17 @@ class WZCard(business_model.Model):
 		"""
 		用微众卡支付
 
-		@param price_to_pay 最大待付款价格（能付多少付多少）
+		@param price_to_pay Decimal最大待付款价格（能付多少付多少）
 
+		@return Decimal类型的支付金额
 		@see 参考原Weapp的`def use_weizoom_card()`
 		"""
+		if isinstance(price_to_pay, float):
+			price_to_pay = Decimal(price_to_pay)
 		use_price = min(price_to_pay, self.balance)
 		self.balance = self.balance - use_price
 		if self.balance < 1e-3:
-			self.balance = 0
+			self.balance = Decimal(0)
 			self.status = wzcard_models.WEIZOOM_CARD_STATUS_EMPTY
 		else:
 			self.status = wzcard_models.WEIZOOM_CARD_STATUS_USED 

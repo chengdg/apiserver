@@ -70,6 +70,8 @@ class Order(business_model.Model):
 		'member_grade_id',
 		'member_grade_discount',
 		'buyer_name',
+
+		'weizoom_card_money',
 	)
 
 	@staticmethod
@@ -506,6 +508,9 @@ class Order(business_model.Model):
 		db_model.promotion_saved_money = self.promotion_saved_money
 		db_model.product_price = self.product_price
 		db_model.final_price = self.final_price
+
+		# 微众卡抵扣金额
+		db_model.weizoom_card_money = self.weizoom_card_money
 		
 		logging.info("Order db_model: {}".format(db_model))
 

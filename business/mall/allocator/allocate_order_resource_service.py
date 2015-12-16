@@ -30,7 +30,7 @@ class AllocateOrderResourceService(AllocateResourceServiceBase):
 
 		AllocateResourceServiceBase.__init__(self, webapp_owner, webapp_user)
 
-
+		# 顺序非常重要！
 		self.register_allocator(OrderProductsResourceAllocator(webapp_owner, webapp_user))
 		self.register_allocator(OrderIntegralResourceAllocator(webapp_owner, webapp_user))
 		self.register_allocator(OrderCouponResourceAllocator(webapp_owner, webapp_user))

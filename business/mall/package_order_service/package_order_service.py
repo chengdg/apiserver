@@ -154,6 +154,7 @@ class PackageOrderService(business_model.Service):
 		"""
 		再次调整订单价格（比如微众卡支付过后调整）
 		"""
+		# TODO: 微众卡资源分配成功之后，在调整order.final_price
 		type2resource = dict([ (resource.type, resource) for resource in price_related_resources ])
 		logging.info("in __adjust_order_price,  type2resource: {}".format(type2resource))
 		return order

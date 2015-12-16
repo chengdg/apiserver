@@ -49,9 +49,7 @@ class AOrder(api_resource.ApiResource):
 				"webapp_owner": webapp_owner,
 				"webapp_user": webapp_user
 			})
-			order, is_success, reason = order_factory.create_order(purchase_info)
-			if not is_success:
-				return 500, {'detail': [{'msg': reason}]}
+			order = order_factory.create_order(purchase_info)
 		except OrderException as e:
 			return 500, {'detail': e.value}
 

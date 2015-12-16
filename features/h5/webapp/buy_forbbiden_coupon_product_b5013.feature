@@ -19,6 +19,7 @@ Feature:在webapp中购买禁用优惠券商品
 	"""
 
 Background:
+	Given 重置weapp的bdd环境
 	Given jobs登录系统:weapp
 	When jobs已添加支付方式:weapp
 		"""
@@ -100,7 +101,7 @@ Background:
 		}]
 		"""
 
-@todo @mall2 @promotion @promotionForbiddenCoupon @online_bug
+@mall3 @promotion @promotionForbiddenCoupon @online_bug
 Scenario:1 购买禁用优惠券商品和非禁用优惠券商品,禁用优惠券商品同时参与限时抢购
 	#非禁用优惠券商品的价格和-限时抢购带来的总优惠金额<优惠券金额(50+60-70=40)
 	Given jobs登录系统:weapp
@@ -347,7 +348,7 @@ Scenario:1 购买禁用优惠券商品和非禁用优惠券商品,禁用优惠�
 		}
 		"""
 
-@todo @mall2 @promotion @promotionForbiddenCoupon @online_bug
+@mall3 @promotion @promotionForbiddenCoupon @online_bug
 Scenario:2 购买禁用优惠券商品和非禁用优惠券商品,禁用优惠券商品同时参与会员折扣
 	#非禁用优惠券商品的价格和-会员折扣带来的总优惠金额<优惠券金额(50+60-70=40)
 	Given jobs登录系统:weapp

@@ -12,11 +12,9 @@ from business.resource.coupon_resource import CouponResource
 
 
 class OrderCouponResourceAllocator(business_model.Model):
-	"""下单使用优惠券（通用券）
+	"""下单使用优惠券
 	"""
 	__slots__ = (
-		'order',
-		'result'
 	)
 
 	def __init__(self, webapp_owner, webapp_user):
@@ -43,12 +41,8 @@ class OrderCouponResourceAllocator(business_model.Model):
 				reason = u'请输入正确的优惠券号'
 				is_success = False
 			else:
-				# 使用的优惠券非通用券
-				if coupon.is_single_coupon:
-					self.__return_empty_coupon()
-
-				# 判断通用券在订单中是否可用
-				is_success, reason = coupon.check_common_coupon_in_order(order, purchase_info, member_id)
+				# 判断优惠券在订单中是否可用
+				is_success, reason = coupon.check_coupon_in_order(order, purchase_info, member_id)
 				if is_success:
 					# 调用CouponResourceAllocator获得资源
 					coupon_resource_allocator = CouponResourceAllocator(webapp_owner, webapp_user)

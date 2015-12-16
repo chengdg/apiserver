@@ -17,13 +17,15 @@ class WZCardResourceAllocator(business_model.Service):
 	@see `def weizoom_card_pre_save_order`
 	"""
 	__slots__ = (
+		'__webapp_owner',
+		'__webapp_user',
 	)
 	
 	def __init__(self, webapp_owner, webapp_user):
 		business_model.Service.__init__(self)
 
-		self.context['webapp_owner'] = webapp_owner
-		self.context['webapp_user'] = webapp_user
+		self.__webapp_owner = webapp_owner
+		self.__webapp_user = webapp_user
 
 
 	def allocate_resource(self, order, purchase_info):
@@ -76,10 +78,10 @@ class WZCardResourceAllocator(business_model.Service):
 						wzcard.wzcard_id,
 						])
 			else:
-				# 
+				# 验证微众卡失败
 				is_success = False
 
-		wzcard_resource = WZCardResource(used_wzcards)
+		wzcard_resource = WZCardResource('wzcard', used_wzcards)
 		return is_success, reason, wzcard_resource
 
 

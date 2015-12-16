@@ -18,6 +18,7 @@ from business.resource.integral_resource import IntegralResource
 from business.mall import postage_calculator
 #from business.mall.order import Order as BussinessOrder
 import logging
+from business.mall.allocator.allocate_price_related_resource_service import AllocatePriceRelatedResourceService
 
 class PackageOrderService(business_model.Service):
 	"""
@@ -32,6 +33,16 @@ class PackageOrderService(business_model.Service):
 		self.context['webapp_owner'] = webapp_owner
 		self.context['webapp_user'] = webapp_user
 
+	def __process_product_price(self, order):
+		coupon_resource = self.type2resource.get('coupon')
+		if coupon_resource:
+			limit_product_id = self.type2resource.get('coupon').coupon.coupon_rule.limit_product_id
+			for product in order.products:
+				if product.id == limit_product_id:
+					product.price = product.original_price
+		order.product_price = sum([product.price * product.purchase_count for product in order.products])
+		return order.product_price
+
 
 	def __process_coupon(self, order, final_price):
 		"""
@@ -42,21 +53,32 @@ class PackageOrderService(business_model.Service):
 		coupon_resource = self.type2resource.get('coupon')
 		if coupon_resource:
 			#order.db_model.coupon_id = coupon_resource.coupon.id
+			coupon = coupon_resource.coupon
 			order.coupon_id = coupon_resource.coupon.id
 
 			forbidden_coupon_product_price = sum([product.price * product.purchase_count for product in order.products if not product.can_use_coupon])
-			final_price -= forbidden_coupon_product_price
+			# final_price -= forbidden_coupon_product_price
 			# 优惠券面额
+
+
+			if coupon.is_single_coupon:
+				limit_product_id = coupon.coupon_rule.limit_product_id
+				coupon_can_deduct_money = sum([product.price * product.purchase_count for product in order.products if product.id == limit_product_id])
+			else:
+				coupon_can_deduct_money = sum([product.price * product.purchase_count for product in order.products if product.can_use_coupon])
+
+
+
 			coupon_denomination = coupon_resource.money
-			if final_price < coupon_denomination:
+			if coupon_can_deduct_money < coupon_denomination:
 				#order.db_model.coupon_money = final_price
-				order.coupon_money = final_price
-				final_price = 0
+				order.coupon_money = coupon_can_deduct_money
+				# final_price = 0
 			else:
 				#order.db_model.coupon_money = coupon_denomination
 				order.coupon_money = coupon_denomination
-				final_price -= coupon_denomination
-			final_price += forbidden_coupon_product_price
+			final_price -= order.coupon_money
+			# final_price += forbidden_coupon_product_price
 		logging.info("`final_price` in __process_coupon(): {}".format(final_price))
 		return final_price
 
@@ -119,13 +141,21 @@ class PackageOrderService(business_model.Service):
 
 		@todo 待实现
 		"""
-		return []
+		webapp_owner = self.context['webapp_owner']
+		webapp_user = self.context['webapp_user']
+
+		allocate_price_related_resource_service = AllocatePriceRelatedResourceService(webapp_owner, webapp_user)
+		is_success, reasons, price_related_resources = allocate_price_related_resource_service.allocate_resource_for(order, purchase_info)
+		logging.info("in __allocate_price_related_resource, price_related_resources: {}".format(price_related_resources))
+		return price_related_resources
 
 
 	def __adjust_order_price(self, order, price_related_resources, purchase_info):
 		"""
 		再次调整订单价格（比如微众卡支付过后调整）
 		"""
+		type2resource = dict([ (resource.type, resource) for resource in price_related_resources ])
+		logging.info("in __adjust_order_price,  type2resource: {}".format(type2resource))
 		return order
 
 
@@ -139,14 +169,14 @@ class PackageOrderService(business_model.Service):
 		@return price_related_resources
 		"""
 
-
 		# 读取resources中的信息
 		# TODO: 如果有多个resource有同一个type呢？
 		self.type2resource = dict([(resource.type, resource) for resource in price_free_resources])
 
-		# 处理通用券 todo 适配单品券
-		order.product_price = sum([product.price * product.purchase_count for product in order.products])
-		final_price = order.product_price		
+
+		# 处理product_price
+		final_price = self.__process_product_price(order)
+
 
 		# 处理优惠券
 		final_price = self.__process_coupon(order, final_price)

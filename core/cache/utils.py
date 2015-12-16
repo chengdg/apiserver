@@ -62,7 +62,6 @@ def delete_cache(key):
 
 def delete_pattern(key):
 	keys = r.keys(key)
-	r.delete(*keys)
 
 def clear_db():
 	r.flushdb()
@@ -86,6 +85,9 @@ def set_cache_wrapper(key, value, timeout=0):
 			'stack': get_trace_back()
 		})
 
+def get_keys(pattern):
+	keys = r.keys(pattern)
+	return keys
 
 def get_cache_wrapper(key):
 	start = time()
@@ -143,6 +145,7 @@ def delete_cache_wrapper():
 		else:
 			return None
 	finally:
+		value = 'delete_cache_wrapper'
 		stop = time()
 		duration = stop - start
 		value_type = str(type(value)).replace('<', '&lt;').replace('>', '&gt;')
@@ -163,6 +166,7 @@ def delete_pattern_wrapper(pattern):
 		else:
 			return None
 	finally:
+		value = 'delete_pattern_wrapper'
 		stop = time()
 		duration = stop - start
 		value_type = str(type(value)).replace('<', '&lt;').replace('>', '&gt;')

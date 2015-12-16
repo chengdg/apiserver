@@ -47,6 +47,7 @@ class AccessToken(business_model.Model):
 		access_token = args['access_token']
 		if access_token.find('=') > -1 or access_token.find('+') > -1 or access_token.find('@') > -1:
 			access_token = urllib.quote(access_token)
+
 		value = cache_util.GET_CACHE(access_token)
 		if value:
 			woid = value['woid']
@@ -82,6 +83,7 @@ class AccessToken(business_model.Model):
 		}
 		self.access_token = key
 		#TiDU-bert 修改缓存库不使用公共库
+		key = "access_token" + key
 		try:
 			cache_util.SET_CACHE(key, value)
 			return key

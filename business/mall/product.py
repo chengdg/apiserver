@@ -297,7 +297,7 @@ class Product(business_model.Model):
 			else:
 				models = self.models
 
-			if len(models) == 0:
+			if not models or len(models) == 0:
 				context['total_stocks'] = 0
 				return context['total_stocks']
 			is_dict = (type(models[0]) == dict)
@@ -673,7 +673,7 @@ class Product(business_model.Model):
 			'sales': getattr(self, 'sales', 0),
 			'is_use_custom_model': self.is_use_custom_model,
 			'is_use_cod_pay_interface': self.is_use_cod_pay_interface,
-			'models': [model.to_dict() for model in self.models],
+			'models': [model.to_dict() for model in self.models] if self.models else [],
 			'used_system_model_properties': getattr(self, 'used_system_model_properties', None),
 			'total_stocks': self.total_stocks,
 			'is_sellout': self.is_sellout,

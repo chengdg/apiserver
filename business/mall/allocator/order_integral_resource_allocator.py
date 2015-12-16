@@ -166,3 +166,8 @@ class OrderIntegralResourceAllocator(business_model.Service):
 			return True, '', resource
 		else:
 			return False, reason, None
+
+
+	@property
+	def resource_type(self):
+		return "order_integral"

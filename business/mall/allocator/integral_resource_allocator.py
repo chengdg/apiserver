@@ -65,7 +65,7 @@ class IntegralResourceAllocator(business_model.Service):
 		total_integral = 0
 		integral_money = 0
 		integral_resource = IntegralResource.get({
-					'type': business_model.RESOURCE_TYPE_INTEGRAL,
+					'type': self.resource_type,
 					'webapp_user': webapp_user,
 					'webapp_owner': webapp_owner
 				})
@@ -76,3 +76,7 @@ class IntegralResourceAllocator(business_model.Service):
 			return True, '', integral_resource
 		else:
 			return False, reason, None
+
+	@property
+	def resource_type(self):
+		return business_model.RESOURCE_TYPE_INTEGRAL

@@ -15,7 +15,7 @@ class CouponResourceAllocator(business_model.Service):
 		member_id = self.context['webapp_user'].member.id
 
 		coupon_resource = CouponResource.get({
-			'type': business_model.RESOURCE_TYPE_COUPON,
+			'type': self.resource_type,
 		})
 
 		coupon_resource.coupon = coupon
@@ -44,3 +44,7 @@ class CouponResourceAllocator(business_model.Service):
 				promotion_models.CouponRule.update(remained_count=promotion_models.CouponRule.remained_count + 1)
 
 			promotion_models.CouponRule.update(use_count=promotion_models.CouponRule.use_count - 1)
+
+	@property
+	def resource_type(self):
+		return business_model.RESOURCE_TYPE_COUPON

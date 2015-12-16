@@ -59,8 +59,8 @@ class OrderFactory(business_model.Model):
 		#'products',
 		#'product_groups',
 		#'order',
-		'resources',
-		'price_info'
+		#'resources',
+		#'price_info'
 	)
 
 	@staticmethod
@@ -126,7 +126,7 @@ class OrderFactory(business_model.Model):
 			logging.info("Allocated resources successfully. count: {}".format(len(resources)))
 
 			self.context['allocator_order_resource_service'] = allocate_order_resource_service
-			self.resources = resources
+			#self.resources = resources
 			# #临时方案：TODO使用pricesevice处理
 			# for resource in resources:
 			# 	if resource.get_type() == business_model.RESOURCE_TYPE_INTEGRAL:
@@ -294,7 +294,10 @@ class OrderFactory(business_model.Model):
 
 		if len(supplier_ids) > 1:
 			# 进行拆单，生成子订单
-			order.db_model.origin_order_id = -1 # 标记有子订单
+			#order.db_model.origin_order_id = -1 
+			# 标记有子订单
+			# TODO: 改成method
+			order.origin_order_id = -1
 			for supplier in supplier_ids:
 				new_order = copy.deepcopy(order.db_model)
 				new_order.id = None

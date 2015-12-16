@@ -488,7 +488,20 @@ class Order(business_model.Model):
 		db_model.pay_interface_type = self.pay_interface_type
 		db_model.order_id = self.order_id	
 
-		db_model.supplier = self.supplier
+		if self.supplier:
+			db_model.supplier = self.supplier
+
+		db_model.origin_order_id = self.origin_order_id
+
+		db_model.coupon_id = self.coupon_id
+		db_model.coupon_money = self.coupon_money
+
+		db_model.integral = self.integral
+		db_model.integral_money = self.integral_money
+		db_model.integral_each_yuan = self.integral_each_yuan
+
+		db_model.postage = self.postage
+		db_model.promotion_saved_money = self.promotion_saved_money
 		
 		db_model.save()
 

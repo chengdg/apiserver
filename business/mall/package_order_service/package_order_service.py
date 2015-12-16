@@ -42,17 +42,20 @@ class PackageOrderService(business_model.Service):
 	def __process_coupon(self, order, final_price):
 		coupon_resource = self.type2resource.get('coupon')
 		if coupon_resource:
-			order.db_model.coupon_id = coupon_resource.coupon.id
+			#order.db_model.coupon_id = coupon_resource.coupon.id
+			order.coupon_id = coupon_resource.coupon.id
 
 			forbidden_coupon_product_price = sum([product.price * product.purchase_count for product in order.products if not product.can_use_coupon])
 			final_price -= forbidden_coupon_product_price
 			# 优惠券面额
 			coupon_denomination = coupon_resource.money
 			if final_price < coupon_denomination:
-				order.db_model.coupon_money = final_price
+				#order.db_model.coupon_money = final_price
+				order.coupon_money = final_price
 				final_price = 0
 			else:
-				order.db_model.coupon_money = coupon_denomination
+				#order.db_model.coupon_money = coupon_denomination
+				order.coupon_money = coupon_denomination
 				final_price -= coupon_denomination
 			final_price += forbidden_coupon_product_price
 		return final_price
@@ -63,9 +66,12 @@ class PackageOrderService(business_model.Service):
 		webapp_owner = self.context['webapp_owner']
 
 		if integral_resource:
-			order.db_model.integral = integral_resource.integral
-			order.db_model.integral_money = integral_resource.money
-			order.db_model.integral_each_yuan = webapp_owner.integral_strategy_settings.integral_each_yuan
+			#order.db_model.integral = integral_resource.integral
+			#order.db_model.integral_money = integral_resource.money
+			#order.db_model.integral_each_yuan = webapp_owner.integral_strategy_settings.integral_each_yuan
+			order.integral = integral_resource.integral
+			order.integral_money = integral_resource.money
+			order.integral_each_yuan = webapp_owner.integral_strategy_settings.integral_each_yuan
 			final_price -= integral_resource.money
 		return final_price		
 
@@ -73,7 +79,8 @@ class PackageOrderService(business_model.Service):
 		postage_config = self.context['webapp_owner'].system_postage_config
 		calculator = postage_calculator.PostageCalculator(postage_config)
 		postage = calculator.get_postage(order.products, purchase_info)
-		order.db_model.postage = postage
+		#order.db_model.postage = postage
+		order.postage = postage
 		final_price += postage
 
 	def __process_promotion(self, order):
@@ -83,14 +90,23 @@ class PackageOrderService(business_model.Service):
 			if promotion_result:
 				saved_money = promotion_result.saved_money
 				promotion_saved_money += saved_money
-		order.db_model.promotion_saved_money = promotion_saved_money
+		#order.db_model.promotion_saved_money = promotion_saved_money
+		order.promotion_saved_money = promotion_saved_money
 
 
 	def __allocate_price_related_resource(self, order, purchase_info):
+		"""
+		分配订单价格相关的资源
+
+		@todo 待实现
+		"""
 		return []
 
 
 	def __adjust_order_price(self, order, price_related_resources, purchase_info):
+		"""
+		再次调整订单价格（比如微众卡支付过后调整）
+		"""
 		return order
 
 

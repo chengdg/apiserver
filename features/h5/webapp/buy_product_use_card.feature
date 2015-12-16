@@ -168,7 +168,7 @@ Scenario:2 微众卡金额等于订单金额时进行支付
 		}
 		"""
 
-@todo @mall2 @mall.pay_weizoom_card @wip.victor3
+@mall3 @mall2 @mall.pay_weizoom_card @wip.victor3
 Scenario:3 微众卡金额小于订单金额时进行支付
 	bill用微众卡购买jobs的商品时,微众卡金额小于订单金额
 	1.创建订单成功，订单状态为“等待支付”
@@ -178,7 +178,7 @@ Scenario:3 微众卡金额小于订单金额时进行支付
 	When bill购买jobs的商品
 		"""
 		{
-			"pay_type": "货到付款",
+			"pay_type": "微信支付",
 			"products":[{
 				"name":"商品1",
 				"price":50,

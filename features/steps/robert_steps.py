@@ -281,8 +281,8 @@ def step_impl(context, webapp_user_name):
 	# 获取coupon规则名
 	if (actual_order['coupon_id'] != 0) and (actual_order['coupon_id'] != -1):
 		# coupon = Coupon.objects.get(id=actual_order.coupon_id)
-		coupon = steps_db_util.get_coupon_by_id(actual_order.coupon_id)
-		actual_order.coupon_id = coupon.coupon_rule.name
+		coupon = steps_db_util.get_coupon_by_id(actual_order['coupon_id'])
+		actual_order['coupon_id'] = coupon.coupon_rule.name
 
 	for product in actual_order['products']:
 		product['count'] = product['purchase_count']

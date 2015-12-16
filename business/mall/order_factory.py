@@ -29,7 +29,9 @@ from business.mall.product import Product
 import settings
 from business.decorator import cached_context_property
 from business.mall.order_products import OrderProducts
-from business.mall.order_checker import OrderChecker
+from business.mall.group_reserved_product_service import GroupReservedProductService
+from business.mall.order import Order
+from business.mall.reserved_product_repository import ReservedProductRepository
 from business.mall.allocator.allocate_order_resource_service import AllocateOrderResourceService
 from business.mall.package_order_service.package_order_service import PackageOrderService
 
@@ -88,6 +90,7 @@ class OrderFactory(business_model.Model):
 		
 	# 	return order_checker.check()
 
+<<<<<<< HEAD
 	def __create_order_id(self):
 		"""创建订单id
 
@@ -258,6 +261,7 @@ class OrderFactory(business_model.Model):
 		price_free_resources = self.__allocate_resource(order, purchase_info)
 		# TODO: to be implemented
 		return price_free_resources
+
 
 
 	'''

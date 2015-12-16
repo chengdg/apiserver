@@ -49,6 +49,7 @@ class ReservedProduct(business_model.Model):
 		'product_model_id',
 		'is_use_custom_model',
 		'weight',
+		'is_use_cod_pay_interface',
 
 		'price',
 		'original_price',
@@ -128,6 +129,7 @@ class ReservedProduct(business_model.Model):
 		self.is_use_custom_model = product.is_use_custom_model
 		self.shopping_cart_id = product_info.get('shopping_cart_id', 0)
 		self.integral_sale = product.integral_sale
+		self.is_use_cod_pay_interface = product.is_use_cod_pay_interface
 
 		self.model_name = product_info['model_name']
 		self.expected_promotion_id = product_info.get('expected_promotion_id', 0)
@@ -232,6 +234,17 @@ class ReservedProduct(business_model.Model):
 		if self.promotion.type_name == 'flash_sale':
 			#限时抢购，修改已预订商品购买价
 			self.price = self.promotion.promotion_price
+
+	def use_product_coupon(self, coupon):
+		"""
+		使用针对商品的优惠券(单品券)
+
+		Parameters
+			[in] coupon: 单品券的Coupon对象
+		"""
+		self.disable_discount()
+		#在原价基础上应用单品券
+		self.price = self.price - coupon.money
 
 	@cached_context_property
 	def __current_model(self):

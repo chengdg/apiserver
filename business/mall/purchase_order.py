@@ -98,9 +98,6 @@ class PurchaseOrder(business_model.Model):
 		#订单运费由前台计算
 		self.postage = 0.0
 
-		#支付方式
-		self.pay_interfaces = webapp_owner.pay_interfaces
-
 		#按促销进行product分组
 		group_reserved_product_service = GroupReservedProductService.get(webapp_owner, webapp_user)
 		self.promotion_product_groups = group_reserved_product_service.group_product_by_promotion(self.products)
@@ -112,6 +109,17 @@ class PurchaseOrder(business_model.Model):
 		#获取订单可用积分
 		integral_info = webapp_user.integral_info
 		self.usable_integral = self.__get_usable_integral(integral_info)
+
+		#根据商品的支付方式配置，确定支付方式集合
+		#只有所有商品都配置了"货到付款", 订单才会有"货到付款"的支付方式
+		self.pay_interfaces = webapp_owner.pay_interfaces
+		is_use_cod = True
+		for product in self.products:
+			if not product.is_use_cod_pay_interface:
+				is_use_cod = False
+				break
+		if not is_use_cod:
+			self.pay_interfaces = filter(lambda x: x['type'] != mall_models.PAY_INTERFACE_COD, self.pay_interfaces)
 
 	def __get_usable_integral(self, integral_info):
 		"""获得订单中用户可以使用的积分

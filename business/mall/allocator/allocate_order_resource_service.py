@@ -34,6 +34,7 @@ class AllocateOrderResourceService(business_model.Service):
 		OrderIntegralResourceAllocator,
 		OrderCouponResourceAllocator,
 		#WZCardResourceAllocator,
+
 	]
 
 	def __init__(self, webapp_owner, webapp_user):

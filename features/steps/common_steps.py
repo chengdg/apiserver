@@ -6,6 +6,7 @@ from behave import *
 from features.util import bdd_util
 #from features.util.helper import WAIT_SHORT_TIME
 from db.account import models as account_models
+from db.mall import models as mall_models
 from db.member import models as member_models
 
 from features.steps import weapp_steps 
@@ -39,14 +40,17 @@ def step_impl(context, user, error):
 	if not server_error_msg:
 		server_error_msg = data['detail'][0]['msg']
 
-	context.tc.assertEquals(error, context.server_error_msg)
+	context.tc.assertEquals(error, server_error_msg)
 
 @then(u"{user}获得'{product_name}'错误提示'{error}'")
 def step_impl(context, user, product_name ,error):
-	detail = context.response_json['data']['detail']
+	context.tc.assertTrue(200 != context.response.body['code'])
+	
+	data = context.response.data
+	detail = data['detail']
 	context.tc.assertEquals(error, detail[0]['short_msg'])
-	pro_id = ProductFactory(name=product_name).id
-	context.tc.assertEquals(pro_id, detail[0]['id'])
+	expected_product_id = mall_models.Product.get(name=product_name).id
+	context.tc.assertEquals(expected_product_id, detail[0]['id'])
 
 @when(u"{user}关注{mp_user_name}的公众号")
 def step_impl(context, user, mp_user_name):

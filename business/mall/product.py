@@ -202,6 +202,7 @@ class Product(business_model.Model):
 		'postage_id',
 		'postage_type',
 		'unified_postage_money',
+		'is_use_cod_pay_interface',
 		
 		#促销信息
 		'promotion',
@@ -651,6 +652,7 @@ class Product(business_model.Model):
 			'min_limit': self.min_limit,
 			'sales': getattr(self, 'sales', 0),
 			'is_use_custom_model': self.is_use_custom_model,
+			'is_use_cod_pay_interface': self.is_use_cod_pay_interface,
 			'models': [model.to_dict() for model in self.models],
 			'used_system_model_properties': getattr(self, 'used_system_model_properties', None),
 			'total_stocks': self.total_stocks,

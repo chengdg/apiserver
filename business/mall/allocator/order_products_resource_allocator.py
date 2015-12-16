@@ -145,6 +145,16 @@ class OrderProductsResourceAllocator(business_model.Service):
 
 		 	if not successed:
 		 		self.__supply_product_info_into_fail_reason(product, reason)
+		 		if reason['type'] == 'product:is_off_shelve':
+		 			if purchase_info.is_purchase_from_shopping_cart:
+		 				reason['msg'] = u'有商品已下架<br/>2秒后返回购物车<br/>请重新下单'
+		 			else:
+		 				reason['msg'] = u'商品已下架<br/>2秒后返回商城首页'
+		 		elif reason['type'] == 'product:not_enough_stocks':
+		 			if purchase_info.is_purchase_from_shopping_cart:
+		 				reason['msg'] = u'有商品库存不足<br/>2秒后返回购物车<br/>请重新下单'
+		 			else:
+		 				reason['msg'] = u'有商品库存不足，请重新下单'
 		 		self.release(resources)
 		 		break
 		 	else:

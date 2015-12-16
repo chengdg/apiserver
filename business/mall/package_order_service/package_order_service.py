@@ -18,6 +18,7 @@ from business.resource.integral_resource import IntegralResource
 from business.mall import postage_calculator
 #from business.mall.order import Order as BussinessOrder
 import logging
+from business.mall.allocator.allocate_price_related_resource_service import AllocatePriceRelatedResourceService
 
 class PackageOrderService(business_model.Service):
 	"""
@@ -119,13 +120,21 @@ class PackageOrderService(business_model.Service):
 
 		@todo 待实现
 		"""
-		return []
+		webapp_owner = self.context['webapp_owner']
+		webapp_user = self.context['webapp_user']
+
+		allocate_price_related_resource_service = AllocatePriceRelatedResourceService(webapp_owner, webapp_user)
+		is_success, reasons, price_related_resources = allocate_price_related_resource_service.allocate_resource_for(order, purchase_info)
+		logging.info("in __allocate_price_related_resource, price_related_resources: {}".format(price_related_resources))
+		return price_related_resources
 
 
 	def __adjust_order_price(self, order, price_related_resources, purchase_info):
 		"""
 		再次调整订单价格（比如微众卡支付过后调整）
 		"""
+		type2resource = dict([ (resource.type, resource) for resource in price_related_resources ])
+		logging.info("in __adjust_order_price,  type2resource: {}".format(type2resource))
 		return order
 
 
@@ -138,7 +147,6 @@ class PackageOrderService(business_model.Service):
 		@return order 订单对象(业务层)
 		@return price_related_resources
 		"""
-
 
 		# 读取resources中的信息
 		# TODO: 如果有多个resource有同一个type呢？

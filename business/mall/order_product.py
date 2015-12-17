@@ -36,7 +36,7 @@ class OrderProduct(business_model.Model):
 		'type',
 		'thumbnails_url',
 		'pic_url',
-		'member_discount',
+		'is_discounted',
 		'purchase_count',
 		'used_promotion_id',
 		'product_model_id',
@@ -60,6 +60,7 @@ class OrderProduct(business_model.Model):
 		'integral_sale_model',
 		'discount_money',
 		'supplier',
+		'is_use_integral_sale'
 	)
 
 	@staticmethod
@@ -108,6 +109,8 @@ class OrderProduct(business_model.Model):
 		self.product_model_id = '%s_%s' % (product_info['id'], product_info['model_name'])
 		self.purchase_count = product_info['count']
 		self.used_promotion_id = product_info['promotion_id']
+		self.is_discounted = (self.discount_money != 0)
+		self.is_use_integral_sale = product_info['integral_sale_id'] > 0
 
 		if product_info['promotion_result']:
 			#self.promotion = {PromotionRepository.get_promotion_from_dict_data(product_info['promotion_result'])}

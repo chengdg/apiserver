@@ -1406,7 +1406,7 @@ class Order(models.Model):
 	order_id = models.CharField(max_length=100)  # 订单号
 	webapp_user_id = models.IntegerField()  # WebApp用户的id
 	webapp_id = models.CharField(max_length=20, verbose_name='店铺ID')  # webapp,订单成交的店铺id
-	webapp_source_id = models.CharField(max_length=20, default=0, verbose_name='商品来源店铺ID')  # 订单内商品实际来源店铺的id
+	webapp_source_id = models.CharField(max_length=20, default=0, verbose_name='商品来源店铺ID')  # 订单内商品实际来源店铺的id，已废弃
 	buyer_name = models.CharField(max_length=100)  # 购买人姓名
 	buyer_tel = models.CharField(max_length=100, default='')  # 购买人电话
 	ship_name = models.CharField(max_length=100)  # 收货人姓名
@@ -1414,11 +1414,11 @@ class Order(models.Model):
 	ship_address = models.CharField(max_length=200)  # 收货人地址
 	area = models.CharField(max_length=100)
 	status = models.IntegerField(default=ORDER_STATUS_NOT)  # 订单状态
-	order_source = models.IntegerField(default=ORDER_SOURCE_OWN)  # 订单来源 0本店 1商城
+	order_source = models.IntegerField(default=ORDER_SOURCE_OWN)  # 订单来源 0本店 1商城 已废弃，新订单使用默认值兼容老数据
 	bill_type = models.IntegerField(default=ORDER_BILL_TYPE_NONE)  # 发票类型
-	bill = models.CharField(max_length=100, default='')  # 发票信息
+	bill = models.CharField(max_length=100, default='')  # 发票信息 已废弃
 	remark = models.TextField(default='')  # 备注
-	product_price = models.FloatField(default=0.0)  # 商品金额
+	product_price = models.FloatField(default=0.0)  # 商品金额（应用促销后的商品总价）
 	coupon_id = models.IntegerField(default=0)  # 优惠券id，用于支持返还优惠券
 	coupon_money = models.FloatField(default=0.0)  # 优惠券金额
 	postage = models.FloatField(default=0.0)  # 运费
@@ -1426,8 +1426,8 @@ class Order(models.Model):
 	integral_money = models.FloatField(default=0.0)  # 积分对应金额
 	member_grade = models.CharField(max_length=50, default='')  # 会员等级
 	member_grade_discount = models.IntegerField(default=100)  # 折扣
-	member_grade_discounted_money = models.FloatField(default=0.0)  # 折扣金额
-	# 最终总金额: (product_price + postage) - (coupon_money + integral_money + weizoom_card_money + promotion_saved_money + edit_money)
+	member_grade_discounted_money = models.FloatField(default=0.0)  # 折扣金额，已废弃
+	# 实付金额: final_price = (product_price + postage) - (coupon_money + integral_money + weizoom_card_money)
 	final_price = models.FloatField(default=0.0)
 	pay_interface_type = models.IntegerField(default=-1)  # 支付方式
 	express_company_name = models.CharField(max_length=50, default='')  # 物流公司名称
@@ -1441,9 +1441,9 @@ class Order(models.Model):
 	reason = models.CharField(max_length=256, default='')  # 取消订单原因
 	update_at = models.DateTimeField(auto_now=True)  # 订单信息更新时间 2014-11-11
 	weizoom_card_money = models.FloatField(default=0.0)  # 微众卡抵扣金额
-	promotion_saved_money = models.FloatField(default=0.0)  # 促销优惠金额
-	edit_money = models.FloatField(default=0.0)  # 商家修改差价
-	origin_order_id = models.IntegerField(default=0) # 原始订单id，用于微众精选拆单
+	promotion_saved_money = models.FloatField(default=0.0)  # 促销优惠金额（只在含限时抢购商品时产生）
+	edit_money = models.FloatField(default=0.0)  # 商家修改差价：final_price（计算公式得） - final_price（商家修改成的）= edit_money
+	origin_order_id = models.IntegerField(default=0) # 原始(母)订单id，用于微众精选拆单
 	# origin_order_id=-1表示有子订单，>0表示有父母订单，=0为默认数据
 	supplier = models.IntegerField(default=0) # 订单供货商，用于微众精选拆单
 	is_100 = models.BooleanField(default=True) # 是否是快递100能够查询的快递
@@ -1721,6 +1721,7 @@ class OrderHasProduct(models.Model):
 	promotion_id = models.IntegerField(default=0)  # 促销信息id
 	promotion_money = models.FloatField(default=0.0)  # 促销抵扣金额
 	grade_discounted_money = models.FloatField(default=0.0)  # 折扣金额
+	integral_sale_id = models.IntegerField(default=0) #使用的积分应用的id
 
 	class Meta(object):
 		db_table = 'mall_order_has_product'

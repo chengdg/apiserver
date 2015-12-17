@@ -73,6 +73,14 @@ class PromotionProductGroup(business_model.Model):
 			for product in self.products:
 				product.active_integral_sale_rule = self.active_integral_sale_rule
 
+	def disable_integral_sale(self):
+		"""
+		禁用积分应用
+		"""
+		self.integral_sale = None
+		for product in self.products:
+			product.disable_integral_sale()
+
 	def apply_promotion(self, purchase_info=None):
 		"""
 		执行促销活动
@@ -122,7 +130,8 @@ class PromotionProductGroup(business_model.Model):
 				'can_use_promotion': self.can_use_promotion,
 				'promotion': self.promotion.to_dict() if self.promotion else None,
 				'promotion_result': self.promotion_result.to_dict() if self.promotion_result else None,
-				'integral_sale_rule': self.integral_sale_rule
+				'integral_sale_rule': self.integral_sale_rule,
+				'active_integral_sale_rule': self.active_integral_sale_rule
 			}
 
 			product_datas = []

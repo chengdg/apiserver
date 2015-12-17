@@ -59,6 +59,16 @@ class WZCardChecker:
 				"msg": reason,
 				"short_msg": u'密码错误'
 			}
+		elif wzcard.is_expired:
+			# 密码错误
+			reason = u'微众卡已过期'
+			logging.error("{}, wzcard: {}".format(reason, wzcard))
+			return False, {
+				"is_success": False,
+				"type": 'wzcard:expired',
+				"msg": reason,
+				"short_msg": u'微众卡已过期'
+			}
 		elif not wzcard.is_activated:
 			reason = u'微众卡未激活'
 			logging.error("{}, wzcard: {}".format(reason, wzcard))	
@@ -119,8 +129,8 @@ class WZCardResourceAllocator(business_model.Service):
 		used_wzcards = []
 		total_used_amount = Decimal(0)
 
+		# 检查每单用微众卡数量
 		if len(wzcard_info_list) > MAX_WZCARD_PER_ORDER:
-			# 检查每单用微众卡数量
 			reason = {
 				"is_success": False,
 				"type": 'wzcard:exceeded',

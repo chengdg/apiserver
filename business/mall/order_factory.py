@@ -339,11 +339,10 @@ class OrderFactory(business_model.Model):
 				if purchase_info.is_purchase_from_shopping_cart:
 					for product in order.products:
 						webapp_user.shopping_cart.remove_product(product)
-		else:
-			# 创建订单失败
-			logging.error("Failed to create Order object or save the order! Release all resources. order={}".format(order))
-			self.release(price_free_resources)
-			# PackageOrderService分配资源失败，price_related_resources应为[]，不需要release
-			raise OrderException(reasons)
-		return order
+			return order
 
+		# 创建订单失败
+		logging.error("Failed to create Order object or save the order! Release all resources. order={}".format(order))
+		self.release(price_free_resources)
+		# PackageOrderService分配资源失败，price_related_resources应为[]，不需要release
+		raise OrderException(reasons)

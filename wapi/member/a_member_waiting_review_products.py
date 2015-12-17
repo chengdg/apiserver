@@ -10,7 +10,9 @@
 from core import api_resource
 from wapi.decorators import param_required
 from business.mall.order_review import OrderReview
-from business.mall.review.reviewed_products import ReviewedProducts
+from business.mall.review.waiting_review_orders import WaitingReviewOrders
+
+
 import logging
 #from core.watchdog.utils import watchdog_info
 
@@ -31,11 +33,38 @@ class AMemberWaitingReviewProducts(api_resource.ApiResource):
 		"""
 
 
-		reviewed_products = ReviewedProducts.get_for_webapp_user({
+		waiting_review_orders = WaitingReviewOrders.get_for_webapp_user({
 			'webapp_owner': args['webapp_owner'],
 			'webapp_user': args['webapp_user']
 			})
 
+		orders = waiting_review_orders.orders
+		order_list = []
+
+		for order in orders:
+			data = {}
+			data['order_is_reviewed'] = order.order_is_reviewed
+			data['order_id'] = order.order_id
+			data['created_at'] = order.created_at
+			data['id'] = order.id
+			data['final_price'] = order.final_price
+
+			products = []
+			for product in order.products:
+				product_dict = {}
+				product_dict['name'] = product.name
+				product_dict['has_picture'] = product.has_reviewed_picture
+				product_dict['model'] = product.model.to_dict()
+				product_dict['product_model_name'] = product.model_name
+				product_dict['id'] = product.id
+				product_dict['has_review'] = product.has_reviewed
+				product_dict['thumbnails_url'] = product.thumbnails_url
+				products.append(product_dict)
+			data['products'] = products
+			order_list.append(data)
+
+		order_list = sorted(order_list, key=lambda x: x['id'], reverse=False)
+
 		return {
-			'reviewed_products': reviewed_products.products
+			'orders': order_list
 		}

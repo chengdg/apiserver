@@ -81,7 +81,7 @@ Scenario:1 取消订单后,手机端订单状态为'已取消'
 		{
 			"status": "待支付",
 			"actions": ["取消订单", "支付", "修改价格"],
-			"total_price": 19.8,
+			"final_price": 19.8,
 			"ship_name": "bill",
 			"ship_tel": "13811223344",
 			"ship_area": "北京市 北京市 海淀区",

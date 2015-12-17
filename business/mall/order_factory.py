@@ -215,6 +215,9 @@ class OrderFactory(business_model.Model):
 
 		#建立<order, product>的关系
 		supplier_ids = []
+		for product_group in product_groups:
+			print product_group.integral_sale
+
 		for product in products:
 			supplier = product.supplier
 			if not supplier in supplier_ids:
@@ -231,7 +234,8 @@ class OrderFactory(business_model.Model):
 				price = product.price,
 				promotion_id = product.used_promotion_id,
 				promotion_money = product.promotion_saved_money,
-				grade_discounted_money=product.discount_money
+				grade_discounted_money=product.discount_money,
+				integral_sale_id = product.integral_sale.id if product.integral_sale else 0
 			)
 
 		if len(supplier_ids) > 1:
@@ -317,6 +321,16 @@ class OrderFactory(business_model.Model):
 		order, is_success, reason = package_order_service.package_order(order, price_free_resources, purchase_info)
 
 		if is_success: # 组装订单成功
+			#如果前端提交了积分使用信息，识别哪些商品使用了积分
+			if purchase_info.group2integralinfo:
+				group2integralinfo = purchase_info.group2integralinfo
+				for product_group in order.product_groups:
+					if not product_group.uid in group2integralinfo:
+						product_group.disable_integral_sale()
+			else:
+				for product_group in order.product_groups:
+					product_group.disable_integral_sale()
+
 			# 保存订单
 			order = self.__save_order(order)
 			# 如果需要（比如订单保存失败），释放资源

@@ -1721,6 +1721,7 @@ class OrderHasProduct(models.Model):
 	promotion_id = models.IntegerField(default=0)  # 促销信息id
 	promotion_money = models.FloatField(default=0.0)  # 促销抵扣金额
 	grade_discounted_money = models.FloatField(default=0.0)  # 折扣金额
+	integral_sale_id = models.IntegerField(default=0) #使用的积分应用的id
 
 	class Meta(object):
 		db_table = 'mall_order_has_product'

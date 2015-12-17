@@ -133,7 +133,8 @@ class OrderProducts(business_model.Model):
 				'total_price': r.total_price,
 				'promotion_money': r.promotion_money,
 				'discount_money': r.grade_discounted_money,
-				'promotion_result': promotion_result
+				'promotion_result': promotion_result,
+				'integral_sale_id': r.integral_sale_id
 			})
 		order_product_infos.sort(lambda x,y: cmp(x['rid'], y['rid']))
 	

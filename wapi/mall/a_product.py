@@ -44,4 +44,8 @@ class AProduct(api_resource.ApiResource):
 
 		result = product.to_dict(extras=['hint'])
 
+		result['webapp_owner_integral_setting'] = {
+			'integarl_per_yuan': webapp_owner.integral_strategy_settings.integral_each_yuan
+		}
+
 		return result

@@ -204,6 +204,13 @@ class ReservedProduct(business_model.Model):
 		else:
 			return webapp_owner.system_postage_config
 
+	def disable_integral_sale(self):
+		"""
+		禁用积分应用
+		"""
+		self.integral_sale = None
+		self.active_integral_sale_rule = None
+
 	# def apply_promotion(self):
 	# 	"""
 	# 	对商品应用促销规则

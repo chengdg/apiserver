@@ -60,7 +60,7 @@ class OrderProduct(business_model.Model):
 		'integral_sale_model',
 		'discount_money',
 		'supplier',
-		'is_use_integral_sale'
+		'is_use_integral_sale',
 
 		#review add by bert
 		'has_reviewed', #old has_review 

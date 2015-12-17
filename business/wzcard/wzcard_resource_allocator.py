@@ -20,7 +20,11 @@ class WZCardChecker:
 		self.wzcard_id = wzcard_id
 
 	def check(self):
-		# 检查微众卡是否可用
+		"""
+		检查微众卡是否可用
+
+		@see `wezoom_card/module_api.py`中的`check_weizoom_card`
+		"""
 		wzcard = self.wzcard
 		if not wzcard:
 			# 无此微众卡
@@ -42,12 +46,21 @@ class WZCardChecker:
 				"msg": reason,
 				"short_msg": u'密码错误'
 			}
+		elif wzcard.is_expired:
+			reason = u'微众卡已过期'
+			logging.error("{}, wzcard: {}".format(reason, wzcard))	
+			return False, {
+				"is_success": False,
+				"type": 'wzcard:expired',
+				"msg": reason,
+				"short_msg": u'卡已过期'
+			}
 		elif not wzcard.is_activated:
 			reason = u'微众卡未激活'
 			logging.error("{}, wzcard: {}".format(reason, wzcard))	
 			return False, {
 				"is_success": False,
-				"type": 'wzcard:nosuch',
+				"type": 'wzcard:notactivated',
 				"msg": reason,
 				"short_msg": u'卡未激活'
 			}

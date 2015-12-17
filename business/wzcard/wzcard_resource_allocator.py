@@ -9,19 +9,36 @@ from business.wzcard.wzcard import WZCard
 from business.wzcard.wzcard_resource import WZCardResource
 from decimal import Decimal
 
+
+# 每单用微众卡数量
+MAX_WZCARD_PER_ORDER = 10
+
 class WZCardChecker:
 	"""
 	判断微众卡能否使用
 	"""
 
-	def __init__(self, wzcard_id, password, wzcard):
-		self.wzcard = wzcard
-		self.password = password
-		self.wzcard_id = wzcard_id
+	def __init__(self):
+		self.checked_wzcard = dict()
 
-	def check(self):
-		# 检查微众卡是否可用
-		wzcard = self.wzcard
+	def check(self, wzcard_id, password, wzcard):
+		"""
+		检查微众卡是否可用
+
+		@see `wezoom_card/module_api.py`中的`check_weizoom_card`
+		"""
+		if wzcard_id in self.checked_wzcard:
+			reason = u'该微众卡已经添加'
+			logging.error("{}, wzcard: {}".format(reason, wzcard))
+			return False, {
+				"is_success": False,
+				"type": 'wzcard:duplicated',
+				"msg": reason,
+				"short_msg": u'无此卡'
+			}
+
+		self.checked_wzcard[wzcard_id] = wzcard
+
 		if not wzcard:
 			# 无此微众卡
 			reason = u'无此微众卡'
@@ -32,7 +49,7 @@ class WZCardChecker:
 				"msg": reason,
 				"short_msg": u'无此卡'
 			}
-		elif not wzcard.check_password(self.password):
+		elif not wzcard.check_password(password):
 			# 密码错误
 			reason = u'卡号或密码错误'
 			logging.error("{}, wzcard: {}".format(reason, wzcard))
@@ -101,6 +118,18 @@ class WZCardResourceAllocator(business_model.Service):
 
 		used_wzcards = []
 		total_used_amount = Decimal(0)
+
+		if len(wzcard_info_list) > MAX_WZCARD_PER_ORDER:
+			# 检查每单用微众卡数量
+			reason = {
+				"is_success": False,
+				"type": 'wzcard:exceeded',
+				"msg": u'微众卡只能使用十张',
+				"short_msg": u'卡未激活'
+			}			
+			return False, reason, None
+
+		checker = WZCardChecker()
 		# 遍历微众卡信息，扣除微众卡
 		for wzcard_info in wzcard_info_list:
 			# 根据wzcard_info获取wzcard对象
@@ -112,8 +141,7 @@ class WZCardResourceAllocator(business_model.Service):
 				})
 			logging.info("wzcard_id: {}, wzcard: {}".format(wzcard_id, wzcard))
 			
-			checker = WZCardChecker(wzcard_id, wzcard_password, wzcard)
-			is_success, reason = checker.check()
+			is_success, reason = checker.check(wzcard_id, wzcard_password, wzcard)
 
 			if is_success:
 				# 验证微众卡可用

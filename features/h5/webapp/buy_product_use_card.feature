@@ -66,7 +66,7 @@ Background:
 		"""
 	And bill关注jobs的公众号
 
-@mall3 @mall2 @wip.victor1
+@mall3 @mall2 @wip.victor1 @mall.pay_weizoom_card
 Scenario:1 微众卡金额大于订单金额时进行支付
 	bill用微众卡购买jobs的商品时,微众卡金额大于订单金额
 	1.自动扣除微众卡金额
@@ -476,7 +476,7 @@ Scenario:8 用已使用过的微众卡购买商品时
 		}
 		"""
 
-@todo @mall2 @mall.pay_weizoom_card @wip.victor9
+@mall3 @mall2 @mall.pay_weizoom_card @wip.victor9
 Scenario:9 用10张微众卡共同支付
 	1.创建订单成功，订单状态为“待支付”
 	2.扣除微众卡金额,状态为“已用完”
@@ -662,12 +662,12 @@ Scenario:9 用10张微众卡共同支付
 		}]
 		"""
 
-@todo @mall2 @mall.pay_weizoom_card
+@mall3 @mall2 @mall.pay_weizoom_card @wip.victor10
 Scenario:10 用11张微众卡共同支付
 	1.创建订单失败错误提示：只能使用10张微众卡
 	2.微众卡金额,状态不变
-	Given jobs登录系统
-	And jobs已创建微众卡
+	Given jobs登录系统:weapp
+	And jobs已创建微众卡:weapp
 		"""
 		{
 			"cards":[{
@@ -776,8 +776,8 @@ Scenario:10 用11张微众卡共同支付
 		"""
 
 	Then bill获得创建订单失败的信息'微众卡只能使用十张'
-	Given jobs登录系统
-	Then jobs能获取微众卡
+	Given jobs登录系统:weapp
+	Then jobs能获取微众卡:weapp
 		"""
 		[{
 			"id":"1000001",
@@ -837,7 +837,7 @@ Scenario:10 用11张微众卡共同支付
 		}]
 		"""
 
-@todo @mall2 @mall.pay_weizoom_card
+@mall3 @mall2 @mall.pay_weizoom_card @wip.victor11
 Scenario:11 用微众卡购买商品时，输入两张同样的卡号密码
 	bill用微众卡购买jobs的商品时,输入错误的卡号密码
 	1.创建订单失败，错误提示"该微众卡已经添加"
@@ -865,8 +865,8 @@ Scenario:11 用微众卡购买商品时，输入两张同样的卡号密码
 	Then bill获得创建订单失败的信息'该微众卡已经添加'
 
 
-	Given jobs登录系统
-	Then jobs能获取微众卡'0000001'
+	Given jobs登录系统:weapp
+	Then jobs能获取微众卡'0000001':weapp
 		"""
 		{
 			"status":"未使用",
@@ -874,7 +874,7 @@ Scenario:11 用微众卡购买商品时，输入两张同样的卡号密码
 		}
 		"""
 
-@todo @mall2 @mall @mall.pay_weizoom_card
+@mall3 @mall2 @mall @mall.pay_weizoom_card @wip.victor12
 Scenario:12 用已用完的微众卡购买商品时
 	bill用已用完的微众卡购买jobs的商品时
 	1.创建订单成功，订单状态为“等待支付”
@@ -910,8 +910,8 @@ Scenario:12 用已用完的微众卡购买商品时
 		}]
 	}
 	"""
-	Given jobs登录系统
-	Then jobs能获取微众卡'0000004'
+	Given jobs登录系统:weapp
+	Then jobs能获取微众卡'0000004':weapp
 	"""
 	{
 		"status":"已用完",

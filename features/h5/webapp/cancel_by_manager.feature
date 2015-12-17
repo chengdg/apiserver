@@ -9,8 +9,9 @@ Feature: 后台取消订单,后台可获取订单状态,取消原因
 """
 
 Background:
-	Given jobs登录系统
-	And jobs已添加商品
+	Given 重置weapp的bdd环境
+	Given jobs登录系统:weapp
+	And jobs已添加商品:weapp
 		"""
 		[{
 			"name": "商品1",
@@ -26,14 +27,22 @@ Background:
 
 		}]
 		"""
+	And jobs已添加支付方式:weapp
+	"""
+	[{
+		"type": "货到付款"
+	}, {
+		"type": "微信支付"
+	}]
+	"""
 	And bill关注jobs的公众号
 
-@todo @mall2 @mall.manager_cancel_status
+@mall3 @mall.manager_cancel_status
 Scenario:1 取消订单后,手机端订单状态为'已取消'
 	1.jobs取消订单,bill可以获取订单状态为'已取消'
 	2.bill可获取'取消原因'
 
-	Given jobs登录系统
+	Given jobs登录系统:weapp
 
 	When bill访问jobs的webapp
 	And bill购买jobs的商品
@@ -66,8 +75,8 @@ Scenario:1 取消订单后,手机端订单状态为'已取消'
 			}]
 		}
 		"""
-	Given jobs登录系统
-	Then jobs可以获得最新订单详情
+	Given jobs登录系统:weapp
+	Then jobs可以获得最新订单详情:weapp
 		"""
 		{
 			"status": "待支付",
@@ -85,8 +94,8 @@ Scenario:1 取消订单后,手机端订单状态为'已取消'
 			}]
 		}
 		"""
-	When jobs'取消'最新订单
-	Then jobs可以获得最新订单详情
+	When jobs'取消'最新订单:weapp
+	Then jobs可以获得最新订单详情:weapp
 		"""
 		{
 			"status": "已取消",

@@ -104,6 +104,7 @@ class AOrder(api_resource.ApiResource):
 			"pay_interface_name",
 			"ship_name",
 			"has_sub_order",
+			"sub_orders",
 			"product_price",
 			"member_grade_discount",
 			"supplier",

@@ -62,6 +62,7 @@ class Order(business_model.Model):
 		'promotion_saved_money',
 
 		'created_at',
+		'update_at',
 		
 		'supplier',
 		'integral_each_yuan',
@@ -175,6 +176,35 @@ class Order(business_model.Model):
 		return products
 
 	@property
+	def sub_orders(self):
+		"""拆单后的子订单信息
+		"""
+		sub_orders = []
+		if self.has_sub_order:
+			sub_order_ids = self.get_sub_order_ids()
+			for sub_order_id in sub_order_ids:
+				sub_order = Order.from_id({
+					'webapp_owner': self.context['webapp_owner'],
+					'webapp_user': self.context['webapp_user'],
+					'order_id': sub_order_id
+				})
+				for product in self.products:
+					#只要属于该子订单的商品
+					if product.supplier == sub_order.supplier:
+						sub_order.products.append(product.to_dict())
+				sub_orders.append(business_model.Model.to_dict(sub_order, 'products'))
+
+		return sub_orders
+
+	def get_sub_order_ids(self):
+		if self.has_sub_order:
+			orders = mall_models.Order.select().dj_where(origin_order_id=self.id)
+			sub_order_ids = [order.order_id for order in orders]
+			return sub_order_ids
+		else:
+			return []
+
+	@property
 	def products(self):
 		"""
 		订单中的商品，包含商品的信息
@@ -261,7 +291,7 @@ class Order(business_model.Model):
 
 			now = datetime.now()
 			if self.origin_order_id < 0:
-				mall_models.Order.update(status=mall_models.ORDER_STATUS_PAYED_NOT_SHIP, pay_interface_type=pay_interface_type, payment_time=now).dj_where(origin_order_id=order.id)
+				mall_models.Order.update(status=mall_models.ORDER_STATUS_PAYED_NOT_SHIP, pay_interface_type=pay_interface_type, payment_time=now).dj_where(origin_order_id=self.id).execute()
 
 			mall_models.Order.update(status=mall_models.ORDER_STATUS_PAYED_NOT_SHIP, pay_interface_type=pay_interface_type, payment_time=now).dj_where(order_id=self.order_id).execute()
 			self.status = mall_models.ORDER_STATUS_PAYED_NOT_SHIP
@@ -446,10 +476,28 @@ class Order(business_model.Model):
 			watchdog_warning(notify_message)
 
 	def to_dict(self, *extras):
-		properties = ['has_sub_order', 'pay_interface_name', 'status_text']
+		properties = ['has_sub_order', 'sub_orders', 'pay_interface_name', 'status_text']
 		if extras:
 			properties.extend(extras)
+
+		order_status_info = self.status
+		if self.has_sub_order:
+			for sub_order in self.sub_orders:
+				#整单的订单状态显示，如果被拆单，则显示订单里最滞后的子订单状态
+				if sub_order['status'] < order_status_info:
+					order_status_info = sub_order['status']
+
+				if sub_order['status'] == mall_models.ORDER_STATUS_PAYED_SHIPED and ((datetime.today() - sub_order['update_at']).days >= 3 or not self.express_number):
+					#已发货订单：有物流信息订单发货后3天显示确认收货按钮，没有物流的立即显示
+					if not hasattr(sub_order, 'session_data'):
+						sub_order['session_data'] = dict()
+					sub_order['session_data']['has_comfire_button'] = '1'
+
+				# sub_order['has_promotion_saved_money'] = sub_order['promotion_saved_money > 0
+				# sub_order['order_status_info'] = mall_models.STATUS2TEXT[sub_order['status']]
+
 		result = business_model.Model.to_dict(self, *properties)
+		# result['status_text'] = mall_models.STATUS2TEXT[order_status_info]
 
 		#因为self.products这个property返回的是ReservedProduct或OrderProduct的对象集合，所以需要再次处理
 		if 'products' in result:
@@ -515,6 +563,7 @@ class Order(business_model.Model):
 		logging.info("Order db_model: {}".format(db_model))
 
 		db_model.save()
+		self.id = db_model.id
 
 		return
 

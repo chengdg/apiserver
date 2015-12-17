@@ -9,6 +9,7 @@ from db.mall import models as mall_models
 from core.watchdog.utils import watchdog_fatal
 import settings
 from db.mall import models as mall_models
+from db.member.models import Member
 
 DEFAULT_DATETIME = datetime.strptime('2000-01-01', '%Y-%m-%d')
 
@@ -687,4 +688,23 @@ class RedEnvelopeRule(models.Model):
 					return True
 		return False
 
+class RedEnvelopeParticipences(models.Model):
+	"""
+	红包领用记录
+	"""
+	owner = models.ForeignKey(User)
+	coupon = models.ForeignKey(Coupon)
+	red_envelope_rule_id = models.IntegerField(default=0)
+	red_envelope_relation_id = models.IntegerField(default=0)
+	member = models.ForeignKey(Member)
+	is_new = models.BooleanField(default=False)
+	introduced_by = models.IntegerField(default=0)  #由谁引入
+	introduce_new_member = models.IntegerField(default=0) #引入新关注
+	introduce_used_number = models.IntegerField(default=0) #引入使用人数
+	introduce_received_number = models.IntegerField(default=0) #引入领取人数
+	introduce_sales_number = models.FloatField(default=0.0) #引入消费额
+	created_at = models.DateTimeField(auto_now_add=True)
+
+	class Meta(object):
+		db_table = 'mall_red_envelope_participences'
 

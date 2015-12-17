@@ -198,7 +198,7 @@ class OrderFactory(business_model.Model):
 		order.customer_message = purchase_info.customer_message
 		order.type = purchase_info.order_type
 		order.pay_interface_type = purchase_info.used_pay_interface_type
-
+		order.status = mall_models.ORDER_STATUS_NOT
 		order.order_id = self.__create_order_id()
 		return order
 
@@ -289,8 +289,7 @@ class OrderFactory(business_model.Model):
 
 		if order.final_price == 0:
 			# 优惠券或积分金额直接可支付完成，直接调用pay_order，完成支付
-			pass
-			#self.pay_order(order.order_id, True, PAY_INTERFACE_PREFERENCE)
+			order.pay(mall_models.PAY_INTERFACE_PREFERENCE)
 			# 支付后的操作
 			#mall_signals.post_pay_order.send(sender=Order, order=order, request=request)
 

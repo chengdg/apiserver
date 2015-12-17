@@ -1408,14 +1408,14 @@ class Order(models.Model):
 	webapp_id = models.CharField(max_length=20, verbose_name='店铺ID')  # webapp,订单成交的店铺id
 	webapp_source_id = models.CharField(max_length=20, default=0, verbose_name='商品来源店铺ID')  # 订单内商品实际来源店铺的id，已废弃
 	buyer_name = models.CharField(max_length=100)  # 购买人姓名
-	buyer_tel = models.CharField(max_length=100, default='')  # 购买人电话
+	buyer_tel = models.CharField(max_length=100, default='')  # 购买人电话,已废弃
 	ship_name = models.CharField(max_length=100)  # 收货人姓名
 	ship_tel = models.CharField(max_length=100)  # 收货人电话
 	ship_address = models.CharField(max_length=200)  # 收货人地址
 	area = models.CharField(max_length=100)
 	status = models.IntegerField(default=ORDER_STATUS_NOT)  # 订单状态
 	order_source = models.IntegerField(default=ORDER_SOURCE_OWN)  # 订单来源 0本店 1商城 已废弃，新订单使用默认值兼容老数据
-	bill_type = models.IntegerField(default=ORDER_BILL_TYPE_NONE)  # 发票类型
+	bill_type = models.IntegerField(default=ORDER_BILL_TYPE_NONE)  # 发票类型，已废弃
 	bill = models.CharField(max_length=100, default='')  # 发票信息 已废弃
 	remark = models.TextField(default='')  # 备注
 	product_price = models.FloatField(default=0.0)  # 商品金额（应用促销后的商品总价）
@@ -1436,7 +1436,7 @@ class Order(models.Model):
 	customer_message = models.CharField(max_length=1024)  # 商家留言
 	payment_time = models.DateTimeField(default=DEFAULT_DATETIME)  # 订单支付时间
 	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间
-	type = models.CharField(max_length=50, default=PRODUCT_DEFAULT_TYPE)  # 产品的类型
+	type = models.CharField(max_length=50, default=PRODUCT_DEFAULT_TYPE)  # 产品的类型，已废弃
 	integral_each_yuan = models.IntegerField(verbose_name='一元是多少积分', default=-1)
 	reason = models.CharField(max_length=256, default='')  # 取消订单原因
 	update_at = models.DateTimeField(auto_now=True)  # 订单信息更新时间 2014-11-11

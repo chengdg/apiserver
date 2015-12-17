@@ -1148,7 +1148,7 @@ Scenario:13 不同等级的会员购买有会员价同时使用全体券的商�
 		"""
 
 #editor: "王丽"
-@mall3 @meberGrade @coupon @todo
+@mall3 @meberGrade @coupon
 Scenario:14 【优惠券】-未到使用日期，不能使用
 	Given jobs登录系统:weapp
 	And jobs已添加了优惠券规则:weapp

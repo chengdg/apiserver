@@ -153,7 +153,7 @@ Scenario:1 购买单个禁用优惠券商品,该商品无单品券
 		}
 		"""
 
-@todo @mall2 @promotion @promotionForbiddenCoupon @todo_single_coupon
+@mall3 @promotion @promotionForbiddenCoupon @
 Scenario:2 购买单个禁用优惠券商品,该商品有单品券
 	#购买商品2,数量2,全体券1不可使用,单品券2可以使用
 	When bill访问jobs的webapp
@@ -275,7 +275,7 @@ Scenario:3 购买多个商品,包含禁用优惠券商品,不满足全体券使�
 		}
 		"""
 
-@todo @mall2 @promotion @promotionForbiddenCoupon
+@mall3 @promotion @promotionForbiddenCoupon
 Scenario:4 购买多个商品,包含禁用优惠券商品,满足全体券使用条件
 	#购买商品1,1+商品2,1+商品3,2(单品券2可以使用,全体券1可使用,但二者只能选择一张使用)
 	#选择使用全体券1
@@ -664,7 +664,7 @@ Scenario:9 购买禁用优惠券商品,该商品同时参与积分应用
 		}
 		"""
 
-@todo @mall2 @promotion @promotionForbiddenCoupon @todo_single
+@mall3 @promotion @promotionForbiddenCoupon
 Scenario:10 购买禁用优惠券多规格商品,一个商品的2个规格,总价格满足单品券使用
 	Given jobs登录系统:weapp
 	And jobs已添加商品规格:weapp

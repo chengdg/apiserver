@@ -319,7 +319,7 @@ Scenario:5 用已用完的微众卡购买商品时
 		}
 		"""
 
-@todo @mall2 @mall.pay_weizoom_card @wip.victor6
+@mall3 @mall2 @mall.pay_weizoom_card @wip.victor6
 Scenario:6 用未激活的微众卡购买商品时
 	bill用未激活的微众卡购买jobs的商品时
 	1.创建订单失败，提示"微众卡未激活"
@@ -375,7 +375,7 @@ Scenario:6 用未激活的微众卡购买商品时
 		}
 		"""
 
-@todo @mall2 @mall.pay_weizoom_card
+@mall3 @mall2 @mall.pay_weizoom_card @wip.victor7
 Scenario:7 用已过期的微众卡购买商品时
 	bill用已用过期的微众卡购买jobs的商品时
 	1.提示"微众卡已过期"
@@ -422,8 +422,8 @@ Scenario:7 用已过期的微众卡购买商品时
 			}]
 		}
 		"""
-	Given jobs登录系统
-	Then jobs能获取微众卡'0000006'
+	Given jobs登录系统:weapp
+	Then jobs能获取微众卡'0000006':weapp
 		"""
 		{
 			"status":"已过期",
@@ -431,7 +431,7 @@ Scenario:7 用已过期的微众卡购买商品时
 		}
 		"""
 
-@todo @mall2 @mall.pay_weizoom_card
+@mall3 @mall2 @mall.pay_weizoom_card @wip.victor8
 Scenario:8 用已使用过的微众卡购买商品时
 	1.创建订单成功，订单状态为“待发货”
 	2.扣除微众卡金额,状态为“已用完”
@@ -467,8 +467,8 @@ Scenario:8 用已使用过的微众卡购买商品时
 			}]
 		}
 		"""
-	Given jobs登录系统
-	Then jobs能获取微众卡'0000002'
+	Given jobs登录系统:weapp
+	Then jobs能获取微众卡'0000002':weapp
 		"""
 		{
 			"status":"已用完",
@@ -476,12 +476,12 @@ Scenario:8 用已使用过的微众卡购买商品时
 		}
 		"""
 
-@todo @mall2 @mall.pay_weizoom_card
+@todo @mall2 @mall.pay_weizoom_card @wip.victor9
 Scenario:9 用10张微众卡共同支付
 	1.创建订单成功，订单状态为“待支付”
 	2.扣除微众卡金额,状态为“已用完”
-	Given jobs登录系统
-	And jobs已创建微众卡
+	Given jobs登录系统:weapp
+	And jobs已创建微众卡:weapp
 		"""
 		{
 			"cards":[{
@@ -601,8 +601,8 @@ Scenario:9 用10张微众卡共同支付
 			}]
 		}
 		"""
-	Given jobs登录系统
-	Then jobs能获取微众卡
+	Given jobs登录系统:weapp
+	Then jobs能获取微众卡:weapp
 		"""
 		[{
 			"id":"1000001",

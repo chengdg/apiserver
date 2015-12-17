@@ -41,7 +41,6 @@ class AllocateResourceServiceBase(business_model.Service):
 		resources = []
 		is_success = True
 		reasons = []
-		reason = None
 		for allocator in self.__allocators:
 			logging.info("allocating resource using {}".format(allocator))
 			is_success, reason, resource = allocator.allocate_resource(order, purchase_info)

@@ -325,8 +325,7 @@ class OrderFactory(business_model.Model):
 		# 填充order
 		package_order_service = PackageOrderService(webapp_owner, webapp_user)
 		# 如果is_success=False, 表示分配资源失败
-		order, is_success, reason = package_order_service.package_order(order, price_free_resources, purchase_info)
-		reasons = [reason]
+		order, is_success, reasons = package_order_service.package_order(order, price_free_resources, purchase_info)
 
 		if is_success: # 组装订单成功
 			# 保存订单

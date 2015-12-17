@@ -6,7 +6,7 @@ from behave import *
 from features.util import bdd_util
 from features.util.helper import WAIT_SHORT_TIME
 import steps_db_util
-
+import logging
 
 @then(u"{user}能获取订单")
 def step_impl(context, user):
@@ -29,6 +29,7 @@ def step_impl(context, webapp_user_name, error_msg):
 	
 	data = context.response.data
 	response_msg = data.get('msg', None)
+	#logging.info("data: {}".format(data))
 	if not response_msg:
 		response_msg = data['detail'][0]['msg']
 	context.tc.assertEquals(error_msg, response_msg)

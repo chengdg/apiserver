@@ -440,6 +440,7 @@ Scenario:8 用已使用过的微众卡购买商品时
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products":[{
 				"name":"商品1",
 				"price":50,

@@ -68,7 +68,7 @@ class AOrderList(api_resource.ApiResource):
 					'name': order_product.name,
 					'purchase_count': order_product.purchase_count,
 					'thumbnails_url': order_product.thumbnails_url,
-					'model': order_product.model.to_dict()
+					'model': order_product.model.to_dict() if order_product.model else None
 				}
 				total_product_count += order_product.purchase_count
 				data['products'].append(product_data)

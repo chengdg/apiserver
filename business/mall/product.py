@@ -296,10 +296,11 @@ class Product(business_model.Model):
 		context = self.context
 		if not 'total_stocks' in context:
 			context['total_stocks'] = 0
-			if self.is_use_custom_model:
-				models = self.models[1:]
-			else:
-				models = self.models
+			models = self.models
+			# if self.is_use_custom_model:
+			# 	models = self.models[1:]
+			# else:
+			# 	models = self.models
 
 			if not models or len(models) == 0:
 				context['total_stocks'] = 0

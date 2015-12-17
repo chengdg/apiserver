@@ -164,6 +164,10 @@ class PromotionRepository(business_model.Model):
 			promotion_models.Promotion.type != promotion_models.PROMOTION_TYPE_COUPON))
 		promotions = []
 		for promotion_db_model in promotion_db_models:
+			if (promotion_db_model.status != promotion_models.PROMOTION_STATUS_STARTED) and (promotion_db_model.status != promotion_models.PROMOTION_STATUS_NOT_START):
+				#跳过已结束、已删除的促销活动
+				continue
+
 			if promotion_db_model.type == promotion_models.PROMOTION_TYPE_FLASH_SALE:
 				promotion = FlashSale(promotion_db_model)
 			if promotion_db_model.type == promotion_models.PROMOTION_TYPE_PREMIUM_SALE:

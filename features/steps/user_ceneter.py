@@ -4,6 +4,7 @@ import time
 
 from behave import *
 
+from db.mall.promotion_models import COUPONSTATUS
 from features.util import bdd_util
 from features.util.helper import WAIT_SHORT_TIME
 from db.mall import models as mall_models
@@ -98,3 +99,23 @@ def step_impl(context, key, expected):
 def step_impl(context, expected):
 	pass
 
+
+@then(u"{webapp_user_name}能获得优惠券列表")
+def step_impl(context, webapp_user_name):
+	response = context.client.get('/wapi/user_center/my_coupon/')
+	unused_coupons = response.body['data']['unused_coupons']
+	used_coupons = response.body['data']['used_coupons']
+	expired_coupons = response.body['data']['expired_coupons']
+
+	for coupon in unused_coupons + used_coupons + expired_coupons:
+		coupon['status'] = COUPONSTATUS[coupon['status']]['name']
+	unused_coupons = __sort(unused_coupons)
+	used_coupons = __sort(used_coupons)
+	expired_coupons = __sort(expired_coupons)
+	actual = {'unused_coupons': unused_coupons, 'used_coupons': used_coupons, 'expired_coupons': expired_coupons}
+	expected = json.loads(context.text)
+	bdd_util.assert_dict(expected, actual)
+
+
+def __sort(dict_array):
+	return list(reversed(sorted(dict_array, key=lambda x: x['coupon_id'])))

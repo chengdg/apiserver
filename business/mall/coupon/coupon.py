@@ -90,20 +90,11 @@ class Coupon(business_model.Model):
 				if self.coupon_rule.limit_product_id not in[product.id for product in order.products]:
 					msg ='该优惠券不能购买订单中的商品'
 				else:
-					print('11111111111111111111111111111')
-
 					price = 0
 					for p in order.products:
 						if p.id == self.coupon_rule.limit_product_id:
-							print('----------------id:',p.id)
-							# todo 确认此处取到的价格是原价
-							# p.price = p.original_price
-							print('----------------,',p.purchase_count)
-							print('----------------all',order.products)
-
 							price += p.original_price * p.purchase_count
 
-					print('33333333333333333333333333')
 					if self.coupon_rule.valid_restrictions > price:
 						# 单品券限制购物金额
 							msg = '该优惠券指定商品金额不满足使用条件'
@@ -127,3 +118,49 @@ class Coupon(business_model.Model):
 				return False, msg
 			else:
 				return True, msg
+
+	@staticmethod
+	@param_required(['webapp_user'])
+	def get_coupons_by_webapp_user(args):
+		"""
+		获取我所有的优惠券
+		过滤掉 已经作废的优惠券
+		"""
+		webapp_user = args['webapp_user']
+		#过滤已经作废的优惠券
+		coupons = list(promotion_models.Coupon.select().dj_where(member_id=webapp_user.member.id, status__lt=promotion_models.COUPON_STATUS_DISCARD).order_by(promotion_models.Coupon.provided_time.desc()))
+		coupon_rule_ids = [c.coupon_rule_id for c in coupons]
+		coupon_rules = promotion_models.CouponRule.select().dj_where(id__in=coupon_rule_ids)
+		id2coupon_rule = dict([(c.id, c) for c in coupon_rules])
+		# coupon_ids = []
+		today = datetime.today()
+		coupon_ids_need_expire = []
+		for coupon in coupons:
+			#添加优惠券使用限制
+			coupon.valid_restrictions = id2coupon_rule[coupon.coupon_rule_id].valid_restrictions
+			coupon.limit_product_id = id2coupon_rule[coupon.coupon_rule_id].limit_product_id
+			coupon.name = id2coupon_rule[coupon.coupon_rule_id].name
+			coupon.start_date = id2coupon_rule[coupon.coupon_rule_id].start_date
+			# 优惠券倒计时
+			if coupon.expired_time > today:
+				valid_days = (coupon.expired_time - today).days
+				if valid_days > 0:
+					coupon.valid_time = '%d天' % valid_days
+				else:
+					#过期时间精确到分钟
+					valid_seconds = (coupon.expired_time - today).seconds
+					if valid_seconds > 3600:
+						coupon.valid_time = '%d小时' % int(valid_seconds / 3600)
+					else:
+						coupon.valid_time = '%d分钟' % int(valid_seconds / 60)
+				coupon.valid_days = valid_days
+			else:
+				# 记录过期并且是未使用的优惠券id
+				if coupon.status == promotion_models.COUPON_STATUS_UNUSED:
+					coupon_ids_need_expire.append(coupon.id)
+					coupon.status = promotion_models.COUPON_STATUS_EXPIRED
+
+		if len(coupon_ids_need_expire) > 0:
+			promotion_models.Coupon.update(status=promotion_models.COUPON_STATUS_EXPIRED).dj_where(id__in=coupon_ids_need_expire).execute()
+
+		return coupons

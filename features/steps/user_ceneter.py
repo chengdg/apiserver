@@ -119,3 +119,51 @@ def step_impl(context, webapp_user_name):
 
 def __sort(dict_array):
 	return list(reversed(sorted(dict_array, key=lambda x: x['coupon_id'])))
+
+@then(u"{webapp_user}成功获取个人中心的'待评价'列表")
+def step_get_presonal_review_list(context, webapp_user):
+	expected = json.loads(context.text)
+	url = "/wapi/member/waiting_review_products"
+	response = context.client.get(url, {
+	})
+	# response = context.client.get(bdd_util.nginx(url), follow=True)
+	orders = response.body['data']['orders']
+	actual = []
+	if orders:
+		for order in orders:
+			logging.error(order['order_is_reviewed'])	
+			if not order['order_is_reviewed']:
+				data = {}
+				data['order_no'] = order['order_id']
+				data['products'] = []
+				for product in order['products']:
+					p_data = {}
+					p_data['product_name'] = product['name']
+
+				
+					if  product['model']['property_values']:
+						for mode in product['model']['property_values']:
+							p_data['product_model_name'] = mode['name']
+					# p_model_name = product['product_model_name']
+					# if p_model_name:
+					# 	the_model_name = ""
+					# 	for model in p_model_name:
+					# 		the_model_name += model['property_value']
+					# 	p_data['product_model_name'] = the_model_name
+					data['products'].append(p_data)
+				actual.append(data)
+	else:
+		actual.append({})
+	if not actual:
+		actual.append({})
+
+	logging.error(actual)
+	logging.error(expected)
+	bdd_util.assert_list(expected, actual)
+
+@then(u"订单'{order_no}'中'{product_name}'的评商品评价提示信息'{review_status}'")
+def step_get_user_publish_review(context, order_no, product_name, review_status):
+	pass
+	# product_review = bdd_util.get_product_review(order_no, product_name)
+	# count = len(product_review.review_detail)
+	# assert count > 200

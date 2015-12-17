@@ -5,8 +5,9 @@
 Feature: bill在webapp中进入到待评价列表，对已到货的商品进行评价,评价完成后，商品不在该列表中显示
 
 Background:
-    Given jobs登录系统
-    And jobs已添加商品规格
+    Given 重置weapp的bdd环境
+    Given jobs登录系统:weapp
+    And jobs已添加商品规格:weapp
         """
         [{
             "name": "尺寸",
@@ -19,7 +20,7 @@ Background:
         }]
         """
 
-    And jobs已添加商品
+    And jobs已添加商品:weapp
         """
         [{
             "name": "商品1",
@@ -48,7 +49,7 @@ Background:
         }]
         """
     Given bill关注jobs的公众号
-    And jobs已有的订单
+    And jobs已有的订单:weapp
         """
         [{
             "order_no":"1",
@@ -176,7 +177,7 @@ Background:
         }]
         """
 
-@todo @mall2 @person @productReview @product @review   @mall.webapp.comment.ee
+@todo @mall2 @person @productReview @product @review   @mall.webapp.comment.ee @ggy
 Scenario:1 bill 进入待评价列表，该列表中显示的是订单状态为"已完成"的订单，可以对商品进行评价
     1)在"待评价"中显示的是订单状态为"已完成"的订单；
     2）对订单中的商品评价完后（包括，文字，晒图），那么下次进入"待评价"中，则不会看到该商品
@@ -283,7 +284,7 @@ Scenario:1 bill 进入待评价列表，该列表中显示的是订单状态为"
         }]
         """
 
-@todo @mall2 @person @productReview @product @review   @mall.webapp.comment.ee
+@todo @mall2 @person @productReview @product @review   @mall.webapp.comment.ee @gyc11
 Scenario:2 同一商品，下过两个订单，不同订单对同一商品的评价不会相互影响
     例如：订单1，购买商品1，订单2，购买商品1，那么对订单1内的商品1评价完后，再次进入，还可以看到订单2的商品1，对其进行评价
 

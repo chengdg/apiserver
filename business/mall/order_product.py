@@ -60,7 +60,11 @@ class OrderProduct(business_model.Model):
 		'integral_sale_model',
 		'discount_money',
 		'supplier',
-		'is_use_integral_sale'
+		'is_use_integral_sale',
+
+		#review add by bert
+		'has_reviewed', #old has_review 
+		'has_reviewed_picture', #old  product_review_picture > order_is_reviewed
 	)
 
 	@staticmethod
@@ -85,9 +89,11 @@ class OrderProduct(business_model.Model):
 	def __init__(self, webapp_owner, webapp_user, product_info=None):
 		business_model.Model.__init__(self)
 
+		self.context['webapp_user'] = webapp_user
 		self.context['webapp_owner'] = webapp_owner
 		if product_info:
 			self.__fill_detail(webapp_user, product_info)
+
 
 	def __fill_detail(self, webapp_user, product_info):
 		"""
@@ -138,6 +144,18 @@ class OrderProduct(business_model.Model):
 		
 		self.model = model
 
+		#view
+		# if mall_models.ProductReview.select().dj_where(product_id=self.id, member_id=webapp_user.member.id).count() > 0:
+		# 	self.has_reviewed = True
+		# else:
+		# 	self.has_reviewed = False
+
+		# if mall_models.ProductReviewPicture.select().dj_where(product_review__member_id=webapp_user.member.id, product_review__product_id=self.id).count() > 0:
+		# 	self.has_reviewed_picture = True
+		# else:
+		# 	self.has_reviewed_picture = False
+
+
 	def has_premium_sale(self):
 		"""
 		订单商品是否使用了买赠促销
@@ -166,5 +184,21 @@ class OrderProduct(business_model.Model):
 		data['postage_config'] = data['_postage_config']
 		data['model'] = self.model.to_dict() if self.model else None
 		return data
+
+	# @cached_context_property
+	# def is_has_reviewed(self):
+	# 	webapp_user = self.context['webapp_user']
+	# 	if mall_models.ProductReview.select().dj_where(product_id=self.id, member_id=webapp_user.member.id).count() > 0:
+	# 		return True
+	# 	else:
+	# 		return False
+
+	# @cached_context_property
+	# def is_has_reviewed_picture(self):
+	# 	webapp_user = self.context['webapp_user']
+	# 	if mall_models.ProductReviewPicture.select().dj_where(product_review_member_id=webapp_user.member.id, product_review_product_id=self.id).count() > 0:
+	# 		return True
+	# 	else:
+	# 		return False
 
 

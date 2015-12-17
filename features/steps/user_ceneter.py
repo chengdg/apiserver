@@ -119,3 +119,34 @@ def step_impl(context, webapp_user_name):
 
 def __sort(dict_array):
 	return list(reversed(sorted(dict_array, key=lambda x: x['coupon_id'])))
+
+@then(u"{webapp_user}成功获取个人中心的'待评价'列表")
+def step_get_presonal_review_list(context, webapp_user):
+	expected = json.loads(context.text)
+	url = "/workbench/jqm/preview/?woid=%d&module=mall&model=order_review_list&action=get" % context.webapp_owner_id
+	response = context.client.get(bdd_util.nginx(url), follow=True)
+	orders = response.context['orders']
+	actual = []
+	if orders:
+		for order in orders:
+			if not order.order_is_reviewed:
+				data = {}
+				data['order_no'] = order.order_id
+				data['products'] = []
+				for product in order.products:
+					p_data = {}
+					p_data['product_name'] = product.name
+					p_model_name = product.product_model_name
+					if p_model_name:
+						the_model_name = ""
+						for model in p_model_name:
+							the_model_name += model['property_value']
+						p_data['product_model_name'] = the_model_name
+					data['products'].append(p_data)
+				actual.append(data)
+	else:
+		actual.append({})
+	if not actual:
+		actual.append({})
+	bdd_util.assert_list(expected, actual)
+

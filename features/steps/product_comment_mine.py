@@ -31,3 +31,34 @@ def step_product_review_should(context, webapp_user, text):
 	print("-"*10, 'actual', "-"*10, actual)
 	print("-"*10, 'expected', "-"*10, expected)
 	bdd_util.assert_list(expected, actual)
+
+
+@When(u"{webapp_user}完成订单'{order_code}'中'{product_name}'的评价包括'{has_picture}'")
+def step_finished_a_product_review(context, webapp_user, order_code, product_name, has_picture):
+	"""
+	完成订单评价
+
+	@see 原Weapp中`features/steps/webapp_product_review_steps.py`
+	"""
+	context_dict = json.loads(context.text)
+
+	url = '/wapi/member/review_product/?_method=put'
+	#url = '/webapp/api/project_api/call/'
+	# 原始源码在`webapp/modules/mall/request_api_util.py`中的`create_product_review()`。
+	order_has_product = bdd_util.get_order_has_product(order_code, product_name)
+	params = {}
+	params.update(context_dict)
+	params.update({
+		'woid': context.webapp_owner_id,
+		'order_id': order_has_product.order_id,
+		'product_id': order_has_product.product_id,
+		'order_has_product_id': order_has_product.id,
+	})
+	# 输入
+	#data['target_api'] = 'product_review/create'
+	#data['module'] = 'mall'
+	has_picture = context_dict.get('picture_list', None)
+	if has_picture:
+		params['picture_list'] = str(has_picture)
+	bdd_util.assert_api_call_success(context.client.post(url, params))
+	return

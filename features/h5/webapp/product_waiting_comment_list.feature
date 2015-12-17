@@ -5,7 +5,8 @@
 Feature: bill在webapp中进入到待评价列表，对已到货的商品进行评价,评价完成后，商品不在该列表中显示
 
 Background:
-    Given jobs登录系统
+    Given 重置weapp的bdd环境
+    Given jobs登录系统:weapp
     And jobs已添加商品规格
         """
         [{

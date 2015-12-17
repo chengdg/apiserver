@@ -3,15 +3,16 @@
 Feature:个人中心（我的优惠券、微众卡余额查询）
 
 Background:
-	Given jobs登录系统
-	And jobs已添加商品
+	Given 重置weapp的bdd环境
+	Given jobs登录系统:weapp
+	And jobs已添加商品:weapp
 		"""
 		[{
 			"name": "商品1",
 			"price": 200.00
 		}]
 		"""
-	And jobs已添加了优惠券规则
+	And jobs已添加了优惠券规则:weapp
 		"""
 		[{
 			"name": "单品券1",
@@ -31,13 +32,24 @@ Background:
 			"coupon_id_prefix": "coupon2_id_"
 		}]
 		"""
+	And jobs已有微众卡支付权限:weapp
+	And jobs已添加支付方式:weapp
+		"""
+		[{
+			"type": "微众卡支付"
+		}, {
+			"type": "货到付款"
+		}, {
+			"type": "微信支付"
+		}]
+		"""
 	Given bill关注jobs的公众号
 	Given tom关注jobs的公众号
 
-@personCenter @myCoupon
+@mall3 @personCenter @myCoupon
 Scenario:1 个人中心-我的优惠券
-	Given jobs登录系统
-	When jobs为会员发放优惠券
+	Given jobs登录系统:weapp
+	When jobs为会员发放优惠券:weapp
 		"""
 		{
 			"name": "单品券1",
@@ -46,30 +58,34 @@ Scenario:1 个人中心-我的优惠券
 			"coupon_ids": ["coupon1_id_1"]
 		}
 		"""
-	When jobs为会员发放优惠券
+	When jobs为会员发放优惠券:weapp
 		"""
 		{
 			"name": "全体券2",
 			"count": 1,
 			"members": ["bill"],
-			"coupon_ids": ["coupon1_id_1"]
+			"coupon_ids": ["coupon2_id_1"]
 		}
 		"""
 	When bill访问jobs的webapp
-	Then bill能获得webapp优惠券列表
+	Then bill能获得优惠券列表
 		"""
-		[{
-				"coupon_id": "coupon2_id_1",
-				"money": 100.00,
-				"status": "未使用"
-			},{
-				"coupon_id": "coupon1_id_1",
-				"money": 10.00,
-				"status": "未使用"
-		}]
+		{
+			"unused_coupons":
+				[{
+					"coupon_id": "coupon2_id_1",
+					"money": 100.00,
+					"status": "未使用"
+				},{
+					"coupon_id": "coupon1_id_1",
+					"money": 10.00,
+					"status": "未使用"
+				}],
+			"used_coupons":[],
+			"expired_coupons":[]
+		}
 		"""
 
-	When bill访问jobs的webapp
 	When bill购买jobs的商品
 		"""
 		{
@@ -84,23 +100,29 @@ Scenario:1 个人中心-我的优惠券
 	Then bill成功创建订单
 		"""
 		{
-			"status": "待发货",
+			"status": "待支付",
 			"final_price": 100.0,
 			"product_price": 200.0,
 			"coupon_money": 100.0
 		}
 		"""
-	Then bill能获得webapp优惠券列表
+	Then bill能获得优惠券列表
 		"""
-		[{
-				"coupon_id": "coupon2_id_1",
-				"money": 100.00,
-				"status": "已使用"
-			},{
-				"coupon_id": "coupon1_id_1",
-				"money": 10.00,
-				"status": "未使用"
-		}]
+		{
+			"unused_coupons":
+				[{
+					"coupon_id": "coupon1_id_1",
+					"money": 10.00,
+					"status": "未使用"
+				}],
+			"used_coupons":
+				[{
+					"coupon_id": "coupon2_id_1",
+					"money": 100.00,
+					"status": "已使用"
+				}],
+			"expired_coupons":[]
+		}
 		"""
 
 @personCenter@balance

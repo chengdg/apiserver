@@ -120,6 +120,16 @@ class OrderFactory(business_model.Model):
 
 		allocate_order_resource_service = AllocateOrderResourceService(webapp_owner, webapp_user)
 		
+		"""
+		说明：reason的格式：
+ 			{
+				"is_success": False,
+				"type": 'promotion:expired',
+				"msg": u"该活动已经过期",
+				"short_msg": u"已经过期"
+			}
+		@see `__allocation_promotion`
+		"""
 		successed, reasons, resources = allocate_order_resource_service.allocate_resource_for(order, purchase_info)
 		
 		if successed:
@@ -133,6 +143,7 @@ class OrderFactory(business_model.Model):
 			# 		self.__process_order_integral_for(resource)
 			return resources
 		else:
+			# 如果分配资源失败，则抛异常
 			allocate_order_resource_service.release(resources)
 			raise OrderException(reasons)	
 
@@ -318,7 +329,7 @@ class OrderFactory(business_model.Model):
 		# 填充order
 		package_order_service = PackageOrderService(webapp_owner, webapp_user)
 		# 如果is_success=False, 表示分配资源失败
-		order, is_success, reason = package_order_service.package_order(order, price_free_resources, purchase_info)
+		order, is_success, reasons = package_order_service.package_order(order, price_free_resources, purchase_info)
 
 		if is_success: # 组装订单成功
 			#如果前端提交了积分使用信息，识别哪些商品使用了积分
@@ -341,9 +352,10 @@ class OrderFactory(business_model.Model):
 				if purchase_info.is_purchase_from_shopping_cart:
 					for product in order.products:
 						webapp_user.shopping_cart.remove_product(product)
-		else:
-			# 创建订单失败
-			logging.error("Failed to create Order object or save the order! Release all resources. order={}".format(order))
-			self.release(price_free_resources)
-			# PackageOrderService分配资源失败，price_related_resources应为[]，不需要release
-		return order, is_success, reason
+			return order
+
+		# 创建订单失败
+		logging.error("Failed to create Order object or save the order! Release all resources. order={}".format(order))
+		self.release(price_free_resources)
+		# PackageOrderService分配资源失败，price_related_resources应为[]，不需要release
+		raise OrderException(reasons)

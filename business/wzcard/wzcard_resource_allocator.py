@@ -9,6 +9,69 @@ from business.wzcard.wzcard import WZCard
 from business.wzcard.wzcard_resource import WZCardResource
 from decimal import Decimal
 
+
+# 每单用微众卡数量
+MAX_WZCARD_PER_ORDER = 10
+
+class WZCardChecker:
+	"""
+	判断微众卡能否使用
+	"""
+
+	def __init__(self):
+		self.checked_wzcard = dict()
+
+	def check(self, wzcard_id, password, wzcard):
+		"""
+		检查微众卡是否可用
+
+		@see `wezoom_card/module_api.py`中的`check_weizoom_card`
+		"""
+		if wzcard_id in self.checked_wzcard:
+			reason = u'该微众卡已经添加'
+			logging.error("{}, wzcard: {}".format(reason, wzcard))
+			return False, {
+				"is_success": False,
+				"type": 'wzcard:duplicated',
+				"msg": reason,
+				"short_msg": u'无此卡'
+			}
+
+		self.checked_wzcard[wzcard_id] = wzcard
+
+		if not wzcard:
+			# 无此微众卡
+			reason = u'无此微众卡'
+			logging.error("{}, wzcard: {}".format(reason, wzcard))
+			return False, {
+				"is_success": False,
+				"type": 'wzcard:nosuch',
+				"msg": reason,
+				"short_msg": u'无此卡'
+			}
+		elif not wzcard.check_password(password):
+			# 密码错误
+			reason = u'卡号或密码错误'
+			logging.error("{}, wzcard: {}".format(reason, wzcard))
+			return False, {
+				"is_success": False,
+				"type": 'wzcard:nosuch',
+				"msg": reason,
+				"short_msg": u'密码错误'
+			}
+		elif not wzcard.is_activated:
+			reason = u'微众卡未激活'
+			logging.error("{}, wzcard: {}".format(reason, wzcard))	
+			return False, {
+				"is_success": False,
+				"type": 'wzcard:nosuch',
+				"msg": reason,
+				"short_msg": u'卡未激活'
+			}
+		return True, {}
+
+
+
 class WZCardResourceAllocator(business_model.Service):
 	"""
 	微众卡资源分配器
@@ -55,29 +118,32 @@ class WZCardResourceAllocator(business_model.Service):
 
 		used_wzcards = []
 		total_used_amount = Decimal(0)
+
+		if len(wzcard_info_list) > MAX_WZCARD_PER_ORDER:
+			# 检查每单用微众卡数量
+			reason = {
+				"is_success": False,
+				"type": 'wzcard:exceeded',
+				"msg": u'微众卡只能使用十张',
+				"short_msg": u'卡未激活'
+			}			
+			return False, reason, None
+
+		checker = WZCardChecker()
 		# 遍历微众卡信息，扣除微众卡
 		for wzcard_info in wzcard_info_list:
 			# 根据wzcard_info获取wzcard对象
 			wzcard_id = wzcard_info['card_name']
-			logging.info("wzcard_id: {}".format(wzcard_id))
+			wzcard_password = wzcard_info['card_pass']
 			wzcard = WZCard.from_wzcard_id({
 				"webapp_owner": webapp_owner,
 				"wzcard_id": wzcard_id,
 				})
-			logging.info("wzcard: {}".format(wzcard))
-			# 检查微众卡是否可用
-			if not wzcard:
-				# 无此微众卡
-				is_success = False
-				reason = u"No such card `%s`" % (wzcard_id)
-				logging.error("{}, wzcard: {}".format(reason, wzcard))
-			elif not wzcard.check_password(wzcard_info['card_pass']):
-				# 密码错误
-				is_success = False
-				#reason = u"Incorrect password for wzcard `%s`" % (wzcard_id)
-				reason = u'卡号或密码错误'
-				logging.error("{}, wzcard: {}".format(reason, wzcard))
-			else:
+			logging.info("wzcard_id: {}, wzcard: {}".format(wzcard_id, wzcard))
+			
+			is_success, reason = checker.check(wzcard_id, wzcard_password, wzcard)
+
+			if is_success:
 				# 验证微众卡可用
 				used_amount = wzcard.pay(order.final_price)
 				logging.info("order.final_price={}, used_amount={}".format(order.final_price, used_amount))
@@ -87,19 +153,29 @@ class WZCardResourceAllocator(business_model.Service):
 				total_used_amount += used_amount
 
 				# 保存微众卡号、使用金额
-				used_wzcards.append( (wzcard.wzcard_id,used_amount) )
+				used_wzcards.append( (wzcard, used_amount) )
+			else:
+				break
 
 		if is_success:
 			# TODO: 需要将order.final_price改成Decimal
 			order.final_price -= float(total_used_amount)
 			order.weizoom_card_money = total_used_amount
 			# 分配WZCardResource
-			wzcard_resource = WZCardResource(self.resource_type, used_wzcards)
+			wzcard_resource = WZCardResource(
+				self.resource_type,
+				[(item[0].wzcard_id, item[1]) for item in used_wzcards]
+				)
 			logging.info("total_used_amount: {}, order.final_price: {}".format(total_used_amount, order.final_price))
 		else:
-			# TODO: 释放资源
+			# 退还微众卡
+			for item in used_wzcards:
+				wzcard = item[0]
+				used_amount = item[1]
+				wzcard.refund(used_amount)
 			wzcard_resource = None
 			order.weizoom_card_money = Decimal(0)
+			
 		return is_success, reason, wzcard_resource
 
 

@@ -40,8 +40,7 @@ class AllocateResourceServiceBase(business_model.Service):
 		"""
 		resources = []
 		is_success = True
-		#reasons = []
-		reason = None
+		reasons = []
 		for allocator in self.__allocators:
 			logging.info("allocating resource using {}".format(allocator))
 			is_success, reason, resource = allocator.allocate_resource(order, purchase_info)
@@ -49,7 +48,7 @@ class AllocateResourceServiceBase(business_model.Service):
 			if not is_success:
 				if resource:
 					resources.append(resource)
-				#reasons.append(reason)
+				reasons.append(reason)
 				self.release(resources)
 				resources = []
 				break
@@ -62,7 +61,8 @@ class AllocateResourceServiceBase(business_model.Service):
 				logging.error("`resource` SHOULD NOT be None! Please check it.")
 		
 		# 如果失败，resources为[]
-		return is_success, reason, resources
+		return is_success, reasons, resources
+
 
 	def _find_allocator_by_type(self, resource_type):
 		return self.__type2allocator.get(resource_type)

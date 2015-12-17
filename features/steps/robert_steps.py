@@ -266,6 +266,10 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 
 @then(u"{webapp_user_name}成功创建订单")
 def step_impl(context, webapp_user_name):
+	__check_order(context, webapp_user_name)
+
+
+def __check_order(context, webapp_user_name):
 	order_id = context.created_order_id
 	if order_id == -1:
 		print 'Server Error: ', json.dumps(json.loads(context.response.content), indent=True)
@@ -304,6 +308,12 @@ def step_impl(context, webapp_user_name):
 		# TODO 验证订单页面操作
 		del expected['actions']
 	bdd_util.assert_dict(expected, actual_order)
+
+
+#bill支付订单成功的校验其实跟成功创建订单的校验是一样的
+@then(u"{webapp_user_name}支付订单成功")
+def step_impl(context, webapp_user_name):
+	__check_order(context, webapp_user_name)
 
 
 @then(u"{webapp_usr_name}手机端获取订单'{order_id}'")
@@ -722,6 +732,7 @@ def step_click_check_out(context, webapp_user_name):
 	#访问支付结果链接
 	if response.body['code'] == 200:
 		pay_url_info = response.data['pay_url_info']
+		context.pay_url_info = pay_url_info
 		pay_type = pay_url_info['type']
 		del pay_url_info['type']
 		if pay_type == 'cod':
@@ -784,3 +795,19 @@ def step_visit_personal_orders(context, webapp_user_name):
             order['products'].append(a_product)
         actual.append(order)
     bdd_util.assert_list(expected, actual)
+
+
+@when(u"{webapp_user_name}使用支付方式'{pay_interface_name}'进行支付")
+def step_impl(context, webapp_user_name, pay_interface_name):
+	pay_interfaces = mall_models.PayInterface.select()
+	for pay_interface in pay_interfaces:
+		if mall_models.PAYTYPE2NAME[pay_interface.type] != pay_interface_name:
+			continue
+		break
+
+	pay_url = '/wapi/pay/pay_result/?_method=put'
+	data = {
+		'pay_interface_type': pay_interface.type,
+		'order_id': context.created_order_id
+	}
+	context.client.post(pay_url, data)

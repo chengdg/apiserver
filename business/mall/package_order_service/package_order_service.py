@@ -52,33 +52,22 @@ class PackageOrderService(business_model.Service):
 		"""
 		coupon_resource = self.type2resource.get('coupon')
 		if coupon_resource:
-			#order.db_model.coupon_id = coupon_resource.coupon.id
 			coupon = coupon_resource.coupon
 			order.coupon_id = coupon_resource.coupon.id
-
-			forbidden_coupon_product_price = sum([product.price * product.purchase_count for product in order.products if not product.can_use_coupon])
-			# final_price -= forbidden_coupon_product_price
-			# 优惠券面额
-
-
 			if coupon.is_single_coupon:
 				limit_product_id = coupon.coupon_rule.limit_product_id
+				# 优惠券可以用于抵扣的金额
 				coupon_can_deduct_money = sum([product.price * product.purchase_count for product in order.products if product.id == limit_product_id])
 			else:
 				coupon_can_deduct_money = sum([product.price * product.purchase_count for product in order.products if product.can_use_coupon])
 
-
-
+			# 优惠券面额
 			coupon_denomination = coupon_resource.money
 			if coupon_can_deduct_money < coupon_denomination:
-				#order.db_model.coupon_money = final_price
 				order.coupon_money = coupon_can_deduct_money
-				# final_price = 0
 			else:
-				#order.db_model.coupon_money = coupon_denomination
 				order.coupon_money = coupon_denomination
 			final_price -= order.coupon_money
-			# final_price += forbidden_coupon_product_price
 		logging.info("`final_price` in __process_coupon(): {}".format(final_price))
 		return final_price
 
@@ -154,6 +143,7 @@ class PackageOrderService(business_model.Service):
 		"""
 		再次调整订单价格（比如微众卡支付过后调整）
 		"""
+		# TODO: 微众卡资源分配成功之后，在调整order.final_price
 		type2resource = dict([ (resource.type, resource) for resource in price_related_resources ])
 		logging.info("in __adjust_order_price,  type2resource: {}".format(type2resource))
 		return order

@@ -61,4 +61,7 @@ def step_finished_a_product_review(context, webapp_user, order_code, product_nam
 	if has_picture:
 		params['picture_list'] = str(has_picture)
 	bdd_util.assert_api_call_success(context.client.post(url, params))
-	return
+
+@then(u"{webapp_user}成功获取商品评价后'感谢评价'页面")
+def step_get_user_thanks_page(context, webapp_user):
+	pass

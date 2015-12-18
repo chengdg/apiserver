@@ -10,6 +10,7 @@ Feature: bill在webapp中对已到货的商品进行评价
 """
 
 Background:
+    Given 重置weapp的bdd环境
     Given jobs登录系统:weapp
     And jobs已添加商品:weapp
         """
@@ -80,7 +81,7 @@ Background:
         }]
         """
 
-@todo @mall2 @mall.webapp.comment.cc @guc
+@todo @mall2 @mall.webapp.comment.cc @mall3 @bert
 Scenario:1 评价完成后会有“感谢评价”页面
     1 如果还有待评价的商品那么该页面有“继续评价”和“返回首页”两个选项
     2 如果没有待评价的页面那么只有“返回首页”的选项

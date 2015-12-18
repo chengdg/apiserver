@@ -6,9 +6,10 @@ Feature:从个人中心浏览不同状态的订单列表
 	"""
 
 Background:
-	Given jobs登录系统
-	And jobs已有微众卡支付权限
-	And jobs已添加支付方式
+	Given 重置weapp的bdd环境
+	Given jobs登录系统:weapp
+	And jobs已有微众卡支付权限:weapp
+	And jobs已添加支付方式:weapp
 		"""
 		[{
 			"type": "微众卡支付"
@@ -18,7 +19,7 @@ Background:
 			"type": "微信支付"
 		}]
 		"""
-	And jobs已添加商品规格
+	And jobs已添加商品规格:weapp
 		"""
 		[{
 			"name": "颜色",
@@ -40,7 +41,7 @@ Background:
 			}]
 		}]
 		"""
-	And jobs已添加商品
+	And jobs已添加商品:weapp
 		"""
 		[{
 			"name": "商品1",
@@ -94,7 +95,7 @@ Background:
 		}
 		"""
 
-		And bill购买jobs的商品
+	And bill购买jobs的商品
 		"""
 		{
 			"order_id":"002",

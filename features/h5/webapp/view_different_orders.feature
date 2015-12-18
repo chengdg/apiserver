@@ -157,8 +157,8 @@ Scenario:1 会员通过个人中心的'待支付',浏览订单列表信息
 				"name": "商品2"
 			}],
 			"counts": 2,
-			"final_price": 40.00,
-			"actions": ["取消订单", "支付"]
+			"final_price": 40.00
+			# "actions": ["取消订单", "支付"]
 		},{
 			"status": "待支付",
 			"created_at": "今天",
@@ -166,8 +166,8 @@ Scenario:1 会员通过个人中心的'待支付',浏览订单列表信息
 				"name": "商品1"
 			}],
 			"counts": 2,
-			"final_price": 40.00,
-			"actions": ["取消订单", "支付"]
+			"final_price": 40.00
+			# "actions": ["取消订单", "支付"]
 		}]
 		"""
 
@@ -212,8 +212,8 @@ Scenario:3 会员通过个人中心的'待收货',浏览订单列表信息
 				"name": "商品4"
 			}],
 			"counts": 2,
-			"final_price": 60.00,
-			"actions": ["查看物流"]
+			"final_price": 60.00
+			# "actions": ["查看物流"]
 		}]
 		"""
 
@@ -242,8 +242,8 @@ Scenario:4 会员通过个人中心的'全部订单',浏览订单列表信息
 				"name": "商品4"
 			}],
 			"counts": 2,
-			"final_price": 60.00,
-			"actions": ["查看物流"]
+			"final_price": 60.00
+			# "actions": ["查看物流"]
 		},{
 			"status": "待发货",
 			"created_at": "今天",
@@ -264,8 +264,8 @@ Scenario:4 会员通过个人中心的'全部订单',浏览订单列表信息
 				"name": "商品2"
 			}],
 			"counts": 2,
-			"final_price": 40.00,
-			"actions": ["取消订单", "支付"]
+			"final_price": 40.00
+			# "actions": ["取消订单", "支付"]
 		},{
 			"status": "待支付",
 			"created_at": "今天",
@@ -274,8 +274,8 @@ Scenario:4 会员通过个人中心的'全部订单',浏览订单列表信息
 				"name": "商品1"
 			}],
 			"counts": 1,
-			"final_price": 20.00,
-			"actions": ["取消订单", "支付"]
+			"final_price": 20.00
+			# "actions": ["取消订单", "支付"]
 		}]
 		"""
 

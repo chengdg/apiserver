@@ -21,7 +21,6 @@ from wapi import wapi_utils
 from core.cache import utils as cache_util
 from db.mall import models as mall_models
 import resource
-from core.watchdog.utils import watchdog_alert
 from business import model as business_model 
 from business.mall.product import Product
 from business.mall.order_products import OrderProducts
@@ -576,3 +575,38 @@ class Order(business_model.Model):
 		"""
 		return True
 
+
+	def update_status(self, action):
+		"""
+		更改订单状态
+
+		已知action:
+		'action' : 'pay' 支付
+		'action' : 'finish' 完成
+		'action' : 'cancel' 取消
+		'action' : 'return_pay' 退款
+		'action' : 'rship' 发货
+
+		@todo 待完整实现
+		"""
+		operator_name = u'客户'
+
+		if action == 'cancel':
+			mall_models.Order.update(status=mall_models.ORDER_STATUS_CANCEL).dj_where(id=self.id).execute()
+			# try:
+			# 	# 返回订单使用的积分
+			# 	if order.integral:
+			# 		from modules.member.models import WebAppUser
+			# 		from modules.member.integral import increase_member_integral
+			# 		member = WebAppUser.get_member_by_webapp_user_id(order.webapp_user_id)
+			# 		increase_member_integral(member, order.integral, u'取消订单 返还积分')
+			# 	# 返回订单使用的优惠劵
+			# 	if order.coupon_id:
+			# 		from market_tools.tools.coupon.util import restore_coupon
+			# 		restore_coupon(order.coupon_id)
+			# 	# 返回商品的数量
+			# 	__restore_product_stock_by_order(order)
+			# 	mall_signals.cancel_order.send(sender=Order, order=order)
+			# except :
+			# 	notify_message = u"取消订单业务处理异常，cause:\n{}".format(unicode_full_stack())
+			# 	watchdog_alert(notify_message, "mall")

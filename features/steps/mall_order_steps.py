@@ -48,3 +48,14 @@ def step_impl(context, webapp_user_name):
 
 	actual = context.response.data
 	bdd_util.assert_dict(expected, actual)
+
+
+@when(u"{webapp_user_name}取消订单'{order_id}'")
+def step_impl(context, webapp_user_name, order_id):
+	response = context.client.post('/wapi/mall/order/', {
+		'woid': context.client.woid,
+		'order_id': order_id,
+		'status': 'cancel'
+	})
+
+	context.tc.assertTrue(200 == context.response.body['code'])

@@ -90,6 +90,23 @@ class AOrder(api_resource.ApiResource):
 
 		return data
 
+	@param_required(['order_id', 'status'])
+	def post(args):
+		"""
+		更改订单状态
+		"""
+		order = Order.from_id({
+			'webapp_user': args['webapp_user'],
+			'webapp_owner': args['webapp_owner'],
+			'order_id': args['order_id']
+		})
+
+		order.update_status(args['status'])
+
+		return {
+			'success': True
+		}
+
 	@staticmethod
 	def to_dict(order):
 		order_dict = order.to_dict('latest_express_detail', 'products')

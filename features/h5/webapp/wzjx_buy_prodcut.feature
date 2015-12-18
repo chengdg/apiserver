@@ -100,7 +100,7 @@ Background:
 	And bill关注jobs的公众号
 
 
-@mall2 @buy @supplier @mall3
+@mall2 @buy @supplier @mall3 @duhao
 Scenario: 1 购买单个商品
 	jobs添加商品后
 	1. bill能在webapp中购买jobs添加的商品
@@ -158,7 +158,7 @@ Scenario: 1 购买单个商品
 		}
 		"""
 
-@mall2 @buy @supplier @mall3
+@mall2 @buy @supplier @mall3 @duhao
 Scenario: 2 购买一个供货商的多个商品
 	bill购买商品后
 	1. 能看到订单详情
@@ -263,7 +263,7 @@ Scenario: 2 购买一个供货商的多个商品
 		}]
 		"""
 
-@mall2 @buy @supplier @mall3
+@mall2 @buy @supplier @mall3 @duhao
 Scenario: 3 购买多个供货商的多个商品,使用微信支付
 	bill购买商品后，使用微信支付
 	1. 能看到订单详情
@@ -431,7 +431,7 @@ Scenario: 3 购买多个供货商的多个商品,使用微信支付
 
 	
 
-@mall2 @buy @supplier @mall3
+@mall2 @buy @supplier @mall3 @duhao
 Scenario: 4 购买多个供货商的多个商品,使用货到付款
 	bill购买商品后，使用货到付款
 	1. 能看到订单详情

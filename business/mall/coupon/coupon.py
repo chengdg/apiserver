@@ -3,10 +3,8 @@
 优惠券
 """
 from datetime import datetime
+
 from business import model as business_model
-from business.decorator import cached_context_property
-from business.mall.coupon.coupon_rule import CouponRule
-from business.mall.forbidden_coupon_product_ids import ForbiddenCouponProductIds
 from db.mall import promotion_models
 from wapi.decorators import param_required
 
@@ -76,7 +74,7 @@ class Coupon(business_model.Model):
 		获取我所有的优惠券
 		"""
 		webapp_user = args['webapp_user']
-		#过滤已经作废的优惠券
+
 		coupon_db_models = list(promotion_models.Coupon.select().dj_where(member_id=webapp_user.member.id).order_by(promotion_models.Coupon.provided_time.desc()))
 		return Coupon.__create_coupons(coupon_db_models)
 
@@ -230,7 +228,7 @@ class Coupon(business_model.Model):
 		else:
 			return True, msg
 
-	def check_coupon_in_order(self, order, purchase_info, webapp_user):
+	def check_coupon_in_order(self, order, webapp_user):
 		reserved_products = order.products
 		return self.is_can_use_for_products(webapp_user, reserved_products)
 

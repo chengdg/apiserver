@@ -140,14 +140,11 @@ class Coupon(business_model.Model):
 		检查优惠券状态
 		"""
 		msg = ''
-		print '-$-' * 20
-		print self.status
-		print '-$-' * 20
 		today = datetime.today()
 		if self.start_time > today:
 			msg = '该优惠券活动尚未开始'
 			#兼容历史数据
-			if coupon.status == promotion_models.COUPON_STATUS_USED:
+			if self.status == promotion_models.COUPON_STATUS_USED:
 				self.display_status = 'used'
 			else:
 				self.display_status = 'disable'

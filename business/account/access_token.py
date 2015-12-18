@@ -19,6 +19,7 @@ from core.exceptionutil import unicode_full_stack
 from business import model as business_model
 from utils import auth_util
 import logging
+from db.account import models as account_models
 
 class AccessToken(business_model.Model):
 	"""
@@ -48,14 +49,12 @@ class AccessToken(business_model.Model):
 		if access_token.find('=') > -1 or access_token.find('+') > -1 or access_token.find('@') > -1:
 			access_token = urllib.quote(access_token)
 
-		value = cache_util.GET_CACHE(access_token)
-		if value:
-			woid = value['woid']
-			openid = value['openid']
-			#TODO-bert 校验access_token时间有效性
-			return AccessToken(woid, openid, access_token)
-		else:
+		try:
+			db_model = account_models.AccessToken.get(access_token=access_token)
+			return AccessToken(db_model.woid, db_model.openid, access_token)
+		except :
 			return None
+		
 
 	def __init__(self, woid, openid, access_token=None):
 		business_model.Model.__init__(self)
@@ -69,32 +68,39 @@ class AccessToken(business_model.Model):
 		"""
 		if self.access_token:
 			return self.access_token
-
-		access_token = auth_util.encrypt_access_token(self.woid, self.openid)
-		key = access_token
-		today = datetime.today()
-		date_str = datetime.today().strftime('%Y-%m-%d') 
-		value = {
-			'woid': self.woid,
-			'openid': self.openid,
-			'date_str': date_str,
-			'expires_in': '100000000000',
-			'times': int(time.time())
-		}
-		self.access_token = key
-		#TiDU-bert 修改缓存库不使用公共库
-		key = "access_token" + key
 		try:
-			cache_util.SET_CACHE(key, value)
-			return key
+			db_model = account_models.AccessToken.get(woid=self.woid, openid=self.openid)
 		except:
-			try:
-				cache_util.SET_CACHE(key, value)
-				return key
-			except:
-				notify_message = u"AccessToken get_access_token cause:\n{}".format(unicode_full_stack())
-				logging.error(notify_message)
-				watchdog_error(notify_message)
-				return None
+			db_model = None
+		if db_model:
+			self.access_token = db_model.access_token
+			return self.access_token
+		else:
+			access_token = auth_util.encrypt_access_token(self.woid, self.openid)
 			
-		
+			self.access_token = access_token
+
+			try:
+				db_model = account_models.AccessToken(
+					woid=self.woid, 
+					openid=self.openid, 
+					times=str(int(time.time())),
+					access_token=access_token,
+					expires_in='100000000000'
+					).save()
+				return access_token
+			except:
+				try:
+					db_model = account_models.AccessToken(
+						woid=self.woid, 
+						openid=self.openid, 
+						times=str(int(time.time())),
+						access_token=access_token,
+						expires_in='1000000000000'
+						).save()
+					return access_token
+				except:
+					notify_message = u"AccessToken get_access_token cause:\n{}".format(unicode_full_stack())
+					logging.error(notify_message)
+					watchdog_error(notify_message)
+					return None

@@ -175,4 +175,15 @@ class TemplateGlobalNavbar(models.Model):
 			return None
 
 
+class AccessToken(models.Model):
+	"""
+		api
+	"""
+	access_token = models.CharField(max_length=256, verbose_name='access_token')
+	woid = models.CharField(max_length=100, verbose_name='woid')
+	openid = models.CharField(max_length=100, verbose_name='openid')
+	expires_in = models.CharField(max_length=100, verbose_name='openid')
+	times = models.IntegerField(default=0)
 
+	class Meta(object):
+		db_table = 'access_token'

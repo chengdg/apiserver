@@ -142,10 +142,36 @@ Background:
 			}]
 		}
 		"""
+	Given jobs登录系统:weapp
+	When jobs填写发货信息:weapp
+		"""
+		[{
+			"order_no": "004",
+			"logistics_name":"顺丰速递",
+			"number":"13013013011",
+			"logistics":true,
+			"ship_name": "bill"
+		}]
+		"""
+
+	#已取消订单
+	When bill访问jobs的webapp
+	And bill购买jobs的商品
+		"""
+		{
+			"order_id":"005",
+			"pay_type":"微信支付",
+			"products": [{
+				"name": "商品1",
+				"count": 1
+			}]
+		}
+		"""
+	When bill取消订单'005'
 
 	
 
-@personCenter @appallOrder @todo
+@personCenter @appallOrder @mall3 @duhao
 Scenario:1 会员通过个人中心的'待支付',浏览订单列表信息
 	When bill访问jobs的webapp
 	And bill访问个人中心
@@ -159,22 +185,20 @@ Scenario:1 会员通过个人中心的'待支付',浏览订单列表信息
 			}],
 			"counts": 2,
 			"final_price": 40.00
-			# "actions": ["取消订单", "支付"]
 		},{
 			"status": "待支付",
 			"created_at": "今天",
 			"products": [{
 				"name": "商品1"
 			}],
-			"counts": 2,
-			"final_price": 40.00
-			# "actions": ["取消订单", "支付"]
+			"counts": 1,
+			"final_price": 10.00
 		}]
 		"""
 
 	
 
-@personCenter @appallOrder @todo
+@personCenter @appallOrder @mall3 @duhao
 Scenario:2 会员通过个人中心的'待发货',浏览订单列表信息
 	When bill访问jobs的webapp
 	And bill访问个人中心
@@ -188,8 +212,7 @@ Scenario:2 会员通过个人中心的'待发货',浏览订单列表信息
 			},{
 				"name": "商品2"
 			},{
-				"name": "商品2",
-				"model": "黑色 M"
+				"name": "商品3"
 			}],
 			"counts": 3,
 			"final_price": 60.00
@@ -198,7 +221,7 @@ Scenario:2 会员通过个人中心的'待发货',浏览订单列表信息
 
 	
 
-@personCenter @appallOrder @todo
+@personCenter @appallOrder @mall3 @duhao
 Scenario:3 会员通过个人中心的'待收货',浏览订单列表信息
 	When bill访问jobs的webapp
 	And bill访问个人中心
@@ -214,17 +237,16 @@ Scenario:3 会员通过个人中心的'待收货',浏览订单列表信息
 			}],
 			"counts": 2,
 			"final_price": 60.00
-			# "actions": ["查看物流"]
 		}]
 		"""
 
 	
 
-@personCenter @appallOrder @todo
+@personCenter @appallOrder @mall3 @duhao
 Scenario:4 会员通过个人中心的'全部订单',浏览订单列表信息
 	When bill访问jobs的webapp
 	And bill访问个人中心
-	Then bill查看个人中心'全部订单列表'订单列表
+	Then bill查看个人中心'全部'订单列表
 		"""
 		[{
 			"status": "已取消",
@@ -244,7 +266,6 @@ Scenario:4 会员通过个人中心的'全部订单',浏览订单列表信息
 			}],
 			"counts": 2,
 			"final_price": 60.00
-			# "actions": ["查看物流"]
 		},{
 			"status": "待发货",
 			"created_at": "今天",
@@ -253,8 +274,7 @@ Scenario:4 会员通过个人中心的'全部订单',浏览订单列表信息
 			},{
 				"name": "商品2"
 			},{
-				"name": "商品2",
-				"model": "黑色 M"
+				"name": "商品3"
 			}],
 			"counts": 3,
 			"final_price": 60.00
@@ -266,7 +286,6 @@ Scenario:4 会员通过个人中心的'全部订单',浏览订单列表信息
 			}],
 			"counts": 2,
 			"final_price": 40.00
-			# "actions": ["取消订单", "支付"]
 		},{
 			"status": "待支付",
 			"created_at": "今天",
@@ -274,9 +293,7 @@ Scenario:4 会员通过个人中心的'全部订单',浏览订单列表信息
 			"products": [{
 				"name": "商品1"
 			}],
-			"counts": 1,
-			"final_price": 20.00
-			# "actions": ["取消订单", "支付"]
+			"counts": 1
 		}]
 		"""
 

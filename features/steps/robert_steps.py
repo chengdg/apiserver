@@ -768,23 +768,23 @@ def step_click_check_out(context, webapp_user_name):
 @then(u"{webapp_user_name}查看个人中心'{order_type}'订单列表")
 def step_visit_personal_orders(context, webapp_user_name, order_type):
 	if order_type == u'全部':
-		type = -1
+		status = -1
 	elif order_type == u'待支付':
-		type = 0
+		status = 0
 	elif order_type == u'待发货':
-		type = 3
+		status = 3
 	elif order_type == u'待收货':
-		type = 4
+		status = 4
 
 	expected = json.loads(context.text)
 	actual = []
 
-	url = '/wapi/mall/order_list/?woid=%d&type=%d' % (context.webapp_owner_id, type)
+	url = '/wapi/mall/order_list/?woid=%d&type=%d' % (context.webapp_owner_id, status)
 	response = context.client.get(bdd_util.nginx(url), follow=True)
 	orders = response.data['orders']
 	import datetime
 	for actual_order in orders:
-		if not actual_order['status'] != type and type != -1:
+		if actual_order['status'] != status and status != -1:
 			continue
 		order = {}
 		order['final_price'] = actual_order['final_price']

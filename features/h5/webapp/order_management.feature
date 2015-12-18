@@ -215,7 +215,7 @@ Scenario: 2 bill在下单购买jobs的商品后，又取消订单
 		}]
 		"""
 
-@mall3 @mall2 @mall.webapp @mall.pay_order @p3 @duhao
+@mall3 @mall2 @mall.webapp @mall.pay_order @p3 @duhao @dh
 Scenario: 3 bill在下单购买jobs的商品后，jobs发货方式为"不需要物流"，bill的订单状态变为"已发货"
 
 	When bill访问jobs的webapp
@@ -282,7 +282,7 @@ Scenario: 3 bill在下单购买jobs的商品后，jobs发货方式为"不需要�
 		"""
 
 	When bill访问jobs的webapp
-	Then bill查看个人中心'全部'订单列表列表
+	Then bill查看个人中心'全部'订单列表
 		"""
 		[{
 			"status": "待收货",

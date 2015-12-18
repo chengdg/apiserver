@@ -81,6 +81,15 @@ class PayInterface(business_model.Model):
 		interface = self.context['interface']
 		interface_type = interface['type']
 		webapp_owner_id = self.context['webapp_owner'].id
+
+		if order.final_price == 0:
+			return {
+				'type': 'cod',
+				'woid': webapp_owner_id,
+				'order_id': order.order_id,
+				'pay_interface_type': mall_models.PAY_INTERFACE_COD
+			}
+			
 		if mall_models.PAY_INTERFACE_ALIPAY == interface_type:
 			return '/mall/alipay/?woid={}&order_id={}&related_config_id={}'.format(webapp_owner_id, order.order_id, interface['related_config_id'])
 		elif mall_models.PAY_INTERFACE_TENPAY == interface_type:

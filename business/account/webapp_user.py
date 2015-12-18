@@ -515,3 +515,9 @@ class WebAppUser(business_model.Model):
 		return Coupon.get_coupons_by_webapp_user({
 			'webapp_user': self
 		})
+
+	@cached_context_property
+	def all_coupons(self):
+		return Coupon.get_all_coupons_by_webapp_user({
+			'webapp_user': self
+		})

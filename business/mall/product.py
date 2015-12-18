@@ -11,6 +11,7 @@ from bs4 import BeautifulSoup
 import math
 from datetime import datetime
 
+from core.exceptionutil import unicode_full_stack
 from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
@@ -37,58 +38,48 @@ class CachedProduct(object):
 		从数据库中获取商品详情
 		"""
 		def inner_func():
-			try:
-				#获取product及其model
-				product_model = mall_models.Product.get(id = product_id)
-				if product_model.owner_id != webapp_owner_id:
-					pass
-					# product.postage_id = -1
-					# product.unified_postage_money = 0
-					# product.postage_type = mall_models.POSTAGE_TYPE_UNIFIED
-				
-				#product.created_at = product.created_at.strftime("%Y-%m-%d %H:%M:%S")
+			#获取product及其model
+			product_model = mall_models.Product.get(id = product_id)
+			if product_model.owner_id != webapp_owner_id:
+				raise Exception(u'')
+				# product.postage_id = -1
+				# product.unified_postage_money = 0
+				# product.postage_type = mall_models.POSTAGE_TYPE_UNIFIED
 
-				product = Product.from_model({
-					'webapp_owner': CachedProduct.webapp_owner, 
-					'model': product_model, 
-					'fill_options': {
-						"with_price": True,
-						"with_product_model": True,
-						"with_model_property_info": True,
-						"with_image": True,
-						"with_property": True,
-						"with_product_promotion": True
-					}
-				})
+			#product.created_at = product.created_at.strftime("%Y-%m-%d %H:%M:%S")
 
-				#获取商品的评论
-				#TODO: 恢复获取评论的逻辑
-				# product_review = ProductReview.objects.filter(
-				# 							Q(product_id=product.id) &
-				# 							Q(status__in=['1', '2'])
-				# 				).order_by('-top_time', '-id')[:2]
-				# product.product_review = product_review
-				#
-				# if product_review:
-				# 	member_ids = [review.member_id for review in product_review]
-				# 	members = get_member_by_id_list(member_ids)
-				# 	member_id2member = dict([(m.id, m) for m in members])
-				# 	for review in product_review:
-				# 		if member_id2member.has_key(review.member_id):
-				# 			review.member_name = member_id2member[review.member_id].username_for_html
-				# 			review.user_icon = member_id2member[review.member_id].user_icon
-				# 		else:
-				# 			review.member_name = '*'
-			except:
-				if settings.DEBUG:
-					raise
-				else:
-					#记录日志
-					alert_message = u"获取商品记录失败,商品id: {} cause:\n{}".format(product_id, unicode_full_stack())
-					watchdog_alert(alert_message, type='WEB')
-					#返回"被删除"商品
-					product = Product()
-					product.is_deleted = True
+			product = Product.from_model({
+				'webapp_owner': CachedProduct.webapp_owner,
+				'model': product_model,
+				'fill_options': {
+					"with_price": True,
+					"with_product_model": True,
+					"with_model_property_info": True,
+					"with_image": True,
+					"with_property": True,
+					"with_product_promotion": True
+				}
+			})
+
+			#获取商品的评论
+			#TODO: 恢复获取评论的逻辑
+			# product_review = ProductReview.objects.filter(
+			# 							Q(product_id=product.id) &
+			# 							Q(status__in=['1', '2'])
+			# 				).order_by('-top_time', '-id')[:2]
+			# product.product_review = product_review
+			#
+			# if product_review:
+			# 	member_ids = [review.member_id for review in product_review]
+			# 	members = get_member_by_id_list(member_ids)
+			# 	member_id2member = dict([(m.id, m) for m in members])
+			# 	for review in product_review:
+			# 		if member_id2member.has_key(review.member_id):
+			# 			review.member_name = member_id2member[review.member_id].username_for_html
+			# 			review.user_icon = member_id2member[review.member_id].user_icon
+			# 		else:
+			# 			review.member_name = '*'
+
 
 			data = product.to_dict()
 
@@ -141,19 +132,15 @@ class CachedProduct(object):
 			if product.is_deleted:
 				return product
 
-			for product_model in product.models:
-				#获取折扣后的价格
-				if webapp_owner_id != product.owner_id and product.weshop_sync == 2:
-					product_model.price = round(product_model.price * 1.1, 2)
 		except:
-			if settings.DEBUG:
+			if settings.DEBUG and not settings.IS_UNDER_BDD:
 				raise
 			else:
 				#记录日志
 				alert_message = u"获取商品记录失败,商品id: {} cause:\n{}".format(product_id, unicode_full_stack())
 				watchdog_alert(alert_message, type='WEB')
 				#返回"被删除"商品
-				product = mall_modules.Product()
+				product = Product()
 				product.is_deleted = True
 
 		return product
@@ -210,6 +197,7 @@ class Product(business_model.Model):
 		'promotion_title',
 		'integral_sale',
 		'product_review',
+		'is_deleted'
 	)
 
 	@staticmethod

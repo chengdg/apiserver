@@ -40,12 +40,15 @@ class AProduct(api_resource.ApiResource):
 			# 'member': member,
 			'product_id': args['product_id']
 		})
-		product.apply_discount(args['webapp_user'])
+		if product.is_deleted:
+			return {'is_deleted': True}
+		else:
+			product.apply_discount(args['webapp_user'])
 
-		result = product.to_dict(extras=['hint'])
+			result = product.to_dict(extras=['hint'])
 
-		result['webapp_owner_integral_setting'] = {
-			'integarl_per_yuan': webapp_owner.integral_strategy_settings.integral_each_yuan
-		}
+			result['webapp_owner_integral_setting'] = {
+				'integarl_per_yuan': webapp_owner.integral_strategy_settings.integral_each_yuan
+			}
 
 		return result

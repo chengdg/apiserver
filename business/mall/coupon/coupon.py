@@ -35,7 +35,8 @@ class Coupon(business_model.Model):
 		'valid_restrictions',
 		'name',
 		'valid_days',
-		'valid_time'
+		'valid_time',
+		'invalid_reason'
 	)
 
 	def __init__(self, model):
@@ -52,9 +53,32 @@ class Coupon(business_model.Model):
 		coupon_id = args['coupon_id']
 		try:
 			coupon_db_model = promotion_models.Coupon.get(coupon_id=coupon_id)
-			return Coupon.from_model({'db_model': coupon_db_model})
+			coupons = Coupon.__create_coupons([coupon_db_model])
+			return coupons[0]
 		except:
 			return None
+
+	@staticmethod
+	@param_required(['webapp_user'])
+	def get_coupons_by_webapp_user(args):
+		"""
+		获取我所有的有效优惠券，过滤掉已经作废的优惠券
+		"""
+		webapp_user = args['webapp_user']
+		#过滤已经作废的优惠券
+		coupon_db_models = list(promotion_models.Coupon.select().dj_where(member_id=webapp_user.member.id, status__lt=promotion_models.COUPON_STATUS_DISCARD).order_by(promotion_models.Coupon.provided_time.desc()))
+		return Coupon.__create_coupons(coupon_db_models)
+
+	@staticmethod
+	@param_required(['webapp_user'])
+	def get_all_coupons_by_webapp_user(args):
+		"""
+		获取我所有的优惠券
+		"""
+		webapp_user = args['webapp_user']
+		#过滤已经作废的优惠券
+		coupon_db_models = list(promotion_models.Coupon.select().dj_where(member_id=webapp_user.member.id).order_by(promotion_models.Coupon.provided_time.desc()))
+		return Coupon.__create_coupons(coupon_db_models)
 
 	@staticmethod
 	@param_required(['db_model'])
@@ -63,11 +87,62 @@ class Coupon(business_model.Model):
 		coupon = Coupon(model)
 		return coupon
 
+	@staticmethod
+	def __create_coupons(coupon_db_models):
+		"""
+		基于coupon db model创建Coupon业务对象
+		"""
+		coupon_rule_ids = [c.coupon_rule_id for c in coupon_db_models]
+		coupon_rules = promotion_models.CouponRule.select().dj_where(id__in=coupon_rule_ids)
+		id2coupon_rule = dict([(c.id, c) for c in coupon_rules])
+		# coupon_ids = []
+		today = datetime.today()
+		coupon_ids_need_expire = []
+		coupons = []
+		for coupon_db_model in coupon_db_models:
+			coupon = Coupon.from_model({"db_model": coupon_db_model})
+
+			#填充与coupon rule相关数据
+			coupon_rule = id2coupon_rule[coupon_db_model.coupon_rule_id]
+			coupon.coupon_rule = coupon_rule
+			coupon.valid_restrictions = coupon_rule.valid_restrictions
+			coupon.limit_product_id = coupon_rule.limit_product_id
+			coupon.name = coupon_rule.name
+
+			#填充优惠券倒计时信息
+			if coupon_db_model.expired_time > today:
+				valid_days = (coupon_db_model.expired_time - today).days
+				if valid_days > 0:
+					coupon.valid_time = '%d天' % valid_days
+				else:
+					#过期时间精确到分钟
+					valid_seconds = (coupon_db_model.expired_time - today).seconds
+					if valid_seconds > 3600:
+						coupon.valid_time = '%d小时' % int(valid_seconds / 3600)
+					else:
+						coupon.valid_time = '%d分钟' % int(valid_seconds / 60)
+				coupon.valid_days = valid_days
+			else:
+				# 记录过期并且是未使用的优惠券id
+				if coupon.status == promotion_models.COUPON_STATUS_UNUSED:
+					coupon_ids_need_expire.append(coupon.id)
+					coupon.status = promotion_models.COUPON_STATUS_EXPIRED
+
+			coupons.append(coupon)
+
+		if len(coupon_ids_need_expire) > 0:
+			promotion_models.Coupon.update(status=promotion_models.COUPON_STATUS_EXPIRED).dj_where(id__in=coupon_ids_need_expire).execute()
+
+		return coupons
+
 	def __check_coupon_status(self, member_id=0):
 		"""
 		检查优惠券状态
 		"""
 		msg = ''
+		print '-$-' * 20
+		print self.status
+		print '-$-' * 20
 		today = datetime.today()
 		if self.start_time > today:
 			msg = '该优惠券活动尚未开始'
@@ -91,6 +166,11 @@ class Coupon(business_model.Model):
 		elif self.member_id > 0 and self.member_id != member_id:
 			msg = '该优惠券已被他人领取不能使用'
 			self.display_status = 'used'
+
+		print '-$-' * 20
+		print msg
+		print '-$-' * 20
+		self.invalid_reason = msg
 		return msg
 
 	def is_can_use_by_webapp_user(self, webapp_user):
@@ -101,8 +181,8 @@ class Coupon(business_model.Model):
 		msg = self.__check_coupon_status(member_id)
 		if msg:
 			return False
-
-		return True
+		else:
+			return True
 
 	def is_specific_product_coupon(self):
 		if self.coupon_rule.limit_product:
@@ -154,77 +234,6 @@ class Coupon(business_model.Model):
 				return False, msg
 			else:
 				return True, msg
-
-	@staticmethod
-	def __create_coupons(coupon_db_models):
-		"""
-		基于coupon db model创建Coupon业务对象
-		"""
-		coupon_rule_ids = [c.coupon_rule_id for c in coupon_db_models]
-		coupon_rules = promotion_models.CouponRule.select().dj_where(id__in=coupon_rule_ids)
-		id2coupon_rule = dict([(c.id, c) for c in coupon_rules])
-		# coupon_ids = []
-		today = datetime.today()
-		coupon_ids_need_expire = []
-		coupons = []
-		for coupon_db_model in coupon_db_models:
-			coupon = Coupon.from_model({"db_model": coupon_db_model})
-
-			#填充与coupon rule相关数据
-			coupon_rule = id2coupon_rule[coupon_db_model.coupon_rule_id]
-			coupon.coupon_rule = coupon_rule
-			coupon.valid_restrictions = coupon_rule.valid_restrictions
-			coupon.limit_product_id = coupon_rule.limit_product_id
-			coupon.name = coupon_rule.name
-
-			#填充优惠券倒计时信息
-			if coupon_db_model.expired_time > today:
-				valid_days = (coupon_db_model.expired_time - today).days
-				if valid_days > 0:
-					coupon.valid_time = '%d天' % valid_days
-				else:
-					#过期时间精确到分钟
-					valid_seconds = (coupon_db_model.expired_time - today).seconds
-					if valid_seconds > 3600:
-						coupon.valid_time = '%d小时' % int(valid_seconds / 3600)
-					else:
-						coupon.valid_time = '%d分钟' % int(valid_seconds / 60)
-				coupon.valid_days = valid_days
-			else:
-				# 记录过期并且是未使用的优惠券id
-				if coupon.status == promotion_models.COUPON_STATUS_UNUSED:
-					coupon_ids_need_expire.append(coupon.id)
-					coupon.status = promotion_models.COUPON_STATUS_EXPIRED
-
-			coupons.append(coupon)
-
-		if len(coupon_ids_need_expire) > 0:
-			promotion_models.Coupon.update(status=promotion_models.COUPON_STATUS_EXPIRED).dj_where(id__in=coupon_ids_need_expire).execute()
-
-		return coupons
-
-
-	@staticmethod
-	@param_required(['webapp_user'])
-	def get_coupons_by_webapp_user(args):
-		"""
-		获取我所有的有效优惠券，过滤掉已经作废的优惠券
-		"""
-		webapp_user = args['webapp_user']
-		#过滤已经作废的优惠券
-		coupon_db_models = list(promotion_models.Coupon.select().dj_where(member_id=webapp_user.member.id, status__lt=promotion_models.COUPON_STATUS_DISCARD).order_by(promotion_models.Coupon.provided_time.desc()))
-		return Coupon.__create_coupons(coupon_db_models)
-
-	@staticmethod
-	@param_required(['webapp_user'])
-	def get_all_coupons_by_webapp_user(args):
-		"""
-		获取我所有的优惠券
-		"""
-		webapp_user = args['webapp_user']
-		#过滤已经作废的优惠券
-		coupon_db_models = list(promotion_models.Coupon.select().dj_where(member_id=webapp_user.member.id).order_by(promotion_models.Coupon.provided_time.desc()))
-		return Coupon.__create_coupons(coupon_db_models)
 
 	def to_dict(self):
 		result = super(Coupon, self).to_dict()

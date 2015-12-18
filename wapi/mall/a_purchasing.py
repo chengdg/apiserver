@@ -11,6 +11,7 @@ from utils import dateutil as utils_dateutil
 import resource
 from business.mall.purchase_info import PurchaseInfo
 from business.mall.purchase_order import PurchaseOrder
+from business.mall.forbidden_coupon_product_ids import ForbiddenCouponProductIds
 
 
 class APurchasing(api_resource.ApiResource):
@@ -20,7 +21,7 @@ class APurchasing(api_resource.ApiResource):
 	app = 'mall'
 	resource = 'purchasing'
 
-	def __get_coupons(webapp_user, products):
+	def __get_coupons(webapp_user, products, forbidden_coupon_product_ids):
 		coupons = webapp_user.all_coupons 
 		limit_coupons = []
 		result_coupons = []
@@ -31,12 +32,15 @@ class APurchasing(api_resource.ApiResource):
 		product_ids = set()
 		total_price = 0
 		productIds2original_price = dict()
-		is_forbidden_coupon = True
+		is_all_product_forbidden_coupon = True
 		for product in products:
 			product_ids.add(product.id)
 			product_total_price = product.price * product.purchase_count
 			product_total_original_price = product.original_price * product.purchase_count
-			total_price += product_total_price
+			if not product.id in forbidden_coupon_product_ids:
+				#没有禁用优惠券的商品的金额才累计进入总价
+				total_price += product_total_price
+				is_all_product_forbidden_coupon = False
 
 			if not productIds2original_price.get(product.id):
 				productIds2original_price[product.id] = 0
@@ -54,6 +58,10 @@ class APurchasing(api_resource.ApiResource):
 						can_use_coupon = False
 				else:
 					#通用券
+					if is_all_product_forbidden_coupon:
+						#所有的商品都禁用了优惠券，通用券必须禁用
+						coupon.disable()
+						can_use_coupon = False
 					if coupon.valid_restrictions > total_price:
 						coupon.disable()
 						can_use_coupon = False
@@ -94,7 +102,10 @@ class APurchasing(api_resource.ApiResource):
 		integral_info['have_integral'] = (integral_info['count'] > 0)
 
 		#获取优惠券
-		coupons, limit_coupons = APurchasing.__get_coupons(webapp_user, order.products)
+		forbidden_coupon_product_ids = ForbiddenCouponProductIds.get_for_webapp_owner({
+			'webapp_owner': args['webapp_owner']
+		}).ids
+		coupons, limit_coupons = APurchasing.__get_coupons(webapp_user, order.products, forbidden_coupon_product_ids)
 		print '-*-' * 20
 		print coupons
 		print limit_coupons

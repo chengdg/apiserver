@@ -42,6 +42,7 @@ class APurchasing(api_resource.ApiResource):
 			product_ids.append(product.id)
 			product_total_price = product.price * product.purchase_count
 			product_total_original_price = product.original_price * product.purchase_count
+			total_price += product_total_price
 			# TODO: 去掉ProductHint的直接调用
 			# if not r_product_hint.ProductHint.is_forbidden_coupon(webapp_owner_id, product.id):
 			# 	#不是被禁用全场优惠券的商品 duhao 20150908
@@ -55,9 +56,21 @@ class APurchasing(api_resource.ApiResource):
 			if not productIds2original_price.get(product.id):
 				productIds2original_price[product.id] = 0
 			productIds2original_price[product.id] += product_total_original_price
+
 		for coupon in coupons:
 			valid = coupon.valid_restrictions
 			limit_id = coupon.limit_product_id
+
+			can_use_coupon = True
+			if not coupon.is_can_use_by_webapp_user(webapp_user):
+				can_use_coupon = False
+			elif coupon.is_single_coupon():
+				#单品券
+				product_ids.count(limit_id) == 0 or valid > productIds2original_price[limit_id]
+			elif:
+				#通用券
+				if valid > total_price:
+					can_use_coupon = False
 
 			if coupon.start_date > today:
 				#兼容历史数据
@@ -135,8 +148,8 @@ class APurchasing(api_resource.ApiResource):
 		integral_info['have_integral'] = (integral_info['count'] > 0)
 
 		#获取优惠券
-		#coupons, limit_coupons = Purchasing.__fill_coupons_for_edit_order(webapp_owner_id, webapp_user, products)
-		coupons, limit_coupons = [], []
+		coupons, limit_coupons = APurchasing.__fill_coupons_for_edit_order(webapp_owner.id, webapp_user, order.products)
+		#coupons, limit_coupons = [], []
 
 		#获取商城配置
 		mall_config = webapp_owner.mall_config

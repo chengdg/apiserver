@@ -28,6 +28,7 @@ from utils import regional_util
 from business.account.member_order_info import MemberOrderInfo
 from business.account.social_account import SocialAccount
 from business.account.integral import Integral
+from business.mall.coupon.coupon import Coupon
 
 
 class WebAppUser(business_model.Model):
@@ -504,6 +505,13 @@ class WebAppUser(business_model.Model):
 			return True
 		else:
 			return False
+
 	@cached_context_property
 	def is_binded(self):
 		return self.member.is_binded
+
+	@cached_context_property
+	def coupons(self):
+		return Coupon.get_coupons_by_webapp_user({
+			'webapp_user': self
+		})

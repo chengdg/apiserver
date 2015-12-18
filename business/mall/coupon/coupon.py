@@ -23,7 +23,9 @@ class Coupon(business_model.Model):
 		'member_id',
 		'coupon_record_id',
 		'status',
+		'display_status',
 		'coupon_id',
+		'limit_product_id',
 		'provided_time',
 		'start_time',
 		'expired_time',
@@ -55,7 +57,7 @@ class Coupon(business_model.Model):
 		coupon._init_slot_from_model(model)
 		return coupon
 
-	def check_coupon_status(self, member_id=0):
+	def __check_coupon_status(self, member_id=0):
 		"""
 		检查优惠券状态
 		"""
@@ -63,17 +65,38 @@ class Coupon(business_model.Model):
 		today = datetime.today()
 		if self.start_time > today:
 			msg = '该优惠券活动尚未开始'
+			#兼容历史数据
+			if coupon.status == promotion_models.COUPON_STATUS_USED:
+				coupon.display_status = 'used'
+			else:
+				coupon.display_status = 'disable'
 		elif self.expired_time < today or self.status == promotion_models.COUPON_STATUS_EXPIRED:
 			msg = '该优惠券已过期'
+			self.display_status = 'overdue'
 		elif self.status == promotion_models.COUPON_STATUS_Expired:
 			msg = '该优惠券已失效'
+			self.display_status = 'overdue'
 		elif self.status == promotion_models.COUPON_STATUS_DISCARD:
 			msg = '该优惠券已作废'
+			coupon.display_status = 'disable'
 		elif self.status == promotion_models.COUPON_STATUS_USED:
 			msg = '该优惠券已使用'
+			self.display_status = 'used'
 		elif self.member_id > 0 and self.member_id != member_id:
 			msg = '该优惠券已被他人领取不能使用'
+			self.display_status = 'used'
 		return msg
+
+	def is_can_use_by_webapp_user(self, webapp_user):
+		"""
+		判断webapp_user是否可以使用优惠券
+		"""
+		member_id = webapp_user.member.id if webapp_user.member else 0
+		msg = self.check_coupon_status(member_id)
+		if msg:
+			return False
+
+		return True
 
 	@cached_context_property
 	def is_single_coupon(self):
@@ -81,7 +104,7 @@ class Coupon(business_model.Model):
 			return True
 
 	def check_coupon_in_order(self, order, purchase_info, member_id):
-			msg = self.check_coupon_status(member_id)
+			msg = self.__check_coupon_status(member_id)
 			if msg:
 				return False, msg
 

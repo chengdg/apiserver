@@ -109,8 +109,8 @@ class ProductResource(business_model.Resource):
 			return False, {
 				'is_successed': False,
 				'type': 'product:is_deleted',
-				'msg': u'已删除',
-				'short_msg': u'已删除'
+				'msg': u'商品已删除',
+				'short_msg': u'商品已删除'
 			}
 
 		current_model_id = model2stock.keys()[0]
@@ -121,8 +121,8 @@ class ProductResource(business_model.Resource):
 				return False, {
 					'is_successed': False,
 					'type': 'product:sellout',
-					'msg': u'已售罄',
-					'short_msg': u'已售罄'
+					'msg': u'商品已售罄',
+					'short_msg': u'商品已售罄'
 				}
 			else:
 				return False, {

@@ -93,10 +93,12 @@ class PromotionProductGroup(business_model.Model):
 				for product in self.products:
 					product.disable_promotion()
 			else:
-				self.promotion_result = self.promotion.apply_promotion(self, purchase_info)
+				self.promotion_result = self.promotion.apply_promotion(self, purchase_info)					
 				self.promotion_saved_money = self.promotion_result.saved_money
 				for product in self.products:
 					product.set_promotion_result(self.promotion_result)
+					if self.promotion_result.need_disable_discount:
+						product.disable_discount()
 		else:
 			if purchase_info:
 				if purchase_info.group2integralinfo and (self.uid in purchase_info.group2integralinfo):

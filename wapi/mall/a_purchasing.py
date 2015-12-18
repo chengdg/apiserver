@@ -30,8 +30,10 @@ class APurchasing(api_resource.ApiResource):
 		if len(coupons) == 0:
 			return result_coupons, limit_coupons
 
+		return [], []
+
 		today = datetime.today()
-		product_ids = []
+		product_ids = set()
 		total_price = 0
 		# jz 2015-10-09
 		# productIds2price = dict()
@@ -39,7 +41,7 @@ class APurchasing(api_resource.ApiResource):
 		is_forbidden_coupon = True
 		# from resource.mall import r_product_hint
 		for product in products:
-			product_ids.append(product.id)
+			product_ids.add(product.id)
 			product_total_price = product.price * product.purchase_count
 			product_total_original_price = product.original_price * product.purchase_count
 			total_price += product_total_price
@@ -64,13 +66,15 @@ class APurchasing(api_resource.ApiResource):
 			can_use_coupon = True
 			if not coupon.is_can_use_by_webapp_user(webapp_user):
 				can_use_coupon = False
-			elif coupon.is_single_coupon():
-				#单品券
-				product_ids.count(limit_id) == 0 or valid > productIds2original_price[limit_id]
-			elif:
-				#通用券
-				if valid > total_price:
-					can_use_coupon = False
+			else:
+				if coupon.is_single_coupon():
+					#单品券
+					#product_ids.count(limit_id) == 0 or valid > productIds2original_price[limit_id]
+					pass
+				else:
+					#通用券
+					if valid > total_price:
+						can_use_coupon = False
 
 			if coupon.start_date > today:
 				#兼容历史数据

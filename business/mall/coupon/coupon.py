@@ -186,4 +186,5 @@ class Coupon(business_model.Model):
 		if len(coupon_ids_need_expire) > 0:
 			promotion_models.Coupon.update(status=promotion_models.COUPON_STATUS_EXPIRED).dj_where(id__in=coupon_ids_need_expire).execute()
 
+		coupons = [Coupon.from_model({"db_model": coupon}) for coupon in coupons]
 		return coupons

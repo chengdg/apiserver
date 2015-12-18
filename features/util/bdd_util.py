@@ -298,14 +298,15 @@ def get_order_has_product(order_code, product_name):
 	def _get_product_model_name(product_model_names):
 		if product_model_names != "standard":
 			pro_id, id = product_model_names.split(":")
-			i = mall_models.ProductModelPropertyValue.get(id=id, property_id=pro_id)
+			#i = mall_models.ProductModelPropertyValue.get(id=id)
+			i = mall_models.ProductModelPropertyValue.select().dj_where(id=id, property_id=pro_id).first()#get(id=id, property_id=pro_id)
 			return i.name
 	order = mall_models.Order.get(order_id=order_code)
 
 	# 商品是否包含规格
 	if ":" in product_name:
 		product_name, product_model_name = product_name.split(":")
-
+		
 	order_has_product_list = mall_models.OrderHasProduct.select().dj_where(order_id=order.id, product_name=product_name)
 
 	if order_has_product_list.count() == 1:

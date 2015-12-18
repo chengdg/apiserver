@@ -125,7 +125,7 @@ Scenario:1 个人中心-我的优惠券
 		}
 		"""
 
-@personCenter@balance
+@personCenter@balance @todo
 Scenario:2 个人中心-微众卡余额查询
 	Given jobs登录系统
 	And jobs设定会员积分策略

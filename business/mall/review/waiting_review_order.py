@@ -67,7 +67,7 @@ class WaitingReviewOrder(business_model.Model):
 				'order': order
 			})
 
-		order_is_reviewed = False
+		order_is_reviewed = True
 		products = order_products.products
 
 		products_list = []
@@ -75,7 +75,8 @@ class WaitingReviewOrder(business_model.Model):
 			has_reviewed_picture = False
 			has_reviewed = False
 			
-			for product_review in mall_models.ProductReview.select().dj_where(order_id=order.id, member_id=webapp_user.member.id):
+			rid = order_product.rid
+			for product_review in mall_models.ProductReview.select().dj_where(product_id=order_product.id, order_has_product_id=rid, order_id=order.id, member_id=webapp_user.member.id):
 				has_reviewed = True
 				if mall_models.ProductReviewPicture.select().dj_where(product_review=product_review).count() > 0:
 					has_reviewed_picture = True
@@ -83,8 +84,13 @@ class WaitingReviewOrder(business_model.Model):
 
 			order_product.has_reviewed_picture = has_reviewed_picture
 			order_product.has_reviewed = has_reviewed
-			if order_product.has_reviewed_picture:
-				order_is_reviewed = True
+
+			if not order_product.has_reviewed and order_is_reviewed:
+				order_is_reviewed = False
+			
+			if not order_product.has_reviewed_picture:
+				order_is_reviewed = False
+
 			products_list.append(order_product)
 
 		self.products = products_list

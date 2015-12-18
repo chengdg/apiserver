@@ -186,7 +186,7 @@ Background:
 		}]
 		"""
 
-@personCenter @appallOrder
+@personCenter @appallOrder @todo
 Scenario:1 会员通过个人中心的'待支付',浏览订单列表信息
 	When bill访问jobs的webapp
 	And bill访问个人中心
@@ -273,7 +273,7 @@ Scenario:1 会员通过个人中心的'待支付',浏览订单列表信息
 		}]
 		"""
 
-@personCenter @appallOrder
+@personCenter @appallOrder @todo
 Scenario:2 会员通过个人中心的'待发货',浏览订单列表信息
 	When bill访问jobs的webapp
 	And bill访问个人中心
@@ -315,7 +315,7 @@ Scenario:2 会员通过个人中心的'待发货',浏览订单列表信息
 		}]
 		"""
 
-@personCenter @appallOrder
+@personCenter @appallOrder @todo
 Scenario:3 会员通过个人中心的'待收货',浏览订单列表信息
 	When bill访问jobs的webapp
 	And bill访问个人中心
@@ -395,7 +395,7 @@ Scenario:3 会员通过个人中心的'待收货',浏览订单列表信息
 		}]
 		"""
 
-@personCenter @appallOrder
+@personCenter @appallOrder @todo
 Scenario:4 会员通过个人中心的'全部订单',浏览订单列表信息
 	When bill访问jobs的webapp
 	And bill访问个人中心

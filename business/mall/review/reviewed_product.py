@@ -33,12 +33,12 @@ class ReviewedProduct(business_model.Model):
 		'member_id',
 		'owner_id',
 		'review_detail',
-		'product_score',
 		'member_id',
 		'status',
 		'created_at',
 		'reviewed_product_pictures',
-		'product'
+		'product',
+		'product_score'
 	)
 
 	@staticmethod
@@ -79,10 +79,56 @@ class ReviewedProduct(business_model.Model):
 		except:
 			return None
 
+	@staticmethod
+	@param_required(['reviewed_order_id', 'product_id'])
+	def from_product_id(args):
+		"""
+		工厂对象，根据id获取ReviewedProduct业务对象
+
+		@param[in] reviewed_order_id: 订单评价id
+		@param[in] product_id: 商品id
+
+		@return ReviewedProduct业务对象
+		"""
+		product_id = args['product_id']
+		reviewed_order_id = args['reviewed_order_id']
+		try:
+			db_model = mall_models.ProductReview.get(order_review_id=reviewed_order_id, product_id=product_id)
+			return ReviewedProduct.from_model({
+				'webapp_owner': webapp_owner,
+				'model': db_model
+			})
+		except:
+			return None
+
+	@staticmethod
+	@param_required(['webapp_owner', 'order_has_product_id'])
+	def from_order_has_product_id(args):
+		"""
+		工厂对象，根据id获取ReviewedProduct业务对象
+
+		@param[in] webapp_owner: webapp_owner
+		@param[in] order_has_product_id: 订单商品r-id
+
+		@return ReviewedProduct业务对象
+		"""
+		webapp_owner = args['webapp_owner']
+		order_has_product_id = args['order_has_product_id']
+		try:
+			db_model = mall_models.ProductReview.get(order_has_product=order_has_product_id)
+			return ReviewedProduct.from_model({
+				'webapp_owner': webapp_owner,
+				'model': db_model
+			})
+		except:
+			return None
+
 	def __init__(self, webapp_owner, model):
 		business_model.Model.__init__(self)
 		self.context['db_model'] = model
 		self.context['webapp_owner'] = webapp_owner
+
+		self.product_score = model.product_score
 
 		self._get_reviewed_product_pictures()
 		self.__fill_product_info()
@@ -109,3 +155,5 @@ class ReviewedProduct(business_model.Model):
 
 			})
 		self.product = product.to_dict()
+
+

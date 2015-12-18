@@ -85,13 +85,32 @@ class ReviewProductFactory(business_model.Model):
 		logging.info("product_review={}".format(product_review.to_dict()))
 
 		picture_list = self.context['picture_list']
-		if picture_list:
-			logging.info("saving product review picture list..., picture_list=%s" % picture_list)
-			for picture in list(eval(picture_list)):
-				mall_models.ProductReviewPicture(
-					product_review=model,
-					order_has_product=self.context['order_has_product_id'],
-					att_url=picture
-				).save()
+		ReviewProductFactory.create_reviewed_product_pictures({
+			'reviewed_id': model.id,
+			'pictures': picture_list,
+			'order_has_product_id': self.context['order_has_product_id']
+			})
+		# if picture_list:
+		# 	logging.info("saving product review picture list..., picture_list=%s" % picture_list)
+		# 	for picture in list(eval(picture_list)):
+		# 		mall_models.ProductReviewPicture(
+		# 			product_review=model,
+		# 			order_has_product=self.context['order_has_product_id'],
+		# 			att_url=picture
+		# 		).save()
 
 		return product_review
+
+	@staticmethod
+	@param_required(['reviewed_id', 'pictures', 'order_has_product_id'])
+	def create_reviewed_product_pictures(args):
+		reviewed_id = args['reviewed_id']
+		pictures = args['pictures']
+		order_has_product_id = args['order_has_product_id']
+		if pictures:
+			for picture in list(eval(pictures)):
+				mall_models.ProductReviewPicture(
+					product_review=reviewed_id,
+					order_has_product=order_has_product_id,
+					att_url=picture
+				).save()

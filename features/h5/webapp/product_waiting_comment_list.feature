@@ -177,7 +177,7 @@ Background:
         }]
         """
 
-@todo @mall2 @person @productReview @product @review   @mall.webapp.comment.ee @ggy
+@mall2 @person @productReview @product @review   @mall.webapp.comment.ee @mall3 @bert
 Scenario:1 bill 进入待评价列表，该列表中显示的是订单状态为"已完成"的订单，可以对商品进行评价
     1)在"待评价"中显示的是订单状态为"已完成"的订单；
     2）对订单中的商品评价完后（包括，文字，晒图），那么下次进入"待评价"中，则不会看到该商品
@@ -230,6 +230,14 @@ Scenario:1 bill 进入待评价列表，该列表中显示的是订单状态为"
             "process_score": "4"
         }
         """
+    Then bill获取订单'2'中'商品2'的追加晒图页面
+        """
+        {
+            "product_score": "4",
+            "review_detail": "商品2不太好！！！！！",
+            "picture_list":[]
+        }
+        """
     Then bill成功获取个人中心的'待评价'列表
         """
         [{
@@ -254,15 +262,10 @@ Scenario:1 bill 进入待评价列表，该列表中显示的是订单状态为"
         }]
         """
 
-    When bill完成订单'2'中'商品2'的评价
+    When bill完成订单'2'中'商品2'的追加晒图评价
         """
         {
-            "product_score": "4",
-            "review_detail": "商品2不太好！！！！！",
-            "serve_score": "4",
-            "deliver_score": "4",
-            "process_score": "4",
-           "picture_list": "['/static/upload/webapp/3_20151102/2015_11_02_18_24_49_948000.png']"
+            "picture_list": "['/static/upload/webapp/3_20151102/2015_11_02_18_24_49_948000.png']"
         }
         """
     Then bill成功获取个人中心的'待评价'列表
@@ -284,7 +287,7 @@ Scenario:1 bill 进入待评价列表，该列表中显示的是订单状态为"
         }]
         """
 
-@todo @mall2 @person @productReview @product @review   @mall.webapp.comment.ee @gyc11
+@mall2 @person @productReview @product @review   @mall.webapp.comment.ee @bert @mall3
 Scenario:2 同一商品，下过两个订单，不同订单对同一商品的评价不会相互影响
     例如：订单1，购买商品1，订单2，购买商品1，那么对订单1内的商品1评价完后，再次进入，还可以看到订单2的商品1，对其进行评价
 
@@ -323,7 +326,7 @@ Scenario:2 同一商品，下过两个订单，不同订单对同一商品的评
         }]
         """
 
-@todo @mall2 @person @productReview @product @review   @mall.webapp.comment.ee
+@mall2 @person @productReview @product @review   @mall.webapp.comment.ee @bert @mall3
 Scenario:3 同一商品，不同规格进行评价，不会互相影响
     When bill关注jobs的公众号
     And bill访问jobs的webapp

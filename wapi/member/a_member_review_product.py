@@ -3,12 +3,19 @@
 评论API
 
 """
+import time
 
 from core import api_resource
 from wapi.decorators import param_required
 from business.mall.order_review import OrderReview
 from business.mall.review.review_product_factory import ReviewProductFactory
 from business.mall.review.review_order_factory import ReviewOrderFactory
+from business.mall.review.reviewed_order import ReviewedOrder
+from business.mall.review.reviewed_product import ReviewedProduct
+from business.mall.review.waiting_review_orders import WaitingReviewOrders
+
+from business.mall.product import Product
+
 import logging
 
 #from core.watchdog.utils import watchdog_info
@@ -23,23 +30,6 @@ class AMemberReviewProduct(api_resource.ApiResource):
 	app = 'member'
 	resource = 'review_product'
 
-	# @staticmethod
-	# def _get_review_status(request):
-	# 	"""
-	# 	得到个人中心待评价列表的状态，
-	# 	如果所有订单已完成晒图， 返回True
-	# 	否则返回 False
-
-	# 	@todo 待优化
-	# 	"""
-	# 	# 得到个人中心的所用订单
-	# 	#orders = request_util._get_order_review_list(request)
-	# 	orders = OrderReview.get_order_review_list(request)
-	# 	# 如果订单都已经完成晒图
-	# 	result = True
-	# 	for order in orders:
-	# 		result = result & order.order_is_reviewed
-	# 	return result
 
 
 	@param_required(['webapp_owner', 'webapp_user', 'order_id', 'product_id', 'order_has_product_id'])
@@ -62,7 +52,6 @@ class AMemberReviewProduct(api_resource.ApiResource):
 		#owner_id = int(request.webapp_owner_id)
 		webapp_owner = args['webapp_owner']
 		webapp_user = args['webapp_user']
-		owner_id = webapp_user.id
 		order_id = args['order_id']
 		#member_id = int(request.member.id)
 		member = webapp_user.member
@@ -92,52 +81,177 @@ class AMemberReviewProduct(api_resource.ApiResource):
 		deliver_score = args.get('deliver_score', None)
 		process_score = args.get('process_score', None)
 		picture_list = args.get('picture_list', None)
-		#创建订单评论
-		"""
-		order_review, created = mall_models.OrderReview.objects.get_or_create(
-			order_id=order_id,
-			owner_id=owner_id,
-			member_id=member_id,
-			serve_score=serve_score,
-			deliver_score=deliver_score,
-			process_score=process_score)
-		"""
+		
+
+		if len(review_detail) == 0 or len(review_detail) > 200:
+			return {'status': 0, 'errmsg': 'error detail length'}
 		# 由业务模型创建review
-		order_review = ReviewOrderFactory.create({
+		order_review = ReviewedOrder.get_from_order_id({
 			'webapp_owner': webapp_owner,
 			'webapp_user': webapp_user,
-			'order_id': order_id,
-			'owner_id': owner_id,
-			'member_id': member_id,
-			'serve_score': serve_score,
-			'deliver_score': deliver_score,
-			'process_score': process_score}).save()
+			'order_id': order_id
+			})
+		if not order_review:
+			order_review = ReviewOrderFactory.create({
+				'webapp_owner': webapp_owner,
+				'webapp_user': webapp_user,
+				'order_id': order_id,
+				'serve_score': serve_score,
+				'deliver_score': deliver_score,
+				'process_score': process_score}).save()
 
 		# 创建商品评论
-		product_review = ReviewProductFactory.create({
+		product_review = ReviewedProduct.from_order_has_product_id({
+			'order_has_product_id': order_has_product_id,
+			'webapp_owner': webapp_owner,
+			})
+
+		if not product_review:
+			product_review = ReviewProductFactory.create({
+				'webapp_owner': webapp_owner,
+				'webapp_user': webapp_user,
+				'order_id':order_id,
+				'product_id':product_id,
+				'order_review_id':order_review.id,
+				'review_detail':review_detail,
+				'product_score':product_score,
+				'order_has_product_id':order_has_product_id,
+				'picture_list':picture_list
+				}).save()
+
+		#请求是否还有待评价商品
+		waiting_review_orders = WaitingReviewOrders.get_for_webapp_user({
+			'webapp_owner': args['webapp_owner'],
+			'webapp_user': args['webapp_user']
+			})
+
+		orders = waiting_review_orders.orders
+		order_list = []
+		has_waiting_review = False
+		for order in orders:
+			if  order.order_is_reviewed is False:
+				has_waiting_review = True
+				break
+
+			for product in order.products:
+				if product.has_reviewed is False:
+					has_waiting_review = True
+					break
+
+				if product.has_reviewed_picture is False:
+					has_waiting_review = True
+					break
+
+			if has_waiting_review:
+				break
+
+		return {'status': 1, 'errmsg': '', 'has_waiting_review': 1 if has_waiting_review else 0}
+
+
+	@param_required(['webapp_owner', 'webapp_user', 'order_id', 'product_id', 'order_has_product_id'])
+	def get(args):
+		"""
+		获得评论信息
+		"""
+		#owner_id = int(request.webapp_owner_id)
+		webapp_owner = args['webapp_owner']
+		webapp_user = args['webapp_user']
+		owner_id = webapp_user.id
+		order_id = args['order_id']
+		#member_id = int(request.member.id)
+		member = webapp_user.member
+		member_id = member.id
+		product_id = int(args['product_id'])
+		order_has_product_id = int(args['order_has_product_id'])
+
+
+		send_time = time.time()
+		
+		product = Product.from_id({
+			"webapp_owner": webapp_owner,
+			"member": webapp_user.member,
+			"product_id": product_id
+		}).to_dict()
+		
+
+		product_review = ReviewedProduct.from_order_has_product_id({
+			'order_has_product_id': order_has_product_id,
+			'webapp_owner': webapp_owner
+			})
+		reviewed_product = {}
+		reviewed_product['id'] = product_review.id
+		reviewed_product['product_score'] = product_review.product_score
+		reviewed_product['review_detail'] = product_review.review_detail
+		reviewed_product['reviewed_product_pictures'] = product_review.reviewed_product_pictures
+
+
+		return {
+			'order_has_product_id': order_has_product_id,
+			'order_id': order_id,
+			'product': product,
+			'reviewed_product': reviewed_product,
+			'send_time': send_time
+		}
+
+
+	@param_required(['webapp_owner', 'webapp_user', 'order_id', 'product_id', 'order_has_product_id', 'picture_list'])
+	def post(args):
+		webapp_owner = args['webapp_owner']
+		webapp_user = args['webapp_user']
+		order_id = args['order_id']
+		#member_id = int(request.member.id)
+		member = webapp_user.member
+		member_id = member.id
+		product_id = int(args['product_id'])
+		order_has_product_id = int(args['order_has_product_id'])
+		picture_list = args['picture_list']
+
+		order_review = ReviewedOrder.get_from_order_id({
 			'webapp_owner': webapp_owner,
 			'webapp_user': webapp_user,
-			'order_id':order_id,
-			#'owner_id':owner_id,
-			'product_id':product_id,
-			'order_review_id':order_review.id,
-			'review_detail':review_detail,
-			'product_score':product_score,
-			'member_id':member_id,
-			'order_has_product_id':order_has_product_id,
-			'picture_list':picture_list
-			}).save()
+			'order_id': order_id
+			})
 
-		#response = create_response(200)
-		#response.data = get_review_status(request)
-		#data = AReview._get_review_status(args)
-		return {}
+		if order_review:
+			product_review = ReviewedProduct.from_order_has_product_id({
+				'order_has_product_id': order_has_product_id,
+				'webapp_owner': webapp_owner,
+				})
+			if product_review and not product_review.reviewed_product_pictures:
+				ReviewProductFactory.create_reviewed_product_pictures({
+					'reviewed_id': product_review.id,
+					'pictures': picture_list,
+					'order_has_product_id': order_has_product_id
+					})
+
+		#请求是否还有待评价商品
+		waiting_review_orders = WaitingReviewOrders.get_for_webapp_user({
+			'webapp_owner': args['webapp_owner'],
+			'webapp_user': args['webapp_user']
+			})
+
+		orders = waiting_review_orders.orders
+		order_list = []
+		has_waiting_review = False
+		for order in orders:
+			if  order.order_is_reviewed is False:
+				has_waiting_review = True
+				break
+
+			for product in order.products:
+				if product.has_reviewed is False:
+					has_waiting_review = True
+					break
+
+				if product.has_reviewed_picture is False:
+					has_waiting_review = True
+					break
+
+			if has_waiting_review:
+				break
+
+		return {'status': 1, 'errmsg': '', 'has_waiting_review': 1 if has_waiting_review else 0}
 
 
-	# @param_required([])
-	# def get(args):
-	# 	"""
-	# 	获得评论信息
-	# 	"""
-	# 	return {
-	# 	}
+
+

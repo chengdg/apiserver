@@ -19,7 +19,7 @@ Background:
         }]
         """
     Given bill关注jobs的公众号
-    And jobs已有的订单
+    And jobs已有的订单:weapp
         """
         [{
             "order_no":"1",
@@ -60,7 +60,7 @@ Background:
         }]
         """
 
-@todo @mall2 @mall.webapp.comment.aa @mall3 @bert
+@mall2 @mall.webapp.comment.aa @mall3 @bert
 Scenario: 1 评价包括文字与晒图
     # bill没有进行购买评价，访问商品评价时，无评价信息
     When bill访问jobs的webapp

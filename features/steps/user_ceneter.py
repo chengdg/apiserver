@@ -137,20 +137,24 @@ def step_get_presonal_review_list(context, webapp_user):
 				data['order_no'] = order['order_id']
 				data['products'] = []
 				for product in order['products']:
-					p_data = {}
-					p_data['product_name'] = product['name']
+					logging.error('>>>>>>>>>>>.1')
+					logging.error(product)
+					logging.error('>>>>>>>>>>>.2')
+					if not product['has_review'] or not product['has_picture']:
+						p_data = {}
+						p_data['product_name'] = product['name']
 
-				
-					if  product['model']['property_values']:
-						for mode in product['model']['property_values']:
-							p_data['product_model_name'] = mode['name']
-					# p_model_name = product['product_model_name']
-					# if p_model_name:
-					# 	the_model_name = ""
-					# 	for model in p_model_name:
-					# 		the_model_name += model['property_value']
-					# 	p_data['product_model_name'] = the_model_name
-					data['products'].append(p_data)
+					
+						if  product['model']['property_values']:
+							for mode in product['model']['property_values']:
+								p_data['product_model_name'] = mode['name']
+						# p_model_name = product['product_model_name']
+						# if p_model_name:
+						# 	the_model_name = ""
+						# 	for model in p_model_name:
+						# 		the_model_name += model['property_value']
+						# 	p_data['product_model_name'] = the_model_name
+						data['products'].append(p_data)
 				actual.append(data)
 	else:
 		actual.append({})
@@ -161,9 +165,11 @@ def step_get_presonal_review_list(context, webapp_user):
 	logging.error(expected)
 	bdd_util.assert_list(expected, actual)
 
-@then(u"订单'{order_no}'中'{product_name}'的评商品评价提示信息'{review_status}'")
-def step_get_user_publish_review(context, order_no, product_name, review_status):
-	pass
-	# product_review = bdd_util.get_product_review(order_no, product_name)
-	# count = len(product_review.review_detail)
-	# assert count > 200
+
+
+# @then(u"订单'{order_no}'中'{product_name}'的评商品评价提示信息'{review_status}'")
+# def step_get_user_publish_review(context, order_no, product_name, review_status):
+# 	pass
+# 	# product_review = bdd_util.get_product_review(order_no, product_name)
+# 	# count = len(product_review.review_detail)
+# 	# assert count > 200

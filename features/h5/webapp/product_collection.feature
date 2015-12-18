@@ -212,7 +212,7 @@ Scenario:3 从我的收藏里面取消收藏商品
 		}]
 		"""
 
-@todo @mall2 @weapp.mall.collect.product @bert @mall3 @t
+@todo @mall2 @weapp.mall.collect.product @bert @mall3 
 Scenario:4 收藏商品后，后台对此商品进行修改
 	bill在webapp收藏jobs的商品后
 	1. jobs对此商品进行修改价格

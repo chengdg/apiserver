@@ -111,11 +111,6 @@ class APurchasing(api_resource.ApiResource):
 
 		#获取优惠券
 		coupons, limit_coupons = APurchasing.__get_coupons(webapp_user, order.products)
-		print '-*-' * 20
-		print coupons
-		print limit_coupons
-		print '-*-' * 20
-		#coupons, limit_coupons = [], []
 
 		#获取商城配置
 		mall_config = webapp_owner.mall_config
@@ -137,6 +132,7 @@ class APurchasing(api_resource.ApiResource):
 
 		return {
 			'order': order_info,
+			'enable_wzcard': webapp_owner.has_wzcard_permission,
 			'mall_config': mall_config,
 			'integral_info': integral_info,
 			'coupons': coupons,

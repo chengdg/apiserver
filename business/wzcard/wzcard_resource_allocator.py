@@ -34,7 +34,7 @@ class WZCardChecker:
 				"is_success": False,
 				"type": 'wzcard:duplicated',
 				"msg": reason,
-				"short_msg": u'无此卡'
+				"short_msg": u'已添加'
 			}
 
 		self.checked_wzcard[wzcard_id] = wzcard
@@ -55,7 +55,7 @@ class WZCardChecker:
 			logging.error("{}, wzcard: {}".format(reason, wzcard))
 			return False, {
 				"is_success": False,
-				"type": 'wzcard:nosuch',
+				"type": 'wzcard:wrongpass',
 				"msg": reason,
 				"short_msg": u'密码错误'
 			}
@@ -74,7 +74,7 @@ class WZCardChecker:
 			logging.error("{}, wzcard: {}".format(reason, wzcard))	
 			return False, {
 				"is_success": False,
-				"type": 'wzcard:nosuch',
+				"type": 'wzcard:inactive',
 				"msg": reason,
 				"short_msg": u'卡未激活'
 			}

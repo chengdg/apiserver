@@ -207,3 +207,61 @@ def step_impl(context, webapp_owner, wzcard_id):
 		'money': response.data['balance']
 	}
 	bdd_util.assert_dict(expected, real)
+
+
+@When(u'{webapp_user}进行微众卡余额查询')
+def step_impl(context, webapp_user):
+	args = json.loads(context.text)
+	context.wzcard_info = {
+		'id': args['id'],
+		'password': args['password']
+	}
+
+
+@Then(u'{webapp_user}获得微众卡余额查询结果')
+def step_impl(context, webapp_user):
+	wzcard_id = context.wzcard_info['id']
+	wzcard_password = context.wzcard_info['password']
+
+	url = "/wapi/wzcard/query_wzcard/"
+	response = context.client.get(url, {
+			'woid': context.webapp_owner_id,
+			'wzcard_id': wzcard_id,
+			'password': wzcard_password,
+		})
+	bdd_util.assert_api_call_success(response)
+
+	logging.info('response.data: {}'.format(response.data))
+	context.tc.assertEquals(200, response.data['code'])
+
+	real = {
+		#'status': response.data['readable_status'],
+		'card_remaining': float(response.data['balance'])
+	}
+	msg = response.data.get('msg')
+	if msg:
+		real['msg'] = msg
+
+	expected = json.loads(context.text)
+	bdd_util.assert_dict(expected, real)
+
+
+@Then(u"{webapp_user}获得错误信息'{expected_msg}'")
+def step_impl(context, webapp_user, expected_msg):
+	wzcard_id = context.wzcard_info['id']
+	wzcard_password = context.wzcard_info['password']
+
+	url = "/wapi/wzcard/query_wzcard/"
+	response = context.client.get(url, {
+			'woid': context.webapp_owner_id,
+			'wzcard_id': wzcard_id,
+			'password': wzcard_password,
+		})
+	bdd_util.assert_api_call_success(response)
+
+	# TODO: 统一API返回代码
+	context.tc.assertEquals(400, response.data['code'])
+
+	logging.info('response.data: {}'.format(response.data))
+	msg = response.data['msg']
+	context.tc.assertEquals(expected_msg, msg)

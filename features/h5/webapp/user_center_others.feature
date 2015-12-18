@@ -125,7 +125,7 @@ Scenario:1 个人中心-我的优惠券
 		}
 		"""
 
-@todo @personCenter @balance @wip.victor13
+@mall3 @personCenter @balance @wip.victor13
 Scenario:2 个人中心-微众卡余额查询
 	Given jobs登录系统:weapp
 	And jobs设定会员积分策略:weapp
@@ -177,10 +177,10 @@ Scenario:2 个人中心-微众卡余额查询
 	Then bill获得微众卡余额查询结果
 		"""
 		{
-			"card_remaining":100.00,
-			"can_exchange_integral":200
+			"card_remaining":100.00
 		}
 		"""
+		#	"can_exchange_integral":200
 	#您的微众卡余额"：100.00元
 	#您可以兑换：200积分
 	#【返回】按钮
@@ -196,11 +196,11 @@ Scenario:2 个人中心-微众卡余额查询
 	Then bill获得微众卡余额查询结果
 		"""
 		{
-			"card_remaining":0.00,
-			"can_exchange_integral":0,
+			"card_remaining": 0.00,
 			"msg":"您的微众卡余额不足!"
 		}
 		"""
+		#	"can_exchange_integral":0,
 		#您的微众卡余额"：0.00元
 		#您可以兑换：0积分
 		#您的微众卡余额不足！（红色字体显示）

@@ -776,36 +776,36 @@ def step_visit_personal_orders(context, webapp_user_name, order_type):
 	elif order_type == u'待收货':
 		type = 4
 
-    expected = json.loads(context.text)
-    actual = []
+	expected = json.loads(context.text)
+	actual = []
 
-    url = '/wapi/mall/order_list/?woid=%d&type=%d' % (context.webapp_owner_id, type)
-    response = context.client.get(bdd_util.nginx(url), follow=True)
-    orders = response.data['orders']
-    import datetime
-    for actual_order in orders:
-    	if not actual_order['status'] != type and type != -1:
-    		continue
-        order = {}
-        order['final_price'] = actual_order['final_price']
-        order['products'] = []
-        order['counts'] = actual_order['product_count']
-        order['status'] = mall_models.ORDERSTATUS2MOBILETEXT[actual_order['status']]
-        order['pay_interface'] = mall_models.PAYTYPE2NAME[actual_order['pay_interface_type']]
-        order['created_at'] = actual_order['created_at']
-        # BBD中购买的时间再未指定购买时间的情况下只能为今天
-        created_at = datetime.datetime.strptime(actual_order['created_at'], '%Y.%m.%d %H:%M')
-        if created_at.date() == datetime.date.today():
-            order['created_at'] = u'今天'
+	url = '/wapi/mall/order_list/?woid=%d&type=%d' % (context.webapp_owner_id, type)
+	response = context.client.get(bdd_util.nginx(url), follow=True)
+	orders = response.data['orders']
+	import datetime
+	for actual_order in orders:
+		if not actual_order['status'] != type and type != -1:
+			continue
+		order = {}
+		order['final_price'] = actual_order['final_price']
+		order['products'] = []
+		order['counts'] = actual_order['product_count']
+		order['status'] = mall_models.ORDERSTATUS2MOBILETEXT[actual_order['status']]
+		order['pay_interface'] = mall_models.PAYTYPE2NAME[actual_order['pay_interface_type']]
+		order['created_at'] = actual_order['created_at']
+		# BBD中购买的时间再未指定购买时间的情况下只能为今天
+		created_at = datetime.datetime.strptime(actual_order['created_at'], '%Y.%m.%d %H:%M')
+		if created_at.date() == datetime.date.today():
+			order['created_at'] = u'今天'
 
-        for i, product in enumerate(actual_order['products']):
-            # 列表页面最多显示3个商品
-            a_product = {}
-            a_product['name'] = product['name']
-            # a_product['price'] = product.total_price
-            order['products'].append(a_product)
-        actual.append(order)
-    bdd_util.assert_list(expected, actual)
+		for i, product in enumerate(actual_order['products']):
+			# 列表页面最多显示3个商品
+			a_product = {}
+			a_product['name'] = product['name']
+			# a_product['price'] = product.total_price
+			order['products'].append(a_product)
+		actual.append(order)
+	bdd_util.assert_list(expected, actual)
 
 
 @when(u"{webapp_user_name}使用支付方式'{pay_interface_name}'进行支付")

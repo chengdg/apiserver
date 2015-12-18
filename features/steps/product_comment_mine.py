@@ -33,8 +33,8 @@ def step_product_review_should(context, webapp_user, text):
 	bdd_util.assert_list(expected, actual)
 
 
-@When(u"{webapp_user}完成订单'{order_code}'中'{product_name}'的评价包括'{has_picture}'")
-def step_finished_a_product_review(context, webapp_user, order_code, product_name, has_picture):
+@When(u"{webapp_user}完成订单'{order_code}'中'{product_name}'的评价")
+def step_finished_a_product_review(context, webapp_user, order_code, product_name):
 	"""
 	完成订单评价
 

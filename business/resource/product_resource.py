@@ -121,8 +121,8 @@ class ProductResource(business_model.Resource):
 				return False, {
 					'is_successed': False,
 					'type': 'product:sellout',
-					'msg': u'商品已售罄',
-					'short_msg': u'商品已售罄'
+					'msg': u'已售罄',
+					'short_msg': u'已售罄'
 				}
 			else:
 				return False, {

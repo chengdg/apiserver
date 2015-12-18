@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from business.mall.coupon.coupon import Coupon
 from core import api_resource
 from wapi.decorators import param_required
 from db.mall import promotion_models
@@ -8,7 +7,7 @@ from db.mall import promotion_models
 
 class AMyCoupon(api_resource.ApiResource):
 	"""
-	个人中心
+	个人中心-我的优惠券
 	"""
 	app = 'user_center'
 	resource = 'my_coupon'
@@ -16,7 +15,7 @@ class AMyCoupon(api_resource.ApiResource):
 	@param_required([])
 	def get(args):
 		"""
-		获取个人中心
+		获取个人中心-我的优惠券
 		"""
 		webapp_user = args['webapp_user']
 		coupons = webapp_user.coupons

@@ -143,6 +143,7 @@ class PremiumSale(promotion.Promotion):
 			'premium_products': self.premium_products
 		}
 		promotion_result = PromotionResult(saved_money=0, subtotal=total_product_price, detail=detail)
+		promotion_result.need_disable_discount = True
 		return promotion_result
 
 	def after_from_dict(self):

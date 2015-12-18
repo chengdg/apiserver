@@ -7,7 +7,6 @@
 from business import model as business_model
 from business.mall.allocator.coupon_resource_allocator import CouponResourceAllocator
 from business.mall.coupon.coupon import Coupon
-from business.mall.coupon.coupon_rule import CouponRule
 from business.resource.coupon_resource import CouponResource
 
 
@@ -26,7 +25,6 @@ class OrderCouponResourceAllocator(business_model.Model):
 	def allocate_resource(self, order, purchase_info):
 		webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user']
-		member_id = webapp_user.member.id
 
 		is_success = True
 		reason = ''
@@ -42,7 +40,7 @@ class OrderCouponResourceAllocator(business_model.Model):
 				is_success = False
 			else:
 				# 判断优惠券在订单中是否可用
-				is_success, reason = coupon.check_coupon_in_order(order, purchase_info, webapp_user)
+				is_success, reason = coupon.check_coupon_in_order(order, webapp_user)
 				if is_success:
 					# 调用CouponResourceAllocator获得资源
 					coupon_resource_allocator = CouponResourceAllocator(webapp_owner, webapp_user)

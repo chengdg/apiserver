@@ -21,50 +21,58 @@ class APurchasing(api_resource.ApiResource):
 	app = 'mall'
 	resource = 'purchasing'
 
-	def __get_coupons(webapp_user, products, forbidden_coupon_product_ids):
+	def __get_coupons(webapp_user, products):
 		coupons = webapp_user.all_coupons 
 		limit_coupons = []
 		result_coupons = []
 		if len(coupons) == 0:
 			return result_coupons, limit_coupons
 
-		today = datetime.today()
-		product_ids = set()
-		total_price = 0
-		productIds2original_price = dict()
-		is_all_product_forbidden_coupon = True
-		for product in products:
-			product_ids.add(product.id)
-			product_total_price = product.price * product.purchase_count
-			product_total_original_price = product.original_price * product.purchase_count
-			if not product.id in forbidden_coupon_product_ids:
-				#没有禁用优惠券的商品的金额才累计进入总价
-				total_price += product_total_price
-				is_all_product_forbidden_coupon = False
+		# today = datetime.today()
+		# product_ids = set()
+		# total_price = 0
+		# productIds2original_price = dict()
+		# is_all_product_forbidden_coupon = True
+		# for product in products:
+		# 	product_ids.add(product.id)
+		# 	product_total_price = product.price * product.purchase_count
+		# 	product_total_original_price = product.original_price * product.purchase_count
+		# 	if not product.id in forbidden_coupon_product_ids:
+		# 		#没有禁用优惠券的商品的金额才累计进入总价
+		# 		total_price += product_total_price
+		# 		is_all_product_forbidden_coupon = False
 
-			if not productIds2original_price.get(product.id):
-				productIds2original_price[product.id] = 0
-			productIds2original_price[product.id] += product_total_original_price
+		# 	if not productIds2original_price.get(product.id):
+		# 		productIds2original_price[product.id] = 0
+		# 	productIds2original_price[product.id] += product_total_original_price
+
+		# for coupon in coupons:
+		# 	can_use_coupon = True
+		# 	if not coupon.is_can_use_by_webapp_user(webapp_user):
+		# 		can_use_coupon = False
+		# 	else:
+		# 		if coupon.is_specific_product_coupon():
+		# 			#单品券
+		# 			if (not coupon.limit_product_id in product_ids) or (coupon.valid_restrictions > productIds2original_price[coupon.limit_product_id]):
+		# 				coupon.disable()
+		# 				can_use_coupon = False
+		# 		else:
+		# 			#通用券
+		# 			if is_all_product_forbidden_coupon:
+		# 				#所有的商品都禁用了优惠券，通用券必须禁用
+		# 				coupon.disable()
+		# 				can_use_coupon = False
+		# 			if coupon.valid_restrictions > total_price:
+		# 				coupon.disable()
+		# 				can_use_coupon = False
+
+		# 	if can_use_coupon:
+		# 		result_coupons.append(coupon.to_dict())
+		# 	else:
+		# 		limit_coupons.append(coupon.to_dict())
 
 		for coupon in coupons:
-			can_use_coupon = True
-			if not coupon.is_can_use_by_webapp_user(webapp_user):
-				can_use_coupon = False
-			else:
-				if coupon.is_specific_product_coupon():
-					#单品券
-					if (not coupon.limit_product_id in product_ids) or (coupon.valid_restrictions > productIds2original_price[coupon.limit_product_id]):
-						coupon.disable()
-						can_use_coupon = False
-				else:
-					#通用券
-					if is_all_product_forbidden_coupon:
-						#所有的商品都禁用了优惠券，通用券必须禁用
-						coupon.disable()
-						can_use_coupon = False
-					if coupon.valid_restrictions > total_price:
-						coupon.disable()
-						can_use_coupon = False
+			can_use_coupon, _ = coupon.is_can_use_for_products(webapp_user, products)
 
 			if can_use_coupon:
 				result_coupons.append(coupon.to_dict())
@@ -102,10 +110,7 @@ class APurchasing(api_resource.ApiResource):
 		integral_info['have_integral'] = (integral_info['count'] > 0)
 
 		#获取优惠券
-		forbidden_coupon_product_ids = ForbiddenCouponProductIds.get_for_webapp_owner({
-			'webapp_owner': args['webapp_owner']
-		}).ids
-		coupons, limit_coupons = APurchasing.__get_coupons(webapp_user, order.products, forbidden_coupon_product_ids)
+		coupons, limit_coupons = APurchasing.__get_coupons(webapp_user, order.products)
 		print '-*-' * 20
 		print coupons
 		print limit_coupons

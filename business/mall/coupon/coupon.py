@@ -167,9 +167,6 @@ class Coupon(business_model.Model):
 			msg = '该优惠券已被他人领取不能使用'
 			self.display_status = 'used'
 
-		print '-$-' * 20
-		print msg
-		print '-$-' * 20
 		self.invalid_reason = msg
 		return msg
 
@@ -196,44 +193,49 @@ class Coupon(business_model.Model):
 		"""
 		self.display_status = 'disable'
 
-	def check_coupon_in_order(self, order, purchase_info, member_id):
-			msg = self.__check_coupon_status(member_id)
-			if msg:
-				return False, msg
+	def is_can_use_for_products(self, webapp_user, reserved_products):
+		member_id = webapp_user.member.id if webapp_user.member else 0
+		msg = self.__check_coupon_status(member_id)
+		if msg:
+			return False, msg
 
-			# 处理单品券
-			if self.is_specific_product_coupon():
-				if self.coupon_rule.limit_product_id not in[product.id for product in order.products]:
-					msg ='该优惠券不能购买订单中的商品'
-				else:
-					price = 0
-					for p in order.products:
-						if p.id == self.coupon_rule.limit_product_id:
-							price += p.original_price * p.purchase_count
-
-					if self.coupon_rule.valid_restrictions > price:
-						# 单品券限制购物金额
-							msg = '该优惠券指定商品金额不满足使用条件'
-
-			# 处理通用券
+		# 处理单品券
+		if self.is_specific_product_coupon():
+			if self.limit_product_id not in [product.id for product in reserved_products]:
+				msg = u'该优惠券不能购买订单中的商品'
 			else:
-				product_ids = [product.id for product in order.products if product.can_use_coupon]
+				price = 0
+				for product in reserved_products:
+					if product.id == self.limit_product_id:
+						price += product.original_price * product.purchase_count
 
-				# 订单使用通用券且只有禁用通用券商品
-				if len(product_ids) == 0:
-					msg = '该优惠券不能购买订单中的商品'
+				if self.valid_restrictions > price:
+					# 单品券限制购物金额
+						msg = u'该优惠券指定商品金额不满足使用条件'
+		# 处理通用券
+		else:
+			product_ids = [product.id for product in reserved_products if product.can_use_coupon]
 
-				# 判断通用券是否满足金额限制
-				else:
-					products_sum_price = sum([product.price * product.purchase_count for product in order.products if product.can_use_coupon])
+			# 订单使用通用券且只有禁用通用券商品
+			if len(product_ids) == 0:
+				msg = u'该优惠券不能购买订单中的商品'
 
-					if self.coupon_rule.valid_restrictions > products_sum_price and self.coupon_rule.valid_restrictions != -1:
-						msg = '该优惠券不满足使用金额限制'
-
-			if msg:
-				return False, msg
+			# 判断通用券是否满足金额限制
 			else:
-				return True, msg
+				products_sum_price = sum([product.price * product.purchase_count for product in reserved_products if product.can_use_coupon])
+
+				if self.valid_restrictions > products_sum_price and self.valid_restrictions != -1:
+					msg = u'该优惠券不满足使用金额限制'
+
+		if msg:
+			self.disable()
+			return False, msg
+		else:
+			return True, msg
+
+	def check_coupon_in_order(self, order, purchase_info, webapp_user):
+		reserved_products = order.products
+		return self.is_can_use_for_products(webapp_user, reserved_products)
 
 	def to_dict(self):
 		result = super(Coupon, self).to_dict()

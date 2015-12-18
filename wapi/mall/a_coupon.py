@@ -6,6 +6,7 @@
 import os
 import copy
 from datetime import datetime
+import json
 
 from core import api_resource
 from wapi.decorators import param_required
@@ -13,6 +14,8 @@ from db.mall import models as mall_models
 from db.mall import promotion_models
 from utils import dateutil as utils_dateutil
 from business.mall.coupon.coupon import Coupon
+from business.mall.reserved_product import ReservedProduct
+from business.mall.forbidden_coupon_product_ids import ForbiddenCouponProductIds
 
 
 class ACoupon(api_resource.ApiResource):
@@ -24,37 +27,43 @@ class ACoupon(api_resource.ApiResource):
 
 	@param_required(['woid', 'coupon_id', 'order_price', 'product2info'])
 	def get(args):
+		webapp_user = args['webapp_user']
+		webapp_owner = args['webapp_owner']
+
 		coupon = Coupon.from_coupon_id({
 			'coupon_id': args['coupon_id']
 		})
 
-		if not coupon:
-			return {
-				'is_success': False,
-				'msg': u'请输入正确的优惠券号'
-			}
+		forbidden_coupon_product_ids = ForbiddenCouponProductIds.get_for_webapp_owner({
+			'webapp_owner': webapp_owner
+		}).ids
 
-		if not coupon.is_can_use_by_webapp_user(args['webapp_user']):
-			return {
-				'is_success': False,
-				'msg': coupon.invalid_reason
-			}
+		reserved_products = []
+		product2info = json.loads(args['product2info'])
+		for product_id, product_info in product2info.items():
+			product_id = int(product_id)
+			reserved_product = ReservedProduct(webapp_owner, webapp_user)
+			reserved_product.id = product_id
+			reserved_product.price = product_info['price']
+			reserved_product.original_price = product_info['original_price']
+			reserved_product.purchase_count = product_info['count']
+			if product_id in forbidden_coupon_product_ids:
+				reserved_product.can_use_coupon = False
+			else:
+				reserved_product.can_use_coupon = True
 
-		if coupon.is_specific_product_coupon():
+			reserved_products.append(reserved_product)
+
+		can_use_coupon, reason = coupon.is_can_use_for_products(webapp_user, reserved_products)
+		if can_use_coupon:
 			return {
-				'is_success': True
+				'is_success': True,
+				'id': coupon.id,
+				'money': coupon.money,
+				'productid': coupon.limit_product_id				
 			}
 		else:
-			if coupon.valid_restrictions > float(args['order_price']):
-				return {
-					'is_success': False,
-					'type': 'not_match_valid_restrictions',
-					'msg': u'该优惠券不满足使用金额限制',
-				}
-			else:				
-				return {
-					'is_success': True,
-					'id': coupon.id,
-					'money': coupon.money,
-					'productid': coupon.limit_product_id
-				}
+			return {
+				'is_success': False,
+				'msg': reason
+			}

@@ -100,12 +100,13 @@ class ReservedProduct(business_model.Model):
 
 		return reserved_product
 
-	def __init__(self, webapp_owner, webapp_user, product_info):
+	def __init__(self, webapp_owner, webapp_user, product_info=None):
 		business_model.Model.__init__(self)
 
 		self.context['webapp_owner'] = webapp_owner
 		self.context['webapp_user'] = webapp_user
-		self.__fill_detail(webapp_user, product_info)
+		if product_info:
+			self.__fill_detail(webapp_user, product_info)
 
 		
 	def __fill_detail(self, webapp_user, product_info):

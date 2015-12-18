@@ -42,7 +42,7 @@ class OrderCouponResourceAllocator(business_model.Model):
 				is_success = False
 			else:
 				# 判断优惠券在订单中是否可用
-				is_success, reason = coupon.check_coupon_in_order(order, purchase_info, member_id)
+				is_success, reason = coupon.check_coupon_in_order(order, purchase_info, webapp_user)
 				if is_success:
 					# 调用CouponResourceAllocator获得资源
 					coupon_resource_allocator = CouponResourceAllocator(webapp_owner, webapp_user)

@@ -139,7 +139,10 @@ class Coupon(business_model.Model):
 		"""
 		msg = ''
 		today = datetime.today()
-		if self.start_time > today:
+		if self.status == promotion_models.COUPON_STATUS_USED:
+			msg = '该优惠券已使用'
+			self.display_status = 'used'
+		elif self.start_time > today:
 			msg = '该优惠券活动尚未开始'
 			#兼容历史数据
 			if self.status == promotion_models.COUPON_STATUS_USED:
@@ -175,6 +178,15 @@ class Coupon(business_model.Model):
 			return False
 		else:
 			return True
+
+	def is_expired(self):
+		"""
+		判断优惠券是否过期
+
+		Returns
+			如果过期，返回True；否则，返回False
+		"""
+		return self.display_status == 'overdue'
 
 	def is_specific_product_coupon(self):
 		if self.coupon_rule.limit_product:

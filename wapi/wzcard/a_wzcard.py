@@ -47,7 +47,6 @@ class AWZCard(api_resource.ApiResource):
 		}
 
 
-
 	@param_required(['woid', 'wzcard_id', 'password', 'balance', 'status'])
 	def put(args):
 		"""

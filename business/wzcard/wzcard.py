@@ -98,6 +98,13 @@ class WZCard(business_model.Model):
 		return text
 
 	@property
+	def is_empty(self):
+		"""
+		是否已用完
+		"""
+		return self.status == wzcard_models.WEIZOOM_CARD_STATUS_EMPTY
+
+	@property
 	def balance(self):
 		"""
 		[property] 微众卡余额

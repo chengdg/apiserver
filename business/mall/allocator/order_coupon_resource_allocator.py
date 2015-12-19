@@ -52,6 +52,7 @@ class OrderCouponResourceAllocator(business_model.Model):
 			reason_dict = {
 				"is_success": False,
 				"msg": reason,
+				"type": "coupon"
 			}
 			return False, reason_dict, None
 

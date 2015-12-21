@@ -46,10 +46,6 @@ class AUsableWZCard(api_resource.ApiResource):
 				"wzcard_id": args['wzcard_id'],
 			})
 
-		print '-*-' * 20
-		print wzcard
-		print '-*-' * 20
-
 		checker = WZCardChecker()
 		is_success, reason = checker.check(wzcard_id, wzcard_password, wzcard)
 
@@ -70,6 +66,7 @@ class AUsableWZCard(api_resource.ApiResource):
 			msg = u'您的微众卡余额不足!'
 
 		return {
+			'id': wzcard.id,
 			'code': 200,
 			'readable_status': wzcard.readable_status,
 			'status': wzcard.status,

@@ -918,3 +918,57 @@ Scenario:12 用已用完的微众卡购买商品时
 		"price":0.00
 	}
 	"""
+
+
+后续补充.雪静
+Scenario:13 用两张微众卡购买，第二张卡的金额大于商品金额
+	1.使用两张微众卡进行购买，微众卡金额大于商品金额
+	2.第一张微众卡余额为0
+	3.第二张微众卡还有余额
+
+	When bill访问jobs的webapp
+	When bill购买jobs的商品
+		"""
+		{
+			"products":[{
+				"name":"商品1",
+				"price":50,
+				"count":1
+			}],
+			"weizoom_card":[{
+				"card_name":"0000003",
+				"card_pass":"1231231"
+			}, {
+				"card_name":"0000001",
+				"card_pass":"1234567"
+			}]
+		}
+	Then bill成功创建订单
+		"""
+		{
+			"status": "待发货",
+			"final_price": 0.0,
+			"product_price": 50.0,
+			"weizoom_card_money":50.00,
+			"products":[{
+				"name":"商品1",
+				"price":50.00,
+				"count":1
+			}]
+		}
+		"""
+	Given jobs登录系统:weapp
+	Then jobs能获取微众卡'0000003':weapp
+		"""
+		{
+			"status":"已用完",
+			"price":0.00
+		}
+		"""
+	Then jobs能获取微众卡'0000001':weapp
+		"""
+		{
+			"status":"已使用",
+			"price":80.00
+		}
+		"""

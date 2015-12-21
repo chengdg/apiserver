@@ -24,6 +24,7 @@ import resource
 from business import model as business_model 
 from business.mall.product import Product
 from business.mall.order_products import OrderProducts
+from business.mall.order_log_operator import OrderLogOperator
 import settings
 from business.decorator import cached_context_property
 from utils import regional_util
@@ -297,8 +298,8 @@ class Order(business_model.Model):
 			self.pay_interface_type = pay_interface_type
 
 			#记录日志
-			#record_operation_log(order_id, u'客户', u'支付')
-			#record_status_log(order_id, u'客户', ORDER_STATUS_NOT, ORDER_STATUS_PAYED_NOT_SHIP)
+			OrderLogOperator.record_operation_log(self, u'客户', u'支付')
+			OrderLogOperator.record_status_log(self, u'客户', mall_models.ORDER_STATUS_NOT, mall_models.ORDER_STATUS_PAYED_NOT_SHIP)
 
 			self.__send_notify_mail()
 
@@ -610,3 +611,5 @@ class Order(business_model.Model):
 			# except :
 			# 	notify_message = u"取消订单业务处理异常，cause:\n{}".format(unicode_full_stack())
 			# 	watchdog_alert(notify_message, "mall")
+		elif action == 'finish':
+			mall_models.Order.update(status=mall_models.ORDER_STATUS_SUCCESSED).dj_where(id=self.id).execute()

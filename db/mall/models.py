@@ -1883,45 +1883,61 @@ class ProductReviewPicture(models.Model):
 
 
 
-
-
-
-
-
-
-#########################################################################
-# 微众商城相关Model
-#########################################################################
-class WeizoomMall(models.Model):
-	"""
-	微众商城用户
-	"""
-	webapp_id = models.CharField(max_length=20)
-	is_active = models.BooleanField(default=True)
-	created_at = models.DateTimeField(auto_now_add=True)
-
-	class Meta(object):
-		db_table = 'weizoom_mall'
-
-	@staticmethod
-	def is_weizoom_mall(webapp_id):
-		if WeizoomMall.objects.filter(webapp_id=webapp_id).count() > 0:
-			return WeizoomMall.objects.filter(webapp_id=webapp_id)[0].is_active
-		else:
-			return False
-		
-
-class WeizoomMallHasOtherMallProduct(models.Model):
-	"""
-	<微众商城, 商品>关系
-	"""
-	weizoom_mall = models.ForeignKey(WeizoomMall)
-	webapp_id = models.CharField(max_length=20)
-	is_checked = models.BooleanField(default=False,)  # 是否审核通过
-	product_id = models.IntegerField(default=-1)  # 商品id
+########################################################################
+# OrderOperationLog:订单操作日志
+########################################################################
+class OrderOperationLog(models.Model):
+	order_id = models.CharField(max_length=50)
+	remark = models.TextField(default='')
+	action = models.CharField(max_length=50)
+	operator = models.CharField(max_length=50)
 	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间
 
 	class Meta(object):
-		db_table = 'weizoom_mall_has_other_mall_product'
+		db_table = 'mall_order_operation_log'
+		verbose_name = '订单后台操作日志'
+		verbose_name_plural = '订单后台操作日志'
 
 
+########################################################################
+# OrderStatusLog:订单状态日志
+########################################################################
+class OrderStatusLog(models.Model):
+	order_id = models.CharField(max_length=50)
+	from_status = models.IntegerField()
+	to_status = models.IntegerField()
+	remark = models.TextField(default='')
+	operator = models.CharField(max_length=50)
+	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间
+
+	class Meta(object):
+		db_table = 'mall_order_status_log'
+		verbose_name = '订单状态日志'
+		verbose_name_plural = '订单状态日志'
+
+
+########################################################################
+# Supplier:供货商信息
+########################################################################
+class Supplier(models.Model):
+	owner = models.ForeignKey(User)
+	name = models.CharField(max_length=16)  # 供货商名称
+	responsible_person = models.CharField(max_length=100) # 供货商负责人
+	supplier_tel = models.CharField(max_length=100) # 供货商电话
+	supplier_address = models.CharField(max_length=256) # 供货商地址
+	remark = models.CharField(max_length=256) # 备注
+	is_delete = models.BooleanField(default=False)  # 是否已经删除
+	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间
+
+	class Meta(object):
+		verbose_name = "供货商"
+		verbose_name_plural = "供货商操作"
+		db_table = "mall_supplier"
+
+	def get_supplier_name(supplier_id):
+		supplier = Supplier.select().dj_where(id=supplier_id).first()
+		
+		if supplier:
+			return supplier.name
+		else:
+			return ''

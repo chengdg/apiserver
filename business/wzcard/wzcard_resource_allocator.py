@@ -73,6 +73,7 @@ class WZCardResourceAllocator(business_model.Service):
 
 		checker = WZCardChecker()
 		# 遍历微众卡信息，扣除微众卡
+		final_price = Decimal(order.final_price)
 		for wzcard_info in wzcard_info_list:
 			# 根据wzcard_info获取wzcard对象
 			wzcard_id = wzcard_info['card_name']
@@ -87,12 +88,13 @@ class WZCardResourceAllocator(business_model.Service):
 
 			if is_success:
 				# 验证微众卡可用
-				used_amount = wzcard.pay(order.final_price)
+				used_amount = wzcard.pay(final_price)
 				logging.info("order.final_price={}, used_amount={}".format(order.final_price, used_amount))
 
 				# 保存微众卡使用的信息，完成扣除微众卡金额动作
 				wzcard.save()
 				total_used_amount += used_amount
+				final_price -= used_amount
 
 				# 保存微众卡号、使用金额
 				used_wzcards.append( (wzcard, used_amount) )

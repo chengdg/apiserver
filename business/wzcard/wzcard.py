@@ -38,11 +38,12 @@ class WZCard(business_model.Model):
 		'active_card_user_id',
 	)
 
-	def __init__(self, webapp_owner, wzcard_id):
+	def __init__(self, wzcard_id, wzcard_owner=None):
 		business_model.Model.__init__(self)
 
 		# webapp_owner是不需要暴露的property，因此放在context中
-		self.context['webapp_owner'] = webapp_owner
+		# wzcard_owner表示创建微众卡的用户
+		self.context['wzcard_owner'] = wzcard_owner
 		self.wzcard_id = wzcard_id
 
 		db_model = wzcard_models.WeizoomCard.get(weizoom_card_id=wzcard_id)
@@ -54,7 +55,7 @@ class WZCard(business_model.Model):
 
 
 	@staticmethod
-	@param_required(['webapp_owner', 'wzcard_id'])
+	@param_required(['wzcard_id'])
 	def from_wzcard_id(args):
 		"""
 		获取微众卡对象的工厂方法
@@ -62,21 +63,11 @@ class WZCard(business_model.Model):
 		@return 如果不存在此卡，返回None
 		"""
 		try:	
-			wzcard = WZCard(args['webapp_owner'], args['wzcard_id'])
+			wzcard = WZCard(args['wzcard_id'])
 			return wzcard
 		except Exception as e:
 			logging.error("Exception: " + str(e))
 		return None
-
-	'''
-	@staticmethod
-	@param_required(['wzcard_id', 'password'])
-	def get(args):
-		"""
-		用微众卡号和密码获取WZCard对象
-		"""
-		return
-	'''
 
 
 	@property
@@ -154,6 +145,7 @@ class WZCard(business_model.Model):
 			status = wzcard_models.WEIZOOM_CARD_STATUS_INACTIVE
 		return status, is_expired
 
+
 	def __create(self, args):
 		"""
 		先将weapp操作代码迁移过来，以后再调整
@@ -196,11 +188,9 @@ class WZCard(business_model.Model):
 		"""
 		pass
 
-
 	def check_password(self, password):
 		"""
-		检查密码
-		@todo 待实现
+		检查密码是否正确
 		"""
 		return self.password == password
 
@@ -212,7 +202,6 @@ class WZCard(business_model.Model):
 		logging.info("WZCard.status: {}, id: {}".format(self.status, self.id))
 		return self.status != wzcard_models.WEIZOOM_CARD_STATUS_INACTIVE
 
-
 	def save(self):
 		"""
 		微众卡信息序列化(比如存到数据库)
@@ -221,7 +210,6 @@ class WZCard(business_model.Model):
 		db_model.save()
 		logging.info("saved WZCard DB object, wzcard_id={}, balance={}".format(db_model.weizoom_card_id, db_model.money))
 		return
-
 
 	def pay(self, price_to_pay):
 		"""

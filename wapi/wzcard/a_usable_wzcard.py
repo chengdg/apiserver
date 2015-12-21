@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""@package wapi.wzcard.a_query_wzcard
+"""@package wapi.wzcard.a_usable_wzcard
 微众卡查询\创建
 """
 
@@ -20,9 +20,8 @@ import logging
 #from business.mall.order_factory import OrderFactory
 #from business.mall.purchase_info import PurchaseInfo
 #from business.mall.pay_interface import PayInterface
-import logging
 
-from business.wzcard.wzcard_resource_allocator import WZCardChecker
+from business.wzcard.wzcard_checker import WZCardChecker
 
 class AUsableWZCard(api_resource.ApiResource):
 	"""
@@ -31,24 +30,25 @@ class AUsableWZCard(api_resource.ApiResource):
 	app = 'wzcard'
 	resource = 'usable_wzcard'
 
-	@param_required(['woid', 'wzcard_id', 'password'])
+	@param_required(['wzcard_id', 'password'])
 	def get(args):
 		"""
 		校验微众卡信息
 		"""
-		webapp_owner = args['webapp_owner']
+		#webapp_owner = args['webapp_owner']
 		wzcard_id = args['wzcard_id']
 		wzcard_password = args['password']
 
 		# 获取微众卡信息
 		wzcard = WZCard.from_wzcard_id({
-				"webapp_owner": webapp_owner,
+				#"webapp_owner": webapp_owner,
 				"wzcard_id": args['wzcard_id'],
 			})
 
-		print '-*-' * 20
-		print wzcard
-		print '-*-' * 20
+		#print '-*-' * 20
+		#print wzcard
+		#print '-*-' * 20
+		logging.info(wzcard)
 
 		checker = WZCardChecker()
 		is_success, reason = checker.check(wzcard_id, wzcard_password, wzcard)

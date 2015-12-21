@@ -149,7 +149,8 @@ class MemberFactory(business_model.Model):
 			#添加默认分组
 			#try:
 			default_member_tag = self.context['default_tag']
-			member_models.MemberHasTag.add_tag_member_relation(member, [default_member_tag.id])
+			if default_member_tag:
+				member_models.MemberHasTag.add_tag_member_relation(member, [default_member_tag.id])
 
 			member_models.MemberInfo.create(
 				member=member,

@@ -45,9 +45,8 @@ class WZCard(business_model.Model):
 		self.context['webapp_owner'] = webapp_owner
 		self.wzcard_id = wzcard_id
 
-		db_model = wzcard_models.WeizoomCard.get(
-			owner=webapp_owner.id,
-			weizoom_card_id=wzcard_id)
+		db_model = wzcard_models.WeizoomCard.get(weizoom_card_id=wzcard_id)
+		#TODO：加入对专属卡的检查
 		self.context['db_model'] = db_model
 		#logging.info('db_model: {}'.format(db_model))
 		logging.info('db_model.money: {}'.format(db_model.money))

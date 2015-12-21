@@ -24,12 +24,12 @@ import logging
 
 from business.wzcard.wzcard_resource_allocator import WZCardChecker
 
-class AQueryWZCard(api_resource.ApiResource):
+class AUsableWZCard(api_resource.ApiResource):
 	"""
-	校验微众卡信息（用于user_center）
+	可用的微众卡
 	"""
 	app = 'wzcard'
-	resource = 'query_wzcard'
+	resource = 'usable_wzcard'
 
 	@param_required(['woid', 'wzcard_id', 'password'])
 	def get(args):
@@ -45,6 +45,10 @@ class AQueryWZCard(api_resource.ApiResource):
 				"webapp_owner": webapp_owner,
 				"wzcard_id": args['wzcard_id'],
 			})
+
+		print '-*-' * 20
+		print wzcard
+		print '-*-' * 20
 
 		checker = WZCardChecker()
 		is_success, reason = checker.check(wzcard_id, wzcard_password, wzcard)

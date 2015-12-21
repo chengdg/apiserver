@@ -62,26 +62,6 @@ class PurchaseOrder(business_model.Model):
 
 		self.type = mall_models.PRODUCT_DEFAULT_TYPE
 
-		ship_info = webapp_user.selected_ship_info
-		if ship_info:
-			self.ship_info = {
-				"name": ship_info['name'],
-				"id": ship_info['id'],
-				"tel": ship_info['tel'],
-				"address": ship_info['address'],
-				"area": ship_info['area'],
-				"display_area": regional_util.get_str_value_by_string_ids(ship_info['area'])
-			}
-		else:# TODO 收货地址
-			self.ship_info = {
-				"name": 1,
-				"id": 2,
-				"tel": 3,
-				"address": 4,
-				"area": 5,
-				"display_area": 6
-			}
-
 		#计算折扣
 		#product.original_price = product.price
 		reserved_product_repository = ReservedProductRepository.get({

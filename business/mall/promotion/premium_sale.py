@@ -118,6 +118,20 @@ class PremiumSale(promotion.Promotion):
 
 		return can_use_promotion
 
+	def __make_compatible_to_old_version(self, purchase_info, premium_products):
+		"""
+		兼容老的数据格式（后台管理系统会使用）
+		"""
+		from business.mall.product import Product
+		webapp_owner = purchase_info.webapp_owner
+		for premium_product in self.premium_products:
+			premium_product['count'] = premium_product['premium_count']
+			product = Product.from_id({
+				'webapp_owner': webapp_owner,
+				'product_id': premium_product['premium_product_id']
+			})
+			premium_product['price'] = product.price_info['min_price']
+
 	def apply_promotion(self, promotion_product_group, purchase_info=None):
 		products = promotion_product_group.products
 		first_product = products[0]
@@ -135,6 +149,10 @@ class PremiumSale(promotion.Promotion):
 			premium_round_count = total_purchase_count / self.count
 			for premium_product in self.premium_products:
 				premium_product['premium_count'] = premium_product['premium_count'] * premium_round_count
+
+		if purchase_info:
+			#当purchase_info有效，表示在下单上下文中，存储的数据需要兼容后台管理系统
+			self.__make_compatible_to_old_version(purchase_info, self.premium_products)
 
 		detail = {
 			'count': self.count,

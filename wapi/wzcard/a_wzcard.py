@@ -12,7 +12,7 @@ from wapi.decorators import param_required
 #from db.mall import promotion_models
 #from db.wzcard import models as wzcard_models
 from business.wzcard.wzcard import WZCard
-from utils import dateutil as utils_dateutil
+#from utils import dateutil as utils_dateutil
 import logging
 #import resource
 #from wapi.mall.a_purchasing import APurchasing as PurchasingApiResource
@@ -20,7 +20,6 @@ import logging
 #from business.mall.order_factory import OrderFactory
 #from business.mall.purchase_info import PurchaseInfo
 #from business.mall.pay_interface import PayInterface
-import logging
 
 class AWZCard(api_resource.ApiResource):
 	"""
@@ -29,15 +28,15 @@ class AWZCard(api_resource.ApiResource):
 	app = 'wzcard'
 	resource = 'wzcard'
 
-	@param_required(['woid'])
+	@param_required(['wzcard_id'])
 	def get(args):
 		"""
 		获取微众卡信息
 		"""
-		webapp_owner = args['webapp_owner']
+		#webapp_owner = args['webapp_owner']
 		# 获取微众卡信息
 		card = WZCard.from_wzcard_id({
-				"webapp_owner": webapp_owner,
+				#"webapp_owner": webapp_owner,
 				"wzcard_id": args['wzcard_id'],
 			})
 		return {
@@ -58,5 +57,5 @@ class AWZCard(api_resource.ApiResource):
 		@param balance 微众卡金额
 
 		"""
-		webapp_owner = args['webapp_owner']
+		#webapp_owner = args['webapp_owner']
 		return {}	

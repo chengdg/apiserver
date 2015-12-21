@@ -102,7 +102,8 @@ class PromotionRepository(business_model.Model):
 				'thumbnails_url': '%s%s' % (settings.IMAGE_HOST, product.thumbnails_url),
 				'original_premium_count': premium_sale_product.count,
 				'premium_count': premium_sale_product.count,
-				'premium_unit': premium_sale_product.unit
+				'premium_unit': premium_sale_product.unit,
+				'premium_product_id': premium_sale_product.product_id
 			}
 			id2sale[premium_sale_id].premium_products.append(data)
 

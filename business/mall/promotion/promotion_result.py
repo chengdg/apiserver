@@ -35,7 +35,7 @@ class PromotionResult(business_model.Model):
 	def __init__(self, saved_money=0, subtotal=0, detail=None):
 		business_model.Model.__init__(self)
 
-		self.version = '2'
+		self.version = settings.PROMOTION_RESULT_VERSION
 		self.is_success = True
 		self.saved_money = saved_money
 		self.subtotal = subtotal

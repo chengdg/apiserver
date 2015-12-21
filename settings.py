@@ -119,3 +119,6 @@ CTYPT_INFO = {
 COMPONENT_INFO = {
         'app_id' : 'wx8209f1f63f0b1d26',
     }
+
+
+PROMOTION_RESULT_VERSION = '2' #促销结果数据版本号

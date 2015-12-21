@@ -25,6 +25,8 @@ class PurchaseInfo(business_model.Model):
     购买信息
     """
     __slots__ = (
+        'webapp_owner',
+        'webapp_user',
         'product_ids',
         'promotion_ids',
         'product_counts',
@@ -56,6 +58,9 @@ class PurchaseInfo(business_model.Model):
 
     def __init__(self, request_args):
         business_model.Model.__init__(self)
+
+        self.webapp_owner = request_args['webapp_owner']
+        self.webapp_user = request_args['webapp_user']
 
         self.__parse(request_args)
 

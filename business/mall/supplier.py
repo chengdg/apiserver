@@ -2,7 +2,7 @@
 """@package business.mall.supplier
 供货商
 """
-
+from business import model as business_model
 from db.mall import models as mall_models
 
 class Supplier(business_model.Model):

@@ -24,7 +24,7 @@ import resource
 from business import model as business_model 
 from business.mall.product import Product
 from business.mall.order_products import OrderProducts
-from business.mall.order_log_operator import OrderLogOperator
+from business.mall import log_operator
 import settings
 from business.decorator import cached_context_property
 from utils import regional_util
@@ -298,8 +298,8 @@ class Order(business_model.Model):
 			self.pay_interface_type = pay_interface_type
 
 			#记录日志
-			OrderLogOperator.record_operation_log(self, u'客户', u'支付')
-			OrderLogOperator.record_status_log(self, u'客户', mall_models.ORDER_STATUS_NOT, mall_models.ORDER_STATUS_PAYED_NOT_SHIP)
+			log_operator.record_operation_log(self, u'客户', u'支付')
+			log_operator.record_status_log(self, u'客户', mall_models.ORDER_STATUS_NOT, mall_models.ORDER_STATUS_PAYED_NOT_SHIP)
 
 			#更新webapp_user的has_purchased字段
 			webapp_user = self.context['webapp_user']

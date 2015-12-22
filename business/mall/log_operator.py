@@ -3,10 +3,10 @@
 操作日志记录器
 
 """
-
+from business import model as business_model
 from db.mall import models as mall_models
 from db.wzcard import models as wzcard_models
-from business.mall import Supplier
+from business.mall.supplier import Supplier
 import logging
 
 class LogOperator(business_model.Model):

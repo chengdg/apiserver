@@ -24,6 +24,7 @@ for f in os.listdir(wapi_path):
 
 from core import api_resource
 import json
+#import resources
 
 class ApiNotExistError(Exception):
 	pass

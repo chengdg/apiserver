@@ -39,11 +39,13 @@ class ForbiddenCouponProductIds(business_model.Model):
 		webapp_cache:get_forbidden_coupon_product_ids_for_cache
 		"""
 		def inner_func():
-			forbidden_coupon_products = list(promotion_models.ForbiddenCouponProduct.select().dj_where(
-				owner_id=webapp_owner_id, 
-				status__in=(promotion_models.FORBIDDEN_STATUS_NOT_START, promotion_models.FORBIDDEN_STATUS_STARTED)
-			))
+			forbidden_coupon_products = []
 
+			for forbidden_coupon_product in promotion_models.ForbiddenCouponProduct.select().dj_where(
+				owner_id=webapp_owner_id,
+				status__in=(promotion_models.FORBIDDEN_STATUS_NOT_START, promotion_models.FORBIDDEN_STATUS_STARTED)
+			):
+				forbidden_coupon_products.append(forbidden_coupon_product.to_dict())
 			return {
 					'keys': [
 						'forbidden_coupon_products_%s' % (webapp_owner_id)
@@ -59,7 +61,12 @@ class ForbiddenCouponProductIds(business_model.Model):
 		"""
 		key = 'forbidden_coupon_products_%s' % (webapp_owner_id)
 
-		forbidden_coupon_products = cache_util.get_from_cache(key, self.__get_forbidden_coupon_product_ids_for_cache(webapp_owner_id))
+		dict_forbidden_coupon_products = cache_util.get_from_cache(key, self.__get_forbidden_coupon_product_ids_for_cache(webapp_owner_id))
+		forbidden_coupon_products = []
+
+		for dict_forbidden_coupon_product in dict_forbidden_coupon_products:
+			forbidden_coupon_products.append(promotion_models.ForbiddenCouponProduct.from_dict(dict_forbidden_coupon_product))
+
 		product_ids = set()
 		for product in forbidden_coupon_products:
 			if ForbiddenCouponProductIds.check_is_active(product):

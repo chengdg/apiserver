@@ -9,6 +9,7 @@ from business.wzcard.wzcard import WZCard
 from business.wzcard.wzcard_resource import WZCardResource
 from business.wzcard.wzcard_checker import WZCardChecker
 from decimal import Decimal
+from business.mall import log_operator
 
 
 # 每单用微众卡数量
@@ -111,6 +112,11 @@ class WZCardResourceAllocator(business_model.Service):
 				[(item[0].wzcard_id, item[1]) for item in used_wzcards]
 				)
 			logging.info("total_used_amount: {}, order.final_price: {}".format(total_used_amount, order.final_price))
+
+			#记录微众卡消费日志 duhao
+			#TODO 这种方式太low了。。。
+			for item in used_wzcards:
+				log_operator.record_wzcard_log(self.__webapp_owner.id, order.order_id, item[0].id, used_amount)
 		else:
 			# 退还微众卡
 			for item in used_wzcards:

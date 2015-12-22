@@ -301,6 +301,10 @@ class Order(business_model.Model):
 			OrderLogOperator.record_operation_log(self, u'客户', u'支付')
 			OrderLogOperator.record_status_log(self, u'客户', mall_models.ORDER_STATUS_NOT, mall_models.ORDER_STATUS_PAYED_NOT_SHIP)
 
+			#更新webapp_user的has_purchased字段
+			webapp_user = self.context['webapp_user']
+			webapp_user.set_purchased()
+
 			self.__send_notify_mail()
 
 		return pay_result

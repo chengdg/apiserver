@@ -78,7 +78,8 @@ class APayResult(api_resource.ApiResource):
 
 			is_pay_success = order.pay(pay_interface.type)
 			if is_pay_success:
-				webapp_user.set_purchased()
+				# webapp_user.set_purchased()  #这个不应该在这处理 duhao
+				pass
 
 			#TODO2: 进行支付后处理
 			#mall_signals.post_pay_order.send(sender=Order, order=order, request=request)

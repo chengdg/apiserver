@@ -143,8 +143,11 @@ class WebAppOwnerInfo(business_model.Model):
 				watchdog_error(error_msg, user_id=webapp_owner_id, noraise=True)
 				pay_interfaces = []
 
-			# 微众卡权限
-			has_permission = account_models.AccountHasWeizoomCardPermissions.is_can_use_weizoom_card_by_owner_id(webapp_owner_id)
+			account_has_weizoom_card_permission = account_models.AccountHasWeizoomCardPermissions.select().dj_where(owner_id=webapp_owner_id).first()
+			if account_has_weizoom_card_permission and account_has_weizoom_card_permission.is_can_use_weizoom_card:
+				has_permission = True
+			else:
+				has_permission = False
 
 			try:
 				operation_settings = account_models.OperationSettings.get_settings_for_user(webapp_owner_id)

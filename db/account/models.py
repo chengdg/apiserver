@@ -115,15 +115,6 @@ class AccountHasWeizoomCardPermissions(models.Model):
 	class Meta(object):
 		db_table = 'market_tool_weizoom_card_account_has_permissions'
 
-	# Todo 需要去除
-	@staticmethod
-	def is_can_use_weizoom_card_by_owner_id(owner_id):
-		permissions = AccountHasWeizoomCardPermissions.select().dj_where(owner_id=owner_id)
-		if permissions.count() > 0:
-			return permissions[0].is_can_use_weizoom_card
-		else:
-			return False
-
 class TemplateGlobalNavbar(models.Model):
 	'''
 	全局导航

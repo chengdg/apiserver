@@ -294,50 +294,6 @@ class ForbiddenCouponProduct(models.Model):
 	class Meta(object):
 		db_table = 'mall_forbidden_coupon_product'
 
-	# Todo 需要删除
-	@property
-	def is_active(self):
-		if self.is_permanant_active and self.status != FORBIDDEN_STATUS_FINISHED:
-			return True
-
-		if self.status == FORBIDDEN_STATUS_FINISHED:
-			return False
-
-		self.__update_status_if_necessary()
-
-		if self.status == FORBIDDEN_STATUS_NOT_START or self.status == FORBIDDEN_STATUS_FINISHED:
-			return False
-
-		return True
-
-	# Todo 需要删除
-	def __update_status_if_necessary(self):
-		if self.is_permanant_active:
-			if self.status != FORBIDDEN_STATUS_STARTED:
-				self.status = FORBIDDEN_STATUS_STARTED
-				self.save()
-			return
-		now = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
-
-		if type(self.end_date) == datetime:
-			end_date = self.end_date.strftime('%Y-%m-%d %H:%M:%S')
-		else:
-			end_date = self.end_date
-
-		if type(self.start_date) == datetime:
-			start_date = self.start_date.strftime('%Y-%m-%d %H:%M:%S')
-		else:
-			start_date = self.start_date
-
-		if start_date <= now and end_date > now and self.status == FORBIDDEN_STATUS_NOT_START:
-			# 未开始状态,但是时间已经再开始,由于定时任务尚未执行
-			self.status = FORBIDDEN_STATUS_STARTED
-			self.save()
-		elif end_date <= now and (self.status == FORBIDDEN_STATUS_NOT_START or self.status == FORBIDDEN_STATUS_STARTED):
-			# 未开始,进行中状态,但是时间到期了,由于定时任务尚未执行
-			self.status = FORBIDDEN_STATUS_FINISHED
-			self.save()
-
 
 class RedEnvelopeRule(models.Model):
 	"""

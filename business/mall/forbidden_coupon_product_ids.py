@@ -3,20 +3,11 @@
 禁用优惠券的商品id集合，从redis缓存中获取相应数据
 """
 
-import json
-from bs4 import BeautifulSoup
-import math
-import itertools
-
-from wapi.decorators import param_required
-from wapi import wapi_utils
+from datetime import datetime
 from core.cache import utils as cache_util
-from db.mall import models as mall_models
 from db.mall import promotion_models
-#import resource
-from core.watchdog.utils import watchdog_alert
-from business import model as business_model 
-import settings
+from wapi.decorators import param_required
+from business import model as business_model
 
 
 class ForbiddenCouponProductIds(business_model.Model):
@@ -71,9 +62,52 @@ class ForbiddenCouponProductIds(business_model.Model):
 		forbidden_coupon_products = cache_util.get_from_cache(key, self.__get_forbidden_coupon_product_ids_for_cache(webapp_owner_id))
 		product_ids = set()
 		for product in forbidden_coupon_products:
-			if product.is_active:
+			if ForbiddenCouponProductIds.check_is_active(product):
 				product_ids.add(product.product_id)
 
 		return product_ids
 
+	@staticmethod
+	def check_is_active(forbidden_coupon_product):
+		if forbidden_coupon_product.is_permanant_active and forbidden_coupon_product.status != promotion_models.FORBIDDEN_STATUS_FINISHED:
+			return True
 
+		if forbidden_coupon_product.status == promotion_models.FORBIDDEN_STATUS_FINISHED:
+			return False
+
+		ForbiddenCouponProductIds.update_status_if_necessary(forbidden_coupon_product)
+
+		if forbidden_coupon_product.status == promotion_models.FORBIDDEN_STATUS_NOT_START or forbidden_coupon_product.status == promotion_models.FORBIDDEN_STATUS_FINISHED:
+			return False
+
+		return True
+
+	@staticmethod
+	def update_status_if_necessary(forbidden_coupon_product):
+		if forbidden_coupon_product.is_permanant_active:
+			if forbidden_coupon_product.status != promotion_models.FORBIDDEN_STATUS_STARTED:
+				forbidden_coupon_product.status = promotion_models.FORBIDDEN_STATUS_STARTED
+				forbidden_coupon_product.save()
+			return
+		now = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
+
+		if type(forbidden_coupon_product.end_date) == datetime:
+			end_date = forbidden_coupon_product.end_date.strftime('%Y-%m-%d %H:%M:%S')
+		else:
+			end_date = forbidden_coupon_product.end_date
+
+		if type(forbidden_coupon_product.start_date) == datetime:
+			start_date = forbidden_coupon_product.start_date.strftime('%Y-%m-%d %H:%M:%S')
+		else:
+			start_date = forbidden_coupon_product.start_date
+
+		if start_date <= now and end_date > now and forbidden_coupon_product.status == promotion_models.FORBIDDEN_STATUS_NOT_START:
+			# 未开始状态,但是时间已经再开始,由于定时任务尚未执行
+			forbidden_coupon_product.status = promotion_models.FORBIDDEN_STATUS_STARTED
+			forbidden_coupon_product.save()
+		elif end_date <= now and (
+				forbidden_coupon_product.status == promotion_models.FORBIDDEN_STATUS_NOT_START or
+				forbidden_coupon_product.status == promotion_models.FORBIDDEN_STATUS_STARTED):
+			# 未开始,进行中状态,但是时间到期了,由于定时任务尚未执行
+			forbidden_coupon_product.status = promotion_models.FORBIDDEN_STATUS_FINISHED
+			forbidden_coupon_product.save()

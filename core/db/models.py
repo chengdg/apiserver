@@ -97,17 +97,19 @@ class DecimalField(peewee.DecimalField):
 
 class DateField(peewee.DateField):
 
-	def __init__(self, auto_now_add=False, auto_now=False, **kwargs):
+	def __init__(self, auto_now_add=False, auto_now=False, blank=False, **kwargs):
 		if auto_now or auto_now_add:
 			kwargs['default'] = datetime.datetime.now
+		kwargs['null'] = blank
 		super(DateField, self).__init__(**kwargs)
 
 
 class DateTimeField(peewee.DateTimeField):
 
-	def __init__(self, auto_now_add=False, auto_now=False, **kwargs):
+	def __init__(self, auto_now_add=False, auto_now=False, blank=False, **kwargs):
 		if auto_now or auto_now_add:
 			kwargs['default'] = datetime.datetime.now
+		kwargs['null'] = blank
 		super(DateTimeField, self).__init__(**kwargs)
 
 class ForeignKey(peewee.ForeignKeyField):

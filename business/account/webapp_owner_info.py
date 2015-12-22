@@ -216,12 +216,12 @@ class WebAppOwnerInfo(business_model.Model):
 		"""
 		webapp_owner_info_key = self.__get_webapp_owner_info_key(self.webapp_owner_id)
 		red_envelope_key = self.__get_red_envelope_key(self.webapp_owner_id)
-		postage_configs_key = self.__get_postage_configs_key(self.webapp_owner_id)
+		#postage_configs_key = self.__get_postage_configs_key(self.webapp_owner_id)
 		logging.info("to purge cache for '%s' and '%s'" % (webapp_owner_info_key, red_envelope_key))
 
 		cache_util.delete_cache(webapp_owner_info_key)
 		cache_util.delete_cache(red_envelope_key)
-		cache_util.delete_cache(postage_configs_key)
+		#cache_util.delete_cache(postage_configs_key)
 		return
 
 

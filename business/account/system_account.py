@@ -15,7 +15,7 @@ from core.cache import utils as cache_util
 from db.mall import models as mall_models
 from db.mall import promotion_models
 from db.account import models as account_models
-import resource
+#import resource
 from db.mall import models as mall_models
 from db.mall import promotion_models
 from db.account import models as account_models

@@ -16,7 +16,7 @@ from db.mall import models as mall_models
 from db.mall import promotion_models
 from db.wzcard import models as wzcard_models
 from db.account import models as account_models
-import resource
+#import resource
 from core.watchdog.utils import watchdog_alert
 from business.decorator import cached_context_property
 from business import model as business_model

@@ -5,7 +5,6 @@ from core.db import models
 from db.account.models import User
 from core.decorator import cached_property
 from utils.string_util import hex_to_byte, byte_to_hex
-import resource
 
 from hashlib import md5
 import time

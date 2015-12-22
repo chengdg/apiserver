@@ -8,7 +8,7 @@ from wapi.decorators import param_required
 from db.mall import models as mall_models
 from db.mall import promotion_models
 from utils import dateutil as utils_dateutil
-import resource
+#import resource
 from business.mall.purchase_info import PurchaseInfo
 from business.mall.purchase_order import PurchaseOrder
 from business.mall.forbidden_coupon_product_ids import ForbiddenCouponProductIds

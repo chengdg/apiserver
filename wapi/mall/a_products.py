@@ -2,7 +2,7 @@
 
 from core import api_resource
 from wapi.decorators import param_required
-import resource
+#import resource
 from business.mall.simple_products import SimpleProducts
 
 class AProducts(api_resource.ApiResource):

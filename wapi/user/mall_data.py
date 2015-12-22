@@ -3,7 +3,7 @@
 from core import api_resource
 from wapi.decorators import param_required
 
-import resource
+#import resource
 
 class MallData(api_resource.ApiResource):
 	"""

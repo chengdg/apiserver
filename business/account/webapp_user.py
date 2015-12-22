@@ -16,7 +16,7 @@ from core.exceptionutil import unicode_full_stack
 from db.mall import models as mall_models
 from db.mall import promotion_models
 from db.member import models as member_models
-import resource
+#import resource
 from core.watchdog.utils import watchdog_alert
 from business import model as business_model
 from business.account.member import Member

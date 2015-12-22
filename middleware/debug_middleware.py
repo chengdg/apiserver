@@ -15,8 +15,8 @@ import logging
 
 class SqlMonitorMiddleware(object):
 	def process_request(self, request, response):
-		import resource
-		resource.indent = 0
+		#import resource
+		#resource.indent = 0
 		
 		print 'empty peewee.QUERIES'
 		peewee.QUERIES = []

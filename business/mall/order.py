@@ -288,7 +288,7 @@ class Order(business_model.Model):
 			#return list(details)
 			return details
 
-		expresses = express_models.ExpressHasOrderPushStatus.dj_where(
+		expresses = express_models.ExpressHasOrderPushStatus.select().dj_where(
 				express_company_name = self.express_company_name,
 				express_number = self.express_number
 			)

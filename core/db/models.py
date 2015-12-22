@@ -47,7 +47,10 @@ class Model(peewee.Model):
 		#columns = [field.get_attname() for field in self._meta.fields]
 		result = {}
 		for field in self._meta.get_fields():
-			result[field.name] = self._data.get(field.name)
+			if isinstance(field, ForeignKey):
+				result[field.name+'_id'] = self._data.get(field.name)
+			else:
+				result[field.name] = self._data.get(field.name)
 		for attr in attrs:
 			result[attr] = getattr(self, attr, None)
 		return result

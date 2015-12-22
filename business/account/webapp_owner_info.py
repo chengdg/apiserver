@@ -171,7 +171,10 @@ class WebAppOwnerInfo(business_model.Model):
 			
 			#member default tags
 			try:
-				default_member_tag = member_models.MemberTag.get_default_tag(webapp_id)
+				try:
+					default_member_tag = member_models.MemberTag.get(webapp_id=webapp_id, name="未分组")
+				except:
+					default_member_tag = member_models.MemberTag.create(webapp_id=webapp_id, name="未分组")
 			except:
 				default_member_tag = member_models.MemberTag()
 			

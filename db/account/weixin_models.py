@@ -28,22 +28,6 @@ class WeixinMpUser(models.Model):
 
 	class Meta(object):
 		db_table = 'account_weixin_mp_user'
-		
-
-	@staticmethod
-	def get_weixin_mp_user(user_id):
-		if WeixinMpUser.objects.filter(owner_id=user_id).count() > 0:
-			return WeixinMpUser.objects.filter(owner_id=user_id)[0]
-		else:
-			return None
-
-
-	@staticmethod
-	def get_weixin_mp_user_access_token_by_mp_user(mpuser):
-		if WeixinMpUserAccessToken.objects.filter(mpuser=mpuser).count() > 0:
-			return WeixinMpUserAccessToken.objects.filter(mpuser=mpuser)[0]
-		else:
-			return None
 
 
 DEFAULT_ICON = '/static/img/user-1.jpg'

@@ -581,9 +581,8 @@ Scenario:4 商品添加到购物车后，后台对商品规格进行修改
 		}
 		"""
 	
-
 @mall3 @mall.webapp @mall.webapp.shopping_cart
-Scenario: 5 商品添加到购物车后，进行删除
+Scenario:5 商品添加到购物车后，进行删除
 	bill加入jobs的商品到购物车后
 	1.可以对购物车的商品进行删除
 
@@ -638,7 +637,7 @@ Scenario: 5 商品添加到购物车后，进行删除
 		}
 		"""
 
-@mall3 @mall.webapp @mall.webapp.shopping_cart @bc
+@mall3 @mall.webapp @mall.webapp.shopping_cart
 Scenario:6 商品添加到购物车后，后台对商品的价格，库存进行修改（库存数量不为0）
 	bill在webapp中将jobs的商品加入到购物车后，jobs将此商品的商品规格进行修改
 	1.bill查看jobs的webapp购物车，此商品有效，价格与库存为更改后的值

@@ -13,7 +13,7 @@ from wapi import wapi_utils
 
 from db.mall import models as mall_models
 
-import resource
+#import resource
 import settings
 from core.watchdog.utils import watchdog_alert
 from core.cache import utils as cache_util

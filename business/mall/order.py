@@ -20,7 +20,7 @@ from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
 from db.mall import models as mall_models
-import resource
+#import resource
 from business import model as business_model 
 from business.mall.product import Product
 from business.mall.order_products import OrderProducts
@@ -31,6 +31,9 @@ from utils import regional_util
 
 from core.decorator import deprecated
 import logging
+
+from db.express import models as express_models
+from business.mall.express.express_detail import ExpressDetail
 
 class Order(business_model.Model):
 	"""订单
@@ -57,6 +60,7 @@ class Order(business_model.Model):
 		'coupon_id',
 		'status',
 		'origin_order_id',
+		'express_company_name',
 		'express_number',
 		'customer_message',
 		'promotion_saved_money',
@@ -270,6 +274,44 @@ class Order(business_model.Model):
 		#TODO2: 实现物流详情
 		return None
 
+	@property
+	def express_details(self):
+		"""
+		[property] 订单的物流详情列表
+
+		@return ExpressDetail对象list
+
+		@see Weapp的`weapp/mall/models.py`中的`get_express_details()`
+		"""
+		# 为了兼容有order.id的方式
+		db_details = express_models.ExpressDetail.select().dj_where(order_id=self.id).order_by(-express_models.ExpressDetail.display_index)
+		if db_details.count() > 0:
+			details = [ExpressDetail(detail) for detail in db_details]
+			#return list(details)
+			return details
+
+		logging.info("express_company_name:{}, express_number:{}".format(self.express_company_name, self.express_number))
+		expresses = express_models.ExpressHasOrderPushStatus.select().dj_where(
+				express_company_name = self.express_company_name,
+				express_number = self.express_number
+			)
+		if expresses.count() == 0:
+			logging.info("No proper ExpressHasOrderPushStatus records.")
+			return []
+
+		try:
+			express = expresses[0]
+			logging.info("express: {}".format(express.id))
+			db_details = express_models.ExpressDetail.select().dj_where(express_id=express.id).order_by(-express_models.ExpressDetail.display_index)
+			details = [ExpressDetail(detail) for detail in db_details]	
+		except Exception as e:
+			#innerErrMsg = full_stack()
+			#watchdog_fatal(u'获取快递详情失败，order_id={}, case:{}'.format(order.id, innerErrMsg), EXPRESS_TYPE)
+			logging.error(u'获取快递详情失败，order_id={}, case:{}'.format(self.id, str(e)))
+			details = []
+		return details
+
+
 	def is_valid(self):
 		"""
 		判断订单是否有效
@@ -311,6 +353,10 @@ class Order(business_model.Model):
 
 	def __send_notify_mail(self):
 		"""发送通知邮件
+
+		@note 原来的发邮件用的是@weizoom.com邮箱，发邮件有拒收的风险。应该改成商用的发邮件服务，比如mailgun。
+
+		@todo 待实现
 		"""
 		print '[TODO2]: send order notify mail...'
 		return

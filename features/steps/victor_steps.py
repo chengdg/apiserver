@@ -223,7 +223,7 @@ def step_impl(context, webapp_user):
 	wzcard_id = context.wzcard_info['id']
 	wzcard_password = context.wzcard_info['password']
 
-	url = "/wapi/wzcard/query_wzcard/"
+	url = "/wapi/wzcard/usable_wzcard/"
 	response = context.client.get(url, {
 			'woid': context.webapp_owner_id,
 			'wzcard_id': wzcard_id,
@@ -251,7 +251,7 @@ def step_impl(context, webapp_user, expected_msg):
 	wzcard_id = context.wzcard_info['id']
 	wzcard_password = context.wzcard_info['password']
 
-	url = "/wapi/wzcard/query_wzcard/"
+	url = "/wapi/wzcard/usable_wzcard/"
 	response = context.client.get(url, {
 			'woid': context.webapp_owner_id,
 			'wzcard_id': wzcard_id,

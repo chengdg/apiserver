@@ -9,7 +9,7 @@ from wapi.decorators import param_required
 from db.mall import models as mall_models
 from db.mall import promotion_models
 from utils import dateutil as utils_dateutil
-import resource
+#import resource
 from wapi.mall.a_purchasing import APurchasing as PurchasingApiResource
 from core.cache import utils as cache_utils
 from business.mall.order import Order

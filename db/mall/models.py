@@ -32,27 +32,6 @@ class MallConfig(models.Model):
 	class Meta(object):
 		db_table = 'mall_config'
 
-	@staticmethod
-	def set_max_product_count_for(user, max_product_count):
-		if user is None or max_product_count < 0:
-			return
-
-		MallConfig.update(max_product_count=max_product_count).dj_where(owner=user.id)
-
-	@staticmethod
-	def get_order_expired_day(user):
-		if user is None:
-			return -1
-
-		if MallConfig.select().dj_where(owner=user.id).count() > 0:
-			return MallConfig.select().dj_where(owner=user)[0].order_expired_day
-
-
-
-
-
-
-
 
 #########################################################################
 # 地域相关Model
@@ -84,12 +63,6 @@ class District(models.Model):
 		db_table = 'district'
 		verbose_name = '区县列表'
 		verbose_name_plural = '区县列表'
-
-
-
-
-
-
 
 
 
@@ -143,25 +116,6 @@ class SpecialPostageConfig(models.Model):
 	class Meta(object):
 		db_table = 'mall_postage_config_special'
 
-	def get_special_has_provinces(self):
-		return PostageConfigSpecialHasProvince.select().dj_where(postage_config_special=self)
-
-	def get_provinces_array(self):
-		provinces = []
-		for special_has_provinces in self.get_special_has_provinces():
-			provinces.append({
-				'id': special_has_provinces.province.id, 
-				'name': special_has_provinces.province.name
-			})
-		return provinces
-
-	@property
-	def destination_str(self):
-		province_ids = self.destination.split(',')
-		provinces = area_util.get_provinces_by_ids(province_ids)
-		self._dest_str = u', '.join(provinces)
-		return self._dest_str
-
 
 class FreePostageConfig(models.Model):
 	"""
@@ -176,14 +130,6 @@ class FreePostageConfig(models.Model):
 
 	class Meta(object):
 		db_table = 'mall_free_postage_config'
-
-	@property
-	def destination_str(self):
-		province_ids = self.destination.split(',')
-		provinces = area_util.get_provinces_by_ids(province_ids)
-		self._dest_str = u', '.join(provinces)
-		return self._dest_str
-
 
 # class PostageConfigSpecialHasProvince(models.Model):
 # 	owner = models.ForeignKey(User)

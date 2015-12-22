@@ -6,7 +6,7 @@ from core import api_resource
 from wapi.decorators import param_required
 from utils import url_helper
 
-import resource
+#import resource
 from business.account.member_factory import MemberFactory
 from business.account.member import Member
 from business.account.system_account import SystemAccount

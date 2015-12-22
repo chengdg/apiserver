@@ -15,7 +15,7 @@ from db.mall import models as mall_models
 from db.mall import promotion_models
 from db.member import models as member_models
 
-import resource
+#import resource
 import settings
 from core.watchdog.utils import watchdog_alert
 from core.cache import utils as cache_util

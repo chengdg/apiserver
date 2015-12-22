@@ -724,7 +724,6 @@ Scenario:18 不同等级的会员购买有会员价同时有运费配置
 		[{
 			"name": "商品14",
 			"price": 100.00,
-			"member_price": true,
 			"weight": 1,
 			"postage": "系统",
 			"is_member_product": "on"

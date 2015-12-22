@@ -17,7 +17,7 @@ from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
 from core.exceptionutil import unicode_full_stack
 from utils import msg_crypt, auth_util, error_codes
 import settings
-import resource
+#import resource
 
 # from wapi.member import a_member_account
 from wapi.user.access_token import AccessToken

@@ -91,22 +91,6 @@ class UserProfile(models.Model):
 	class Meta(object):
 		db_table = 'account_user_profile'
 
-	@property
-	def host(self):
-		if hasattr(self, '_host'):
-			return self._host
-
-		if self.host_name and len(self.host_name.strip()) > 0:
-			self._host = self.host_name
-		else:
-			self._host = settings.DOMAIN
-
-		return self._host
-
-	@property
-	def is_manager(self):
-		return (self.user_id == self.manager_id) or (self.manager_id == 2) #2 is manager's id
-
 
 class OperationSettings(models.Model):
 	"""
@@ -118,17 +102,6 @@ class OperationSettings(models.Model):
 
 	class Meta(object):
 		db_table = 'account_operation_settings'
-
-	@staticmethod
-	def get_settings_for_user(userid):
-		if userid is None:
-			return None
-
-		settings_list = list(OperationSettings.select().dj_where(owner_id=userid)) 
-		if len(settings_list) == 0:
-			return OperationSettings.create(owner=userid)
-		else:
-			return settings_list[0]
 
 
 class AccountHasWeizoomCardPermissions(models.Model):
@@ -142,15 +115,6 @@ class AccountHasWeizoomCardPermissions(models.Model):
 	class Meta(object):
 		db_table = 'market_tool_weizoom_card_account_has_permissions'
 
-	@staticmethod
-	def is_can_use_weizoom_card_by_owner_id(owner_id):
-		permissions = AccountHasWeizoomCardPermissions.select().dj_where(owner_id=owner_id)
-		if permissions.count() > 0:
-			return permissions[0].is_can_use_weizoom_card
-		else:
-			return False
-
-
 class TemplateGlobalNavbar(models.Model):
 	'''
 	全局导航
@@ -163,16 +127,6 @@ class TemplateGlobalNavbar(models.Model):
 
 	class Meta(object):
 		db_table = 'template_global_navbar'
-
-	@staticmethod
-	def get_object(user_id):
-		if user_id > 0:
-			global_navbar = TemplateGlobalNavbar.get(
-				owner=user_id
-			)
-			return global_navbar
-		else:
-			return None
 
 
 class AccessToken(models.Model):

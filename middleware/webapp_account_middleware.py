@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from db.account import models as account_models
-import resource
+#import resource
 from business.account.webapp_owner import WebAppOwner
 from business.account.member import Member
 from business.account.webapp_user import WebAppUser

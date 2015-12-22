@@ -20,3 +20,4 @@ import a_integral_setting
 import a_global_navbar
 import a_coupon
 import a_coupons
+import a_express_details

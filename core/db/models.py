@@ -47,7 +47,10 @@ class Model(peewee.Model):
 		#columns = [field.get_attname() for field in self._meta.fields]
 		result = {}
 		for field in self._meta.get_fields():
-			result[field.name] = self._data.get(field.name)
+			if isinstance(field, ForeignKey):
+				result[field.name+'_id'] = self._data.get(field.name)
+			else:
+				result[field.name] = self._data.get(field.name)
 		for attr in attrs:
 			result[attr] = getattr(self, attr, None)
 		return result
@@ -94,17 +97,19 @@ class DecimalField(peewee.DecimalField):
 
 class DateField(peewee.DateField):
 
-	def __init__(self, auto_now_add=False, auto_now=False, **kwargs):
+	def __init__(self, auto_now_add=False, auto_now=False, blank=False, **kwargs):
 		if auto_now or auto_now_add:
 			kwargs['default'] = datetime.datetime.now
+		kwargs['null'] = blank
 		super(DateField, self).__init__(**kwargs)
 
 
 class DateTimeField(peewee.DateTimeField):
 
-	def __init__(self, auto_now_add=False, auto_now=False, **kwargs):
+	def __init__(self, auto_now_add=False, auto_now=False, blank=False, **kwargs):
 		if auto_now or auto_now_add:
 			kwargs['default'] = datetime.datetime.now
+		kwargs['null'] = blank
 		super(DateTimeField, self).__init__(**kwargs)
 
 class ForeignKey(peewee.ForeignKeyField):

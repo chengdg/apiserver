@@ -35,46 +35,6 @@ class MemberGrade(models.Model):
 	def __unicode__(self):
 		return u"{}-{}".format(self.webapp_id, self.name)
 
-	#############################################################################
-	# integral_info: 获取积分信息
-	#############################################################################
-	@property
-	def integral_info(self):
-		count = Member.objects.get(id=self.member_id).integral
-		count_per_yuan = IntegralStrategySttings.objects.get(webapp_id=self.webapp_id).integral_each_yuan
-		return {
-			'count': count,
-			'count_per_yuan': count_per_yuan
-		}
-
-	@property
-	def member_count(self):
-		return Member.select().dj_where(grade_id=self.id, is_for_test=False, is_subscribed=True).count()
-
-	DEFAULT_GRADE_NAME = u'普通会员'
-	@staticmethod
-	def get_default_grade(webapp_id):
-		try:
-			return MemberGrade.get(webapp_id=webapp_id, is_default_grade=True)
-		except:
-			return MemberGrade.create(
-				webapp_id = webapp_id,
-				name = MemberGrade.DEFAULT_GRADE_NAME,
-				upgrade_lower_bound = 0,
-				is_default_grade = True,
-				is_auto_upgrade = True
-			)
-
-	@staticmethod
-	def get_all_grades_list(webapp_id):
-		if webapp_id is None:
-			return []
-		member_grades = MemberGrade.select().dj_where(webapp_id=webapp_id).order_by('id')
-
-		for member_grade in member_grades:
-			member_grade.pay_money = '%.2f' % member_grade.pay_money
-		return member_grades
-
 
 SOCIAL_PLATFORM_WEIXIN = 0
 SOCIAL_PLATFORM_QQ = 1
@@ -99,14 +59,6 @@ class SocialAccount(models.Model):
 	uuid = models.CharField(max_length=255)
 	created_at = models.DateTimeField(auto_now_add=True, verbose_name='加入日期')
 
-	def is_from_weixin(self):
-		return SOCIAL_PLATFORM_WEIXIN == self.platform
-
-	def is_from_qq(self):
-		return SOCIAL_PLATFORM_QQ == self.platform
-
-	def is_frm_sina_weibo(self):
-		return SOCIAL_PLATFORM_SINAWEIBO == self.platform
 
 	class Meta(object):
 		db_table = 'binding_social_account'
@@ -128,14 +80,6 @@ class ShipInfo(models.Model):
 	class Meta(object):
 		db_table = 'member_ship_info'
 
-	@property
-	def get_str_area(self):
-		from tools.regional import views as regional_util
-		if self.area:
-			return regional_util.get_str_value_by_string_ids(self.area)
-		else:
-			return ''
-
 
 class WebAppUser(models.Model):
 	"""
@@ -150,178 +94,6 @@ class WebAppUser(models.Model):
 
 	class Meta(object):
 		db_table = 'member_webapp_user'
-
-	@staticmethod
-	def get_member_by_webapp_user_id(id):
-		try:
-			webapp_user = WebAppUser.get(id=id)
-			if webapp_user.member_id != 0 and webapp_user.member_id != -1:
-				return Member.get(id=webapp_user.member_id)
-			elif father_id != 0:
-				webapp_user = WebAppUser.get(id=webapp_user.id)
-				if webapp_user.member_id != 0 and webapp_user.member_id != -1:
-					return Member.get(id=webapp_user.member_id)
-				else:
-					return None
-			else:
-				return None
-		except:
-			return None
-
-
-	@property
-	def is_member(self):
-		return self.member_id > 0
-
-	# def can_use_integral(self, integral):
-	# 	"""
-	# 	检查是否可用数量为integral的积分
-	# 	"""
-	# 	if not self.is_member:
-	# 		return False
-
-	# 	remianed_integral = Member.get(id=self.member_id).integral
-	# 	if remianed_integral >= integral:
-	# 		return True
-	# 	else:
-	# 		return False
-
-	@cached_property
-	def integral_info(self):
-		"""
-		积分信息
-		"""
-		try:
-			self.member = Member.get(id=self.member_id)
-			member = self.member
-			count = member.integral
-			target_grade_id = member.grade_id
-			target_member_grade = self.webapp_owner_info.member2grade.get(target_grade_id, None)
-			if target_member_grade:
-				usable_integral_percentage_in_order = target_member_grade.usable_integral_percentage_in_order
-			else:
-				usable_integral_percentage_in_order = 100
-		except:
-			count = 0
-			usable_integral_percentage_in_order = 100
-
-		#计算积分金额
-		if self.webapp_owner_info and hasattr(self.webapp_owner_info, 'integral_strategy_settings'):
-			integral_strategy_settings = self.webapp_owner_info.integral_strategy_settings
-		else:
-			integral_strategy_settings = IntegralStrategySttings.get(webapp_id=self.webapp_id)
-
-		count_per_yuan = integral_strategy_settings.integral_each_yuan
-
-		usable_integral_or_conpon = integral_strategy_settings.usable_integral_or_conpon
-		return {
-			'count': count,
-			'count_per_yuan': count_per_yuan,
-			'usable_integral_percentage_in_order' : usable_integral_percentage_in_order,
-			'usable_integral_or_conpon' : usable_integral_or_conpon
-		}
-
-	def use_integral(self, integral_count):
-		"""
-		使用积分
-		"""
-		from integral import use_integral_to_buy
-
-		if integral_count == 0:
-			return 0.0
-
-		member = Member.get(id=self.member_id)
-		return use_integral_to_buy(member, integral_count)
-
-	#############################################################################
-	# coupons: 获取用户的优惠券信息
-	#############################################################################
-	@property
-	def coupons(self):
-		"""
-		优惠券信息
-		"""
-		if self.member_id == 0:
-			return []
-		else:
-			return resource.get('member', 'member_coupons', {
-				'member': self,
-				'return_model': True
-			})
-
-	def use_coupon_by_coupon_id(self, member_id, coupon_id, price=0, webapp_owner_id=-1):
-		"""
-		通过优惠券号使用优惠券
-		"""
-		if coupon_id > 0:
-			try:
-				coupon = coupon_model.Coupon.objects.get(owner_id=webapp_owner_id, coupon_id=coupon_id, status=coupon_model.COUPON_STATUS_UNUSED)
-			except:
-				raise IOError
-			coupon.money = float(coupon.money)
-			coupon_role = coupon_model.CouponRule.objects.get(id=coupon.coupon_rule_id)
-			coupon.valid_restrictions = coupon_role.valid_restrictions
-			if coupon.valid_restrictions > price and coupon.valid_restrictions!=-1:
-				raise ValueError
-			coupon_model.Coupon.select().dj_where(coupon_id=coupon_id).update(status=coupon_model.COUPON_STATUS_USED)
-		else:
-			coupon = coupon_model.Coupon()
-			coupon.money = 0.0
-			coupon.id = coupon_id
-
-		return coupon
-
-	def complete_payment(self, request, order=None):
-		"""
-		完成支付，进行支付后的处理
-		"""
-		if request is None:
-			return
-
-		# from integral import increase_for_buy_via_shared_url
-		# #首先进行积分的处理
-		# #print '===========innnnnnnnnnnnnnnnnnnnnnnnnnnnnnn'
-		# increase_for_buy_via_shared_url(request, order)
-		#进行分享链接的相关计算
-		from modules.member.util import  process_payment_with_shared_info
-		process_payment_with_shared_info(request)
-
-	def set_purchased(self):
-		"""
-		设置已购买标识
-		"""
-		if not self.has_purchased:
-			WebAppUser.objects.update(has_purchased=True)
-
-	def consume_integral(self, count, type):
-		"""
-		使用积分
-		"""
-		member = Member.from_webapp_user(self)
-		if member is None:
-			return
-
-		try:
-			member.consume_integral(count, type)
-		except:
-			notify_msg = u"消费积分出错，会员id:{}, type:{}".format(member.id, type)
-			watchdog_fatal(notify_msg)
-
-def _generate_member_token(member, social_account):
-	return "{}{}{}{}".format(
-		member.webapp_id,
-		social_account.platform,
-		time.strftime("%Y%m%d"),
-		(''.join(random.sample(string.ascii_letters + string.digits, 6))) + str(member.id))
-
-
-import random
-def _create_random():
-	date = str(time.time()*1000)
-	sample_list = ['0','1','2','3','4','5','6','7','8','9','a', 'b', 'c', 'd', 'e']
-	random_str = ''.join(random.sample(string.ascii_letters + string.digits, 10))
-	random_str = date + random_str
-	return random_str
 
 #关注渠道
 SOURCE_SELF_SUB = 0  # 直接关注
@@ -435,57 +207,6 @@ class MemberFollowRelation(models.Model):
 	class Meta(object):
 		db_table = 'member_follow_relation'
 
-	@staticmethod
-	def get_follow_members_for(member_id, is_fans='0', is_from_qrcode=False):
-		if member_id is None or member_id <= 0:
-			return []
-
-		try:
-			if is_fans != '0' and is_fans != None:
-				follow_relations = MemberFollowRelation.objects.filter(member_id=member_id, is_fans=True).order_by('-id')
-			else:
-				follow_relations = MemberFollowRelation.objects.filter(member_id=member_id).order_by('-id')
-
-			follow_member_ids = [relation.follower_member_id for relation in follow_relations]
-
-			if is_from_qrcode:
-				return Member.objects.filter(id__in=follow_member_ids,source=SOURCE_MEMBER_QRCODE,status__in=[SUBSCRIBED, CANCEL_SUBSCRIBED])
-			else:
-				return Member.objects.filter(id__in=follow_member_ids, status__in=[SUBSCRIBED, CANCEL_SUBSCRIBED])
-		except:
-			return []
-
-	@staticmethod
-	def get_follow_members_for_shred_url(member_id):
-		if member_id is None or member_id <= 0:
-			return []
-
-		try:
-			follow_relations = MemberFollowRelation.objects.filter(member_id=member_id, is_fans=True).order_by('-id')
-			follow_member_ids = [relation.follower_member_id for relation in follow_relations]
-			return Member.objects.filter(id__in=follow_member_ids, source=SOURCE_BY_URL, status__in=[SUBSCRIBED, CANCEL_SUBSCRIBED])
-		except:
-			return []
-
-
-	@staticmethod
-	def is_fan(member_id, follower_member_id):
-		return 1 if MemberFollowRelation.objects.filter(member_id=member_id, follower_member_id=follower_member_id, is_fans=True).count() > 0 else 0
-
-	@staticmethod
-	def is_father(member_id, follow_mid):
-		return 1 if MemberFollowRelation.objects.filter(member_id=follow_mid, follower_member_id=member_id, is_fans=True).count() > 0 else 0
-
-	@staticmethod
-	def get_father_member(member_id):
-		member_relation = MemberFollowRelation.objects.filter(follower_member_id=member_id, is_fans=True)[0] if MemberFollowRelation.objects.filter(follower_member_id=member_id, is_fans=True).count() > 0 else None
-		if member_relation:
-			try:
-				return Member.objects.get(id=member_relation.member_id)
-			except:
-				return None
-		return None
-
 
 USABLE_BOTH = 0 #积分优惠券可以同时使用
 USABLE_INTEGRAL = 1 #只可使用积分
@@ -517,12 +238,6 @@ class IntegralStrategySttings(models.Model):
 	class Meta(object):
 		db_table = 'member_integral_strategy_settings'
 
-	@staticmethod
-	def get_integral_each_yuan(webapp_id):
-		if IntegralStrategySttings.select().dj_where(webapp_id=webapp_id).count() > 0:
-			return IntegralStrategySttings.select().dj_where(webapp_id=webapp_id)[0].integral_each_yuan
-		else:
-			return None
 
 class MemberTag(models.Model):
 	"""
@@ -538,30 +253,6 @@ class MemberTag(models.Model):
 		verbose_name_plural = '会员分组'
 
 	DEFAULT_TAG_NAME = u'未分组'
-	@staticmethod
-	def get_default_tag(webapp_id):
-		try:
-			return MemberTag.get(webapp_id=webapp_id, name="未分组")
-		except:
-			return MemberTag.create(webapp_id=webapp_id, name="未分组")
-
-
-	@staticmethod
-	def get_member_tags(webapp_id):
-		if webapp_id:
-			if MemberTag.filter(webapp_id=webapp_id, name="未分组").count() == 0:
-				MemberTag.create(webapp_id=webapp_id, name="未分组")
-			return list(MemberTag.filter(webapp_id=webapp_id))
-		else:
-			return []
-
-	@staticmethod
-	def get_member_tag(webapp_id, name):
-		return MemberTag.filter(webapp_id=webapp_id, name=name)[0] if MemberTag.filter(webapp_id=webapp_id, name=name).count() > 0 else None
-
-	@staticmethod
-	def create(webapp_id, name):
-		return MemberTag.create(webapp_id=webapp_id, name=name)
 
 #########################################################################
 # MemberHasTag
@@ -575,62 +266,6 @@ class MemberHasTag(models.Model):
 		verbose_name = '会员所属分组'
 		verbose_name_plural = '会员所属分组'
 
-	@staticmethod
-	def get_member_has_tags(member):
-		if member:
-			return list(MemberHasTag.filter(member=member))
-		return []
-
-	@staticmethod
-	def get_tag_has_member_count(tag):
-		return MemberHasTag.filter(member_tag=tag).count()
-
-	@staticmethod
-	def is_member_tag(member, member_tag):
-		if member and member_tag:
-			return MemberHasTag.filter(member=member, member_tag_id=member_tag.id).count()
-		else:
-			return False
-
-	@staticmethod
-	def delete_tag_member_relation_by_member(member):
-		if member:
-			MemberHasTag.filter(member=member).delete()
-
-	@staticmethod
-	def add_tag_member_relation(member, tag_ids_list):
-		print '>>>>>>>>>>>>>>>>>tag_ids_list:::',tag_ids_list
-		if member and len(tag_ids_list) > 0:
-			for tag_id in tag_ids_list:
-				if tag_id:
-					if MemberHasTag.select().dj_where(member=member, member_tag_id=tag_id).count() == 0:
-						print '>>>>>>>>>>>>>>>>>tag_id:::',tag_id
-						MemberHasTag.create(member=member, member_tag=tag_id)
-	# @staticmethod
-	# def get_member_list_by_tag_id(tag_id):
-	# 	if tag_id:
-	# 		members = []
-	# 		for member_has_tag in MemberHasTag.filter(member_tag_id=tag_id):
-	# 			members.append(member_has_tag.member)
-	# 		return members
-	# 	else:
-	# 		return []
-
-	# @staticmethod
-	# def add_members_tag(default_tag_id, tag_id, member_ids):
-	# 	if tag_id:
-	# 		for member_id in member_ids:
-	# 			if MemberHasTag.filter(member_tag_id=default_tag_id, member_id=member_id).count() > 0:
-	# 				MemberHasTag.filter(member_tag_id=default_tag_id, member_id=member_id).delete()
-	# 			if MemberHasTag.filter(member_tag_id=tag_id, member_id=member_id).count() == 0:
-	# 				MemberHasTag.create(member_id=member_id, member_tag_id=tag_id)
-
-	# @staticmethod
-	# def get_tag_has_sub_member_count(tag):
-	# 	if isinstance(tag, MemberTag):
-	# 		return MemberHasTag.filter(member_tag=tag, member__status=SUBSCRIBED).count()
-	# 	else:
-	# 		return MemberHasTag.filter(member_tag_id=tag, member__status=SUBSCRIBED).count()
 
 class MemberSharedUrlInfo(models.Model):
 	member = models.ForeignKey(Member)

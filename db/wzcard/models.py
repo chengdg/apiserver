@@ -40,12 +40,6 @@ class WeizoomCardRule(models.Model):
 	belong_to_owner = models.IntegerField(default=0) #专属商家
 	is_new_member_special = models.BooleanField(default=False) #是否为新会员专属卡
 
-	#@staticmethod
-	#def get_all_weizoom_card_rules_list(user):
-	#	if user is None:
-	#		return []
-	#	return list(WeizoomCoinRule.objects.filter(owner=user))
-
 	class Meta(object):
 		db_table = 'market_tool_weizoom_card_rule'
 		verbose_name = '微众卡规则'
@@ -86,6 +80,3 @@ class WeizoomCard(models.Model):
 		verbose_name = '微众卡'
 		verbose_name_plural = '微众卡'
 
-	# @staticmethod
-	# def check_card(weizoom_card_id, password):
-	# 	return WeizoomCard.objects.filter(weizoom_card_id=weizoom_card_id, password=password).count() > 0

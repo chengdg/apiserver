@@ -85,131 +85,6 @@ class Promotion(models.Model):
 	class Meta(object):
 		db_table = 'mallpromotion_promotion'
 
-	# def __update_status_if_necessary(self):
-	# 	now = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
-
-	# 	if type(self.end_date) == datetime:
-	# 		end_date = self.end_date.strftime('%Y-%m-%d %H:%M:%S')
-	# 	else:
-	# 		end_date = self.end_date
-
-	# 	if type(self.start_date) == datetime:
-	# 		start_date = self.start_date.strftime('%Y-%m-%d %H:%M:%S')
-	# 	else:
-	# 		start_date = self.start_date
-
-	# 	if start_date <= now and end_date > now and self.status == PROMOTION_STATUS_NOT_START:
-	# 		# 未开始状态,但是时间已经再开始,由于定时任务尚未执行
-	# 		self.status = PROMOTION_STATUS_STARTED
-	# 		self.save()
-	# 	elif end_date <= now and (self.status == PROMOTION_STATUS_NOT_START or\
-	# 		self.status == PROMOTION_STATUS_STARTED or self.status == PROMOTION_STATUS_DISABLE):
-	# 		# 未开始,进行中状态,但是时间到期了,由于定时任务尚未执行
-	# 		# 已失效状态,优惠券需求要置为已过期
-	# 		self.status = PROMOTION_STATUS_FINISHED
-	# 		self.save()
-
-	# @property
-	# def status_name(self):
-	# 	self.__update_status_if_necessary()
-	# 	return PROMOTIONSTATUS2NAME.get(self.status, u'未知')
-
-	# @property
-	# def type_name(self):
-	# 	return PROMOTION2TYPE.get(self.type, u'未知')['display_name']
-
-	# @property
-	# def DetailClass(self):
-	# 	if self.type == PROMOTION_TYPE_FLASH_SALE:
-	# 		return FlashSale
-	# 	elif self.type == PROMOTION_TYPE_PRICE_CUT:
-	# 		return PriceCut
-	# 	elif self.type == PROMOTION_TYPE_INTEGRAL_SALE:
-	# 		return IntegralSale
-	# 	elif self.type == PROMOTION_TYPE_PREMIUM_SALE:
-	# 		return PremiumSale
-	# 	elif self.type == PROMOTION_TYPE_COUPON:
-	# 		return CouponRule
-	# 	else:
-	# 		return None
-
-	# @property
-	# def is_active(self):
-	# 	if self.status == PROMOTION_STATUS_FINISHED or self.status == PROMOTION_STATUS_DELETED:
-	# 		return False
-
-	# 	self.__update_status_if_necessary()
-
-	# 	now = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
-	# 	if self.start_date > now:
-	# 		return False
-	# 	if self.end_date < now:
-	# 		return False
-
-	# 	return True
-
-	# @staticmethod
-	# def fill_product_detail(webapp_owner, promotions):
-	# 	promotions = [promotion for promotion in promotions if not hasattr(promotion, 'products')]
-
-	# 	#获取product列表
-	# 	for promotion in promotions:
-	# 		promotion.products = []
-
-	# 	id2promotion = dict([(promotion.id, promotion) for promotion in promotions])
-	# 	promotion_ids = [promotion.id for promotion in promotions]
-	# 	product_ids = [relation.product_id for relation in ProductHasPromotion.select().dj_where(promotion_id__in=promotion_ids)]
-	# 	products = list(mall_models.Product.select().dj_where(id__in=product_ids))
-	# 	moall_models.Product.fill_details(webapp_owner, products, {
-	# 		'with_product_model': True,
-	# 		"with_model_property_info": True,
-	# 		'with_sales': True
-	# 	})
-	# 	id2product = dict([(product.id, product) for product in products])
-
-	# 	#获取<promotion, product_ids>关系集合
-	# 	for relation in ProductHasPromotion.select().dj_where(promotion_id__in=promotion_ids):
-	# 		promotion = id2promotion[relation.promotion_id]
-	# 		product = id2product[relation.product_id]
-	# 		if hasattr(promotion, 'products'):
-	# 			promotion.products.append(product)
-	# 		else:
-	# 			promotion.products = [product]
-
-	# @staticmethod
-	# def fill_concrete_info_detail(webapp_owner, promotions):
-	# 	promotions = [promotion for promotion in promotions if not hasattr(promotion, 'detail')]
-
-	# 	#按type对promotion进行分类
-	# 	type2promotions = {}
-	# 	for promotion in promotions:
-	# 		promotion.end_date = promotion.end_date if isinstance(promotion.end_date, str) else promotion.end_date.strftime('%Y-%m-%d %H:%M:%S')
-	# 		promotion.created_at = promotion.created_at if isinstance(promotion.created_at, str) else promotion.created_at.strftime('%Y-%m-%d %H:%M:%S')
-	# 		promotion.start_date = promotion.start_date if isinstance(promotion.start_date, str) else promotion.start_date.strftime('%Y-%m-%d %H:%M:%S')
-	# 		type2promotions.setdefault(promotion.type, []).append(promotion)
-
-	# 	#对每种类型的promotion，获取detail
-	# 	for promotion_type, promotions in type2promotions.items():
-	# 		detail2promotion = dict([(promotion.detail_id, promotion) for promotion in promotions])
-	# 		detail_ids = [promotion.detail_id for promotion in promotions]
-	# 		DetailClass = promotions[0].DetailClass
-	# 		details = list(DetailClass.select().dj_where(id__in=detail_ids))
-	# 		if hasattr(DetailClass, 'fill_related_details'):
-	# 			DetailClass.fill_related_details(webapp_owner, details)
-	# 		for detail in details:
-	# 			detail2promotion[detail.id].detail = detail.to_dict()
-
-	# @staticmethod
-	# def fill_details(webapp_owner, promotions, options):
-	# 	if len(promotions) == 0:
-	# 		return
-
-	# 	if options.get('with_concrete_promotion', False):
-	# 		Promotion.fill_concrete_info_detail(webapp_owner, promotions)
-
-	# 	if options.get('with_product', False):
-	# 		Promotion.fill_product_detail(webapp_owner, promotions)
-
 
 class ProductHasPromotion(models.Model):
 	"""
@@ -239,14 +114,6 @@ class FlashSale(models.Model):
 		verbose_name = '限时抢购'
 		verbose_name_plural = '限时抢购'
 
-	# def to_dict(self):
-	# 	return {
-	# 		'id': self.id,
-	# 		'limit_period': self.limit_period,
-	# 		'promotion_price': self.promotion_price,
-	# 		'count_per_purchase': self.count_per_purchase
-	# 	}
-
 
 class PriceCut(models.Model):
 	"""
@@ -261,14 +128,6 @@ class PriceCut(models.Model):
 		db_table = 'mallpromotion_price_cut'
 		verbose_name = '满减'
 		verbose_name_plural = '满减'
-
-	# def to_dict(self):
-	# 	return {
-	# 		'id': self.id,
-	# 		'price_threshold': self.price_threshold,
-	# 		'cut_money': self.cut_money,
-	# 		'is_enable_cycle_mode': self.is_enable_cycle_mode
-	# 	}
 
 
 INTEGRAL_SALE_TYPE_PARTIAL = 0 #部分抵扣
@@ -289,53 +148,6 @@ class IntegralSale(models.Model):
 		verbose_name = '积分应用'
 		verbose_name_plural = '积分应用'
 
-	@staticmethod
-	def fill_related_details(webapp_owner, integral_sales):
-		integral_sale_ids = []
-		id2sale = {}
-		for integral_sale in integral_sales:
-			integral_sale.rules = []
-			integral_sale_ids.append(integral_sale.id)
-			id2sale[integral_sale.id] = integral_sale
-
-		integral_sale_rules = list(IntegralSaleRule.select().dj_where(integral_sale_id__in=integral_sale_ids))
-		for integral_sale_rule in integral_sale_rules:
-			integral_sale_id = integral_sale_rule.integral_sale_id
-			data = integral_sale_rule.to_dict()
-			id2sale[integral_sale_id].rules.append(data)
-
-	def to_dict(self):
-		if len(self.rules) == 0:
-			discount = 0
-			discount_money = 0
-		elif len(self.rules) == 1:
-			discount = str(self.rules[0]['discount']) + '%'
-			discount_money = "%.2f" % self.rules[0]['discount_money']
-		else:
-			max_discount = str(max(list(rule['discount'] for rule in self.rules)))
-			min_discount = str(min(list(rule['discount'] for rule in self.rules)))
-			max_discount_money = str(max(list(rule['discount_money'] for rule in self.rules)))
-			min_discount_money = str(min(list(rule['discount_money'] for rule in self.rules)))
-			if max_discount == min_discount:
-				discount = max_discount
-			else:
-				discount = min_discount + '% ~ ' + max_discount + '%'
-
-			if max_discount_money == min_discount_money:
-				discount_money = max_discount_money
-			else:
-				discount_money = min_discount_money + ' ~ ' + max_discount_money
-
-		return {
-			'id': self.id,
-			'type': self.type,
-			'type_name': u'部分抵扣' if self.type == INTEGRAL_SALE_TYPE_PARTIAL else u'全额抵扣',
-			'is_permanant_active': self.is_permanant_active,
-			'rules': self.rules,
-			'discount': discount,
-			'discount_money': discount_money
-		}
-
 
 class IntegralSaleRule(models.Model):
 	"""
@@ -352,14 +164,6 @@ class IntegralSaleRule(models.Model):
 		verbose_name = '积分应用规则'
 		verbose_name_plural = '积分应用规则'
 
-	def to_dict(self):
-		return {
-			'id': self.id,
-			'member_grade_id': self.member_grade_id,
-			'discount': self.discount,
-			'discount_money': self.discount_money
-		}
-
 
 class PremiumSale(models.Model):
 	"""
@@ -373,42 +177,6 @@ class PremiumSale(models.Model):
 		db_table = 'mallpromotion_premium_sale'
 		verbose_name = '买赠'
 		verbose_name_plural = '买赠'
-
-	@staticmethod
-	def fill_related_details(webapp_owner, premium_sales):
-		premium_sale_ids = []
-		id2sale = {}
-		for premium_sale in premium_sales:
-			premium_sale.premium_products = []
-			premium_sale_ids.append(premium_sale.id)
-			id2sale[premium_sale.id] = premium_sale
-
-		premium_sale_products = list(PremiumSaleProduct.select().dj_where(premium_sale_id__in=premium_sale_ids))
-		product_ids = [premium_sale_product.product_id for premium_sale_product in premium_sale_products]
-		products = mall_models.Product.select().dj_where(id__in=product_ids)
-		mall_models.Product.fill_details(webapp_owner, products, {
-			'with_product_model': True,
-			"with_model_property_info": True,
-			'with_sales': True
-		})
-		id2product = dict([(product.id, product) for product in products])
-
-		for premium_sale_product in premium_sale_products:
-			premium_sale_id = premium_sale_product.premium_sale_id
-			product_id = premium_sale_product.product_id
-			product = id2product[product_id]
-			data = product.format_to_dict()
-			data['premium_count'] = premium_sale_product.count
-			data['premium_unit'] = premium_sale_product.unit
-			id2sale[premium_sale_id].premium_products.append(data)
-
-	def to_dict(self):
-		return {
-			'id': self.id,
-			'count': self.count,
-			'is_enable_cycle_mode': self.is_enable_cycle_mode,
-			'premium_products': self.premium_products
-		}
 
 
 class PremiumSaleProduct(models.Model):
@@ -425,13 +193,6 @@ class PremiumSaleProduct(models.Model):
 		db_table = 'mallpromotion_premium_sale_product'
 		verbose_name = '买赠赠品'
 		verbose_name_plural = '买赠赠品'
-
-
-
-
-
-
-
 
 
 #########################################################################
@@ -463,28 +224,6 @@ class CouponRule(models.Model):
 
 	class Meta(object):
 		db_table = 'market_tool_coupon_rule'
-
-	@staticmethod
-	def get_all_coupon_rules_list(user):
-		if user is None:
-			return []
-
-		return list(CouponRule.select().dj_where(owner=user, is_active=True, end_date__gt=datetime.now()).order_by('-id'))
-
-	def to_dict(self):
-		return {
-			'id': self.id,
-			'name': self.name,
-			'owner_id': self.owner_id,
-			'count': self.count,
-			'remained_count': self.remained_count,
-			'limit_counts': self.limit_counts,
-			'limit_product': self.limit_product,
-			'money': '%.2f' % self.money,
-			'get_person_count': self.get_person_count,
-			'get_count': self.get_count,
-			'use_count': self.use_count,
-		}
 
 
 #优惠券状态
@@ -555,6 +294,23 @@ class ForbiddenCouponProduct(models.Model):
 	class Meta(object):
 		db_table = 'mall_forbidden_coupon_product'
 
+	# Todo 需要删除
+	@property
+	def is_active(self):
+		if self.is_permanant_active and self.status != FORBIDDEN_STATUS_FINISHED:
+			return True
+
+		if self.status == FORBIDDEN_STATUS_FINISHED:
+			return False
+
+		self.__update_status_if_necessary()
+
+		if self.status == FORBIDDEN_STATUS_NOT_START or self.status == FORBIDDEN_STATUS_FINISHED:
+			return False
+
+		return True
+
+	# Todo 需要删除
 	def __update_status_if_necessary(self):
 		if self.is_permanant_active:
 			if self.status != FORBIDDEN_STATUS_STARTED:
@@ -582,58 +338,6 @@ class ForbiddenCouponProduct(models.Model):
 			self.status = FORBIDDEN_STATUS_FINISHED
 			self.save()
 
-	@property
-	def status_name(self):
-		self.__update_status_if_necessary()
-		return FORBIDDENSTATUS2NAME.get(self.status, u'未知')
-
-	@property
-	def is_active(self):
-		if self.is_permanant_active and self.status != FORBIDDEN_STATUS_FINISHED:
-			return True
-
-		if self.status == FORBIDDEN_STATUS_FINISHED:
-			return False
-
-		self.__update_status_if_necessary()
-
-		if self.status == FORBIDDEN_STATUS_NOT_START or self.status == FORBIDDEN_STATUS_FINISHED:
-			return False
-
-		return True
-
-	@property
-	def is_overdue(self):
-		if self.status == FORBIDDEN_STATUS_FINISHED:
-			return True
-
-		if self.is_permanant_active:
-			return False
-
-		self.__update_status_if_necessary()
-
-		if self.status == FORBIDDEN_STATUS_FINISHED:
-			return True
-
-		return False
-
-	def to_dict(self):
-		mall_models.Product.fill_details(self.owner_id, [self.product], {
-			'with_product_model': True,
-			"with_model_property_info": True,
-			'with_sales': True
-		})
-		return {
-			'id': self.id,
-			'product': self.product.format_to_dict(),
-			'status': self.status,
-			'status_name': self.status_name,
-			'start_date': self.start_date.strftime('%Y-%m-%d %H:%M:%S'),
-			'end_date': self.end_date.strftime('%Y-%m-%d %H:%M:%S'),
-			'is_permanant_active': self.is_permanant_active,
-			'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S')
-		}
-
 
 class RedEnvelopeRule(models.Model):
 	"""
@@ -658,35 +362,7 @@ class RedEnvelopeRule(models.Model):
 	class Meta(object):
 		db_table = 'mall_red_envelope_rule'
 
-	@staticmethod
-	def can_show_red_envelope(order, red_envelope):
-		"""判断订单是否能显示分享红包
-		@param[in] order: 需要判断的订单，需要使用订单商品价格，订单运费等价格信息
-		@param[in] red_envelope: 红包规则，注意是从request.webapp_owner_info缓存中获取
-			由缓存抓取时判断红包状态、优惠券库存问题
 
-		@return
-			True: 订单可以显示分享红包按钮
-			False: 订单不可以显示分享红包按钮
-		### 注: 此方法不需要查询数据库
-		"""
-		from mall import models as mall_models
-		if order.status <= mall_models.ORDER_STATUS_CANCEL or order.status >= mall_models.ORDER_STATUS_REFUNDING:
-			return False
-
-		now = datetime.now()
-		if red_envelope and (red_envelope['limit_time'] or red_envelope['end_time'] > now):
-			# 缓存里有分享红包规则，并且红包规则未到期，注：红包规则状态在缓存抓取时判断
-			if red_envelope['limit_time'] and red_envelope['created_at'] > order.created_at or \
-				not red_envelope['limit_time'] and red_envelope['start_time'] > order.created_at:
-				return False
-			coupon_rule = red_envelope['coupon_rule']
-			if coupon_rule and coupon_rule.get('end_date', now) > now:
-				# 红包规则对应的优惠券未到期，注：优惠券库存在缓存抓取时判断
-				if order.product_price + order.postage >= red_envelope['limit_order_money']:
-					# 商品价格+运费应大于等于红包规则订单金额设置
-					return True
-		return False
 
 class RedEnvelopeParticipences(models.Model):
 	"""

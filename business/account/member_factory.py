@@ -151,7 +151,7 @@ class MemberFactory(business_model.Model):
 			default_member_tag = self.context['default_tag']
 			if default_member_tag:
 				if member_models.MemberHasTag.select().dj_where(member=member, member_tag_id=default_member_tag.id).count() == 0:
-					MemberHasTag.create(member=member, member_tag=default_member_tag.id)
+					member_models.MemberHasTag.create(member=member, member_tag=default_member_tag.id)
 
 			
 			member_models.MemberInfo.create(

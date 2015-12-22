@@ -60,6 +60,7 @@ class Order(business_model.Model):
 		'coupon_id',
 		'status',
 		'origin_order_id',
+		'express_company_name',
 		'express_number',
 		'customer_message',
 		'promotion_saved_money',
@@ -282,28 +283,33 @@ class Order(business_model.Model):
 
 		@see Weapp的`weapp/mall/models.py`中的`get_express_details()`
 		"""
+		# 为了兼容有order.id的方式
 		db_details = express_models.ExpressDetail.select().dj_where(order_id=self.id).order_by(-express_models.ExpressDetail.display_index)
 		if db_details.count() > 0:
 			details = [ExpressDetail(detail) for detail in db_details]
 			#return list(details)
 			return details
 
+		logging.info("express_company_name:{}, express_number:{}".format(self.express_company_name, self.express_number))
 		expresses = express_models.ExpressHasOrderPushStatus.select().dj_where(
 				express_company_name = self.express_company_name,
 				express_number = self.express_number
 			)
 		if expresses.count() == 0:
+			logging.info("No proper ExpressHasOrderPushStatus records.")
 			return []
 
 		try:
 			express = expresses[0]
-			db_details = ExpressDetail.select().dj_where(express_id=express.id).order_by(-express_models.ExpressDetail.display_index)
-			details = [ExpressDetail(detail) for detail in db_details]			
+			logging.info("express: {}".format(express.id))
+			db_details = express_models.ExpressDetail.select().dj_where(express_id=express.id).order_by(-express_models.ExpressDetail.display_index)
+			details = [ExpressDetail(detail) for detail in db_details]	
 		except Exception as e:
 			#innerErrMsg = full_stack()
 			#watchdog_fatal(u'获取快递详情失败，order_id={}, case:{}'.format(order.id, innerErrMsg), EXPRESS_TYPE)
 			logging.error(u'获取快递详情失败，order_id={}, case:{}'.format(self.id, str(e)))
-		return []
+			details = []
+		return details
 
 
 	def is_valid(self):

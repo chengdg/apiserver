@@ -208,10 +208,10 @@ class AMemberReviewProduct(api_resource.ApiResource):
 			reviewed_product['review_detail'] = product_review.review_detail
 			reviewed_product['reviewed_product_pictures'] = product_review.reviewed_product_pictures
 
-
+		print '>>>>>>>>>>>>>>>>>>>>>>>',order.id
 		return {
 			'order_has_product_id': order_has_product_id,
-			'order_id': order_id,
+			'order_id': order.id,
 			'product': product,
 			'reviewed_product': reviewed_product,
 			'send_time': send_time

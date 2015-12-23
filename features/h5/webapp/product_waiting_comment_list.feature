@@ -366,3 +366,119 @@ Scenario:3 同一商品，不同规格进行评价，不会互相影响
                 }]
         }]
         """
+
+#补充:张三香 2015.12.23
+@person @productReview @product @review @mall3 @bert
+Scenario:4 个人中心的待评价列表中不显示赠品
+    Given jobs登录系统:weapp
+    Given jobs已添加支付方式:weapp
+        """
+        [{
+            "type": "微信支付",
+            "is_active": "启用"
+        }, {
+            "type": "货到付款",
+            "is_active": "启用"
+        }]
+        """
+    And jobs已添加商品:weapp
+        """
+        [{
+            "name": "赠品",
+            "price": 10.00
+        }]
+        """
+    When jobs创建买赠活动:weapp
+        """
+        [{
+            "name": "商品1买一赠二",
+            "start_date": "今天",
+            "end_date": "1天后",
+            "product_name": "商品1",
+            "premium_products": [{
+                "name": "赠品",
+                "count": 2
+            }],
+            "count": 1,
+            "is_enable_cycle_mode": true
+        }]
+        """
+    When bill访问jobs的webapp
+    When bill购买jobs的商品
+        """
+        {
+            "order_id":"6",
+            "pay_type":"货到付款",
+            "products": [{
+                "name": "商品1",
+                "count": 1
+            }]
+        }
+        """
+    Then bill成功创建订单
+        """
+        {
+            "order_no":"6",
+            "status": "待发货",
+            "final_price": 10.00,
+            "products": [{
+                "name": "商品1",
+                "count": 1,
+                "promotion": {
+                    "type": "premium_sale"
+                }
+            },{
+                "name": "赠品",
+                "count": 2,
+                "promotion": {
+                    "type": "premium_sale:premium_product"
+                }
+            }]
+        }
+        """
+
+    Given jobs登录系统:weapp
+    When jobs对订单进行发货:weapp
+        """
+        {
+            "order_no": "6",
+            "logistics": "申通快递",
+            "number": "229388967650",
+            "shipper": "jobs"
+        }
+        """
+    When jobs'完成'订单'6':weapp
+    When bill访问jobs的webapp
+    Then bill成功获取个人中心的'待评价'列表
+        """
+        [{
+            "order_no": "1",
+            "products": [{
+                    "product_name": "商品1"
+                }]
+        },{
+            "order_no": "5",
+            "products": [{
+                    "product_name": "商品1"
+                }]
+        },{
+            "order_no": "2",
+            "products": [{
+                    "product_name": "商品2"
+                }]
+        },{
+            "order_no": "4",
+            "products": [{
+                    "product_name": "商品4",
+                    "product_model_name": "M"
+                },{
+                    "product_name": "商品4",
+                    "product_model_name": "S"
+                }]
+        },{
+            "order_no": "6",
+            "products": [{
+                    "product_name": "商品1"
+            }]
+        }]
+        """

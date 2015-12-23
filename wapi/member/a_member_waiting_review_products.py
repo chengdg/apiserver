@@ -54,7 +54,7 @@ class AMemberWaitingReviewProducts(api_resource.ApiResource):
 				product_dict = {}
 				product_dict['name'] = product.name
 				product_dict['has_picture'] = product.has_reviewed_picture
-				product_dict['model'] = product.model.to_dict()
+				product_dict['model'] =  product.model.to_dict() if product.model else {}
 				product_dict['product_model_name'] = product.model_name
 				product_dict['id'] = product.id
 				product_dict['has_review'] = product.has_reviewed

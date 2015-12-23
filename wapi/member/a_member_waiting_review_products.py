@@ -59,6 +59,7 @@ class AMemberWaitingReviewProducts(api_resource.ApiResource):
 				product_dict['id'] = product.id
 				product_dict['has_review'] = product.has_reviewed
 				product_dict['thumbnails_url'] = product.thumbnails_url
+				product_dict['order_has_product_id'] = product.rid
 				products.append(product_dict)
 			data['products'] = products
 			order_list.append(data)
@@ -68,3 +69,4 @@ class AMemberWaitingReviewProducts(api_resource.ApiResource):
 		return {
 			'orders': order_list
 		}
+

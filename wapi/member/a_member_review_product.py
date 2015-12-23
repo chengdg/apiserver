@@ -13,8 +13,10 @@ from business.mall.review.review_order_factory import ReviewOrderFactory
 from business.mall.review.reviewed_order import ReviewedOrder
 from business.mall.review.reviewed_product import ReviewedProduct
 from business.mall.review.waiting_review_orders import WaitingReviewOrders
+from business.mall.order_products import OrderProducts
 
 from business.mall.product import Product
+from business.mall.order import Order
 
 import logging
 
@@ -167,12 +169,32 @@ class AMemberReviewProduct(api_resource.ApiResource):
 
 		send_time = time.time()
 		
-		product = Product.from_id({
-			"webapp_owner": webapp_owner,
-			"member": webapp_user.member,
-			"product_id": product_id
-		}).to_dict()
+		# product = Product.from_id({
+		# 	"webapp_owner": webapp_owner,
+		# 	"member": webapp_user.member,
+		# 	"product_id": product_id
+		# }).to_dict()
 		
+		order = Order.from_id({
+			'webapp_owner': webapp_user,
+			'webapp_user': webapp_owner,
+			'order_id': order_id
+		})
+
+		order_products = OrderProducts.get_for_order({
+				'webapp_owner': webapp_owner,
+				'webapp_user': webapp_user,
+				'order': order
+			})
+
+		products = order_products.products
+
+		product = {}
+
+		for p in products:
+			if p.id == product_id:
+				product = p.to_dict()
+				break
 
 		product_review = ReviewedProduct.from_order_has_product_id({
 			'order_has_product_id': order_has_product_id,

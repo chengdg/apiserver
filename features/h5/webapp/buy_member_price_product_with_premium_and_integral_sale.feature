@@ -240,19 +240,19 @@ Scenario:3 购买会员价，买赠（某一等级）和积分抵扣（分级设
 	Given jobs登录系统:weapp
 	When jobs创建买赠活动:weapp
 		"""
-			[{
-				"name": "商品1买一赠一",
-				"start_date": "今天",
-				"end_date": "1天后",
-				"product_name": "商品1",
-				"premium_products": [{
-					"name": "赠品",
-					"count": 1
-				}],
-				"count": 1,
-				"member_grade":"铜牌会员",
-				"is_enable_cycle_mode": true
-			}]
+		[{
+			"name": "商品1买一赠一",
+			"start_date": "今天",
+			"end_date": "1天后",
+			"product_name": "商品1",
+			"premium_products": [{
+				"name": "赠品",
+				"count": 1
+			}],
+			"count": 1,
+			"member_grade":"铜牌会员",
+			"is_enable_cycle_mode": true
+		}]
 		"""
 	When jobs创建积分应用活动:weapp
 		"""
@@ -354,19 +354,19 @@ Scenario:4 购买会员价，买赠（某一等级）和积分抵扣（统一设
 	Given jobs登录系统:weapp
 	When jobs创建买赠活动:weapp
 		"""
-			[{
-				"name": "商品1买一赠一",
-				"start_date": "今天",
-				"end_date": "1天后",
-				"product_name": "商品1",
-				"premium_products": [{
-					"name": "赠品",
-					"count": 1
-				}],
-				"count": 1,
-				"member_grade":"铜牌会员",
-				"is_enable_cycle_mode": true
-			}]
+		[{
+			"name": "商品1买一赠一",
+			"start_date": "今天",
+			"end_date": "1天后",
+			"product_name": "商品1",
+			"premium_products": [{
+				"name": "赠品",
+				"count": 1
+			}],
+			"count": 1,
+			"member_grade":"铜牌会员",
+			"is_enable_cycle_mode": true
+		}]
 		"""
 	When jobs创建积分应用活动:weapp
 		"""

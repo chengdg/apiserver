@@ -31,7 +31,7 @@ from utils import regional_util
 
 from core.decorator import deprecated
 import logging
-
+from db.mall import promotion_models
 from db.express import models as express_models
 from business.mall.express.express_detail import ExpressDetail
 
@@ -327,37 +327,6 @@ class Order(business_model.Model):
 		"""
 		return self.context['is_valid']
 
-	def pay(self, pay_interface_type):
-		"""对订单进行支付
-
-		@param[in] pay_interface_type: 支付所使用的支付接口的type
-		"""
-		pay_result = False
-
-		if self.status == mall_models.ORDER_STATUS_NOT:
-			#改变订单的支付状态
-			pay_result = True
-
-			now = datetime.now()
-			if self.origin_order_id < 0:
-				mall_models.Order.update(status=mall_models.ORDER_STATUS_PAYED_NOT_SHIP, pay_interface_type=pay_interface_type, payment_time=now).dj_where(origin_order_id=self.id).execute()
-
-			mall_models.Order.update(status=mall_models.ORDER_STATUS_PAYED_NOT_SHIP, pay_interface_type=pay_interface_type, payment_time=now).dj_where(order_id=self.order_id).execute()
-			self.status = mall_models.ORDER_STATUS_PAYED_NOT_SHIP
-			self.pay_interface_type = pay_interface_type
-
-			#记录日志
-			LogOperator.record_operation_log(self, u'客户', u'支付')
-			LogOperator.record_status_log(self, u'客户', mall_models.ORDER_STATUS_NOT, mall_models.ORDER_STATUS_PAYED_NOT_SHIP)
-
-			#更新webapp_user的has_purchased字段
-			webapp_user = self.context['webapp_user']
-			webapp_user.set_purchased()
-
-			self.__send_notify_mail()
-
-		return pay_result
-
 	def __send_notify_mail(self):
 		"""发送通知邮件
 
@@ -623,6 +592,8 @@ class Order(business_model.Model):
 		db_model.save()
 		self.id = db_model.id
 
+		self.__after_update_status('buy')
+
 		return
 
 	@property
@@ -634,7 +605,77 @@ class Order(business_model.Model):
 		"""
 		return True
 
-	def update_status(self, action):
+
+	def pay(self, pay_interface_type):
+		"""对订单进行支付
+
+		@param[in] pay_interface_type: 支付所使用的支付接口的type
+		"""
+		pay_result = False
+
+		if self.status == mall_models.ORDER_STATUS_NOT:
+			#改变订单的支付状态
+			pay_result = True
+
+			now = datetime.now()
+			if self.origin_order_id < 0:
+				mall_models.Order.update(status=mall_models.ORDER_STATUS_PAYED_NOT_SHIP, pay_interface_type=pay_interface_type, payment_time=now).dj_where(origin_order_id=self.id).execute()
+
+			mall_models.Order.update(status=mall_models.ORDER_STATUS_PAYED_NOT_SHIP, pay_interface_type=pay_interface_type, payment_time=now).dj_where(order_id=self.order_id).execute()
+			self.status = mall_models.ORDER_STATUS_PAYED_NOT_SHIP
+			self.pay_interface_type = pay_interface_type
+
+
+			#更新webapp_user的has_purchased字段
+			webapp_user = self.context['webapp_user']
+			webapp_user.set_purchased()
+
+			self.__after_update_status('pay')
+
+		return pay_result
+
+
+	# todo
+	def cancel(self):
+		"""
+		取消订单
+		"""
+		# 释放订单资源
+
+		mall_models.Order.update(status=mall_models.ORDER_STATUS_CANCEL).dj_where(id=self.id).execute()
+
+		# 更新子订单状态
+		if self.origin_order_id == -1:
+			mall_models.Order.update(status=mall_models.ORDER_STATUS_CANCEL).dj_where(origin_order_id=self.id).execute()
+
+		self.__after_update_status('cancel')
+
+	# todo
+	def finish(self):
+		"""
+		完成订单（确认收货）
+		"""
+
+		# 更新红包引入消费金额的数据
+		if self.coupon_id and promotion_models.RedEnvelopeParticipences.select().dj_where(coupon_id=self.coupon_id, introduced_by__gt=0).count() > 0:
+			red_envelope2member = promotion_models.RedEnvelopeParticipences.get(promotion_models.RedEnvelopeParticipences.coupon_id==self.coupon_id)
+			promotion_models.RedEnvelopeParticipences.update(introduce_sales_number = promotion_models.RedEnvelopeParticipences.introduce_sales_number + self.final_price + self.postage).dj_where(
+				red_envelope_rule_id=red_envelope2member.red_envelope_rule_id,
+				red_envelope_relation_id=red_envelope2member.red_envelope_relation_id,
+				member_id=red_envelope2member.introduced_by
+			).execute()
+
+		# 更新订单状态
+		mall_models.Order.update(status=mall_models.ORDER_STATUS_SUCCESSED).dj_where(id=self.id).execute()
+
+		# 更新子订单状态
+		if self.origin_order_id == -1:
+			mall_models.Order.update(status=mall_models.ORDER_STATUS_SUCCESSED).dj_where(origin_order_id=self.id).execute()
+
+		self.__after_update_status('finish')
+		# todo 更新会员数据
+
+	def __after_update_status(self, action):
 		"""
 		# 更改订单状态
 
@@ -649,16 +690,9 @@ class Order(business_model.Model):
 		* 更新订单状态
 		* 记录操作日志
 		* 设置父、子订单状态
-		* 更新会员消费次数、金额、平均客单价、等级
+		* 更新会员数据（消费次数、金额、平均客单价、等级、已购买标识）
 		* 发邮件
 
-	### 特定操作功能
-		* 取消订单
-			* 返回资源
-		* 支付
-		* 完成
-			* 更新红包引入消费金额的数据
-		* 购买
 		@todo 待完整实现
 		@warning 在此处加代码请注意子订单问题,此方法不能由子订单使用
 		"""
@@ -667,90 +701,22 @@ class Order(business_model.Model):
 		# 更新前状态
 		raw_status = self.status
 
-		action2target_status = {
-			'pay': mall_models.ORDER_STATUS_PAYED_NOT_SHIP,
-			'cancel': mall_models.ORDER_STATUS_CANCEL,
-			'finish': mall_models.ORDER_STATUS_SUCCESSED,
-			'buy': mall_models.ORDER_STATUS_NOT
-		}
-
-		action2msg= {
-			'pay': '支付',
-			'cancel': '取消订单',
-			'finish': '完成',
-			'buy': '下单'
-		}
-
-		# todo 非法操作
-		if action not in action2target_status.keys():
-			pass
-
-		target_status = action2target_status[action]
-
-		# 更新订单状态
-		mall_models.Order.update(status=target_status).dj_where(id=self.id).execute()
-
-		# 更新子订单状态
-		if self.origin_order_id == -1:
-			mall_models.Order.update(status=target_status).dj_where(origin_order_id=self.id).execute()
-
-		#################################
-		# 特定操作功能
-		#################################
-		if action == 'cancel':
-			# todo 返还资源
-			pass
-			# try:
-			# 	# 返回订单使用的积分
-			# 	if order.integral:
-			# 		from modules.member.models import WebAppUser
-			# 		from modules.member.integral import increase_member_integral
-			# 		member = WebAppUser.get_member_by_webapp_user_id(order.webapp_user_id)
-			# 		increase_member_integral(member, order.integral, u'取消订单 返还积分')
-			# 	# 返回订单使用的优惠劵
-			# 	if order.coupon_id:
-			# 		from market_tools.tools.coupon.util import restore_coupon
-			# 		restore_coupon(order.coupon_id)
-			# 	# 返回商品的数量
-			# 	__restore_product_stock_by_order(order)
-			# 	mall_signals.cancel_order.send(sender=Order, order=order)
-			# except :
-			# 	notify_message = u"取消订单业务处理异常，cause:\n{}".format(unicode_full_stack())
-			# 	watchdog_alert(notify_message, "mall")
-		elif action == 'finish':
-			pass
-			# todo 红包数据
-		elif action == 'pay':
-			pass
+		target_status = mall_models.ACTION2TARGET_STATUS[action]
 
 		#################################
 		# 通用代码
 		#################################
 
-
 		# todo 记录日志 @duhao
 		operator_name = u'客户'
+		LogOperator.record_operation_log(self, u'客户', mall_models.ACTION2MSG[action])
+		LogOperator.record_status_log(self, u'客户', mall_models.ORDER_STATUS_NOT, mall_models.ORDER_STATUS_PAYED_NOT_SHIP)
 
-		# if self.is_sub_order and target_status in [mall_models.ORDER_STATUS_SUCCESSED]:
-		# 	# 如果更新子订单，更新父订单状态
-		# 	origin_order = Order.from_id({
-		# 		'webapp_owner': self.context['webapp_owner'],
-		# 		'webapp_user': self.context['webapp_user'],
-		# 		# todo 优化
-		# 		'order_id': mall_models.Order.get(id=self.origin_order_id).order_id
-		# 	})
-		# 	children_order_status = list(order.status for order in mall_models.Order.select().dj_where(origin_order_id=self.origin_order_id))
-		# 	if origin_order.status != min(children_order_status):
-		# 		origin_order.update_status(action)
-		#
-		# 	pass
-		#
-		# else:
-		# 	# 如果更新父订单，更新子订单状态
-		# 	mall_models.Order.update(origin_order_id=self.id).dj_where(id=self.id).execute()
+		# todo 更新会员消费次数、金额、平均客单价、等级、已购买标识 @郭玉成
+		# 可能不是所有操作都需要，实现时可以放在相应order操作里
 
-		# todo 更新会员的消费、消费次数、消费单价、等级 @郭玉成
+		# todo 模板消息
 
-		# todo 发邮件
-
+		# todo 运营邮件email
+		self.__send_notify_mail()
 

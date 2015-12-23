@@ -1343,6 +1343,21 @@ ORDER_SOURCE2TEXT = {
 
 QUALIFIED_ORDER_STATUS = [ORDER_STATUS_PAYED_NOT_SHIP, ORDER_STATUS_PAYED_SHIPED, ORDER_STATUS_SUCCESSED]
 
+ACTION2TARGET_STATUS = {
+	'pay': ORDER_STATUS_PAYED_NOT_SHIP,
+	'cancel': ORDER_STATUS_CANCEL,
+	'finish': ORDER_STATUS_SUCCESSED,
+	'buy': ORDER_STATUS_NOT
+}
+
+ACTION2MSG = {
+	'pay': '支付',
+	'cancel': '取消订单',
+	'finish': '完成',
+	'buy': '下单'
+}
+
+
 class Order(models.Model):
 	"""
 	订单

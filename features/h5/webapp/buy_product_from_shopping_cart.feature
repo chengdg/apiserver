@@ -103,8 +103,6 @@ Background:
 		"""
 	Given bill关注jobs的公众号
 
-
-
 @mall3 @mall @zy_wsc01 @mall.webapp @mall.webapp.shopping_cart @gycc
 Scenario:1 从购物车购买单个商品
 	bill将jobs的一个商品加入购物车后
@@ -190,7 +188,6 @@ Scenario:1 从购物车购买单个商品
 			"invalid_products": []
 		}
 		"""
-
 
 @mall3 @mall @zy_wsc02 @mall.webapp @mall.webapp.shopping_cart
 Scenario:2 从购物车购买全部商品
@@ -433,14 +430,14 @@ Scenario:5 从购物车购买商品时有商品下架
 		"""
 	When bill从购物车发起购买操作
 		"""
-			{
-				"action": "click",
-				"context": [{
-					"name": "商品1"
-				}, {
-					"name": "商品2"
-				}]
-			}
+		{
+			"action": "click",
+			"context": [{
+				"name": "商品1"
+			}, {
+				"name": "商品2"
+			}]
+		}
 		"""
 	Then bill能获得待编辑订单
 		"""
@@ -460,7 +457,7 @@ Scenario:5 从购物车购买商品时有商品下架
 	When bill在购物车订单编辑中点击提交订单
 		"""
 		{
-		"pay_type": "货到付款"
+			"pay_type": "货到付款"
 		}
 		"""
 	Then bill获得错误提示'有商品已下架<br/>2秒后返回购物车<br/>请重新下单'
@@ -516,7 +513,7 @@ Scenario:6 从购物车同时购买"有运费和无运费"的商品，并且商�
 	When bill在购物车订单编辑中点击提交订单
 		"""
 		{
-		"pay_type": "货到付款"
+			"pay_type": "货到付款"
 		}
 		"""
 	Then bill成功创建订单

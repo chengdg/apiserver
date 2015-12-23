@@ -101,11 +101,17 @@ class AOrder(api_resource.ApiResource):
 			'order_id': args['order_id']
 		})
 
-		order.update_status(args['status'])
+		action = args['status']
+		if action == 'cancel':
+			order.cancel()
+		elif action == 'finish':
+			order.finish()
 
 		return {
 			'success': True
 		}
+
+
 
 	@staticmethod
 	def to_dict(order):

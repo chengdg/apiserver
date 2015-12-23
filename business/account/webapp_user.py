@@ -424,9 +424,16 @@ class WebAppUser(business_model.Model):
 	@property
 	def phone(self):
 		"""
-		[property] 会员绑定的手机号码
+		[property] 会员绑定的手机号码加密
 		"""
 		return self.member.phone
+
+	@property
+	def phone_number(self):
+		"""
+		[property] 会员绑定的手机号码
+		"""
+		return self.member.phone_number
 
 	@property
 	def name(self):
@@ -521,3 +528,31 @@ class WebAppUser(business_model.Model):
 		return Coupon.get_all_coupons_by_webapp_user({
 			'webapp_user': self
 		})
+
+	#绑定相关
+	@staticmethod
+	def can_binding_phone(webapp_id, phone_number):
+		return member_models.MemberInfo.select().dj_where(member__webapp_id=webapp_id, phone_number=phone_number, is_binded=True).count() == 0
+
+	def update_phone_captcha(self, phone_number, captcha, sessionid):
+		if phone_number and captcha:
+			member_models.MemberInfo.update(session_id=sessionid, phone_number=phone_number, captcha=captcha, binding_time=datetime.now()).dj_where(member_id=self.member.id).execute()
+
+	@cached_context_property
+	def captcha(self):
+		"""
+		[property] 手机验证码
+		"""
+		return self.member.captcha
+
+	@cached_context_property
+	def captcha_session_id(self):
+		"""
+		[property] 手机验证码
+		"""
+		return self.member.captcha_session_id
+
+	@cached_context_property
+	def binded(self):
+		member_models.MemberInfo.update(binding_time=datetime.now(), is_binded=True).dj_where(member_id=self.member.id).execute()
+	

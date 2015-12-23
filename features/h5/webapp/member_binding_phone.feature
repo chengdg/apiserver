@@ -9,44 +9,44 @@ Feature: 会员绑定手机号
 	5 绑定手机成功之后，访问"绑定会员"页，获得绑定手机号，中间隐藏
 """
 
-@person @bindingPhone
+Background:
+    Given 重置weapp的bdd环境
+    Given jobs登录系统:weapp
+    Given bill关注jobs的公众号
+
+@person @bindingPhone @bert @mall3
 Scenario:1 手机绑定-输入正确的验证码
-	When bill关注jobs的公众账号
 	When bill访问jobs的Webapp
 
 	When bill获取手机绑定验证码'15194857825'
-	Then bill成功获得手机绑定验证码'1234'
-	When bill绑定手机
+	When bill使用验证码绑定手机
 		"""
 		{
-			"phone": 15194857825,
-			"verification_code": 1234
+			"phone": 15194857825
 		}
 		"""
 	Then bill获得个人中心手机绑定信息
 		"""
 		{
-			"绑定手机": "151****7825"
+			"phone": "151****7825"
 		}
 		"""
 
-@person @bindingPhone
+@person @bindingPhone  @bert @mall3
 Scenario:2 手机绑定-输入错误的验证码
-	When bill关注jobs的公众账号
 	When bill访问jobs的Webapp
 
 	When bill获取手机绑定验证码'15194857825'
-	Then bill成功获得手机绑定验证码'1234'
-	When bill绑定手机
+	When bill使用验证码绑定手机
 		"""
 		{
 			"phone": 15194857825,
-			"verification_code": 6789
+			"verification_code": 10000000000
 		}
 		"""
 	Then bill获得个人中心手机绑定信息
 		"""
 		{
-			"绑定手机": ""
+			"phone": ""
 		}
 		"""

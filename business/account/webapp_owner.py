@@ -214,16 +214,23 @@ class WebAppOwner(business_model.Model):
 	@property
 	def default_member_tag(self):
 		"""
-		[property] 默认会员等级
+		[property] 默认会员分组
 		"""
 		return self.__webapp_owner_info.default_member_tag
 
 	@property
 	def weixin_mp_user_access_token(self):
 		"""
-		[property] 默认会员等级
+		[property] MPTOKEN
 		"""
 		return self.__webapp_owner_info.weixin_mp_user_access_token
+
+	@property
+	def mpuser_preview_info(self):
+		"""
+		[property] 默认MpUserInfo
+		"""
+		return self.__webapp_owner_info.mpuser_preview_info
 
 
 

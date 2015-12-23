@@ -46,6 +46,7 @@ class WebAppOwnerInfo(business_model.Model):
 		'weixin_mp_user_access_token',
 
 		'webapp_owner_id',
+		'mpuser_preview_info'
 	)
 
 	@staticmethod

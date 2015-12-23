@@ -178,11 +178,13 @@ class AMemberReviewProduct(api_resource.ApiResource):
 			'order_has_product_id': order_has_product_id,
 			'webapp_owner': webapp_owner
 			})
+
 		reviewed_product = {}
-		reviewed_product['id'] = product_review.id
-		reviewed_product['product_score'] = product_review.product_score
-		reviewed_product['review_detail'] = product_review.review_detail
-		reviewed_product['reviewed_product_pictures'] = product_review.reviewed_product_pictures
+		if product_review:
+			reviewed_product['id'] = product_review.id
+			reviewed_product['product_score'] = product_review.product_score
+			reviewed_product['review_detail'] = product_review.review_detail
+			reviewed_product['reviewed_product_pictures'] = product_review.reviewed_product_pictures
 
 
 		return {

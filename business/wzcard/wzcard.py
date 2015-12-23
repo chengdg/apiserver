@@ -17,7 +17,7 @@ class WZCard(business_model.Model):
 	"""
 	微众卡业务模型
 
-	@see WEAPP/market_tools/tools/weizoom_card/models.py
+	@see 原WEAPP的`/market_tools/tools/weizoom_card/models.py`
 	"""
 	__slots__ = (
 		'id', # 数据库ID
@@ -90,7 +90,9 @@ class WZCard(business_model.Model):
 	@property
 	def is_empty(self):
 		"""
-		是否已用完
+		[property] 是否已用完
+
+		@return True:已用完；False:未用完
 		"""
 		return self.status == wzcard_models.WEIZOOM_CARD_STATUS_EMPTY
 
@@ -113,11 +115,28 @@ class WZCard(business_model.Model):
 
 	@property
 	def status(self):
+		"""
+		[property] 微众卡状态
+
+		微众卡有几种状态：
+
+		状态  |  值  | 符号
+		:----- | :------- | :----------
+		未使用	 	| 0 | WEIZOOM_CARD_STATUS_UNUSED
+		已被使用 	| 1 | WEIZOOM_CARD_STATUS_USED
+		已用完		| 2 | WEIZOOM_CARD_STATUS_EMPTY
+		未激活		| 3 | WEIZOOM_CARD_STATUS_INACTIVE
+
+		@see `db/models.py`
+		"""
 		db_model = self.context['db_model']
 		return db_model.status
 
 	@status.setter
 	def status(self, value):
+		"""
+		[setter] 微众卡状态
+		"""
 		#self.status = value
 		db_model = self.context['db_model']	
 		db_model.status = value
@@ -126,6 +145,8 @@ class WZCard(business_model.Model):
 	@staticmethod
 	def _get_status(status_str):
 		"""
+		status_text -> status值
+
 		@see `weapp/features/steps/market_tools_weizoom_card_steps.py`
 		"""
 
@@ -184,9 +205,11 @@ class WZCard(business_model.Model):
 	@property
 	def orders(self):
 		"""
-		微众卡对应的订单
+		[property] 微众卡对应的订单
+
+		@todo 待实现
 		"""
-		pass
+		return []
 
 	def check_password(self, password):
 		"""
@@ -197,7 +220,7 @@ class WZCard(business_model.Model):
 	@property	
 	def is_activated(self):
 		"""
-		微众卡是否激活
+		[property] 微众卡是否激活
 		"""
 		logging.info("WZCard.status: {}, id: {}".format(self.status, self.id))
 		return self.status != wzcard_models.WEIZOOM_CARD_STATUS_INACTIVE

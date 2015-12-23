@@ -636,12 +636,11 @@ class Order(business_model.Model):
 
 	def update_status(self, action):
 		"""
-		@todo 待完整实现
 		# 更改订单状态
 
 		## 合法操作：
 		* pay 支付
-		* finish 确认收货
+		* finish 完成
 		* cancel 取消订单
 		* buy 购买
 
@@ -657,9 +656,14 @@ class Order(business_model.Model):
 		* 取消订单
 			* 返回资源
 		* 支付
-		* 确认收货
+		* 完成
+			* 更新红包引入消费金额的数据
 		* 购买
+		@todo 待完整实现
+		@warning 在此处加代码请注意子订单问题,此方法不能由子订单使用
 		"""
+		assert not self.is_sub_order
+
 		# 更新前状态
 		raw_status = self.status
 
@@ -670,13 +674,25 @@ class Order(business_model.Model):
 			'buy': mall_models.ORDER_STATUS_NOT
 		}
 
+		action2msg= {
+			'pay': '支付',
+			'cancel': '取消订单',
+			'finish': '完成',
+			'buy': '下单'
+		}
+
 		# todo 非法操作
 		if action not in action2target_status.keys():
 			pass
 
 		target_status = action2target_status[action]
 
+		# 更新订单状态
+		mall_models.Order.update(status=target_status).dj_where(id=self.id).execute()
 
+		# 更新子订单状态
+		if self.origin_order_id == -1:
+			mall_models.Order.update(status=target_status).dj_where(origin_order_id=self.id).execute()
 
 		#################################
 		# 特定操作功能
@@ -711,30 +727,29 @@ class Order(business_model.Model):
 		# 通用代码
 		#################################
 
-		# 更新订单状态
-		mall_models.Order.update(status=target_status).dj_where(id=self.id).execute()
 
 		# todo 记录日志 @duhao
 		operator_name = u'客户'
 
-		# if self.is_sub_order > 0 and target_status in [mall_models.ORDER_STATUS_SUCCESSED]:
+		# if self.is_sub_order and target_status in [mall_models.ORDER_STATUS_SUCCESSED]:
 		# 	# 如果更新子订单，更新父订单状态
 		# 	origin_order = Order.from_id({
-		# 			'webapp_owner': self.context['webapp_owner'],
-		# 			'webapp_user': self.context['webapp_user'],
-		# 			# todo 优化
-		# 			'order_id': mall_models.Order.get(id=self.origin_order_id).order_id
+		# 		'webapp_owner': self.context['webapp_owner'],
+		# 		'webapp_user': self.context['webapp_user'],
+		# 		# todo 优化
+		# 		'order_id': mall_models.Order.get(id=self.origin_order_id).order_id
 		# 	})
 		# 	children_order_status = list(order.status for order in mall_models.Order.select().dj_where(origin_order_id=self.origin_order_id))
 		# 	if origin_order.status != min(children_order_status):
 		# 		origin_order.update_status(action)
-        #
+		#
 		# 	pass
-        #
+		#
 		# else:
 		# 	# 如果更新父订单，更新子订单状态
 		# 	mall_models.Order.update(origin_order_id=self.id).dj_where(id=self.id).execute()
-		# 	# todo 更新会员的消费、消费次数、消费单价、等级 @郭玉成
+
+		# todo 更新会员的消费、消费次数、消费单价、等级 @郭玉成
 
 		# todo 发邮件
 

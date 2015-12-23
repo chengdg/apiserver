@@ -95,6 +95,8 @@ Background:
 			"coupon_product": "商品2"
 		}]
 		"""
+	Given bill关注jobs的公众号
+	Given jobs登录系统:weapp
 	When jobs为会员发放优惠券:weapp
 		"""
 		{
@@ -124,7 +126,7 @@ Background:
 			"is_permanant_active": false
 		}]
 		"""
-	Given bill关注jobs的公众号
+
 
 @mall3 @promotion @promotionForbiddenCoupon
 Scenario:1 购买单个禁用优惠券商品,该商品无单品券
@@ -153,7 +155,7 @@ Scenario:1 购买单个禁用优惠券商品,该商品无单品券
 		}
 		"""
 
-@mall3 @promotion @promotionForbiddenCoupon @
+@mall3 @promotion @promotionForbiddenCoupon
 Scenario:2 购买单个禁用优惠券商品,该商品有单品券
 	#购买商品2,数量2,全体券1不可使用,单品券2可以使用
 	When bill访问jobs的webapp
@@ -200,7 +202,7 @@ Scenario:2 购买单个禁用优惠券商品,该商品有单品券
 		"""
 
 @mall3 @promotion @promotionForbiddenCoupon
-Scenario:3 购买多个商品,包含禁用优惠券商品,不满足全体券使用条件
+Scenario:3 购买多个商品,包含禁用优惠券商品,非禁用商品不满足全体券使用条件
 	#购买商品1和商品3,全体券1不可使用
 	When bill访问jobs的webapp
 	When bill购买jobs的商品

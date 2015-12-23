@@ -2,7 +2,15 @@
 """@package business.mall.order_factory
 订单生成器
 
-订单生成器根据购买信息(PurchaseInfo对象)，生成一个订单
+订单生成器根据购买信息(PurchaseInfo对象)，生成一个订单。
+
+## 下单步骤
+	1. 申请订单价无关资源（比如：reserved product, coupon, integral）
+	2. 计算订单价格（填充资源信息到订单业务对象中）
+	3. 申请订单价相关资源（比如：微众卡）
+	4. 调整订单价格（填充资源信息到订单业务对象中）
+	5. 保存订单
+	6. 如果需要（比如订单保存失败），释放资源（包括订单价相关资源和订单价无关资源）
 """
 
 import json
@@ -37,17 +45,7 @@ from business.mall.package_order_service.package_order_service import PackageOrd
 
 from business.mall.reserved_product_repository import ReservedProductRepository
 from business.mall.group_reserved_product_service import GroupReservedProductService
-
-
-class OrderException(Exception):
-	def __init__(self, value):
-		self.value = value
-	def __str__(self):
-		return repr(self.value)
-
-
-
-
+from business.mall.order_exception import OrderException
 
 
 class OrderFactory(business_model.Model):
@@ -55,12 +53,6 @@ class OrderFactory(business_model.Model):
 	订单生成器
 	"""
 	__slots__ = (
-		#'purchase_info',
-		#'products',
-		#'product_groups',
-		#'order',
-		#'resources',
-		#'price_info'
 	)
 
 	@staticmethod
@@ -301,13 +293,6 @@ class OrderFactory(business_model.Model):
 		"""
 		由PurchaseInfo创建订单
 
-		**下单步骤**：
-			1. 申请订单价无关资源（比如：reserved product, coupon, integral）
-			2. 计算订单价格（填充资源信息到订单业务对象中）
-			3. 申请订单价相关资源（比如：微众卡）
-			4. 调整订单价格（填充资源信息到订单业务对象中）
-			5. 保存订单
-			6. 如果需要（比如订单保存失败），释放资源（包括订单价相关资源和订单价无关资源）
 		"""
 		
 		webapp_owner = self.context['webapp_owner']

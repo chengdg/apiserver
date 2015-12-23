@@ -172,7 +172,7 @@ class Order(business_model.Model):
 	def product_outlines(self):
 		"""订单中的商品概况，只包含最基本的商品信息
 
-		TODO2：这里返回的依然是存储层的Product对象，需要返回业务层的Product业务对象
+		@TODO：这里返回的依然是存储层的Product对象，需要返回业务层的Product业务对象
 		"""
 		product_ids = [r.product_id for r in mall_models.OrderHasProduct.select().dj_where(order=self.id)]
 		products = list(mall_models.Product.select().dj_where(id__in=product_ids))
@@ -251,6 +251,13 @@ class Order(business_model.Model):
 		[property] 该订单是否有子订单
 		"""
 		return self.origin_order_id == -1 and self.status > mall_models.ORDER_STATUS_NOT #未支付的订单按未拆单显示
+
+	@property
+	def is_sub_order(self):
+		"""
+		[property] 该订单是否是子订单
+		"""
+		return self.origin_order_id > 0
 
 	@property
 	def pay_interface_name(self):
@@ -354,7 +361,7 @@ class Order(business_model.Model):
 	def __send_notify_mail(self):
 		"""发送通知邮件
 
-		@note 原来的发邮件用的是@weizoom.com邮箱，发邮件有拒收的风险。应该改成商用的发邮件服务，比如mailgun。
+		@note 原来的发邮件用的是`weizoom.com`邮箱，发邮件有被拒收的风险。应该改成商用的发邮件服务，比如**mailgun**。
 
 		@todo 待实现
 		"""
@@ -627,24 +634,56 @@ class Order(business_model.Model):
 		"""
 		return True
 
-
 	def update_status(self, action):
 		"""
-		更改订单状态
-
-		已知action:
-		'action' : 'pay' 支付
-		'action' : 'finish' 完成
-		'action' : 'cancel' 取消
-		'action' : 'return_pay' 退款
-		'action' : 'rship' 发货
-
 		@todo 待完整实现
-		"""
-		operator_name = u'客户'
+		# 更改订单状态
 
+		## 合法操作：
+		* pay 支付
+		* finish 确认收货
+		* cancel 取消订单
+		* buy 购买
+
+		## 功能列表：
+		### 共同功能
+		* 更新订单状态
+		* 记录操作日志
+		* 设置父、子订单状态
+		* 更新会员消费次数、金额、平均客单价、等级
+		* 发邮件
+
+	### 特定操作功能
+		* 取消订单
+			* 返回资源
+		* 支付
+		* 确认收货
+		* 购买
+		"""
+		# 更新前状态
+		raw_status = self.status
+
+		action2target_status = {
+			'pay': mall_models.ORDER_STATUS_PAYED_NOT_SHIP,
+			'cancel': mall_models.ORDER_STATUS_CANCEL,
+			'finish': mall_models.ORDER_STATUS_SUCCESSED,
+			'buy': mall_models.ORDER_STATUS_NOT
+		}
+
+		# todo 非法操作
+		if action not in action2target_status.keys():
+			pass
+
+		target_status = action2target_status[action]
+
+
+
+		#################################
+		# 特定操作功能
+		#################################
 		if action == 'cancel':
-			mall_models.Order.update(status=mall_models.ORDER_STATUS_CANCEL).dj_where(id=self.id).execute()
+			# todo 返还资源
+			pass
 			# try:
 			# 	# 返回订单使用的积分
 			# 	if order.integral:
@@ -663,4 +702,40 @@ class Order(business_model.Model):
 			# 	notify_message = u"取消订单业务处理异常，cause:\n{}".format(unicode_full_stack())
 			# 	watchdog_alert(notify_message, "mall")
 		elif action == 'finish':
-			mall_models.Order.update(status=mall_models.ORDER_STATUS_SUCCESSED).dj_where(id=self.id).execute()
+			pass
+			# todo 红包数据
+		elif action == 'pay':
+			pass
+
+		#################################
+		# 通用代码
+		#################################
+
+		# 更新订单状态
+		mall_models.Order.update(status=target_status).dj_where(id=self.id).execute()
+
+		# todo 记录日志 @duhao
+		operator_name = u'客户'
+
+		# if self.is_sub_order > 0 and target_status in [mall_models.ORDER_STATUS_SUCCESSED]:
+		# 	# 如果更新子订单，更新父订单状态
+		# 	origin_order = Order.from_id({
+		# 			'webapp_owner': self.context['webapp_owner'],
+		# 			'webapp_user': self.context['webapp_user'],
+		# 			# todo 优化
+		# 			'order_id': mall_models.Order.get(id=self.origin_order_id).order_id
+		# 	})
+		# 	children_order_status = list(order.status for order in mall_models.Order.select().dj_where(origin_order_id=self.origin_order_id))
+		# 	if origin_order.status != min(children_order_status):
+		# 		origin_order.update_status(action)
+        #
+		# 	pass
+        #
+		# else:
+		# 	# 如果更新父订单，更新子订单状态
+		# 	mall_models.Order.update(origin_order_id=self.id).dj_where(id=self.id).execute()
+		# 	# todo 更新会员的消费、消费次数、消费单价、等级 @郭玉成
+
+		# todo 发邮件
+
+

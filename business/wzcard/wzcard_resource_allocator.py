@@ -1,6 +1,7 @@
 #coding: utf8
 """@package business.wzcard.wzcard_resource_allocator
 微众卡资源分配器
+
 """
 
 from business import model as business_model
@@ -21,9 +22,9 @@ class WZCardResourceAllocator(business_model.Service):
 	"""
 	微众卡资源分配器
 
-	@see 原Weapp的`card_api_view.py`
-	@see `def weizoom_card_pre_save_order`
+	@see 原Weapp的`card_api_view.py`和`def weizoom_card_pre_save_order`
 	"""
+
 	__slots__ = (
 		'__webapp_owner',
 		'__webapp_user',
@@ -40,10 +41,10 @@ class WZCardResourceAllocator(business_model.Service):
 		"""
 		分配微众卡资源
 
-		@param order 订单对象
-		@param purchase_info 订单信息。其中的`wzcard_info`存放微众卡信息，是`(card_name, card_pass)`的list。
+		@param[in] order 订单对象
+		@param[in] purchase_info 订单信息。其中的`wzcard_info`存放微众卡信息，是 (card_name, card_pass) 的list。
 
-		分配流程：
+		**分配资源流程**：
 			1. 获取微众卡信息；
 			2. 依次扣除微众卡金额；
 			3. 返回微众卡资源(WZCardResource)对象
@@ -56,7 +57,7 @@ class WZCardResourceAllocator(business_model.Service):
 		wzcard_info_list = purchase_info.wzcard_info
 		logging.info("wzcard_info: {}".format(wzcard_info_list))
 
-		webapp_owner = self.__webapp_owner
+		#webapp_owner = self.__webapp_owner
 
 		used_wzcards = []
 		total_used_amount = Decimal(0)
@@ -133,9 +134,9 @@ class WZCardResourceAllocator(business_model.Service):
 		"""
 		释放微众卡资源
 
-		@param resource 由此allocator分配的微众卡资源
+		@param[in] resource 由此allocator分配的微众卡资源
 		@note 退回微众卡账户
-		@todo 待实现
+		@todo 退款记录
 		"""
 		logging.info("calling WZCardResourceAllocator.release() to release resources, resource: {}".format(resource))
 		if isinstance(resource, WZCardResource):
@@ -155,4 +156,7 @@ class WZCardResourceAllocator(business_model.Service):
 
 	@property
 	def resource_type(self):
+		"""
+		资源类型标识符（作为分配WZCardResource的一个参数）
+		"""
 		return "wzcard"

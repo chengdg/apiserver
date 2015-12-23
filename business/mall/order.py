@@ -24,7 +24,7 @@ from db.mall import models as mall_models
 from business import model as business_model 
 from business.mall.product import Product
 from business.mall.order_products import OrderProducts
-from business.mall import log_operator
+from business.mall.log_operator import LogOperator
 import settings
 from business.decorator import cached_context_property
 from utils import regional_util
@@ -131,12 +131,12 @@ class Order(business_model.Model):
 
 
 	@staticmethod
-	def empty_order():
+	def empty_order(webapp_owner=None, webapp_user=None):
 		"""工厂方法，创建空的Order对象
 
 		@return Order对象
 		"""
-		order = Order(None, None, None)
+		order = Order(webapp_owner, webapp_user, None)
 		return order
 
 	def __init__(self, webapp_owner, webapp_user, order_id):
@@ -340,8 +340,8 @@ class Order(business_model.Model):
 			self.pay_interface_type = pay_interface_type
 
 			#记录日志
-			log_operator.record_operation_log(self, u'客户', u'支付')
-			log_operator.record_status_log(self, u'客户', mall_models.ORDER_STATUS_NOT, mall_models.ORDER_STATUS_PAYED_NOT_SHIP)
+			LogOperator.record_operation_log(self, u'客户', u'支付')
+			LogOperator.record_status_log(self, u'客户', mall_models.ORDER_STATUS_NOT, mall_models.ORDER_STATUS_PAYED_NOT_SHIP)
 
 			#更新webapp_user的has_purchased字段
 			webapp_user = self.context['webapp_user']

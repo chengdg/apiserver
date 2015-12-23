@@ -48,13 +48,13 @@ class LogOperator(business_model.Model):
 
 
 	@staticmethod
-	def record_wzcard_log(webapp_owner, order_id, card_id, money, event_type=wzcard_models.WEIZOOM_CARD_LOG_TYPE_BUY_USE):
+	def record_wzcard_log(owner_id, order_id, card_id, money, event_type=wzcard_models.WEIZOOM_CARD_LOG_TYPE_BUY_USE):
 		"""
 		记录微众卡日志
 		"""
 		logging.info("to create an WeizoomCardHasOrder log...")
 		wzcard_log = wzcard_models.WeizoomCardHasOrder.create(
-			owner_id = webapp_owner.id,
+			owner_id = owner_id,
 			order_id = order_id,
 			card_id = card_id,
 			money = money,

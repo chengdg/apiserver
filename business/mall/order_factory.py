@@ -314,7 +314,7 @@ class OrderFactory(business_model.Model):
 		webapp_user = self.context['webapp_user']
 
 		# 创建空订单
-		order = Order.empty_order()
+		order = Order.empty_order(webapp_owner, webapp_user)
 
 		# 初始化，不需要资源信息
 		order = self.__init_order(order, purchase_info)

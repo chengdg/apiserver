@@ -90,7 +90,7 @@ class AOrder(api_resource.ApiResource):
 
 		return data
 
-	@param_required(['order_id', 'status'])
+	@param_required(['order_id', 'action'])
 	def post(args):
 		"""
 		更改订单状态
@@ -101,7 +101,7 @@ class AOrder(api_resource.ApiResource):
 			'order_id': args['order_id']
 		})
 
-		action = args['status']
+		action = args['action']
 		if action == 'cancel':
 			order.cancel()
 		elif action == 'finish':

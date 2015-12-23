@@ -176,6 +176,8 @@ class Member(business_model.Model):
 
 		if member_info.phone_number and len(member_info.phone_number) > 10:
 			member_info.phone =  '%s****%s' % (member_info.phone_number[:3], member_info.phone_number[-4:])
+		else:
+			member_info.phone = ''
 
 		return member_info
 

@@ -154,7 +154,7 @@ class WebAppOwnerInfo(business_model.Model):
 					operation_settings = account_models.OperationSettings.create(owner_id=webapp_owner_id)
 				else:
 					operation_settings = account_models.OperationSettings.select().dj_where(owner_id=webapp_owner_id).first()
-			else:
+			except:
 				error_msg = u"获得user('{}')对应的OperationSettings构建cache失败, cause:\n{}"\
 						.format(webapp_owner_id, unicode_full_stack())
 				watchdog_error(error_msg, user_id=webapp_owner_id, noraise=True)

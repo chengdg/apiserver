@@ -172,7 +172,7 @@ class Order(business_model.Model):
 	def product_outlines(self):
 		"""订单中的商品概况，只包含最基本的商品信息
 
-		TODO2：这里返回的依然是存储层的Product对象，需要返回业务层的Product业务对象
+		@TODO：这里返回的依然是存储层的Product对象，需要返回业务层的Product业务对象
 		"""
 		product_ids = [r.product_id for r in mall_models.OrderHasProduct.select().dj_where(order=self.id)]
 		products = list(mall_models.Product.select().dj_where(id__in=product_ids))
@@ -357,7 +357,7 @@ class Order(business_model.Model):
 	def __send_notify_mail(self):
 		"""发送通知邮件
 
-		@note 原来的发邮件用的是@weizoom.com邮箱，发邮件有拒收的风险。应该改成商用的发邮件服务，比如mailgun。
+		@note 原来的发邮件用的是`weizoom.com`邮箱，发邮件有被拒收的风险。应该改成商用的发邮件服务，比如**mailgun**。
 
 		@todo 待实现
 		"""
@@ -649,7 +649,7 @@ class Order(business_model.Model):
 		* 更新会员消费次数、金额、平均客单价、等级
 		* 发邮件
 
-		### 特定操作功能
+	### 特定操作功能
 		* 取消订单
 			* 返回资源
 		* 支付

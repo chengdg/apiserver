@@ -209,13 +209,13 @@ def myfunction(arg1, arg2, kwarg='whatever.'):
     get parsed by doxypypy and marked up with Doxygen commands as a
     regular input filter to Doxygen.
 
-    @param[in] arg1 A positional argument.
-    @param[in] arg2 Another positional argument.
-    @param[out] kwarg  A keyword argument.
+    @param[in] \@param[in] arg1 A positional argument.
+    @param[in] \@param[in] arg2 Another positional argument.
+    @param[out] \@param[out] kwarg  A keyword argument.
 
-    @return 返回结果说明。A string holding the result.
+    @return \@return 返回结果说明。A string holding the result.
 
-    @retval 返回值
+    @retval \@retval 返回值
 
     @param arg1 A positional argument.
     @param arg2 Another positional argument.
@@ -223,9 +223,9 @@ def myfunction(arg1, arg2, kwarg='whatever.'):
 
     @note \@note 值得注意的问题
     
-    @attention 注意事项
+    @attention \@attention注意事项
 
-    @see http://wiki.weizoom.com:81/
+    @see \@see http://wiki.weizoom.com:81/
 
     @warning \@warning 警告
 

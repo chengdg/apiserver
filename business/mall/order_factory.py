@@ -8,12 +8,12 @@
 下单步骤
 -----------------
 
-	1. 申请订单价无关资源（比如：reserved product, coupon, integral）
-	2. 计算订单价格（填充资源信息到订单业务对象中）
-	3. 申请订单价相关资源（比如：微众卡）
-	4. 调整订单价格（填充资源信息到订单业务对象中）
-	5. 保存订单
-	6. 如果需要（比如订单保存失败），释放资源（包括订单价相关资源和订单价无关资源）
+1. 申请订单价无关资源（比如：reserved product, coupon, integral）
+2. 计算订单价格（填充资源信息到订单业务对象中）
+3. 申请订单价相关资源（比如：微众卡）
+4. 调整订单价格（填充资源信息到订单业务对象中）
+5. 保存订单
+6. 如果需要（比如订单保存失败），释放资源（包括订单价相关资源和订单价无关资源）
 
 """
 
@@ -109,6 +109,17 @@ class OrderFactory(business_model.Model):
 		"""
 		申请订单价无关资源
 
+		说明：`reason`的格式
+
+ 			{
+				"is_success": False,
+				"type": 'promotion:expired',
+				"msg": u"该活动已经过期",
+				"short_msg": u"已经过期"
+			}
+		
+		@see __allocation_promotion()
+
 		@return price_free_resources
 		"""
 		webapp_owner = self.context['webapp_owner']
@@ -116,16 +127,6 @@ class OrderFactory(business_model.Model):
 
 		allocate_order_resource_service = AllocateOrderResourceService(webapp_owner, webapp_user)
 		
-		"""
-		说明：reason的格式：
- 			{
-				"is_success": False,
-				"type": 'promotion:expired',
-				"msg": u"该活动已经过期",
-				"short_msg": u"已经过期"
-			}
-		@see `__allocation_promotion`
-		"""
 		successed, reasons, resources = allocate_order_resource_service.allocate_resource_for(order, purchase_info)
 		
 		if successed:
@@ -200,6 +201,9 @@ class OrderFactory(business_model.Model):
 
 
 	def release(self, resources):
+		"""
+		释放资源
+		"""
 		allocator_order_resource_service = self.context['allocator_order_resource_service'] 
 		if isinstance(allocator_order_resource_service, AllocateOrderResourceService):
 			allocator_order_resource_service.release(resources)
@@ -209,7 +213,7 @@ class OrderFactory(business_model.Model):
 		"""
 		保存订单
 
-		@param order Order对象(业务模型)
+		@param[in] order Order对象(业务模型)
 		"""
 		#webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user']

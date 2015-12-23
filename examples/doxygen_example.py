@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-""" @package example.doxygen_example
+""" @package examples.doxygen_example
 用Doxygen文档化的范例
 
 @brief Doxygen Python示例

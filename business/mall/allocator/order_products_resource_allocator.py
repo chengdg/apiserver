@@ -88,11 +88,9 @@ class OrderProductsResourceAllocator(business_model.Service):
 		"""
 		将同一商品的不同规格的商品进行合并，主要合并
 
-		Parameters
-			[in] products: ReservedProduct对象集合
+		@param[in] products: ReservedProduct对象集合
 
-		Returns
-			MergedReservedProduct对象集合
+		@return MergedReservedProduct对象集合
 		"""
 		id2product = {}
 		for product in products:

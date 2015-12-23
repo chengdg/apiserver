@@ -5,16 +5,30 @@
 
 """
 
-class OrderResourceExtractor(object):
+from business import model as business_model 
+from business.mall.integral.integral_resource_extractor import IntegralResourceExtractor
+
+import logging
+
+class OrderResourceExtractor(business_model.Model):
 	"""
 	资源抽取器
 
 	负责从purchase_info中抽取各种resource并合并同类resource
 	"""
+	__slots__ = (
+		'__extractors',
+	)
 
 	def __init__(self):
+		self.__extractors = []
+		self.register_extractor(IntegralResourceExtractor())
 		return
-	
+
+	def register_extractor(self, extractor):
+		self.__extractors.append(extractor)
+		return
+
 	def extract(self, purchase_info):
 		"""
 		抽取并合并资源

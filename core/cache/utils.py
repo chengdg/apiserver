@@ -65,7 +65,6 @@ def set_cache(key, value, timeout=0):
 
 @modify_keys
 def get_cache(key):
-	key = ":1:"+key
 	value = r.get(key)
 	if not value:
 		return value

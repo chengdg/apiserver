@@ -100,7 +100,7 @@ Background:
 	And bill关注jobs的公众号
 
 @mall3 @mall.webapp @zy_bp01
-Scenario: 购买单个商品
+Scenario:1 购买单个商品
 	jobs添加商品后
 	1. bill能在webapp中购买jobs添加的商品
 	1. bill的订单中的信息正确
@@ -137,9 +137,8 @@ Scenario: 购买单个商品
 		}
 		"""
 
-
-@mall.webapp @mall3 @zy_bp02
-Scenario:1 购买商品时，使用订单备注
+@mall3 @mall.webapp @zy_bp02
+Scenario:2 购买商品时，使用订单备注
 	bill在购买jobs添加的商品时
 	1. 添加了"订单备注"，则jobs能在管理系统中看到该"订单备注"
 	2. 不添加'订单备注', 则jobs能在管理系统中看到"订单备注"为空字符串
@@ -188,8 +187,8 @@ Scenario:1 购买商品时，使用订单备注
 		}
 		"""
 
-@mall.webapp @mall3 @zy_bp03 @robert.wip
-Scenario:2 购买有规格的商品
+@mall3 @mall.webapp @zy_bp03 @robert.wip
+Scenario:3 购买有规格的商品
 	jobs添加商品后
 	1. bill能在webapp中购买jobs添加的商品
 	2. bill的订单中的信息正确
@@ -229,9 +228,8 @@ Scenario:2 购买有规格的商品
 		}
 		"""
 
-
-@mall.webapp @mall3 @zy_bp04 @robert.wip
-Scenario:3 购买已经下架的商品
+@mall3 @mall.webapp @zy_bp04 @robert.wip
+Scenario:4 购买已经下架的商品
 	bill可能会在以下情景下购买已下架的商品A：
 	1. bill打开商品A的详情页面
 	2. bill点击“购买”，进入商品A的订单编辑页面
@@ -252,8 +250,8 @@ Scenario:3 购买已经下架的商品
 		"""
 	Then bill获得错误提示'商品已下架<br/>2秒后返回商城首页'
 
-@mall.webapp @mall3 @zy_bp05 @robert.wip
-Scenario:4 购买的商品数量等于库存数量
+@mall3 @mall.webapp @zy_bp05 @robert.wip
+Scenario:5 购买的商品数量等于库存数量
 	jobs添加有限商品后
 	1. bill能在webapp中购买jobs添加的商品
 	2. bill的订单中的信息正确
@@ -299,8 +297,8 @@ Scenario:4 购买的商品数量等于库存数量
 		}
 		"""
 
-@mall.webapp @mall3 @zy_bp06 @robert.wip
-Scenario:5 购买库存不足的商品
+@mall3 @mall.webapp @zy_bp06 @robert.wip
+Scenario:6 购买库存不足的商品
 	bill可能会在以下情景下购买库存不足的商品A：
 	1. bill打开商品A的详情页面
 	2. bill调整数量为3个点击“购买”，进入商品A的订单编辑页面
@@ -336,11 +334,12 @@ Scenario:5 购买库存不足的商品
 		}
 		"""
 
-@mall.webapp @mall3 @zy_bp07 @robert.wip
-Scenario:6 货到付款的商品有两种支付方式
+@mall3 @mall.webapp @zy_bp07 @robert.wip
+Scenario:7 货到付款的商品有两种支付方式
 	bill购买jobs配有'货到付款'的商品时
 	1.bill可以使用'在线支付'进行支付
-	2.bill可以使用'货到付款'进行支付
+	2.bill可以使用'微众卡支付'进行支付
+	3.bill可以使用'货到付款'进行支付
 
 	When bill访问jobs的webapp
 	And bill加入jobs的商品到购物车
@@ -359,15 +358,16 @@ Scenario:6 货到付款的商品有两种支付方式
 			}]
 		}
 		"""
-	Then bill'能'使用支付方式'微信支付'进行支付
+	Then bill'能'使用支付方式'微众卡支付'进行支付
 	Then bill'能'使用支付方式'货到付款'进行支付
 	Then bill'能'使用支付方式'微信支付'进行支付
 
-@mall.webapp @mall3 @zy_bp08 @robert.wip
-Scenario:7 没有货到付款的商品只有一种支付方式
+@mall3 @mall.webapp @zy_bp08 @robert.wip
+Scenario:8 没有货到付款的商品只有一种支付方式
 	bill购买jobs没有配'货到付款'的商品时
-	1.bill可以使用'微众卡支付'进行支付
-	2.bill不可以使用'货到付款'进行支付
+	1.bill可以使用'在线支付'进行支付
+	2.bill可以使用'微众卡支付'进行支付
+	3.bill不可以使用'货到付款'进行支付
 
 	When bill访问jobs的webapp
 	And bill加入jobs的商品到购物车
@@ -387,76 +387,45 @@ Scenario:7 没有货到付款的商品只有一种支付方式
 		}
 		"""
 	Then bill'能'使用支付方式'微信支付'进行支付
-	Then bill'不能'使用支付方式'货到付款'进行支付
-
-
-@mall.webapp @mall3 @robert.wip
-Scenario: 8 购买多个商品配置不同的支付方式
-	bill购买jobs多个商品时，分别配置不同的支付方式
-	1.bill可以使用'在线支付'进行支付
-	2.bill不可以使用'货到付款'进行支付
-
-	When bill访问jobs的webapp
-	When bill加入jobs的商品到购物车
-		"""
-		[{
-			"name": "商品2",
-			"count": 1
-		}, {
-			"name": "商品6",
-			"count": 1
-		}]
-		"""
-	When bill从购物车发起购买操作
-		"""
-		{
-			"action": "pay",
-			"context": [{
-				"name": "商品2"
-			}, {
-				"name": "商品6"
-			}]
-		}
-		"""
-	Then bill'能'使用支付方式'微信支付'进行支付
-	Then bill'不能'使用支付方式'货到付款'进行支付
-
-@mall3
-Scenario: 8 购买多个商品配置不同的支付方式
-	bill购买jobs多个商品时，分别配置不同的支付方式
-	1.bill可以使用'在线支付'进行支付
-	2.bill不可以使用'货到付款'进行支付
-
-	When bill访问jobs的webapp
-	When bill加入jobs的商品到购物车
-		"""
-		[{
-			"name": "商品2",
-			"count": 1
-		}, {
-			"name": "商品6",
-			"count": 1
-		}]
-		"""
-	When bill从购物车发起购买操作
-		"""
-		{
-			"action": "pay",
-			"context": [{
-				"name": "商品2"
-			}, {
-				"name": "商品6"
-			}]
-		}
-		"""
 	Then bill'能'使用支付方式'微众卡支付'进行支付
-	Then bill'能'使用支付方式'微信支付'进行支付
 	Then bill'不能'使用支付方式'货到付款'进行支付
 
+@mall3 @mall.webapp @robert.wip
+Scenario:9 购买多个商品配置不同的支付方式
+	bill购买jobs多个商品时，分别配置不同的支付方式
+	1.bill可以使用'在线支付'进行支付
+	2.bill可以使用'在线支付'进行支付
+	3.bill不可以使用'货到付款'进行支付
+
+	When bill访问jobs的webapp
+	When bill加入jobs的商品到购物车
+		"""
+		[{
+			"name": "商品2",
+			"count": 1
+		}, {
+			"name": "商品6",
+			"count": 1
+		}]
+		"""
+	When bill从购物车发起购买操作
+		"""
+		{
+			"action": "pay",
+			"context": [{
+				"name": "商品2"
+			}, {
+				"name": "商品6"
+			}]
+		}
+		"""
+	Then bill'能'使用支付方式'微信支付'进行支付
+	Then bill'能'使用支付方式'微众卡支付'进行支付
+	Then bill'不能'使用支付方式'货到付款'进行支付
 
 #后续补充.雪静
-@mall.webapp @mall3 @zy_bp09 @robert.wip
-Scenario:9 购买库存为零的商品
+@mall3 @mall.webapp @zy_bp09 @robert.wip
+Scenario:10 购买库存为零的商品
 	bill可能会在以下情景下购买库存不足的商品A：
 	1. bill打开商品A的详情页面
 	2. bill调整数量为2个点击“购买”，进入商品A的订单编辑页面
@@ -499,10 +468,9 @@ Scenario:9 购买库存为零的商品
 		"""
 	Then bill获得错误提示'商品已售罄'
 
-@allOrder @mall3 @robert.wip
-Scenario: 10 会员购买商品后，获取订单列表
+@mall3 @allOrder @robert.wip
+Scenario:11 会员购买商品后，获取订单列表
 	bill成功创建订单多个订单后，获取订单列表
-
 
 	When bill访问jobs的webapp
 	And bill购买jobs的商品
@@ -584,11 +552,9 @@ Scenario: 10 会员购买商品后，获取订单列表
 		}]
 		"""
 
-
-
 #根据需求4985新增场景
-@mall.webapp @mall3 @robert.wip
-Scenario: 11 会员购买的商品同时参加多个活动，然后下架商品
+@mall3 @mall.webapp @robert.wip
+Scenario:12 会员购买的商品同时参加多个活动，然后下架商品
 	bill购买商品时，jobs下架此商品，bill获得错误提示信息
 
 	Given jobs登录系统:weapp
@@ -658,10 +624,8 @@ Scenario: 11 会员购买的商品同时参加多个活动，然后下架商品
 		"""
 	Then bill获得'商品2'错误提示'商品已下架'
 
-
-
-@mall.webapp @mall3 @robert.wip
-Scenario: 12 会员购买的商品同时参加多个活动，然后删除商品
+@mall3 @mall.webapp @robert.wip
+Scenario:13 会员购买的商品同时参加多个活动，然后删除商品
 	bill购买商品时，jobs删除此商品，bill获得错误提示信息
 
 	Given jobs登录系统:weapp
@@ -730,4 +694,3 @@ Scenario: 12 会员购买的商品同时参加多个活动，然后删除商品
 		}
 		"""
 	Then bill获得'商品2'错误提示'商品已删除'
-	

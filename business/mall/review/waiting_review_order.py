@@ -72,6 +72,10 @@ class WaitingReviewOrder(business_model.Model):
 
 		products_list = []
 		for order_product in products:
+			if order_product.promotion:
+				if order_product.promotion['type_name'] == 'premium_sale:premium_product':
+					continue
+			
 			has_reviewed_picture = False
 			has_reviewed = False
 			

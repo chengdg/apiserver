@@ -2,7 +2,19 @@
 """@package business.mall.order_factory
 订单生成器
 
-订单生成器根据购买信息(PurchaseInfo对象)，生成一个订单
+@brief 订单生成器根据购买信息(PurchaseInfo对象)，生成一个订单。
+
+
+下单步骤
+-----------------
+
+1. 申请订单价无关资源（比如：reserved product, coupon, integral）
+2. 计算订单价格（填充资源信息到订单业务对象中）
+3. 申请订单价相关资源（比如：微众卡）
+4. 调整订单价格（填充资源信息到订单业务对象中）
+5. 保存订单
+6. 如果需要（比如订单保存失败），释放资源（包括订单价相关资源和订单价无关资源）
+
 """
 
 import json
@@ -37,17 +49,7 @@ from business.mall.package_order_service.package_order_service import PackageOrd
 
 from business.mall.reserved_product_repository import ReservedProductRepository
 from business.mall.group_reserved_product_service import GroupReservedProductService
-
-
-class OrderException(Exception):
-	def __init__(self, value):
-		self.value = value
-	def __str__(self):
-		return repr(self.value)
-
-
-
-
+from business.mall.order_exception import OrderException
 
 
 class OrderFactory(business_model.Model):
@@ -55,12 +57,6 @@ class OrderFactory(business_model.Model):
 	订单生成器
 	"""
 	__slots__ = (
-		#'purchase_info',
-		#'products',
-		#'product_groups',
-		#'order',
-		#'resources',
-		#'price_info'
 	)
 
 	@staticmethod
@@ -113,6 +109,17 @@ class OrderFactory(business_model.Model):
 		"""
 		申请订单价无关资源
 
+		说明：`reason`的格式
+
+ 			{
+				"is_success": False,
+				"type": 'promotion:expired',
+				"msg": u"该活动已经过期",
+				"short_msg": u"已经过期"
+			}
+		
+		@see __allocation_promotion()
+
 		@return price_free_resources
 		"""
 		webapp_owner = self.context['webapp_owner']
@@ -120,16 +127,6 @@ class OrderFactory(business_model.Model):
 
 		allocate_order_resource_service = AllocateOrderResourceService(webapp_owner, webapp_user)
 		
-		"""
-		说明：reason的格式：
- 			{
-				"is_success": False,
-				"type": 'promotion:expired',
-				"msg": u"该活动已经过期",
-				"short_msg": u"已经过期"
-			}
-		@see `__allocation_promotion`
-		"""
 		successed, reasons, resources = allocate_order_resource_service.allocate_resource_for(order, purchase_info)
 		
 		if successed:
@@ -204,6 +201,9 @@ class OrderFactory(business_model.Model):
 
 
 	def release(self, resources):
+		"""
+		释放资源
+		"""
 		allocator_order_resource_service = self.context['allocator_order_resource_service'] 
 		if isinstance(allocator_order_resource_service, AllocateOrderResourceService):
 			allocator_order_resource_service.release(resources)
@@ -213,7 +213,7 @@ class OrderFactory(business_model.Model):
 		"""
 		保存订单
 
-		@param order Order对象(业务模型)
+		@param[in] order Order对象(业务模型)
 		"""
 		#webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user']
@@ -301,20 +301,13 @@ class OrderFactory(business_model.Model):
 		"""
 		由PurchaseInfo创建订单
 
-		**下单步骤**：
-			1. 申请订单价无关资源（比如：reserved product, coupon, integral）
-			2. 计算订单价格（填充资源信息到订单业务对象中）
-			3. 申请订单价相关资源（比如：微众卡）
-			4. 调整订单价格（填充资源信息到订单业务对象中）
-			5. 保存订单
-			6. 如果需要（比如订单保存失败），释放资源（包括订单价相关资源和订单价无关资源）
 		"""
 		
 		webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user']
 
 		# 创建空订单
-		order = Order.empty_order()
+		order = Order.empty_order(webapp_owner, webapp_user)
 
 		# 初始化，不需要资源信息
 		order = self.__init_order(order, purchase_info)

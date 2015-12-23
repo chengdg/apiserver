@@ -1,4 +1,9 @@
 #coding: utf8
+"""@package business.wzcard.wzcard_checker
+微众卡检查器
+
+判断微众卡是否能用、是否有效、是否激活等各种情况。
+"""
 import logging
 
 
@@ -13,6 +18,16 @@ class WZCardChecker(object):
 	def check(self, wzcard_id, password, wzcard):
 		"""
 		检查微众卡是否可用
+
+		@return 返回二元组：是否可用(True/False), reason。
+
+		其中reason格式：
+			{
+				"is_success": False,
+				"type": 'wzcard:duplicated',
+				"msg": reason,
+				"short_msg": u'已添加'
+			}		
 
 		@see `wezoom_card/module_api.py`中的`check_weizoom_card`
 		"""

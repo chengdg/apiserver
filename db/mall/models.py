@@ -1880,10 +1880,3 @@ class Supplier(models.Model):
 		verbose_name_plural = "供货商操作"
 		db_table = "mall_supplier"
 
-	def get_supplier_name(supplier_id):
-		supplier = Supplier.select().dj_where(id=supplier_id).first()
-		
-		if supplier:
-			return supplier.name
-		else:
-			return ''

@@ -1,9 +1,6 @@
 #_author_:bc 2015.12.18
 
 Feature:从个人中心浏览不同状态的订单列表
-	"""
-		
-	"""
 
 Background:
 	Given 重置weapp的bdd环境
@@ -169,8 +166,6 @@ Background:
 		"""
 	When bill取消订单'005'
 
-	
-
 @personCenter @appallOrder @mall3 @duhao
 Scenario:1 会员通过个人中心的'待支付',浏览订单列表信息
 	When bill访问jobs的webapp
@@ -196,8 +191,6 @@ Scenario:1 会员通过个人中心的'待支付',浏览订单列表信息
 		}]
 		"""
 
-	
-
 @personCenter @appallOrder @mall3 @duhao
 Scenario:2 会员通过个人中心的'待发货',浏览订单列表信息
 	When bill访问jobs的webapp
@@ -219,8 +212,6 @@ Scenario:2 会员通过个人中心的'待发货',浏览订单列表信息
 		}]
 		"""
 
-	
-
 @personCenter @appallOrder @mall3 @duhao
 Scenario:3 会员通过个人中心的'待收货',浏览订单列表信息
 	When bill访问jobs的webapp
@@ -239,8 +230,6 @@ Scenario:3 会员通过个人中心的'待收货',浏览订单列表信息
 			"final_price": 60.00
 		}]
 		"""
-
-	
 
 @personCenter @appallOrder @mall3 @duhao
 Scenario:4 会员通过个人中心的'全部订单',浏览订单列表信息
@@ -297,4 +286,4 @@ Scenario:4 会员通过个人中心的'全部订单',浏览订单列表信息
 		}]
 		"""
 
-	
+

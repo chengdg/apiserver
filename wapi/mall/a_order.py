@@ -121,7 +121,7 @@ class AOrder(api_resource.ApiResource):
 
 	@staticmethod
 	def to_dict(order):
-		order_dict = order.to_dict('latest_express_detail', 'products', 'red_envelope', 'red_envelope_created')
+		order_dict = order.to_dict('latest_express_detail', 'products')
 		api_keys = [
 			"buyer_name",
 			"coupon_money",

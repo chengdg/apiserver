@@ -1,0 +1,75 @@
+#author: 王丽 2015-12-24
+
+Feature:运营邮件通知
+	jobs设定开启运营邮件通知，用户订单满足相应的条件，配置的运营邮箱可以收到相应的邮件通知
+
+Background:
+	Given 重置weapp的bdd环境
+	Given jobs登录系统:weapp
+	And jobs已添加支付方式:weapp
+		"""
+		[{
+			"type": "货到付款"
+		}, {
+			"type": "微信支付"
+		}]
+		"""
+	And jobs已添加商品:weapp
+		"""
+		[{
+			"name": "商品1",
+			"price":100.0
+		}]
+		"""
+	Given bill关注jobs的公众号
+
+Scenario:1 启用"下订单时"邮件通知
+	Given jobs登录系统:weapp
+	When bill配置'下单时'邮件通知
+		"""
+		{
+			"email":"ceshi@weizoom",
+			"exclude_memberID":""
+		}
+		"""
+
+	#购买商品，成功下单
+	When bill购买jobs的商品
+		"""
+		{
+			"order_id":"0000001",
+			"ship_name": "tom",
+			"ship_tel": "13811223344",
+			"ship_area": "北京市 北京市 海淀区",
+			"ship_address": "泰兴大厦",
+			"pay_type": "微信支付",
+			"products": [{
+				"name": "商品1",
+				"count": 1
+			}]
+		}
+		"""
+	Then bill成功创建订单
+		"""
+		{
+			"status": "待支付",
+			"final_price": 100.0,
+			"product_price": 100.00,
+			"products": [{
+				"name": "商品1",
+				"count": 1
+			}]
+		}
+		"""
+	Then 邮箱'ceshi@weizoom'获得'下单时'运营邮件通知
+		"""
+		商品名称：热干面<br />
+		订单号：20151224161321569<br />
+		下单时间：2015-12-24 16:13<br />
+		订单状态：待支付<br />
+		订购数量：1<br />
+		支付金额：1.5<br />
+		收货人：bill<br />
+		收货人电话：13811223344<br />
+		收货人地址： 泰兴大厦<br />
+		"""

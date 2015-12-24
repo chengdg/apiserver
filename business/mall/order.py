@@ -274,6 +274,27 @@ class Order(business_model.Model):
 		"""
 		return mall_models.STATUS2TEXT[self.status]
 
+	@property
+	def red_envelope(self):
+		"""
+		[property] 订单是否可领取红包
+		"""
+		red_envelope = self.context['webapp_owner'].red_envelope
+		if RedEnvelope.can_show_red_envelope(self, red_envelope):
+			return red_envelope['id']
+
+		return 0
+
+	@property
+	def red_envelope_created(self):
+		"""
+		[property] 领取红包的记录是否已经建立，即是否已经领取过红包
+		"""
+		if promotion_models.RedEnvelopeToOrder.select().dj_where(order_id=self.id).count() > 0:
+			return True
+
+		return False
+
 	@cached_context_property
 	def latest_express_detail(self):
 		"""

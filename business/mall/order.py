@@ -25,6 +25,7 @@ from business import model as business_model
 from business.mall.product import Product
 from business.mall.order_products import OrderProducts
 from business.mall.log_operator import LogOperator
+from business.mall.red_envelope import RedEnvelope
 import settings
 from business.decorator import cached_context_property
 from utils import regional_util
@@ -537,7 +538,7 @@ class Order(business_model.Model):
 			watchdog_warning(notify_message)
 
 	def to_dict(self, *extras):
-		properties = ['has_sub_order', 'sub_orders', 'pay_interface_name', 'status_text']
+		properties = ['has_sub_order', 'sub_orders', 'pay_interface_name', 'status_text', 'red_envelope', 'red_envelope_created']
 		if extras:
 			properties.extend(extras)
 

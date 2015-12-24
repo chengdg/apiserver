@@ -538,7 +538,7 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 		}
 		"""
 	When bill访问jobs的webapp
-	And bill使用支付方式'微信支付'进行支付
+	And bill使用支付方式'货到付款'进行支付
 	Given jobs登录系统:weapp
 	Then jobs可以看到订单列表:weapp
 		"""
@@ -547,7 +547,7 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 			"status": "待发货",
 			"final_price": 339.00,
 			"postage": 40.00,
-			"actions": ["申请退款"],
+			"actions": ["取消订单"],
 			"products": [{
 				"name": "商品1",
 				"price": 100.00,
@@ -588,7 +588,7 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 			"status": "待发货",
 			"final_price": 339.00,
 			"postage": 40.00,
-			"actions": ["申请退款"],
+			"actions": ["取消订单"],
 			"products": [{
 				"name": "商品1",
 				"price": 100.00,
@@ -622,7 +622,7 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 			"ship_address": "泰兴大厦",
 			"final_price": 339.00,
 			"postage": 40.00,
-			"actions": ["申请退款"],
+			"actions": ["取消订单"],
 			"products": [{
 				"name": "商品1",
 				"price": 100.00,
@@ -692,7 +692,7 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 			"status": "已发货",
 			"final_price": 339.00,
 			"postage": 40.00,
-			"actions": ["申请退款"],
+			"actions": ["取消订单"],
 			"products": [{
 				"name": "商品1",
 				"price": 100.00,
@@ -757,7 +757,7 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 			"status": "已发货",
 			"final_price": 339.00,
 			"postage": 40.00,
-			"actions": ["申请退款"],
+			"actions": ["取消订单"],
 			"products": [{
 				"name": "商品1",
 				"price": 100.00,

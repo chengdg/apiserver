@@ -355,7 +355,7 @@ Scenario: 3 购买多个供货商的多个商品,使用微信支付
 		}
 		"""
 	When bill访问jobs的webapp
-	#And bill使用支付方式'微信支付'进行支付
+	And bill使用支付方式'微信支付'进行支付
 	Given jobs登录系统:weapp
 	Then jobs可以看到订单列表:weapp
 		"""

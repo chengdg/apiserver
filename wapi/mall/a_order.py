@@ -8,6 +8,7 @@ import copy
 from datetime import datetime
 
 from core import api_resource
+from core.exceptionutil import unicode_full_stack
 from wapi.decorators import param_required
 from db.mall import models as mall_models
 from db.mall import promotion_models
@@ -19,7 +20,7 @@ from business.mall.order_factory import OrderFactory, OrderException
 from business.mall.purchase_info import PurchaseInfo
 from business.mall.pay_interface import PayInterface
 from business.mall.order import Order
-
+from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
 
 class AOrder(api_resource.ApiResource):
 	"""
@@ -95,22 +96,27 @@ class AOrder(api_resource.ApiResource):
 		"""
 		更改订单状态
 		"""
-		order = Order.from_id({
-			'webapp_user': args['webapp_user'],
-			'webapp_owner': args['webapp_owner'],
-			'order_id': args['order_id']
-		})
+		try:
+			order = Order.from_id({
+				'webapp_user': args['webapp_user'],
+				'webapp_owner': args['webapp_owner'],
+				'order_id': args['order_id']
+			})
 
-		action = args['action']
-		if action == 'cancel':
-			order.cancel()
-		elif action == 'finish':
-			order.finish()
-
-		return {
-			'success': True
-		}
-
+			action = args['action']
+			if action == 'cancel':
+				order.cancel()
+			elif action == 'finish':
+				order.finish()
+			else:
+				raise Exception(u'非法操作')
+			return {
+				'success': True
+			}
+		except:
+			notify_message = u"apiserver中修改订单状态失败, order_id:{}, action:{}, cause:\n{}".format(args['order_id'], args['action'], unicode_full_stack())
+			watchdog_error(notify_message)
+			return 500
 
 
 	@staticmethod

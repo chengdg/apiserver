@@ -14,6 +14,7 @@ from wapi.mall.a_purchasing import APurchasing as PurchasingApiResource
 from core.cache import utils as cache_utils
 from business.mall.order import Order
 from business.mall.pay_interface import PayInterface
+from business.mall.red_envelope import RedEnvelope
 import settings
 from core.watchdog.utils import watchdog_info, watchdog_error
 
@@ -97,13 +98,13 @@ class APayResult(api_resource.ApiResource):
 		# 		pass
 
 		#TODO2: 是否提示用户领红包
-		# is_show_red_envelope = False
-		# red_envelope_rule_id = 0
-		# red_envelope = request.webapp_owner_info.red_envelope
-		# if promotion_models.RedEnvelopeRule.can_show_red_envelope(order, red_envelope):
-		# 	# 是可以显示分享红包按钮
-		# 	is_show_red_envelope = True
-		# 	red_envelope_rule_id = red_envelope['id']
+		is_show_red_envelope = False
+		red_envelope_rule_id = 0
+		red_envelope = webapp_owner.red_envelope
+		if RedEnvelope.can_show_red_envelope(order, red_envelope):
+			# 是可以显示分享红包按钮
+			is_show_red_envelope = True
+			red_envelope_rule_id = red_envelope['id']
 
 		# 同步支付结果结束时间
 		get_pay_result_end_time = int(time.time() * 1000)
@@ -118,7 +119,8 @@ class APayResult(api_resource.ApiResource):
 		return {
 			'is_trade_success': is_trade_success,
 			'order': order.to_dict(),
-			'is_show_red_envelope': False
+			'is_show_red_envelope': False,
+			'red_envelope_rule_id': red_envelope_rule_id
 		}
 
 

@@ -71,6 +71,8 @@ class AExpressDetails(api_resource.ApiResource):
 		data = [AExpressDetails.to_dict(detail) for detail in express_details]
 		
 		return {
+			"order_id": args['order_id'],
+			"status": order.status_text, 
 			"express_company_name": order.readable_express_company_name,
 			"express_number": order.express_number,
 			"express_details": data

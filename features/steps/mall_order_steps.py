@@ -55,7 +55,27 @@ def step_impl(context, webapp_user_name, order_id):
 	response = context.client.post('/wapi/mall/order/', {
 		'woid': context.client.woid,
 		'order_id': order_id,
-		'status': 'cancel'
+		'action': 'cancel'
 	})
 
-	context.tc.assertTrue(200 == context.response.body['code'])
+	context.tc.assertTrue(200 == response.body['code'])
+
+
+@then(u"{webapp_user_name}在webapp查看'{order_id}'的物流信息")
+def step_impl(context, webapp_user_name, order_id):
+	expected_order = json.loads(context.text)
+	response = context.client.get('/wapi/mall/express_details/', {
+		'woid': context.client.woid,
+		'order_id': order_id
+	})
+	context.tc.assertTrue(200 == response.body['code'])
+
+	actual_order = response.body['data']
+	actual_order = {
+		'order_id': actual_order['order_id'],
+		'logistics': actual_order['express_company_name'],
+		'number': actual_order['express_number'],
+		'status': actual_order['status']
+	}
+
+	bdd_util.assert_dict(expected_order, actual_order)

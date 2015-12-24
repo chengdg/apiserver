@@ -158,7 +158,9 @@ class AOrder(api_resource.ApiResource):
 			"products",
 			"status_text",
 			"created_at",
-			"weizoom_card_money"
+			"weizoom_card_money",
+			"red_envelope",
+			"red_envelope_created",
 		]
 		data = {}
 		for key in api_keys:

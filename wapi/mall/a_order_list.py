@@ -52,6 +52,8 @@ class AOrderList(api_resource.ApiResource):
 				'has_sub_order': order.has_sub_order,
 				'express_number': order.express_number,
 				'review_is_finished': False,
+				'red_envelope': order.red_envelope,
+				'red_envelope_created': order.red_envelope_created,
 				'products': []
 			}
 

@@ -25,15 +25,16 @@ Background:
 
 Scenario:1 启用"下订单时"邮件通知
 	Given jobs登录系统:weapp
-	When bill配置'下单时'邮件通知
+	When jobs配置'下单时'邮件通知
 		"""
 		{
-			"email":"ceshi@weizoom",
+			"email":"ceshi@weizoom.com",
 			"exclude_memberID":""
 		}
 		"""
 
 	#购买商品，成功下单
+	When bill访问jobs的webapp
 	When bill购买jobs的商品
 		"""
 		{
@@ -61,7 +62,7 @@ Scenario:1 启用"下订单时"邮件通知
 			}]
 		}
 		"""
-	Then 邮箱'ceshi@weizoom'获得'下单时'运营邮件通知
+	Then 邮箱'ceshi@weizoom.com'获得'下单时'运营邮件通知
 		"""
 		商品名称：热干面<br />
 		订单号：20151224161321569<br />

@@ -21,3 +21,4 @@ import a_global_navbar
 import a_coupon
 import a_coupons
 import a_express_details
+import a_image

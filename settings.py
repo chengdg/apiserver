@@ -122,3 +122,5 @@ COMPONENT_INFO = {
 
 
 PROMOTION_RESULT_VERSION = '2' #促销结果数据版本号
+
+UPLOAD_DIR = os.path.join(PROJECT_HOME, '../static', 'upload')

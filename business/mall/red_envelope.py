@@ -12,7 +12,7 @@
 #import cache
 from wapi.decorators import param_required
 from db.mall import models as mall_models
-#import settings
+from datetime import datetime
 from business import model as business_model
 
 class RedEnvelope(business_model.Model):
@@ -32,7 +32,6 @@ class RedEnvelope(business_model.Model):
 			False: 订单不可以显示分享红包按钮
 		### 注: 此方法不需要查询数据库
 		"""
-		from mall import models as mall_models
 		if order.status <= mall_models.ORDER_STATUS_CANCEL or order.status >= mall_models.ORDER_STATUS_REFUNDING:
 			return False
 

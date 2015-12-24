@@ -119,7 +119,7 @@ class APayResult(api_resource.ApiResource):
 		return {
 			'is_trade_success': is_trade_success,
 			'order': order.to_dict(),
-			'is_show_red_envelope': False,
+			'is_show_red_envelope': is_show_red_envelope,
 			'red_envelope_rule_id': red_envelope_rule_id
 		}
 

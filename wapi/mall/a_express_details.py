@@ -71,7 +71,7 @@ class AExpressDetails(api_resource.ApiResource):
 		data = [AExpressDetails.to_dict(detail) for detail in express_details]
 		
 		return {
-			"express_company_name": u"顺丰快递",
-			"express_number": "2015025465656",
+			"express_company_name": order.readable_express_company_name,
+			"express_number": order.express_number,
 			"express_details": data
 		}

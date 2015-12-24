@@ -34,6 +34,7 @@ import logging
 from db.mall import promotion_models
 from db.express import models as express_models
 from business.mall.express.express_detail import ExpressDetail
+from business.mall.express.express_info import ExpressInfo
 
 class Order(business_model.Model):
 	"""订单
@@ -280,6 +281,19 @@ class Order(business_model.Model):
 		"""
 		#TODO2: 实现物流详情
 		return None
+
+	@cached_context_property
+	@deprecated
+	def readable_express_company_name(self):
+		"""
+		可读的快递名称(中文)
+
+		order.express_company_name是物流公司的英文名(拼音)，输出时转成中文名
+
+		@todo 将readable_express_company_name, express_details等并到express_info(ExpressInfo对象)中
+		"""
+		return ExpressInfo.get_name_by_value(self.express_company_name)
+
 
 	@property
 	def express_details(self):

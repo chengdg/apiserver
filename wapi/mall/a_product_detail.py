@@ -8,7 +8,7 @@ from utils import dateutil as utils_dateutil
 from business.mall.product import Product
 
 
-class ProductDetail(api_resource.ApiResource):
+class AProductDetail(api_resource.ApiResource):
 	"""
 	商品
 	"""

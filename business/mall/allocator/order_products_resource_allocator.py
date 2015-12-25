@@ -30,6 +30,7 @@ class OrderProductsResourceAllocator(business_model.Service):
 
 		release_resources = []
 		for resource in resources:
+			print 'type: ', resource.get_type()
 			if resource.get_type() == business_model.RESOURCE_TYPE_PRODUCTS:
 				release_resources.append(resource)
 
@@ -116,11 +117,6 @@ class OrderProductsResourceAllocator(business_model.Service):
 		promotion_reason = None
 		merged_reserved_products = self.__merge_different_model_product(products)
 		merged_promotion_product = None
-		for merged_reserved_product in merged_reserved_products:
-			is_promotion_success, promotion_reason = self.__allocate_promotion(merged_reserved_product)
-			if not is_promotion_success:
-				merged_promotion_product = merged_reserved_product
-				break
 
 		successed = False
 		resources = []
@@ -146,10 +142,19 @@ class OrderProductsResourceAllocator(business_model.Service):
 				resources.append(resource)
 				self.context['resource2allocator'][resource.model_id] = product_resource_allocator
 
+		for merged_reserved_product in merged_reserved_products:
+			is_promotion_success, promotion_reason = self.__allocate_promotion(merged_reserved_product)
+			if not is_promotion_success:
+				merged_promotion_product = merged_reserved_product
+				break
+
 		if not successed:
 			return False, reason, None
 		elif not is_promotion_success:
 			self.__supply_product_info_into_fail_reason(merged_promotion_product, promotion_reason)
+			if resources:
+				products_resource = ProductsResource(resources)
+				self.release([products_resource])
 			return False, promotion_reason, None
 		else:
 			resource = ProductsResource(resources)

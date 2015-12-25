@@ -320,7 +320,7 @@ Scenario: 4 购买单个买赠商品，超出库存限制
 		"""
 
 # __edit__ : 王丽 2015-12-25
-@mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
+@promotion @mall.promotion @mall.webapp.promotion @robert.wip
 Scenario: 5 购买单个买赠商品，赠品数量超出库存限制
 	#赠品库存不为零，但是库存不足本次订单赠送，下单提示赠品库存不足，继续提交订单成功，赠品数量为现有库存数量
 	When bill访问jobs的webapp
@@ -1287,7 +1287,7 @@ Scenario: 14 不同等级的会员购买会员价，同时有会员等级买赠�
 		"""
 
 # __edit__ : 王丽 2015-12-25
-@mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
+@promotion @mall.promotion @mall.webapp.promotion @robert.wip
 Scenario: 15 通过购物车购买单个买赠商品，赠品数量超出库存限制
 	#赠品库存不为零，但是库存不足本次订单赠送，下单提示赠品库存不足，继续提交订单成功，赠品数量为现有库存数量
 	When bill访问jobs的webapp

@@ -10,7 +10,7 @@ Feature:校验多个下单错误提示信息
 		商品5-已经过期(买赠活动)
 		商品6-限制购买(有限购周期)
 		商品7-限购3件 （多规格 M S）
-		#商品8至少购x件
+		商品8-已删除
 	"""
 
 Background:
@@ -75,6 +75,9 @@ Background:
 		},{
 			"name": "赠品",
 			"price": 10.0
+		},{
+			"name": "商品8",
+			"price": 80.0
 		}]
 		"""
 	When jobs创建买赠活动
@@ -115,7 +118,7 @@ Background:
 	Given bill关注jobs的公众号
 
 @mall.webapp @mall.promotion
-Scenario:1 校验多个下单错误信息提示
+Scenario:1 校验多个下单错误信息提示（错误信息类型不同）
 
 	#bill购买有限购周期的商品-商品6
 		When bill访问jobs的webapp
@@ -281,8 +284,58 @@ Scenario:1 校验多个下单错误信息提示
 			}
 			"""
 
+@mall.webapp @mall.promotion
+Scenario:2 校验多个下单错误信息提示（错误信息类型相同）
 
+	When bill访问jobs的webapp
+	And bill加入jobs的商品到购物车
+		"""
+		[{
+			"name": "商品4",
+			"count": 2
+		}, {
+			"name": "商品8",
+			"count": 1
+		}]
+		"""
+	When bill从购物车发起购买操作
+		"""
+		{
+			"action": "pay",
+			"context": [{
+			}, {
+				"name": "商品4"
+			}, {
+				"name": "商品8"
+			}]
+		}
+		"""
 
+	#删除商品
+		Given jobs登录系统
+		When jobs'删除'商品'商品4'
+		When jobs'删除'商品'商品8'
 
-
-
+	When bill在购物车订单编辑中点击提交订单
+		"""
+		{
+			"ship_name": "bill",
+			"ship_tel": "13811223344",
+			"ship_area": "北京市 北京市 海淀区",
+			"ship_address": "泰兴大厦",
+			"pay_type": "微信支付"
+		}
+		"""
+	Then bill获得创建订单失败的信息
+			"""
+			{
+				"detail": 
+				[{
+					"id": "商品4",
+					"msg": "已删除"
+				},{
+					"id": "商品8",
+					"msg": "已删除"
+				}]
+			}
+			"""

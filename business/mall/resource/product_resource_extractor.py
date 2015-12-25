@@ -7,18 +7,17 @@ from business.mall.reserved_product_repository import ReservedProductRepository
 from business.mall.group_reserved_product_service import GroupReservedProductService
 from business.resource.product_resource import ProductResource
 from business.mall.merged_reserved_product import MergedReservedProduct
+from business.mall.resource.resource_extractor import ResourceExtractor
 
-class ProductResourceExtractor(business_model.Model):
+class ProductResourceExtractor(ResourceExtractor):
 	"""
 	商品资源抽取器
 	"""
+	__slots__ = (
+	)
 
 	def __init__(self, webapp_owner, webapp_user):
-		business_model.Model.__init__(self)
-
-		self.context['webapp_owner'] = webapp_owner
-		self.context['webapp_user'] = webapp_user
-
+		ResourceExtractor.__init__(self, webapp_owner, webapp_user)
 
 
 	def __process_products(self, order, purchase_info):
@@ -72,6 +71,8 @@ class ProductResourceExtractor(business_model.Model):
 		"""
 		根据purchase_info抽取resource
 
+		每一种product是一个ProductResource
+
 		@note 相当于MapReduce模型中的map
 
 		@return Resource对象
@@ -97,6 +98,7 @@ class ProductResourceExtractor(business_model.Model):
 				})
 			# allocator以resources作为输入，那么resource应包括allocator所需要的信息
 			product_resource.product = merged_reserved_product
+			product_resource.is_purchase_from_shopping_cart = purchase_info.is_purchase_from_shopping_cart
 			resources.append(product_resource)
 		
 		return order, resources

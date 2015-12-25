@@ -21,7 +21,7 @@ from business.mall.product import Product
 from business.mall.allocator.integral_resource_allocator import IntegralResourceAllocator
 import settings
 from business.decorator import cached_context_property
-
+from order.decorator import deprecated
 
 class OrderIntegralResourceAllocator(business_model.Service):
 	"""订单积分分配器
@@ -91,9 +91,8 @@ class OrderIntegralResourceAllocator(business_model.Service):
 		"""
 		申请积分应用活动
 
-		Returns:
-			is_success: 如果成功，返回True；否则，返回False
-			reason: 如果成功，返回None；否则，返回失败原因
+		@retval is_success: 如果成功，返回True；否则，返回False
+		@retval reason: 如果成功，返回None；否则，返回失败原因
 		"""
 		count_per_yuan = webapp_owner.integral_strategy_settings.integral_each_yuan
 
@@ -135,7 +134,35 @@ class OrderIntegralResourceAllocator(business_model.Service):
 
 		return True, None
 
-	def allocate_resource(self, order, purchase_info):
+	def allocate_resource(self, order, resources):
+		"""
+		根据抽取的IntegralResource分配资源
+		"""
+		webapp_owner = self.context['webapp_owner']
+		webapp_user = self.context['webapp_user']
+
+		for resource in resources:
+			# 只分配积分资源
+			if resource.type != self.resource_type:
+				continue
+
+			# 真正的分配资源
+			total_integral = resource.integral
+			integral_resource_allocator = IntegralResourceAllocator(webapp_owner, webapp_user)
+			is_success, reason, resource = integral_resource_allocator.allocate_resource(total_integral)
+
+			if is_success:
+				self.context['resource2allocator'][resource] = integral_resource_allocator
+				return True, '', resource
+			else:
+				return False, reason, None
+
+
+	@deprecated
+	def allocate_resource_old(self, order, purchase_info):
+		"""
+		分配积分资源
+		"""
 		webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user']
 

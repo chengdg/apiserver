@@ -33,7 +33,10 @@ class ProductResource(business_model.Resource):
 	
 		# 抽取出来的product，原来放在order中，先暂存这里
 		'product',
-		)
+		'is_purchase_from_shopping_cart',
+		'is_available', # True表示分配成功; False表示分配失败
+		'failed_reason', # 分配失败原因
+	)
 
 
 	@staticmethod

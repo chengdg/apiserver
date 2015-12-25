@@ -47,6 +47,9 @@ from business.mall.reserved_product_repository import ReservedProductRepository
 from business.mall.allocator.allocate_order_resource_service import AllocateOrderResourceService
 from business.mall.package_order_service.package_order_service import PackageOrderService
 
+from business.mall.resource.product_resource_extractor import ProductResourceExtractor
+from business.mall.resource.product_resource_extractor import IntegralResourceExtractor
+
 from business.mall.order_exception import OrderException
 
 
@@ -106,7 +109,27 @@ class OrderFactory(business_model.Model):
 		"""
 		分配抽取出来的资源
 		"""
-		return
+		webapp_owner = self.context['webapp_owner']
+		webapp_user = self.context['webapp_user']
+
+		allocate_order_resource_service = AllocateOrderResourceService(webapp_owner, webapp_user)
+		
+		successed, reasons, resources = allocate_order_resource_service.allocate_resources(order, resources)
+		
+		if successed:
+			logging.info("Allocated resources successfully. count: {}".format(len(resources)))
+
+			self.context['allocator_order_resource_service'] = allocate_order_resource_service
+			#self.resources = resources
+			# #临时方案：TODO使用pricesevice处理
+			# for resource in resources:
+			# 	if resource.get_type() == business_model.RESOURCE_TYPE_INTEGRAL:
+			# 		self.__process_order_integral_for(resource)
+			return resources
+
+		# 如果分配资源失败，则抛异常
+		allocate_order_resource_service.release(resources)
+		raise OrderException(reasons)			
 
 	@deprecated
 	def __allocate_price_free_resources(self, order, purchase_info):
@@ -303,8 +326,13 @@ class OrderFactory(business_model.Model):
 		#order = self.__process_products(order, purchase_info)
 
 		# 抽取资源
+		## 抽取订单商品资源
 		product_extractor = ProductResourceExtractor(webapp_owner, webapp_user)
 		order, resources = product_extractor.extract(order, purchase_info)
+		## 抽取积分资源
+		integral_extractor = IntegralResourceExtractor(webapp_owner, webapp_user)
+		order, resources = integral_extractor.extract(order, purchase_info)
+
 
 		# TODO: merge各种resources(相当于reduce)
 		resources = self.__merge_resource(resources)

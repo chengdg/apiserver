@@ -12,7 +12,7 @@ from business.mall.allocator.order_integral_resource_allocator import OrderInteg
 from business.mall.allocator.order_products_resource_allocator import OrderProductsResourceAllocator
 from business.mall.allocator.order_coupon_resource_allocator import OrderCouponResourceAllocator
 
-#import logging
+import logging
 
 
 class AllocateOrderResourceService(AllocateResourceServiceBase):
@@ -35,6 +35,46 @@ class AllocateOrderResourceService(AllocateResourceServiceBase):
 		self.register_allocator(OrderIntegralResourceAllocator(webapp_owner, webapp_user))
 		self.register_allocator(OrderCouponResourceAllocator(webapp_owner, webapp_user))
 
+
+	def allocate_resources(self, order, extracted_resources):
+		"""
+		分配抽取的资源
+
+		@return (is_success, reasons, resources)
+		"""
+		resources = []
+		is_success = True
+		reasons = []
+		webapp_owner = self.__webapp_owner
+		webapp_user = self.__webapp_user
+
+		# TODO: to be replaced with self.__allocators
+		__allocators = [
+			OrderProductsResourceAllocator(webapp_owner, webapp_user),
+			OrderIntegralResourceAllocator(webapp_owner, webapp_user),
+		]
+		for allocator in __allocators:
+			logging.info("allocating resource using {}".format(allocator))
+			is_success, reason, allocated_resources = allocator.allocate_resource(order, extracted_resources)
+			resources.extend(allocated_resources)
+			logging.info("allocation result: is_success: {}, reason: {}, resource: {}".format(is_success, reason, allocated_resources))
+			if not is_success:
+				if resource:
+					resources.append(resource)
+				reasons.append(reason)
+				self.release(resources)
+				resources = []
+				break
+			elif resource:
+				if isinstance(resource, list):
+					resources.extend(resource)
+				else:
+					resources.append(resource)
+			else:
+				logging.error("`resource` SHOULD NOT be None! Please check it.")
+		
+		# 如果失败，resources为[]
+		return is_success, reasons, resources
 
 '''
 class AllocateOrderResourceService0(business_model.Service):

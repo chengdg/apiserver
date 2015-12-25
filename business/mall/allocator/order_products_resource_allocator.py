@@ -85,7 +85,8 @@ class OrderProductsResourceAllocator(business_model.Service):
 			result['model_name'] = product.model_name
 			result['pic_url'] = product.thumbnails_url
 
-	def allocate(self, resources):
+
+	def allocate_resource(self, resources):
 		"""
 		根据extractor抽取出的资源信息申请资源
 		"""
@@ -93,6 +94,10 @@ class OrderProductsResourceAllocator(business_model.Service):
 		#resources = []
 		#for product in products:
 		for resource in resources:
+			# 找出商品类型的resource
+			if resource.type != self.resource_type:
+				continue
+
 			# 从ProductResource资源中获取product
 			product = resource.product
 		 	product_resource_allocator = ProductResourceAllocator.get()
@@ -101,12 +106,14 @@ class OrderProductsResourceAllocator(business_model.Service):
 		 	if not successed:
 		 		self.__supply_product_info_into_fail_reason(product, reason)
 		 		if reason['type'] == 'product:is_off_shelve':
-		 			if purchase_info.is_purchase_from_shopping_cart:
+		 			#if purchase_info.is_purchase_from_shopping_cart:
+		 			if resource.is_purchase_from_shopping_cart:
 		 				reason['msg'] = u'有商品已下架<br/>2秒后返回购物车<br/>请重新下单'
 		 			else:
 		 				reason['msg'] = u'商品已下架<br/>2秒后返回商城首页'
 		 		elif reason['type'] == 'product:not_enough_stocks':
-		 			if purchase_info.is_purchase_from_shopping_cart:
+		 			#if purchase_info.is_purchase_from_shopping_cart:
+		 			if resource.is_purchase_from_shopping_cart:
 		 				reason['msg'] = u'有商品库存不足<br/>2秒后返回购物车<br/>请重新下单'
 		 			else:
 		 				reason['msg'] = u'有商品库存不足，请重新下单'
@@ -118,14 +125,13 @@ class OrderProductsResourceAllocator(business_model.Service):
 
 		if not successed:
 			return False, reason, None
-		else:
-			resource = ProductsResource(resources)
-		 	return True, reason, resource		
-		return
+
+		resource = ProductsResource(resources)
+	 	return True, reason, resource
 
 
 	@deprecated
-	def allocate_resource(self, order, purchase_info):
+	def allocate_resource_old(self, order, purchase_info):
 		#webapp_owner = self.context['webapp_owner']
 		#webapp_user = self.context['webapp_user']
 

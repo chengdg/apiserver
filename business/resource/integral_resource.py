@@ -30,7 +30,10 @@ class IntegralResource(business_model.Resource):
 		'type',
 		'integral',
 		'money',
-		'integral_log_id'
+		'integral_log_id',
+
+		'is_available',
+		'failed_reason',
 		)
 
 
@@ -55,6 +58,9 @@ class IntegralResource(business_model.Resource):
 		return self.type
 
 	def get_resource(self, integral):
+		"""
+		@todo 资源分配不应该放在IntegralResource中
+		"""
 		self.integral = integral
 		#self.money = integral_money
 		webapp_user = self.context['webapp_user']

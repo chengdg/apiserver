@@ -111,41 +111,46 @@ class OrderProductsResourceAllocator(business_model.Service):
 		#webapp_user = self.context['webapp_user']
 
 		products = order.products
-
 		#分配促销
+		is_promotion_success = True
+		promotion_reason = None
 		merged_reserved_products = self.__merge_different_model_product(products)
+		merged_promotion_product = None
 		for merged_reserved_product in merged_reserved_products:
-			is_success, reason = self.__allocate_promotion(merged_reserved_product)
-			if not is_success:
-				self.__supply_product_info_into_fail_reason(merged_reserved_product, reason)
-				return False, reason, None
+			is_promotion_success, promotion_reason = self.__allocate_promotion(merged_reserved_product)
+			if not is_promotion_success:
+				merged_promotion_product = merged_reserved_product
+				break
 
 		successed = False
 		resources = []
 		for product in products:
-		 	product_resource_allocator = ProductResourceAllocator.get()
-		 	successed, reason, resource = product_resource_allocator.allocate_resource(product)
+			product_resource_allocator = ProductResourceAllocator.get()
+			successed, reason, resource = product_resource_allocator.allocate_resource(product)
 
-		 	if not successed:
-		 		self.__supply_product_info_into_fail_reason(product, reason)
-		 		if reason['type'] == 'product:is_off_shelve':
-		 			if purchase_info.is_purchase_from_shopping_cart:
-		 				reason['msg'] = u'有商品已下架<br/>2秒后返回购物车<br/>请重新下单'
-		 			else:
-		 				reason['msg'] = u'商品已下架<br/>2秒后返回商城首页'
-		 		elif reason['type'] == 'product:not_enough_stocks':
-		 			if purchase_info.is_purchase_from_shopping_cart:
-		 				reason['msg'] = u'有商品库存不足<br/>2秒后返回购物车<br/>请重新下单'
-		 			else:
-		 				reason['msg'] = u'有商品库存不足，请重新下单'
-		 		self.release(resources)
-		 		break
-		 	else:
-		 		resources.append(resource)
-		 		self.context['resource2allocator'][resource.model_id] = product_resource_allocator
+			if not successed:
+				self.__supply_product_info_into_fail_reason(product, reason)
+				if reason['type'] == 'product:is_off_shelve':
+					if purchase_info.is_purchase_from_shopping_cart:
+						reason['msg'] = u'有商品已下架<br/>2秒后返回购物车<br/>请重新下单'
+					else:
+						reason['msg'] = u'商品已下架<br/>2秒后返回商城首页'
+				elif reason['type'] == 'product:not_enough_stocks':
+					if purchase_info.is_purchase_from_shopping_cart:
+						reason['msg'] = u'有商品库存不足<br/>2秒后返回购物车<br/>请重新下单'
+					else:
+						reason['msg'] = u'有商品库存不足，请重新下单'
+				self.release(resources)
+				break
+			else:
+				resources.append(resource)
+				self.context['resource2allocator'][resource.model_id] = product_resource_allocator
 
 		if not successed:
 			return False, reason, None
+		elif not is_promotion_success:
+			self.__supply_product_info_into_fail_reason(merged_promotion_product, promotion_reason)
+			return False, promotion_reason, None
 		else:
 			resource = ProductsResource(resources)
 		 	return True, reason, resource

@@ -54,11 +54,11 @@ class ProductResource(business_model.Resource):
 		return self.type
 
 	def get_resources(self, product):
-		is_successed, reason = self.__check_shelve_type(product)
+		is_successed, reason = self.__check_product_status(product)
 		if not is_successed:
 			return False, reason
-
-		is_successed, reason = self.__check_product_status(product)
+			
+		is_successed, reason = self.__check_shelve_type(product)
 		if not is_successed:
 			return False, reason
 

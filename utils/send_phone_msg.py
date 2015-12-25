@@ -53,6 +53,6 @@ def send_captcha(phone_number, company_name=u'微众传媒'):
 	MSG_CONTENT = u"您的验证码为[%s]，请不要泄露给任何人【%s】"
 	captcha = ''.join(random.sample(string.digits, 4))
 	content = MSG_CONTENT % (captcha, company_name)
-	result = True
-	#result = send_phone_captcha(phone_number, content)
+	#result = True
+	result = send_phone_captcha(phone_number, content)
 	return result,captcha

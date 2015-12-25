@@ -17,8 +17,8 @@ file_list = dict()
 # -----------------------------------------------
 image_path = "http://%s.b0.upaiyun.com%s"
 def upload_image_to_upyun(file_path, upyun_path):
-	if settings.MODE == 'develop':
-		return '/static%s' % upyun_path
+	# if settings.MODE == 'develop':
+	# 	return '/static%s' % upyun_path
 		
 	up = upyun.UpYun(BUCKETNAME, USERNAME, PASSWORD, timeout=300,
 			endpoint=upyun.ED_AUTO)

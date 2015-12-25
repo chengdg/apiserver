@@ -24,7 +24,7 @@ class AImage(api_resource.ApiResource):
 		file_data = args['file']
 		image_path = upload_img.save_base64_img_file_local_for_webapp(webapp_owner.id, file_data)
 		if image_path:
-			return {"img_path": img_path}
+			return {"image_path": image_path}
 		else:
 			return 500
 

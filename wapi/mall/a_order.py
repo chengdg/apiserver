@@ -44,6 +44,8 @@ class AOrder(api_resource.ApiResource):
 		purchase_info = PurchaseInfo.parse({
 			'request_args': args
 		})
+		if purchase_info.is_force_purchase:
+			webapp_user.set_force_purchase()
 
 		try:
 			order_factory = OrderFactory.get({

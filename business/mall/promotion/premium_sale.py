@@ -90,20 +90,38 @@ class PremiumSale(promotion.Promotion):
 			elif stocks == -1:
 				#无限库存
 				pass
-			elif stocks == 0 or premium_product['premium_count'] > stocks:
-				reason = PromotionFailure({
-					'type': 'promotion:premium_sale:not_enough_premium_product_stocks',
-					'msg': u'库存不足',
-					'short_msg': u'库存不足'
-				})
-				self.__supply_product_info_into_fail_reason(premium_product, reason)
-				return reason
-
-		#禁用商品会员价
-		#product.disable_discount()
+			elif stocks == 0:
+				if webapp_user.is_force_purchase():
+					#强制购买，改变赠品数量
+					premium_product['premium_count'] = 0
+				else:
+					reason = PromotionFailure({
+						'type': 'promotion:premium_sale:no_premium_product_stocks',
+						'msg': u'已赠完',
+						'short_msg': u'已赠完'
+					})
+					self.__supply_product_info_into_fail_reason(premium_product, reason)
+					return reason
+			elif premium_product['premium_count'] > stocks:
+				if webapp_user.is_force_purchase():
+					#强制购买，改变赠品数量
+					premium_product['premium_count'] = stocks
+					#商品库存小于赠品，直接将库存设置为0
+					mall_models.ProductModel.update(stocks=0).dj_where(product_id=premium_product['premium_product_id'], name='standard').execute()
+				else:
+					reason = PromotionFailure({
+						'type': 'promotion:premium_sale:not_enough_premium_product_stocks',
+						'msg': u'库存不足',
+						'short_msg': u'库存不足'
+					})
+					self.__supply_product_info_into_fail_reason(premium_product, reason)
+					return reason
+			else:
+				#商品库存大于赠品，直接扣库存
+				mall_models.ProductModel.update(stocks=mall_models.ProductModel.stocks-premium_product['premium_count']).dj_where(product_id=premium_product['premium_product_id'], name='standard').execute()
 
 		result = PromotionResult()
-		result.need_disable_discount = True
+		result.need_disable_discount = True #买赠活动需要禁用会员折扣
 		return result
 
 	def can_apply_promotion(self, promotion_product_group):

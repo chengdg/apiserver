@@ -556,3 +556,16 @@ class WebAppUser(business_model.Model):
 	def binded(self):
 		member_models.MemberInfo.update(binding_time=datetime.now(), is_binded=True).dj_where(member_id=self.member.id).execute()
 	
+	def set_force_purchase(self):
+		"""
+		设置强制购买模式
+
+		强制购买模式可以避开一些资源检查，比如：买赠活动的赠品库存不足
+		"""
+		self.context['is_force_purchase'] = True
+
+	def is_force_purchase(self):
+		"""
+		获取当前是否是强制购买模式
+		"""
+		return self.context.get('is_force_purchase', False)

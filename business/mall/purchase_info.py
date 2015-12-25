@@ -40,6 +40,7 @@ class PurchaseInfo(business_model.Model):
         'order_integral_info',
 
         'is_purchase_from_shopping_cart',
+        'is_force_purchase',
         'coupon_id',
         'wzcard_info', # 微众卡信息
     )
@@ -85,6 +86,7 @@ class PurchaseInfo(business_model.Model):
 
         self.order_type = request_args.get('order_type', mall_models.PRODUCT_DEFAULT_TYPE)
         self.is_purchase_from_shopping_cart = (request_args.get('is_order_from_shopping_cart', 'false') == 'true')
+        self.is_force_purchase = (request_args.get('forcing_submit', '0') == '1')
 
         self.__parse_integral_info(request_args) 
 

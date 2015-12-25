@@ -30,7 +30,7 @@ class OrderProductsResourceAllocator(business_model.Service):
 
 		release_resources = []
 		for resource in resources:
-			if resource.get_type() == business_model.RESOURCE_TYPE_PRODUCT:
+			if resource.get_type() == business_model.RESOURCE_TYPE_PRODUCTS:
 				release_resources.append(resource)
 
 		for release_resource in release_resources:

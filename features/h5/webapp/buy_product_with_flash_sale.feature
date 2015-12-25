@@ -162,8 +162,20 @@ Background:
 	And tom关注jobs的公众号
 	And sam关注jobs的公众号
 	And jobs登录系统:weapp
-	And jobs调tom等级为铜牌会员:weapp
-	And jobs调sam等级为银牌会员:weapp
+	When jobs更新'tom'的会员等级:weapp
+		"""
+		{
+			"name": "tom",
+			"member_rank": "铜牌会员"
+		}
+		"""
+	When jobs更新'sam'的会员等级:weapp
+		"""
+		{
+			"name": "sam",
+			"member_rank": "银牌会员"
+		}
+		"""
 	Then jobs可以获得会员列表:weapp
 		"""
 			[{

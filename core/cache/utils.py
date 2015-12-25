@@ -38,10 +38,10 @@ def modify_keys(function):
 		if isinstance(keys, list):
 			acture_keys = []
 			for key in keys:
-				acture_keys.append(':1:'+key)
+				acture_keys.append(':1:api'+key)
 			keys = acture_keys
 		else:
-			keys = ':1:' + keys
+			keys = ':1:api' + keys
 		args[0] = keys
 		args = tuple(args)
 		return function(*args, **kwargs)

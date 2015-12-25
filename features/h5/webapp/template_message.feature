@@ -1,0 +1,266 @@
+#author: 王丽 2015-12-24
+
+Feature:模板消息
+	jobs设定开启模板消息，用户满足相应的模板消息的条件，可以收到相应的消息
+
+Background:
+	Given 重置weapp的bdd环境
+	Given jobs登录系统:weapp
+
+	And jobs已有模板消息:weapp
+		"""
+		[{
+			"title":"TM00398-付款成功通知",
+			"template_id":"_k8QP2Fs_nZBiR52e_Y1040m5zi30i3E28khSHz8QtY",
+			"headline":"我们已收到您的货款，开始为您打包商品，请耐心等待: )",
+			"ending":"如有问题咨询微众客服，微众将第一时间为您服务！",
+			"industry":"IT科技",
+			"type":"主营行业",
+			"status":"已启用"
+		},{
+			"title":"OPENTM200303341-商品发货通知",
+			"template_id":"i3Uv69VpdJR3FB09eClA5mQqJJrTuxCIb3-piSZ3LJY",
+			"headline":"您的订单已发货，请注意查收",
+			"ending":"如有问题咨询微众客服，微众将第一时间为您服务！",
+			"industry":"消费品",
+			"type":"副营行业",
+			"status":"已启用"
+		}]
+		"""
+
+	And jobs已添加商品:weapp
+		"""
+		[{
+			"name": "商品1",
+			"price": 100.00
+		}]
+		"""
+	And jobs已添加支付方式:weapp
+		"""
+		[{
+			"type": "微信支付",
+			"is_active": "启用"
+		}, {
+			"type": "货到付款",
+			"is_active": "启用"
+		}]
+		"""
+
+	And bill关注jobs的公众号
+	And tom关注jobs的公众号
+
+@message @templateMessage
+Scenario:1 启用模板消息，配置正确的模板ID，可以成功接收到消息
+	When bill访问jobs的webapp
+	#购买商品，支付成功模板消息
+	When bill购买jobs的商品
+		"""
+		{
+			"order_id":"0000001",
+			"ship_name": "tom",
+			"ship_tel": "13811223344",
+			"ship_area": "北京市 北京市 海淀区",
+			"ship_address": "泰兴大厦",
+			"pay_type": "微信支付",
+			"products": [{
+				"name": "商品1",
+				"count": 1
+			}]
+		}
+		"""
+	When bill使用支付方式'微信支付'进行支付
+		"""
+		{
+			"is_sync": true
+		}
+		"""
+	Then bill支付订单成功
+		"""
+		{
+			"status": "待发货",
+			"final_price": 100.0,
+			"products": [{
+				"name": "商品1",
+				"price": 100.0,
+				"count": 1
+			}]
+		}
+		"""
+	Then bill收到模板消息
+		"""
+		付款成功通知<br />我们已收到您的货款，开始为您打包商品，请耐心等待: )<br />
+		订单金额：￥100.0[实际付款]<br />
+		商品详情：商品1<br />
+		收货信息：泰兴大厦<br />
+		订单编号：0000001
+		如有问题咨询微众客服，微众将第一时间为您服务！<br />
+		"""
+
+	#购买商品，支付成功，发货成功模板消息
+	Given jobs登录系统:weapp
+	When jobs对订单进行发货:weapp
+		"""
+		{
+			"order_no":"0000001",
+			"logistics":"顺丰速运",
+			"number":"123456789"
+		}
+		"""
+	Then bill收到模板消息
+		"""
+		商品发货通知<br />您的订单已发货，请注意查收<br />
+		快递公司：顺丰速运快递<br />
+		快递单号：123456789<br />
+		商品详情：商品1<br />
+		商品数量：1<br />
+		如有问题咨询微众客服，微众将第一时间为您服务！<br />
+		"""
+
+	#购买者才能收到相应的消息
+	Then tom收到模板消息
+		"""
+		"""
+
+@message @templateMessage
+Scenario:2 未启用模板消息，配置正确的模板ID，不可以成功接收到消息
+	Given jobs登录系统:weapp
+	When jobs修改'IT科技'行业标题为'付款成功通知'的状态
+		"""
+		{
+			"title":"TM00398-付款成功通知",
+			"template_id":"_k8QP2Fs_nZBiR52e_Y1040m5zi30i3E28khSHz8QtY",
+			"headline":"我们已收到您的货款，开始为您打包商品，请耐心等待: )",
+			"ending":"如有问题咨询微众客服，微众将第一时间为您服务！",
+			"industry":"IT科技",
+			"type":"主营行业",
+			"status":"未启用"
+		}
+		"""
+	When bill访问jobs的webapp
+	#购买商品，支付成功模板消息
+	When bill购买jobs的商品
+		"""
+		{
+			"order_id":"0000001",
+			"ship_name": "tom",
+			"ship_tel": "13811223344",
+			"ship_area": "北京市 北京市 海淀区",
+			"ship_address": "泰兴大厦",
+			"pay_type": "微信支付",
+			"products": [{
+				"name": "商品1",
+				"count": 1
+			}]
+		}
+		"""
+	When bill使用支付方式'微信支付'进行支付
+		"""
+		{
+			"is_sync": true
+		}
+		"""
+	Then bill支付订单成功
+		"""
+		{
+			"status": "待发货",
+			"final_price": 100.0,
+			"products": [{
+				"name": "商品1",
+				"price": 100.0,
+				"count": 1
+			}]
+		}
+		"""
+	Then bill收到模板消息
+		"""
+		"""
+
+	#购买商品，支付成功，发货成功模板消息
+	Given jobs登录系统:weapp
+	When jobs对订单进行发货:weapp
+		"""
+		{
+			"order_no":"0000001",
+			"logistics":"顺丰速运",
+			"number":"123456789"
+		}
+		"""
+	Then bill收到模板消息
+		"""
+		商品发货通知<br />您的订单已发货，请注意查收<br />
+		快递公司：顺丰速运快递<br />
+		快递单号：123456789<br />
+		商品详情：商品1<br />
+		商品数量：1<br />
+		如有问题咨询微众客服，微众将第一时间为您服务！<br />
+		"""
+
+@message @templateMessage
+Scenario:3 启用模板消息，配置错误的模板ID，不可以成功接收到消息
+	Given jobs登录系统:weapp
+	When jobs给'IT科技'行业标题为'付款成功通知'的模板消息添加内容
+		"""
+		{
+			"template_id":"12334556",
+			"headline":"我们已收到您的货款，开始为您打包商品，请耐心等待: )",
+			"ending":"如有问题咨询微众客服，微众将第一时间为您服务！",
+		}
+		"""
+	When bill访问jobs的webapp
+	#购买商品，支付成功模板消息
+	When bill购买jobs的商品
+		"""
+		{
+			"order_id":"0000001",
+			"ship_name": "tom",
+			"ship_tel": "13811223344",
+			"ship_area": "北京市 北京市 海淀区",
+			"ship_address": "泰兴大厦",
+			"pay_type": "微信支付",
+			"products": [{
+				"name": "商品1",
+				"count": 1
+			}]
+		}
+		"""
+	When bill使用支付方式'微信支付'进行支付
+		"""
+		{
+			"is_sync": true
+		}
+		"""
+	Then bill支付订单成功
+		"""
+		{
+			"status": "待发货",
+			"final_price": 100.0,
+			"products": [{
+				"name": "商品1",
+				"price": 100.0,
+				"count": 1
+			}]
+		}
+		"""
+	Then bill收到模板消息
+		"""
+		"""
+
+	#购买商品，支付成功，发货成功模板消息
+	Given jobs登录系统:weapp
+	When jobs对订单进行发货:weapp
+		"""
+		{
+			"order_no":"0000001",
+			"logistics":"顺丰速运",
+			"number":"123456789"
+		}
+		"""
+	Then bill收到模板消息
+		"""
+		商品发货通知<br />您的订单已发货，请注意查收<br />
+		快递公司：顺丰速运快递<br />
+		快递单号：123456789<br />
+		商品详情：商品1<br />
+		商品数量：1<br />
+		如有问题咨询微众客服，微众将第一时间为您服务！<br />
+		"""

@@ -44,7 +44,8 @@ def step_impl(context, webapp_user_name, webapp_owner_name, integral_count):
 		'webapp_owner': webapp_owner,
 		'member_id': member.id
 		})
-	webapp_user.cleanup_cache()
+	if webapp_user:
+		webapp_user.cleanup_cache
 
 
 @then(u'{webapp_user_name}在{webapp_owner_name}的webapp中获得积分日志')

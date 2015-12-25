@@ -126,7 +126,7 @@ class Integral(business_model.Model):
 					manager=manager
 				)
 			if webapp_user:
-				webapp_user.cleanup_cache()
+				webapp_user.cleanup_cache
 
 			return True, integral_log.id
 		except:

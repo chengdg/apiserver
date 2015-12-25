@@ -470,11 +470,17 @@ class WebAppUser(business_model.Model):
 		"""
 		return self.member.username_for_html
 
+	@cached_context_property
 	def cleanup_cache(self):
 		"""
 		[property] 清除缓存
 		"""
 		key = 'member_{webapp:%s}_{openid:%s}' % (self.member.webapp_id, self.openid)
+		cache_util.delete_cache(key)
+
+	@cached_context_property
+	def cleanup_order_info_cache(self):
+		key = "webapp_order_stats_{wu:%d}" % (self.id)
 		cache_util.delete_cache(key)
 
 	@cached_context_property

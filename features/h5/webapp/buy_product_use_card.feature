@@ -1,5 +1,6 @@
 #editor: benchi
 #editor: 师帅 2015.10.20
+#editor: 王丽 2015.12.25
 
 Feature:使用微众卡购买商品
 	用户能通过webapp使用微众卡购买jobs的商品

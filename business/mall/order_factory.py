@@ -26,7 +26,7 @@ import time
 import random
 import copy
 import logging
-
+from core.decorator import deprecated
 from business.mall.order import Order
 
 #from business.mall.package_order_service.package_order_service import CalculatePriceService
@@ -47,8 +47,6 @@ from business.mall.reserved_product_repository import ReservedProductRepository
 from business.mall.allocator.allocate_order_resource_service import AllocateOrderResourceService
 from business.mall.package_order_service.package_order_service import PackageOrderService
 
-from business.mall.reserved_product_repository import ReservedProductRepository
-from business.mall.group_reserved_product_service import GroupReservedProductService
 from business.mall.order_exception import OrderException
 
 
@@ -104,7 +102,13 @@ class OrderFactory(business_model.Model):
 		else:
 			return order_id
 
+	def __allocate_extracted_resources(self, order, resources):
+		"""
+		分配抽取出来的资源
+		"""
+		return
 
+	@deprecated
 	def __allocate_price_free_resources(self, order, purchase_info):
 		"""
 		申请订单价无关资源
@@ -118,6 +122,7 @@ class OrderFactory(business_model.Model):
 				"short_msg": u"已经过期"
 			}
 		
+		@todo 改成`__allocate_extracted_resources()`
 		@see __allocation_promotion()
 
 		@return price_free_resources
@@ -145,30 +150,6 @@ class OrderFactory(business_model.Model):
 			raise OrderException(reasons)	
 
 
-	def __process_products(self, order, purchase_info):
-		"""
-		向order中添加products和product_groups
-
-		@note 从OrderFactory迁移的代码
-		"""
-		webapp_owner = self.context['webapp_owner']
-		webapp_user = self.context['webapp_user']
-
-		#获得已预订商品集合
-		reserved_product_repository = ReservedProductRepository.get({
-			'webapp_owner': webapp_owner,
-			'webapp_user': webapp_user
-		})
-		order.products = reserved_product_repository.get_reserved_products_from_purchase_info(purchase_info)
-
-		#按促销进行product分组
-		group_reserved_product_service = GroupReservedProductService.get(webapp_owner, webapp_user)
-		order.product_groups = group_reserved_product_service.group_product_by_promotion(order.products)
-
-		#对每一个group应用促销活动
-		for promotion_product_group in order.product_groups:
-			promotion_product_group.apply_promotion(purchase_info)
-		return order
 
 
 	def __init_order(self, order, purchase_info):
@@ -296,6 +277,13 @@ class OrderFactory(business_model.Model):
 		return order
 
 
+	def __merge_resources(self, resources):
+		"""
+		合并同类resources(相当于reduce)
+
+		@todo 待实现
+		"""
+		return resources
 
 	def create_order(self, purchase_info):
 		"""
@@ -311,11 +299,19 @@ class OrderFactory(business_model.Model):
 
 		# 初始化，不需要资源信息
 		order = self.__init_order(order, purchase_info)
-		# 初始化商品信息
-		order = self.__process_products(order, purchase_info)
+		# 初始化商品信息(改到product resource extractor)
+		#order = self.__process_products(order, purchase_info)
 
-		# 申请订单价无关资源
-		price_free_resources = self.__allocate_price_free_resources(order, purchase_info)
+		# 抽取资源
+		product_extractor = ProductResourceExtractor(webapp_owner, webapp_user)
+		order, resources = product_extractor.extract(order, purchase_info)
+
+		# TODO: merge各种resources(相当于reduce)
+		resources = self.__merge_resource(resources)
+
+		# 分配订单价无关资源
+		price_free_resources = self.__allocate_extracted_resources(order, resources)
+		#price_free_resources = self.__allocate_price_free_resources(order, purchase_info)
 		logging.info("price_free_resources={}".format(price_free_resources))
 
 		# 填充order

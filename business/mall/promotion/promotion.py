@@ -104,12 +104,10 @@ class Promotion(business_model.Model):
 		"""
 		为webapp_user, product分配促销
 
-		Parameters
-			webapp_user
-			product: ReservedProduct对象
+		@param webapp_user
+		@param product: ReservedProduct对象
 
-		Returns
-			is_success: 如果分配成功，返回True；否则，返回False
+		@return is_success: 如果分配成功，返回True；否则，返回False
 			result: 分配成功，返回{}; 否则，返回失败原因
 		"""
 		raise NotImplementedError("%s must implement allocate method" % str(self.__class__))

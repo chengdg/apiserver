@@ -48,8 +48,7 @@ class MergedReservedProduct(business_model.Model):
 		"""
 		添加商品
 
-		Parameters
-			[in] reserved_product: ReservedProduct对象
+		@param[in] reserved_product: ReservedProduct对象
 		"""
 		if not self.id:
 			self.id = reserved_product.id
@@ -68,8 +67,7 @@ class MergedReservedProduct(business_model.Model):
 		"""
 		判断已预订商品是否拥有预期的促销
 
-		Returns
-			如果拥有预期促销，返回True；否则，返回False
+		@return 如果拥有预期促销，返回True；否则，返回False
 		"""
 		return self.expected_promotion_id != 0
 

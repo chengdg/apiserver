@@ -29,7 +29,10 @@ class ProductResource(business_model.Resource):
 	__slots__ = (
 		'type',
 		'model_id',
-		'purchase_count'
+		'purchase_count',
+	
+		# 抽取出来的product，原来放在order中，先暂存这里
+		'product',
 		)
 
 

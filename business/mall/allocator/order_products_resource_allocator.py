@@ -7,6 +7,7 @@ from business import model as business_model
 from business.resource.products_resource import ProductsResource
 from business.mall.allocator.product_resource_allocator import ProductResourceAllocator
 from business.mall.merged_reserved_product import MergedReservedProduct
+from core.decorator import deprecated
 
 class OrderProductsResourceAllocator(business_model.Service):
 	"""请求订单商品库存资源
@@ -84,39 +85,52 @@ class OrderProductsResourceAllocator(business_model.Service):
 			result['model_name'] = product.model_name
 			result['pic_url'] = product.thumbnails_url
 
-	def __merge_different_model_product(self, products):
+	def allocate(self, resources):
 		"""
-		将同一商品的不同规格的商品进行合并，主要合并
-
-		@param[in] products: ReservedProduct对象集合
-
-		@return MergedReservedProduct对象集合
+		根据extractor抽取出的资源信息申请资源
 		"""
-		id2product = {}
-		for product in products:
-			merged_reserved_product = id2product.get(product.id, None)
-			if not merged_reserved_product:
-				merged_reserved_product = MergedReservedProduct()
-				merged_reserved_product.add_product(product)
-				id2product[product.id] = merged_reserved_product
-			else:
-				merged_reserved_product.add_product(product)
+		successed = False
+		#resources = []
+		#for product in products:
+		for resource in resources:
+			# 从ProductResource资源中获取product
+			product = resource.product
+		 	product_resource_allocator = ProductResourceAllocator.get()
+		 	successed, reason, resource = product_resource_allocator.allocate_resource(product)
 
-		return id2product.values()
+		 	if not successed:
+		 		self.__supply_product_info_into_fail_reason(product, reason)
+		 		if reason['type'] == 'product:is_off_shelve':
+		 			if purchase_info.is_purchase_from_shopping_cart:
+		 				reason['msg'] = u'有商品已下架<br/>2秒后返回购物车<br/>请重新下单'
+		 			else:
+		 				reason['msg'] = u'商品已下架<br/>2秒后返回商城首页'
+		 		elif reason['type'] == 'product:not_enough_stocks':
+		 			if purchase_info.is_purchase_from_shopping_cart:
+		 				reason['msg'] = u'有商品库存不足<br/>2秒后返回购物车<br/>请重新下单'
+		 			else:
+		 				reason['msg'] = u'有商品库存不足，请重新下单'
+		 		self.release(resources)
+		 		break
+		 	else:
+		 		resources.append(resource)
+		 		self.context['resource2allocator'][resource.model_id] = product_resource_allocator
 
+		if not successed:
+			return False, reason, None
+		else:
+			resource = ProductsResource(resources)
+		 	return True, reason, resource		
+		return
+
+
+	@deprecated
 	def allocate_resource(self, order, purchase_info):
 		#webapp_owner = self.context['webapp_owner']
 		#webapp_user = self.context['webapp_user']
 
-		products = order.products
-
-		#分配促销
-		merged_reserved_products = self.__merge_different_model_product(products)
-		for merged_reserved_product in merged_reserved_products:
-			is_success, reason = self.__allocate_promotion(merged_reserved_product)
-			if not is_success:
-				self.__supply_product_info_into_fail_reason(merged_reserved_product, reason)
-				return False, reason, None
+		# moved to ProductResourceExtractor
+		# merged_reserved_products = self.__merge_different_model_product(products)
 
 		successed = False
 		resources = []

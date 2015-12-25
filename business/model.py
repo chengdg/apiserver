@@ -80,6 +80,7 @@ class Service(object):
 RESOURCE_TYPE_INTEGRAL = 'integral'
 RESOURCE_TYPE_COUPON = 'coupon'
 RESOURCE_TYPE_PRODUCT = 'product'
+RESOURCE_TYPE_PRODUCTS = 'products'
 class Resource(object):
 	"""
 	领域服务的基类

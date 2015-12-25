@@ -61,6 +61,11 @@ Background:
 				"password":"1231231",
 				"status":"已过期",
 				"price":30.00
+			},{
+				"id":"0000007",
+				"password":"1234567",
+				"status":"未使用",
+				"price":50.00
 			}]
 		}
 		"""
@@ -79,7 +84,7 @@ Scenario:1 微众卡金额大于订单金额时进行支付
 		"""
 		{
 			"status":"未使用",
-			"price":50.00
+			"price":100.00
 		}
 		"""
 
@@ -141,7 +146,7 @@ Scenario:2 微众卡金额等于订单金额时进行支付
 				"count":1
 			}],
 			"weizoom_card":[{
-				"card_name":"0000002",
+				"card_name":"0000007",
 				"card_pass":"1234567"
 			}]
 		}
@@ -162,7 +167,7 @@ Scenario:2 微众卡金额等于订单金额时进行支付
 		}
 		"""
 	Given jobs登录系统:weapp
-	Then jobs能获取微众卡'0000002':weapp
+	Then jobs能获取微众卡'0000007':weapp
 		"""
 		{
 			"status":"已用完",
@@ -174,8 +179,8 @@ Scenario:2 微众卡金额等于订单金额时进行支付
 #购买流程.编辑订单.微众卡使用
 Scenario:3 微众卡金额小于订单金额时进行支付
 	bill用微众卡购买jobs的商品时,微众卡金额小于订单金额
-	1.创建订单成功，订单状态为“等待支付”
-	2.微众卡金额不变,状态为“未使用”
+	1.创建订单成功，订单状态为“等待支付”，待支付金额为订单金额减去微众卡金额
+	2.微众卡金额为零,状态为“已使用”
 
 	When bill访问jobs的webapp
 	When bill购买jobs的商品
@@ -194,7 +199,6 @@ Scenario:3 微众卡金额小于订单金额时进行支付
 		}
 		"""
 
-	#bill获得创建订单失败的信息'您的微众卡余额不足！'
 	Then bill成功创建订单
 		"""
 		{
@@ -296,7 +300,7 @@ Scenario:5 用已用完的微众卡购买商品时
 				"count":1
 			}],
 			"weizoom_card":[{
-				"card_name":"0000003",
+				"card_name":"0000004",
 				"card_pass":"1231231"
 			}]
 		}
@@ -306,7 +310,7 @@ Scenario:5 用已用完的微众卡购买商品时
 		"""
 		{
 			"status": "待支付",
-			"final_price": 20.0,
+			"final_price": 50.0,
 			"product_price": 50.0,
 			"products":[{
 				"name":"商品1",
@@ -316,7 +320,7 @@ Scenario:5 用已用完的微众卡购买商品时
 		}
 		"""
 	Given jobs登录系统:weapp
-	Then jobs能获取微众卡'0000003':weapp
+	Then jobs能获取微众卡'0000004':weapp
 		"""
 		{
 			"status":"已用完",
@@ -887,10 +891,10 @@ Scenario:11 用微众卡购买商品时，输入两张同样的卡号密码
 
 @mall3 @mall2 @mall @mall.pay_weizoom_card @wip.victor12
 #购买流程.编辑订单.微众卡使用
-Scenario:12 用已用完的微众卡购买商品时
-	bill用已用完的微众卡购买jobs的商品时
-	1.创建订单成功，订单状态为“等待支付”
-	2.微众卡金额不变,状态为“已用完”
+Scenario:12 用两张微众卡购买，第一张卡的金额大于商品金额
+	1.使用两张微众卡进行购买，微众卡金额大于商品金额
+	2.第一张微众卡还有余额
+	3.第二张微众卡还有余额
 
 	When bill访问jobs的webapp
 	When bill购买jobs的商品
@@ -903,34 +907,43 @@ Scenario:12 用已用完的微众卡购买商品时
 				"count":1
 			}],
 			"weizoom_card":[{
-				"card_name":"0000004",
+				"card_name":"0000001",
+				"card_pass":"1234567"
+			},{
+				"card_name":"0000003",
 				"card_pass":"1231231"
 			}]
 		}
 		"""
-
 	Then bill成功创建订单
-	"""
-	{
-		"status": "待支付",
-		"final_price": 50.0,
-		"product_price": 50.0,
-		"products":[{
-			"name":"商品1",
-			"price":50.00,
-			"count":1
-		}]
-	}
-	"""
+		"""
+		{
+			"status": "待发货",
+			"final_price": 0.0,
+			"product_price": 50.0,
+			"weizoom_card_money":50.00,
+			"products":[{
+				"name":"商品1",
+				"price":50.00,
+				"count":1
+			}]
+		}
+		"""
 	Given jobs登录系统:weapp
-	Then jobs能获取微众卡'0000004':weapp
-	"""
-	{
-		"status":"已用完",
-		"price":0.00
-	}
-	"""
-
+	Then jobs能获取微众卡'0000001':weapp
+		"""
+		{
+			"status":"已使用",
+			"price":50.00
+		}
+		"""
+	Then jobs能获取微众卡'0000003':weapp
+		"""
+		{
+			"status":"未使用",
+			"price":30.00
+		}
+		"""
 
 @mall3 @mall.pay_weizoom_card @wip.bpuc13
 #购买流程.编辑订单.微众卡使用
@@ -943,6 +956,7 @@ Scenario:13 用两张微众卡购买，第二张卡的金额大于商品金额
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "微信支付",
 			"products":[{
 				"name":"商品1",
 				"price":50,

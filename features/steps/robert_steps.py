@@ -251,7 +251,7 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 			db_order.order_id=args['order_id']
 			db_order.save()
 			if db_order.origin_order_id <0:
-				for order in Order.select().dj_where(origin_order_id=db_order.id):
+				for order in mall_models.Order.select().dj_where(origin_order_id=db_order.id):
 					order.order_id = '%s^%s' % (args['order_id'], order.supplier)
 					order.save()
 			context.created_order_id = args['order_id']

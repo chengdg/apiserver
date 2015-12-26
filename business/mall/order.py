@@ -14,7 +14,10 @@ import random
 from datetime import datetime
 
 from core.exceptionutil import unicode_full_stack
+from core.sendmail import sendmail
 from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
+import db.account.models as accout_models
+from utils.regional_util import get_str_value_by_string_ids
 
 from wapi.decorators import param_required
 from wapi import wapi_utils
@@ -36,6 +39,15 @@ from db.mall import promotion_models
 from db.express import models as express_models
 from business.mall.express.express_detail import ExpressDetail
 from business.mall.express.express_info import ExpressInfo
+from services.order_notify_mail_service.task import notify_order_mail
+
+ORDER_STATUS2NOTIFY_STATUS = {
+	mall_models.ORDER_STATUS_NOT: accout_models.PLACE_ORDER,
+	mall_models.ORDER_STATUS_PAYED_NOT_SHIP: accout_models.PAY_ORDER,
+	mall_models.ORDER_STATUS_PAYED_SHIPED: accout_models.SHIP_ORDER,
+	mall_models.ORDER_STATUS_SUCCESSED: accout_models.SUCCESSED_ORDER,
+	mall_models.ORDER_STATUS_CANCEL: accout_models.CANCEL_ORDER
+}
 
 class Order(business_model.Model):
 	"""订单
@@ -313,6 +325,7 @@ class Order(business_model.Model):
 		order.express_company_name是物流公司的英文名(拼音)，输出时转成中文名
 
 		@todo 将readable_express_company_name, express_details等并到express_info(ExpressInfo对象)中
+		弃用后请修改__send_notify_mail()中的调用
 		"""
 		return ExpressInfo.get_name_by_value(self.express_company_name)
 
@@ -370,9 +383,9 @@ class Order(business_model.Model):
 
 		@todo 待实现
 		"""
-		print '[TODO2]: send order notify mail...'
-		return
-		order_has_products = OrderHasProduct.objects.filter(order=order)
+		# print '[TODO2]: send order notify mail...'
+		# return
+		order_has_products = mall_models.OrderHasProduct.select().dj_where(order=self.id)
 		buy_count = ''
 		product_name = ''
 		product_pic_list = []
@@ -382,160 +395,63 @@ class Order(business_model.Model):
 			product_pic_list.append(order_has_product.product.thumbnails_url)
 		buy_count = buy_count[:-1]
 		product_name = product_name[:-1]
-
-		user = UserProfile.objects.get(webapp_id=order.webapp_id).user
-
-		if order.coupon_id == 0:
-			coupon = ''
+		user = accout_models.UserProfile.get(webapp_id=self.webapp_id).user
+		if self.coupon_id:
+			coupon = str(promotion_models.Coupon.get(id=int(self.coupon_id)).coupon_id) + u',￥' + str(self.coupon_money)
 		else:
-			coupon = str(Coupon.objects.get(id=int(order.coupon_id)).coupon_id)+u',￥'+str(order.coupon_money)
+			coupon = ''
 
 		try:
-			area = get_str_value_by_string_ids(order.area)
+			area = get_str_value_by_string_ids(self.ship_area)
 		except:
-			area = order.area
+			area = self.ship_area
 		else:
 			area = u''
 
-		buyer_address = area+u" "+order.ship_address
+		buyer_address = area + u" " + self.ship_address
+		
+		order_status = self.status_text
 
-		if order.status == 0:
-			status = 0
-			order_status = u"待支付"
-		elif order.status == 3:
-			status = 1
-			order_status = u"待发货"
-		elif order.status == 4:
-			status = 2
-			order_status = u"已发货"
-		elif order.status == 5:
-			status = 3
-			order_status = u"已完成"
-		elif order.status == 1:
-			status = 4
-			order_status = u"已取消"
-		elif order.status == 6:
-			status = 5
-			order_status = u"退款中"
-		elif order.status == 7:
-			status = 6
-			order_status = u"退款完成"
-		else:
-			status = -1
-			order_status = ''
-
+		email_notify_status = ORDER_STATUS2NOTIFY_STATUS.get(self.status,-1)
 		try:
-			member= WebAppUser.get_member_by_webapp_user_id(order.webapp_user_id)
+			member = self.context['webapp_user'].member
 			if member is not None:
 				member_id = member.id
 			else:
 				member_id = -1
-		except :
+		except:
 			member_id = -1
 
-		if order.express_company_name:
-			from tools.express.util import  get_name_by_value
-			express_company_name = get_name_by_value(order.express_company_name)
-		else:
-			express_company_name = ""
-		if order.express_number:
-			express_number = order.express_number
+		express_company_name = self.readable_express_company_name
+
+		if self.express_number:
+			express_number = self.express_number
 		else:
 			express_number = ''
 
-		notify_order(
-				user=user,
+		notify_order_mail.delay(
+				user_id=user.id,
 				member_id=member_id,
-				status=status,
-				order_id=order.order_id,
+				status=email_notify_status,
+				order_id=self.order_id,
 				buyed_time=time.strftime('%Y-%m-%d %H:%M', time.localtime(time.time())),
 				order_status=order_status,
 				buy_count=buy_count,
-				total_price=order.final_price,
-				bill=order.bill,
+				total_price=self.final_price,
+				bill='',
 				coupon=coupon,
 				product_name=product_name,
-				integral=order.integral,
-				buyer_name=order.ship_name,
+				integral=self.integral,
+				buyer_name=self.ship_name,
 				buyer_address=buyer_address,
-				buyer_tel=order.ship_tel,
-				remark=order.customer_message,
+				buyer_tel=self.ship_tel,
+				remark=self.customer_message,
 				product_pic_list=product_pic_list,
-				postage=order.postage,
+				postage=self.postage,
 				express_company_name=express_company_name,
 				express_number=express_number
 				)
 
-
-	def notify_order(user, member_id, status, order_id, buyed_time, order_status, buy_count, total_price, bill, coupon, product_name, integral, buyer_name, buyer_address, buyer_tel, remark, product_pic_list, postage='0', express_company_name=None, express_number=None):
-		"""
-		发送邮件，通知订单消息
-
-		@todo 用模板改造沟通邮件内容的代码
-		"""
-		order_notifys = UserOrderNotifySettings.objects.filter(user=user, status=status, is_active=True)
-		if order_notifys.count() > 0 and str(member_id) not in order_notifys[0].black_member_ids.split('|') and order_notifys[0].emails != '':
-			# TODO: 可以用模板改造这段代码
-			order_notify = order_notifys[0]
-			content_list = []
-			content_described = u'微商城-%s-订单' % order_status
-			if order_id:
-				if product_name:
-					content_list.append(u'商品名称：%s' % product_name)
-				if product_pic_list:
-					pic_address = ''
-					for pic in product_pic_list:
-						pic_address = pic_address+"<img src='http://%s%s' width='170px' height='200px'></img>" % (settings.DOMAIN, pic)
-					if pic_address != '':
-						content_list.append(pic_address)
-				content_list.append(u'订单号：%s' % order_id)
-				if buyed_time:
-					content_list.append(u'下单时间：%s' % buyed_time)
-				if order_status:
-					content_list.append(u'订单状态：<font color="red">%s</font>' % order_status)
-				if express_company_name:
-					content_list.append(u'<font color="red">物流公司：%s</font>' % express_company_name)
-				if express_number:
-					content_list.append(u'<font color="red">物流单号：%s</font>' % express_number)
-				if buy_count:
-					content_list.append(u'订购数量：%s' % buy_count)
-				if total_price:
-					content_list.append(u'支付金额：%s' % total_price)
-				if integral:
-					content_list.append(u'使用积分：%s' % integral)
-				if coupon:
-					content_list.append(u'优惠券：%s' % coupon)
-				if bill:
-					content_list.append(u'发票：%s' % bill)
-				if postage:
-					content_list.append(u'邮费：%s' % postage)
-				if buyer_name:
-					content_list.append(u'收货人：%s' % buyer_name)
-				if buyer_tel:
-					content_list.append(u'收货人电话：%s' % buyer_tel)
-				if buyer_address:
-					content_list.append(u'收货人地址：%s' % buyer_address)
-				if remark:
-					content_list.append(u'顾客留言：%s' % remark)
-				
-				# if member_id:
-				# 	try:
-				# 		member = Member.objects.get(id=member_id)
-				# 		content_list.append(u'会员昵称：%s' % member.username_for_html)
-				# 	except:
-				# 		pass
-					
-			content = u'<br> '.join(content_list) 
-			_send_email(user, order_notify.emails, content_described, content)
-
-	def _send_email(user, emails, content_described, content):
-		try:
-			for email in emails.split('|'):
-				if email.find('@') > -1:
-					sendmail(email, content_described, content)
-		except:
-			notify_message = u"发送邮件失败user_id（{}）, cause:\n{}".format(user.id,unicode_full_stack())
-			watchdog_warning(notify_message)
 
 	def to_dict(self, *extras):
 		properties = ['has_sub_order', 'sub_orders', 'pay_interface_name', 'status_text', 'red_envelope', 'red_envelope_created']
@@ -677,6 +593,8 @@ class Order(business_model.Model):
 		取消订单
 		"""
 		# 释放订单资源
+		self.status = mall_models.ORDER_STATUS_CANCEL
+
 
 		mall_models.Order.update(status=mall_models.ORDER_STATUS_CANCEL).dj_where(id=self.id).execute()
 
@@ -704,6 +622,7 @@ class Order(business_model.Model):
 		# 更新订单状态
 		mall_models.Order.update(status=mall_models.ORDER_STATUS_SUCCESSED).dj_where(id=self.id).execute()
 
+		self.status = mall_models.ORDER_STATUS_SUCCESSED
 		# 更新子订单状态
 		if self.origin_order_id == -1:
 			mall_models.Order.update(status=mall_models.ORDER_STATUS_SUCCESSED).dj_where(origin_order_id=self.id).execute()

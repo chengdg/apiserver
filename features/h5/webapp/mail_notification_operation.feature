@@ -21,17 +21,20 @@ Background:
 			"price":100.0
 		}]
 		"""
+	And jobs初始化邮件通知:weapp
 	Given bill关注jobs的公众号
 
+@ztqb
 Scenario:1 启用"下订单时"邮件通知
 	Given jobs登录系统:weapp
-	When jobs配置'下单时'邮件通知
+	When jobs配置'下单时'邮件通知:weapp
 		"""
 		{
-			"email":"ceshi@weizoom.com",
-			"exclude_memberID":""
+			"emails":"925896183@qq.com",
+			"member_ids":""
 		}
 		"""
+	When jobs启用'下单时'邮件通知:weapp
 
 	#购买商品，成功下单
 	When bill访问jobs的webapp
@@ -62,15 +65,19 @@ Scenario:1 启用"下订单时"邮件通知
 			}]
 		}
 		"""
-	Then 邮箱'ceshi@weizoom.com'获得'下单时'运营邮件通知
-		"""
-		商品名称：热干面<br />
-		订单号：20151224161321569<br />
-		下单时间：2015-12-24 16:13<br />
-		订单状态：待支付<br />
-		订购数量：1<br />
-		支付金额：1.5<br />
-		收货人：bill<br />
-		收货人电话：13811223344<br />
-		收货人地址： 泰兴大厦<br />
-		"""
+#	Then server能发送邮件
+#	"""
+#	商品名称：商品1<br> 订单号：0000001<br> 下单时间：2015-12-25 15:11<br> 订单状态：<font color="red">待支付</font><br> 订购数量：1<br> 支付金额：100.0<br> 收货人：tom<br> 收货人电话：13811223344<br> 收货人地址： 泰兴大厦
+#	"""
+#	Then 邮箱'ceshi@weizoom.com'获得'下单时'运营邮件通知
+#		"""
+#		商品名称：热干面<br />
+#		订单号：20151224161321569<br />
+#		下单时间：2015-12-24 16:13<br />
+#		订单状态：待支付<br />
+#		订购数量：1<br />
+#		支付金额：1.5<br />
+#		收货人：bill<br />
+#		收货人电话：13811223344<br />
+#		收货人地址： 泰兴大厦<br />
+#		"""

@@ -336,3 +336,16 @@ def get_product_by(product_name):
 
 def get_member_by_id(member_id):
 	return Member.from_id({'webapp_owner': None, 'member_id': member_id})
+
+
+bdd_mock = {
+	'notify_mail': ''
+}
+
+
+def set_bdd_mock(mock_type, mock_content):
+	bdd_mock[mock_type] = mock_content
+
+
+def get_bdd_mock(mock_type):
+	return bdd_mock[mock_type]

@@ -319,9 +319,10 @@ Scenario: 4 购买单个买赠商品，超出库存限制
 		}
 		"""
 
-@mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
+# __edit__ : 王丽 2015-12-25
+@promotion @mall.promotion @mall.webapp.promotion @robert.wip
 Scenario: 5 购买单个买赠商品，赠品数量超出库存限制
-
+	#赠品库存不为零，但是库存不足本次订单赠送，下单提示赠品库存不足，继续提交订单成功，赠品数量为现有库存数量
 	When bill访问jobs的webapp
 	When bill购买jobs的商品
 		"""
@@ -342,6 +343,94 @@ Scenario: 5 购买单个买赠商品，赠品数量超出库存限制
 			}]
 		}
 		"""
+	When bill选择'继续提交'
+	Then bill成功创建订单
+		"""
+		{
+			"status": "待支付",
+			"final_price": 1000.00,
+			"products": [{
+				"name": "商品2",
+				"count": 5,
+				"promotion": {
+					"type": "premium_sale"
+				}
+			},{
+				"name": "商品4",
+				"count": 20,
+				"promotion": {
+					"type": "premium_sale:premium_product"
+				}
+			}]
+		}
+		"""
+
+	#赠品库存为零，下单提示赠品库存不足，"继续提交"订单成功，赠品数量为零
+	When bill访问jobs的webapp
+	When bill购买jobs的商品
+		"""
+		{
+			"products": [{
+				"name": "商品2",
+				"count": 1
+			}]
+		}
+		"""
+	Then bill获得创建订单失败的信息
+		"""
+		{
+			"detail": [{
+				"id": "商品4",
+				"msg": "库存不足",
+				"short_msg": "库存不足"
+			}]
+		}
+		"""
+	When bill选择'继续提交'
+	Then bill成功创建订单
+		"""
+		{
+			"status": "待支付",
+			"final_price": 200.00,
+			"products": [{
+				"name": "商品2",
+				"count": 1,
+				"promotion": {
+					"type": "premium_sale"
+				}
+			},{
+				"name": "商品4",
+				"count": 0,
+				"promotion": {
+					"type": "premium_sale:premium_product"
+				}
+			}]
+		}
+		"""
+
+	#赠品库存为零，下单提示赠品库存不足，"返回修改"订单成功
+	When bill访问jobs的webapp
+	When bill购买jobs的商品
+		"""
+		{
+			"products": [{
+				"name": "商品2",
+				"count": 1
+			}]
+		}
+		"""
+	Then bill获得创建订单失败的信息
+		"""
+		{
+			"detail": [{
+				"id": "商品4",
+				"msg": "库存不足",
+				"short_msg": "库存不足"
+			}]
+		}
+		"""
+	When bill选择'返回修改'
+	Then bill跳转到商品'商品2'的商品详情页
 
 @mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
 Scenario: 6 购买多个 有规格的参与买赠的商品
@@ -607,7 +696,7 @@ Scenario: 10  创建买赠活动，但活动时间没开始，按原有商品销
 		"""
 
 @mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
-Scenario: 创建买赠活动，活动结束后，按原有商品销售，不进行赠送
+Scenario: 11 创建买赠活动，活动结束后，按原有商品销售，不进行赠送
 	Given jobs登录系统:weapp
 	And jobs已添加商品:weapp
 		"""
@@ -654,7 +743,7 @@ Scenario: 创建买赠活动，活动结束后，按原有商品销售，不进�
 		"""
 
 @mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
-Scenario: 11  创建买赠活动，选择商品时，活动进行中，但去付款时，活动已经结束了，系统提示：该活动已经过期
+Scenario: 12  创建买赠活动，选择商品时，活动进行中，但去付款时，活动已经结束了，系统提示：该活动已经过期
 	Given jobs登录系统:weapp
 	And jobs已添加商品:weapp
 		"""
@@ -703,7 +792,7 @@ Scenario: 11  创建买赠活动，选择商品时，活动进行中，但去付
 		"""
 
 @mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
-Scenario: 12 购买单个买赠活动商品，购买时活动进行中，提交订单时，该活动被商家手工结束
+Scenario: 13 购买单个买赠活动商品，购买时活动进行中，提交订单时，该活动被商家手工结束
 
 	Given jobs登录系统:weapp
 	And jobs已添加商品:weapp
@@ -757,7 +846,7 @@ Scenario: 12 购买单个买赠活动商品，购买时活动进行中，提交�
 
 # __edit__ : 王丽   补充 "雪静"
 @mall3 @promotion @promotionPremium @meberGrade @robert.wip
-Scenario: 13 不同等级的会员购买会员价，同时有会员等级买赠活动的商品
+Scenario: 14 不同等级的会员购买会员价，同时有会员等级买赠活动的商品
 	Given jobs登录系统:weapp
 	When jobs添加会员等级:weapp
 		"""
@@ -1196,3 +1285,194 @@ Scenario: 13 不同等级的会员购买会员价，同时有会员等级买赠�
 			}]
 		}
 		"""
+
+# __edit__ : 王丽 2015-12-25
+@promotion @mall.promotion @mall.webapp.promotion @robert.wip
+Scenario: 15 通过购物车购买单个买赠商品，赠品数量超出库存限制
+	#赠品库存不为零，但是库存不足本次订单赠送，下单提示赠品库存不足，继续提交订单成功，赠品数量为现有库存数量
+	When bill访问jobs的webapp
+	When bill加入jobs的商品到购物车
+		"""
+		[{
+			"name": "商品2",
+			"count": 5
+		}]
+		"""
+	When bill从购物车发起购买操作
+		"""
+		{
+			"action": "click",
+			"context": [{
+				"name": "商品2"
+			}]
+		}
+		"""
+	Then bill获得待编辑订单
+		"""
+		{
+			"products": [{
+				"name": "商品2",
+				"count": 5
+			}]
+		}
+		"""
+	When bill在购物车订单编辑中点击提交订单
+		"""
+		{
+			"ship_name": "bill",
+			"ship_tel": "13811223344",
+			"ship_area": "北京市 北京市 海淀区",
+			"ship_address": "泰兴大厦",
+			"pay_type": "货到付款"
+		}
+		"""
+	Then bill获得创建订单失败的信息
+		"""
+		{
+			"detail": [{
+				"id": "商品4",
+				"msg": "库存不足",
+				"short_msg": "库存不足"
+			}]
+		}
+		"""
+	When bill选择'继续提交'
+	Then bill成功创建订单
+		"""
+		{
+			"status": "待支付",
+			"final_price": 1000.00,
+			"products": [{
+				"name": "商品2",
+				"count": 5,
+				"promotion": {
+					"type": "premium_sale"
+				}
+			},{
+				"name": "商品4",
+				"count": 20,
+				"promotion": {
+					"type": "premium_sale:premium_product"
+				}
+			}]
+		}
+		"""
+
+	#赠品库存为零，下单提示赠品库存不足，"继续提交"订单成功，赠品数量为零
+	When bill访问jobs的webapp
+	When bill加入jobs的商品到购物车
+		"""
+		[{
+			"name": "商品2",
+			"count": 1
+		}]
+		"""
+	When bill从购物车发起购买操作
+		"""
+		{
+			"action": "click",
+			"context": [{
+				"name": "商品2"
+			}]
+		}
+		"""
+	Then bill获得待编辑订单
+		"""
+		{
+			"products": [{
+				"name": "商品2",
+				"count": 1
+			}]
+		}
+		"""
+	When bill在购物车订单编辑中点击提交订单
+		"""
+		{
+			"ship_name": "bill",
+			"ship_tel": "13811223344",
+			"ship_area": "北京市 北京市 海淀区",
+			"ship_address": "泰兴大厦",
+			"pay_type": "货到付款"
+		}
+		"""
+	Then bill获得创建订单失败的信息
+		"""
+		{
+			"detail": [{
+				"id": "商品4",
+				"msg": "库存不足",
+				"short_msg": "库存不足"
+			}]
+		}
+		"""
+	When bill选择'继续提交'
+	Then bill成功创建订单
+		"""
+		{
+			"status": "待支付",
+			"final_price": 200.00,
+			"products": [{
+				"name": "商品2",
+				"count": 1,
+				"promotion": {
+					"type": "premium_sale"
+				}
+			},{
+				"name": "商品4",
+				"count": 0,
+				"promotion": {
+					"type": "premium_sale:premium_product"
+				}
+			}]
+		}
+		"""
+
+	#赠品库存为零，下单提示赠品库存不足，"返回修改"订单成功
+	When bill访问jobs的webapp
+	When bill加入jobs的商品到购物车
+		"""
+		[{
+			"name": "商品2",
+			"count": 1
+		}]
+		"""
+	When bill从购物车发起购买操作
+		"""
+		{
+			"action": "click",
+			"context": [{
+				"name": "商品2"
+			}]
+		}
+		"""
+	Then bill获得待编辑订单
+		"""
+		{
+			"products": [{
+				"name": "商品2",
+				"count": 1
+			}]
+		}
+		"""
+	When bill在购物车订单编辑中点击提交订单
+		"""
+		{
+			"ship_name": "bill",
+			"ship_tel": "13811223344",
+			"ship_area": "北京市 北京市 海淀区",
+			"ship_address": "泰兴大厦",
+			"pay_type": "货到付款"
+		}
+		"""
+	Then bill获得创建订单失败的信息
+		"""
+		{
+			"detail": [{
+				"id": "商品4",
+				"msg": "库存不足",
+				"short_msg": "库存不足"
+			}]
+		}
+		"""
+	When bill选择'返回修改'
+	Then bill跳转到商品'商品2'的商品详情页

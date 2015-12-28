@@ -653,6 +653,9 @@ class Order(business_model.Model):
 		"""
 		assert not self.is_sub_order
 
+		#更新与webapp user对应的订单信息缓存数据
+		self.context['webapp_user'].cleanup_order_info_cache
+
 		# 更新前状态
 		raw_status = self.status
 

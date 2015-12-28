@@ -49,10 +49,8 @@ class AOrderList(api_resource.ApiResource):
 				'webapp_user': webapp_user
 				})
 
-			review_is_finished = True
-			if waiting_review_order and waiting_review_order.order_is_reviewed is False:
-				review_is_finished = False
-
+			review_is_finished = waiting_review_order.reviewed
+			
 			data = {
 				'id': order.id,
 				'order_id': order.order_id,

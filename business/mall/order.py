@@ -17,6 +17,7 @@ from core.exceptionutil import unicode_full_stack
 from core.sendmail import sendmail
 from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
 import db.account.models as accout_models
+from core.wxapi import get_weixin_api
 from utils.regional_util import get_str_value_by_string_ids
 
 from wapi.decorators import param_required
@@ -47,6 +48,11 @@ ORDER_STATUS2NOTIFY_STATUS = {
 	mall_models.ORDER_STATUS_PAYED_SHIPED: accout_models.SHIP_ORDER,
 	mall_models.ORDER_STATUS_SUCCESSED: accout_models.SUCCESSED_ORDER,
 	mall_models.ORDER_STATUS_CANCEL: accout_models.CANCEL_ORDER
+}
+
+
+ORDER_STATUS2SEND_PONINT = {
+	mall_models.ORDER_STATUS_PAYED_NOT_SHIP: mall_models.PAY_ORDER_SUCCESS,
 }
 
 class Order(business_model.Model):
@@ -385,6 +391,7 @@ class Order(business_model.Model):
 		"""
 		# print '[TODO2]: send order notify mail...'
 		# return
+		# todo 修改
 		order_has_products = mall_models.OrderHasProduct.select().dj_where(order=self.id)
 		buy_count = ''
 		product_name = ''
@@ -677,4 +684,94 @@ class Order(business_model.Model):
 
 		# todo 运营邮件email
 		self.__send_notify_mail()
+		# todo 需要真实环境测试
+		# self.__send_template_message()
 
+	def __send_template_message(self):
+		webapp_owner = self.context['webapp_owner']
+		webapp_user = self.context['webapp_user']
+		# user_profile = UserProfile.objects.get(webapp_id=webapp_id)
+		user_profile = webapp_owner.user_profile
+		user = user_profile.user
+		send_point = ORDER_STATUS2SEND_PONINT.get(self.status, '')
+		template_message = mall_models.MarketToolsTemplateMessageDetail.select().dj_where(owner=user, template_message__send_point=send_point, status=1).first()
+
+		if user_profile and template_message and template_message.template_id:
+			mpuser_access_token = webapp_owner.weixin_mp_user_access_token
+			if mpuser_access_token:
+				try:
+					weixin_api = get_weixin_api(mpuser_access_token)
+					message = self.__get_order_send_message_dict(user_profile, template_message, self, send_point)
+					result = weixin_api.send_template_message(message, True)
+					#_record_send_template_info(order, template_message.template_id, user)
+					# if result.has_key('msg_id'):
+					# 	UserSentMassMsgLog.create(user_profile.webapp_id, result['msg_id'], MESSAGE_TYPE_TEXT, content)
+					return True
+				except:
+					notify_message = u"发送模板消息异常, cause:\n{}".format(unicode_full_stack())
+					watchdog_warning(notify_message)
+					return False
+			else:
+				return False
+		return True
+
+
+	def __get_order_send_message_dict(self,user_profile, template_message, order, send_point):
+		template_data = dict()
+		social_account = self.context['webapp_user'].social_account
+		print(type(social_account),social_account)
+		if social_account and social_account.openid:
+			template_data['touser'] = self.context['webapp_user'].openid
+			template_data['template_id'] = template_message.template_id
+
+			# if user_profile.host.find('http') > -1:
+			# 	host ="%s/workbench/jqm/preview/" % user_profile.host
+			# else:
+			# 	host = "http://%s/workbench/jqm/preview/" % user_profile.host
+			# todo
+			host = ''
+
+			template_data['url'] = '%s?woid=%s&module=mall&model=order&action=pay&order_id=%s&workspace_id=mall&sct=%s' % (host, user_profile.user_id, order.order_id, social_account.token)
+
+			template_data['topcolor'] = "#FF0000"
+			detail_data = {}
+			template_message_detail = template_message.template_message
+			detail_data["first"] = {"value" : template_message.first_text, "color" : "#000000"}
+			detail_data["remark"] = {"value" : template_message.remark_text, "color" : "#000000"}
+			order.express_company_name =  u'%s快递' % self.readable_express_company_name
+			if template_message_detail.attribute:
+				attribute_data_list = template_message_detail.attribute.split(',')
+				for attribute_datas in attribute_data_list:
+					attribute_data = attribute_datas.split(':')
+					key = attribute_data[0].strip()
+					attr = attribute_data[1].strip()
+					if attr == 'final_price' and getattr(order, attr):
+						value = u'￥%s［实际付款］' % getattr(order, attr)
+						detail_data[key] = {"value" : value, "color" : "#173177"}
+					elif hasattr(order, attr):
+						if attr == 'final_price':
+							value = u'￥%s［实际付款］' % getattr(order, attr)
+							detail_data[key] = {"value" : value, "color" : "#173177"}
+						elif attr == 'payment_time':
+							dt = datetime.now()
+							payment_time = dt.strftime('%Y-%m-%d %H:%M:%S')
+							detail_data[key] = {"value" : payment_time, "color" : "#173177"}
+						else:
+							detail_data[key] = {"value" : getattr(order, attr), "color" : "#173177"}
+					else:
+						order_products = OrderProducts.get_for_order({
+							'webapp_owner': self.context['webapp_owner'],
+							'webapp_user': self['webapp_user'],
+							'order': order
+						})
+
+						if 'number' == attr:
+							number = sum([product.count for product in order_products])
+							detail_data[key] = {"value" : number, "color" : "#173177"}
+
+						if 'product_name' == attr:
+							products = self.products
+							product_names =','.join([p.name for p in products])
+							detail_data[key] = {"value" : product_names, "color" : "#173177"}
+			template_data['data'] = detail_data
+		return template_data

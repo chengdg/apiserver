@@ -31,6 +31,7 @@ class SocialAccount(business_model.Model):
 		'id',
 		'openid',
 		'webapp_id',
+		'token'
 	)
 
 	@staticmethod

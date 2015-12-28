@@ -30,7 +30,8 @@ import logging
 class WebAppOwner(business_model.Model):
 	__slots__ = (
 		'id',
-		'webapp_id'
+		'webapp_id',
+		'user_profile'
 	)
 
 	@staticmethod
@@ -51,6 +52,7 @@ class WebAppOwner(business_model.Model):
 	def __init__(self, webapp_owner_id):
 		business_model.Model.__init__(self)
 		webapp_owner_profile = account_models.UserProfile.get(user=webapp_owner_id)
+		self.user_profile = webapp_owner_profile
 		self.webapp_id = webapp_owner_profile.webapp_id
 		self.id = webapp_owner_profile.user_id
 

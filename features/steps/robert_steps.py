@@ -282,6 +282,7 @@ def __check_order(context, webapp_user_name):
 	actual_order = response.data['order']
 	actual_order['order_no'] = actual_order['order_id']
 	actual_order['status'] = actual_order['status_text']
+	actual_order['methods_of_payment'] = actual_order['pay_interface_name']
 	# 获取coupon规则名
 	if (actual_order['coupon_id'] != 0) and (actual_order['coupon_id'] != -1):
 		# coupon = Coupon.objects.get(id=actual_order.coupon_id)

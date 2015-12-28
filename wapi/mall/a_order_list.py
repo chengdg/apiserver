@@ -43,6 +43,10 @@ class AOrderList(api_resource.ApiResource):
 
 		order_datas = []
 		for order in orders:
+			#子订单不显示在订单列表中
+			if order.origin_order_id > 0:
+				continue
+
 			waiting_review_order = WaitingReviewOrder.get_for_order({
 				'webapp_owner': webapp_owner,
 				'order': order,

@@ -151,7 +151,7 @@ class WebAppOwnerInfo(business_model.Model):
 				has_permission = False
 
 			try:
-				if account_models.OperationSettings.objects.filter(owner_id=webapp_owner_id).count() == 0:
+				if account_models.OperationSettings.select().dj_where(owner_id=webapp_owner_id).count() == 0:
 					operation_settings = account_models.OperationSettings.create(owner_id=webapp_owner_id)
 				else:
 					operation_settings = account_models.OperationSettings.select().dj_where(owner_id=webapp_owner_id).first()

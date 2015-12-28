@@ -39,7 +39,7 @@ class WaitingReviewOrder(business_model.Model):
 	def get_for_order(args):
 		"""工厂方法，根据order_id创建WaitingReviewOrder对象
 
-		@param[in] order_id: order_id
+		@param[in] order: order
 
 		@return OrderProducts对象
 		"""

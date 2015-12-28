@@ -7,6 +7,7 @@ from business import model as business_model
 from business.resource.products_resource import ProductsResource
 from business.mall.allocator.product_resource_allocator import ProductResourceAllocator
 from business.mall.merged_reserved_product import MergedReservedProduct
+import logging
 
 class OrderProductsResourceAllocator(business_model.Service):
 	"""请求订单商品库存资源
@@ -30,6 +31,8 @@ class OrderProductsResourceAllocator(business_model.Service):
 
 		release_resources = []
 		for resource in resources:
+			if not resource:
+				continue
 			print 'type: ', resource.get_type()
 			if resource.get_type() == business_model.RESOURCE_TYPE_PRODUCTS:
 				release_resources.append(resource)
@@ -108,6 +111,11 @@ class OrderProductsResourceAllocator(business_model.Service):
 		return id2product.values()
 
 	def allocate_resource(self, order, purchase_info):
+		"""
+		分配OrderProduct资源
+
+		@return is_success, reasons, resource
+		"""
 		#webapp_owner = self.context['webapp_owner']
 		#webapp_user = self.context['webapp_user']
 
@@ -118,13 +126,17 @@ class OrderProductsResourceAllocator(business_model.Service):
 		merged_reserved_products = self.__merge_different_model_product(products)
 		merged_promotion_product = None
 
-		successed = False
+		successed = True
 		resources = []
+		reasons = []
 		for product in products:
+			logging.info("try to allocate product: {}".format(product))
 			product_resource_allocator = ProductResourceAllocator.get()
-			successed, reason, resource = product_resource_allocator.allocate_resource(product)
+			successed_once, reason, resource = product_resource_allocator.allocate_resource(product)
+			logging.info("success: {}, reason: {}, resource: {}".format(successed_once, reason, resource))
 
-			if not successed:
+			if not successed_once:
+				successed = False
 				self.__supply_product_info_into_fail_reason(product, reason)
 				if reason['type'] == 'product:is_off_shelve':
 					if purchase_info.is_purchase_from_shopping_cart:
@@ -136,11 +148,18 @@ class OrderProductsResourceAllocator(business_model.Service):
 						reason['msg'] = u'有商品库存不足<br/>2秒后返回购物车<br/>请重新下单'
 					else:
 						reason['msg'] = u'有商品库存不足，请重新下单'
-				self.release(resources)
-				break
+				#self.release(resources)
+				#break
+				resources.append(resource)
+				logging.info("adding reason: msg={}".format(reason['msg']))
+				reasons.append(reason)
 			else:
 				resources.append(resource)
 				self.context['resource2allocator'][resource.model_id] = product_resource_allocator
+
+		if not successed:
+			self.release(resources)
+			resources = None
 
 		for merged_reserved_product in merged_reserved_products:
 			is_promotion_success, promotion_reason = self.__allocate_promotion(merged_reserved_product)
@@ -149,16 +168,16 @@ class OrderProductsResourceAllocator(business_model.Service):
 				break
 
 		if not successed:
-			return False, reason, None
+			return False, reasons, None
 		elif not is_promotion_success:
 			self.__supply_product_info_into_fail_reason(merged_promotion_product, promotion_reason)
 			if resources:
 				products_resource = ProductsResource(resources)
 				self.release([products_resource])
-			return False, promotion_reason, None
+			return False, [promotion_reason], None
 		else:
 			resource = ProductsResource(resources)
-		 	return True, reason, resource
+		 	return True, [reason], resource
 
 	@property
 	def resource_type(self):

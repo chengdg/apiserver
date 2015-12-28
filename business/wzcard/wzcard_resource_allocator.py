@@ -71,7 +71,7 @@ class WZCardResourceAllocator(business_model.Service):
 				"msg": u'微众卡只能使用十张',
 				"short_msg": u'卡未激活'
 			}			
-			return False, reason, None
+			return False, [reason], None
 
 		checker = WZCardChecker()
 		# 遍历微众卡信息，扣除微众卡
@@ -127,7 +127,7 @@ class WZCardResourceAllocator(business_model.Service):
 			wzcard_resource = None
 			order.weizoom_card_money = Decimal(0)
 			
-		return is_success, reason, wzcard_resource
+		return is_success, [reason], wzcard_resource
 
 
 	def release(self, resource):

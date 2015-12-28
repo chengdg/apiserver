@@ -32,6 +32,7 @@ class ProductResourceAllocator(business_model.Service):
 				'type': self.resource_type
 			})
 
+	 	# TODO: 将ProductResource.get_resources()迁移到ProductResourceAllocator中
 		successed, reason = product_resource.get_resources(product)
 		if not successed:
 			return False, reason, None

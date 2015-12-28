@@ -43,15 +43,16 @@ class AllocateResourceServiceBase(business_model.Service):
 		reasons = []
 		for allocator in self.__allocators:
 			logging.info("allocating resource using {}".format(allocator))
-			is_success, reason, resource = allocator.allocate_resource(order, purchase_info)
-			logging.info("allocation result: is_success: {}, reason: {}, resource: {}".format(is_success, reason, resource))
-			if not is_success:
+			is_success_once, failure_reasons, resource = allocator.allocate_resource(order, purchase_info)
+			logging.info("allocation result: is_success: {}, reasons: {}, resource: {}".format(is_success, failure_reasons, resource))
+			if not is_success_once:
+				is_success = False
 				if resource:
 					resources.append(resource)
-				reasons.append(reason)
-				self.release(resources)
-				resources = []
-				break
+				reasons.extend(failure_reasons)
+				#self.release(resources)
+				#resources = []
+				#break
 			elif resource:
 				if isinstance(resource, list):
 					resources.extend(resource)
@@ -59,6 +60,11 @@ class AllocateResourceServiceBase(business_model.Service):
 					resources.append(resource)
 			else:
 				logging.error("`resource` SHOULD NOT be None! Please check it.")
+		if not is_success:
+			# 释放已分配的资源
+			logging.info("release all allocated resources: {}".format(resources))
+			self.release(resources)
+			resources = []
 		
 		# 如果失败，resources为[]
 		return is_success, reasons, resources

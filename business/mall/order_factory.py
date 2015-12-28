@@ -141,6 +141,10 @@ class OrderFactory(business_model.Model):
 			return resources
 		else:
 			# 如果分配资源失败，则抛异常
+			logging.info("count of `reasons`: {}".format(len(reasons)))
+			logging.info("reasons in OrderFactory.create_order: ")
+			for reason in reasons:
+				logging.info("reason: { name: {}, short_msg: {} }".format(reason['name'], reason['short_msg']))
 			allocate_order_resource_service.release(resources)
 			raise OrderException(reasons)	
 

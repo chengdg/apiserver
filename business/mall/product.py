@@ -241,8 +241,8 @@ class Product(business_model.Model):
 			self._init_slot_from_model(model)
 			self.owner_id = model.owner_id
 			self.min_limit = model.stocks
-			self.thumbnails_url = '%s%s' % (settings.IMAGE_HOST, model.thumbnails_url)
-			self.pic_url = '%s%s' % (settings.IMAGE_HOST, model.pic_url)
+			self.thumbnails_url = '%s%s' % (settings.IMAGE_HOST, model.thumbnails_url) if model.thumbnails_url.find('http') == -1 else model.thumbnails_url
+			self.pic_url = '%s%s' % (settings.IMAGE_HOST, model.pic_url) if model.pic_url.find('http') == -1 else model.pic_url
 
 	def __set_image_to_lazy_load(self):
 		"""将商品详情图片设置微lazy load

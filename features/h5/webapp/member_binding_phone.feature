@@ -14,7 +14,7 @@ Background:
     Given jobs登录系统:weapp
     Given bill关注jobs的公众号
 
-@person @bindingPhone @bert @mall3
+@mall3 @person @bindingPhone @bert
 Scenario:1 手机绑定-输入正确的验证码
 	When bill访问jobs的Webapp
 
@@ -32,7 +32,7 @@ Scenario:1 手机绑定-输入正确的验证码
 		}
 		"""
 
-@person @bindingPhone  @bert @mall3
+@mall3 @person @bindingPhone @bert
 Scenario:2 手机绑定-输入错误的验证码
 	When bill访问jobs的Webapp
 

@@ -409,14 +409,12 @@ class Order(business_model.Model):
 			coupon = ''
 
 		try:
+			print(self.ship_area)
 			area = get_str_value_by_string_ids(self.ship_area)
 		except:
 			area = self.ship_area
-		else:
-			area = u''
 
 		buyer_address = area + u" " + self.ship_address
-		
 		order_status = self.status_text
 
 		email_notify_status = ORDER_STATUS2NOTIFY_STATUS.get(self.status,-1)

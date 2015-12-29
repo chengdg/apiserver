@@ -104,6 +104,39 @@ def step_webapp_user_get_product_review(context, webapp_user, product_name):
 	@see 原Webapp的`webapp_product_review_steps.py`
 	"""
 	product = bdd_util.get_product_by(product_name)
+	url = "/wapi/mall/product/"
+	#response = context.client.get(bdd_util.nginx(url), follow=True)
+	response = context.client.get(url, {
+			# 'woid': context.webapp_owner_id,
+			'product_id': product.id
+		})
+	bdd_util.assert_api_call_success(response)	
+
+	data = response.data
+	logging.debug('response.data: {}'.format(data))
+	product_review_list = data['product_reviews']
+	actual = []
+	if product_review_list:
+		for i in product_review_list:
+			data = {}
+			#data['member'] = i.member_name
+			member = bdd_util.get_member_by_id(i['member_id'])
+			data['member'] = member.username
+			data['review_detail'] = i['review_detail']
+			actual.append(data)
+	else:
+		actual.append({})
+
+	expected = json.loads(context.text)
+	bdd_util.assert_list(expected, actual)
+
+
+@Then(u"{webapp_user}成功获取'{product_name}'的商品详情的'更多评价'")
+def step_impl(context, webapp_user, product_name):
+	"""
+	@see 原Webapp的`webapp_product_review_steps.py`
+	"""
+	product = bdd_util.get_product_by(product_name)
 	expected = json.loads(context.text)
 	#url = "/workbench/jqm/preview/?woid=%d&module=mall&model=product&rid=%d" % (context.webapp_owner_id, product.id)
 	url = "/wapi/mall/product_reviews/"
@@ -129,21 +162,6 @@ def step_webapp_user_get_product_review(context, webapp_user, product_name):
 	else:
 		actual.append({})
 	bdd_util.assert_list(expected, actual)
-
-
-@Then(u"{webapp_user}成功获取'{product_name}'的商品详情的'更多评价'")
-def step_impl(context, webapp_user, product_name):
-	"""
-	@todo 后续实现
-	"""
-	new_step = u'''	Then %s在商品详情页成功获取'%s'的评价列表
-		"""
-		%s
-		"""
-	''' % (webapp_user, product_name, json.dumps(json.loads(context.text)))
-	logging.info("Converted step:\n %s" % new_step)
-	context.execute_steps(new_step)
-	return
 
 
 @When(u"{webapp_user}在商城首页点击'{product_name}'的链接")

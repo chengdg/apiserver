@@ -15,15 +15,15 @@ Feature: jobs在后台对已有评价进行审核
 """
 
 Background:
-
-    Given jobs登录系统
-    And jobs设定会员积分策略
+    Given 重置weapp的bdd环境
+    Given jobs登录系统:weapp
+    And jobs设定会员积分策略:weapp
         """
         {
             "be_member_increase_count": 20
         }
         """
-    And jobs已添加商品
+    And jobs已添加商品:weapp
         """
         [{
             "name": "商品1",
@@ -37,7 +37,7 @@ Background:
         }]
         """
     Given bill关注jobs的公众号
-    And jobs已有的订单
+    And jobs已有的订单:weapp
         """
         [{
             "order_no":"1",
@@ -248,7 +248,7 @@ Background:
         """
 
     Given tom关注jobs的公众号
-    And jobs已有的订单
+    And jobs已有的订单:weapp
         """
         [{
             "order_no":"3",
@@ -311,14 +311,14 @@ Background:
         }
         """
 
-@mall2 @product @review   @mall.webapp.comment @prm1 @ProductDetail
+@mall2 @product @review   @mall.webapp.comment @prm1 @ProductDetail @mall3 @duhao
 Scenario:1 审核通过 屏蔽处理 通过并置顶
     1.审核通过:用户评价内容将显示在商品详情页
     2.屏蔽处理：该评价将不被允许显示在商品详情页
     3.通过并置顶：是指审核通过该评论，并且置顶显示该评价；
 
-    Given jobs登录系统
-    When jobs已完成对商品的评价信息审核
+    Given jobs登录系统:weapp
+    When jobs已完成对商品的评价信息审核:weapp
         """
         [{
             "product_name": "商品1",
@@ -371,10 +371,10 @@ Scenario:1 审核通过 屏蔽处理 通过并置顶
         }]
         """
 
-@mall2 @product @review @mall.webapp.comment @prm5 @ProductDetail
+@mall2 @product @review @mall.webapp.comment @prm5 @ProductDetail @duhao @mall3
 Scenario:2 同款商品，3个置顶操作，最后置顶的，排在最上面
-    Given jobs登录系统
-    When jobs已完成对商品的评价信息审核
+    Given jobs登录系统:weapp
+    When jobs已完成对商品的评价信息审核:weapp
         """
         [{
             "product_name": "商品1",
@@ -447,12 +447,12 @@ Scenario:2 同款商品，3个置顶操作，最后置顶的，排在最上面
         }]
         """
 
-@mall2 @product @review   @mall.webapp.comment @prm6 @ProductDetail
+@mall2 @product @review   @mall.webapp.comment @prm6 @ProductDetail @mall3 @duhao
 Scenario:3 同款商品，最多可置顶3条评价信息
     第4条置顶时，第一条置顶信息失去优先级，按原有时间顺序排列
 
-    Given jobs登录系统
-    When jobs已完成对商品的评价信息审核
+    Given jobs登录系统:weapp
+    When jobs已完成对商品的评价信息审核:weapp
         """
         [{
             "product_name": "商品1",
@@ -532,7 +532,7 @@ Scenario:3 同款商品，最多可置顶3条评价信息
         """
 
 #后续补充.雪静
-@mall2 @product @review   @mall.webapp.comment @prm7
+@mall2 @product @review   @mall.webapp.comment @prm7 @mall3 @duhao
 Scenario:4 jobs通过审核评价，给用户加积分
    1.tom评价jobs的商品，jobs通过审核，给tom加相应的积分
    2.tom评价jobs的商品，jobs通过并置顶，给tom加相应的积分
@@ -546,15 +546,15 @@ Scenario:4 jobs通过审核评价，给用户加积分
             "integral": 20
         }]
         """
-    Given jobs登录系统
-    And jobs设定会员积分策略
+    Given jobs登录系统:weapp
+    And jobs设定会员积分策略:weapp
         """
         {
             "review_increase": 20,
             "be_member_increase_count": 20
         }
         """
-    When jobs已完成对商品的评价信息审核
+    When jobs已完成对商品的评价信息审核:weapp
         """
         [{
             "product_name": "商品1",
@@ -574,8 +574,8 @@ Scenario:4 jobs通过审核评价，给用户加积分
             "integral": 20
         }]
         """
-    Given jobs登录系统
-    When jobs已完成对商品的评价信息审核
+    Given jobs登录系统:weapp
+    When jobs已完成对商品的评价信息审核:weapp
         """
         [{
             "product_name": "商品2",
@@ -598,8 +598,8 @@ Scenario:4 jobs通过审核评价，给用户加积分
             "integral": 20
         }]
         """
-    Given jobs登录系统
-    When jobs已完成对商品的评价信息审核
+    Given jobs登录系统:weapp
+    When jobs已完成对商品的评价信息审核:weapp
         """
         [{
             "product_name": "商品2",
@@ -622,8 +622,8 @@ Scenario:4 jobs通过审核评价，给用户加积分
             "integral": 20
         }]
         """
-    Given jobs登录系统
-    When jobs已完成对商品的评价信息审核
+    Given jobs登录系统:weapp
+    When jobs已完成对商品的评价信息审核:weapp
         """
         [{
             "product_name": "商品2",
@@ -646,8 +646,8 @@ Scenario:4 jobs通过审核评价，给用户加积分
             "integral": 20
         }]
         """
-    Given jobs登录系统
-    When jobs已完成对商品的评价信息审核
+    Given jobs登录系统:weapp
+    When jobs已完成对商品的评价信息审核:weapp
         """
         [{
             "product_name": "商品1",

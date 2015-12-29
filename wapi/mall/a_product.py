@@ -52,6 +52,7 @@ class AProduct(api_resource.ApiResource):
 			})
 			if product_reviews:
 				reviews = product_reviews.products
+				reviews = reviews[:2]
 			else:
 				reviews = []
 

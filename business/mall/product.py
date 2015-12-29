@@ -181,6 +181,7 @@ class Product(business_model.Model):
 		#'model_name',
 		#'product_model_properties',
 		'models',
+		'deleted_models',
 		'used_system_model_properties',
 
 		#价格、销售信息
@@ -464,14 +465,28 @@ class Product(business_model.Model):
 						'max_price': max_price,
 					}
 			else:
-				standard_model = product.models[0]
-				product.price_info = {
-					'display_price': str("%.2f" % standard_model.price),
-					'display_original_price': str("%.2f" % standard_model.original_price),
-					'display_market_price': str("%.2f" % standard_model.market_price),
-					'min_price': standard_model.price,
-					'max_price': standard_model.price,
-				}
+				standard_model = None
+				if product.models:
+					standard_model = product.models[0]
+				elif product.deleted_models:
+					standard_model = product.deleted_models[0]
+					
+				if standard_model:
+					product.price_info = {
+						'display_price': str("%.2f" % standard_model.price),
+						'display_original_price': str("%.2f" % standard_model.original_price),
+						'display_market_price': str("%.2f" % standard_model.market_price),
+						'min_price': standard_model.price,
+						'max_price': standard_model.price,
+					}
+				else:
+					product.price_info = {
+						'display_price': str("%.2f" % 0),
+						'display_original_price': str("%.2f" % 0),
+						'display_market_price': str("%.2f" % 0),
+						'min_price': 0,
+						'max_price': 0,
+					}
 
 	@staticmethod
 	def __fill_model_detail(webapp_owner_id, products, is_enable_model_property_info=False):

@@ -6,6 +6,12 @@ Feature:运营邮件通知
 Background:
 	Given 重置weapp的bdd环境
 	Given jobs登录系统:weapp
+	Given jobs设定会员积分策略:weapp
+		"""
+		{
+			"integral_each_yuan": 2
+		}
+		"""
 	And jobs已添加支付方式:weapp
 		"""
 		[{
@@ -19,65 +25,532 @@ Background:
 		[{
 			"name": "商品1",
 			"price":100.0
+		},{
+			"name": "商品2",
+			"price":100.0
+		},{
+			"name": "商品3",
+			"price":100.0
+		},{
+			"name": "商品4",
+			"price":100.0
+		},{
+			"name": "赠品",
+			"price":10.0
+		}]
+		"""
+
+	When jobs创建积分应用活动:weapp
+		"""
+		[{
+			"name": "商品1积分应用",
+			"start_date": "今天",
+			"end_date": "1天后",
+			"product_name": "商品1",
+			"is_permanant_active": false,
+			"rules": [{
+				"member_grade": "全部",
+				"discount": 50,
+				"discount_money": 50.0
+			}]
+		}]
+		"""
+	When jobs创建买赠活动:weapp
+		"""
+		[{
+			"name": "商品2买一赠一",
+			"promotion_title":"",
+			"start_date": "今天",
+			"end_date": "1天后",
+			"member_grade": "普通会员",
+			"product_name": "商品2",
+			"premium_products": 
+			[{
+				"name": "赠品",
+				"count": 1
+			}],
+			"count": 1,
+			"is_enable_cycle_mode": true
+		}]
+		"""
+	When jobs创建限时抢购活动:weapp
+		"""
+		[{
+			"name": "商品3限时抢购",
+			"promotion_title":"",
+			"start_date": "今天",
+			"end_date": "1天后",
+			"product_name":"商品3",
+			"member_grade": "全部会员",
+			"count_per_purchase": 2,
+			"promotion_price": 50.00,
+			"limit_period": 1
+		}]
+		"""
+	Given jobs已添加了优惠券规则:weapp
+		"""
+		[{
+			"name": "优惠券",
+			"money": 50,
+			"start_date": "今天",
+			"end_date": "2天后",
+			"coupon_id_prefix": "coupon1_id_",
+			"coupon_product": "商品4"
 		}]
 		"""
 	And jobs初始化邮件通知:weapp
 	Given bill关注jobs的公众号
+	Given tom关注jobs的公众号
 
+	Given jobs登录系统:weapp
+	When jobs为会员发放优惠券:weapp
+		"""
+		{
+			"name": "单品券4",
+			"count": 1,
+			"members": ["tom"]
+		}
+		"""
 
-Scenario:1 启用"下订单时"邮件通知
+@configuration @mail
+Scenario:1 启用"下单时"邮件通知
+	#1 bill购买单个商品（积分活动）；配置两个运营接收邮件，可以正确只收到一次邮件通知
+	#2 tom购买多个商品（买赠、限时抢购、优惠券）；配置两个运营接收邮件，可以正确只收到一次邮件通知
+	
 	Given jobs登录系统:weapp
 	When jobs配置'下单时'邮件通知:weapp
 		"""
 		{
-			"emails":"925896183@qq.com",
+			"emails":"ceshi@weizoom.com|ceshi02@weizoom.com",
 			"member_ids":""
 		}
 		"""
 	When jobs启用'下单时'邮件通知:weapp
+	#购买单个商品（积分活动），成功下单
+		When bill访问jobs的webapp
+		When bill获得jobs的200会员积分
+		When bill购买jobs的商品
+			"""
+			{
+				"order_id":"0000001",
+				"ship_name": "bill",
+				"ship_tel": "13811223344",
+				"ship_area": "北京市 北京市 海淀区",
+				"ship_address": "泰兴大厦",
+				"pay_type": "微信支付",
+				"products": [{
+					"name": "商品1",
+					"count": 1,
+					"integral": 100
+				}]
+			}
+			"""
+		Then bill成功创建订单
+			"""
+			{
+				"order_no":"0000001",
+				"status": "待支付",
+				"final_price": 50.0,
+				"product_price": 100.00,
+				"integral": 100,
+				"integral_money":50.00,
+				"products": [{
+					"name": "商品1",
+					"count": 1
+				}]
+			}
+			"""
 
-	#购买商品，成功下单
-	When bill访问jobs的webapp
-	When bill购买jobs的商品
+		Then server能发送邮件
+			"""
+			商品名称：商品1<br> 订单号：0000001<br> 下单时间：2015-12-25 15:11<br> 订单状态：<font color="red">待支付</font><br> 订购数量：1<br> 支付金额：100.0<br> 收货人：tom<br> 收货人电话：13811223344<br> 收货人地址： 泰兴大厦
+			"""
+		Then 邮箱'ceshi@weizoom.com'获得'下单时'运营邮件'一次'通知
+			"""
+			商品名称：商品1<br />
+			订单号：0000001<br />
+			下单时间："今天"<br />
+			订单状态：待支付<br />
+			订购数量：1<br />
+			支付金额：50<br />
+			使用积分：100<br />
+			收货人：bill<br />
+			收货人电话：13811223344<br />
+			收货人地址：北京市 北京市 海淀区 泰兴大厦<br />
+			"""
+		Then 邮箱'ceshi02@weizoom.com'获得'下单时'运营邮件'一次'通知
+			"""
+			商品名称：商品1<br />
+			订单号：0000001<br />
+			下单时间："今天" 16:13<br />
+			订单状态：待支付<br />
+			订购数量：1<br />
+			支付金额：50<br />
+			使用积分：100<br />
+			收货人：bill<br />
+			收货人电话：13811223344<br />
+			收货人地址：北京市 北京市 海淀区 泰兴大厦<br />
+			"""
+
+	#购买多个商品（买赠、限时抢购、优惠券），成功下单
+		When tom访问jobs的webapp
+		When tom购买jobs的商品
+			"""
+			{
+				"order_id":"0000002",
+				"ship_name": "tom",
+				"ship_tel": "13811223344",
+				"ship_area": "北京市 北京市 海淀区",
+				"ship_address": "泰兴大厦",
+				"pay_type": "微信支付",
+				"products": [{
+					"name": "商品2",
+					"count": 1
+				},{
+					"name": "商品3",
+					"count": 2
+				},{
+					"name": "商品4",
+					"count": 1
+				}],
+				"coupon": "coupon1_id_1"
+			}
+			"""
+		Then tom成功创建订单
+			"""
+			{
+				"order_no":"0000002",
+				"status": "待支付",
+				"final_price": 250.0,
+				"products": [{
+					"name": "商品2",
+					"count": 1,
+					"promotion": {
+						"type": "premium_sale"
+					}
+				},{
+					"name": "赠品",
+					"count": 1,
+					"promotion": {
+						"type": "premium_sale:premium_product"
+					}
+				},{
+					"name": "商品3",
+					"count": 2
+				},{
+					"name": "商品4",
+					"count": 1
+				}],
+				"coupon_money": 50.0
+			}
+			"""
+		Then server能发送邮件
+			"""
+			商品名称：商品1<br> 订单号：0000001<br> 下单时间：2015-12-25 15:11<br> 订单状态：<font color="red">待支付</font><br> 订购数量：1<br> 支付金额：100.0<br> 收货人：tom<br> 收货人电话：13811223344<br> 收货人地址： 泰兴大厦
+			"""
+		Then 邮箱'ceshi@weizoom.com'获得'下单时'运营邮件'一次'通知
+			"""
+			商品名称：商品2,商品3,商品4<br />
+			订单号：0000002<br />
+			下单时间："今天"<br />
+			订单状态：待支付<br />
+			订购数量：4<br />
+			支付金额：250<br />
+			优惠券：coupon1_id_1,￥50.0
+			收货人：tom<br />
+			收货人电话：13811223344<br />
+			收货人地址：北京市 北京市 海淀区 泰兴大厦<br />
+			"""
+		Then 邮箱'ceshi02@weizoom.com'获得'下单时'运营邮件'一次'通知
+			"""
+			商品名称：商品2,商品3,商品4<br />
+			订单号：0000002<br />
+			下单时间："今天"<br />
+			订单状态：待支付<br />
+			订购数量：4<br />
+			支付金额：250<br />
+			优惠券：coupon1_id_1,￥50.0
+			收货人：tom<br />
+			收货人电话：13811223344<br />
+			收货人地址：北京市 北京市 海淀区 泰兴大厦<br />
+			"""
+
+@configuration @mail
+Scenario:2 启用"付款时"邮件通知
+	#1 bill购买单个商品（积分活动）；配置运营接收邮件，可以正确只收到一次邮件通知
+	#2 tom购买多个商品（买赠、限时抢购、优惠券）；配置运营接收邮件，可以正确只收到一次邮件通知
+	
+	Given jobs登录系统:weapp
+	When jobs配置'付款时'邮件通知:weapp
 		"""
 		{
-			"order_id":"0000001",
-			"ship_name": "tom",
-			"ship_tel": "13811223344",
-			"ship_area": "北京市 北京市 海淀区",
-			"ship_address": "泰兴大厦",
-			"pay_type": "微信支付",
-			"products": [{
-				"name": "商品1",
-				"count": 1
-			}]
+			"emails":"ceshi@weizoom.com",
+			"member_ids":""
 		}
 		"""
-	Then bill成功创建订单
+	When jobs启用'付款时'邮件通知:weapp
+	#购买单个商品（积分活动），成功下单
+		When bill访问jobs的webapp
+		When bill获得jobs的200会员积分
+		When bill购买jobs的商品
+			"""
+			{
+				"order_id":"0000001",
+				"ship_name": "bill",
+				"ship_tel": "13811223344",
+				"ship_area": "北京市 北京市 海淀区",
+				"ship_address": "泰兴大厦",
+				"pay_type": "微信支付",
+				"products": [{
+					"name": "商品1",
+					"count": 1,
+					"integral": 100
+				}]
+			}
+			"""
+		Then bill成功创建订单
+			"""
+			{
+				"order_no":"0000001",
+				"status": "待支付",
+				"final_price": 50.0,
+				"product_price": 100.00,
+				"integral": 100,
+				"integral_money":50.00,
+				"products": [{
+					"name": "商品1",
+					"count": 1
+				}]
+			}
+			"""
+		When bill使用支付方式'微信支付'进行支付:weapp
+
+		Then server能发送邮件
+			"""
+			商品名称：商品1<br> 订单号：0000001<br> 下单时间：2015-12-25 15:11<br> 订单状态：<font color="red">待支付</font><br> 订购数量：1<br> 支付金额：100.0<br> 收货人：tom<br> 收货人电话：13811223344<br> 收货人地址： 泰兴大厦
+			"""
+		Then 邮箱'ceshi@weizoom.com'获得'付款时'运营邮件'一次'通知
+			"""
+			商品名称：商品1<br />
+			订单号：0000001<br />
+			下单时间："今天"<br />
+			订单状态：待发货<br />
+			订购数量：1<br />
+			支付金额：50<br />
+			使用积分：100<br />
+			收货人：bill<br />
+			收货人电话：13811223344<br />
+			收货人地址：北京市 北京市 海淀区 泰兴大厦<br />
+			"""
+
+	#购买多个商品（买赠、限时抢购、优惠券），成功下单
+		When tom访问jobs的webapp
+		When tom购买jobs的商品
+			"""
+			{
+				"order_id":"0000002",
+				"ship_name": "tom",
+				"ship_tel": "13811223344",
+				"ship_area": "北京市 北京市 海淀区",
+				"ship_address": "泰兴大厦",
+				"pay_type": "微信支付",
+				"products": [{
+					"name": "商品2",
+					"count": 1
+				},{
+					"name": "商品3",
+					"count": 2
+				},{
+					"name": "商品4",
+					"count": 1
+				}],
+				"coupon": "coupon1_id_1"
+			}
+			"""
+		Then tom成功创建订单
+			"""
+			{
+				"order_no":"0000002",
+				"status": "待支付",
+				"final_price": 250.0,
+				"products": [{
+					"name": "商品2",
+					"count": 1,
+					"promotion": {
+						"type": "premium_sale"
+					}
+				},{
+					"name": "赠品",
+					"count": 1,
+					"promotion": {
+						"type": "premium_sale:premium_product"
+					}
+				},{
+					"name": "商品3",
+					"count": 2
+				},{
+					"name": "商品4",
+					"count": 1
+				}],
+				"coupon_money": 50.0
+			}
+			"""
+		When tom使用支付方式'微信支付'进行支付:weapp
+		Then server能发送邮件
+			"""
+			商品名称：商品1<br> 订单号：0000001<br> 下单时间：2015-12-25 15:11<br> 订单状态：<font color="red">待支付</font><br> 订购数量：1<br> 支付金额：100.0<br> 收货人：tom<br> 收货人电话：13811223344<br> 收货人地址： 泰兴大厦
+			"""
+		Then 邮箱'ceshi@weizoom.com'获得'付款时'运营邮件'一次'通知
+			"""
+			商品名称：商品2,商品3,商品4<br />
+			订单号：0000002<br />
+			下单时间："今天"<br />
+			订单状态：待发货<br />
+			订购数量：4<br />
+			支付金额：250<br />
+			优惠券：coupon1_id_1,￥50.0
+			收货人：tom<br />
+			收货人电话：13811223344<br />
+			收货人地址：北京市 北京市 海淀区 泰兴大厦<br />
+			"""
+
+@configuration @mail
+Scenario:3 启用"取消时"邮件通知
+	#1 bill购买单个商品（积分活动）；配置运营接收邮件，可以正确只收到一次邮件通知
+	#2 tom购买多个商品（买赠、限时抢购、优惠券）；配置运营接收邮件，可以正确只收到一次邮件通知
+
+	Given jobs登录系统:weapp
+	When jobs配置'取消时'邮件通知:weapp
 		"""
 		{
-			"status": "待支付",
-			"final_price": 100.0,
-			"product_price": 100.00,
-			"products": [{
-				"name": "商品1",
-				"count": 1
-			}]
+			"emails":"ceshi@weizoom.com",
+			"member_ids":""
 		}
 		"""
-#	Then server能发送邮件
-#	"""
-#	商品名称：商品1<br> 订单号：0000001<br> 下单时间：2015-12-25 15:11<br> 订单状态：<font color="red">待支付</font><br> 订购数量：1<br> 支付金额：100.0<br> 收货人：tom<br> 收货人电话：13811223344<br> 收货人地址： 泰兴大厦
-#	"""
-#	Then 邮箱'ceshi@weizoom.com'获得'下单时'运营邮件通知
-#		"""
-#		商品名称：热干面<br />
-#		订单号：20151224161321569<br />
-#		下单时间：2015-12-24 16:13<br />
-#		订单状态：待支付<br />
-#		订购数量：1<br />
-#		支付金额：1.5<br />
-#		收货人：bill<br />
-#		收货人电话：13811223344<br />
-#		收货人地址： 泰兴大厦<br />
-#		"""
+	When jobs启用'取消时'邮件通知:weapp
+	#购买单个商品（积分活动），成功下单
+		When bill访问jobs的webapp
+		When bill获得jobs的200会员积分
+		When bill购买jobs的商品
+			"""
+			{
+				"order_id":"0000001",
+				"ship_name": "bill",
+				"ship_tel": "13811223344",
+				"ship_area": "北京市 北京市 海淀区",
+				"ship_address": "泰兴大厦",
+				"pay_type": "微信支付",
+				"products": [{
+					"name": "商品1",
+					"count": 1,
+					"integral": 100
+				}]
+			}
+			"""
+		Then bill成功创建订单
+			"""
+			{
+				"order_no":"0000001",
+				"status": "待支付",
+				"final_price": 50.0,
+				"product_price": 100.00,
+				"integral": 100,
+				"integral_money":50.00,
+				"products": [{
+					"name": "商品1",
+					"count": 1
+				}]
+			}
+			"""
+		When bill'能'取消订单'0000001'
+
+		Then server能发送邮件
+			"""
+			商品名称：商品1<br> 订单号：0000001<br> 下单时间：2015-12-25 15:11<br> 订单状态：<font color="red">待支付</font><br> 订购数量：1<br> 支付金额：100.0<br> 收货人：tom<br> 收货人电话：13811223344<br> 收货人地址： 泰兴大厦
+			"""
+		Then 邮箱'ceshi@weizoom.com'获得'付款时'运营邮件'一次'通知
+			"""
+			商品名称：商品1<br />
+			订单号：0000001<br />
+			下单时间："今天"<br />
+			订单状态：已取消<br />
+			订购数量：1<br />
+			支付金额：50<br />
+			使用积分：100<br />
+			收货人：bill<br />
+			收货人电话：13811223344<br />
+			收货人地址：北京市 北京市 海淀区 泰兴大厦<br />
+			"""
+
+	#购买多个商品（买赠、限时抢购、优惠券），成功下单
+		When tom访问jobs的webapp
+		When tom购买jobs的商品
+			"""
+			{
+				"order_id":"0000002",
+				"ship_name": "tom",
+				"ship_tel": "13811223344",
+				"ship_area": "北京市 北京市 海淀区",
+				"ship_address": "泰兴大厦",
+				"pay_type": "微信支付",
+				"products": [{
+					"name": "商品2",
+					"count": 1
+				},{
+					"name": "商品3",
+					"count": 2
+				},{
+					"name": "商品4",
+					"count": 1
+				}],
+				"coupon": "coupon1_id_1"
+			}
+			"""
+		Then tom成功创建订单
+			"""
+			{
+				"order_no":"0000002",
+				"status": "待支付",
+				"final_price": 250.0,
+				"products": [{
+					"name": "商品2",
+					"count": 1,
+					"promotion": {
+						"type": "premium_sale"
+					}
+				},{
+					"name": "赠品",
+					"count": 1,
+					"promotion": {
+						"type": "premium_sale:premium_product"
+					}
+				},{
+					"name": "商品3",
+					"count": 2
+				},{
+					"name": "商品4",
+					"count": 1
+				}],
+				"coupon_money": 50.0
+			}
+			"""
+		When tom使用支付方式'微信支付'进行支付:weapp
+		When tom'能'取消订单'0000002'
+
+		Then server能发送邮件
+			"""
+			商品名称：商品1<br> 订单号：0000001<br> 下单时间：2015-12-25 15:11<br> 订单状态：<font color="red">待支付</font><br> 订购数量：1<br> 支付金额：100.0<br> 收货人：tom<br> 收货人电话：13811223344<br> 收货人地址： 泰兴大厦
+			"""
+		Then 邮箱'ceshi@weizoom.com'获得'付款时'运营邮件'一次'通知
+			"""
+			商品名称：商品2,商品3,商品4<br />
+			订单号：0000002<br />
+			下单时间："今天"<br />
+			订单状态：已取消<br />
+			订购数量：4<br />
+			支付金额：250<br />
+			优惠券：coupon1_id_1,￥50.0
+			收货人：tom<br />
+			收货人电话：13811223344<br />
+			收货人地址：北京市 北京市 海淀区 泰兴大厦<br />
+			"""

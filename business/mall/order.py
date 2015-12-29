@@ -650,6 +650,19 @@ class Order(business_model.Model):
 			self.status = mall_models.ORDER_STATUS_PAYED_NOT_SHIP
 			self.pay_interface_type = pay_interface_type
 
+			# 处理销量
+			# todo weapp及数据库修改为必定存在销量记录
+			products = self.products
+			for product in products:
+				# 赠品不计销量
+				if product.promotion == {'type_name': 'premium_sale:premium_product'}:
+					continue
+
+				if mall_models.ProductSales.select().dj_where(product_id=product.id).first():
+					mall_models.ProductSales.update(sales=mall_models.ProductSales.sales + product.purchase_count).execute()
+				else:
+					mall_models.ProductSales.create(product=product.id, sales=product.purchase_count)
+
 
 			#更新webapp_user的has_purchased字段
 			webapp_user = self.context['webapp_user']

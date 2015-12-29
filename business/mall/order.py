@@ -210,7 +210,7 @@ class Order(business_model.Model):
 					#只要属于该子订单的商品
 					if product.supplier == sub_order.supplier:
 						sub_order.products.append(product.to_dict())
-				sub_orders.append(business_model.Model.to_dict(sub_order, 'products'))
+				sub_orders.append(business_model.Model.to_dict(sub_order, 'products', 'latest_express_detail'))
 
 		return sub_orders
 
@@ -313,7 +313,9 @@ class Order(business_model.Model):
 		"""
 		[property] 订单的最新物流详情
 		"""
-		#TODO2: 实现物流详情
+		details = self.express_details
+		if details:
+			return details[-1].to_dict()
 		return None
 
 	@cached_context_property

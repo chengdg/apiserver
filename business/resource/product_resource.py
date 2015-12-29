@@ -65,10 +65,12 @@ class ProductResource(business_model.Resource):
 		is_succeeded, reason = product_resource_checker.check(product)
 
 		if not is_succeeded:
+			logging.info("reason in `ProductResource.get_resources(): {}".format(reason))
 			return False, reason
 
 		is_succeeded, reason = self.consume_stocks(product)
 		if not is_succeeded:
+			logging.info("reason in `ProductResource.get_resources(): {}".format(reason))
 			return False, reason
 
 		return True, reason

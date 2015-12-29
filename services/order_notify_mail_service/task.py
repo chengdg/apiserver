@@ -3,9 +3,11 @@
 import db.account.models as accout_models
 from celery import task
 
+import settings
 from core.exceptionutil import unicode_full_stack
 from core.sendmail import sendmail
 from core.watchdog.utils import watchdog_warning
+from features.util.bdd_util import set_bdd_mock
 
 
 @task
@@ -69,6 +71,23 @@ def notify_order_mail(user_id, member_id, status, order_id, buyed_time, order_st
 				# 		pass
 
 			content = u'<br> '.join(content_list)
+			if settings.IS_UNDER_BDD:
+				mock = dict()
+				mock_content = {
+					'buyer_name':buyer_name,
+					'buy_count': buy_count,
+					'buyer_address': buyer_address,
+					'buyer_tel': buyer_tel,
+					'order_status': order_status,
+					'product_name': product_name,
+					'total_price': total_price,
+					'integral': integral,
+					'coupon': coupon
+				}
+				mock['mails'] = order_notify.emails
+				mock['content'] = mock_content
+				set_bdd_mock('notify_mail', mock)
+				return
 			__send_email(user_id, order_notify.emails, content_described, content)
 
 def __send_email(user_id, emails, content_described, content):

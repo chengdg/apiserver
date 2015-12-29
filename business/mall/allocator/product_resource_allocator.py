@@ -7,6 +7,8 @@
 from db.mall import models as mall_models
 from business import model as business_model 
 from business.resource.product_resource import ProductResource
+from core.decorator import deprecated
+import logging
 
 class ProductResourceAllocator(business_model.Service):
 	"""请求商品库存资源
@@ -17,15 +19,35 @@ class ProductResourceAllocator(business_model.Service):
 	def __init__(self, webapp_owner, webapp_user):
 		business_model.Service.__init__(self, webapp_owner, webapp_user)
 		
-		self.context['resource'] = None
+		#self.context['resource'] = None
 
-	def release(self):
+	@deprecated
+	def __release(self):
+		"""
+		原来的release()，仅保留代码。
+
+		@note 这里实现的思路是，每个allocator保存resource的信息。重构后release需要传入resource参数，即allocator不存储resource。(by Victor)
+		"""
 		if self.context['resource']:
 			resource = self.context['resource']
 			#TODo-bert 异常处理
 			model_id = resource.model_id
 			purchase_count = resource.purchase_count
 			mall_models.ProductModel.update(stocks=mall_models.ProductModel.stocks+purchase_count).dj_where(id=model_id).execute()
+
+	def release(self, resource):
+		"""
+		释放ProductResource
+		"""
+		if not isinstance(resource, ProductResource):
+			logging.info("resource SHOULD BE ProductResouce")
+			return
+
+		model_id = resource.model_id
+		purchase_count = resource.purchase_count
+		mall_models.ProductModel.update(stocks=mall_models.ProductModel.stocks+purchase_count).dj_where(id=model_id).execute()
+		return
+
 
 	def allocate_resource(self, product):
 	 	product_resource = ProductResource.get({

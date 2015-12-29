@@ -27,27 +27,39 @@ class OrderProductsResourceAllocator(business_model.Service):
 		self.context['resource2allocator'] = {}
 
 
-	def release(self, resources):
-		if not resources:
-			return 
+	def release(self, product_resource):
+		if not product_resource:
+			logging.info(u"`product_resource` should not be None. It's meaningless.")
+			return
 
-		release_resources = []
-		for resource in resources:
+		if not isinstance(product_resource, ProductsResource):
+			logging.info(u"ONLY to release OrderProductsResources")
+			return
+
+		#release_resources = []
+
+		product_resource_allocator = ProductResourceAllocator.get()
+
+		for resource in product_resource.resources:
 			if not resource:
 				continue
-			print 'type: ', resource.get_type()
-			if resource.get_type() == business_model.RESOURCE_TYPE_PRODUCTS:
-				release_resources.append(resource)
+			logging.info(u'Resource type: {}'.format(resource.get_type()))
+			product_resource_allocator.release(resource)
 
-		for release_resource in release_resources:
-			resources = release_resource.resources
+			#if resource.get_type() == business_model.RESOURCE_TYPE_PRODUCTS:
+			#	release_resources.append(resource)
 
-			for resource in resources:
-				allocator = self.context['resource2allocator'].get(resource.model_id, None)
-				if allocator:
-					allocator.release()
+		#for release_resource in release_resources:
+		#	resources = release_resource.resources
+		#	for resource in resources:
+		#		allocator = self.context['resource2allocator'].get(resource.model_id, None)
+		#		if allocator:
+		#			allocator.release()
 
 	def __allocate_promotion(self, product):
+		"""
+		分配促销资源
+		"""
 		if product.has_expected_promotion() and not product.is_expected_promotion_active():
 			return False, PromotionFailure({
 				"type": 'promotion:expired',
@@ -58,6 +70,7 @@ class OrderProductsResourceAllocator(business_model.Service):
 		if not product.promotion:
 			return True, PromotionResult()
 
+		# 分配各种促销资源
 		promotion_result = product.promotion.allocate(self.context['webapp_user'], product)
 		if not promotion_result.is_success:
 			# reason = {
@@ -121,7 +134,7 @@ class OrderProductsResourceAllocator(business_model.Service):
 		is_promotion_success = True
 		promotion_reason = None
 		merged_reserved_products = self.__merge_different_model_product(products)
-		merged_promotion_product = None
+		#merged_promotion_product = None
 
 		successed = True
 		resources = []
@@ -149,6 +162,7 @@ class OrderProductsResourceAllocator(business_model.Service):
 				#break
 				resources.append(resource)
 				logging.info(u"adding reason: msg={}".format(reason['msg']))
+				logging.info(u"appending reason: {}".format(reason))
 				reasons.append(reason)
 			else:
 				resources.append(resource)
@@ -162,7 +176,9 @@ class OrderProductsResourceAllocator(business_model.Service):
 		for merged_reserved_product in merged_reserved_products:
 			is_promotion_success, promotion_reason = self.__allocate_promotion(merged_reserved_product)
 			if not is_promotion_success:
-				merged_promotion_product = merged_reserved_product
+				logging.info(u"appending reason: {}".format(reason))
+				successed = False
+				#merged_promotion_product = merged_reserved_product
 				for inner_reserved_product in merged_reserved_product.get_products():
 					promotion_reason_dict = promotion_reason.to_dict()
 					promotion_reason_dict['id'] = None #hack, trigger __supply_product_info_into_fail_reason work
@@ -178,13 +194,12 @@ class OrderProductsResourceAllocator(business_model.Service):
 		elif not is_promotion_success:
 			if resources:
 				products_resource = ProductsResource(resources)
-				self.release([products_resource])
+				self.release(products_resource)
+			reasons.append(promotion_reason)
 			return False, reasons, None
-		else:
-			resource = ProductsResource(resources)
-		 	return True, reasons, resource
+		resource = ProductsResource(resources, self.resource_type)
+	 	return True, reasons, resource
 
 	@property
 	def resource_type(self):
 		return "order_products"
-	

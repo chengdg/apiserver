@@ -242,7 +242,7 @@ Scenario: 1 购买单个限时抢购商品，限时抢购进行中
 		}
 		"""
 
-@mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip @wip.bpwfs2
 Scenario:2 购买单个限时抢购商品，限时抢购已过期（在购物车中是限时抢购商品，但，去提交订单时已经不是限时抢购商品）
 
 	When bill访问jobs的webapp

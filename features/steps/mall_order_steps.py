@@ -47,7 +47,13 @@ def step_impl(context, webapp_user_name):
 		product = steps_db_util.get_product_by_prouduct_name(owner_id=webapp_owner_id, name=detail['id'])
 		detail['id'] = product.id
 
+		if 'model' in detail:
+			detail['model_name'] = steps_db_util.get_product_model_keys(detail['model'])
+			del detail['model']
+
 	actual = context.response.data
+
+	logging.info("actual: {}".format(actual))
 	bdd_util.assert_dict(expected, actual)
 
 
@@ -81,9 +87,3 @@ def step_impl(context, webapp_user_name, order_id):
 
 	bdd_util.assert_dict(expected_order, actual_order)
 
-@then(u"server能发送邮件")
-def step_impl(context):
-	expected = context.text
-
-	actual = bdd_util.get_bdd_mock('notify_mail').get('content', '')
-	assert expected == actual

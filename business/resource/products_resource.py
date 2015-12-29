@@ -43,9 +43,10 @@ class ProductsResource(business_model.Resource):
 		
 	# 	return product_resource
 
-	def __init__(self, resources):
+	def __init__(self, resources, resource_type):
 		business_model.Resource.__init__(self)
-		self.type = business_model.RESOURCE_TYPE_PRODUCTS
+		self.type = resource_type
+		#self.type = business_model.RESOURCE_TYPE_PRODUCTS
 		self.resources = resources
 
 	def get_type(self):

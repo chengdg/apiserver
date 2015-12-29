@@ -204,7 +204,6 @@ Scenario:1 校验多个下单错误信息提示（错误信息类型不同）
 				"name": "商品3"
 			}, {
 				"name": "商品4"
-			
 			}]
 		}
 		"""
@@ -235,7 +234,7 @@ Scenario:1 校验多个下单错误信息提示（错误信息类型不同）
 	When jobs'下架'商品'商品3':weapp
 
 	#删除商品4
-	When jobs'删除'商品'商品4':weapp
+	When jobs'永久删除'商品'商品4':weapp
 
 	#结束商品5参与的买赠活动
 	When jobs'结束'促销活动'商品5买二赠一':weapp
@@ -261,6 +260,20 @@ Scenario:1 校验多个下单错误信息提示（错误信息类型不同）
 			},{
 				"id": "商品3",
 				"short_msg": "商品已下架"
+			},{
+				"id": "商品4",
+				"short_msg": "商品已删除"
+			},{
+				"id": "商品5",
+				"short_msg": "已经过期"
+			},{
+				"id": "商品7",
+				"model": "M",
+				"msg": "限购3件"
+			},{
+				"id": "商品7",
+				"model": "S",
+				"msg": "限购3件"
 			}]
 		}
 		"""
@@ -268,25 +281,11 @@ Scenario:1 校验多个下单错误信息提示（错误信息类型不同）
 #				"id": "商品6",
 #				"msg": "限制购买"
 #			},{
-#				"id": "商品7",
-#				"model":"M",
-#				"msg": "限购3件"
-#			},{
-#				"id": "商品7",
-#				"model":"S",
-#				"msg": "限购3件"
-#			},{
-#				"id": "商品5",
-#				"msg": "已经过期"
-#			},{
 #				"id": "商品2",
 #				"msg": "已售罄"
-#			},{
-#				"id": "商品4",
-#				"msg": "已删除"
 
 
-@mall3 @mall.webapp @mall.promotion @wip.we2
+@mall3 @mall.webapp @mall.promotion @wip.cmemfo2
 Scenario:2 校验多个下单错误信息提示（错误信息类型相同）
 
 	When bill访问jobs的webapp
@@ -305,7 +304,6 @@ Scenario:2 校验多个下单错误信息提示（错误信息类型相同）
 		{
 			"action": "pay",
 			"context": [{
-			}, {
 				"name": "商品4"
 			}, {
 				"name": "商品8"
@@ -314,9 +312,9 @@ Scenario:2 校验多个下单错误信息提示（错误信息类型相同）
 		"""
 
 	#删除商品
-	Given jobs登录系统
-	When jobs'删除'商品'商品4'
-	When jobs'删除'商品'商品8'
+	Given jobs登录系统:weapp
+	When jobs'永久删除'商品'商品4':weapp
+	When jobs'永久删除'商品'商品8':weapp
 
 	When bill在购物车订单编辑中点击提交订单
 		"""
@@ -334,10 +332,10 @@ Scenario:2 校验多个下单错误信息提示（错误信息类型相同）
 			"detail": 
 			[{
 				"id": "商品4",
-				"short_msg": "已删除"
+				"short_msg": "商品已删除"
 			},{
 				"id": "商品8",
-				"short_msg": "已删除"
+				"short_msg": "商品已删除"
 			}]
 		}
 		"""

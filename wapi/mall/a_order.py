@@ -90,9 +90,6 @@ class AOrder(api_resource.ApiResource):
 		}
 		if pay_url_info:
 			data['pay_url_info'] = pay_url_info
-
-		webapp_user.cleanup_order_info_cache()
-
 		return data
 
 	@param_required(['order_id', 'action'])

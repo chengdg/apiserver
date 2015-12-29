@@ -118,7 +118,7 @@ CTYPT_INFO = {
 }
 
 COMPONENT_INFO = {
-        'app_id' : 'wx8209f1f63f0b1d26',
+        'app_id' : 'wx9b89fe19768a02d2',
     }
 
 
@@ -133,4 +133,7 @@ UPLOAD_DIR = os.path.join(PROJECT_HOME, '../static', 'upload')
 MAIL_NOTIFY_USERNAME = u'972122220@qq.com'
 MAIL_NOTIFY_PASSWORD = u'irocwdrjrpkzbcfa'
 MAIL_NOTIFY_ACCOUNT_SMTP = u'smtp.qq.com'
+
+#最为oauthserver时候使用
+OAUTHSERVER_HOST = 'http://api.mall3.weizzz.com/'
 

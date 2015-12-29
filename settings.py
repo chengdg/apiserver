@@ -118,7 +118,7 @@ CTYPT_INFO = {
 }
 
 COMPONENT_INFO = {
-        'app_id' : 'wx8209f1f63f0b1d26',
+        'app_id' : 'wx9b89fe19768a02d2',
     }
 
 

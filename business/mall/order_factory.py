@@ -144,7 +144,7 @@ class OrderFactory(business_model.Model):
 			logging.info("count of `reasons`: {}".format(len(reasons)))
 			logging.info("reasons in OrderFactory.create_order: ")
 			for reason in reasons:
-				logging.info("reason: name: {}, short_msg: {}".format(reason.get('name'), reason.get('short_msg')))
+				logging.info(u"reason: name: {}, short_msg: {}".format(reason.get('name'), reason.get('short_msg')))
 			allocate_order_resource_service.release(resources)
 			raise OrderException(reasons)	
 

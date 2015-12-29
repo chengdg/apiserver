@@ -27,25 +27,34 @@ class OrderProductsResourceAllocator(business_model.Service):
 		self.context['resource2allocator'] = {}
 
 
-	def release(self, resources):
-		if not resources:
-			return 
+	def release(self, product_resource):
+		if not product_resource:
+			logging.info(u"`product_resource` should not be None. It's meaningless.")
+			return
 
-		release_resources = []
-		for resource in resources:
+		if not isinstance(product_resource, ProductsResource):
+			logging.info(u"ONLY to release OrderProductsResources")
+			return
+
+		#release_resources = []
+
+		product_resource_allocator = ProductResourceAllocator.get()
+
+		for resource in product_resource.resources:
 			if not resource:
 				continue
-			print 'type: ', resource.get_type()
-			if resource.get_type() == business_model.RESOURCE_TYPE_PRODUCTS:
-				release_resources.append(resource)
+			logging.info(u'Resource type: {}'.format(resource.get_type()))
+			product_resource_allocator.release(resource)
 
-		for release_resource in release_resources:
-			resources = release_resource.resources
+			#if resource.get_type() == business_model.RESOURCE_TYPE_PRODUCTS:
+			#	release_resources.append(resource)
 
-			for resource in resources:
-				allocator = self.context['resource2allocator'].get(resource.model_id, None)
-				if allocator:
-					allocator.release()
+		#for release_resource in release_resources:
+		#	resources = release_resource.resources
+		#	for resource in resources:
+		#		allocator = self.context['resource2allocator'].get(resource.model_id, None)
+		#		if allocator:
+		#			allocator.release()
 
 	def __allocate_promotion(self, product):
 		"""

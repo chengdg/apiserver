@@ -48,6 +48,9 @@ class OrderProductsResourceAllocator(business_model.Service):
 					allocator.release()
 
 	def __allocate_promotion(self, product):
+		"""
+		分配促销资源
+		"""
 		if product.has_expected_promotion() and not product.is_expected_promotion_active():
 			return False, PromotionFailure({
 				"type": 'promotion:expired',
@@ -58,6 +61,7 @@ class OrderProductsResourceAllocator(business_model.Service):
 		if not product.promotion:
 			return True, PromotionResult()
 
+		# 分配各种促销资源
 		promotion_result = product.promotion.allocate(self.context['webapp_user'], product)
 		if not promotion_result.is_success:
 			# reason = {
@@ -148,7 +152,11 @@ class OrderProductsResourceAllocator(business_model.Service):
 				#self.release(resources)
 				#break
 				resources.append(resource)
+<<<<<<< HEAD
 				logging.info(u"adding reason: msg={}".format(reason['msg']))
+=======
+				logging.info("appending reason: msg={}".format(reason['msg']))
+>>>>>>> update
 				reasons.append(reason)
 			else:
 				resources.append(resource)
@@ -162,6 +170,8 @@ class OrderProductsResourceAllocator(business_model.Service):
 		for merged_reserved_product in merged_reserved_products:
 			is_promotion_success, promotion_reason = self.__allocate_promotion(merged_reserved_product)
 			if not is_promotion_success:
+				logging.info("appending reason: msg={}".format(reason['msg']))
+				successed = False
 				merged_promotion_product = merged_reserved_product
 				for inner_reserved_product in merged_reserved_product.get_products():
 					promotion_reason_dict = promotion_reason.to_dict()
@@ -178,13 +188,12 @@ class OrderProductsResourceAllocator(business_model.Service):
 		elif not is_promotion_success:
 			if resources:
 				products_resource = ProductsResource(resources)
-				self.release([products_resource])
+				self.release(products_resource)
+			reasons.append(promotion_reason)
 			return False, reasons, None
-		else:
-			resource = ProductsResource(resources)
-		 	return True, reasons, resource
+		resource = ProductsResource(resources, self.resource_type)
+	 	return True, reasons, resource
 
 	@property
 	def resource_type(self):
 		return "order_products"
-	

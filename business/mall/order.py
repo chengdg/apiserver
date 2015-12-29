@@ -615,7 +615,7 @@ class Order(business_model.Model):
 					integral_count = promotion_result['use_integral']
 				mall_models.OrderHasPromotion.create(
 						order=self.db_model,
-						webapp_user_id=self.webapp_id,
+						webapp_user_id=self.webapp_user_id,
 						promotion_id=promotion.id,
 						promotion_type=promotion.type_name,
 						promotion_result_json=json.dumps(promotion_result.to_dict()),

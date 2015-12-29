@@ -46,6 +46,9 @@ def step_impl(context, webapp_user_name):
 	for detail in expected['detail']:
 		product = steps_db_util.get_product_by_prouduct_name(owner_id=webapp_owner_id, name=detail['id'])
 		detail['id'] = product.id
+		if 'model_name' in detail:
+			detail['model'] = steps_db_util.get_product_model_keys(detail['model_name'])
+			del detail['model_name']
 
 	actual = context.response.data
 	bdd_util.assert_dict(expected, actual)

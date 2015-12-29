@@ -103,7 +103,8 @@ class PromotionRepository(business_model.Model):
 				'original_premium_count': premium_sale_product.count,
 				'premium_count': premium_sale_product.count,
 				'premium_unit': premium_sale_product.unit,
-				'premium_product_id': premium_sale_product.product_id
+				'premium_product_id': premium_sale_product.product_id,
+				'supplier': premium_sale_product.supplier,
 			}
 			id2sale[premium_sale_id].premium_products.append(data)
 

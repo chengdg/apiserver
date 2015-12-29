@@ -163,7 +163,7 @@ class WebAppOwnerInfo(business_model.Model):
 
 			#全局导航
 			try:
-				global_navbar = account_models.TemplateGlobalNavbar.get_object(webapp_owner_id)
+				global_navbar = account_models.TemplateGlobalNavbar.select().dj_where(owner_id=webapp_owner_id).first()
 			except:
 				global_navbar = account_models.TemplateGlobalNavbar()
 

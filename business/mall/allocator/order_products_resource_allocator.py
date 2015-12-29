@@ -178,7 +178,7 @@ class OrderProductsResourceAllocator(business_model.Service):
 			if not is_promotion_success:
 				logging.info(u"appending reason: {}".format(reason))
 				successed = False
-				merged_promotion_product = merged_reserved_product
+				#merged_promotion_product = merged_reserved_product
 				for inner_reserved_product in merged_reserved_product.get_products():
 					promotion_reason_dict = promotion_reason.to_dict()
 					promotion_reason_dict['id'] = None #hack, trigger __supply_product_info_into_fail_reason work

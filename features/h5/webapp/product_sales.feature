@@ -29,6 +29,17 @@ Background:
 					}
 				}
 			}
+		},{
+			"name": "商品2",
+			"model": {
+				"models": {
+					"standard": {
+						"price": 100.00,
+						"stock_type": "有限",
+						"stocks": 10
+					}
+				}
+			}
 		}]
 		"""
 	And jobs已添加支付方式:weapp
@@ -146,7 +157,7 @@ Scenario: 2 订单为待支付状态时，商品销量不变
 		"""
 
 @mall2 @product @saleingProduct
-Scenario: 3 购买买赠商品成功支付订单后，主商品销量增加，赠品销量不变
+Scenario: 3 购买买赠商品(赠品为主商品)成功支付订单后，主商品销量增加，赠品销量不变
 	jobs创建买赠活动后
 	1.bill成功下单后，主商品销量增加，赠品销量不变
 
@@ -231,6 +242,114 @@ Scenario: 3 购买买赠商品成功支付订单后，主商品销量增加，�
 						"price": 100.00,
 						"stock_type": "有限",
 						"stocks": 7
+					}
+				}
+			}
+		}
+		"""
+
+@mall2 @product @saleingProduct
+Scenario: 4 购买买赠商品(赠品为非主商品)成功支付订单后，主商品销量增加，赠品销量不变
+	jobs创建买赠活动后
+	1.bill成功下单后，主商品销量增加，赠品销量不变
+
+	Given jobs登录系统:weapp
+	#购买买赠商品，主商品和赠品都使用一个商品，赠品减库存，不增加销量
+	When jobs创建买赠活动:weapp
+		"""
+		[{
+			"name": "商品1买一赠二",
+			"start_date": "今天",
+			"end_date": "1天后",
+			"product_name": "商品1",
+			"premium_products": [{
+				"name": "商品2",
+				"count": 2
+			}],
+			"count": 1,
+			"is_enable_cycle_mode": true
+		}]
+		"""
+	When bill访问jobs的webapp
+	When bill购买jobs的商品
+		"""
+		{
+			"products": [{
+				"name": "商品1",
+				"count": 1
+			}]
+		}
+		"""
+	Then bill成功创建订单
+		"""
+		{
+			"status": "待支付",
+			"final_price": 100.00,
+			"products": [{
+				"name": "商品1",
+				"count": 1,
+				"promotion": {
+					"type": "premium_sale"
+				}
+			}, {
+				"name": "商品2",
+				"count": 2,
+				"promotion": {
+					"type": "premium_sale:premium_product"
+				}
+			}]
+		}
+		"""
+	When bill使用支付方式'货到付款'进行支付
+	Then bill支付订单成功
+		"""
+		{
+			"status": "待发货",
+			"final_price": 100.00,
+			"products": [{
+				"name": "商品1",
+				"count": 1,
+				"promotion": {
+					"type": "premium_sale"
+				}
+			},{
+				"name": "商品2",
+				"count": 2,
+				"promotion": {
+					"type": "premium_sale:premium_product"
+				}
+			}]
+		}
+		"""
+	#买赠活动：赠品扣库存，但是不算销量
+	Given jobs登录系统:weapp
+	Then jobs能获取商品'商品1':weapp
+		"""
+		{
+			"name": "商品1",
+			"sales": 1,
+			"model": {
+				"models": {
+					"standard": {
+						"price": 100.00,
+						"stock_type": "有限",
+						"stocks": 9
+					}
+				}
+			}
+		}
+		"""
+	Then jobs能获取商品'商品2':weapp
+		"""
+		{
+			"name": "商品2",
+			"sales": 0,
+			"model": {
+				"models": {
+					"standard": {
+						"price": 100.00,
+						"stock_type": "有限",
+						"stocks": 8
 					}
 				}
 			}

@@ -81,7 +81,7 @@ class OrderProductsResourceAllocator(business_model.Service):
 			#如果失败原因中没有商品信息，则填充商品信息
 			result.id = product.id
 			result.name = product.name
-			result.stocks = product.stocks
+			result.stocks = product.purchase_count
 			result.model_name = product.model_name
 			result.pic_url = product.thumbnails_url
 
@@ -163,10 +163,12 @@ class OrderProductsResourceAllocator(business_model.Service):
 			is_promotion_success, promotion_reason = self.__allocate_promotion(merged_reserved_product)
 			if not is_promotion_success:
 				merged_promotion_product = merged_reserved_product
-				self.__supply_product_info_into_fail_reason(merged_promotion_product, promotion_reason)
-				promotion_reason = promotion_reason.to_dict()
-				logging.info(u"adding reason: msg={}".format(promotion_reason['msg']))
-				promotion_reasons.append(promotion_reason)
+				for inner_reserved_product in merged_reserved_product.get_products():
+					promotion_reason.id = None #hack, trigger __supply_product_info_into_fail_reason work
+					self.__supply_product_info_into_fail_reason(inner_reserved_product, promotion_reason)
+					promotion_reason_dict = promotion_reason.to_dict()
+					logging.info(u"adding reason: msg={}".format(promotion_reason_dict['msg']))
+					promotion_reasons.append(promotion_reason_dict)
 		#has_real_fail_reason = len([reason for reason in promotion_reasons if reason['type'] != 'promotion:premium_sale:no_premium_product_stocks' and reason['type'] != 'promotion:premium_sale:not_enough_premium_product_stocks']) > 0
 		if len(promotion_reasons) > 0:
 			reasons.extend(promotion_reasons)

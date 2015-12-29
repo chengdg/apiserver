@@ -88,3 +88,6 @@ class MergedReservedProduct(business_model.Model):
 		"""
 		for reserved_product in self.context['products']:
 			reserved_product.disable_discount()
+
+	def get_products(self):
+		return self.context['products']

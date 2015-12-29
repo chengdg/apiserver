@@ -134,3 +134,6 @@ MAIL_NOTIFY_USERNAME = u'972122220@qq.com'
 MAIL_NOTIFY_PASSWORD = u'irocwdrjrpkzbcfa'
 MAIL_NOTIFY_ACCOUNT_SMTP = u'smtp.qq.com'
 
+#最为oauthserver时候使用
+OAUTHSERVER_HOST = 'http://api.mall3.weizzz.com/'
+

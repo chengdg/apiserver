@@ -685,6 +685,12 @@ class Order(business_model.Model):
 		if self.origin_order_id == -1:
 			mall_models.Order.update(status=mall_models.ORDER_STATUS_CANCEL).dj_where(origin_order_id=self.id).execute()
 
+		# 退回销量
+		products = filter(lambda p: p.promotion != "'type_name': 'premium_sale:premium_product'", self.products)
+		# order_has_products = mall_models.OrderHasProduct.select().dj_where(order=self.id)
+		for product in products:
+			mall_models.ProductSales.update(sales=mall_models.ProductSales.sales - product.purchase_count).execute()
+
 		self.__after_update_status('cancel')
 
 	# todo

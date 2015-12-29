@@ -24,7 +24,7 @@ Background:
 	And jobs初始化邮件通知:weapp
 	Given bill关注jobs的公众号
 
-@ztqb
+
 Scenario:1 启用"下订单时"邮件通知
 	Given jobs登录系统:weapp
 	When jobs配置'下单时'邮件通知:weapp

@@ -69,7 +69,7 @@ Background:
 	And bill关注jobs的公众号
 	And tom关注jobs的公众号
 
-@mall3 @mall.webapp @mall.webapp.shopping_cart
+@mall3 @mall.webapp @mall.webapp.shopping_cart @wip.aptsc1
 Scenario:1 放入单个商品到购物车
 	jobs添加商品后
 	1. bill能在webapp中将jobs添加的商品放入购物车
@@ -139,7 +139,7 @@ Scenario:1 放入单个商品到购物车
 		}
 		"""
 
-@mall3 @mall.webapp @mall.webapp.shopping_cart
+@mall3 @mall.webapp @mall.webapp.shopping_cart @wip.aptsc2
 Scenario:2 放入多个商品到购物车
 	jobs添加商品后
 	1. bill能在webapp中将jobs添加的商品放入购物车

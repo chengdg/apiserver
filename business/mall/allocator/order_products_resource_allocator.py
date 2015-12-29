@@ -161,11 +161,8 @@ class OrderProductsResourceAllocator(business_model.Service):
 				#self.release(resources)
 				#break
 				resources.append(resource)
-<<<<<<< HEAD
 				logging.info(u"adding reason: msg={}".format(reason['msg']))
-=======
-				logging.info("appending reason: msg={}".format(reason['msg']))
->>>>>>> update
+				logging.info(u"appending reason: {}".format(reason))
 				reasons.append(reason)
 			else:
 				resources.append(resource)
@@ -179,7 +176,7 @@ class OrderProductsResourceAllocator(business_model.Service):
 		for merged_reserved_product in merged_reserved_products:
 			is_promotion_success, promotion_reason = self.__allocate_promotion(merged_reserved_product)
 			if not is_promotion_success:
-				logging.info("appending reason: msg={}".format(reason['msg']))
+				logging.info(u"appending reason: {}".format(reason))
 				successed = False
 				merged_promotion_product = merged_reserved_product
 				for inner_reserved_product in merged_reserved_product.get_products():

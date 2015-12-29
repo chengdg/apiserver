@@ -111,7 +111,7 @@ Scenario: 1 成功支付订单后，商品销量增加
 		}
 		"""
 
-@mall2 @product @saleingProduct
+@mall3 @product @saleingProduct
 Scenario: 2 订单为待支付状态时，商品销量不变
 	bill成功创建订单待支付状态，jobs的商品销量不变
 	1.商品库存减少
@@ -156,7 +156,7 @@ Scenario: 2 订单为待支付状态时，商品销量不变
 		}
 		"""
 
-@mall2 @product @saleingProduct
+@mall3 @product @saleingProduct
 Scenario: 3 购买买赠商品(赠品为主商品)成功支付订单后，主商品销量增加，赠品销量不变
 	jobs创建买赠活动后
 	1.bill成功下单后，主商品销量增加，赠品销量不变
@@ -248,7 +248,7 @@ Scenario: 3 购买买赠商品(赠品为主商品)成功支付订单后，主商
 		}
 		"""
 
-@mall2 @product @saleingProduct
+@mall3 @product @saleingProduct
 Scenario: 4 购买买赠商品(赠品为非主商品)成功支付订单后，主商品销量增加，赠品销量不变
 	jobs创建买赠活动后
 	1.bill成功下单后，主商品销量增加，赠品销量不变

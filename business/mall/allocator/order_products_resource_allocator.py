@@ -179,6 +179,7 @@ class OrderProductsResourceAllocator(business_model.Service):
 				logging.info(u"appending reason: {}".format(reason))
 				successed = False
 				#merged_promotion_product = merged_reserved_product
+<<<<<<< HEAD
 				for inner_reserved_product in merged_reserved_product.get_products():
 					promotion_reason_dict = promotion_reason.to_dict()
 					promotion_reason_dict['id'] = None #hack, trigger __supply_product_info_into_fail_reason work
@@ -188,6 +189,12 @@ class OrderProductsResourceAllocator(business_model.Service):
 		#has_real_fail_reason = len([reason for reason in promotion_reasons if reason['type'] != 'promotion:premium_sale:no_premium_product_stocks' and reason['type'] != 'promotion:premium_sale:not_enough_premium_product_stocks']) > 0
 		if len(promotion_reasons) > 0:
 			reasons.extend(promotion_reasons)
+=======
+				
+				self.__supply_product_info_into_fail_reason(merged_reserved_product, promotion_reason)
+				reasons.append(promotion_reason)
+				break
+>>>>>>> 修复multiple_error，识别商品4、商品5的错误信息。特别注意：jobs'删除'商品'xxxx'  应该写成  jobs'永久删除'商品'xxx'
 
 		if not successed:
 			return False, reasons, None

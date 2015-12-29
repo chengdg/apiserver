@@ -130,7 +130,7 @@ class OrderFactory(business_model.Model):
 		successed, reasons, resources = allocate_order_resource_service.allocate_resource_for(order, purchase_info)
 		
 		if successed:
-			logging.info("Allocated resources successfully. count: {}".format(len(resources)))
+			logging.info(u"Allocated resources successfully. count: {}".format(len(resources)))
 
 			self.context['allocator_order_resource_service'] = allocate_order_resource_service
 			#self.resources = resources
@@ -141,8 +141,8 @@ class OrderFactory(business_model.Model):
 			return resources
 		else:
 			# 如果分配资源失败，则抛异常
-			logging.info("count of `reasons`: {}".format(len(reasons)))
-			logging.info("reasons in OrderFactory.create_order: ")
+			logging.info(u"count of `reasons`: {}".format(len(reasons)))
+			logging.info(u"reasons in OrderFactory.create_order: ")
 			for reason in reasons:
 				logging.info(u"reason: name: {}, short_msg: {}".format(reason.get('name'), reason.get('short_msg')))
 			allocate_order_resource_service.release(resources)
@@ -254,7 +254,7 @@ class OrderFactory(business_model.Model):
 
 		# 申请订单价无关资源
 		price_free_resources = self.__allocate_price_free_resources(order, purchase_info)
-		logging.info("price_free_resources={}".format(price_free_resources))
+		logging.info(u"price_free_resources={}".format(price_free_resources))
 
 		# 填充order
 		package_order_service = PackageOrderService(webapp_owner, webapp_user)

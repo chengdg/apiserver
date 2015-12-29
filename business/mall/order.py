@@ -213,6 +213,14 @@ class Order(business_model.Model):
 					'order_id': sub_order_id
 				})
 				for product in self.products:
+					#新的数据中已经有supplier字段了，但是为了兼容旧的数据，次数要做此处理
+					if not product.supplier:
+						_product = Product.from_id({
+							'webapp_owner': self.context['webapp_owner'],
+							'product_id': product.id
+						})
+						product.supplier = _product.supplier
+
 					#只要属于该子订单的商品
 					if product.supplier == sub_order.supplier:
 						sub_order.products.append(product.to_dict())

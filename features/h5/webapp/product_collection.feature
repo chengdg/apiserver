@@ -121,7 +121,7 @@ Scenario:2 收藏多个商品，包括无规格和有规格的商品
 		}]
 		"""
 
-@mall2 @weapp.mall.collect.product @bert @mall3
+@mall2 @weapp.mall.collect.product @bert @mall3 @wip.pc2
 Scenario:3 从我的收藏里面取消收藏商品
 	bill在webapp收藏jobs的商品后
 	1. bill能取消收藏已收藏的商品

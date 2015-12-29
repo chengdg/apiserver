@@ -285,7 +285,7 @@ Scenario:1 校验多个下单错误信息提示（错误信息类型不同）
 #				"msg": "已售罄"
 
 
-@mall3 @mall.webapp @mall.promotion @wip.we2
+@mall3 @mall.webapp @mall.promotion @wip.cmemfo2
 Scenario:2 校验多个下单错误信息提示（错误信息类型相同）
 
 	When bill访问jobs的webapp
@@ -304,7 +304,6 @@ Scenario:2 校验多个下单错误信息提示（错误信息类型相同）
 		{
 			"action": "pay",
 			"context": [{
-			}, {
 				"name": "商品4"
 			}, {
 				"name": "商品8"
@@ -313,9 +312,9 @@ Scenario:2 校验多个下单错误信息提示（错误信息类型相同）
 		"""
 
 	#删除商品
-	Given jobs登录系统
-	When jobs'永久删除'商品'商品4'
-	When jobs'永久删除'商品'商品8'
+	Given jobs登录系统:weapp
+	When jobs'永久删除'商品'商品4':weapp
+	When jobs'永久删除'商品'商品8':weapp
 
 	When bill在购物车订单编辑中点击提交订单
 		"""
@@ -333,10 +332,10 @@ Scenario:2 校验多个下单错误信息提示（错误信息类型相同）
 			"detail": 
 			[{
 				"id": "商品4",
-				"short_msg": "已删除"
+				"short_msg": "商品已删除"
 			},{
 				"id": "商品8",
-				"short_msg": "已删除"
+				"short_msg": "商品已删除"
 			}]
 		}
 		"""

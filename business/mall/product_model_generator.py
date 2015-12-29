@@ -122,17 +122,6 @@ class ProductModelGenerator(business_model.Model):
 
 			self.__fill_used_product_model_property(product)
 
-		# for product_id, product_models in product2deleted_models.items():
-		# 	product = id2product[product_id]
-		# 	if len(product_models) == 1 and product_models[0].name == 'standard':
-		# 		product.is_use_custom_model = False
-		# 	else:
-		# 		product.is_use_custom_model = True
-
-		# 	product.deleted_models = product_models
-
-		# 	self.__fill_used_product_model_property(product)
-
 
 	def __fill_used_product_model_property(self, product):
 		"""

@@ -181,7 +181,6 @@ class Product(business_model.Model):
 		#'model_name',
 		#'product_model_properties',
 		'models',
-		'deleted_models',
 		'used_system_model_properties',
 
 		#价格、销售信息
@@ -468,8 +467,6 @@ class Product(business_model.Model):
 				standard_model = None
 				if product.models:
 					standard_model = product.models[0]
-				elif product.deleted_models:
-					standard_model = product.deleted_models[0]
 					
 				if standard_model:
 					product.price_info = {

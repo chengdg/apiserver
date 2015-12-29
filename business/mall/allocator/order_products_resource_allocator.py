@@ -77,13 +77,13 @@ class OrderProductsResourceAllocator(business_model.Service):
 		return True, PromotionResult()
 
 	def __supply_product_info_into_fail_reason(self, product, result):
-		if not result.id:
+		if not id in result:
 			#如果失败原因中没有商品信息，则填充商品信息
-			result.id = product.id
-			result.name = product.name
-			result.stocks = product.purchase_count
-			result.model_name = product.model_name
-			result.pic_url = product.thumbnails_url
+			result['id'] = product.id
+			result['name'] = product.name
+			result['stocks'] = product.purchase_count
+			result['model_name'] = product.model_name
+			result['pic_url'] = product.thumbnails_url
 
 	def __merge_different_model_product(self, products):
 		"""
@@ -164,9 +164,9 @@ class OrderProductsResourceAllocator(business_model.Service):
 			if not is_promotion_success:
 				merged_promotion_product = merged_reserved_product
 				for inner_reserved_product in merged_reserved_product.get_products():
-					promotion_reason.id = None #hack, trigger __supply_product_info_into_fail_reason work
-					self.__supply_product_info_into_fail_reason(inner_reserved_product, promotion_reason)
 					promotion_reason_dict = promotion_reason.to_dict()
+					promotion_reason_dict['id'] = None #hack, trigger __supply_product_info_into_fail_reason work
+					self.__supply_product_info_into_fail_reason(inner_reserved_product, promotion_reason_dict)
 					logging.info(u"adding reason: msg={}".format(promotion_reason_dict['msg']))
 					promotion_reasons.append(promotion_reason_dict)
 		#has_real_fail_reason = len([reason for reason in promotion_reasons if reason['type'] != 'promotion:premium_sale:no_premium_product_stocks' and reason['type'] != 'promotion:premium_sale:not_enough_premium_product_stocks']) > 0

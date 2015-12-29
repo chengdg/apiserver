@@ -39,7 +39,7 @@ class OAuthMiddleware(object):
 		注：如果7无法获取正常会员帐号信息，会直接回调callback_uri
 	"""
 	def process_request(self, req, resp):
-		
+
 		if '/oauthserver' not in req.path:
 			return 
 
@@ -76,7 +76,7 @@ class OAuthMiddleware(object):
 			api_style = "snsapi_base"
 			url = 'https://open.weixin.qq.com/connect/oauth2/authorize' \
 			+ '?appid=%s&redirect_uri=%s&response_type=code&scope=%s&state=123&component_appid=%s#wechat_redirect' \
-			% (weixin_mp_user_access_token.app_id, urllib.quote(req.url).replace('/','%2F'), api_style, component_info['app_id'])
+			% (weixin_mp_user_access_token.app_id, urllib.quote(req.uri).replace('/','%2F'), api_style, component_info['app_id'])
 		else:
 			"""
 				通过code获取openid，

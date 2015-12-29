@@ -81,9 +81,3 @@ def step_impl(context, webapp_user_name, order_id):
 
 	bdd_util.assert_dict(expected_order, actual_order)
 
-@then(u"server能发送邮件")
-def step_impl(context):
-	expected = context.text
-
-	actual = bdd_util.get_bdd_mock('notify_mail').get('content', '')
-	assert expected == actual

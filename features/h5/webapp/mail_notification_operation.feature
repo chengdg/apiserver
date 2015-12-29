@@ -112,7 +112,7 @@ Background:
 		}
 		"""
 
-@configuration @mail
+@mall3 @configuration @mail
 Scenario:1 启用"下单时"邮件通知
 	#1 bill购买单个商品（积分活动）；配置两个运营接收邮件，可以正确只收到一次邮件通知
 	#2 tom购买多个商品（买赠、限时抢购、优惠券）；配置两个运营接收邮件，可以正确只收到一次邮件通知
@@ -160,36 +160,20 @@ Scenario:1 启用"下单时"邮件通知
 				}]
 			}
 			"""
-
 		Then server能发送邮件
 			"""
-			商品名称：商品1<br> 订单号：0000001<br> 下单时间：2015-12-25 15:11<br> 订单状态：<font color="red">待支付</font><br> 订购数量：1<br> 支付金额：100.0<br> 收货人：tom<br> 收货人电话：13811223344<br> 收货人地址： 泰兴大厦
-			"""
-		Then 邮箱'ceshi@weizoom.com'获得'下单时'运营邮件'一次'通知
-			"""
-			商品名称：商品1<br />
-			订单号：0000001<br />
-			下单时间："今天"<br />
-			订单状态：待支付<br />
-			订购数量：1<br />
-			支付金额：50<br />
-			使用积分：100<br />
-			收货人：bill<br />
-			收货人电话：13811223344<br />
-			收货人地址：北京市 北京市 海淀区 泰兴大厦<br />
-			"""
-		Then 邮箱'ceshi02@weizoom.com'获得'下单时'运营邮件'一次'通知
-			"""
-			商品名称：商品1<br />
-			订单号：0000001<br />
-			下单时间："今天" 16:13<br />
-			订单状态：待支付<br />
-			订购数量：1<br />
-			支付金额：50<br />
-			使用积分：100<br />
-			收货人：bill<br />
-			收货人电话：13811223344<br />
-			收货人地址：北京市 北京市 海淀区 泰兴大厦<br />
+			{
+				"content":{
+					"buyer_name": "bill",
+					"product_name":"商品1",
+					"order_status":"待支付",
+					"buy_count":"1",
+					"total_price":50.0,
+					"buyer_address":"北京市 北京市 海淀区 泰兴大厦"
+
+				},
+				"mails":"ceshi@weizoom.com|ceshi02@weizoom.com"
+			}
 			"""
 
 	#购买多个商品（买赠、限时抢购、优惠券），成功下单
@@ -246,36 +230,21 @@ Scenario:1 启用"下单时"邮件通知
 			"""
 		Then server能发送邮件
 			"""
-			商品名称：商品1<br> 订单号：0000001<br> 下单时间：2015-12-25 15:11<br> 订单状态：<font color="red">待支付</font><br> 订购数量：1<br> 支付金额：100.0<br> 收货人：tom<br> 收货人电话：13811223344<br> 收货人地址： 泰兴大厦
-			"""
-		Then 邮箱'ceshi@weizoom.com'获得'下单时'运营邮件'一次'通知
-			"""
-			商品名称：商品2,商品3,商品4<br />
-			订单号：0000002<br />
-			下单时间："今天"<br />
-			订单状态：待支付<br />
-			订购数量：4<br />
-			支付金额：250<br />
-			优惠券：coupon1_id_1,￥50.0
-			收货人：tom<br />
-			收货人电话：13811223344<br />
-			收货人地址：北京市 北京市 海淀区 泰兴大厦<br />
-			"""
-		Then 邮箱'ceshi02@weizoom.com'获得'下单时'运营邮件'一次'通知
-			"""
-			商品名称：商品2,商品3,商品4<br />
-			订单号：0000002<br />
-			下单时间："今天"<br />
-			订单状态：待支付<br />
-			订购数量：4<br />
-			支付金额：250<br />
-			优惠券：coupon1_id_1,￥50.0
-			收货人：tom<br />
-			收货人电话：13811223344<br />
-			收货人地址：北京市 北京市 海淀区 泰兴大厦<br />
+			{
+				"content":{
+					"buyer_name": "tom",
+					"product_name":"商品2,商品3,商品4",
+					"order_status":"待支付",
+					"buy_count":"1,2,1",
+					"total_price":250.0,
+					"buyer_address":"北京市 北京市 海淀区 泰兴大厦"
+
+				},
+				"mails":"ceshi@weizoom.com|ceshi02@weizoom.com"
+			}
 			"""
 
-@configuration @mail
+@mall3 @configuration @mail
 Scenario:2 启用"付款时"邮件通知
 	#1 bill购买单个商品（积分活动）；配置运营接收邮件，可以正确只收到一次邮件通知
 	#2 tom购买多个商品（买赠、限时抢购、优惠券）；配置运营接收邮件，可以正确只收到一次邮件通知
@@ -323,24 +292,23 @@ Scenario:2 启用"付款时"邮件通知
 				}]
 			}
 			"""
-		When bill使用支付方式'微信支付'进行支付:weapp
+		When bill使用支付方式'微信支付'进行支付
 
 		Then server能发送邮件
 			"""
-			商品名称：商品1<br> 订单号：0000001<br> 下单时间：2015-12-25 15:11<br> 订单状态：<font color="red">待支付</font><br> 订购数量：1<br> 支付金额：100.0<br> 收货人：tom<br> 收货人电话：13811223344<br> 收货人地址： 泰兴大厦
-			"""
-		Then 邮箱'ceshi@weizoom.com'获得'付款时'运营邮件'一次'通知
-			"""
-			商品名称：商品1<br />
-			订单号：0000001<br />
-			下单时间："今天"<br />
-			订单状态：待发货<br />
-			订购数量：1<br />
-			支付金额：50<br />
-			使用积分：100<br />
-			收货人：bill<br />
-			收货人电话：13811223344<br />
-			收货人地址：北京市 北京市 海淀区 泰兴大厦<br />
+			{
+				"content":{
+					"buyer_name": "bill",
+					"product_name":"商品1",
+					"order_status":"待发货",
+					"buy_count":"1",
+					"total_price":50.0,
+					"integral":100,
+					"buyer_address":"北京市 北京市 海淀区 泰兴大厦"
+
+				},
+				"mails":"ceshi@weizoom.com"
+			}
 			"""
 
 	#购买多个商品（买赠、限时抢购、优惠券），成功下单
@@ -395,26 +363,26 @@ Scenario:2 启用"付款时"邮件通知
 				"coupon_money": 50.0
 			}
 			"""
-		When tom使用支付方式'微信支付'进行支付:weapp
+		When tom使用支付方式'微信支付'进行支付
 		Then server能发送邮件
 			"""
-			商品名称：商品1<br> 订单号：0000001<br> 下单时间：2015-12-25 15:11<br> 订单状态：<font color="red">待支付</font><br> 订购数量：1<br> 支付金额：100.0<br> 收货人：tom<br> 收货人电话：13811223344<br> 收货人地址： 泰兴大厦
-			"""
-		Then 邮箱'ceshi@weizoom.com'获得'付款时'运营邮件'一次'通知
-			"""
-			商品名称：商品2,商品3,商品4<br />
-			订单号：0000002<br />
-			下单时间："今天"<br />
-			订单状态：待发货<br />
-			订购数量：4<br />
-			支付金额：250<br />
-			优惠券：coupon1_id_1,￥50.0
-			收货人：tom<br />
-			收货人电话：13811223344<br />
-			收货人地址：北京市 北京市 海淀区 泰兴大厦<br />
+			{
+				"content":{
+					"buyer_name": "tom",
+					"product_name":"商品2,商品3,商品4",
+					"order_status":"待发货",
+					"buy_count":"1,2,1",
+					"total_price":250.0,
+					"coupon":"coupon1_id_1,￥50.0",
+					"buyer_address":"北京市 北京市 海淀区 泰兴大厦"
+
+				},
+				"mails":"ceshi@weizoom.com"
+			}
 			"""
 
-@configuration @mail
+
+@configuration @mail @ztqb3
 Scenario:3 启用"取消时"邮件通知
 	#1 bill购买单个商品（积分活动）；配置运营接收邮件，可以正确只收到一次邮件通知
 	#2 tom购买多个商品（买赠、限时抢购、优惠券）；配置运营接收邮件，可以正确只收到一次邮件通知
@@ -466,22 +434,20 @@ Scenario:3 启用"取消时"邮件通知
 
 		Then server能发送邮件
 			"""
-			商品名称：商品1<br> 订单号：0000001<br> 下单时间：2015-12-25 15:11<br> 订单状态：<font color="red">待支付</font><br> 订购数量：1<br> 支付金额：100.0<br> 收货人：tom<br> 收货人电话：13811223344<br> 收货人地址： 泰兴大厦
-			"""
-		Then 邮箱'ceshi@weizoom.com'获得'付款时'运营邮件'一次'通知
-			"""
-			商品名称：商品1<br />
-			订单号：0000001<br />
-			下单时间："今天"<br />
-			订单状态：已取消<br />
-			订购数量：1<br />
-			支付金额：50<br />
-			使用积分：100<br />
-			收货人：bill<br />
-			收货人电话：13811223344<br />
-			收货人地址：北京市 北京市 海淀区 泰兴大厦<br />
-			"""
+			{
+				"content":{
+					"buyer_name": "bill",
+					"product_name":"商品1",
+					"order_status":"已取消",
+					"buy_count":"1",
+					"total_price":50.0,
+					"integral":100,
+					"buyer_address":"北京市 北京市 海淀区 泰兴大厦"
 
+				},
+				"mails":"ceshi@weizoom.com"
+			}
+			"""
 	#购买多个商品（买赠、限时抢购、优惠券），成功下单
 		When tom访问jobs的webapp
 		When tom购买jobs的商品
@@ -534,23 +500,23 @@ Scenario:3 启用"取消时"邮件通知
 				"coupon_money": 50.0
 			}
 			"""
-		When tom使用支付方式'微信支付'进行支付:weapp
-		When tom'能'取消订单'0000002'
+		When tom使用支付方式'微信支付'进行支付
+		When tom取消订单'0000002'
 
 		Then server能发送邮件
 			"""
-			商品名称：商品1<br> 订单号：0000001<br> 下单时间：2015-12-25 15:11<br> 订单状态：<font color="red">待支付</font><br> 订购数量：1<br> 支付金额：100.0<br> 收货人：tom<br> 收货人电话：13811223344<br> 收货人地址： 泰兴大厦
+			{
+				"content":{
+					"buyer_name": "tom",
+					"product_name":"商品2,商品3,商品4",
+					"order_status":"已取消",
+					"buy_count":"1,2,1",
+					"total_price":250.0,
+					"coupon":"coupon1_id_1,￥50.0",
+					"buyer_address":"北京市 北京市 海淀区 泰兴大厦"
+
+				},
+				"mails":"ceshi@weizoom.com"
+			}
 			"""
-		Then 邮箱'ceshi@weizoom.com'获得'付款时'运营邮件'一次'通知
-			"""
-			商品名称：商品2,商品3,商品4<br />
-			订单号：0000002<br />
-			下单时间："今天"<br />
-			订单状态：已取消<br />
-			订购数量：4<br />
-			支付金额：250<br />
-			优惠券：coupon1_id_1,￥50.0
-			收货人：tom<br />
-			收货人电话：13811223344<br />
-			收货人地址：北京市 北京市 海淀区 泰兴大厦<br />
-			"""
+

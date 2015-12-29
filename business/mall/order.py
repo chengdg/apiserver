@@ -12,7 +12,7 @@ import uuid
 import time
 import random
 from datetime import datetime
-import copy
+
 from core.exceptionutil import unicode_full_stack
 from core.sendmail import sendmail
 from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
@@ -545,75 +545,9 @@ class Order(business_model.Model):
 		db_model.weizoom_card_money = self.weizoom_card_money
 		
 		logging.info("Order db_model: {}".format(db_model))
+
 		db_model.save()
 		self.id = db_model.id
-
-		# 建立订单相关数据
-		products = self.products
-		product_groups = self.product_groups
-
-		#建立<order, product>的关系
-		supplier_ids = []
-		for product_group in product_groups:
-			print product_group.integral_sale
-
-		for product in products:
-			supplier = product.supplier
-			if not supplier in supplier_ids:
-				supplier_ids.append(supplier)
-
-			# TODO: 将存储隐藏到Order.save()中
-			mall_models.OrderHasProduct.create(
-				order = self.db_model,
-				product = product.id,
-				product_name = product.name,
-				product_model_name = product.model_name,
-				number = product.purchase_count,
-				total_price = product.total_price,
-				price = product.price,
-				promotion_id = product.used_promotion_id,
-				promotion_money = product.promotion_saved_money,
-				grade_discounted_money=product.discount_money,
-				integral_sale_id = product.integral_sale.id if product.integral_sale else 0
-			)
-
-		if len(supplier_ids) > 1:
-			# 进行拆单，生成子订单
-			self.db_model.origin_order_id = -1
-			# 标记有子订单
-			# TODO: 改成method
-			self.origin_order_id = -1
-			for supplier in supplier_ids:
-				new_order = copy.deepcopy(self.db_model)
-				new_order.id = None
-				new_order.order_id = '%s^%s' % (self.order_id, supplier)
-				new_order.origin_order_id = self.id
-				new_order.supplier = supplier
-				new_order.save()
-		elif supplier_ids[0] != 0:
-			self.supplier = supplier_ids[0]
-
-		#建立<order, promotion>的关系
-		for product_group in product_groups:
-			if product_group.promotion:
-				promotion = product_group.promotion
-				promotion_result = product_group.promotion_result
-				integral_money = 0
-				integral_count = 0
-				if promotion.type_name == 'integral_sale':
-					integral_money = promotion_result['integral_money']
-					integral_count = promotion_result['use_integral']
-				mall_models.OrderHasPromotion.create(
-						order=self.db_model,
-						webapp_user_id=self.webapp_id,
-						promotion_id=promotion.id,
-						promotion_type=promotion.type_name,
-						promotion_result_json=json.dumps(promotion_result.to_dict()),
-						integral_money=integral_money,
-						integral_count=integral_count,
-				)
-
-		db_model.save()
 
 		self.__after_update_status('buy')
 

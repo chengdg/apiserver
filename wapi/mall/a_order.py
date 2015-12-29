@@ -91,6 +91,13 @@ class AOrder(api_resource.ApiResource):
 		}
 		if pay_url_info:
 			data['pay_url_info'] = pay_url_info
+
+		#记录分享来的订单
+		fmt = args.get('fmt', None)
+		from db.member import models as member_models
+		if fmt and fmt != webapp_user.member.token:
+			member_models.MallOrderFromSharedRecord.create(order_id=order.id, fmt=fmt)
+
 		return data
 
 	@param_required(['order_id', 'action'])

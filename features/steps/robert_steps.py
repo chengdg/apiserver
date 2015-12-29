@@ -184,6 +184,12 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 		"card_pass": '',
 		"xa-choseInterfaces": PAYNAME2ID.get(args.get("pay_type", u"微信支付"),-1)
 	}
+
+	if hasattr(context, 'fmt'):
+		data['fmt'] = context.fmt
+		logging.error('>>>>>>>>>>>>>1')
+		logging.error(data['fmt'])
+		logging.error('>>>>>>>>>>>>>2')
 	if 'integral' in args and args['integral'] > 0:
 		# 整单积分抵扣
 		# orderIntegralInfo:{"integral":20,"money":"10.00"}"

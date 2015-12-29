@@ -128,7 +128,7 @@ Background:
 		"""
 
 
-@mall3 @promotion @promotionForbiddenCoupon
+@mall3 @promotion @promotionForbiddenCoupon @wip.bfcp1
 Scenario:1 购买单个禁用优惠券商品,该商品无单品券
 	#购买商品1,数量2,全体券1不可使用
 	When bill访问jobs的webapp

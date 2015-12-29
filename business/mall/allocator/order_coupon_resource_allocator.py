@@ -47,14 +47,15 @@ class OrderCouponResourceAllocator(business_model.Model):
 					is_success, reason, coupon_resource = coupon_resource_allocator.allocate_resource(coupon)
 
 		if is_success:
-			return True, '', coupon_resource
+			return True, [{}], coupon_resource
 		else:
 			reason_dict = {
 				"is_success": False,
 				"msg": reason,
 				"type": "coupon"
 			}
-			return False, reason_dict, None
+			return False, [reason_dict], None
+
 
 	def release(self, resources):
 		for resource in resources:

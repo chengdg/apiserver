@@ -35,12 +35,12 @@ class IntegralResourceAllocator(business_model.Service):
 		self.context['webapp_owner'] = webapp_owner
 		self.context['webapp_user'] = webapp_user
 
-		self.context['resource'] = None
+		#self.context['resource'] = None
 
 	
-	def release(self):
+	def release(self, release_resource=None):
 		webapp_user = self.context['webapp_user']
-		release_resource = self.context['resource']
+		#release_resource = self.context['resource']
 		# release_resources = []
 		# for resource in resources:
 		# 	if resource.get_type() == business_model.RESOURCE_TYPE_INTEGRAL:
@@ -72,7 +72,7 @@ class IntegralResourceAllocator(business_model.Service):
 		successed,reason = integral_resource.get_resource(integral)
 
 		if successed:
-			self.context['resource'] = integral_resource
+			#self.context['resource'] = integral_resource
 			return True, '', integral_resource
 		else:
 			return False, reason, None

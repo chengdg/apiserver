@@ -21,7 +21,8 @@ from business.mall.product import Product
 import settings
 from business.decorator import cached_context_property
 from business.mall.realtime_stock import RealtimeStock
-
+from core.decorator import deprecated
+from business.resource.product_resource_checker import ProductResourceChecker
 
 class ProductResource(business_model.Resource):
 	"""商品资源
@@ -53,46 +54,26 @@ class ProductResource(business_model.Resource):
 	def get_type(self):
 		return self.type
 
+	@deprecated
 	def get_resources(self, product):
-		is_successed, reason = self.__check_product_status(product)
-		if not is_successed:
-			return False, reason
-			
-		is_successed, reason = self.__check_shelve_type(product)
-		if not is_successed:
+		"""
+		@todo 需要将这段代码迁移到ProductResourceAllocator中
+		"""
+
+		product_resource_checker = ProductResourceChecker()
+
+		is_succeeded, reason = product_resource_checker.check(product)
+
+		if not is_succeeded:
 			return False, reason
 
-		is_successed, reason = self.consume_stocks(product)
-		if not is_successed:
+		is_succeeded, reason = self.consume_stocks(product)
+		if not is_succeeded:
 			return False, reason
 
 		return True, reason
 
-	def __check_shelve_type(self, product):
-		if product.shelve_type == mall_models.PRODUCT_SHELVE_TYPE_OFF:
-			return False, {
-				'is_successed': False,
-				'type': 'product:is_off_shelve',
-				'msg': u'',
-				'short_msg': u'商品已下架'
-			}
 
-		return True, {
-			'is_successed': True
-		}
-
-	def __check_product_status(self, product):
-		if product.is_deleted:
-			return False, {
-				'is_successed': False,
-				'type': 'product:is_deleted',
-				'msg': u'商品已删除',
-				'short_msg': u'商品已删除'
-			}
-
-		return True, {
-			'is_successed': True
-		}
 
 	def consume_stocks(self, product):
 		"""

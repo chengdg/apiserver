@@ -41,6 +41,7 @@ def step_impl(context, webapp_user_name):
 	context.tc.assertTrue(200 != context.response.body['code'])
 
 	expected = json.loads(context.text)
+	logging.info("Context.text: {}".format(expected))
 	webapp_owner_id = context.webapp_owner_id
 	for detail in expected['detail']:
 		product = steps_db_util.get_product_by_prouduct_name(owner_id=webapp_owner_id, name=detail['id'])

@@ -498,7 +498,7 @@ class Product(business_model.Model):
 		for product in products:
 			product.swipe_images = [{
 				'id': img.id, 
-				'url': '%s%s' % (settings.IMAGE_HOST, img.url),
+				'url': '%s%s' % (settings.IMAGE_HOST, img.url) if img.url.find('http') == -1 else img.url,
 				'linkUrl': img.link_url, 
 				'width': img.width, 
 				'height': img.height

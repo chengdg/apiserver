@@ -12,11 +12,12 @@ import uuid
 import time
 import random
 from datetime import datetime
-
+import copy
 from core.exceptionutil import unicode_full_stack
 from core.sendmail import sendmail
 from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
 import db.account.models as accout_models
+from core.wxapi import get_weixin_api
 from utils.regional_util import get_str_value_by_string_ids
 
 from wapi.decorators import param_required
@@ -47,6 +48,11 @@ ORDER_STATUS2NOTIFY_STATUS = {
 	mall_models.ORDER_STATUS_PAYED_SHIPED: accout_models.SHIP_ORDER,
 	mall_models.ORDER_STATUS_SUCCESSED: accout_models.SUCCESSED_ORDER,
 	mall_models.ORDER_STATUS_CANCEL: accout_models.CANCEL_ORDER
+}
+
+
+ORDER_STATUS2SEND_PONINT = {
+	mall_models.ORDER_STATUS_PAYED_NOT_SHIP: mall_models.PAY_ORDER_SUCCESS,
 }
 
 class Order(business_model.Model):
@@ -387,6 +393,7 @@ class Order(business_model.Model):
 		"""
 		# print '[TODO2]: send order notify mail...'
 		# return
+		# todo 修改
 		order_has_products = mall_models.OrderHasProduct.select().dj_where(order=self.id)
 		buy_count = ''
 		product_name = ''
@@ -404,14 +411,12 @@ class Order(business_model.Model):
 			coupon = ''
 
 		try:
+			print(self.ship_area)
 			area = get_str_value_by_string_ids(self.ship_area)
 		except:
 			area = self.ship_area
-		else:
-			area = u''
 
 		buyer_address = area + u" " + self.ship_address
-		
 		order_status = self.status_text
 
 		email_notify_status = ORDER_STATUS2NOTIFY_STATUS.get(self.status,-1)
@@ -542,9 +547,75 @@ class Order(business_model.Model):
 		db_model.weizoom_card_money = self.weizoom_card_money
 		
 		logging.info("Order db_model: {}".format(db_model))
-
 		db_model.save()
 		self.id = db_model.id
+
+		# 建立订单相关数据
+		products = self.products
+		product_groups = self.product_groups
+
+		#建立<order, product>的关系
+		supplier_ids = []
+		for product_group in product_groups:
+			print product_group.integral_sale
+
+		for product in products:
+			supplier = product.supplier
+			if not supplier in supplier_ids:
+				supplier_ids.append(supplier)
+
+			# TODO: 将存储隐藏到Order.save()中
+			mall_models.OrderHasProduct.create(
+				order = self.db_model,
+				product = product.id,
+				product_name = product.name,
+				product_model_name = product.model_name,
+				number = product.purchase_count,
+				total_price = product.total_price,
+				price = product.price,
+				promotion_id = product.used_promotion_id,
+				promotion_money = product.promotion_saved_money,
+				grade_discounted_money=product.discount_money,
+				integral_sale_id = product.integral_sale.id if product.integral_sale else 0
+			)
+
+		if len(supplier_ids) > 1:
+			# 进行拆单，生成子订单
+			self.db_model.origin_order_id = -1
+			# 标记有子订单
+			# TODO: 改成method
+			self.origin_order_id = -1
+			for supplier in supplier_ids:
+				new_order = copy.deepcopy(self.db_model)
+				new_order.id = None
+				new_order.order_id = '%s^%s' % (self.order_id, supplier)
+				new_order.origin_order_id = self.id
+				new_order.supplier = supplier
+				new_order.save()
+		elif supplier_ids[0] != 0:
+			self.supplier = supplier_ids[0]
+
+		#建立<order, promotion>的关系
+		for product_group in product_groups:
+			if product_group.promotion:
+				promotion = product_group.promotion
+				promotion_result = product_group.promotion_result
+				integral_money = 0
+				integral_count = 0
+				if promotion.type_name == 'integral_sale':
+					integral_money = promotion_result['integral_money']
+					integral_count = promotion_result['use_integral']
+				mall_models.OrderHasPromotion.create(
+						order=self.db_model,
+						webapp_user_id=self.webapp_id,
+						promotion_id=promotion.id,
+						promotion_type=promotion.type_name,
+						promotion_result_json=json.dumps(promotion_result.to_dict()),
+						integral_money=integral_money,
+						integral_count=integral_count,
+				)
+
+		db_model.save()
 
 		self.__after_update_status('buy')
 
@@ -656,7 +727,7 @@ class Order(business_model.Model):
 		assert not self.is_sub_order
 
 		#更新与webapp user对应的订单信息缓存数据
-		self.context['webapp_user'].cleanup_order_info_cache
+		self.context['webapp_user'].cleanup_order_info_cache()
 
 		# 更新前状态
 		raw_status = self.status
@@ -679,4 +750,94 @@ class Order(business_model.Model):
 
 		# todo 运营邮件email
 		self.__send_notify_mail()
+		# todo 需要真实环境测试
+		# self.__send_template_message()
 
+	def __send_template_message(self):
+		webapp_owner = self.context['webapp_owner']
+		webapp_user = self.context['webapp_user']
+		# user_profile = UserProfile.objects.get(webapp_id=webapp_id)
+		user_profile = webapp_owner.user_profile
+		user = user_profile.user
+		send_point = ORDER_STATUS2SEND_PONINT.get(self.status, '')
+		template_message = mall_models.MarketToolsTemplateMessageDetail.select().dj_where(owner=user, template_message__send_point=send_point, status=1).first()
+
+		if user_profile and template_message and template_message.template_id:
+			mpuser_access_token = webapp_owner.weixin_mp_user_access_token
+			if mpuser_access_token:
+				try:
+					weixin_api = get_weixin_api(mpuser_access_token)
+					message = self.__get_order_send_message_dict(user_profile, template_message, self, send_point)
+					result = weixin_api.send_template_message(message, True)
+					#_record_send_template_info(order, template_message.template_id, user)
+					# if result.has_key('msg_id'):
+					# 	UserSentMassMsgLog.create(user_profile.webapp_id, result['msg_id'], MESSAGE_TYPE_TEXT, content)
+					return True
+				except:
+					notify_message = u"发送模板消息异常, cause:\n{}".format(unicode_full_stack())
+					watchdog_warning(notify_message)
+					return False
+			else:
+				return False
+		return True
+
+
+	def __get_order_send_message_dict(self,user_profile, template_message, order, send_point):
+		template_data = dict()
+		social_account = self.context['webapp_user'].social_account
+		print(type(social_account),social_account)
+		if social_account and social_account.openid:
+			template_data['touser'] = self.context['webapp_user'].openid
+			template_data['template_id'] = template_message.template_id
+
+			# if user_profile.host.find('http') > -1:
+			# 	host ="%s/workbench/jqm/preview/" % user_profile.host
+			# else:
+			# 	host = "http://%s/workbench/jqm/preview/" % user_profile.host
+			# todo
+			host = ''
+
+			template_data['url'] = '%s?woid=%s&module=mall&model=order&action=pay&order_id=%s&workspace_id=mall&sct=%s' % (host, user_profile.user_id, order.order_id, social_account.token)
+
+			template_data['topcolor'] = "#FF0000"
+			detail_data = {}
+			template_message_detail = template_message.template_message
+			detail_data["first"] = {"value" : template_message.first_text, "color" : "#000000"}
+			detail_data["remark"] = {"value" : template_message.remark_text, "color" : "#000000"}
+			order.express_company_name =  u'%s快递' % self.readable_express_company_name
+			if template_message_detail.attribute:
+				attribute_data_list = template_message_detail.attribute.split(',')
+				for attribute_datas in attribute_data_list:
+					attribute_data = attribute_datas.split(':')
+					key = attribute_data[0].strip()
+					attr = attribute_data[1].strip()
+					if attr == 'final_price' and getattr(order, attr):
+						value = u'￥%s［实际付款］' % getattr(order, attr)
+						detail_data[key] = {"value" : value, "color" : "#173177"}
+					elif hasattr(order, attr):
+						if attr == 'final_price':
+							value = u'￥%s［实际付款］' % getattr(order, attr)
+							detail_data[key] = {"value" : value, "color" : "#173177"}
+						elif attr == 'payment_time':
+							dt = datetime.now()
+							payment_time = dt.strftime('%Y-%m-%d %H:%M:%S')
+							detail_data[key] = {"value" : payment_time, "color" : "#173177"}
+						else:
+							detail_data[key] = {"value" : getattr(order, attr), "color" : "#173177"}
+					else:
+						order_products = OrderProducts.get_for_order({
+							'webapp_owner': self.context['webapp_owner'],
+							'webapp_user': self['webapp_user'],
+							'order': order
+						})
+
+						if 'number' == attr:
+							number = sum([product.count for product in order_products])
+							detail_data[key] = {"value" : number, "color" : "#173177"}
+
+						if 'product_name' == attr:
+							products = self.products
+							product_names =','.join([p.name for p in products])
+							detail_data[key] = {"value" : product_names, "color" : "#173177"}
+			template_data['data'] = detail_data
+		return template_data

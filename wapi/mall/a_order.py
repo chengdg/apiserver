@@ -54,6 +54,7 @@ class AOrder(api_resource.ApiResource):
 			})
 			order = order_factory.create_order(purchase_info)
 		except OrderException as e:
+			# 实际上detail是reason列表
 			return 500, {'detail': e.value}
 
 		# order_factory = OrderFactory.get({
@@ -90,9 +91,6 @@ class AOrder(api_resource.ApiResource):
 		}
 		if pay_url_info:
 			data['pay_url_info'] = pay_url_info
-
-		webapp_user.cleanup_order_info_cache
-
 		return data
 
 	@param_required(['order_id', 'action'])

@@ -443,7 +443,7 @@ Scenario:6 购买单个限时抢购商品，未超过库存限制，但超过单
 		"""
 	Then bill获得创建订单失败的信息'限购2件'
 
-@mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip @wip.bpwfs7
 Scenario:7 在限购周期内连续购买限时抢购商品
 
 	When bill访问jobs的webapp

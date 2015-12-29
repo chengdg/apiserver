@@ -54,6 +54,7 @@ class AOrder(api_resource.ApiResource):
 			})
 			order = order_factory.create_order(purchase_info)
 		except OrderException as e:
+			# 实际上detail是reason列表
 			return 500, {'detail': e.value}
 
 		# order_factory = OrderFactory.get({

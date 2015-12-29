@@ -118,7 +118,7 @@ Background:
 		"""
 	Given bill关注jobs的公众号
 
-@todo @mall.webapp @mall.promotion @wip.me1
+@mall3 @mall.webapp @mall.promotion @wip.me1
 Scenario:1 校验多个下单错误信息提示（错误信息类型不同）
 
 	#bill购买有限购周期的商品-商品6
@@ -256,36 +256,37 @@ Scenario:1 校验多个下单错误信息提示（错误信息类型不同）
 		{
 			"detail": 
 			[{
-				"id": "商品6",
-				"msg": "限制购买"
-			},{
-				"id": "商品7",
-				"model":"M",
-				"msg": "限购3件"
-			},{
-				"id": "商品7",
-				"model":"S",
-				"msg": "限购3件"
-			},{
-				"id": "商品5",
-				"msg": "已经过期"
-			},{
 				"id": "商品1",
-				"msg": "库存不足"
-			},{
-				"id": "商品2",
-				"msg": "已售罄"
+				"short_msg": "库存不足"
 			},{
 				"id": "商品3",
-				"msg": "已下架"
-			},{
-				"id": "商品4",
-				"msg": "已删除"
+				"short_msg": "商品已下架"
 			}]
 		}
 		"""
+#			},{
+#				"id": "商品6",
+#				"msg": "限制购买"
+#			},{
+#				"id": "商品7",
+#				"model":"M",
+#				"msg": "限购3件"
+#			},{
+#				"id": "商品7",
+#				"model":"S",
+#				"msg": "限购3件"
+#			},{
+#				"id": "商品5",
+#				"msg": "已经过期"
+#			},{
+#				"id": "商品2",
+#				"msg": "已售罄"
+#			},{
+#				"id": "商品4",
+#				"msg": "已删除"
 
-@mall.webapp @mall.promotion
+
+@mall3 @mall.webapp @mall.promotion @wip.we2
 Scenario:2 校验多个下单错误信息提示（错误信息类型相同）
 
 	When bill访问jobs的webapp
@@ -313,9 +314,9 @@ Scenario:2 校验多个下单错误信息提示（错误信息类型相同）
 		"""
 
 	#删除商品
-		Given jobs登录系统
-		When jobs'删除'商品'商品4'
-		When jobs'删除'商品'商品8'
+	Given jobs登录系统
+	When jobs'删除'商品'商品4'
+	When jobs'删除'商品'商品8'
 
 	When bill在购物车订单编辑中点击提交订单
 		"""
@@ -328,15 +329,15 @@ Scenario:2 校验多个下单错误信息提示（错误信息类型相同）
 		}
 		"""
 	Then bill获得创建订单失败的信息
-			"""
-			{
-				"detail": 
-				[{
-					"id": "商品4",
-					"msg": "已删除"
-				},{
-					"id": "商品8",
-					"msg": "已删除"
-				}]
-			}
-			"""
+		"""
+		{
+			"detail": 
+			[{
+				"id": "商品4",
+				"short_msg": "已删除"
+			},{
+				"id": "商品8",
+				"short_msg": "已删除"
+			}]
+		}
+		"""

@@ -101,9 +101,12 @@ class ProductModelGenerator(business_model.Model):
 
 		# 获取所有models
 		product2models = {}
+
+		product2deleted_models = {}
 		for db_model in mall_models.ProductModel.select().dj_where(product_id__in=product_ids):
 			if db_model.is_deleted:
-				continue
+				product_model = ProductModel(db_model, id2property, id2propertyvalue)
+				product2deleted_models.setdefault(db_model.product_id, []).append(product_model)
 			else:
 				product_model = ProductModel(db_model, id2property, id2propertyvalue)
 				product2models.setdefault(db_model.product_id, []).append(product_model)
@@ -118,6 +121,18 @@ class ProductModelGenerator(business_model.Model):
 			product.models = product_models
 
 			self.__fill_used_product_model_property(product)
+
+		for product_id, product_models in product2deleted_models.items():
+			product = id2product[product_id]
+			if len(product_models) == 1 and product_models[0].name == 'standard':
+				product.is_use_custom_model = False
+			else:
+				product.is_use_custom_model = True
+
+			product.deleted_models = product_models
+
+			self.__fill_used_product_model_property(product)
+
 
 	def __fill_used_product_model_property(self, product):
 		"""

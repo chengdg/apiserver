@@ -213,6 +213,7 @@ def step_impl(context, webapp_owner):
 @Then(u"{webapp_owner}能获取微众卡'{wzcard_id}'")
 def step_impl(context, webapp_owner, wzcard_id):
 	expected = json.loads(context.text)
+	expected['price'] = float(expected['price'])
 	url = "/wapi/wzcard/wzcard/"
 	response = context.client.get(url, {
 			'woid': context.webapp_owner_id,
@@ -222,7 +223,7 @@ def step_impl(context, webapp_owner, wzcard_id):
 
 	real = {
 		'status': response.data['readable_status'],
-		'money': response.data['balance']
+		'price': float(response.data['balance'])
 	}
 	bdd_util.assert_dict(expected, real)
 

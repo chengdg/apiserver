@@ -17,6 +17,9 @@ from business import model as business_model
 
 from business.resource.integral_resource import IntegralResource
 from business.mall.allocator.integral_resource_allocator import IntegralResourceAllocator
+from business.mall.allocator.product_resource_allocator import ProductResourceAllocator
+from business.resource.product_resource import ProductResource
+from business.resource.products_resource import ProductsResource
 
 class OrderResourceExtractor(business_model.Model):
 	"""
@@ -50,12 +53,40 @@ class OrderResourceExtractor(business_model.Model):
 				'type': resource_type
 			})
 		integral_resource.integral = order.integral
+		integral_resource.integral_log_id = -1 # 表示不删除integral_log
 		#integral_resource.money = order.integral_money
 
 		resources.append(integral_resource)
 		logging.info("extracted {} IntegralResources, resource_type={}".format(len(resources), resource_type))
 		return resources
 
+
+	def __extract_products_resource(self, order):
+		"""
+		抽取ProductsResource
+		"""
+		logging.info(u"to extract ProductsResource from order")
+		resources = []
+
+		webapp_owner = self.context['webapp_owner']
+		webapp_user = self.context['webapp_user']
+
+		# 从Order中恢复ProductsResource
+		product_resources = []
+		resource_type = ProductResourceAllocator(webapp_owner, webapp_user).resource_type
+
+		# TODO: 以后改成用order.products之类的
+		db_order_has_products = mall_models.OrderHasProduct.select().dj_where(order=order.id)
+		for db_record in db_order_has_products:
+			product_resource = ProductResource.get({
+					'type': resource_type
+				})
+			product_resource.purchase_count = db_record.number
+			product_resource.model_id = 0
+			product_resources.append(product_resource)
+
+		resources.append(ProductsResource(product_resources))
+		return resources
 
 	def extract(self, order):
 		"""

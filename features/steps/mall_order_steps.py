@@ -69,6 +69,23 @@ def step_impl(context, webapp_user_name, order_id):
 	context.tc.assertTrue(200 == response.body['code'])
 
 
+@then(u"{webapp_user_name}'{is_can}'取消订单'{order_id}'")
+def step_impl(context, webapp_user_name, is_can, order_id):
+	logging.info('webapp_user_name: {}'.format(webapp_user_name))
+	response = context.client.get('/wapi/mall/order/', {
+		'woid': context.client.woid,
+		'order_id': order_id
+	})
+
+	order = response.body['data']['order']
+	if is_can == u'能':
+		context.tc.assertTrue(order['status_text'] == u'待支付')
+	elif is_can == u'不能':
+		context.tc.assertTrue(order['status_text'] != u'待支付')
+	else:
+		context.tc.assertTrue(1 == 0)
+
+
 @then(u"{webapp_user_name}在webapp查看'{order_id}'的物流信息")
 def step_impl(context, webapp_user_name, order_id):
 	expected_order = json.loads(context.text)

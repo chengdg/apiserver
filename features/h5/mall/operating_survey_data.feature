@@ -96,8 +96,9 @@ Feature: 经营报告-经营概况——概况数据
 """
 
 Background:
-    Given jobs登录系统
-    And jobs设定会员积分策略
+    Given 重置weapp的bdd环境
+    Given jobs登录系统:weapp
+    And jobs设定会员积分策略:weapp
         """
         {
             "be_member_increase_count":500,
@@ -105,7 +106,7 @@ Background:
         }
         """
 
-    When jobs添加支付方式
+    When jobs添加支付方式:weapp
         """
         [{
             "type": "货到付款",
@@ -125,8 +126,8 @@ Background:
             "is_active": "启用"
         }]
         """
-    And jobs开通使用微众卡权限
-    And jobs添加支付方式
+    And jobs开通使用微众卡权限:weapp
+    And jobs添加支付方式:weapp
         """
         [{
             "type": "微众卡支付",
@@ -134,7 +135,7 @@ Background:
             "is_active": "启用"
         }]
         """
-    Given jobs已创建微众卡
+    Given jobs已创建微众卡:weapp
         """
         {
             "cards":[{
@@ -151,7 +152,7 @@ Background:
         }
         """
     
-    When jobs添加商品规格
+    When jobs添加商品规格:weapp
         """
         [{
             "name": "颜色",
@@ -163,7 +164,7 @@ Background:
             }]
         }]
         """
-    And jobs已添加商品
+    And jobs已添加商品:weapp
         """
         [{
             "name": "商品1",
@@ -212,7 +213,7 @@ Background:
         }]
         """
 
-    And jobs创建积分应用活动
+    And jobs创建积分应用活动:weapp
         """
         [{
             "name": "商品1积分应用",
@@ -239,7 +240,7 @@ Background:
         }]
         """
 
-    And jobs添加优惠券规则
+    And jobs添加优惠券规则:weapp
         """
         [{
             "name": "全体券1",
@@ -250,14 +251,14 @@ Background:
         }]
         """
 
-    When jack关注jobs的公众号于'2014-07-01'
-    When tom关注jobs的公众号于'2014-07-02'
-    When marry关注jobs的公众号于'2014-07-03'
+    When jack关注jobs的公众号于'2014-07-01':weapp
+    When tom关注jobs的公众号于'2014-07-02':weapp
+    When marry关注jobs的公众号于'2014-07-03':weapp
 
 @mall2 @bi @salesAnalysis   @stats
 Scenario:1  经营概况：店铺经营概况
 
-    When 微信用户批量消费jobs的商品
+    When 微信用户批量消费jobs的商品:weapp
         | order_id |    date    | consumer |    product   | payment | pay_type |postage*|price*| product_integral |       coupon         | paid_amount* |  weizoom_card     | alipay* | wechat* | cash* |   action      | order_status* |
         |   0001   | 2014-08-05 |   jack   | 商品1,1      |         | 支付宝   |   10   | 100  |       200        |                      |     90       |                   |   90    |    0    |   0   |               |    待支付     |
         |   0002   | 5天前      |   tom    | 商品1,1      |         | 支付宝   |   10   | 100  |       200        |                      |     90       |                   |   90    |    0    |   0   |  jobs,取消    |    已取消     |
@@ -268,8 +269,8 @@ Scenario:1  经营概况：店铺经营概况
         |   0007   | 今天       |   -tom3  | 商品1,1      |   支付  | 货到付款 |   10   | 100  |        0         |                      |     110      |                   |    0    |    0    |   110 |               |    待发货     |
         |   0008   | 今天       |   -tom4  | 商品1,1      |   支付  | 支付宝   |   10   | 100  |        0         |                      |     110      |                   |   110   |    0    |   0   |               |    待发货     |
 
-    Given jobs登录系统
-    When jobs设置筛选日期
+    Given jobs登录系统:weapp
+    When jobs设置筛选日期:weapp
         """
         [{
             "begin_date":"5天前",
@@ -277,8 +278,8 @@ Scenario:1  经营概况：店铺经营概况
         }]
         """
     
-    And 查询'店铺经营概况'
-    Then 获得店铺经营概况数据
+    And 查询'店铺经营概况':weapp
+    Then 获得店铺经营概况数据:weapp
         """
         {
             "buyer_count": 3,

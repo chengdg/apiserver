@@ -123,9 +123,27 @@ class AOrder(api_resource.ApiResource):
 				'success': True
 			}
 		except:
+			# TODO: 规范错误信息
 			notify_message = u"apiserver中修改订单状态失败, order_id:{}, action:{}, cause:\n{}".format(args['order_id'], args['action'], unicode_full_stack())
 			watchdog_error(notify_message)
 			return 500
+
+	@param_required(['order_id'])
+	def delete(args):
+		"""
+		取消订单
+		"""
+		order = Order.from_id({
+			'webapp_user': args['webapp_user'],
+			'webapp_owner': args['webapp_owner'],
+			'order_id': args['order_id']
+		})
+
+		order.cancel()
+		return {
+			'success': True
+		}
+
 
 
 	@staticmethod

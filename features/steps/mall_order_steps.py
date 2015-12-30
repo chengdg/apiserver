@@ -77,7 +77,7 @@ def step_impl(context, webapp_user_name, is_can, order_id):
 		'order_id': order_id
 	})
 
-	order = response.body['data']['order']
+	order = response.body['data']
 	if is_can == u'能':
 		context.tc.assertTrue(order['status_text'] == u'待支付')
 	elif is_can == u'不能':

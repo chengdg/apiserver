@@ -181,7 +181,6 @@ class OrderProducts(business_model.Model):
 					premium_order_product.name = premium_product['name']
 					if promotion_result_version == settings.PROMOTION_RESULT_VERSION:
 						premium_order_product.purchase_count = premium_product['premium_count']
-						premium_order_product.thumbnails_url = premium_product['thumbnails_url']
 						premium_order_product.thumbnails_url = '%s%s' % (settings.IMAGE_HOST, premium_product['thumbnails_url']) if premium_product['thumbnails_url'].find('http') == -1 else premium_product['thumbnails_url']
 					else:
 						premium_order_product.purchase_count = premium_product['count']

@@ -99,7 +99,7 @@ class PromotionRepository(business_model.Model):
 			data = {
 				'id': product.id,
 				'name': product.name,
-				'thumbnails_url': '%s%s' % (settings.IMAGE_HOST, product.thumbnails_url),
+				'thumbnails_url': '%s%s' % (settings.IMAGE_HOST, product.thumbnails_url) if product.thumbnails_url.find('http') == -1 else product.thumbnails_url,
 				'original_premium_count': premium_sale_product.count,
 				'premium_count': premium_sale_product.count,
 				'premium_unit': premium_sale_product.unit,

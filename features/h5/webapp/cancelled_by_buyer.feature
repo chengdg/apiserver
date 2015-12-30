@@ -65,7 +65,8 @@ Background:
 	#		"integral": 150
 	#	}]
 	#	"""
-	And jobs已添加了优惠券规则:weapp
+	Given jobs登录系统:weapp
+	Given jobs已添加了优惠券规则:weapp
 		"""
 		[{
 			"name": "全体券1",
@@ -226,7 +227,7 @@ Scenario:1 bill能取消待支付订单
 		}
 		"""
 
-@mall3 @mall2 @order @allOrder   @mall.order_cancel_status @mall.order_cancel_status.coupon_member @pyliu @wip.cbb2
+@mall3 @mall2 @order @allOrder   @mall.order_cancel_status @mall.order_cancel_status.coupon_member @pyliu @wip.cbb2 @dd2
 Scenario:2 bill不能取消使用了优惠券的待发货订单
 	bill不能取消订单'002'
 	1. bill手机端订单状态为'待发货'

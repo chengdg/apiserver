@@ -53,7 +53,8 @@ class PremiumSale(promotion.Promotion):
 		premium_result.name = product['name']
 		premium_result.stocks = 0
 		premium_result.model_name = ""
-		premium_result.pic_url = product['thumbnails_url']
+		premium_result.pic_url = '%s%s' % (settings.IMAGE_HOST, product['thumbnails_url']) if product['thumbnails_url'].find('http') == -1 else product['thumbnails_url']
+		# premium_result.pic_url = product['thumbnails_url']
 
 	def allocate(self, webapp_user, product):
 		#收集赠品的所有库存，可能的结果有：

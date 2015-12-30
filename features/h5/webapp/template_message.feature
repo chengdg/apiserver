@@ -10,22 +10,59 @@ Background:
 	And jobs已有模板消息:weapp
 		"""
 		[{
-			"title":"TM00398-付款成功通知",
-			"template_id":"_k8QP2Fs_nZBiR52e_Y1040m5zi30i3E28khSHz8QtY",
-			"headline":"我们已收到您的货款，开始为您打包商品，请耐心等待: )",
-			"ending":"如有问题咨询微众客服，微众将第一时间为您服务！",
+			"template_id":"",
+			"headline":"TM00398-付款成功通知",
 			"industry":"IT科技",
 			"type":"主营行业",
-			"status":"已启用"
+			"status":"未启用",
+			"operate":"查看"
 		},{
-			"title":"OPENTM200303341-商品发货通知",
-			"template_id":"i3Uv69VpdJR3FB09eClA5mQqJJrTuxCIb3-piSZ3LJY",
-			"headline":"您的订单已发货，请注意查收",
-			"ending":"如有问题咨询微众客服，微众将第一时间为您服务！",
+			"template_id":"",
+			"headline":"OPENTM200303341-商品发货通知",
 			"industry":"消费品",
 			"type":"副营行业",
-			"status":"已启用"
+			"status":"未启用",
+			"operate":"查看"
 		}]
+		"""
+	When jobs给'主营行业'行业标题为'TM00398-付款成功通知'的模板消息添加内容
+		"""
+		{
+			"template_id":"_k8QP2Fs_nZBiR52e_Y1040m5zi30i3E28khSHz8QtY",
+			"first":"我们已收到您的货款，开始为您打包商品，请耐心等待: )",
+			"remark":"如有问题咨询微众客服，微众将第一时间为您服务！"
+		}
+		"""
+	When jobs给'消费品'行业标题为'OPENTM200303341-商品发货通知'的模板消息添加内容
+		"""
+		{
+			"template_id":"i3Uv69VpdJR3FB09eClA5mQqJJrTuxCIb3-piSZ3LJY",
+			"first":"您的订单已发货，请注意查收",
+			"remark":"如有问题咨询微众客服，微众将第一时间为您服务！"
+		}
+		"""
+
+	When jobs修改'主营行业'行业标题为'TM00398-付款成功通知'的状态
+		"""
+		{
+			"template_id":"_k8QP2Fs_nZBiR52e_Y1040m5zi30i3E28khSHz8QtY",
+			"headline":"我们已收到您的货款，开始为您打包商品，请耐心等待: )",
+			"industry":"IT科技",
+			"type":"主营行业",
+			"status":"已启用",
+			"operate":"查看"
+		}
+		"""
+	When jobs修改'消费品'行业标题为'OPENTM200303341-商品发货通知'的状态
+		"""
+		{
+			"template_id":"i3Uv69VpdJR3FB09eClA5mQqJJrTuxCIb3-piSZ3LJY",
+			"headline":"您的订单已发货，请注意查收",
+			"industry":"消费品",
+			"type":"副营行业",
+			"status":"已启用",
+			"operate":"查看"
+		}
 		"""
 
 	And jobs已添加商品:weapp
@@ -49,7 +86,7 @@ Background:
 	And bill关注jobs的公众号
 	And tom关注jobs的公众号
 
-@message @templateMessage
+@message @templateMessage  @ztqb
 Scenario:1 启用模板消息，配置正确的模板ID，可以成功接收到消息
 	When bill访问jobs的webapp
 	#购买商品，支付成功模板消息
@@ -86,20 +123,33 @@ Scenario:1 启用模板消息，配置正确的模板ID，可以成功接收到�
 			}]
 		}
 		"""
-	Then bill收到模板消息
+
+	Then server能发送模板消息
 		"""
-		付款成功通知<br />我们已收到您的货款，开始为您打包商品，请耐心等待: )<br />
-		订单金额：￥100.0[实际付款]<br />
-		商品详情：商品1<br />
-		收货信息：泰兴大厦<br />
-		订单编号：0000001
-		如有问题咨询微众客服，微众将第一时间为您服务！<br />
+		{
+			"touser":"bill_jobs",
+			"first":"我们已收到您的货款，开始为您打包商品，请耐心等待: )",
+			"remark":"如有问题咨询微众客服，微众将第一时间为您服务！",
+			"orderProductPrice":"￥100.0 [实际付款]",
+			"orderProductName":"商品1",
+			"orderAddress":"泰兴大厦"
+		}
 		"""
 
-	#购买者才能收到相应的消息
-	Then tom收到模板消息
-		"""
-		"""
+#	Then bill收到模板消息
+#		"""
+#		付款成功通知<br />我们已收到您的货款，开始为您打包商品，请耐心等待: )<br />
+#		订单金额：￥100.0[实际付款]<br />
+#		商品详情：商品1<br />
+#		收货信息：泰兴大厦<br />
+#		订单编号：0000001
+#		如有问题咨询微众客服，微众将第一时间为您服务！<br />
+#		"""
+#
+#	#购买者才能收到相应的消息
+#	Then tom收到模板消息
+#		"""
+#		"""
 
 @message @templateMessage
 Scenario:2 未启用模板消息，配置正确的模板ID，不可以成功接收到消息
@@ -151,9 +201,14 @@ Scenario:2 未启用模板消息，配置正确的模板ID，不可以成功接�
 			}]
 		}
 		"""
-	Then bill收到模板消息
+	Then server能发送模板消息
 		"""
+		{}
 		"""
+
+#	Then bill收到模板消息
+#		"""
+#		"""
 
 @message @templateMessage
 Scenario:3 启用模板消息，配置错误的模板ID，不可以成功接收到消息
@@ -201,6 +256,11 @@ Scenario:3 启用模板消息，配置错误的模板ID，不可以成功接收�
 			}]
 		}
 		"""
-	Then bill收到模板消息
+	Then server能发送模板消息
 		"""
+		{}
 		"""
+
+#	Then bill收到模板消息
+#		"""
+#		"""

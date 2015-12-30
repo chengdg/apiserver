@@ -13,11 +13,14 @@ import time
 #import random
 from datetime import datetime
 import copy
+
+import settings
 from core.exceptionutil import unicode_full_stack
 from core.sendmail import sendmail
 from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
 import db.account.models as accout_models
 from core.wxapi import get_weixin_api
+from features.util.bdd_util import set_bdd_mock
 from utils.regional_util import get_str_value_by_string_ids
 
 #import settings
@@ -40,6 +43,7 @@ from db.express import models as express_models
 from business.mall.express.express_detail import ExpressDetail
 from business.mall.express.express_info import ExpressInfo
 from services.order_notify_mail_service.task import notify_order_mail
+from business.mall.allocator.allocate_order_resource_service import AllocateOrderResourceService
 
 ORDER_STATUS2NOTIFY_STATUS = {
 	mall_models.ORDER_STATUS_NOT: accout_models.PLACE_ORDER,
@@ -62,6 +66,7 @@ class Order(business_model.Model):
 		'order_id',
 		'type',
 		'pay_interface_type',
+		'payment_time',
 		'final_price',
 		'product_price',
 		'edit_money',
@@ -479,13 +484,6 @@ class Order(business_model.Model):
 				if sub_order['status'] < order_status_info:
 					order_status_info = sub_order['status']
 
-				#是否显示确认收货按钮交由前端进行判断 duhao
-				# if sub_order['status'] == mall_models.ORDER_STATUS_PAYED_SHIPED and ((datetime.today() - sub_order['update_at']).days >= 3 or not self.express_number):
-				# 	#已发货订单：有物流信息订单发货后3天显示确认收货按钮，没有物流的立即显示
-				# 	if not hasattr(sub_order, 'session_data'):
-				# 		sub_order['session_data'] = dict()
-				# 	sub_order['session_data']['has_comfire_button'] = '1'
-
 				# sub_order['has_promotion_saved_money'] = sub_order['promotion_saved_money > 0
 				# sub_order['order_status_info'] = mall_models.STATUS2TEXT[sub_order['status']]
 
@@ -530,7 +528,7 @@ class Order(business_model.Model):
 		db_model.type = self.type
 		db_model.pay_interface_type = self.pay_interface_type
 		db_model.order_id = self.order_id
-		db_model.webapp_source_id = 0 	# 兼容老数据
+		#db_model.webapp_source_id = 0 	# 兼容老数据
 
 		if self.supplier:
 			db_model.supplier = self.supplier
@@ -644,6 +642,7 @@ class Order(business_model.Model):
 
 		@param[in] pay_interface_type: 支付所使用的支付接口的type
 		"""
+		print('----------hereeee111111111')
 		pay_result = False
 
 		if self.status == mall_models.ORDER_STATUS_NOT:
@@ -677,7 +676,7 @@ class Order(business_model.Model):
 			webapp_user.set_purchased()
 
 			self.__after_update_status('pay')
-
+			self.__send_template_message()
 		return pay_result
 
 
@@ -690,8 +689,11 @@ class Order(business_model.Model):
 		webapp_user = self.context['webapp_user']
 		order_resource_extractor = OrderResourceExtractor(webapp_owner, webapp_user)
 		resources = order_resource_extractor.extract(self)
-		# find allocators to release resources
+		# 释放资源
+		service = AllocateOrderResourceService(webapp_owner, webapp_user)
+		service.release(resources)
 		return
+
 
 	def cancel(self):
 		"""
@@ -699,7 +701,7 @@ class Order(business_model.Model):
 
 		@todo 需要释放订单资源	
 		"""
-		#TODO: 释放订单资源
+		logging.info(u"Order id:{} is to be cancelled. Resources should be released first.".format(self.id))
 		self.__release_order_resources()
 
 		# 更新订单状态
@@ -789,7 +791,7 @@ class Order(business_model.Model):
 		# todo 运营邮件email
 		self.__send_notify_mail()
 		# todo 需要真实环境测试
-		# self.__send_template_message()
+
 
 	def __send_template_message(self):
 		webapp_owner = self.context['webapp_owner']
@@ -799,14 +801,21 @@ class Order(business_model.Model):
 		user = user_profile.user
 		send_point = ORDER_STATUS2SEND_PONINT.get(self.status, '')
 		template_message = mall_models.MarketToolsTemplateMessageDetail.select().dj_where(owner=user, template_message__send_point=send_point, status=1).first()
-
 		if user_profile and template_message and template_message.template_id:
 			mpuser_access_token = webapp_owner.weixin_mp_user_access_token
 			if mpuser_access_token:
 				try:
-					weixin_api = get_weixin_api(mpuser_access_token)
 					message = self.__get_order_send_message_dict(user_profile, template_message, self, send_point)
+					if settings.IS_UNDER_BDD:
+						mock = dict()
+						mock['touser'] = mpuser_access_token
+						for key, value in message['data'].items():
+							mock[key] = value['value']
+						set_bdd_mock('template_message', mock)
+						return False
+					weixin_api = get_weixin_api(mpuser_access_token)
 					result = weixin_api.send_template_message(message, True)
+
 					#_record_send_template_info(order, template_message.template_id, user)
 					# if result.has_key('msg_id'):
 					# 	UserSentMassMsgLog.create(user_profile.webapp_id, result['msg_id'], MESSAGE_TYPE_TEXT, content)
@@ -865,7 +874,7 @@ class Order(business_model.Model):
 					else:
 						order_products = OrderProducts.get_for_order({
 							'webapp_owner': self.context['webapp_owner'],
-							'webapp_user': self['webapp_user'],
+							'webapp_user': self.context['webapp_user'],
 							'order': order
 						})
 

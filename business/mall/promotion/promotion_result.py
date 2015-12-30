@@ -46,6 +46,7 @@ class PromotionResult(business_model.Model):
 		result = {
 			'version': self.version,
 			'saved_money': self.saved_money,
+			'promotion_saved_money': self.saved_money,  #为了兼容weapp后端系统，此字段在apiserver中无用
 			'subtotal': self.subtotal
 		}
 		if self.detail:

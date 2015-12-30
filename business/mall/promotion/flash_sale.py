@@ -88,6 +88,7 @@ class FlashSale(promotion.Promotion):
 		detail = {
 			'limit_period': self.limit_period,
 			'promotion_price': self.promotion_price,
+			'promotioned_product_price': self.promotion_price,  #为了兼容weapp后端系统，此字段在apiserver中无用
 			'count_per_purchase': self.count_per_purchase
 		}
 		saved_money = product.original_price - self.promotion_price

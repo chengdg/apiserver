@@ -57,10 +57,9 @@ class OrderCouponResourceAllocator(business_model.Model):
 			return False, [reason_dict], None
 
 
-	def release(self, resources):
-		for resource in resources:
-			if resource.get_type() == business_model.RESOURCE_TYPE_COUPON:
-				CouponResourceAllocator.release(resource)
+	def release(self, resource):
+		if resource.get_type() == business_model.RESOURCE_TYPE_COUPON:
+			CouponResourceAllocator.release(resource)
 
 	def __return_empty_coupon(self):
 		empty_coupon_resource = CouponResource.get({

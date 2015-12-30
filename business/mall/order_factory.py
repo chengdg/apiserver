@@ -35,7 +35,8 @@ from wapi import wapi_utils
 from core.cache import utils as cache_util
 from db.mall import models as mall_models
 #import resource
-from core.watchdog.utils import watchdog_alert
+from core.watchdog.utils import watchdog_alert,watchdog_error
+from core.exceptionutil import unicode_full_stack
 from business import model as business_model 
 from business.mall.product import Product
 import settings
@@ -223,14 +224,21 @@ class OrderFactory(business_model.Model):
 		webapp_user = self.context['webapp_user']
 
 		logging.debug("order.db_model={}".format(order.db_model))
+		try:
+			order.save()
+			if order.final_price == 0:
+				# 优惠券或积分金额直接可支付完成，直接调用pay_order，完成支付
+				order.pay(mall_models.PAY_INTERFACE_PREFERENCE)
+				# 支付后的操作
+				#mall_signals.post_pay_order.send(sender=Order, order=order, request=request)
 
-		order.save()
-		if order.final_price == 0:
-			# 优惠券或积分金额直接可支付完成，直接调用pay_order，完成支付
-			order.pay(mall_models.PAY_INTERFACE_PREFERENCE)
-			# 支付后的操作
-			#mall_signals.post_pay_order.send(sender=Order, order=order, request=request)
+		except:
+			notify_message = u"__save_order error cause:\n{}".format(unicode_full_stack())
+			logging.error(notify_message)
+			watchdog_error(notify_message)
+			return None
 
+		
 		return order
 
 

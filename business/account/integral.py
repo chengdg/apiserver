@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""@package business.spread
+"""@package business.account.integral
 
 """
 
@@ -173,4 +173,3 @@ class Integral(business_model.Model):
 			'member':webapp_user.member,
 			'event_type':  member_models.RETURN_BY_SYSTEM
 			})
-

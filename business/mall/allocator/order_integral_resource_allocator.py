@@ -53,14 +53,16 @@ class OrderIntegralResourceAllocator(business_model.Service):
 		release_resources = []
 		resources = [to_release_resource]
 		for resource in resources:
-			if resource.get_type() == business_model.RESOURCE_TYPE_INTEGRAL:
+			if resource.get_type() == self.resource_type:
 				release_resources.append(resource)
 
 		for release_resource in release_resources:
 			allocator = self.context['resource2allocator'].get(release_resource, None)
 			#TODO-bert 异常处理
-			if allocator:
-				allocator.release(release_resource)
+			if not allocator:
+				allocator = IntegralResourceAllocator(self.context['webapp_owner'], self.context['webapp_user'])
+			logging.info("to release IntegralResource: {}".format(release_resource))
+			allocator.release(release_resource)
 
 
 	def __allocate_order_integral_setting(self, webapp_owner, order, purchase_info):

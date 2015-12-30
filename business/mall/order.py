@@ -40,6 +40,7 @@ from db.express import models as express_models
 from business.mall.express.express_detail import ExpressDetail
 from business.mall.express.express_info import ExpressInfo
 from services.order_notify_mail_service.task import notify_order_mail
+from business.mall.allocator.allocate_order_resource_service import AllocateOrderResourceService
 
 ORDER_STATUS2NOTIFY_STATUS = {
 	mall_models.ORDER_STATUS_NOT: accout_models.PLACE_ORDER,
@@ -683,8 +684,11 @@ class Order(business_model.Model):
 		webapp_user = self.context['webapp_user']
 		order_resource_extractor = OrderResourceExtractor(webapp_owner, webapp_user)
 		resources = order_resource_extractor.extract(self)
-		# find allocators to release resources
+		# 释放资源
+		service = AllocateOrderResourceService(webapp_owner, webapp_user)
+		service.release(resources)
 		return
+
 
 	def cancel(self):
 		"""
@@ -692,7 +696,7 @@ class Order(business_model.Model):
 
 		@todo 需要释放订单资源	
 		"""
-		#TODO: 释放订单资源
+		logging.info(u"Order id:{} is to be cancelled. Resources should be released first.".format(self.id))
 		self.__release_order_resources()
 
 		# 更新订单状态

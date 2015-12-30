@@ -30,10 +30,15 @@ def step_impl(context, command):
 def step_impl(context, command):
 	_run_weapp_step(u'Given %s' % command, context.text)
 
-@Then(u"{ignore}:weapp")
-def step_impl(context, ignore):
-	import sys
-	print >> sys.stderr, u'ignore weapp operation: %s' % ignore
+
+@Then(u"{command}:weapp")
+def step_impl(context, command):
+	_run_weapp_step(u'Then %s' % command, context.text)
+
+# @Then(u"{ignore}:weapp")
+# def step_impl(context, ignore):
+# 	import sys
+# 	print >> sys.stderr, u'ignore weapp operation: %s' % ignore
 
 @When(u"执行weapp操作:skip")
 def step_impl(context):

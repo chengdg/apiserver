@@ -49,7 +49,7 @@ Background:
 	And bill关注jobs的公众号
 	And tom关注jobs的公众号
 
-@message @templateMessage
+@message @templateMessage  @ztqb
 Scenario:1 启用模板消息，配置正确的模板ID，可以成功接收到消息
 	When bill访问jobs的webapp
 	#购买商品，支付成功模板消息
@@ -86,20 +86,34 @@ Scenario:1 启用模板消息，配置正确的模板ID，可以成功接收到�
 			}]
 		}
 		"""
-	Then bill收到模板消息
+
+	Then server能发送模板消息
 		"""
-		付款成功通知<br />我们已收到您的货款，开始为您打包商品，请耐心等待: )<br />
-		订单金额：￥100.0[实际付款]<br />
-		商品详情：商品1<br />
-		收货信息：泰兴大厦<br />
-		订单编号：0000001
-		如有问题咨询微众客服，微众将第一时间为您服务！<br />
+		{
+			"touser":"bill_jobs",
+			"first":"我们已收到您的货款，开始为您打包商品，请耐心等待: )",
+			"remark":"如有问题咨询微众客服，微众将第一时间为您服务！",
+			"orderProductPrice":"￥100.0 [实际付款]",
+			"orderProductName":"商品1",
+			"orderAddress":""
+		}
 		"""
 
-	#购买者才能收到相应的消息
-	Then tom收到模板消息
-		"""
-		"""
+
+#	Then bill收到模板消息
+#		"""
+#		付款成功通知<br />我们已收到您的货款，开始为您打包商品，请耐心等待: )<br />
+#		订单金额：￥100.0[实际付款]<br />
+#		商品详情：商品1<br />
+#		收货信息：泰兴大厦<br />
+#		订单编号：0000001
+#		如有问题咨询微众客服，微众将第一时间为您服务！<br />
+#		"""
+#
+#	#购买者才能收到相应的消息
+#	Then tom收到模板消息
+#		"""
+#		"""
 
 @message @templateMessage
 Scenario:2 未启用模板消息，配置正确的模板ID，不可以成功接收到消息

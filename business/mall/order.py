@@ -695,7 +695,7 @@ class Order(business_model.Model):
 			Integral.increase_after_order_payed_finsh({
 				'webapp_user': webapp_user,
 				'webapp_owner': self.context['webapp_owner'],
-				'order_id': self.order_id
+				'order_id': self.id
 				})
 			self.__after_update_status('pay')
 			self.__send_template_message()

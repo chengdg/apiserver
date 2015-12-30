@@ -794,10 +794,6 @@ class Order(business_model.Model):
 
 
 	def __send_template_message(self):
-		# print('sadasdasdasd')
-		# raise Exception('xsdasasaaaaaaa')
-		# return True
-		# print('-----------111')
 		webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user']
 		# user_profile = UserProfile.objects.get(webapp_id=webapp_id)
@@ -805,31 +801,21 @@ class Order(business_model.Model):
 		user = user_profile.user
 		send_point = ORDER_STATUS2SEND_PONINT.get(self.status, '')
 		template_message = mall_models.MarketToolsTemplateMessageDetail.select().dj_where(owner=user, template_message__send_point=send_point, status=1).first()
-		print('-----------------here3')
 		if user_profile and template_message and template_message.template_id:
-			print('-----------------here4')
 			mpuser_access_token = webapp_owner.weixin_mp_user_access_token
 			if mpuser_access_token:
-				print('--------------5')
 				try:
 					message = self.__get_order_send_message_dict(user_profile, template_message, self, send_point)
-					print('------------here6666')
-					if settings.IS_UNDER_BDD or 1:
-						print('------------here777777777')
-						print('-----message',message)
+					if settings.IS_UNDER_BDD:
 						mock = dict()
 						mock['touser'] = mpuser_access_token
-						print('--------------aaaa',message['data'])
 						for key, value in message['data'].items():
-							print('---oookey',key)
-							print('----x',key,value,value['value'])
 							mock[key] = value['value']
-						print('---------mock',mock)
-						print('------------------here8888888')
 						set_bdd_mock('template_message', mock)
 						return False
 					weixin_api = get_weixin_api(mpuser_access_token)
 					result = weixin_api.send_template_message(message, True)
+
 					#_record_send_template_info(order, template_message.template_id, user)
 					# if result.has_key('msg_id'):
 					# 	UserSentMassMsgLog.create(user_profile.webapp_id, result['msg_id'], MESSAGE_TYPE_TEXT, content)

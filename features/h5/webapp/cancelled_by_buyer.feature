@@ -338,7 +338,7 @@ Scenario:4 bill能取消使用积分的待支付订单
 		}
 		"""
 
-@todo @wip.cbb5 @wip.cbb
+@mall3 @wip.cbb5 @wip.cbb
 Scenario:5 bill能取消使用了单品券的待支付订单
 bill能取消订单'005'
 	1. bill手机端订单状态为'待支付'
@@ -379,7 +379,7 @@ bill能取消订单'005'
 		}
 		"""
 
-@todo @wip.cbb @wip.cbb6
+@mall3 @wip.cbb @wip.cbb6
 Scenario:6 bill能取消使用了优惠券的待支付订单
 bill能取消订单'006'
 	1. bill手机端订单状态为'待支付'
@@ -420,7 +420,7 @@ bill能取消订单'006'
 		}
 		"""
 
-@todo @wip.cbb @wip.cbb7
+@mall3 @wip.cbb @wip.cbb7
 Scenario:7 bill不能取消使用了微众卡的待发货订单
 	bill不能取消订单'007'
 	1. bill手机端订单状态为'待发货'
@@ -461,7 +461,7 @@ Scenario:7 bill不能取消使用了微众卡的待发货订单
 		"""
 
 
-
+@mall3 @wip.cbb @wip.cbb8
 Scenario:8 bill能取消使用了微众卡的待支付订单
 	bill能取消订单'008'
 	1. bill手机端订单状态为'待支付'

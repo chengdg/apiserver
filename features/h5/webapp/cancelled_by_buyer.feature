@@ -190,7 +190,7 @@ Background:
 		}
 		"""
 
-@mall2 @order @allOrder @mall.order_cancel_status @mall.order_cancel_status.member @wip.cbb1
+@mall3 @mall2 @order @allOrder @mall.order_cancel_status @mall.order_cancel_status.member @wip.cbb1
 Scenario:1 bill能取消待支付订单
 	bill取消订单'001'
 	1. bill手机端订单状态改变为'已取消'

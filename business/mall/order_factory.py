@@ -36,6 +36,7 @@ from core.cache import utils as cache_util
 from db.mall import models as mall_models
 #import resource
 from core.watchdog.utils import watchdog_alert,watchdog_error
+from core.exceptionutil import unicode_full_stack
 from business import model as business_model 
 from business.mall.product import Product
 import settings

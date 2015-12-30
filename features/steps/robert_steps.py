@@ -748,7 +748,7 @@ def step_click_check_out(context, webapp_user_name):
 	else:
 		context.created_order_id = -1
 		context.server_error_msg = response.data['detail'][0]['msg']
-		print "buy_error----------------------------",context.server_error_msg,response
+		print "buy_error----------------------------",context.server_error_msg
 
 	if context.created_order_id != -1:
 		if 'date' in argument:

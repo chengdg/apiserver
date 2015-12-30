@@ -190,7 +190,7 @@ Background:
 		}
 		"""
 
-@mall2 @order @allOrder @mall.order_cancel_status @mall.order_cancel_status.member @wip.cbb1
+@mall3 @mall2 @order @allOrder @mall.order_cancel_status @mall.order_cancel_status.member @wip.cbb1
 Scenario:1 bill能取消待支付订单
 	bill取消订单'001'
 	1. bill手机端订单状态改变为'已取消'
@@ -222,7 +222,7 @@ Scenario:1 bill能取消待支付订单
 		}
 		"""
 
-@mall2 @order @allOrder   @mall.order_cancel_status @mall.order_cancel_status.coupon_member @pyliu
+@mall2 @order @allOrder   @mall.order_cancel_status @mall.order_cancel_status.coupon_member @pyliu @wip.cbb2
 Scenario:2 bill不能取消使用了优惠券的待发货订单
 	bill不能取消订单'002'
 	1. bill手机端订单状态为'待发货'
@@ -262,7 +262,7 @@ Scenario:2 bill不能取消使用了优惠券的待发货订单
 		}
 		"""
 
-@mall2 @order @allOrder   @mall.order_cancel_status @mall.order_cancel_status.integral_member @pyliu02
+@mall2 @order @allOrder   @mall.order_cancel_status @mall.order_cancel_status.integral_member @pyliu02 @wip.cbb3
 Scenario:3 bill不能取消使用了积分的待发货订单
 	bill不能取消订单'003'
 	1. bill手机端订单状态为'待发货'
@@ -279,12 +279,8 @@ Scenario:3 bill不能取消使用了积分的待发货订单
 			"status": "待发货"
 		}
 		"""
-	Then bill获取积分数值
-		"""
-		{
-			"integral":"0"
-		}
-		"""
+	Then bill在jobs的webapp中拥有0会员积分
+
 	Given jobs登录系统:weapp
 	Then jobs能获得订单'003':weapp
 		"""
@@ -301,7 +297,7 @@ Scenario:3 bill不能取消使用了积分的待发货订单
 		}
 		"""
 
-@mall2 @order @allOrder   @mall.order_cancel_status @mall.order_cancel_status.integral_and_coupon_member @pyliu
+@mall2 @order @allOrder   @mall.order_cancel_status @mall.order_cancel_status.integral_and_coupon_member @pyliu @wip.cbb4
 Scenario:4 bill能取消使用积分的待支付订单
 	bill取消订单'004'
 	1. bill手机端订单状态改变为'已取消'
@@ -318,12 +314,7 @@ Scenario:4 bill能取消使用积分的待支付订单
 			"status": "已取消"
 		}
 		"""
-	Then bill获取积分数值
-		"""
-		{
-			"integral": "50"
-		}
-		"""
+	Then bill在jobs的webapp中拥有50会员积分
 	Given jobs登录系统:weapp
 	Then jobs能获得订单'004':weapp
 		"""

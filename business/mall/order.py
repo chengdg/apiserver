@@ -6,11 +6,11 @@
 
 import json
 from bs4 import BeautifulSoup
-import math
-import itertools
-import uuid
+#import math
+#import itertools
+#import uuid
 import time
-import random
+#import random
 from datetime import datetime
 import copy
 from core.exceptionutil import unicode_full_stack
@@ -20,19 +20,18 @@ import db.account.models as accout_models
 from core.wxapi import get_weixin_api
 from utils.regional_util import get_str_value_by_string_ids
 
+#import settings
 from wapi.decorators import param_required
-from wapi import wapi_utils
 from core.cache import utils as cache_util
 from db.mall import models as mall_models
-#import resource
 from business import model as business_model 
 from business.mall.product import Product
 from business.mall.order_products import OrderProducts
 from business.mall.log_operator import LogOperator
 from business.mall.red_envelope import RedEnvelope
-import settings
 from business.decorator import cached_context_property
 from utils import regional_util
+from business.resource.order_resource_extractor import OrderResourceExtractor
 
 from core.decorator import deprecated
 import logging
@@ -681,22 +680,39 @@ class Order(business_model.Model):
 		return pay_result
 
 
-	# todo
+	def __release_order_resources(self):
+		"""
+		取消订单时，释放订单资源
+
+		"""
+		webapp_owner = self.context['webapp_owner']
+		webapp_user = self.context['webapp_user']
+		order_resource_extractor = OrderResourceExtractor(webapp_owner, webapp_user)
+		resources = order_resource_extractor.extract(self)
+		# find allocators to release resources
+		return
+
 	def cancel(self):
 		"""
 		取消订单
+
+		@todo 需要释放订单资源	
 		"""
-		# 释放订单资源
+		#TODO: 释放订单资源
+		self.__release_order_resources()
+
+		# 更新订单状态
 		self.status = mall_models.ORDER_STATUS_CANCEL
-
-
 		mall_models.Order.update(status=mall_models.ORDER_STATUS_CANCEL).dj_where(id=self.id).execute()
 
 		# 更新子订单状态
-		if self.origin_order_id == -1:
+		if self.origin_order_id == mall_models.ORIGIN_ORDER:
+			# 此订单为主订单。更新其子订单也为“取消状态”
 			mall_models.Order.update(status=mall_models.ORDER_STATUS_CANCEL).dj_where(origin_order_id=self.id).execute()
 
+		# TODO: 发出cancel_order事件
 		self.__after_update_status('cancel')
+
 
 	# todo
 	def finish(self):

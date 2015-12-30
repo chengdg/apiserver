@@ -91,6 +91,13 @@ class AOrder(api_resource.ApiResource):
 		}
 		if pay_url_info:
 			data['pay_url_info'] = pay_url_info
+
+		#记录分享来的订单
+		fmt = args.get('fmt', None)
+		from db.member import models as member_models
+		if fmt and fmt != webapp_user.member.token:
+			member_models.MallOrderFromSharedRecord.create(order_id=order.id, fmt=fmt)
+
 		return data
 
 	@param_required(['order_id', 'action'])
@@ -116,9 +123,27 @@ class AOrder(api_resource.ApiResource):
 				'success': True
 			}
 		except:
+			# TODO: 规范错误信息
 			notify_message = u"apiserver中修改订单状态失败, order_id:{}, action:{}, cause:\n{}".format(args['order_id'], args['action'], unicode_full_stack())
 			watchdog_error(notify_message)
 			return 500
+
+	@param_required(['order_id'])
+	def delete(args):
+		"""
+		取消订单
+		"""
+		order = Order.from_id({
+			'webapp_user': args['webapp_user'],
+			'webapp_owner': args['webapp_owner'],
+			'order_id': args['order_id']
+		})
+
+		order.cancel()
+		return {
+			'success': True
+		}
+
 
 
 	@staticmethod

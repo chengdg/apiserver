@@ -46,7 +46,6 @@ class MemberSpread(business_model.Model):
 		"""
 		query_strings = dict(urlparse.parse_qs(urlparse.urlparse(args['url']).query))
 		fmt = query_strings.get('fmt', None)
-
 		#创建会员
 		member = MemberFactory.create({
 			"webapp_owner": args['webapp_owner'],
@@ -80,7 +79,8 @@ class MemberSpread(business_model.Model):
 			'webapp_owner':  args['webapp_owner'],
 			'webapp_user': webapp_user,
 			'fmt': fmt,
-			'url': args['url']
+			'url': args['url'],
+			'is_fans': created
 			})
 
 	

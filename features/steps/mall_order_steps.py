@@ -59,6 +59,7 @@ def step_impl(context, webapp_user_name):
 
 @when(u"{webapp_user_name}取消订单'{order_id}'")
 def step_impl(context, webapp_user_name, order_id):
+	logging.info('webapp_user_name: {}'.format(webapp_user_name))
 	response = context.client.post('/wapi/mall/order/', {
 		'woid': context.client.woid,
 		'order_id': order_id,

@@ -182,24 +182,32 @@ Background:
 		"""
 	#And marry对订单'008'进行确认收货
 
-@order @allOrder
+@mall3 @order @allOrder
 Scenario:1 统计整个系统有订单的：消费金额、订单数、客单价
-	When Given jobs登录系统:weapp
+    Given jobs登录系统:weapp
+    When jobs设置筛选日期:weapp
+        """
+        [{
+            "begin_date":"今天",
+            "end_date":"今天"
+        }]
+        """
+    
+    And 查询'店铺经营概况':weapp
+    Then 获得店铺经营概况数据:weapp
+        """
+        {
+            "transaction_money": "900.00",
+            "vis_price": "150.00",
+            "transaction_orders": 6
+        }
+        """
 
-	Then jobs获得有效订单统计
-		"""
-		{
-			"purchase_amount":900.00,
-			"purchase_number":6,
-			"customer_price":150.00
-		}
-		"""
-
-@order @allOrder
+@mall3 @order @allOrder
 Scenario:2 统计单个会员有订单的：消费金额、订单数、客单价
-	When bill访问jobs的webapp
-
-	Then bill获得有效订单统计
+	Given jobs登录系统:weapp
+	When jobs访问'bill'会员详情:weapp
+	Then jobs获得'bill'的购买信息:weapp
 		"""
 		{
 			"purchase_amount":400.00,

@@ -5,6 +5,7 @@ import shutil
 import os
 from datetime import datetime, timedelta
 import subprocess
+import base64
 
 from behave import *
 import requests
@@ -20,7 +21,16 @@ def _run_weapp_step(step, context):
 		'step': step,
 		'context': context
 	}
-	requests.post(url, data={'data':json.dumps(data)})
+	response = requests.post(url, data={'data':json.dumps(data)})
+
+	response_text = base64.b64decode(response.text.encode('utf-8')).decode('utf-8')
+	if response_text != 'success':
+		buf = []
+		buf.append('\n*************** START WEAPP STEP EXCEPTION ***************')
+		buf.append(response_text.strip())
+		buf.append('*************** FINISH WEAPP STEP EXCEPTION ***************\n')
+		print '\n'.join(buf)
+		assert False, 'weapp_step_response.text != "success", Weapp step has EXCEPTION!!!'
 
 @When(u"{command}:weapp")
 def step_impl(context, command):

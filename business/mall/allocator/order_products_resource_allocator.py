@@ -163,7 +163,8 @@ class OrderProductsResourceAllocator(business_model.Service):
 				self.context['resource2allocator'][resource.model_id] = product_resource_allocator
 
 		if not successed:
-			resource = ProductsResource(resource, self.resource_type)
+			# TODO: 应该改成用ProductResourceAllocator释放
+			resource = ProductsResource(resources, self.resource_type)
 			self.release(resource)
 			resources = None
 

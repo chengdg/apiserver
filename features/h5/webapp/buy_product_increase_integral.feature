@@ -102,7 +102,7 @@ Scenario:1 点击给未购买的分享者增加积分
 			"integral":20
 		}]
 		"""
-	#清空cookie，Nokia点击的bill的分享链接，获得积分奖励
+	#清空cookie，Nokia再次点击bill的分享链接，不再获得积分奖励
 	When 清空浏览器:weapp
 	When nokia点击bill分享链接
 	When 清空浏览器:weapp

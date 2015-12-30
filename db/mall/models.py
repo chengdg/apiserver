@@ -1369,7 +1369,7 @@ class Order(models.Model):
 	order_id = models.CharField(max_length=100)  # 订单号
 	webapp_user_id = models.IntegerField()  # WebApp用户的id
 	webapp_id = models.CharField(max_length=20, verbose_name='店铺ID')  # webapp,订单成交的店铺id
-	webapp_source_id = models.CharField(max_length=20, default=0, verbose_name='商品来源店铺ID')  # 订单内商品实际来源店铺的id，已废弃
+	webapp_source_id = models.IntegerField(default=0, verbose_name='商品来源店铺ID')  # 订单内商品实际来源店铺的id，已废弃
 	buyer_name = models.CharField(max_length=100)  # 购买人姓名
 	buyer_tel = models.CharField(max_length=100, default='')  # 购买人电话,已废弃
 	ship_name = models.CharField(max_length=100)  # 收货人姓名

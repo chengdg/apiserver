@@ -39,6 +39,7 @@ class PromotionResult(business_model.Model):
 		self.is_success = True
 		self.saved_money = saved_money
 		self.subtotal = subtotal
+		self.need_disable_discount = False
 		if detail:
 			self.detail = detail
 

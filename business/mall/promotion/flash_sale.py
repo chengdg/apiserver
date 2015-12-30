@@ -52,11 +52,11 @@ class FlashSale(promotion.Promotion):
 		"""
 		#检查count_per_purchase		
 		if product.purchase_count > self.count_per_purchase:
-			return PromotionFailure({
+			return [PromotionFailure({
 				'type': 'promotion:flash_sale:exceed_count_per_purchase',
 				'msg': u'限购%d件' % self.count_per_purchase,
 				'short_msg': u'限购%d件' % self.count_per_purchase,
-			})
+			})]
 
 		#检查是否超过了限购周期的限制
 		if self.limit_period == 0 or self.limit_period == -1:
@@ -71,13 +71,13 @@ class FlashSale(promotion.Promotion):
 			).count()
 			# 限购周期内已购买过商品
 			if purchase_record_count > 0:
-				return PromotionFailure({
+				return [PromotionFailure({
 					'type': 'promotion:flash_sale:limit_period',
 					'msg': u'在限购周期内不能多次购买',
 					'short_msg': u'限制购买'
-				})
+				})]
 
-		return PromotionResult()
+		return [PromotionResult()]
 
 	def can_apply_promotion(self, promotion_product_group):
 		return True

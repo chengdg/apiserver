@@ -188,6 +188,9 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 	if hasattr(context, 'fmt'):
 		data['fmt'] = context.fmt
 		logging.info('fmt: {}'.format(data['fmt']))
+
+	if args.get('force', False):
+		data['forcing_submit'] = 1
 		
 	if 'integral' in args and args['integral'] > 0:
 		# 整单积分抵扣
@@ -590,6 +593,7 @@ def step_impl(context, webapp_user_name):
 	response = context.client.get(bdd_util.nginx(url), follow=True)
 	context.product_infos = product_infos
 	context.response = response
+	context.shopping_cart_order = response.data['order']
 
 @then(u"{webapp_user_name}获得待编辑订单")
 def step_impl(context, webapp_user_name):
@@ -703,7 +707,7 @@ def step_click_check_out(context, webapp_user_name):
 	argument = json.loads(context.text)
 	pay_type = argument['pay_type']
 
-	order = context.response.data['order']
+	order = context.shopping_cart_order
 	product_info = _get_prodcut_info(order)
 	url = '/wapi/mall/order/?_method=put'
 	data = {
@@ -718,6 +722,9 @@ def step_click_check_out(context, webapp_user_name):
 		"ship_address": argument.get('ship_address', "长安大街"),
 		"ship_tel": argument.get('ship_tel', "11111111111"),
 	}
+
+	if argument.get('force', False):
+		data['forcing_submit'] = 1
 
 	data.update(product_info)
 	coupon_id = context.product_infos.get('coupon_id', None)

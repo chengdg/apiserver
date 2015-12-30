@@ -529,7 +529,8 @@ class Order(business_model.Model):
 		db_model.customer_message = self.customer_message
 		db_model.type = self.type
 		db_model.pay_interface_type = self.pay_interface_type
-		db_model.order_id = self.order_id	
+		db_model.order_id = self.order_id
+		db_model.webapp_source_id = 0 	# 兼容老数据
 
 		if self.supplier:
 			db_model.supplier = self.supplier

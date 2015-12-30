@@ -40,14 +40,28 @@ Background:
 		"""
 		[{
 			"name": "商品1",
-			"stock_type": "有限",
-			"stocks": 2,
-			"price": 10.0
+			"model": {
+				"models": {
+					"standard": {
+						"user_code": "10",
+						"stock_type": "有限",
+						"stocks": 2,
+						"price": 10.0
+					}
+				}
+			}
 		},{
 			"name": "商品2",
-			"stock_type": "有限",
-			"stocks": 1,
-			"price": 20.0
+			"model": {
+				"models": {
+					"standard": {
+						"user_code": "20",
+						"stock_type": "有限",
+						"stocks": 1,
+						"price": 20.0
+					}
+				}
+			}
 		},{
 			"name": "商品3",
 			"price": 30.0
@@ -211,23 +225,25 @@ Scenario:1 校验多个下单错误信息提示（错误信息类型不同）
 	#jobs在台进行下架、删除等操作
 	Given jobs登录系统:weapp
 	#修改商品1的库存为1（由2变为1）
-	When jobs更新商品'商品1':weapp
+	When jobs更新商品'商品1'的库存为:weapp
 		"""
-		{
+		[{
 			"name":"商品1",
+			"user_code": "10",
 			"stock_type": "有限",
 			"stocks": 1
-		}
+		}]
 		"""
 
 	#修改商品2的库存为0
-	When jobs更新商品'商品2':weapp
+	When jobs更新商品'商品2'的库存为:weapp
 		"""
-		{
+		[{
 			"name":"商品2",
+			"user_code": "20",
 			"stock_type": "有限",
 			"stocks": 0
-		}
+		}]
 		"""
 
 	#下架商品3
@@ -258,6 +274,9 @@ Scenario:1 校验多个下单错误信息提示（错误信息类型不同）
 				"id": "商品1",
 				"short_msg": "库存不足"
 			},{
+				"id": "商品2",
+				"msg": "商品已售罄"
+			},{
 				"id": "商品3",
 				"short_msg": "商品已下架"
 			},{
@@ -266,6 +285,9 @@ Scenario:1 校验多个下单错误信息提示（错误信息类型不同）
 			},{
 				"id": "商品5",
 				"short_msg": "已经过期"
+			},{
+				"id": "商品6",
+				"msg": "在限购周期内不能多次购买"
 			},{
 				"id": "商品7",
 				"model": "M",
@@ -277,12 +299,6 @@ Scenario:1 校验多个下单错误信息提示（错误信息类型不同）
 			}]
 		}
 		"""
-#			},{
-#				"id": "商品6",
-#				"msg": "限制购买"
-#			},{
-#				"id": "商品2",
-#				"msg": "已售罄"
 
 
 @mall3 @mall.webapp @mall.promotion @wip.cmemfo2

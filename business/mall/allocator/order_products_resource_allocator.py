@@ -173,29 +173,29 @@ class OrderProductsResourceAllocator(business_model.Service):
 			resources = None
 
 		promotion_reasons = []
-		for merged_reserved_product in merged_reserved_products:
-			is_promotion_success, promotion_reason = self.__allocate_promotion(merged_reserved_product)
-			if not is_promotion_success:
-				logging.info(u"appending reason: {}".format(reason))
-				successed = False
-				#merged_promotion_product = merged_reserved_product
-				for inner_reserved_product in merged_reserved_product.get_products():
-					promotion_reason_dict = promotion_reason.to_dict()
-					promotion_reason_dict['id'] = None #hack, trigger __supply_product_info_into_fail_reason work
-					self.__supply_product_info_into_fail_reason(inner_reserved_product, promotion_reason_dict)
-					logging.info(u"adding reason: msg={}".format(promotion_reason_dict['msg']))
-					promotion_reasons.append(promotion_reason_dict)
-		#has_real_fail_reason = len([reason for reason in promotion_reasons if reason['type'] != 'promotion:premium_sale:no_premium_product_stocks' and reason['type'] != 'promotion:premium_sale:not_enough_premium_product_stocks']) > 0
-		if len(promotion_reasons) > 0:
-			reasons.extend(promotion_reasons)
+		if successed:
+			for merged_reserved_product in merged_reserved_products:
+				__is_promotion_success, promotion_reason = self.__allocate_promotion(merged_reserved_product)
+				if not __is_promotion_success:
+					is_promotion_success = __is_promotion_success
+					logging.info(u"appending reason: {}".format(reason))
+					#merged_promotion_product = merged_reserved_product
+					for inner_reserved_product in merged_reserved_product.get_products():
+						promotion_reason_dict = promotion_reason.to_dict()
+						promotion_reason_dict['id'] = None #hack, trigger __supply_product_info_into_fail_reason work
+						self.__supply_product_info_into_fail_reason(inner_reserved_product, promotion_reason_dict)
+						logging.info(u"adding reason: msg={}".format(promotion_reason_dict['msg']))
+						promotion_reasons.append(promotion_reason_dict)
+			#has_real_fail_reason = len([reason for reason in promotion_reasons if reason['type'] != 'promotion:premium_sale:no_premium_product_stocks' and reason['type'] != 'promotion:premium_sale:not_enough_premium_product_stocks']) > 0
+			if len(promotion_reasons) > 0:
+				reasons.extend(promotion_reasons)
 
 		if not successed:
 			return False, reasons, None
 		elif not is_promotion_success:
 			if resources:
-				products_resource = ProductsResource(resources)
+				products_resource = ProductsResource(resources, self.resource_type)
 				self.release(products_resource)
-			reasons.append(promotion_reason)
 			return False, reasons, None
 		resource = ProductsResource(resources, self.resource_type)
 	 	return True, reasons, resource

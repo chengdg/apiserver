@@ -1357,6 +1357,8 @@ ACTION2MSG = {
 	'buy': '下单'
 }
 
+ORIGIN_ORDER = -1
+NO_SUBORDER = 0
 
 class Order(models.Model):
 	"""

@@ -198,7 +198,7 @@ Scenario:1 bill能取消待支付订单
 	3. '商品1'库存更新加1
 
 	When bill访问jobs的webapp
-	When bill'能'取消订单'001'
+	Then bill'能'取消订单'001'
 	Then bill手机端获取订单'001'
 		"""
 		{
@@ -231,7 +231,7 @@ Scenario:2 bill不能取消使用了优惠券的待发货订单
 	4. 优惠券'coupon1_id_1'状态改变为'已使用'
 
 	When bill访问jobs的webapp
-	When bill'不能'取消订单'002'
+	Then bill'不能'取消订单'002'
 	Then bill手机端获取订单'002'
 		"""
 		{
@@ -271,7 +271,7 @@ Scenario:3 bill不能取消使用了积分的待发货订单
 	4. 积分数值为：'0'
 
 	When bill访问jobs的webapp
-	When bill'不能'取消订单'003'
+	Then bill'不能'取消订单'003'
 	Then bill手机端获取订单'003'
 		"""
 		{
@@ -306,7 +306,7 @@ Scenario:4 bill能取消使用积分的待支付订单
 	4. 积分数值改变为：'50'
 
 	When bill访问jobs的webapp
-	When bill'能'取消订单'004'
+	Then bill'能'取消订单'004'
 	Then bill手机端获取订单'004'
 		"""
 		{
@@ -339,7 +339,7 @@ bill能取消订单'005'
 	4. 单品券'coupon2_id_1'状态改变为'未使用'
 
 	When bill访问jobs的webapp
-	When bill'能'取消订单'005'
+	Then bill'能'取消订单'005'
 	Then bill手机端获取订单'005'
 		"""
 		{
@@ -379,7 +379,7 @@ bill能取消订单'006'
 	4. 优惠券'coupon1_id_2'状态改变为'未使用'
 
 	When bill访问jobs的webapp
-	When bill'能'取消订单'006'
+	Then bill'能'取消订单'006'
 	Then bill手机端获取订单'006'
 		"""
 		{
@@ -419,7 +419,7 @@ Scenario:7 bill不能取消使用了微众卡的待发货订单
 	4. 微众卡状态为'已用完'
 
 	When bill访问jobs的webapp
-	When bill'不能'取消订单'007'
+	Then bill'不能'取消订单'007'
 	Then bill手机端获取订单'007'
 		"""
 		{
@@ -460,7 +460,7 @@ Scenario:8 bill能取消使用了微众卡的待支付订单
 	4. 微众卡状态为'已使用'
 
 	When bill访问jobs的webapp
-	When bill'能'取消订单'008'
+	Then bill'能'取消订单'008'
 	Then bill手机端获取订单'008'
 		"""
 		{

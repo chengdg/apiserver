@@ -51,10 +51,9 @@ class PremiumSale(promotion.Promotion):
 	def __supply_product_info_into_fail_reason(self, product, premium_result):
 		premium_result.id = product['id']
 		premium_result.name = product['name']
-		premium_result.stocks = 0
-		premium_result.model_name = ""
+		premium_result.stocks = None
+		premium_result.model_name = None
 		premium_result.pic_url = '%s%s' % (settings.IMAGE_HOST, product['thumbnails_url']) if product['thumbnails_url'].find('http') == -1 else product['thumbnails_url']
-		# premium_result.pic_url = product['thumbnails_url']
 
 	def allocate(self, webapp_user, product):
 		#收集赠品的所有库存，可能的结果有：
@@ -82,6 +81,7 @@ class PremiumSale(promotion.Promotion):
 						product2stocks[premium_product_id] = stock_info['stocks']
 
 		#检查赠品库存是否满足
+		failed_reasons = []
 		for premium_product in self.premium_products:
 			premium_product_id = premium_product['id']
 			stocks = product2stocks.get(premium_product_id, -2)
@@ -102,7 +102,7 @@ class PremiumSale(promotion.Promotion):
 						'short_msg': u'已赠完'
 					})
 					self.__supply_product_info_into_fail_reason(premium_product, reason)
-					return reason
+					failed_reasons.append(reason)
 			elif premium_product['premium_count'] > stocks:
 				if webapp_user.is_force_purchase():
 					#强制购买，改变赠品数量
@@ -116,14 +116,17 @@ class PremiumSale(promotion.Promotion):
 						'short_msg': u'库存不足'
 					})
 					self.__supply_product_info_into_fail_reason(premium_product, reason)
-					return reason
+					failed_reasons.append(reason)
 			else:
 				#商品库存大于赠品，直接扣库存
 				mall_models.ProductModel.update(stocks=mall_models.ProductModel.stocks-premium_product['premium_count']).dj_where(product_id=premium_product['premium_product_id'], name='standard').execute()
 
-		result = PromotionResult()
-		result.need_disable_discount = True #买赠活动需要禁用会员折扣
-		return result
+		if len(failed_reasons) > 0:
+			return failed_reasons
+		else:
+			result = PromotionResult()
+			result.need_disable_discount = True #买赠活动需要禁用会员折扣
+			return [result]
 
 	def can_apply_promotion(self, promotion_product_group):
 		can_use_promotion = True

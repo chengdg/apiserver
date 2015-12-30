@@ -320,7 +320,7 @@ Scenario: 4 购买单个买赠商品，超出库存限制
 		"""
 
 # __edit__ : 王丽 2015-12-25
-@promotion @mall.promotion @mall.webapp.promotion @robert.wip
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
 Scenario: 5 购买单个买赠商品，赠品数量超出库存限制
 	#赠品库存不为零，但是库存不足本次订单赠送，下单提示赠品库存不足，继续提交订单成功，赠品数量为现有库存数量
 	When bill访问jobs的webapp
@@ -343,7 +343,17 @@ Scenario: 5 购买单个买赠商品，赠品数量超出库存限制
 			}]
 		}
 		"""
-	When bill选择'继续提交'
+	#进行强制购买
+	When bill购买jobs的商品
+		"""
+		{
+			"force": true,
+			"products": [{
+				"name": "商品2",
+				"count": 5
+			}]
+		}
+		"""
 	Then bill成功创建订单
 		"""
 		{
@@ -381,12 +391,22 @@ Scenario: 5 购买单个买赠商品，赠品数量超出库存限制
 		{
 			"detail": [{
 				"id": "商品4",
-				"msg": "库存不足",
-				"short_msg": "库存不足"
+				"msg": "已赠完",
+				"short_msg": "已赠完"
 			}]
 		}
 		"""
-	When bill选择'继续提交'
+	#进行强制购买
+	When bill购买jobs的商品
+		"""
+		{
+			"force": true,
+			"products": [{
+				"name": "商品2",
+				"count": 1
+			}]
+		}
+		"""
 	Then bill成功创建订单
 		"""
 		{
@@ -407,30 +427,6 @@ Scenario: 5 购买单个买赠商品，赠品数量超出库存限制
 			}]
 		}
 		"""
-
-	#赠品库存为零，下单提示赠品库存不足，"返回修改"订单成功
-	When bill访问jobs的webapp
-	When bill购买jobs的商品
-		"""
-		{
-			"products": [{
-				"name": "商品2",
-				"count": 1
-			}]
-		}
-		"""
-	Then bill获得创建订单失败的信息
-		"""
-		{
-			"detail": [{
-				"id": "商品4",
-				"msg": "库存不足",
-				"short_msg": "库存不足"
-			}]
-		}
-		"""
-	When bill选择'返回修改'
-	Then bill跳转到商品'商品2'的商品详情页
 
 @mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
 Scenario: 6 购买多个 有规格的参与买赠的商品
@@ -1287,7 +1283,7 @@ Scenario: 14 不同等级的会员购买会员价，同时有会员等级买赠�
 		"""
 
 # __edit__ : 王丽 2015-12-25
-@promotion @mall.promotion @mall.webapp.promotion @robert.wip
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip @wip
 Scenario: 15 通过购物车购买单个买赠商品，赠品数量超出库存限制
 	#赠品库存不为零，但是库存不足本次订单赠送，下单提示赠品库存不足，继续提交订单成功，赠品数量为现有库存数量
 	When bill访问jobs的webapp
@@ -1336,11 +1332,22 @@ Scenario: 15 通过购物车购买单个买赠商品，赠品数量超出库存�
 			}]
 		}
 		"""
-	When bill选择'继续提交'
+	#从购物车强制提交订单
+	When bill在购物车订单编辑中点击提交订单
+		"""
+		{
+			"force": true,
+			"ship_name": "bill",
+			"ship_tel": "13811223344",
+			"ship_area": "北京市 北京市 海淀区",
+			"ship_address": "泰兴大厦",
+			"pay_type": "货到付款"
+		}
+		"""
 	Then bill成功创建订单
 		"""
 		{
-			"status": "待支付",
+			"status": "待发货",
 			"final_price": 1000.00,
 			"products": [{
 				"name": "商品2",
@@ -1400,16 +1407,27 @@ Scenario: 15 通过购物车购买单个买赠商品，赠品数量超出库存�
 		{
 			"detail": [{
 				"id": "商品4",
-				"msg": "库存不足",
-				"short_msg": "库存不足"
+				"msg": "已赠完",
+				"short_msg": "已赠完"
 			}]
 		}
 		"""
-	When bill选择'继续提交'
+	#从购物车强制提交订单
+	When bill在购物车订单编辑中点击提交订单
+		"""
+		{
+			"force": true,
+			"ship_name": "bill",
+			"ship_tel": "13811223344",
+			"ship_area": "北京市 北京市 海淀区",
+			"ship_address": "泰兴大厦",
+			"pay_type": "货到付款"
+		}
+		"""
 	Then bill成功创建订单
 		"""
 		{
-			"status": "待支付",
+			"status": "待发货",
 			"final_price": 200.00,
 			"products": [{
 				"name": "商品2",
@@ -1427,52 +1445,3 @@ Scenario: 15 通过购物车购买单个买赠商品，赠品数量超出库存�
 		}
 		"""
 
-	#赠品库存为零，下单提示赠品库存不足，"返回修改"订单成功
-	When bill访问jobs的webapp
-	When bill加入jobs的商品到购物车
-		"""
-		[{
-			"name": "商品2",
-			"count": 1
-		}]
-		"""
-	When bill从购物车发起购买操作
-		"""
-		{
-			"action": "click",
-			"context": [{
-				"name": "商品2"
-			}]
-		}
-		"""
-	Then bill获得待编辑订单
-		"""
-		{
-			"products": [{
-				"name": "商品2",
-				"count": 1
-			}]
-		}
-		"""
-	When bill在购物车订单编辑中点击提交订单
-		"""
-		{
-			"ship_name": "bill",
-			"ship_tel": "13811223344",
-			"ship_area": "北京市 北京市 海淀区",
-			"ship_address": "泰兴大厦",
-			"pay_type": "货到付款"
-		}
-		"""
-	Then bill获得创建订单失败的信息
-		"""
-		{
-			"detail": [{
-				"id": "商品4",
-				"msg": "库存不足",
-				"short_msg": "库存不足"
-			}]
-		}
-		"""
-	When bill选择'返回修改'
-	Then bill跳转到商品'商品2'的商品详情页

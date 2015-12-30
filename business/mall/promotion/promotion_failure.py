@@ -43,9 +43,19 @@ class PromotionFailure(PromotionResult):
 		self.msg = options['msg']
 		self.short_msg = options['short_msg']
 
+		self.id = None
+		self.name = None
+		self.stocks = None
+		self.model_name = None
+		self.pic_url = None
+
 	def to_dict(self):
 		result = {}
 		for slot in PromotionFailure.__slots__:
 			result[slot] = getattr(self, slot, None)
+
+		print '-$$-' * 20
+		print result
+		print '-$$-' * 20
 
 		return result

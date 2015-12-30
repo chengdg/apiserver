@@ -44,7 +44,7 @@ from business.mall.express.express_detail import ExpressDetail
 from business.mall.express.express_info import ExpressInfo
 from services.order_notify_mail_service.task import notify_order_mail
 from business.mall.allocator.allocate_order_resource_service import AllocateOrderResourceService
-
+from business.account.integral import Integral
 ORDER_STATUS2NOTIFY_STATUS = {
 	mall_models.ORDER_STATUS_NOT: accout_models.PLACE_ORDER,
 	mall_models.ORDER_STATUS_PAYED_NOT_SHIP: accout_models.PAY_ORDER,
@@ -82,6 +82,7 @@ class Order(business_model.Model):
 		'coupon_money',
 
 		'coupon_id',
+		'raw_status',
 		'status',
 		'origin_order_id',
 		'express_company_name',
@@ -217,7 +218,7 @@ class Order(business_model.Model):
 					'order_id': sub_order_id
 				})
 				for product in self.products:
-					#新的数据中已经有supplier字段了，但是为了兼容旧的数据，次数要做此处理
+					#新的数据中已经有supplier字段了，但是为了兼容旧的数据，此处要做此处理
 					if not product.supplier:
 						_product = Product.from_id({
 							'webapp_owner': self.context['webapp_owner'],
@@ -653,6 +654,7 @@ class Order(business_model.Model):
 				mall_models.Order.update(status=mall_models.ORDER_STATUS_PAYED_NOT_SHIP, pay_interface_type=pay_interface_type, payment_time=now).dj_where(origin_order_id=self.id).execute()
 
 			mall_models.Order.update(status=mall_models.ORDER_STATUS_PAYED_NOT_SHIP, pay_interface_type=pay_interface_type, payment_time=now).dj_where(order_id=self.order_id).execute()
+			self.raw_status = self.status
 			self.status = mall_models.ORDER_STATUS_PAYED_NOT_SHIP
 			self.pay_interface_type = pay_interface_type
 
@@ -673,7 +675,13 @@ class Order(business_model.Model):
 			#更新webapp_user的has_purchased字段
 			webapp_user = self.context['webapp_user']
 			webapp_user.set_purchased()
+			webapp_user.update_pay_info(self.final_price + self.weizoom_card_money)
 
+			Integral.increase_after_order_payed_finsh({
+				'webapp_user': webapp_user,
+				'webapp_owner': self.context['webapp_owner'],
+				'order_id': self.order_id
+				})
 			self.__after_update_status('pay')
 			self.__send_template_message()
 		return pay_result
@@ -704,6 +712,7 @@ class Order(business_model.Model):
 		self.__release_order_resources()
 
 		# 更新订单状态
+		self.raw_status = self.status
 		self.status = mall_models.ORDER_STATUS_CANCEL
 		mall_models.Order.update(status=mall_models.ORDER_STATUS_CANCEL).dj_where(id=self.id).execute()
 
@@ -733,7 +742,7 @@ class Order(business_model.Model):
 
 		# 更新订单状态
 		mall_models.Order.update(status=mall_models.ORDER_STATUS_SUCCESSED).dj_where(id=self.id).execute()
-
+		self.raw_status = self.status
 		self.status = mall_models.ORDER_STATUS_SUCCESSED
 		# 更新子订单状态
 		if self.origin_order_id == -1:
@@ -760,7 +769,7 @@ class Order(business_model.Model):
 		* 更新会员数据（消费次数、金额、平均客单价、等级、已购买标识）
 		* 发邮件
 
-		@todo 待完整实现
+
 		@warning 在此处加代码请注意子订单问题,此方法不能由子订单使用
 		"""
 		assert not self.is_sub_order
@@ -768,28 +777,13 @@ class Order(business_model.Model):
 		#更新与webapp user对应的订单信息缓存数据
 		self.context['webapp_user'].cleanup_order_info_cache()
 
-		# 更新前状态
-		raw_status = self.status
+		# 记录日志
 
-		target_status = mall_models.ACTION2TARGET_STATUS[action]
-
-		#################################
-		# 通用代码
-		#################################
-
-		# todo 记录日志 @duhao
-		operator_name = u'客户'
 		LogOperator.record_operation_log(self, u'客户', mall_models.ACTION2MSG[action])
-		LogOperator.record_status_log(self, u'客户', mall_models.ORDER_STATUS_NOT, mall_models.ORDER_STATUS_PAYED_NOT_SHIP)
-
-		# todo 更新会员消费次数、金额、平均客单价、等级、已购买标识 @郭玉成
-		# 可能不是所有操作都需要，实现时可以放在相应order操作里
-
-		# todo 模板消息
-
-		# todo 运营邮件email
+		if self.raw_status != None:
+			LogOperator.record_status_log(self, u'客户', self.raw_status, self.status)
 		self.__send_notify_mail()
-		# todo 需要真实环境测试
+
 
 
 	def __send_template_message(self):

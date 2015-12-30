@@ -27,7 +27,7 @@ from business.decorator import cached_context_property
 from utils import regional_util
 from business.account.member_order_info import MemberOrderInfo
 from business.account.social_account import SocialAccount
-from business.account.integral import Integral
+
 from business.mall.coupon.coupon import Coupon
 
 
@@ -495,7 +495,7 @@ class WebAppUser(business_model.Model):
 	def use_integral(self, integral_count):
 		if integral_count == 0:
 			return True, None
-
+		from business.account.integral import Integral
 		return Integral.use_integral_to_buy({
 			'webapp_user': self,
 			'integral_count': -integral_count
@@ -578,7 +578,7 @@ class WebAppUser(business_model.Model):
 		if money > 0:
 			member = member_models.Member.get(id=self.member.id)
 			member.pay_money = member.pay_money + money
-			member.pay_times = member.pay_times + pay_times
+			member.pay_times = member.pay_times + 1
 			try:
 				member.unit_price = member.pay_money/member.pay_times
 			except:

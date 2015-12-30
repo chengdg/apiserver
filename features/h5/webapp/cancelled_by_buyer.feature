@@ -194,7 +194,7 @@ Background:
 		}
 		"""
 
-@mall3 @mall2 @order @allOrder @mall.order_cancel_status @mall.order_cancel_status.member @wip.cbb1
+@mall3 @mall2 @order @allOrder @mall.order_cancel_status @mall.order_cancel_status.member @wip.cbb1 @wip.cbb
 Scenario:1 bill能取消待支付订单
 	bill取消订单'001'
 	1. bill手机端订单状态改变为'已取消'
@@ -227,7 +227,7 @@ Scenario:1 bill能取消待支付订单
 		}
 		"""
 
-@mall3 @mall2 @order @allOrder   @mall.order_cancel_status @mall.order_cancel_status.coupon_member @pyliu @wip.cbb2 @dd2
+@mall3 @mall2 @order @allOrder   @mall.order_cancel_status @mall.order_cancel_status.coupon_member @pyliu @wip.cbb2 @dd2 @wip.cbb
 Scenario:2 bill不能取消使用了优惠券的待发货订单
 	bill不能取消订单'002'
 	1. bill手机端订单状态为'待发货'
@@ -267,7 +267,7 @@ Scenario:2 bill不能取消使用了优惠券的待发货订单
 		}
 		"""
 
-@mall3 @mall2 @order @allOrder   @mall.order_cancel_status @mall.order_cancel_status.integral_member @pyliu02 @wip.cbb3
+@mall3 @mall2 @order @allOrder   @mall.order_cancel_status @mall.order_cancel_status.integral_member @pyliu02 @wip.cbb3 @wip.cbb
 Scenario:3 bill不能取消使用了积分的待发货订单
 	bill不能取消订单'003'
 	1. bill手机端订单状态为'待发货'
@@ -302,7 +302,7 @@ Scenario:3 bill不能取消使用了积分的待发货订单
 		}
 		"""
 
-@mall3 @mall2 @order @allOrder   @mall.order_cancel_status @mall.order_cancel_status.integral_and_coupon_member @pyliu @wip.cbb4
+@mall3 @mall2 @order @allOrder @mall.order_cancel_status @mall.order_cancel_status.integral_and_coupon_member @pyliu @wip.cbb4 @wip.cbb
 Scenario:4 bill能取消使用积分的待支付订单
 	bill取消订单'004'
 	1. bill手机端订单状态改变为'已取消'
@@ -338,6 +338,7 @@ Scenario:4 bill能取消使用积分的待支付订单
 		}
 		"""
 
+@mall3 @wip.cbb5 @wip.cbb
 Scenario:5 bill能取消使用了单品券的待支付订单
 bill能取消订单'005'
 	1. bill手机端订单状态为'待支付'
@@ -378,7 +379,7 @@ bill能取消订单'005'
 		}
 		"""
 
-
+@mall3 @wip.cbb @wip.cbb6
 Scenario:6 bill能取消使用了优惠券的待支付订单
 bill能取消订单'006'
 	1. bill手机端订单状态为'待支付'
@@ -419,7 +420,7 @@ bill能取消订单'006'
 		}
 		"""
 
-
+@mall3 @wip.cbb @wip.cbb7
 Scenario:7 bill不能取消使用了微众卡的待发货订单
 	bill不能取消订单'007'
 	1. bill手机端订单状态为'待发货'
@@ -460,7 +461,7 @@ Scenario:7 bill不能取消使用了微众卡的待发货订单
 		"""
 
 
-
+@mall3 @wip.cbb @wip.cbb8
 Scenario:8 bill能取消使用了微众卡的待支付订单
 	bill能取消订单'008'
 	1. bill手机端订单状态为'待支付'

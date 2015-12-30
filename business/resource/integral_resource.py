@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""@package business.resource.integral_resource.IntegralResource
+"""@package business.resource.integral_resource
 积分资源
 
 积分资源的属性：

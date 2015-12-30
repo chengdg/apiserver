@@ -573,3 +573,16 @@ class WebAppUser(business_model.Model):
 		获取当前是否是强制购买模式
 		"""
 		return self.context.get('is_force_purchase', False)
+
+	def update_pay_info(self, money):
+		if money > 0:
+			member = member_models.Member.get(id=self.member.id)
+			member.pay_money = member.pay_money + money
+			member.pay_times = member.pay_times + pay_times
+			try:
+				member.unit_price = member.pay_money/member.pay_times
+			except:
+				member.unit_price = 0
+			member.save()
+
+

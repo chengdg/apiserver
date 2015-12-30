@@ -16,13 +16,6 @@ Background:
 			"type":"主营行业",
 			"status":"未启用",
 			"operate":"查看"
-		},{
-			"template_id":"",
-			"headline":"OPENTM200303341-商品发货通知",
-			"industry":"消费品",
-			"type":"副营行业",
-			"status":"未启用",
-			"operate":"查看"
 		}]
 		"""
 	When jobs给'主营行业'行业标题为'TM00398-付款成功通知'的模板消息添加内容
@@ -30,14 +23,6 @@ Background:
 		{
 			"template_id":"_k8QP2Fs_nZBiR52e_Y1040m5zi30i3E28khSHz8QtY",
 			"first":"我们已收到您的货款，开始为您打包商品，请耐心等待: )",
-			"remark":"如有问题咨询微众客服，微众将第一时间为您服务！"
-		}
-		"""
-	When jobs给'消费品'行业标题为'OPENTM200303341-商品发货通知'的模板消息添加内容
-		"""
-		{
-			"template_id":"i3Uv69VpdJR3FB09eClA5mQqJJrTuxCIb3-piSZ3LJY",
-			"first":"您的订单已发货，请注意查收",
 			"remark":"如有问题咨询微众客服，微众将第一时间为您服务！"
 		}
 		"""
@@ -49,17 +34,6 @@ Background:
 			"headline":"我们已收到您的货款，开始为您打包商品，请耐心等待: )",
 			"industry":"IT科技",
 			"type":"主营行业",
-			"status":"已启用",
-			"operate":"查看"
-		}
-		"""
-	When jobs修改'消费品'行业标题为'OPENTM200303341-商品发货通知'的状态
-		"""
-		{
-			"template_id":"i3Uv69VpdJR3FB09eClA5mQqJJrTuxCIb3-piSZ3LJY",
-			"headline":"您的订单已发货，请注意查收",
-			"industry":"消费品",
-			"type":"副营行业",
 			"status":"已启用",
 			"operate":"查看"
 		}

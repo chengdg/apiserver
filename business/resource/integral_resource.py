@@ -1,8 +1,16 @@
 # -*- coding: utf-8 -*-
-"""@package business.inegral_allocator.IntegralResourceAllocator
-请求积分资源
+"""@package business.resource.integral_resource.IntegralResource
+积分资源
 
+积分资源的属性：
+
+属性	| 类型	| 说明
+:------   | :------- | :-------
+integral | 数值	| 积分数量
+money  | 数值 	| 表示积分对应的价格
+integral_log_id	| 数值	| 积分记录ID(待确认)
 """
+
 import logging
 import json
 from bs4 import BeautifulSoup

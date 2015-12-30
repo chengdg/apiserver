@@ -46,6 +46,7 @@ from services.order_notify_mail_service.task import notify_order_mail
 from business.mall.allocator.allocate_order_resource_service import AllocateOrderResourceService
 from business.account.integral import Integral
 from business.mall.pay_interface import PayInterface
+from decimal import Decimal
 
 ORDER_STATUS2NOTIFY_STATUS = {
 	mall_models.ORDER_STATUS_NOT: accout_models.PLACE_ORDER,
@@ -690,7 +691,7 @@ class Order(business_model.Model):
 			#更新webapp_user的has_purchased字段
 			webapp_user = self.context['webapp_user']
 			webapp_user.set_purchased()
-			webapp_user.update_pay_info(self.final_price + self.weizoom_card_money)
+			webapp_user.update_pay_info(float(self.final_price) + float(self.weizoom_card_money))
 
 			Integral.increase_after_order_payed_finsh({
 				'webapp_user': webapp_user,

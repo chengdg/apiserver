@@ -681,22 +681,33 @@ class Order(business_model.Model):
 		return pay_result
 
 
-	# todo
+	def __release_order_resources():
+		"""
+		取消订单时，释放订单资源
+		"""
+		return
+
 	def cancel(self):
 		"""
 		取消订单
+
+		@todo 需要释放订单资源	
 		"""
-		# 释放订单资源
+		#TODO: 释放订单资源
+		self.__release_order_resources()
+
+		# 更新订单状态
 		self.status = mall_models.ORDER_STATUS_CANCEL
-
-
 		mall_models.Order.update(status=mall_models.ORDER_STATUS_CANCEL).dj_where(id=self.id).execute()
 
 		# 更新子订单状态
-		if self.origin_order_id == -1:
+		if self.origin_order_id == mall_models.ORIGIN_ORDER:
+			# 此订单为主订单。更新其子订单也为“取消状态”
 			mall_models.Order.update(status=mall_models.ORDER_STATUS_CANCEL).dj_where(origin_order_id=self.id).execute()
 
+		# TODO: 发出cancel_order事件
 		self.__after_update_status('cancel')
+
 
 	# todo
 	def finish(self):

@@ -279,12 +279,8 @@ Scenario:3 bill不能取消使用了积分的待发货订单
 			"status": "待发货"
 		}
 		"""
-	Then bill获取积分数值
-		"""
-		{
-			"integral":"0"
-		}
-		"""
+	Then bill在jobs的webapp中拥有0会员积分
+
 	Given jobs登录系统:weapp
 	Then jobs能获得订单'003':weapp
 		"""
@@ -318,12 +314,7 @@ Scenario:4 bill能取消使用积分的待支付订单
 			"status": "已取消"
 		}
 		"""
-	Then bill获取积分数值
-		"""
-		{
-			"integral": "50"
-		}
-		"""
+	Then bill在jobs的webapp中拥有50会员积分
 	Given jobs登录系统:weapp
 	Then jobs能获得订单'004':weapp
 		"""

@@ -199,6 +199,7 @@ Scenario:1 bill能取消待支付订单
 
 	When bill访问jobs的webapp
 	Then bill'能'取消订单'001'
+	When bill取消订单'001'
 	Then bill手机端获取订单'001'
 		"""
 		{
@@ -307,6 +308,7 @@ Scenario:4 bill能取消使用积分的待支付订单
 
 	When bill访问jobs的webapp
 	Then bill'能'取消订单'004'
+	When bill取消订单'004'
 	Then bill手机端获取订单'004'
 		"""
 		{
@@ -340,6 +342,7 @@ bill能取消订单'005'
 
 	When bill访问jobs的webapp
 	Then bill'能'取消订单'005'
+	When bill取消订单'005'
 	Then bill手机端获取订单'005'
 		"""
 		{
@@ -380,6 +383,7 @@ bill能取消订单'006'
 
 	When bill访问jobs的webapp
 	Then bill'能'取消订单'006'
+	When bill取消订单'006'
 	Then bill手机端获取订单'006'
 		"""
 		{
@@ -461,6 +465,7 @@ Scenario:8 bill能取消使用了微众卡的待支付订单
 
 	When bill访问jobs的webapp
 	Then bill'能'取消订单'008'
+	When bill取消订单'008'
 	Then bill手机端获取订单'008'
 		"""
 		{

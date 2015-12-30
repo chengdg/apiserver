@@ -217,7 +217,7 @@ class Order(business_model.Model):
 					'order_id': sub_order_id
 				})
 				for product in self.products:
-					#新的数据中已经有supplier字段了，但是为了兼容旧的数据，次数要做此处理
+					#新的数据中已经有supplier字段了，但是为了兼容旧的数据，此处要做此处理
 					if not product.supplier:
 						_product = Product.from_id({
 							'webapp_owner': self.context['webapp_owner'],

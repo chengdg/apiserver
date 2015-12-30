@@ -93,7 +93,12 @@ class PromotionRepository(business_model.Model):
 		id2product = dict([(product.id, product) for product in products])
 
 		for premium_sale_product in premium_sale_products:
+			#add by duhao当赠品和主商品不是一个供应商时，需要把赠品的供应商id变为和主商品一样，以便和主商品显示在同一个子订单中
 			premium_sale_id = premium_sale_product.premium_sale_id
+			promotion = promotion_models.Promotion.get(type=promotion_models.PROMOTION_TYPE_PREMIUM_SALE, detail_id=premium_sale_id)
+			product2promotion = promotion_models.ProductHasPromotion.get(promotion=promotion.id)
+			main_product = product2promotion.product
+
 			product_id = premium_sale_product.product_id
 			product = id2product[product_id]
 			data = {
@@ -103,7 +108,8 @@ class PromotionRepository(business_model.Model):
 				'original_premium_count': premium_sale_product.count,
 				'premium_count': premium_sale_product.count,
 				'premium_unit': premium_sale_product.unit,
-				'premium_product_id': premium_sale_product.product_id
+				'premium_product_id': premium_sale_product.product_id,
+				'supplier': main_product.supplier
 			}
 			id2sale[premium_sale_id].premium_products.append(data)
 

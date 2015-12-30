@@ -150,7 +150,7 @@ class PremiumSale(promotion.Promotion):
 				'product_id': premium_product['premium_product_id']
 			})
 			premium_product['price'] = product.price_info['min_price']
-			premium_product['supplier'] = product.supplier
+			# premium_product['supplier'] = product.supplier
 
 	def apply_promotion(self, promotion_product_group, purchase_info=None):
 		products = promotion_product_group.products

@@ -137,3 +137,6 @@ MAIL_NOTIFY_ACCOUNT_SMTP = u'smtp.qq.com'
 #最为oauthserver时候使用
 OAUTHSERVER_HOST = 'http://api.mall3.weizzz.com/'
 
+WEAPP_DOMAIN = 'docker.test.weizzz.com'
+H5_DOMAIN = 'h5.mall3.weizzz.com'
+

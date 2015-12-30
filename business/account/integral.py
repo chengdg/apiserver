@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""@package business.spread
+"""@package business.account.integral
 
 """
 
@@ -158,3 +158,23 @@ class Integral(business_model.Model):
 		#TODO-bert 增加watchdog
 		member_models.Member.update(integral=member_models.Member.integral + integral_count).dj_where(id=webapp_user.member.id).execute()
 		member_models.MemberIntegralLog.delete().dj_where(id=integral_log_id).execute()
+
+	@staticmethod
+	def return_integral(args):
+		"""
+		返还积分
+
+		与roll_back_integral()区别：return_integral()不删除integral_log。
+		"""
+		webapp_user = args['webapp_user']
+		return_count = args['return_count']
+		
+		if return_count <= 0:
+			return
+
+		return Integral.increase_member_integral({
+			'integral_increase_count': return_count,
+			'webapp_user': webapp_user,
+			'member':webapp_user.member,
+			'event_type':  member_models.RETURN_BY_SYSTEM
+			})

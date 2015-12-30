@@ -49,12 +49,21 @@ class IntegralResourceAllocator(business_model.Service):
 		if release_resource:
 			integral = release_resource.integral
 			integral_log_id = release_resource.integral_log_id
-			if integral > 0 and integral_log_id != -1:
-				Integral.roll_back_integral({
-						'webapp_user': webapp_user,
-						'integral_count': integral,
-						'integral_log_id': integral_log_id
-						})
+			if integral_log_id >= 0:
+				# 表示积分回滚
+				if integral > 0:
+					Integral.roll_back_integral({
+							'webapp_user': webapp_user,
+							'integral_count': integral,
+							'integral_log_id': integral_log_id
+							})
+			else:
+				# integral_log_id=-1 表示积分返还
+				Integral.return_integral({
+							'webapp_user': webapp_user,
+							'return_count': integral,
+					})
+		return
 
 
 	def allocate_resource(self, integral):

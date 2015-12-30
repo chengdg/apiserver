@@ -28,9 +28,9 @@ def notify_order_mail(user_id, member_id, status, order_id, buyed_time, order_st
 				if product_pic_list:
 					pic_address = ''
 					for pic in product_pic_list:
-						# todo
-						# pic_address = pic_address+"<img src='http://%s%s' width='170px' height='200px'></img>" % (settings.DOMAIN, pic)
-						pic_address = ''
+						if pic.find('http') < 0:
+							pic = "http://%s%s" % (settings.WEAPP_DOMAIN, pic)
+						pic_address = pic_address+"<img src='%s' width='170px' height='200px'></img>" % (pic)
 					if pic_address != '':
 						content_list.append(pic_address)
 				content_list.append(u'订单号：%s' % order_id)

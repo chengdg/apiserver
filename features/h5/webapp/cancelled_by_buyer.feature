@@ -55,13 +55,16 @@ Background:
 		}]
 		"""
 	And bill关注jobs的公众号
-	And jobs已有的会员:weapp
-		"""
-		[{
-			"name": "bill",
-			"integral":"150"
-		}]
-		"""
+	When bill访问jobs的webapp
+	When bill获得jobs的150会员积分
+	Then bill在jobs的webapp中拥有150会员积分
+	#And jobs已有的会员:weapp
+	#	"""
+	#	[{
+	#		"name": "bill",
+	#		"integral": 150
+	#	}]
+	#	"""
 	And jobs已添加了优惠券规则:weapp
 		"""
 		[{
@@ -223,7 +226,7 @@ Scenario:1 bill能取消待支付订单
 		}
 		"""
 
-@mall2 @order @allOrder   @mall.order_cancel_status @mall.order_cancel_status.coupon_member @pyliu @wip.cbb2
+@mall3 @mall2 @order @allOrder   @mall.order_cancel_status @mall.order_cancel_status.coupon_member @pyliu @wip.cbb2
 Scenario:2 bill不能取消使用了优惠券的待发货订单
 	bill不能取消订单'002'
 	1. bill手机端订单状态为'待发货'
@@ -263,7 +266,7 @@ Scenario:2 bill不能取消使用了优惠券的待发货订单
 		}
 		"""
 
-@mall2 @order @allOrder   @mall.order_cancel_status @mall.order_cancel_status.integral_member @pyliu02 @wip.cbb3
+@mall3 @mall2 @order @allOrder   @mall.order_cancel_status @mall.order_cancel_status.integral_member @pyliu02 @wip.cbb3
 Scenario:3 bill不能取消使用了积分的待发货订单
 	bill不能取消订单'003'
 	1. bill手机端订单状态为'待发货'
@@ -298,7 +301,7 @@ Scenario:3 bill不能取消使用了积分的待发货订单
 		}
 		"""
 
-@mall2 @order @allOrder   @mall.order_cancel_status @mall.order_cancel_status.integral_and_coupon_member @pyliu @wip.cbb4
+@mall3 @mall2 @order @allOrder   @mall.order_cancel_status @mall.order_cancel_status.integral_and_coupon_member @pyliu @wip.cbb4
 Scenario:4 bill能取消使用积分的待支付订单
 	bill取消订单'004'
 	1. bill手机端订单状态改变为'已取消'
@@ -307,6 +310,7 @@ Scenario:4 bill能取消使用积分的待支付订单
 	4. 积分数值改变为：'50'
 
 	When bill访问jobs的webapp
+	#Then bill在jobs的webapp中拥有150会员积分
 	Then bill'能'取消订单'004'
 	When bill取消订单'004'
 	Then bill手机端获取订单'004'

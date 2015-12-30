@@ -40,8 +40,7 @@ class ProductResourceAllocator(business_model.Service):
 		释放ProductResource
 		"""
 		if not isinstance(resource, ProductResource):
-			logging.info("resource SHOULD BE ProductResouce")
-			return
+			logging.warning("resource SHOULD BE ProductResouce")
 
 		model_id = resource.model_id
 		purchase_count = resource.purchase_count

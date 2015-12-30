@@ -18,7 +18,7 @@ import logging
 
 @then(u"{webapp_user_name}在{webapp_owner_name}的webapp中拥有{integral_count}会员积分")
 def step_impl(context, webapp_user_name, webapp_owner_name, integral_count):
-	webapp_owner_id = context.webapp_owner_id
+	#webapp_owner_id = context.webapp_owner_id
 	response = context.client.get('/wapi/user_center/user_center/', {
 	})
 	

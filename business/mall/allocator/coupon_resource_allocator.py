@@ -55,7 +55,7 @@ class CouponResourceAllocator(business_model.Service):
 
 			promotion_models.CouponRule.update(use_count=promotion_models.CouponRule.use_count - 1)
 
-			red_envelope2member = resource.context['red_envelope2member']
+			red_envelope2member = resource.context.get('red_envelope2member', None)
 			if red_envelope2member and red_envelope2member.introduced_by != 0:
 				promotion_models.RedEnvelopeParticipences.update(
 						introduce_used_number=promotion_models.RedEnvelopeParticipences.introduce_used_number - 1).dj_where(

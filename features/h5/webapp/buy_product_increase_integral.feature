@@ -623,7 +623,7 @@ Scenario:6 基础积分不为0，额外积分奖励，小数部分直接舍掉�
 		}]
 		"""
 
-@mall2 @member @member.shared_integral @mall3 @gcy1
+@mall2 @member @member.shared_integral @mall3 @bert
 Scenario:7 推荐关注的好友购买奖励 基础积分设为0，额外积分奖励不为零
 	1.bill是tom的邀请者
 	2.tom每次购买jobs的商品，给bill增加积分

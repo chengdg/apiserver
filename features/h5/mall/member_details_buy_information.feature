@@ -17,9 +17,10 @@ Feature: 会员管理-会员列表-会员详情-购买信息
 	"""
 
 Background:
-	Given jobs登录系统
+	Given 重置weapp的bdd环境
+	Given jobs登录系统:weapp
 	#添加相关基础数据
-		When jobs已添加商品
+		When jobs已添加商品:weapp
 			"""
 			[{
 				"name": "商品1",
@@ -33,7 +34,7 @@ Background:
 				"stock_type": "无限"
 			}]
 			"""
-		And jobs已添加支付方式
+		And jobs已添加支付方式:weapp
 			"""
 			[{
 				"type": "货到付款",
@@ -53,7 +54,7 @@ Background:
 			}]
 			"""
 		And bill关注jobs的公众号
-		When 微信用户批量消费jobs的商品
+		When 微信用户批量消费jobs的商品:weapp
 			|    order_id    |    date    |delivery_time| consumer |   product | payment | pay_type | postage*| price* | paid_amount*| alipay*| wechat*| cash*|   action      | order_status* |
 			| 对应订单编号01 | 2015-01-01 |             | bill     | 商品1,1   | 支付    | 支付宝   | 10      | 100    | 110         | 110    | 0      | 0    |               | 待发货        |
 			| 对应订单编号02 | 2015-01-02 |             | bill     | 商品2,2   |         | 支付宝   | 15      | 100    | 0           | 0      | 0      | 0    | jobs,取消     | 已取消        |
@@ -66,9 +67,9 @@ Background:
 @mall2 @member @memberList @order
 Scenario:1 当前会员的"会员详情"的"购买信息"数据
 
-	Given jobs登录系统
-	When jobs访问'bill'会员详情
-	Then jobs获得'bill'的购买信息
+	Given jobs登录系统:weapp
+	When jobs访问'bill'会员详情:weapp
+	Then jobs获得'bill'的购买信息:weapp
 		"""
 		{
 			"purchase_amount":660.00,
@@ -76,7 +77,7 @@ Scenario:1 当前会员的"会员详情"的"购买信息"数据
 			"customer_price":132.00
 		}
 		"""
-	Then jobs获得'bill'的订单列表
+	Then jobs获得'bill'的订单列表:weapp
 		|   order_id    | order_amount |    date    | order_status |
 		|对应订单编号07 |    110.00    | 2015-03-05 | 退款成功     |
 		|对应订单编号06 |    115.00    | 2015-03-04 | 退款中       |

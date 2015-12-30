@@ -62,7 +62,7 @@ class PayInterface(business_model.Model):
 
 		self.context['webapp_owner'] = webapp_owner
 
-		if pay_interface_type:
+		if pay_interface_type != None:
 			self.context['interface'] = next(interface for interface in webapp_owner.pay_interfaces if interface['type'] == pay_interface_type)
 		elif interface_id:
 			self.context['interface'] = next(interface for interface in webapp_owner.pay_interfaces if interface['id'] == interface_id)

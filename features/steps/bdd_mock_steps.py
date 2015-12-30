@@ -15,7 +15,6 @@ def step_impl(context):
 
 @then(u'server能发送模板消息')
 def step_impl(context):
-    print('----------------ffff',bdd_mock)
     expected = json.loads(context.text)
     actual = bdd_util.get_bdd_mock('template_message')
     bdd_util.assert_dict(expected, actual)

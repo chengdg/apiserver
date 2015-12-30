@@ -10,6 +10,7 @@ Feature:下单失败后校验库存、积分、优惠券和微众卡信息
 	"""
 
 Background:
+	Given 重置weapp的bdd环境
 	Given jobs登录系统:weapp
 	Given jobs设定会员积分策略:weapp
 		"""
@@ -101,6 +102,7 @@ Background:
 		}]
 		"""
 
+@mall3 @duhao @order
 Scenario:1 下单失败后，校验商品的库存变化
 	bill加入1个'商品1'和2个'商品2'到购物车
 	jobs后台下架'商品1'和'商品2'
@@ -160,7 +162,7 @@ Scenario:1 下单失败后，校验商品的库存变化
 		"""
 	#校验商品的库存
 	Given jobs登录系统:weapp
-	Then jobs能获取商品'商品1':weapp
+	Then jobs能获取商品'商品1'
 		"""
 		{
 			"name": "商品1",
@@ -176,7 +178,7 @@ Scenario:1 下单失败后，校验商品的库存变化
 			}
 		}
 		"""
-	Then jobs能获取商品'商品2':weapp
+	Then jobs能获取商品'商品2'
 		"""
 		{
 			"name": "商品2",
@@ -193,6 +195,7 @@ Scenario:1 下单失败后，校验商品的库存变化
 		}
 		"""
 
+@mall3 @duhao @order
 Scenario:2 下单失败后，校验会员的积分变化
 	#bill购买商品2，消耗积分
 	#jobs结积分活动
@@ -243,7 +246,7 @@ Scenario:2 下单失败后，校验会员的积分变化
 	Then bill在jobs的webapp中拥有50会员积分
 	#下单失败，校验商品的库存
 	Given jobs登录系统:weapp
-	Then jobs能获取商品'商品2':weapp
+	Then jobs能获取商品'商品2'
 		"""
 		{
 			"name": "商品2",
@@ -260,6 +263,7 @@ Scenario:2 下单失败后，校验会员的积分变化
 		}
 		"""
 
+@mall3 @duhao @order
 Scenario:3 下单失败后，校验优惠券和微众卡的变化
 	When bill访问jobs的webapp
 	When bill购买jobs的商品
@@ -289,7 +293,7 @@ Scenario:3 下单失败后，校验优惠券和微众卡的变化
 		}
 		"""
 	Given jobs登录系统:weapp
-	Then jobs能获取商品'商品3':weapp
+	Then jobs能获取商品'商品3'
 		"""
 		{
 			"name": "商品3",
@@ -305,7 +309,7 @@ Scenario:3 下单失败后，校验优惠券和微众卡的变化
 			}
 		}
 		"""
-	Then jobs能获得优惠券'优惠券1'的码库:weapp
+	Then jobs能获得优惠券'优惠券1'的码库
 		"""
 		{
 			"coupon1_id_1": {
@@ -322,7 +326,7 @@ Scenario:3 下单失败后，校验优惠券和微众卡的变化
 			}
 		}
 		"""
-	Then jobs能获取微众卡'0000001':weapp
+	Then jobs能获取微众卡'0000001'
 		"""
 		{
 			"status":"未使用",

@@ -13,11 +13,14 @@ import time
 #import random
 from datetime import datetime
 import copy
+
+import settings
 from core.exceptionutil import unicode_full_stack
 from core.sendmail import sendmail
 from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
 import db.account.models as accout_models
 from core.wxapi import get_weixin_api
+from features.util.bdd_util import set_bdd_mock
 from utils.regional_util import get_str_value_by_string_ids
 
 #import settings
@@ -63,6 +66,7 @@ class Order(business_model.Model):
 		'order_id',
 		'type',
 		'pay_interface_type',
+		'payment_time',
 		'final_price',
 		'product_price',
 		'edit_money',
@@ -524,7 +528,7 @@ class Order(business_model.Model):
 		db_model.type = self.type
 		db_model.pay_interface_type = self.pay_interface_type
 		db_model.order_id = self.order_id
-		db_model.webapp_source_id = 0 	# 兼容老数据
+		#db_model.webapp_source_id = 0 	# 兼容老数据
 
 		if self.supplier:
 			db_model.supplier = self.supplier
@@ -638,6 +642,7 @@ class Order(business_model.Model):
 
 		@param[in] pay_interface_type: 支付所使用的支付接口的type
 		"""
+		print('----------hereeee111111111')
 		pay_result = False
 
 		if self.status == mall_models.ORDER_STATUS_NOT:
@@ -671,7 +676,7 @@ class Order(business_model.Model):
 			webapp_user.set_purchased()
 
 			self.__after_update_status('pay')
-
+			self.__send_template_message()
 		return pay_result
 
 
@@ -786,9 +791,13 @@ class Order(business_model.Model):
 		# todo 运营邮件email
 		self.__send_notify_mail()
 		# todo 需要真实环境测试
-		# self.__send_template_message()
+
 
 	def __send_template_message(self):
+		# print('sadasdasdasd')
+		# raise Exception('xsdasasaaaaaaa')
+		# return True
+		# print('-----------111')
 		webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user']
 		# user_profile = UserProfile.objects.get(webapp_id=webapp_id)
@@ -796,13 +805,30 @@ class Order(business_model.Model):
 		user = user_profile.user
 		send_point = ORDER_STATUS2SEND_PONINT.get(self.status, '')
 		template_message = mall_models.MarketToolsTemplateMessageDetail.select().dj_where(owner=user, template_message__send_point=send_point, status=1).first()
-
+		print('-----------------here3')
 		if user_profile and template_message and template_message.template_id:
+			print('-----------------here4')
 			mpuser_access_token = webapp_owner.weixin_mp_user_access_token
 			if mpuser_access_token:
+				print('--------------5')
 				try:
-					weixin_api = get_weixin_api(mpuser_access_token)
 					message = self.__get_order_send_message_dict(user_profile, template_message, self, send_point)
+					print('------------here6666')
+					if settings.IS_UNDER_BDD or 1:
+						print('------------here777777777')
+						print('-----message',message)
+						mock = dict()
+						mock['touser'] = mpuser_access_token
+						print('--------------aaaa',message['data'])
+						for key, value in message['data'].items():
+							print('---oookey',key)
+							print('----x',key,value,value['value'])
+							mock[key] = value['value']
+						print('---------mock',mock)
+						print('------------------here8888888')
+						set_bdd_mock('template_message', mock)
+						return False
+					weixin_api = get_weixin_api(mpuser_access_token)
 					result = weixin_api.send_template_message(message, True)
 					#_record_send_template_info(order, template_message.template_id, user)
 					# if result.has_key('msg_id'):
@@ -862,7 +888,7 @@ class Order(business_model.Model):
 					else:
 						order_products = OrderProducts.get_for_order({
 							'webapp_owner': self.context['webapp_owner'],
-							'webapp_user': self['webapp_user'],
+							'webapp_user': self.context['webapp_user'],
 							'order': order
 						})
 

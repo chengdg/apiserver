@@ -88,6 +88,8 @@ DELIVER_MESSAGE = """{
 
 SEND_MASS_MSG_URI = 'cgi-bin/message/template/send'
 class WeixinTemplateMessageSendApi(object):
+	# def __init__(self):
+	# 	print(222222222222222222222222222222222)
 
 	def get_get_request_url_and_api_info(self, mpuser_access_token=None, varargs=()):
 		if len(varargs) >= 3 and len(varargs) == 0:

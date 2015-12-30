@@ -3,7 +3,7 @@
 请求订单商品库存资源
 
 """
-from business import model as business_model 
+from business import model as business_model
 from business.resource.products_resource import ProductsResource
 from business.mall.allocator.product_resource_allocator import ProductResourceAllocator
 from business.mall.merged_reserved_product import MergedReservedProduct
@@ -31,12 +31,6 @@ class OrderProductsResourceAllocator(business_model.Service):
 		if not product_resource:
 			logging.info(u"`product_resource` should not be None. It's meaningless.")
 			return
-
-		if not isinstance(product_resource, ProductsResource):
-			logging.info(u"ONLY to release OrderProductsResources")
-			return
-
-		#release_resources = []
 
 		product_resource_allocator = ProductResourceAllocator.get()
 
@@ -169,7 +163,9 @@ class OrderProductsResourceAllocator(business_model.Service):
 				self.context['resource2allocator'][resource.model_id] = product_resource_allocator
 
 		if not successed:
-			self.release(resources)
+			# TODO: 应该改成用ProductResourceAllocator释放
+			resource = ProductsResource(resources, self.resource_type)
+			self.release(resource)
 			resources = None
 
 		promotion_reasons = []

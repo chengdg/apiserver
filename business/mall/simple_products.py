@@ -25,7 +25,8 @@ class SimpleProducts(business_model.Model):
 	"""
 	__slots__ = (
 		'category',
-		'products'
+		'products',
+		'categories'
 	)
 
 	@staticmethod
@@ -52,7 +53,7 @@ class SimpleProducts(business_model.Model):
 		# jz 2015-11-26
 		# self.context['webapp_user'] = webapp_user
 
-		self.category, self.products = self.__get_from_cache(category_id)
+		self.category, self.products, self.categories = self.__get_from_cache(category_id)
 
 	def __get_from_cache(self, category_id):
 		"""
@@ -67,6 +68,7 @@ class SimpleProducts(business_model.Model):
 		if category_id == 0:
 			category = mall_models.ProductCategory()
 			category.name = u'全部'
+			category.id = 0
 		else:
 			id2category = dict([(c["id"], c) for c in data['categories']])
 			if category_id in id2category:
@@ -99,7 +101,7 @@ class SimpleProducts(business_model.Model):
 
 			products = products_not_0 + products_is_0
 
-		return category, products
+		return category, products, data['categories']
 
 
 	def __get_from_db(self, webapp_owner):
@@ -132,7 +134,8 @@ class SimpleProducts(business_model.Model):
 						'model': product_model,
 						'fill_options': {
 							"with_price": True,
-							"with_product_promotion": True
+							"with_product_promotion": True,
+							"with_selected_category": True
 						}
 					})
 

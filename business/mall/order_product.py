@@ -8,23 +8,22 @@
 
 """
 
-import json
-from bs4 import BeautifulSoup
-import math
-import itertools
-from datetime import datetime
+#import json
+#from bs4 import BeautifulSoup
+#import math
+#import itertools
+#from datetime import datetime
 
 from wapi.decorators import param_required
-from wapi import wapi_utils
-from core.cache import utils as cache_util
+#from wapi import wapi_utils
+#from core.cache import utils as cache_util
 from db.mall import models as mall_models
-import resource
-from core.watchdog.utils import watchdog_alert
+#import resource
+#from core.watchdog.utils import watchdog_alert
 from business import model as business_model 
 from business.mall.product import Product
-import settings
+#import settings
 from business.decorator import cached_context_property
-from business.mall.promotion.promotion_repository import PromotionRepository
 
 
 class OrderProduct(business_model.Model):
@@ -36,7 +35,7 @@ class OrderProduct(business_model.Model):
 		'type',
 		'thumbnails_url',
 		'pic_url',
-		'member_discount',
+		'is_discounted',
 		'purchase_count',
 		'used_promotion_id',
 		'product_model_id',
@@ -60,7 +59,13 @@ class OrderProduct(business_model.Model):
 		'integral_sale_model',
 		'discount_money',
 		'supplier',
-	)
+		'is_use_integral_sale',
+
+		#review add by bert
+		'has_reviewed', #old has_review 
+		'has_reviewed_picture', #old  product_review_picture > order_is_reviewed
+		'rid', # order_has_product_id
+	)	
 
 	@staticmethod
 	@param_required(['webapp_owner', 'webapp_user', 'product_info'])
@@ -84,9 +89,11 @@ class OrderProduct(business_model.Model):
 	def __init__(self, webapp_owner, webapp_user, product_info=None):
 		business_model.Model.__init__(self)
 
+		self.context['webapp_user'] = webapp_user
 		self.context['webapp_owner'] = webapp_owner
 		if product_info:
 			self.__fill_detail(webapp_user, product_info)
+
 
 	def __fill_detail(self, webapp_user, product_info):
 		"""
@@ -108,6 +115,9 @@ class OrderProduct(business_model.Model):
 		self.product_model_id = '%s_%s' % (product_info['id'], product_info['model_name'])
 		self.purchase_count = product_info['count']
 		self.used_promotion_id = product_info['promotion_id']
+		self.is_discounted = (self.discount_money != 0)
+		self.is_use_integral_sale = product_info['integral_sale_id'] > 0
+		self.rid = product_info['rid']
 
 		if product_info['promotion_result']:
 			#self.promotion = {PromotionRepository.get_promotion_from_dict_data(product_info['promotion_result'])}
@@ -134,6 +144,7 @@ class OrderProduct(business_model.Model):
 		self.stocks = model.stocks
 		
 		self.model = model
+
 
 	def has_premium_sale(self):
 		"""
@@ -163,5 +174,6 @@ class OrderProduct(business_model.Model):
 		data['postage_config'] = data['_postage_config']
 		data['model'] = self.model.to_dict() if self.model else None
 		return data
+
 
 

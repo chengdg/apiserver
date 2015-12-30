@@ -31,6 +31,22 @@ class Object(object):
 	def to_dict(self):
 		return self.__dict__
 
+def modify_keys(function):
+	def _modify_keys(*args, **kwargs):
+		args = list(args)
+		keys = args[0]
+		if isinstance(keys, list):
+			acture_keys = []
+			for key in keys:
+				acture_keys.append(':1:api'+key)
+			keys = acture_keys
+		else:
+			keys = ':1:api' + keys
+		args[0] = keys
+		args = tuple(args)
+		return function(*args, **kwargs)
+	return _modify_keys
+
 def get_trace_back():
 	stack_entries = traceback.extract_stack()
 	stack_entries = filter(lambda entry: (('apiserver' in entry[0]) and (not 'cache%sutils' % os.path.sep in entry[0])), stack_entries)
@@ -42,10 +58,12 @@ def get_trace_back():
 	stack = '<br/>'.join(buf).replace("\\", '/').replace('"', "``").replace("'", '`')
 	return stack
 
+@modify_keys
 def set_cache(key, value, timeout=0):
 	pickled_value = pickle.dumps(value)
 	r.set(key, pickled_value)
 
+@modify_keys
 def get_cache(key):
 	value = r.get(key)
 	if not value:
@@ -53,16 +71,18 @@ def get_cache(key):
 	return pickle.loads(value)
 	# return r.get(key)
 
+@modify_keys
 def get_many(keys):
 	return [pickle.loads(value) if value else value for value in r.mget(keys)]
 
+@modify_keys
 def delete_cache(key):
 	r.delete(key)
 	#r.delete(':1:'+key)
 
+@modify_keys
 def delete_pattern(key):
 	keys = r.keys(key)
-	r.delete(*keys)
 
 def clear_db():
 	r.flushdb()
@@ -85,7 +105,11 @@ def set_cache_wrapper(key, value, timeout=0):
 			'time': "%.3f" % duration,
 			'stack': get_trace_back()
 		})
-
+		
+@modify_keys
+def get_keys(pattern):
+	keys = r.keys(pattern)
+	return keys
 
 def get_cache_wrapper(key):
 	start = time()
@@ -143,6 +167,7 @@ def delete_cache_wrapper():
 		else:
 			return None
 	finally:
+		value = 'delete_cache_wrapper'
 		stop = time()
 		duration = stop - start
 		value_type = str(type(value)).replace('<', '&lt;').replace('>', '&gt;')
@@ -163,6 +188,7 @@ def delete_pattern_wrapper(pattern):
 		else:
 			return None
 	finally:
+		value = 'delete_pattern_wrapper'
 		stop = time()
 		duration = stop - start
 		value_type = str(type(value)).replace('<', '&lt;').replace('>', '&gt;')
@@ -245,3 +271,6 @@ def get_many_from_cache(key_infos):
 			objs[key] = value
 
 	return objs
+
+
+

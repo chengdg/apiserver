@@ -8,6 +8,7 @@ import copy
 from datetime import datetime
 
 from core import api_resource
+from core.exceptionutil import unicode_full_stack
 from wapi.decorators import param_required
 from db.mall import models as mall_models
 from db.mall import promotion_models
@@ -19,7 +20,7 @@ from business.mall.order_factory import OrderFactory, OrderException
 from business.mall.purchase_info import PurchaseInfo
 from business.mall.pay_interface import PayInterface
 from business.mall.order import Order
-
+from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
 
 class AOrder(api_resource.ApiResource):
 	"""
@@ -43,6 +44,8 @@ class AOrder(api_resource.ApiResource):
 		purchase_info = PurchaseInfo.parse({
 			'request_args': args
 		})
+		if purchase_info.is_force_purchase:
+			webapp_user.set_force_purchase()
 
 		try:
 			order_factory = OrderFactory.get({
@@ -51,6 +54,7 @@ class AOrder(api_resource.ApiResource):
 			})
 			order = order_factory.create_order(purchase_info)
 		except OrderException as e:
+			# 实际上detail是reason列表
 			return 500, {'detail': e.value}
 
 		# order_factory = OrderFactory.get({
@@ -88,7 +92,109 @@ class AOrder(api_resource.ApiResource):
 		if pay_url_info:
 			data['pay_url_info'] = pay_url_info
 
+		#记录分享来的订单
+		fmt = args.get('fmt', None)
+		from db.member import models as member_models
+		if fmt and fmt != webapp_user.member.token:
+			member_models.MallOrderFromSharedRecord.create(order_id=order.id, fmt=fmt)
+
 		return data
+
+	@param_required(['order_id', 'action'])
+	def post(args):
+		"""
+		更改订单状态
+		"""
+		try:
+			order = Order.from_id({
+				'webapp_user': args['webapp_user'],
+				'webapp_owner': args['webapp_owner'],
+				'order_id': args['order_id']
+			})
+
+			action = args['action']
+			if action == 'cancel':
+				order.cancel()
+			elif action == 'finish':
+				order.finish()
+			else:
+				raise Exception(u'非法操作')
+			return {
+				'success': True
+			}
+		except:
+			# TODO: 规范错误信息
+			notify_message = u"apiserver中修改订单状态失败, order_id:{}, action:{}, cause:\n{}".format(args['order_id'], args['action'], unicode_full_stack())
+			watchdog_error(notify_message)
+			return 500
+
+	@param_required(['order_id'])
+	def delete(args):
+		"""
+		取消订单
+		"""
+		order = Order.from_id({
+			'webapp_user': args['webapp_user'],
+			'webapp_owner': args['webapp_owner'],
+			'order_id': args['order_id']
+		})
+
+		order.cancel()
+		return {
+			'success': True
+		}
+
+
+
+	@staticmethod
+	def to_dict(order):
+		order_dict = order.to_dict('latest_express_detail', 'products')
+		api_keys = [
+			"buyer_name",
+			"coupon_money",
+			"integral",
+			"ship_area",
+			"member_grade_id",
+			"edit_money",
+			"id",
+			"pay_interface_name",
+			"ship_name",
+			"has_sub_order",
+			"sub_orders",
+			"product_price",
+			"member_grade_discount",
+			"supplier",
+			"latest_express_detail",
+			"type",
+			"integral_each_yuan",
+			"final_price",
+			"status",
+			"postage",
+			"ship_address",
+			"pay_interface_type",
+			"order_id",
+			"integral_money",
+			"ship_tel",
+			"origin_order_id",
+			"coupon_id",
+			"customer_message",
+			"webapp_id",
+			"promotion_saved_money",
+			"express_number",
+			"webapp_user_id",
+			"products",
+			"status_text",
+			"created_at",
+			"weizoom_card_money",
+			"red_envelope",
+			"red_envelope_created",
+		]
+		data = {}
+		for key in api_keys:
+			data[key] = order_dict.get(key)
+		return {
+			"order": data
+		}
 
 	@param_required(['order_id'])
 	def get(args):
@@ -98,6 +204,4 @@ class AOrder(api_resource.ApiResource):
 			'order_id': args['order_id']
 		})
 
-		return {
-			'order': order.to_dict('latest_express_detail', 'products')
-		}
+		return AOrder.to_dict(order)

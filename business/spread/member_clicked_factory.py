@@ -15,7 +15,7 @@ import string
 from wapi.decorators import param_required
 from wapi import wapi_utils
 from db.member import models as member_models
-import resource
+#import resource
 from core.watchdog.utils import watchdog_alert
 from business import model as business_model 
 import settings

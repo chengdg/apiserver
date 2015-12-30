@@ -16,7 +16,7 @@ from core.exceptionutil import unicode_full_stack
 from db.mall import models as mall_models
 from db.mall import promotion_models
 from db.member import models as member_models
-import resource
+#import resource
 from core.watchdog.utils import watchdog_alert
 from business import model as business_model
 from business.account.member import Member
@@ -28,6 +28,7 @@ from utils import regional_util
 from business.account.member_order_info import MemberOrderInfo
 from business.account.social_account import SocialAccount
 from business.account.integral import Integral
+from business.mall.coupon.coupon import Coupon
 
 
 class WebAppUser(business_model.Model):
@@ -423,9 +424,16 @@ class WebAppUser(business_model.Model):
 	@property
 	def phone(self):
 		"""
-		[property] 会员绑定的手机号码
+		[property] 会员绑定的手机号码加密
 		"""
 		return self.member.phone
+
+	@property
+	def phone_number(self):
+		"""
+		[property] 会员绑定的手机号码
+		"""
+		return self.member.phone_number
 
 	@property
 	def name(self):
@@ -469,6 +477,10 @@ class WebAppUser(business_model.Model):
 		key = 'member_{webapp:%s}_{openid:%s}' % (self.member.webapp_id, self.openid)
 		cache_util.delete_cache(key)
 
+	def cleanup_order_info_cache(self):
+		key = "webapp_order_stats_{wu:%d}" % (self.id)
+		cache_util.delete_cache(key)
+
 	@cached_context_property
 	def openid(self):
 		"""
@@ -504,6 +516,73 @@ class WebAppUser(business_model.Model):
 			return True
 		else:
 			return False
+
 	@cached_context_property
 	def is_binded(self):
 		return self.member.is_binded
+
+	@cached_context_property
+	def coupons(self):
+		return Coupon.get_coupons_by_webapp_user({
+			'webapp_user': self
+		})
+
+	@cached_context_property
+	def all_coupons(self):
+		return Coupon.get_all_coupons_by_webapp_user({
+			'webapp_user': self
+		})
+
+	#绑定相关
+	@staticmethod
+	def can_binding_phone(webapp_id, phone_number):
+		return member_models.MemberInfo.select().dj_where(member__webapp_id=webapp_id, phone_number=phone_number, is_binded=True).count() == 0
+
+	def update_phone_captcha(self, phone_number, captcha, sessionid):
+		if phone_number and captcha:
+			member_models.MemberInfo.update(session_id=sessionid, phone_number=phone_number, captcha=captcha, binding_time=datetime.now()).dj_where(member_id=self.member.id).execute()
+
+	@cached_context_property
+	def captcha(self):
+		"""
+		[property] 手机验证码
+		"""
+		return self.member.captcha
+
+	@cached_context_property
+	def captcha_session_id(self):
+		"""
+		[property] 手机验证码
+		"""
+		return self.member.captcha_session_id
+
+	@cached_context_property
+	def binded(self):
+		member_models.MemberInfo.update(binding_time=datetime.now(), is_binded=True).dj_where(member_id=self.member.id).execute()
+	
+	def set_force_purchase(self):
+		"""
+		设置强制购买模式
+
+		强制购买模式可以避开一些资源检查，比如：买赠活动的赠品库存不足
+		"""
+		self.context['is_force_purchase'] = True
+
+	def is_force_purchase(self):
+		"""
+		获取当前是否是强制购买模式
+		"""
+		return self.context.get('is_force_purchase', False)
+
+	def update_pay_info(self, money):
+		if money > 0:
+			member = member_models.Member.get(id=self.member.id)
+			member.pay_money = member.pay_money + money
+			member.pay_times = member.pay_times + pay_times
+			try:
+				member.unit_price = member.pay_money/member.pay_times
+			except:
+				member.unit_price = 0
+			member.save()
+
+

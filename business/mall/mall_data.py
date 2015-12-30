@@ -60,7 +60,7 @@ from core.cache import utils as cache_util
 from db.mall import models as mall_models
 from db.mall import promotion_models
 from db.account import models as account_models
-import resource
+#import resource
 from core.watchdog.utils import watchdog_alert
 from business import model as business_model
 import settings
@@ -169,10 +169,12 @@ class MallData(business_model.Model):
 		def inner_func():
 			properties = []
 			user_profile = account_models.UserProfile.select().dj_where(user_id=webapp_owner_id)
-			if user_profile.count() == 1 and mall_models.WeizoomMall.select().dj_where(webapp_id=user_profile[0].webapp_id, is_active=True).count() == 1:
-				properties = list(mall_models.ProductModelProperty.select().dj_where())
-			else:
-				properties = list(mall_models.ProductModelProperty.select().dj_where(owner_id=webapp_owner_id))
+			#duhao 20151221注释，去掉微众商城相关业务
+			# if user_profile.count() == 1 and mall_models.WeizoomMall.select().dj_where(webapp_id=user_profile[0].webapp_id, is_active=True).count() == 1:
+			# 	properties = list(mall_models.ProductModelProperty.select().dj_where())
+			# else:
+			# 	properties = list(mall_models.ProductModelProperty.select().dj_where(owner_id=webapp_owner_id))
+			properties = list(mall_models.ProductModelProperty.select().dj_where(owner_id=webapp_owner_id))
 			id2property = {}
 			property_ids = []
 			for property in properties:

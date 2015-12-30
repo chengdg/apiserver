@@ -67,39 +67,72 @@ def step_impl(context, web_user):
 	
 	return
 
-@When(u"{webapp_user}完成订单'{order_code}'中'{product_name}'的评价包括'{has_picture}'")
-def step_finished_a_product_review(context, webapp_user, order_code, product_name, has_picture):
-	"""
-	完成订单评价
+# @When(u"{webapp_user}完成订单'{order_code}'中'{product_name}'的评价包括'{has_picture}'")
+# def step_finished_a_product_review(context, webapp_user, order_code, product_name, has_picture):
+# 	"""
+# 	完成订单评价
 
-	@see 原Weapp中`features/steps/webapp_product_review_steps.py`
-	"""
-	context_dict = json.loads(context.text)
+# 	@see 原Weapp中`features/steps/webapp_product_review_steps.py`
+# 	"""
+# 	context_dict = json.loads(context.text)
 
-	url = '/wapi/mall/review/?_method=put'
-	#url = '/webapp/api/project_api/call/'
-	# 原始源码在`webapp/modules/mall/request_api_util.py`中的`create_product_review()`。
-	order_has_product = bdd_util.get_order_has_product(order_code, product_name)
-	params = {}
-	params.update(context_dict)
-	params.update({
-		'woid': context.webapp_owner_id,
-		'order_id': order_has_product.order_id,
-		'product_id': order_has_product.product_id,
-		'order_has_product_id': order_has_product.id,
-	})
-	# 输入
-	#data['target_api'] = 'product_review/create'
-	#data['module'] = 'mall'
-	has_picture = context_dict.get('picture_list', None)
-	if has_picture:
-		params['picture_list'] = str(has_picture)
-	bdd_util.assert_api_call_success(context.client.post(url, params))
-	return
+# 	url = '/wapi/member/review_product/?_method=put'
+# 	#url = '/webapp/api/project_api/call/'
+# 	# 原始源码在`webapp/modules/mall/request_api_util.py`中的`create_product_review()`。
+# 	order_has_product = bdd_util.get_order_has_product(order_code, product_name)
+# 	params = {}
+# 	params.update(context_dict)
+# 	params.update({
+# 		'woid': context.webapp_owner_id,
+# 		'order_id': order_has_product.order_id,
+# 		'product_id': order_has_product.product_id,
+# 		'order_has_product_id': order_has_product.id,
+# 	})
+# 	# 输入
+# 	#data['target_api'] = 'product_review/create'
+# 	#data['module'] = 'mall'
+# 	has_picture = context_dict.get('picture_list', None)
+# 	if has_picture:
+# 		params['picture_list'] = str(has_picture)
+# 	bdd_util.assert_api_call_success(context.client.post(url, params))
+# 	return
 
 
 @Then(u"{webapp_user}在商品详情页成功获取'{product_name}'的评价列表")
 def step_webapp_user_get_product_review(context, webapp_user, product_name):
+	"""
+	@see 原Webapp的`webapp_product_review_steps.py`
+	"""
+	product = bdd_util.get_product_by(product_name)
+	url = "/wapi/mall/product/"
+	#response = context.client.get(bdd_util.nginx(url), follow=True)
+	response = context.client.get(url, {
+			# 'woid': context.webapp_owner_id,
+			'product_id': product.id
+		})
+	bdd_util.assert_api_call_success(response)	
+
+	data = response.data
+	logging.debug('response.data: {}'.format(data))
+	product_review_list = data['product_reviews']
+	actual = []
+	if product_review_list:
+		for i in product_review_list:
+			data = {}
+			#data['member'] = i.member_name
+			member = bdd_util.get_member_by_id(i['member_id'])
+			data['member'] = member.username
+			data['review_detail'] = i['review_detail']
+			actual.append(data)
+	else:
+		actual.append({})
+
+	expected = json.loads(context.text)
+	bdd_util.assert_list(expected, actual)
+
+
+@Then(u"{webapp_user}成功获取'{product_name}'的商品详情的'更多评价'")
+def step_impl(context, webapp_user, product_name):
 	"""
 	@see 原Webapp的`webapp_product_review_steps.py`
 	"""
@@ -129,21 +162,6 @@ def step_webapp_user_get_product_review(context, webapp_user, product_name):
 	else:
 		actual.append({})
 	bdd_util.assert_list(expected, actual)
-
-
-@Then(u"{webapp_user}成功获取'{product_name}'的商品详情的'更多评价'")
-def step_impl(context, webapp_user, product_name):
-	"""
-	@todo 后续实现
-	"""
-	new_step = u'''	Then %s在商品详情页成功获取'%s'的评价列表
-		"""
-		%s
-		"""
-	''' % (webapp_user, product_name, json.dumps(json.loads(context.text)))
-	logging.info("Converted step:\n %s" % new_step)
-	context.execute_steps(new_step)
-	return
 
 
 @When(u"{webapp_user}在商城首页点击'{product_name}'的链接")
@@ -195,6 +213,7 @@ def step_impl(context, webapp_owner):
 @Then(u"{webapp_owner}能获取微众卡'{wzcard_id}'")
 def step_impl(context, webapp_owner, wzcard_id):
 	expected = json.loads(context.text)
+	expected['price'] = float(expected['price'])
 	url = "/wapi/wzcard/wzcard/"
 	response = context.client.get(url, {
 			'woid': context.webapp_owner_id,
@@ -204,6 +223,64 @@ def step_impl(context, webapp_owner, wzcard_id):
 
 	real = {
 		'status': response.data['readable_status'],
-		'money': response.data['balance']
+		'price': float(response.data['balance'])
 	}
 	bdd_util.assert_dict(expected, real)
+
+
+@When(u'{webapp_user}进行微众卡余额查询')
+def step_impl(context, webapp_user):
+	args = json.loads(context.text)
+	context.wzcard_info = {
+		'id': args['id'],
+		'password': args['password']
+	}
+
+
+@Then(u'{webapp_user}获得微众卡余额查询结果')
+def step_impl(context, webapp_user):
+	wzcard_id = context.wzcard_info['id']
+	wzcard_password = context.wzcard_info['password']
+
+	url = "/wapi/wzcard/usable_wzcard/"
+	response = context.client.get(url, {
+			'woid': context.webapp_owner_id,
+			'wzcard_id': wzcard_id,
+			'password': wzcard_password,
+		})
+	bdd_util.assert_api_call_success(response)
+
+	logging.info('response.data: {}'.format(response.data))
+	context.tc.assertEquals(200, response.data['code'])
+
+	real = {
+		#'status': response.data['readable_status'],
+		'card_remaining': float(response.data['balance'])
+	}
+	msg = response.data.get('msg')
+	if msg:
+		real['msg'] = msg
+
+	expected = json.loads(context.text)
+	bdd_util.assert_dict(expected, real)
+
+
+@Then(u"{webapp_user}获得错误信息'{expected_msg}'")
+def step_impl(context, webapp_user, expected_msg):
+	wzcard_id = context.wzcard_info['id']
+	wzcard_password = context.wzcard_info['password']
+
+	url = "/wapi/wzcard/usable_wzcard/"
+	response = context.client.get(url, {
+			'woid': context.webapp_owner_id,
+			'wzcard_id': wzcard_id,
+			'password': wzcard_password,
+		})
+	bdd_util.assert_api_call_success(response)
+
+	# TODO: 统一API返回代码
+	context.tc.assertEquals(400, response.data['code'])
+
+	logging.info('response.data: {}'.format(response.data))
+	msg = response.data['msg']
+	context.tc.assertEquals(expected_msg, msg)

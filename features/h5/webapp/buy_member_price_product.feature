@@ -376,7 +376,6 @@ Scenario:4 订单完成后，达到自动升级的条件
 			"upgrade": "自动升级",
 			"pay_money": 500.00,
 			"pay_times": 20,
-			"upgrade_lower_bound": 10000,
 			"discount": "9"
 		}
 		"""
@@ -387,7 +386,6 @@ Scenario:4 订单完成后，达到自动升级的条件
 			"upgrade": "自动升级",
 			"pay_money": 1000.00,
 			"pay_times": 30,
-			"upgrade_lower_bound": 30000,
 			"discount": "8"
 		}
 		"""
@@ -402,14 +400,12 @@ Scenario:4 订单完成后，达到自动升级的条件
 			"upgrade": "自动升级",
 			"pay_money": 500.00,
 			"pay_times": 20,
-			"upgrade_lower_bound": 10000,
 			"discount": "9"
 		}, {
 			"name": "银牌会员",
 			"upgrade": "自动升级",
 			"pay_money": 1000.00,
 			"pay_times": 30,
-			"upgrade_lower_bound": 30000,
 			"discount": "8"
 		}, {
 			"name": "金牌会员",

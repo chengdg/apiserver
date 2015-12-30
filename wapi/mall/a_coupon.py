@@ -2,75 +2,68 @@
 """@package wapi.mall.a_coupon
 优惠券接口
 
-@see Webapp中的`mall/promotion/coupon.py`
-@todo 待清理
 """
 import os
+import copy
+from datetime import datetime
+import json
 
-#from django.template import RequestContext
-#from django.shortcuts import render_to_response
-#from django.http import HttpResponse
-#from excel_response import ExcelResponse
-#from django.contrib.auth.decorators import param_required
-
-#from core import resource
-#from mall import export
-#from mall.models import *
-#from modules.member.models import WebAppUser
-#from modules.member.module_api import get_member_by_id_list
-#from core import paginator
-#from models import *
-#from core.jsonresponse import create_response, JsonResponse
-#from core import search_util
-#from mall.promotion.utils import create_coupons
-
-COUNT_PER_PAGE = 20
-PROMOTION_TYPE_COUPON = 4
-FIRST_NAV_NAME = export.MALL_PROMOTION_AND_APPS_FIRST_NAV
+from core import api_resource
+from wapi.decorators import param_required
+from db.mall import models as mall_models
+from db.mall import promotion_models
+from utils import dateutil as utils_dateutil
+from business.mall.coupon.coupon import Coupon
+from business.mall.reserved_product import ReservedProduct
+from business.mall.forbidden_coupon_product_ids import ForbiddenCouponProductIds
 
 
+class ACoupon(api_resource.ApiResource):
+	"""
+	优惠券
+	"""
+	app = 'mall'
+	resource = 'coupon'
 
+	@param_required(['woid', 'coupon_id', 'order_price', 'product2info'])
+	def get(args):
+		webapp_user = args['webapp_user']
+		webapp_owner = args['webapp_owner']
 
-"""
-# 筛选数据构造
-COUPON_FILTERS = {
-	'coupon': [
-		{
-			'comparator': lambda coupon, filter_value: (filter_value == coupon.coupon_id),
-			'query_string_field': 'couponCode'
-		}, {
-			'comparator': lambda coupon, filter_value: (filter_value == 'all') or (filter_value == str(coupon.status)),
-			'query_string_field': 'useStatus'
-		}
-	],
-	'member': [
-		{
-			'comparator': lambda member, filter_value: (filter_value in member.username_for_html),
-			'query_string_field': 'memberName'
-		}
-	]
-}
+		coupon = Coupon.from_coupon_id({
+			'coupon_id': args['coupon_id']
+		})
 
+		forbidden_coupon_product_ids = ForbiddenCouponProductIds.get_for_webapp_owner({
+			'webapp_owner': webapp_owner
+		}).ids
 
-def _filter_reviews(args, coupons):
-	has_filter = search_util.init_filters(args, COUPON_FILTERS)
-	if not has_filter:
-		# 没有filter，直接返回
-		return coupons
+		reserved_products = []
+		product2info = json.loads(args['product2info'])
+		for product_id, product_info in product2info.items():
+			product_id = int(product_id)
+			reserved_product = ReservedProduct(webapp_owner, webapp_user)
+			reserved_product.id = product_id
+			reserved_product.price = product_info['price']
+			reserved_product.original_price = product_info['original_price']
+			reserved_product.purchase_count = product_info['count']
+			if product_id in forbidden_coupon_product_ids:
+				reserved_product.can_use_coupon = False
+			else:
+				reserved_product.can_use_coupon = True
 
-	coupons = search_util.filter_objects(coupons, COUPON_FILTERS['coupon'])
+			reserved_products.append(reserved_product)
 
-	# 处理领取人
-	member_name = args.GET.get('memberName', '')
-	filter_coupons = coupons
-	if member_name:
-		member_ids = [c.member_id for c in coupons]
-		members = get_member_by_id_list(member_ids)
-		members = search_util.filter_objects(members, COUPON_FILTERS['member'])
-		member_ids = [member.id for member in members]
-		filter_coupons = []
-		for coupon in coupons:
-			if coupon.member_id in member_ids:
-				filter_coupons.append(coupon)
-	return filter_coupons
-"""
+		can_use_coupon, reason = coupon.is_can_use_for_products(webapp_user, reserved_products)
+		if can_use_coupon:
+			return {
+				'is_success': True,
+				'id': coupon.id,
+				'money': coupon.money,
+				'productid': coupon.limit_product_id				
+			}
+		else:
+			return {
+				'is_success': False,
+				'msg': reason
+			}

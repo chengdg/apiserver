@@ -5,8 +5,9 @@ from core import api_resource
 from wapi.decorators import param_required
 from db.mall import models as mall_models
 from utils import dateutil as utils_dateutil
-import resource
+#import resource
 from business.mall.product import Product
+from business.mall.review.product_reviews import ProductReviews
 
 
 class AProduct(api_resource.ApiResource):
@@ -40,8 +41,26 @@ class AProduct(api_resource.ApiResource):
 			# 'member': member,
 			'product_id': args['product_id']
 		})
-		product.apply_discount(args['webapp_user'])
+		if product.is_deleted:
+			return {'is_deleted': True}
+		else:
+			product.apply_discount(args['webapp_user'])
 
-		result = product.to_dict(extras=['hint'])
+			product_reviews = ProductReviews.get_from_product_id({
+				'webapp_owner': webapp_owner,
+				'product_id': product_id,
+			})
+			if product_reviews:
+				reviews = product_reviews.products
+				reviews = reviews[:2]
+			else:
+				reviews = []
+
+			result = product.to_dict(extras=['hint'])
+
+			result['webapp_owner_integral_setting'] = {
+				'integarl_per_yuan': webapp_owner.integral_strategy_settings.integral_each_yuan
+			}
+			result['product_reviews'] = reviews
 
 		return result

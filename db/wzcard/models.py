@@ -40,12 +40,6 @@ class WeizoomCardRule(models.Model):
 	belong_to_owner = models.IntegerField(default=0) #专属商家
 	is_new_member_special = models.BooleanField(default=False) #是否为新会员专属卡
 
-	#@staticmethod
-	#def get_all_weizoom_card_rules_list(user):
-	#	if user is None:
-	#		return []
-	#	return list(WeizoomCoinRule.objects.filter(owner=user))
-
 	class Meta(object):
 		db_table = 'market_tool_weizoom_card_rule'
 		verbose_name = '微众卡规则'
@@ -89,3 +83,27 @@ class WeizoomCard(models.Model):
 	# @staticmethod
 	# def check_card(weizoom_card_id, password):
 	# 	return WeizoomCard.objects.filter(weizoom_card_id=weizoom_card_id, password=password).count() > 0
+
+
+WEIZOOM_CARD_LOG_TYPE_ACTIVATION = u'激活'
+WEIZOOM_CARD_LOG_TYPE_DISABLE = u'停用'
+WEIZOOM_CARD_LOG_TYPE_BUY_USE = u'使用'
+WEIZOOM_CARD_LOG_TYPE_BUY_RETURN = u'返还'
+WEIZOOM_CARD_LOG_TYPE_RETURN_BY_SYSTEM = u'积分兑换'
+WEIZOOM_CARD_LOG_TYPE_MANAGER_MODIFY = u'系统管理员修改'
+#########################################################################
+# WeizoomCardHasOrder : 消费记录 order_id == -1 是积分兑换
+#########################################################################
+class WeizoomCardHasOrder(models.Model):
+	owner_id = models.IntegerField() #商家
+	card_id = models.IntegerField() #weizoom card id  
+	order_id = models.CharField(max_length=50, default='-1') #订单号  order_id == -1 是积分兑换
+	money = models.DecimalField(max_digits=65, decimal_places=2) #金额
+	created_at = models.DateTimeField(auto_now_add=True) #添加时间
+	event_type = models.CharField(max_length=64, verbose_name='事件类型')
+	member_integral_log_id = models.IntegerField(default=0, verbose_name='积分日志id')
+
+	class Meta(object):
+		db_table = 'market_tool_weizoom_card_has_order'
+		verbose_name = '微众卡支付交易记录'
+		verbose_name_plural = '微众卡支付交易记录'

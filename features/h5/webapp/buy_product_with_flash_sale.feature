@@ -162,8 +162,20 @@ Background:
 	And tom关注jobs的公众号
 	And sam关注jobs的公众号
 	And jobs登录系统:weapp
-	And jobs调tom等级为铜牌会员:weapp
-	And jobs调sam等级为银牌会员:weapp
+	When jobs更新'tom'的会员等级:weapp
+		"""
+		{
+			"name": "tom",
+			"member_rank": "铜牌会员"
+		}
+		"""
+	When jobs更新'sam'的会员等级:weapp
+		"""
+		{
+			"name": "sam",
+			"member_rank": "银牌会员"
+		}
+		"""
 	Then jobs可以获得会员列表:weapp
 		"""
 			[{
@@ -230,7 +242,7 @@ Scenario: 1 购买单个限时抢购商品，限时抢购进行中
 		}
 		"""
 
-@mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip @wip.bpwfs2
 Scenario:2 购买单个限时抢购商品，限时抢购已过期（在购物车中是限时抢购商品，但，去提交订单时已经不是限时抢购商品）
 
 	When bill访问jobs的webapp
@@ -431,7 +443,7 @@ Scenario:6 购买单个限时抢购商品，未超过库存限制，但超过单
 		"""
 	Then bill获得创建订单失败的信息'限购2件'
 
-@mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip @wip.bpwfs7
 Scenario:7 在限购周期内连续购买限时抢购商品
 
 	When bill访问jobs的webapp

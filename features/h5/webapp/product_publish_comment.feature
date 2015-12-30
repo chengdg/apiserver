@@ -5,8 +5,9 @@
 Feature: bill在webapp中对已到货的商品进行评价包括，有图，无图，默认项：商品评分，服务态度，发货速度，物流服务 都为5颗星，评价字数在200个之内，显示项包括，商品名称，价格
 
 Background:
-    Given jobs登录系统
-    And jobs已添加商品
+    Given 重置weapp的bdd环境
+    Given jobs登录系统:weapp
+    And jobs已添加商品:weapp
         """
         [{
             "name": "商品1",
@@ -17,7 +18,7 @@ Background:
         }]
         """
     Given bill关注jobs的公众号
-    And jobs已有的订单
+    And jobs已有的订单:weapp
         """
         [{
             "order_no":"1",
@@ -78,10 +79,10 @@ Background:
         }]
         """
 
-@todo @mall2 @person @productReview @product @review   @mall.webapp.comment.dd 
+@mall2 @person @productReview @product @review  @mall.webapp.comment.dd @bert @mall3
 Scenario:1 评价包括文字与晒图
     When bill访问jobs的webapp
-    And bill完成订单'1'中'商品1'的评价包括'文字与晒图'
+    And bill完成订单'1'中'商品1'的评价
         """
         {
             "product_score": "4",
@@ -96,7 +97,7 @@ Scenario:1 评价包括文字与晒图
     # And 订单'1'中'商品1'的评商品评价提示详情'评价文字要求在200字以内'
 
     #文字在200以内，成功提交
-    When bill完成订单'1'中'商品1'的评价包括'文字与晒图'
+    When bill完成订单'1'中'商品1'的评价
         """
         {
             "product_score": "4",
@@ -119,10 +120,10 @@ Scenario:1 评价包括文字与晒图
         }]
         """
 
-@todo @mall2 @person @productReview @product @review   @mall.webapp.comment.dd 
+@mall2 @person @productReview @product @review   @mall.webapp.comment.dd @mall3 @bert
 Scenario:2 无晒图
     When bill访问jobs的webapp
-    And bill完成订单'1'中'商品1'的评价包括'文字与晒图'
+    And bill完成订单'1'中'商品1'的评价
         """
         {
             "product_score": "4",

@@ -15,8 +15,8 @@ import logging
 
 class SqlMonitorMiddleware(object):
 	def process_request(self, request, response):
-		import resource
-		resource.indent = 0
+		#import resource
+		#resource.indent = 0
 		
 		print 'empty peewee.QUERIES'
 		peewee.QUERIES = []
@@ -34,25 +34,15 @@ class SqlMonitorMiddleware(object):
 class RedisMiddleware(object):
 	def process_request(self, request, response):
 		if request.params.get('__nocache', None):
-			access_token = request.params.get('access_token',None)
-			value = None
-			if access_token:
-				account_info = AccessToken.get({
-					'access_token':access_token
-				})
-				if account_info:
-					access_token = account_info.access_token
-					date_str = datetime.today().strftime('%Y-%m-%d') 
-					value = {
-						'woid': account_info.woid,
-						'openid': account_info.openid,
-						'date_str': date_str,
-						'expires_in': '100000000000',
-						'times': int(time.time())
-					}
+			access_token_keys = cache.utils.get_keys('access_token*')
+			access_token_dict = {}
 
+			for access_token_key in access_token_keys:
+				access_token_dict[access_token_key] = cache.utils.GET_CACHE(access_token_key)
+			
 			cache.utils.clear_db()
 
-			if access_token and value:
-				logging.debug("access_token:%s. value:%s" % (access_token, value))
-				cache.utils.SET_CACHE(access_token, value)
+			for key,value in access_token_dict.items():
+				cache.utils.SET_CACHE(key, value)
+
+

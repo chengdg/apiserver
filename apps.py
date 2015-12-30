@@ -2,16 +2,16 @@
 
 import json
 import decimal
-from wsgiref import simple_server
+#from wsgiref import simple_server
 from datetime import datetime, date
 
 import falcon
 from core import api_resource
-from core import auth
+#from core import auth
 from core.exceptionutil import unicode_full_stack
 import settings
-import resource as resource_module
-import resource.resources
+#import resource as resource_module
+#import resource.resources
 import wapi.resources
 import wapi as wapi_resource
 from core.db import models

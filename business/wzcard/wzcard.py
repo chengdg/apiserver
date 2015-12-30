@@ -1,6 +1,8 @@
 #coding: utf8
 """@package business.card.weizoom_card
 微众卡的业务模型
+
+@see 原Weapp的`card_api_view.py`
 """
 
 from business import model as business_model
@@ -8,13 +10,14 @@ from db.wzcard import models as wzcard_models
 from wapi.decorators import param_required
 #from db.wzcard.models import WeizoomCardRule, WeizoomCard
 import logging
+from decimal import Decimal
 
 
 class WZCard(business_model.Model):
 	"""
 	微众卡业务模型
 
-	@see WEAPP/market_tools/tools/weizoom_card/models.py
+	@see 原WEAPP的`/market_tools/tools/weizoom_card/models.py`
 	"""
 	__slots__ = (
 		'id', # 数据库ID
@@ -35,24 +38,24 @@ class WZCard(business_model.Model):
 		'active_card_user_id',
 	)
 
-	def __init__(self, webapp_owner, wzcard_id):
+	def __init__(self, wzcard_id, wzcard_owner=None):
 		business_model.Model.__init__(self)
 
 		# webapp_owner是不需要暴露的property，因此放在context中
-		self.context['webapp_owner'] = webapp_owner
+		# wzcard_owner表示创建微众卡的用户
+		self.context['wzcard_owner'] = wzcard_owner
 		self.wzcard_id = wzcard_id
 
-		wzcard_db = wzcard_models.WeizoomCard.get(
-			owner=webapp_owner.id,
-			weizoom_card_id=wzcard_id)
-		self.context['wzcard_db'] = wzcard_db
-		#logging.info('wzcard_db: {}'.format(wzcard_db))
-		logging.info('wzcard_db.money: {}'.format(wzcard_db.money))
-		self._init_slot_from_model(wzcard_db)
+		db_model = wzcard_models.WeizoomCard.get(weizoom_card_id=wzcard_id)
+		#TODO：加入对专属卡的检查
+		self.context['db_model'] = db_model
+		#logging.info('db_model: {}'.format(db_model))
+		logging.info('db_model.money: {}'.format(db_model.money))
+		self._init_slot_from_model(db_model)
 
 
 	@staticmethod
-	@param_required(['webapp_owner', 'wzcard_id'])
+	@param_required(['wzcard_id'])
 	def from_wzcard_id(args):
 		"""
 		获取微众卡对象的工厂方法
@@ -60,21 +63,11 @@ class WZCard(business_model.Model):
 		@return 如果不存在此卡，返回None
 		"""
 		try:	
-			wzcard = WZCard(args['webapp_owner'], args['wzcard_id'])
+			wzcard = WZCard(args['wzcard_id'])
 			return wzcard
 		except Exception as e:
-			logging.error(str(e))
+			logging.error("Exception: " + str(e))
 		return None
-
-	'''
-	@staticmethod
-	@param_required(['wzcard_id', 'password'])
-	def get(args):
-		"""
-		用微众卡号和密码获取WZCard对象
-		"""
-		return
-	'''
 
 
 	@property
@@ -95,11 +88,19 @@ class WZCard(business_model.Model):
 		return text
 
 	@property
+	def is_empty(self):
+		"""
+		[property] 是否已用完
+
+		@return True:已用完；False:未用完
+		"""
+		return self.status == wzcard_models.WEIZOOM_CARD_STATUS_EMPTY
+
+	@property
 	def balance(self):
 		"""
 		[property] 微众卡余额
 		"""
-		#logging.info("self.money: {}".format(self.money))
 		return self.money
 
 	@balance.setter
@@ -108,25 +109,44 @@ class WZCard(business_model.Model):
 		[setter] 修改微众卡余额
 		"""
 		self.money = value
-		wzcard_db = self.context['wzcard_db']	
-		wzcard_db.money = value
+		db_model = self.context['db_model']	
+		db_model.money = value
 		return
 
 	@property
 	def status(self):
-		wzcard_db = self.context['wzcard_db']
-		return wzcard_db.status
+		"""
+		[property] 微众卡状态
+
+		微众卡有几种状态：
+
+		状态  |  值  | 符号
+		:----- | :------- | :----------
+		未使用	 	| 0 | WEIZOOM_CARD_STATUS_UNUSED
+		已被使用 	| 1 | WEIZOOM_CARD_STATUS_USED
+		已用完		| 2 | WEIZOOM_CARD_STATUS_EMPTY
+		未激活		| 3 | WEIZOOM_CARD_STATUS_INACTIVE
+
+		@see `db/models.py`
+		"""
+		db_model = self.context['db_model']
+		return db_model.status
 
 	@status.setter
 	def status(self, value):
+		"""
+		[setter] 微众卡状态
+		"""
 		#self.status = value
-		wzcard_db = self.context['wzcard_db']	
-		wzcard_db.status = value
+		db_model = self.context['db_model']	
+		db_model.status = value
 		return
 
 	@staticmethod
 	def _get_status(status_str):
 		"""
+		status_text -> status值
+
 		@see `weapp/features/steps/market_tools_weizoom_card_steps.py`
 		"""
 
@@ -145,6 +165,7 @@ class WZCard(business_model.Model):
 			is_expired = True
 			status = wzcard_models.WEIZOOM_CARD_STATUS_INACTIVE
 		return status, is_expired
+
 
 	def __create(self, args):
 		"""
@@ -178,47 +199,86 @@ class WZCard(business_model.Model):
 			expired_time = "3000-12-12 00:00:00",
 			is_expired = is_expired
 		)
-		return
+		return wzcard
 
 
 	@property
 	def orders(self):
 		"""
-		微众卡对应的订单
-		"""
-		pass
+		[property] 微众卡对应的订单
 
+		@todo 待实现
+		"""
+		return []
 
 	def check_password(self, password):
 		"""
-		检查密码
-		@todo 待实现
+		检查密码是否正确
 		"""
-		return True
+		return self.password == password
+
+	@property	
+	def is_activated(self):
+		"""
+		[property] 微众卡是否激活
+		"""
+		logging.info("WZCard.status: {}, id: {}".format(self.status, self.id))
+		return self.status != wzcard_models.WEIZOOM_CARD_STATUS_INACTIVE
 
 	def save(self):
 		"""
 		微众卡信息序列化(比如存到数据库)
 		"""
-		wzcard_db = self.context['wzcard_db']	
-		wzcard_db.save()
-		logging.info("saved WZCard DB object, wzcard_id={}, balance={}".format(wzcard_db.weizoom_card_id, wzcard_db.balance))
+		db_model = self.context['db_model']	
+		db_model.save()
+		logging.info("saved WZCard DB object, wzcard_id={}, balance={}".format(db_model.weizoom_card_id, db_model.money))
 		return
-
 
 	def pay(self, price_to_pay):
 		"""
 		用微众卡支付
 
-		@param price_to_pay 最大待付款价格（能付多少付多少）
+		@param price_to_pay Decimal最大待付款价格（能付多少付多少）
 
+		@return Decimal类型的支付金额
 		@see 参考原Weapp的`def use_weizoom_card()`
+
+		@todo 记录日志
 		"""
+		# 如果price_to_pay是float/str，转成Decimal
+		price_to_pay = price_to_pay if isinstance(price_to_pay, Decimal) else Decimal(price_to_pay)
 		use_price = min(price_to_pay, self.balance)
 		self.balance = self.balance - use_price
 		if self.balance < 1e-3:
-			self.balance = 0
+			self.balance = Decimal(0)
 			self.status = wzcard_models.WEIZOOM_CARD_STATUS_EMPTY
 		else:
 			self.status = wzcard_models.WEIZOOM_CARD_STATUS_USED 
+		# 更新数据库
+		self.save()
 		return use_price
+
+
+	def refund(self, amount, reason=None):
+		"""
+		微众卡退款（用于release）
+
+		@param amount 退款金额
+		@param reason 退款原因
+
+		@return 退款后余额
+		@note 不同于微众卡"充值"
+		"""
+		# 如果amount是float/str，转成Decimal
+		amount = amount if isinstance(amount, Decimal) else Decimal(amount)
+		if amount>0:
+			self.balance += amount
+		# 更新数据库
+		is_success = True
+		try:
+			self.save()
+			# TODO: update log with `reason`
+		except Exception as e:
+			logging.error(str(e))
+			is_success = False
+		return is_success, self.balance

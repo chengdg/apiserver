@@ -69,7 +69,7 @@ Background:
 	And bill关注jobs的公众号
 	And tom关注jobs的公众号
 
-@mall3 @mall.webapp @mall.webapp.shopping_cart
+@mall3 @mall.webapp @mall.webapp.shopping_cart @wip.aptsc1
 Scenario:1 放入单个商品到购物车
 	jobs添加商品后
 	1. bill能在webapp中将jobs添加的商品放入购物车
@@ -139,7 +139,7 @@ Scenario:1 放入单个商品到购物车
 		}
 		"""
 
-@mall3 @mall.webapp @mall.webapp.shopping_cart
+@mall3 @mall.webapp @mall.webapp.shopping_cart @wip.aptsc2
 Scenario:2 放入多个商品到购物车
 	jobs添加商品后
 	1. bill能在webapp中将jobs添加的商品放入购物车
@@ -581,9 +581,8 @@ Scenario:4 商品添加到购物车后，后台对商品规格进行修改
 		}
 		"""
 	
-
 @mall3 @mall.webapp @mall.webapp.shopping_cart
-Scenario: 5 商品添加到购物车后，进行删除
+Scenario:5 商品添加到购物车后，进行删除
 	bill加入jobs的商品到购物车后
 	1.可以对购物车的商品进行删除
 
@@ -638,7 +637,7 @@ Scenario: 5 商品添加到购物车后，进行删除
 		}
 		"""
 
-@mall3 @mall.webapp @mall.webapp.shopping_cart @bc
+@mall3 @mall.webapp @mall.webapp.shopping_cart
 Scenario:6 商品添加到购物车后，后台对商品的价格，库存进行修改（库存数量不为0）
 	bill在webapp中将jobs的商品加入到购物车后，jobs将此商品的商品规格进行修改
 	1.bill查看jobs的webapp购物车，此商品有效，价格与库存为更改后的值

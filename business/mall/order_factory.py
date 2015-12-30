@@ -2,7 +2,19 @@
 """@package business.mall.order_factory
 订单生成器
 
-订单生成器根据购买信息(PurchaseInfo对象)，生成一个订单
+@brief 订单生成器根据购买信息(PurchaseInfo对象)，生成一个订单。
+
+
+下单步骤
+-----------------
+
+1. 申请订单价无关资源（比如：reserved product, coupon, integral）
+2. 计算订单价格（填充资源信息到订单业务对象中）
+3. 申请订单价相关资源（比如：微众卡）
+4. 调整订单价格（填充资源信息到订单业务对象中）
+5. 保存订单
+6. 如果需要（比如订单保存失败），释放资源（包括订单价相关资源和订单价无关资源）
+
 """
 
 import json
@@ -22,8 +34,9 @@ from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
 from db.mall import models as mall_models
-import resource
-from core.watchdog.utils import watchdog_alert
+#import resource
+from core.watchdog.utils import watchdog_alert,watchdog_error
+from core.exceptionutil import unicode_full_stack
 from business import model as business_model 
 from business.mall.product import Product
 import settings
@@ -37,17 +50,7 @@ from business.mall.package_order_service.package_order_service import PackageOrd
 
 from business.mall.reserved_product_repository import ReservedProductRepository
 from business.mall.group_reserved_product_service import GroupReservedProductService
-
-
-class OrderException(Exception):
-	def __init__(self, value):
-		self.value = value
-	def __str__(self):
-		return repr(self.value)
-
-
-
-
+from business.mall.order_exception import OrderException
 
 
 class OrderFactory(business_model.Model):
@@ -55,12 +58,6 @@ class OrderFactory(business_model.Model):
 	订单生成器
 	"""
 	__slots__ = (
-		#'purchase_info',
-		#'products',
-		#'product_groups',
-		#'order',
-		#'resources',
-		#'price_info'
 	)
 
 	@staticmethod
@@ -113,6 +110,17 @@ class OrderFactory(business_model.Model):
 		"""
 		申请订单价无关资源
 
+		说明：`reason`的格式
+
+ 			{
+				"is_success": False,
+				"type": 'promotion:expired',
+				"msg": u"该活动已经过期",
+				"short_msg": u"已经过期"
+			}
+		
+		@see __allocation_promotion()
+
 		@return price_free_resources
 		"""
 		webapp_owner = self.context['webapp_owner']
@@ -123,7 +131,7 @@ class OrderFactory(business_model.Model):
 		successed, reasons, resources = allocate_order_resource_service.allocate_resource_for(order, purchase_info)
 		
 		if successed:
-			logging.info("Allocated resources successfully. count: {}".format(len(resources)))
+			logging.info(u"Allocated resources successfully. count: {}".format(len(resources)))
 
 			self.context['allocator_order_resource_service'] = allocate_order_resource_service
 			#self.resources = resources
@@ -133,6 +141,11 @@ class OrderFactory(business_model.Model):
 			# 		self.__process_order_integral_for(resource)
 			return resources
 		else:
+			# 如果分配资源失败，则抛异常
+			logging.info(u"count of `reasons`: {}".format(len(reasons)))
+			logging.info(u"reasons in OrderFactory.create_order: ")
+			for reason in reasons:
+				logging.info(u"reason: name: {}, short_msg: {}".format(reason.get('name'), reason.get('short_msg')))
 			allocate_order_resource_service.release(resources)
 			raise OrderException(reasons)	
 
@@ -187,98 +200,45 @@ class OrderFactory(business_model.Model):
 		order.customer_message = purchase_info.customer_message
 		order.type = purchase_info.order_type
 		order.pay_interface_type = purchase_info.used_pay_interface_type
-
+		order.status = mall_models.ORDER_STATUS_NOT
 		order.order_id = self.__create_order_id()
 		return order
 
 
-	def release(self):
+	def release(self, resources):
+		"""
+		释放资源
+		"""
 		allocator_order_resource_service = self.context['allocator_order_resource_service'] 
 		if isinstance(allocator_order_resource_service, AllocateOrderResourceService):
-			allocator_order_resource_service.release()
+			allocator_order_resource_service.release(resources)
 
 
 	def __save_order(self, order):
 		"""
 		保存订单
 
-		@param order Order对象(业务模型)
+		@param[in] order Order对象(业务模型)
 		"""
 		#webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user']
 
-		products = order.products
-		product_groups = order.product_groups
-
 		logging.debug("order.db_model={}".format(order.db_model))
-		order.save()
+		try:
+			order.save()
+			if order.final_price == 0:
+				# 优惠券或积分金额直接可支付完成，直接调用pay_order，完成支付
+				order.pay(mall_models.PAY_INTERFACE_PREFERENCE)
+				# 支付后的操作
+				#mall_signals.post_pay_order.send(sender=Order, order=order, request=request)
 
-		#建立<order, product>的关系
-		supplier_ids = []
-		for product in products:
-			supplier = product.supplier
-			if not supplier in supplier_ids:
-				supplier_ids.append(supplier)
+		except:
+			notify_message = u"__save_order error cause:\n{}".format(unicode_full_stack())
+			logging.error(notify_message)
+			watchdog_error(notify_message)
+			return None
 
-			# TODO: 将存储隐藏到Order.save()中
-			mall_models.OrderHasProduct.create(
-				order = order.db_model,
-				product = product.id,
-				product_name = product.name,
-				product_model_name = product.model_name,
-				number = product.purchase_count,
-				total_price = product.total_price,
-				price = product.price,
-				promotion_id = product.used_promotion_id,
-				promotion_money = product.promotion_saved_money,
-				grade_discounted_money=product.discount_money
-			)
-
-		if len(supplier_ids) > 1:
-			# 进行拆单，生成子订单
-			#order.db_model.origin_order_id = -1 
-			# 标记有子订单
-			# TODO: 改成method
-			order.origin_order_id = -1
-			for supplier in supplier_ids:
-				new_order = copy.deepcopy(order.db_model)
-				new_order.id = None
-				new_order.order_id = '%s^%s' % (order.order_id, supplier)
-				new_order.origin_order_id = order.id
-				new_order.supplier = supplier
-				new_order.save()
-		elif supplier_ids[0] != 0:
-			order.supplier = supplier_ids[0]
-		order.save()
-		#order.db_model.save()
-
-		#建立<order, promotion>的关系
-		for product_group in product_groups:
-			if product_group.promotion:
-				promotion = product_group.promotion
-				promotion_result = product_group.promotion_result
-				integral_money = 0
-				integral_count = 0
-				if promotion.type_name == 'integral_sale':
-					integral_money = promotion_result['integral_money']
-					integral_count = promotion_result['use_integral']
-				mall_models.OrderHasPromotion.create(
-					order = order.db_model,
-					webapp_user_id = webapp_user.id,
-					promotion_id = promotion.id,
-					promotion_type = promotion.type_name,
-					promotion_result_json = json.dumps(promotion_result.to_dict()),
-					integral_money = integral_money,
-					integral_count = integral_count,
-				)
-
-		if order.final_price == 0:
-			# 优惠券或积分金额直接可支付完成，直接调用pay_order，完成支付
-			pass
-			#self.pay_order(order.order_id, True, PAY_INTERFACE_PREFERENCE)
-			# 支付后的操作
-			#mall_signals.post_pay_order.send(sender=Order, order=order, request=request)
-
+		
 		return order
 
 
@@ -287,20 +247,13 @@ class OrderFactory(business_model.Model):
 		"""
 		由PurchaseInfo创建订单
 
-		**下单步骤**：
-			1. 申请订单价无关资源（比如：reserved product, coupon, integral）
-			2. 计算订单价格（填充资源信息到订单业务对象中）
-			3. 申请订单价相关资源（比如：微众卡）
-			4. 调整订单价格（填充资源信息到订单业务对象中）
-			5. 保存订单
-			6. 如果需要（比如订单保存失败），释放资源（包括订单价相关资源和订单价无关资源）
 		"""
 		
 		webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user']
 
 		# 创建空订单
-		order = Order.empty_order()
+		order = Order.empty_order(webapp_owner, webapp_user)
 
 		# 初始化，不需要资源信息
 		order = self.__init_order(order, purchase_info)
@@ -309,27 +262,38 @@ class OrderFactory(business_model.Model):
 
 		# 申请订单价无关资源
 		price_free_resources = self.__allocate_price_free_resources(order, purchase_info)
-		logging.info("price_free_resources={}".format(price_free_resources))
+		logging.info(u"price_free_resources={}".format(price_free_resources))
 
 		# 填充order
 		package_order_service = PackageOrderService(webapp_owner, webapp_user)
-		order,  price_related_resources = package_order_service.package_order(order, price_free_resources, purchase_info)
+		# 如果is_success=False, 表示分配资源失败
+		order, is_success, reasons = package_order_service.package_order(order, price_free_resources, purchase_info)
 
-		# 保存订单
-		order = self.__save_order(order)
+		if is_success: # 组装订单成功
+			#如果前端提交了积分使用信息，识别哪些商品使用了积分
+			if purchase_info.group2integralinfo:
+				group2integralinfo = purchase_info.group2integralinfo
+				for product_group in order.product_groups:
+					if not product_group.uid in group2integralinfo:
+						product_group.disable_integral_sale()
+			else:
+				for product_group in order.product_groups:
+					product_group.disable_integral_sale()
 
-		# 如果需要（比如订单保存失败），释放资源
-		if order and order.is_saved:
-			#删除购物车
-			# TODO: 删除购物车不应该放在这里
-			logging.warning('to clean the CART')
-			if purchase_info.is_purchase_from_shopping_cart:
-				for product in order.products:
-					webapp_user.shopping_cart.remove_product(product)
-		else:
-			# 创建订单失败
-			logging.error("Failed to create Order object or save the order! Release all resources. order={}".format(order))
-			self.release(price_free_resources)
-			self.release(price_related_resources)
+			# 保存订单
+			order = self.__save_order(order)
+			# 如果需要（比如订单保存失败），释放资源
+			if order and order.is_saved:
+				#删除购物车
+				# TODO: 删除购物车不应该放在这里
+				logging.warning('to clean the CART')
+				if purchase_info.is_purchase_from_shopping_cart:
+					for product in order.products:
+						webapp_user.shopping_cart.remove_product(product)
+			return order
 
-		return order
+		# 创建订单失败
+		logging.error("Failed to create Order object or save the order! Release all resources. order={}".format(order))
+		self.release(price_free_resources)
+		# PackageOrderService分配资源失败，price_related_resources应为[]，不需要release
+		raise OrderException(reasons)

@@ -14,7 +14,7 @@ from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
 from db.mall import models as mall_models
-import resource
+#import resource
 from core.watchdog.utils import watchdog_alert
 from business import model as business_model 
 from business.mall.product import Product
@@ -35,6 +35,7 @@ class OrderIntegralResourceAllocator(business_model.Service):
 		self.context['webapp_user'] = webapp_user
 		self.context['resource2allocator'] = {}
 
+	"""
 	def release(self, resources):
 		release_resources = []
 		for resource in resources:
@@ -46,6 +47,23 @@ class OrderIntegralResourceAllocator(business_model.Service):
 			#TODO-bert 异常处理
 			if allocator:
 				allocator.release()
+	"""
+
+	def release(self, to_release_resource):
+		release_resources = []
+		resources = [to_release_resource]
+		for resource in resources:
+			if resource.get_type() == self.resource_type:
+				release_resources.append(resource)
+
+		for release_resource in release_resources:
+			allocator = self.context['resource2allocator'].get(release_resource, None)
+			#TODO-bert 异常处理
+			if not allocator:
+				allocator = IntegralResourceAllocator(self.context['webapp_owner'], self.context['webapp_user'])
+			logging.info("to release IntegralResource: {}".format(release_resource))
+			allocator.release(release_resource)
+
 
 	def __allocate_order_integral_setting(self, webapp_owner, order, purchase_info):
 		"""
@@ -136,6 +154,11 @@ class OrderIntegralResourceAllocator(business_model.Service):
 		return True, None
 
 	def allocate_resource(self, order, purchase_info):
+		"""
+		
+		@return is_success, reasons, resource
+		@note 返回值中reasons为list
+		"""
 		webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user']
 
@@ -146,14 +169,14 @@ class OrderIntegralResourceAllocator(business_model.Service):
 			#使用积分抵扣
 			is_success, reason = self.__allocate_order_integral_setting(webapp_owner, order, purchase_info)
 			if not is_success:
-				return False, reason, None
+				return False, [reason], None
 
 			total_integral = purchase_info.order_integral_info['integral']
 		elif purchase_info.group2integralinfo:
 			#使用积分应用
 			is_success, reason = self.__allocate_integral_sale(webapp_owner, order, purchase_info)
 			if not is_success:
-				return False, reason, None
+				return False, [reason], None
 
 			for group_uid, integral_info in purchase_info.group2integralinfo.items():
 				total_integral += int(integral_info['integral'])
@@ -163,6 +186,12 @@ class OrderIntegralResourceAllocator(business_model.Service):
 
 		if is_success:
 			self.context['resource2allocator'][resource] = integral_resource_allocator
-			return True, '', resource
+			return True, [{}], resource
 		else:
-			return False, reason, None
+			return False, [reason], None
+
+
+	@property
+	def resource_type(self):
+		#return "order_integral"
+		return business_model.RESOURCE_TYPE_INTEGRAL

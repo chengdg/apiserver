@@ -145,7 +145,17 @@
 						__displayQueries(queries);
 
 						if (data.code !== 200) {
-							var buffer = ['Error: ' + data.errMsg, '\n', data.innerErrMsg];
+							var errMsg = data.errMsg;
+							if (typeof errMsg === 'object') {
+								errMsg = JSON.stringify(errMsg);
+							}
+
+							var innerErrMsg = data.innerErrMsg;
+							if (typeof innerErrMsg === 'object') {
+								innerErrMsg = JSON.stringify(innerErrMsg);
+							}
+
+							var buffer = ['Error: ' + errMsg, '\n', innerErrMsg];
 							$('.jsoneditor textarea').val(buffer.join('\n'));
 						} else {
 							resultViewer.set(data);
@@ -161,7 +171,17 @@
 						__displayQueries(queries);
 
 						if (data.code !== 200) {
-							var buffer = ['Error: ' + data.errMsg, '\n', data.innerErrMsg];
+							var errMsg = data.errMsg;
+							if (typeof errMsg === 'object') {
+								errMsg = JSON.stringify(errMsg);
+							}
+
+							var innerErrMsg = data.innerErrMsg;
+							if (typeof innerErrMsg === 'object') {
+								innerErrMsg = JSON.stringify(innerErrMsg);
+							}
+
+							var buffer = ['Error: ' + errMsg, '\n', innerErrMsg];
 							$('.jsoneditor textarea').val(buffer.join('\n'));
 						} else {
 							resultViewer.set(data);

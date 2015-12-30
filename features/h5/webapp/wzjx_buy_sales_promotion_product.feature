@@ -11,6 +11,7 @@ Feature: 购买促销商品
 
 
 Background:
+	Given 重置weapp的bdd环境
 	Given jobs登录系统:weapp
 	And jobs已添加供货商:weapp
 		"""
@@ -82,7 +83,7 @@ Background:
 	Given bill关注jobs的公众号
 
 
-@todo @mall2 @buy   @supplier 
+@mall2 @buy @supplier @mall3 @duhao
 Scenario: 1 不同供货商的商品进行促销
 	设置促销活动进行购买
 
@@ -117,7 +118,7 @@ Scenario: 1 不同供货商的商品进行促销
 		}]
 		"""
 	When bill访问jobs的webapp
-	When bill领取jobs的优惠券
+	When bill领取jobs的优惠券:weapp
 		"""
 		[{
 			"name": "优惠券1",
@@ -150,13 +151,13 @@ Scenario: 1 不同供货商的商品进行促销
 		"""
 		{
 			"pay_type": "微信支付",
-			"order_no": "001"
+			"order_id": "001"
 		}
 		"""
 	Then bill成功创建订单
 		"""
 		{
-			"order_no": "001",
+			"order_id": "001",
 			"status": "待支付",
 			"final_price": 100.00,
 			"coupon_money": 50.00,
@@ -257,7 +258,7 @@ Scenario: 1 不同供货商的商品进行促销
 		}]
 		"""
 
-@todo @mall2 @buy   @supplier
+@mall2 @buy @supplier @mall3 @duhao
 Scenario: 2 不同供货商的商品进行会员价购买
 	设置会员等级价的商品进行购买
 
@@ -278,7 +279,7 @@ Scenario: 2 不同供货商的商品进行会员价购买
 		}
 		"""
 	When bill访问jobs的webapp
-	When bill领取jobs的优惠券
+	When bill领取jobs的优惠券:weapp
 		"""
 		[{
 			"name": "优惠券1",
@@ -311,13 +312,13 @@ Scenario: 2 不同供货商的商品进行会员价购买
 		"""
 		{
 			"pay_type": "微信支付",
-			"order_no": "001"
+			"order_id": "001"
 		}
 		"""
 	Then bill成功创建订单
 		"""
 		{
-			"order_no": "001",
+			"order_id": "001",
 			"status": "待支付",
 			"final_price": 130.00,
 			"coupon_money": 50.00,
@@ -385,7 +386,7 @@ Scenario: 2 不同供货商的商品进行会员价购买
 		}]
 		"""
 
-@todo @mall2 @buy   @supplier
+@mall2 @buy @supplier @mall3 @duhao
 Scenario: 3 使用积分购买不同供货商的商品
 	使用积分进行购买
 
@@ -433,7 +434,7 @@ Scenario: 3 使用积分购买不同供货商的商品
 		"""
 		{
 			"pay_type": "微信支付",
-			"order_no": "001",
+			"order_id": "001",
 			"integral": 50,
 			"integral_money": 50
 		}
@@ -441,7 +442,7 @@ Scenario: 3 使用积分购买不同供货商的商品
 	Then tom成功创建订单
 		"""
 		{
-			"order_no": "001",
+			"order_id": "001",
 			"status": "待支付",
 			"final_price": 150.00,
 			"integral_money": 50.00,

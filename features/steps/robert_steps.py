@@ -77,7 +77,7 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 
 	def __get_current_promotion_id_for_product(product, member_grade_id):
 		promotion_ids = [r.promotion_id for r in promotion_models.ProductHasPromotion.select().dj_where(product_id=product.id)]
-		promotions = list(promotion_models.Promotion.select().dj_where(id__in=promotion_ids, status=promotion_models.PROMOTION_STATUS_STARTED).where(promotion_models.Promotion.type>3))
+		promotions = list(promotion_models.Promotion.select().dj_where(id__in=promotion_ids, status=promotion_models.PROMOTION_STATUS_STARTED).where(promotion_models.Promotion.type>4))
 		if len(promotions) > 0 and (promotions[0].member_grade_id <= 0 or \
 				promotions[0].member_grade_id == member_grade_id):
 			# 存在促销信息，且促销设置等级对该会员开放
@@ -184,6 +184,14 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 		"card_pass": '',
 		"xa-choseInterfaces": PAYNAME2ID.get(args.get("pay_type", u"微信支付"),-1)
 	}
+
+	if hasattr(context, 'fmt'):
+		data['fmt'] = context.fmt
+		logging.info('fmt: {}'.format(data['fmt']))
+
+	if args.get('force', False):
+		data['forcing_submit'] = 1
+		
 	if 'integral' in args and args['integral'] > 0:
 		# 整单积分抵扣
 		# orderIntegralInfo:{"integral":20,"money":"10.00"}"
@@ -251,7 +259,7 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 			db_order.order_id=args['order_id']
 			db_order.save()
 			if db_order.origin_order_id <0:
-				for order in Order.select().dj_where(origin_order_id=db_order.id):
+				for order in mall_models.Order.select().dj_where(origin_order_id=db_order.id):
 					order.order_id = '%s^%s' % (args['order_id'], order.supplier)
 					order.save()
 			context.created_order_id = args['order_id']
@@ -266,6 +274,10 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 
 @then(u"{webapp_user_name}成功创建订单")
 def step_impl(context, webapp_user_name):
+	__check_order(context, webapp_user_name)
+
+
+def __check_order(context, webapp_user_name):
 	order_id = context.created_order_id
 	if order_id == -1:
 		print 'Server Error: ', json.dumps(json.loads(context.response.content), indent=True)
@@ -278,6 +290,7 @@ def step_impl(context, webapp_user_name):
 	actual_order = response.data['order']
 	actual_order['order_no'] = actual_order['order_id']
 	actual_order['status'] = actual_order['status_text']
+	actual_order['methods_of_payment'] = actual_order['pay_interface_name']
 	# 获取coupon规则名
 	if (actual_order['coupon_id'] != 0) and (actual_order['coupon_id'] != -1):
 		# coupon = Coupon.objects.get(id=actual_order.coupon_id)
@@ -296,11 +309,20 @@ def step_impl(context, webapp_user_name):
 			if model['property_values']:
 				product['model'] = ' '.join(property_value['name'] for property_value in model['property_values'])
 
+	# 需要订单中给出微众卡支付金额
+	#actual_order['weizoom_card_money'] = 0.0
+
 	expected = json.loads(context.text)
 	if expected.get('actions', None):
 		# TODO 验证订单页面操作
 		del expected['actions']
 	bdd_util.assert_dict(expected, actual_order)
+
+
+#bill支付订单成功的校验其实跟成功创建订单的校验是一样的
+@then(u"{webapp_user_name}支付订单成功")
+def step_impl(context, webapp_user_name):
+	__check_order(context, webapp_user_name)
 
 
 @then(u"{webapp_usr_name}手机端获取订单'{order_id}'")
@@ -318,7 +340,7 @@ def step_impl(context, webapp_usr_name, order_id):
 	actual['order_time'] = (str(actual['created_at']))
 	actual['methods_of_payment'] = actual['pay_interface_name']
 	#actual.member = actual.buyer_name
-	actual['status'] = actual['status_text']
+	actual['status'] = mall_models.ORDERSTATUS2MOBILETEXT[actual['status']]
 	actual['ship_area'] = actual['ship_area']
 
 	if has_sub_order:
@@ -571,6 +593,7 @@ def step_impl(context, webapp_user_name):
 	response = context.client.get(bdd_util.nginx(url), follow=True)
 	context.product_infos = product_infos
 	context.response = response
+	context.shopping_cart_order = response.data['order']
 
 @then(u"{webapp_user_name}获得待编辑订单")
 def step_impl(context, webapp_user_name):
@@ -684,7 +707,7 @@ def step_click_check_out(context, webapp_user_name):
 	argument = json.loads(context.text)
 	pay_type = argument['pay_type']
 
-	order = context.response.data['order']
+	order = context.shopping_cart_order
 	product_info = _get_prodcut_info(order)
 	url = '/wapi/mall/order/?_method=put'
 	data = {
@@ -699,6 +722,9 @@ def step_click_check_out(context, webapp_user_name):
 		"ship_address": argument.get('ship_address', "长安大街"),
 		"ship_tel": argument.get('ship_tel', "11111111111"),
 	}
+
+	if argument.get('force', False):
+		data['forcing_submit'] = 1
 
 	data.update(product_info)
 	coupon_id = context.product_infos.get('coupon_id', None)
@@ -719,6 +745,7 @@ def step_click_check_out(context, webapp_user_name):
 	#访问支付结果链接
 	if response.body['code'] == 200:
 		pay_url_info = response.data['pay_url_info']
+		context.pay_url_info = pay_url_info
 		pay_type = pay_url_info['type']
 		del pay_url_info['type']
 		if pay_type == 'cod':
@@ -733,7 +760,7 @@ def step_click_check_out(context, webapp_user_name):
 	else:
 		context.created_order_id = -1
 		context.server_error_msg = response.data['detail'][0]['msg']
-		print "buy_error----------------------------",context.server_error_msg,response
+		print "buy_error----------------------------",context.server_error_msg
 
 	if context.created_order_id != -1:
 		if 'date' in argument:
@@ -751,33 +778,60 @@ def step_click_check_out(context, webapp_user_name):
 	logging.info("[Order Created] webapp_owner_id: {}, created_order_id: {}".format(context.webapp_owner_id, context.created_order_id))
 
 
-@then(u"{webapp_user_name}查看个人中心全部订单")
-def step_visit_personal_orders(context, webapp_user_name):
-    expected = json.loads(context.text)
-    actual = []
+@then(u"{webapp_user_name}查看个人中心'{order_type}'订单列表")
+def step_visit_personal_orders(context, webapp_user_name, order_type):
+	if order_type == u'全部':
+		status = -1
+	elif order_type == u'待支付':
+		status = 0
+	elif order_type == u'待发货':
+		status = 3
+	elif order_type == u'待收货':
+		status = 4
 
-    url = '/wapi/mall/order_list/?woid=%d&type=-1' % (context.webapp_owner_id)
-    response = context.client.get(bdd_util.nginx(url), follow=True)
-    orders = response.data['orders']
-    import datetime
-    for actual_order in orders:
-        order = {}
-        order['final_price'] = actual_order['final_price']
-        order['products'] = []
-        order['counts'] = actual_order['product_count']
-        order['status'] = mall_models.ORDERSTATUS2MOBILETEXT[actual_order['status']]
-        order['pay_interface'] = mall_models.PAYTYPE2NAME[actual_order['pay_interface_type']]
-        order['created_at'] = actual_order['created_at']
-        # BBD中购买的时间再未指定购买时间的情况下只能为今天
-        created_at = datetime.datetime.strptime(actual_order['created_at'], '%Y.%m.%d %H:%M')
-        if created_at.date() == datetime.date.today():
-            order['created_at'] = u'今天'
+	expected = json.loads(context.text)
+	actual = []
 
-        for i, product in enumerate(actual_order['products']):
-            # 列表页面最多显示3个商品
-            a_product = {}
-            a_product['name'] = product['name']
-            # a_product['price'] = product.total_price
-            order['products'].append(a_product)
-        actual.append(order)
-    bdd_util.assert_list(expected, actual)
+	url = '/wapi/mall/order_list/?woid=%d&type=%d' % (context.webapp_owner_id, status)
+	response = context.client.get(bdd_util.nginx(url), follow=True)
+	orders = response.data['orders']
+	import datetime
+	for actual_order in orders:
+		if actual_order['status'] != status and status != -1:
+			continue
+		order = {}
+		order['final_price'] = actual_order['final_price']
+		order['products'] = []
+		order['counts'] = actual_order['product_count']
+		order['status'] = mall_models.ORDERSTATUS2MOBILETEXT[actual_order['status']]
+		order['pay_interface'] = mall_models.PAYTYPE2NAME[actual_order['pay_interface_type']]
+		order['created_at'] = actual_order['created_at']
+		# BBD中购买的时间再未指定购买时间的情况下只能为今天
+		created_at = datetime.datetime.strptime(actual_order['created_at'], '%Y.%m.%d %H:%M')
+		if created_at.date() == datetime.date.today():
+			order['created_at'] = u'今天'
+
+		for i, product in enumerate(actual_order['products']):
+			# 列表页面最多显示3个商品
+			a_product = {}
+			a_product['name'] = product['name']
+			# a_product['price'] = product.total_price
+			order['products'].append(a_product)
+		actual.append(order)
+	bdd_util.assert_list(expected, actual)
+
+
+@when(u"{webapp_user_name}使用支付方式'{pay_interface_name}'进行支付")
+def step_impl(context, webapp_user_name, pay_interface_name):
+	pay_interfaces = mall_models.PayInterface.select()
+	for pay_interface in pay_interfaces:
+		if mall_models.PAYTYPE2NAME[pay_interface.type] != pay_interface_name:
+			continue
+		break
+
+	pay_url = '/wapi/pay/pay_result/?_method=put'
+	data = {
+		'pay_interface_type': pay_interface.type,
+		'order_id': context.created_order_id
+	}
+	context.client.post(pay_url, data)

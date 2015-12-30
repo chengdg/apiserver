@@ -14,7 +14,7 @@ from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
 from db.mall import models as mall_models
-import resource
+#import resource
 from core.watchdog.utils import watchdog_alert
 from business import model as business_model 
 from business.mall.product import Product
@@ -35,12 +35,12 @@ class IntegralResourceAllocator(business_model.Service):
 		self.context['webapp_owner'] = webapp_owner
 		self.context['webapp_user'] = webapp_user
 
-		self.context['resource'] = None
+		#self.context['resource'] = None
 
 	
-	def release(self):
+	def release(self, release_resource=None):
 		webapp_user = self.context['webapp_user']
-		release_resource = self.context['resource']
+		#release_resource = self.context['resource']
 		# release_resources = []
 		# for resource in resources:
 		# 	if resource.get_type() == business_model.RESOURCE_TYPE_INTEGRAL:
@@ -49,12 +49,21 @@ class IntegralResourceAllocator(business_model.Service):
 		if release_resource:
 			integral = release_resource.integral
 			integral_log_id = release_resource.integral_log_id
-			if integral > 0 and integral_log_id != -1:
-				Integral.roll_back_integral({
-						'webapp_user': webapp_user,
-						'integral_count': integral,
-						'integral_log_id': integral_log_id
-						})
+			if integral_log_id >= 0:
+				# 表示积分回滚
+				if integral > 0:
+					Integral.roll_back_integral({
+							'webapp_user': webapp_user,
+							'integral_count': integral,
+							'integral_log_id': integral_log_id
+							})
+			else:
+				# integral_log_id=-1 表示积分返还
+				Integral.return_integral({
+							'webapp_user': webapp_user,
+							'return_count': integral,
+					})
+		return
 
 
 	def allocate_resource(self, integral):
@@ -65,14 +74,18 @@ class IntegralResourceAllocator(business_model.Service):
 		total_integral = 0
 		integral_money = 0
 		integral_resource = IntegralResource.get({
-					'type': business_model.RESOURCE_TYPE_INTEGRAL,
+					'type': self.resource_type,
 					'webapp_user': webapp_user,
 					'webapp_owner': webapp_owner
 				})
 		successed,reason = integral_resource.get_resource(integral)
 
 		if successed:
-			self.context['resource'] = integral_resource
+			#self.context['resource'] = integral_resource
 			return True, '', integral_resource
 		else:
 			return False, reason, None
+
+	@property
+	def resource_type(self):
+		return business_model.RESOURCE_TYPE_INTEGRAL

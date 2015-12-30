@@ -133,7 +133,8 @@ class OrderProducts(business_model.Model):
 				'total_price': r.total_price,
 				'promotion_money': r.promotion_money,
 				'discount_money': r.grade_discounted_money,
-				'promotion_result': promotion_result
+				'promotion_result': promotion_result,
+				'integral_sale_id': r.integral_sale_id
 			})
 		order_product_infos.sort(lambda x,y: cmp(x['rid'], y['rid']))
 	
@@ -174,15 +175,21 @@ class OrderProducts(business_model.Model):
 			if promotion.promotion_type == 'premium_sale':
 				#将premium_product转换为order product
 				promotion_result = json.loads(promotion.promotion_result_json)
+				promotion_result_version = promotion_result.get('version', '0')
 				for premium_product in promotion_result['premium_products']:
 					premium_order_product = OrderProduct(self.context['webapp_owner'], self.context['webapp_user'])
 					premium_order_product.name = premium_product['name']
-					premium_order_product.purchase_count = premium_product['premium_count']
-					premium_order_product.thumbnails_url = premium_product['thumbnails_url']
+					if promotion_result_version == settings.PROMOTION_RESULT_VERSION:
+						premium_order_product.purchase_count = premium_product['premium_count']
+						premium_order_product.thumbnails_url = '%s%s' % (settings.IMAGE_HOST, premium_product['thumbnails_url']) if premium_product['thumbnails_url'].find('http') == -1 else premium_product['thumbnails_url']
+					else:
+						premium_order_product.purchase_count = premium_product['count']
+						premium_order_product.thumbnails_url = '%s%s' % (settings.IMAGE_HOST, premium_product['thumbnails_url']) if premium_product['thumbnails_url'].find('http') == -1 else premium_product['thumbnails_url']
 					premium_order_product.id = premium_product['id']
 					premium_order_product.price = 0	
 					premium_order_product.promotion = {
 						'type_name': 'premium_sale:premium_product'
 					}
+					premium_order_product.supplier = premium_product.get('supplier', None)
 
 					self.products.append(premium_order_product)

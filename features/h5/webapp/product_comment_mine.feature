@@ -6,8 +6,9 @@ Feature: bill在webapp中对已到货的商品进行完评价后，在我的评�
         显示内容包括：商品名 （有规格的显示规格），评价的时间，评价内容，晒图
 
 Background:
-    Given jobs登录系统
-    And jobs已添加商品
+    Given 重置weapp的bdd环境
+    Given jobs登录系统:weapp
+    And jobs已添加商品:weapp
         """
         [{
             "name": "商品1",
@@ -18,7 +19,7 @@ Background:
         }]
         """
     Given bill关注jobs的公众号
-    And jobs已有的订单
+    And jobs已有的订单:weapp
         """
         [{
             "order_no":"1",
@@ -59,7 +60,7 @@ Background:
         }]
         """
 
-@todo @mall2 @mall.webapp.comment.aa
+@mall2 @mall.webapp.comment.aa @mall3 @bert
 Scenario: 1 评价包括文字与晒图
     # bill没有进行购买评价，访问商品评价时，无评价信息
     When bill访问jobs的webapp
@@ -71,7 +72,7 @@ Scenario: 1 评价包括文字与晒图
         """
 
     #文字在200以内，成功提交
-    When bill完成订单'1'中'商品1'的评价包括'文字与晒图'
+    When bill完成订单'1'中'商品1'的评价
         """
         {
             "product_score": "4",
@@ -90,7 +91,7 @@ Scenario: 1 评价包括文字与晒图
         }]
         """
 
-    When bill完成订单'2'中'商品2'的评价包括'文字'
+    When bill完成订单'2'中'商品2'的评价
         """
         {
             "product_score": "4",

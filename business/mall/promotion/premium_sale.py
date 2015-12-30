@@ -51,9 +51,9 @@ class PremiumSale(promotion.Promotion):
 	def __supply_product_info_into_fail_reason(self, product, premium_result):
 		premium_result.id = product['id']
 		premium_result.name = product['name']
-		premium_result.stocks = 0
-		premium_result.model_name = ""
-		premium_result.pic_url = product['thumbnails_url']
+		premium_result.stocks = None
+		premium_result.model_name = None
+		premium_result.pic_url = '%s%s' % (settings.IMAGE_HOST, product['thumbnails_url']) if product['thumbnails_url'].find('http') == -1 else product['thumbnails_url']
 
 	def allocate(self, webapp_user, product):
 		#收集赠品的所有库存，可能的结果有：
@@ -81,6 +81,7 @@ class PremiumSale(promotion.Promotion):
 						product2stocks[premium_product_id] = stock_info['stocks']
 
 		#检查赠品库存是否满足
+		failed_reasons = []
 		for premium_product in self.premium_products:
 			premium_product_id = premium_product['id']
 			stocks = product2stocks.get(premium_product_id, -2)
@@ -90,21 +91,42 @@ class PremiumSale(promotion.Promotion):
 			elif stocks == -1:
 				#无限库存
 				pass
-			elif stocks == 0 or premium_product['premium_count'] > stocks:
-				reason = PromotionFailure({
-					'type': 'promotion:premium_sale:not_enough_premium_product_stocks',
-					'msg': u'库存不足',
-					'short_msg': u'库存不足'
-				})
-				self.__supply_product_info_into_fail_reason(premium_product, reason)
-				return reason
+			elif stocks == 0:
+				if webapp_user.is_force_purchase():
+					#强制购买，改变赠品数量
+					premium_product['premium_count'] = 0
+				else:
+					reason = PromotionFailure({
+						'type': 'promotion:premium_sale:no_premium_product_stocks',
+						'msg': u'已赠完',
+						'short_msg': u'已赠完'
+					})
+					self.__supply_product_info_into_fail_reason(premium_product, reason)
+					failed_reasons.append(reason)
+			elif premium_product['premium_count'] > stocks:
+				if webapp_user.is_force_purchase():
+					#强制购买，改变赠品数量
+					premium_product['premium_count'] = stocks
+					#商品库存小于赠品，直接将库存设置为0
+					mall_models.ProductModel.update(stocks=0).dj_where(product_id=premium_product['premium_product_id'], name='standard').execute()
+				else:
+					reason = PromotionFailure({
+						'type': 'promotion:premium_sale:not_enough_premium_product_stocks',
+						'msg': u'库存不足',
+						'short_msg': u'库存不足'
+					})
+					self.__supply_product_info_into_fail_reason(premium_product, reason)
+					failed_reasons.append(reason)
+			else:
+				#商品库存大于赠品，直接扣库存
+				mall_models.ProductModel.update(stocks=mall_models.ProductModel.stocks-premium_product['premium_count']).dj_where(product_id=premium_product['premium_product_id'], name='standard').execute()
 
-		#禁用商品会员价
-		#product.disable_discount()
-
-		result = PromotionResult()
-		result.need_disable_discount = True
-		return result
+		if len(failed_reasons) > 0:
+			return failed_reasons
+		else:
+			result = PromotionResult()
+			result.need_disable_discount = True #买赠活动需要禁用会员折扣
+			return [result]
 
 	def can_apply_promotion(self, promotion_product_group):
 		can_use_promotion = True
@@ -117,6 +139,21 @@ class PremiumSale(promotion.Promotion):
 			can_use_promotion = False
 
 		return can_use_promotion
+
+	def __make_compatible_to_old_version(self, purchase_info, premium_products):
+		"""
+		兼容老的数据格式（后台管理系统会使用）
+		"""
+		from business.mall.product import Product
+		webapp_owner = purchase_info.webapp_owner
+		for premium_product in self.premium_products:
+			premium_product['count'] = premium_product['premium_count']
+			product = Product.from_id({
+				'webapp_owner': webapp_owner,
+				'product_id': premium_product['premium_product_id']
+			})
+			premium_product['price'] = product.price_info['min_price']
+			premium_product['supplier'] = product.supplier
 
 	def apply_promotion(self, promotion_product_group, purchase_info=None):
 		products = promotion_product_group.products
@@ -136,6 +173,10 @@ class PremiumSale(promotion.Promotion):
 			for premium_product in self.premium_products:
 				premium_product['premium_count'] = premium_product['premium_count'] * premium_round_count
 
+		if purchase_info:
+			#当purchase_info有效，表示在下单上下文中，存储的数据需要兼容后台管理系统
+			self.__make_compatible_to_old_version(purchase_info, self.premium_products)
+
 		detail = {
 			'count': self.count,
 			'is_enable_cycle_mode': self.is_enable_cycle_mode,
@@ -143,6 +184,7 @@ class PremiumSale(promotion.Promotion):
 			'premium_products': self.premium_products
 		}
 		promotion_result = PromotionResult(saved_money=0, subtotal=total_product_price, detail=detail)
+		promotion_result.need_disable_discount = True
 		return promotion_result
 
 	def after_from_dict(self):

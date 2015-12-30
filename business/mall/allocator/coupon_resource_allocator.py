@@ -15,7 +15,7 @@ class CouponResourceAllocator(business_model.Service):
 		member_id = self.context['webapp_user'].member.id
 
 		coupon_resource = CouponResource.get({
-			'type': business_model.RESOURCE_TYPE_COUPON,
+			'type': self.resource_type,
 		})
 
 		coupon_resource.coupon = coupon
@@ -31,7 +31,17 @@ class CouponResourceAllocator(business_model.Service):
 			promotion_models.CouponRule.update(remained_count=promotion_models.CouponRule.remained_count - 1)
 
 		promotion_models.CouponRule.update(use_count=promotion_models.CouponRule.use_count + 1)
-		# todo 更新红包优惠券分析数据
+
+		# 更新红包优惠券分析数据 by Eugene
+		red_envelope2member = promotion_models.RedEnvelopeParticipences.select().dj_where(coupon_id=coupon.id).first()
+		if red_envelope2member:
+			if red_envelope2member.introduced_by != 0:
+				promotion_models.RedEnvelopeParticipences.update(
+					introduce_used_number=promotion_models.RedEnvelopeParticipences.introduce_used_number + 1).dj_where(
+					red_envelope_rule_id=red_envelope2member.red_envelope_rule_id,
+					red_envelope_relation_id=red_envelope2member.red_envelope_relation_id,
+					member_id=red_envelope2member.introduced_by).execute()
+			self.context['red_envelope2member'] = red_envelope2member
 		return True, '', coupon_resource
 
 	@staticmethod
@@ -44,3 +54,15 @@ class CouponResourceAllocator(business_model.Service):
 				promotion_models.CouponRule.update(remained_count=promotion_models.CouponRule.remained_count + 1)
 
 			promotion_models.CouponRule.update(use_count=promotion_models.CouponRule.use_count - 1)
+
+			red_envelope2member = resource.context.get('red_envelope2member', None)
+			if red_envelope2member and red_envelope2member.introduced_by != 0:
+				promotion_models.RedEnvelopeParticipences.update(
+						introduce_used_number=promotion_models.RedEnvelopeParticipences.introduce_used_number - 1).dj_where(
+						red_envelope_rule_id=red_envelope2member.red_envelope_rule_id,
+						red_envelope_relation_id=red_envelope2member.red_envelope_relation_id,
+						member_id=red_envelope2member.introduced_by).execute()
+
+	@property
+	def resource_type(self):
+		return business_model.RESOURCE_TYPE_COUPON

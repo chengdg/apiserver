@@ -4,17 +4,17 @@
 
 """
 
-import json
-from bs4 import BeautifulSoup
-import math
+#import json
+#from bs4 import BeautifulSoup
+#import math
 from datetime import datetime
 
 from wapi.decorators import param_required
-from wapi import wapi_utils
-from core.cache import utils as cache_util
+#from wapi import wapi_utils
+#from core.cache import utils as cache_util
 from db.mall import models as mall_models
 from db.mall import promotion_models
-from core.watchdog.utils import watchdog_alert
+#from core.watchdog.utils import watchdog_alert
 from business import model as business_model
 import settings
 from business.mall.promotion.flash_sale import FlashSale
@@ -99,10 +99,11 @@ class PromotionRepository(business_model.Model):
 			data = {
 				'id': product.id,
 				'name': product.name,
-				'thumbnails_url': '%s%s' % (settings.IMAGE_HOST, product.thumbnails_url),
+				'thumbnails_url': '%s%s' % (settings.IMAGE_HOST, product.thumbnails_url) if product.thumbnails_url.find('http') == -1 else product.thumbnails_url,
 				'original_premium_count': premium_sale_product.count,
 				'premium_count': premium_sale_product.count,
-				'premium_unit': premium_sale_product.unit
+				'premium_unit': premium_sale_product.unit,
+				'premium_product_id': premium_sale_product.product_id
 			}
 			id2sale[premium_sale_id].premium_products.append(data)
 
@@ -159,10 +160,15 @@ class PromotionRepository(business_model.Model):
 		for relation in product_promotion_relations:
 			promotion_ids.append(relation.promotion_id)
 			promotion2product[relation.promotion_id] = relation.product_id
-
-		promotion_db_models = list(promotion_models.Promotion.select().dj_where(id__in=promotion_ids))
+		# todo 写法优化
+		promotion_db_models = list(promotion_models.Promotion.select().dj_where(id__in=promotion_ids).where(
+			promotion_models.Promotion.type != promotion_models.PROMOTION_TYPE_COUPON))
 		promotions = []
 		for promotion_db_model in promotion_db_models:
+			if (promotion_db_model.status != promotion_models.PROMOTION_STATUS_STARTED) and (promotion_db_model.status != promotion_models.PROMOTION_STATUS_NOT_START):
+				#跳过已结束、已删除的促销活动
+				continue
+
 			if promotion_db_model.type == promotion_models.PROMOTION_TYPE_FLASH_SALE:
 				promotion = FlashSale(promotion_db_model)
 			if promotion_db_model.type == promotion_models.PROMOTION_TYPE_PREMIUM_SALE:

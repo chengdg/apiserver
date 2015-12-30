@@ -5,8 +5,9 @@
 Feature: bill在webapp中进入到待评价列表，对已到货的商品进行评价,评价完成后，商品不在该列表中显示
 
 Background:
-    Given jobs登录系统
-    And jobs已添加商品规格
+    Given 重置weapp的bdd环境
+    Given jobs登录系统:weapp
+    And jobs已添加商品规格:weapp
         """
         [{
             "name": "尺寸",
@@ -19,7 +20,7 @@ Background:
         }]
         """
 
-    And jobs已添加商品
+    And jobs已添加商品:weapp
         """
         [{
             "name": "商品1",
@@ -48,7 +49,7 @@ Background:
         }]
         """
     Given bill关注jobs的公众号
-    And jobs已有的订单
+    And jobs已有的订单:weapp
         """
         [{
             "order_no":"1",
@@ -176,14 +177,14 @@ Background:
         }]
         """
 
-@todo @mall2 @person @productReview @product @review   @mall.webapp.comment.ee
+@mall2 @person @productReview @product @review   @mall.webapp.comment.ee @mall3 @bert
 Scenario:1 bill 进入待评价列表，该列表中显示的是订单状态为"已完成"的订单，可以对商品进行评价
     1)在"待评价"中显示的是订单状态为"已完成"的订单；
     2）对订单中的商品评价完后（包括，文字，晒图），那么下次进入"待评价"中，则不会看到该商品
     3）只提供文字评价后，下次进入"待评价"中，则会看到该商品 下，显示"追加晒图"添加完图片之后，该商品则不会显示在"待评价"列表中
 
     #2）对订单中的商品评价完后（包括，文字，晒图），那么下次进入"待评价"中，则不会看到该商品
-    When bill完成订单'1'中'商品1'的评价包括'文字与晒图'
+    When bill完成订单'1'中'商品1'的评价
         """
             {
                 "product_score": "4",
@@ -219,7 +220,7 @@ Scenario:1 bill 进入待评价列表，该列表中显示的是订单状态为"
         """
 
     #3）只提供文字评价后，下次进入"待评价"中，则会看到该商品 下，显示"追加晒图",添加完图片之后，该商品则不会显示在"待评价"列表中
-    When bill完成订单'2'中'商品2'的评价包括'文字'
+    When bill完成订单'2'中'商品2'的评价
         """
         {
             "product_score": "4",
@@ -227,6 +228,14 @@ Scenario:1 bill 进入待评价列表，该列表中显示的是订单状态为"
             "serve_score": "4",
             "deliver_score": "4",
             "process_score": "4"
+        }
+        """
+    Then bill获取订单'2'中'商品2'的追加晒图页面
+        """
+        {
+            "product_score": "4",
+            "review_detail": "商品2不太好！！！！！",
+            "picture_list":[]
         }
         """
     Then bill成功获取个人中心的'待评价'列表
@@ -253,15 +262,10 @@ Scenario:1 bill 进入待评价列表，该列表中显示的是订单状态为"
         }]
         """
 
-    When bill完成订单'2'中'商品2'的评价包括'晒图'
+    When bill完成订单'2'中'商品2'的追加晒图评价
         """
         {
-            "product_score": "4",
-            "review_detail": "商品2不太好！！！！！",
-            "serve_score": "4",
-            "deliver_score": "4",
-            "process_score": "4",
-           "picture_list": "['/static/upload/webapp/3_20151102/2015_11_02_18_24_49_948000.png']"
+            "picture_list": "['/static/upload/webapp/3_20151102/2015_11_02_18_24_49_948000.png']"
         }
         """
     Then bill成功获取个人中心的'待评价'列表
@@ -283,11 +287,11 @@ Scenario:1 bill 进入待评价列表，该列表中显示的是订单状态为"
         }]
         """
 
-@todo @mall2 @person @productReview @product @review   @mall.webapp.comment.ee
+@mall2 @person @productReview @product @review   @mall.webapp.comment.ee @bert @mall3
 Scenario:2 同一商品，下过两个订单，不同订单对同一商品的评价不会相互影响
     例如：订单1，购买商品1，订单2，购买商品1，那么对订单1内的商品1评价完后，再次进入，还可以看到订单2的商品1，对其进行评价
 
-    When bill完成订单'1'中'商品1'的评价包括'文字与晒图'
+    When bill完成订单'1'中'商品1'的评价
         """
         {
             "product_score": "4",
@@ -322,11 +326,11 @@ Scenario:2 同一商品，下过两个订单，不同订单对同一商品的评
         }]
         """
 
-@todo @mall2 @person @productReview @product @review   @mall.webapp.comment.ee
+@mall2 @person @productReview @product @review   @mall.webapp.comment.ee @bert @mall3
 Scenario:3 同一商品，不同规格进行评价，不会互相影响
     When bill关注jobs的公众号
     And bill访问jobs的webapp
-    When bill完成订单'4'中'商品4:S'的评价包括'文字与晒图'
+    When bill完成订单'4'中'商品4:S'的评价
         """
         {
             "product_score": "4",
@@ -360,5 +364,121 @@ Scenario:3 同一商品，不同规格进行评价，不会互相影响
                     "product_name": "商品4",
                     "product_model_name": "M"
                 }]
+        }]
+        """
+
+#补充:张三香 2015.12.23
+@person @productReview @product @review @mall3 @bert
+Scenario:4 个人中心的待评价列表中不显示赠品
+    Given jobs登录系统:weapp
+    Given jobs已添加支付方式:weapp
+        """
+        [{
+            "type": "微信支付",
+            "is_active": "启用"
+        }, {
+            "type": "货到付款",
+            "is_active": "启用"
+        }]
+        """
+    And jobs已添加商品:weapp
+        """
+        [{
+            "name": "赠品",
+            "price": 10.00
+        }]
+        """
+    When jobs创建买赠活动:weapp
+        """
+        [{
+            "name": "商品1买一赠二",
+            "start_date": "今天",
+            "end_date": "1天后",
+            "product_name": "商品1",
+            "premium_products": [{
+                "name": "赠品",
+                "count": 2
+            }],
+            "count": 1,
+            "is_enable_cycle_mode": true
+        }]
+        """
+    When bill访问jobs的webapp
+    When bill购买jobs的商品
+        """
+        {
+            "order_id":"6",
+            "pay_type":"货到付款",
+            "products": [{
+                "name": "商品1",
+                "count": 1
+            }]
+        }
+        """
+    Then bill成功创建订单
+        """
+        {
+            "order_no":"6",
+            "status": "待发货",
+            "final_price": 10.00,
+            "products": [{
+                "name": "商品1",
+                "count": 1,
+                "promotion": {
+                    "type": "premium_sale"
+                }
+            },{
+                "name": "赠品",
+                "count": 2,
+                "promotion": {
+                    "type": "premium_sale:premium_product"
+                }
+            }]
+        }
+        """
+
+    Given jobs登录系统:weapp
+    When jobs对订单进行发货:weapp
+        """
+        {
+            "order_no": "6",
+            "logistics": "申通快递",
+            "number": "229388967650",
+            "shipper": "jobs"
+        }
+        """
+    When jobs'完成'订单'6':weapp
+    When bill访问jobs的webapp
+    Then bill成功获取个人中心的'待评价'列表
+        """
+        [{
+            "order_no": "1",
+            "products": [{
+                    "product_name": "商品1"
+                }]
+        },{
+            "order_no": "5",
+            "products": [{
+                    "product_name": "商品1"
+                }]
+        },{
+            "order_no": "2",
+            "products": [{
+                    "product_name": "商品2"
+                }]
+        },{
+            "order_no": "4",
+            "products": [{
+                    "product_name": "商品4",
+                    "product_model_name": "M"
+                },{
+                    "product_name": "商品4",
+                    "product_model_name": "S"
+                }]
+        },{
+            "order_no": "6",
+            "products": [{
+                    "product_name": "商品1"
+            }]
         }]
         """

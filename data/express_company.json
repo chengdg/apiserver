@@ -1,0 +1,83 @@
+[
+	{
+		"id": "00001",
+		"name": "申通快递",
+		"value": "shentong"
+	},
+	{
+		"id": "00002",
+		"name": "EMS",
+		"value": "ems"
+	},
+	{
+		"id": "00003",
+		"name": "顺丰速运",
+		"value": "shunfeng"
+	},
+	{
+		"id": "00004",
+		"name": "圆通速递",
+		"value": "yuantong"
+	},
+	{
+		"id": "00005",
+		"name": "中通速递",
+		"value": "zhongtong"
+	},
+	{
+		"id": "00006",
+		"name": "韵达快运",
+		"value": "yunda"
+	},
+	{
+		"id": "00007",
+		"name": "天天快递",
+		"value": "tiantian"
+	},
+	{
+		"id": "00008",
+		"name": "汇通快运",
+		"value": "huitongkuaidi"
+	},
+	{
+		"id": "00009",
+		"name": "全峰快递",
+		"value": "quanfengkuaidi"
+	},
+	{
+		"id": "00010",
+		"name": "德邦物流",
+		"value": "debangwuliu"
+	},
+	{
+		"id": "00011",
+		"name": "宅急送",
+		"value": "zhaijisong"
+	},
+	{
+		"id": "00012",
+		"name": "快捷速递",
+		"value": "kuaijiesudi"
+	},
+	{
+		"id": "00013",
+		"name": "比利时邮政",
+		"value": "bpost"		
+	},
+	{
+		"id": "00014",
+		"name": "速尔快递",
+		"value": "suer"		
+	},
+	{
+		"id": "00015",
+		"name": "国通快递",
+		"value": "guotongkuaidi"		
+	},
+  	{
+		"id": "00016",
+		"name": "如风达",
+		"value": "rufengda"
+	}
+]
+

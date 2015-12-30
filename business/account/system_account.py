@@ -15,7 +15,7 @@ from core.cache import utils as cache_util
 from db.mall import models as mall_models
 from db.mall import promotion_models
 from db.account import models as account_models
-import resource
+#import resource
 from db.mall import models as mall_models
 from db.mall import promotion_models
 from db.account import models as account_models
@@ -71,9 +71,9 @@ class SystemAccount(business_model.Model):
 			date_str = datetime.today().strftime('%Y-%m-%d') 
 			return {
 				'value': {
-					'member': member,
-					'webapp_user': webapp_user,
-					'social_account': social_account,
+					'member': member.to_dict(),
+					'webapp_user': webapp_user.to_dict(),
+					'social_account': social_account.to_dict(),
 					'date_time':date_str
 				}
 			}
@@ -99,16 +99,16 @@ class SystemAccount(business_model.Model):
 
 		webapp_user = WebAppUser.from_model({
 				'webapp_owner': webapp_owner,
-				'model': data['webapp_user']
+				'model': member_models.WebAppUser.from_dict(data['webapp_user'])
 		})
 		member = Member.from_model({
 			'webapp_owner': webapp_owner,
-			'model': data['member']
+			'model': member_models.Member.from_dict(data['member'])
 		})
 
 		social_account = SocialAccount.from_model({
 			'webapp_owner': webapp_owner,
-			'model': data['social_account']
+			'model': member_models.SocialAccount.from_dict(data['social_account'])
 		})
 
 		self.member = member

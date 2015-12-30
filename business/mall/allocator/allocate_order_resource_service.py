@@ -1,28 +1,43 @@
 # -*- coding: utf-8 -*-
 """@package business.mall.allocator.allocator_order_resource_service.AllocateOrderResourceService
-订单资源分配器
+订单资源分配器（分配价格无关资源）
 
 """
 
-import json
-from bs4 import BeautifulSoup
-import math
+#from business import model as business_model 
 
-from wapi.decorators import param_required
-from wapi import wapi_utils
-from core.cache import utils as cache_util
-from db.mall import models as mall_models
-import resource
-from core.watchdog.utils import watchdog_alert
-from business import model as business_model 
+from allocate_resource_service_base import AllocateResourceServiceBase
+
 from business.mall.allocator.order_integral_resource_allocator import OrderIntegralResourceAllocator
 from business.mall.allocator.order_products_resource_allocator import OrderProductsResourceAllocator
 from business.mall.allocator.order_coupon_resource_allocator import OrderCouponResourceAllocator
-from business.wzcard.wzcard_resource_allocator import WZCardResourceAllocator
 
-import logging
+#import logging
 
-class AllocateOrderResourceService(business_model.Service):
+
+class AllocateOrderResourceService(AllocateResourceServiceBase):
+	"""
+	分配价格无关资源
+	"""
+
+	def __init__(self, webapp_owner, webapp_user):
+		"""
+		**注意**：这里的顺序非常重要！
+		
+		`OrderProductsResourceAllocator` 必须要在 `OrderIntegralResourceAlloctor` 之前，
+		因为买赠会修改积分应用计算积分金额限额的价格基数（当有买赠时，按原价计算；当没有买赠时，按会员价计算）
+		"""
+
+		AllocateResourceServiceBase.__init__(self, webapp_owner, webapp_user)
+
+		# 顺序非常重要！
+		self.register_allocator(OrderProductsResourceAllocator(webapp_owner, webapp_user))
+		self.register_allocator(OrderIntegralResourceAllocator(webapp_owner, webapp_user))
+		self.register_allocator(OrderCouponResourceAllocator(webapp_owner, webapp_user))
+
+
+'''
+class AllocateOrderResourceService0(business_model.Service):
 
 	"""
 	AllocateOrderResourceService
@@ -71,3 +86,4 @@ class AllocateOrderResourceService(business_model.Service):
 			return 
 		for allocator in self.context['allocators']:
 			allocator.release(resources)
+'''

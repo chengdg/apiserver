@@ -56,7 +56,7 @@ class IntegralLogs(business_model.Model):
 		webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user'] 
 		integral_logs_list = []
-		integral_logs = member_models.MemberIntegralLog.select().dj_where(member_id=webapp_user.member.id).order_by('-created_at')
+		integral_logs = member_models.MemberIntegralLog.select().dj_where(member_id=webapp_user.member.id).order_by(-member_models.MemberIntegralLog.created_at)
 
 		for integral_log in integral_logs:
 			integral_logs_list.append(IntegralLog.from_model({

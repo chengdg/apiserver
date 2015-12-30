@@ -16,12 +16,13 @@ from db.mall import models as mall_models
 from db.mall import promotion_models
 from db.wzcard import models as wzcard_models
 from db.account import models as account_models
-import resource
+#import resource
 from core.watchdog.utils import watchdog_alert
 from business.decorator import cached_context_property
 from business import model as business_model
 from business.mall.mall_data import MallData
 from business.account.webapp_owner_info import WebAppOwnerInfo
+from db.account import weixin_models as weixin_user_models
 import settings
 from core.decorator import deprecated
 import logging
@@ -30,7 +31,8 @@ import logging
 class WebAppOwner(business_model.Model):
 	__slots__ = (
 		'id',
-		'webapp_id'
+		'webapp_id',
+		'user_profile'
 	)
 
 	@staticmethod
@@ -51,6 +53,7 @@ class WebAppOwner(business_model.Model):
 	def __init__(self, webapp_owner_id):
 		business_model.Model.__init__(self)
 		webapp_owner_profile = account_models.UserProfile.get(user=webapp_owner_id)
+		self.user_profile = webapp_owner_profile
 		self.webapp_id = webapp_owner_profile.webapp_id
 		self.id = webapp_owner_profile.user_id
 
@@ -214,16 +217,23 @@ class WebAppOwner(business_model.Model):
 	@property
 	def default_member_tag(self):
 		"""
-		[property] 默认会员等级
+		[property] 默认会员分组
 		"""
 		return self.__webapp_owner_info.default_member_tag
 
 	@property
 	def weixin_mp_user_access_token(self):
 		"""
-		[property] 默认会员等级
+		[property] MPTOKEN
 		"""
-		return self.__webapp_owner_info.weixin_mp_user_access_token
+		return weixin_user_models.WeixinMpUserAccessToken.get(id=self.__webapp_owner_info.weixin_mp_user_access_token.id)
+
+	@property
+	def mpuser_preview_info(self):
+		"""
+		[property] 默认MpUserInfo
+		"""
+		return self.__webapp_owner_info.mpuser_preview_info
 
 
 

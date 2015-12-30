@@ -15,7 +15,7 @@ from core.cache import utils as cache_util
 from db.mall import models as mall_models
 from db.mall import promotion_models
 from db.account import models as account_models
-import resource
+#import resource
 from db.mall import models as mall_models
 from db.mall import promotion_models
 from db.account import models as account_models
@@ -46,6 +46,7 @@ class WebAppOwnerInfo(business_model.Model):
 		'weixin_mp_user_access_token',
 
 		'webapp_owner_id',
+		'mpuser_preview_info'
 	)
 
 	@staticmethod
@@ -143,11 +144,17 @@ class WebAppOwnerInfo(business_model.Model):
 				watchdog_error(error_msg, user_id=webapp_owner_id, noraise=True)
 				pay_interfaces = []
 
-			# 微众卡权限
-			has_permission = account_models.AccountHasWeizoomCardPermissions.is_can_use_weizoom_card_by_owner_id(webapp_owner_id)
+			account_has_weizoom_card_permission = account_models.AccountHasWeizoomCardPermissions.select().dj_where(owner_id=webapp_owner_id).first()
+			if account_has_weizoom_card_permission and account_has_weizoom_card_permission.is_can_use_weizoom_card:
+				has_permission = True
+			else:
+				has_permission = False
 
 			try:
-				operation_settings = account_models.OperationSettings.get_settings_for_user(webapp_owner_id)
+				if account_models.OperationSettings.select().dj_where(owner_id=webapp_owner_id).count() == 0:
+					operation_settings = account_models.OperationSettings.create(owner_id=webapp_owner_id)
+				else:
+					operation_settings = account_models.OperationSettings.select().dj_where(owner_id=webapp_owner_id).first()
 			except:
 				error_msg = u"获得user('{}')对应的OperationSettings构建cache失败, cause:\n{}"\
 						.format(webapp_owner_id, unicode_full_stack())
@@ -156,7 +163,7 @@ class WebAppOwnerInfo(business_model.Model):
 
 			#全局导航
 			try:
-				global_navbar = account_models.TemplateGlobalNavbar.get_object(webapp_owner_id)
+				global_navbar = account_models.TemplateGlobalNavbar.select().dj_where(owner_id=webapp_owner_id).first()
 			except:
 				global_navbar = account_models.TemplateGlobalNavbar()
 
@@ -168,7 +175,10 @@ class WebAppOwnerInfo(business_model.Model):
 			
 			#member default tags
 			try:
-				default_member_tag = member_models.MemberTag.get_default_tag(webapp_id)
+				try:
+					default_member_tag = member_models.MemberTag.get(webapp_id=webapp_id, name="未分组")
+				except:
+					default_member_tag = member_models.MemberTag.create(webapp_id=webapp_id, name="未分组")
 			except:
 				default_member_tag = member_models.MemberTag()
 			
@@ -210,12 +220,12 @@ class WebAppOwnerInfo(business_model.Model):
 		"""
 		webapp_owner_info_key = self.__get_webapp_owner_info_key(self.webapp_owner_id)
 		red_envelope_key = self.__get_red_envelope_key(self.webapp_owner_id)
-		postage_configs_key = self.__get_postage_configs_key(self.webapp_owner_id)
+		#postage_configs_key = self.__get_postage_configs_key(self.webapp_owner_id)
 		logging.info("to purge cache for '%s' and '%s'" % (webapp_owner_info_key, red_envelope_key))
 
 		cache_util.delete_cache(webapp_owner_info_key)
 		cache_util.delete_cache(red_envelope_key)
-		cache_util.delete_cache(postage_configs_key)
+		#cache_util.delete_cache(postage_configs_key)
 		return
 
 

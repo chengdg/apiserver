@@ -32,27 +32,6 @@ class MallConfig(models.Model):
 	class Meta(object):
 		db_table = 'mall_config'
 
-	@staticmethod
-	def set_max_product_count_for(user, max_product_count):
-		if user is None or max_product_count < 0:
-			return
-
-		MallConfig.update(max_product_count=max_product_count).dj_where(owner=user.id)
-
-	@staticmethod
-	def get_order_expired_day(user):
-		if user is None:
-			return -1
-
-		if MallConfig.select().dj_where(owner=user.id).count() > 0:
-			return MallConfig.select().dj_where(owner=user)[0].order_expired_day
-
-
-
-
-
-
-
 
 #########################################################################
 # 地域相关Model
@@ -84,12 +63,6 @@ class District(models.Model):
 		db_table = 'district'
 		verbose_name = '区县列表'
 		verbose_name_plural = '区县列表'
-
-
-
-
-
-
 
 
 
@@ -143,25 +116,6 @@ class SpecialPostageConfig(models.Model):
 	class Meta(object):
 		db_table = 'mall_postage_config_special'
 
-	def get_special_has_provinces(self):
-		return PostageConfigSpecialHasProvince.select().dj_where(postage_config_special=self)
-
-	def get_provinces_array(self):
-		provinces = []
-		for special_has_provinces in self.get_special_has_provinces():
-			provinces.append({
-				'id': special_has_provinces.province.id, 
-				'name': special_has_provinces.province.name
-			})
-		return provinces
-
-	@property
-	def destination_str(self):
-		province_ids = self.destination.split(',')
-		provinces = area_util.get_provinces_by_ids(province_ids)
-		self._dest_str = u', '.join(provinces)
-		return self._dest_str
-
 
 class FreePostageConfig(models.Model):
 	"""
@@ -176,14 +130,6 @@ class FreePostageConfig(models.Model):
 
 	class Meta(object):
 		db_table = 'mall_free_postage_config'
-
-	@property
-	def destination_str(self):
-		province_ids = self.destination.split(',')
-		provinces = area_util.get_provinces_by_ids(province_ids)
-		self._dest_str = u', '.join(provinces)
-		return self._dest_str
-
 
 # class PostageConfigSpecialHasProvince(models.Model):
 # 	owner = models.ForeignKey(User)
@@ -1397,6 +1343,23 @@ ORDER_SOURCE2TEXT = {
 
 QUALIFIED_ORDER_STATUS = [ORDER_STATUS_PAYED_NOT_SHIP, ORDER_STATUS_PAYED_SHIPED, ORDER_STATUS_SUCCESSED]
 
+ACTION2TARGET_STATUS = {
+	'pay': ORDER_STATUS_PAYED_NOT_SHIP,
+	'cancel': ORDER_STATUS_CANCEL,
+	'finish': ORDER_STATUS_SUCCESSED,
+	'buy': ORDER_STATUS_NOT
+}
+
+ACTION2MSG = {
+	'pay': '支付',
+	'cancel': '取消订单',
+	'finish': '完成',
+	'buy': '下单'
+}
+
+ORIGIN_ORDER = -1
+NO_SUBORDER = 0
+
 class Order(models.Model):
 	"""
 	订单
@@ -1406,19 +1369,19 @@ class Order(models.Model):
 	order_id = models.CharField(max_length=100)  # 订单号
 	webapp_user_id = models.IntegerField()  # WebApp用户的id
 	webapp_id = models.CharField(max_length=20, verbose_name='店铺ID')  # webapp,订单成交的店铺id
-	webapp_source_id = models.CharField(max_length=20, default=0, verbose_name='商品来源店铺ID')  # 订单内商品实际来源店铺的id
+	webapp_source_id = models.IntegerField(default=0, verbose_name='商品来源店铺ID')  # 订单内商品实际来源店铺的id，已废弃
 	buyer_name = models.CharField(max_length=100)  # 购买人姓名
-	buyer_tel = models.CharField(max_length=100, default='')  # 购买人电话
+	buyer_tel = models.CharField(max_length=100, default='')  # 购买人电话,已废弃
 	ship_name = models.CharField(max_length=100)  # 收货人姓名
 	ship_tel = models.CharField(max_length=100)  # 收货人电话
 	ship_address = models.CharField(max_length=200)  # 收货人地址
 	area = models.CharField(max_length=100)
 	status = models.IntegerField(default=ORDER_STATUS_NOT)  # 订单状态
-	order_source = models.IntegerField(default=ORDER_SOURCE_OWN)  # 订单来源 0本店 1商城
-	bill_type = models.IntegerField(default=ORDER_BILL_TYPE_NONE)  # 发票类型
-	bill = models.CharField(max_length=100, default='')  # 发票信息
+	order_source = models.IntegerField(default=ORDER_SOURCE_OWN)  # 订单来源 0本店 1商城 已废弃，新订单使用默认值兼容老数据
+	bill_type = models.IntegerField(default=ORDER_BILL_TYPE_NONE)  # 发票类型，已废弃
+	bill = models.CharField(max_length=100, default='')  # 发票信息 已废弃
 	remark = models.TextField(default='')  # 备注
-	product_price = models.FloatField(default=0.0)  # 商品金额
+	product_price = models.FloatField(default=0.0)  # 商品金额（应用促销后的商品总价）
 	coupon_id = models.IntegerField(default=0)  # 优惠券id，用于支持返还优惠券
 	coupon_money = models.FloatField(default=0.0)  # 优惠券金额
 	postage = models.FloatField(default=0.0)  # 运费
@@ -1426,8 +1389,8 @@ class Order(models.Model):
 	integral_money = models.FloatField(default=0.0)  # 积分对应金额
 	member_grade = models.CharField(max_length=50, default='')  # 会员等级
 	member_grade_discount = models.IntegerField(default=100)  # 折扣
-	member_grade_discounted_money = models.FloatField(default=0.0)  # 折扣金额
-	# 最终总金额: (product_price + postage) - (coupon_money + integral_money + weizoom_card_money + promotion_saved_money + edit_money)
+	member_grade_discounted_money = models.FloatField(default=0.0)  # 折扣金额，已废弃
+	# 实付金额: final_price = (product_price + postage) - (coupon_money + integral_money + weizoom_card_money)
 	final_price = models.FloatField(default=0.0)
 	pay_interface_type = models.IntegerField(default=-1)  # 支付方式
 	express_company_name = models.CharField(max_length=50, default='')  # 物流公司名称
@@ -1436,14 +1399,14 @@ class Order(models.Model):
 	customer_message = models.CharField(max_length=1024)  # 商家留言
 	payment_time = models.DateTimeField(default=DEFAULT_DATETIME)  # 订单支付时间
 	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间
-	type = models.CharField(max_length=50, default=PRODUCT_DEFAULT_TYPE)  # 产品的类型
+	type = models.CharField(max_length=50, default=PRODUCT_DEFAULT_TYPE)  # 产品的类型，已废弃
 	integral_each_yuan = models.IntegerField(verbose_name='一元是多少积分', default=-1)
 	reason = models.CharField(max_length=256, default='')  # 取消订单原因
 	update_at = models.DateTimeField(auto_now=True)  # 订单信息更新时间 2014-11-11
 	weizoom_card_money = models.FloatField(default=0.0)  # 微众卡抵扣金额
-	promotion_saved_money = models.FloatField(default=0.0)  # 促销优惠金额
-	edit_money = models.FloatField(default=0.0)  # 商家修改差价
-	origin_order_id = models.IntegerField(default=0) # 原始订单id，用于微众精选拆单
+	promotion_saved_money = models.FloatField(default=0.0)  # 促销优惠金额（只在含限时抢购商品时产生）
+	edit_money = models.FloatField(default=0.0)  # 商家修改差价：final_price（计算公式得） - final_price（商家修改成的）= edit_money
+	origin_order_id = models.IntegerField(default=0) # 原始(母)订单id，用于微众精选拆单
 	# origin_order_id=-1表示有子订单，>0表示有父母订单，=0为默认数据
 	supplier = models.IntegerField(default=0) # 订单供货商，用于微众精选拆单
 	is_100 = models.BooleanField(default=True) # 是否是快递100能够查询的快递
@@ -1721,6 +1684,7 @@ class OrderHasProduct(models.Model):
 	promotion_id = models.IntegerField(default=0)  # 促销信息id
 	promotion_money = models.FloatField(default=0.0)  # 促销抵扣金额
 	grade_discounted_money = models.FloatField(default=0.0)  # 折扣金额
+	integral_sale_id = models.IntegerField(default=0) #使用的积分应用的id
 
 	class Meta(object):
 		db_table = 'mall_order_has_product'
@@ -1882,45 +1846,181 @@ class ProductReviewPicture(models.Model):
 
 
 
-
-
-
-
-
-
-#########################################################################
-# 微众商城相关Model
-#########################################################################
-class WeizoomMall(models.Model):
-	"""
-	微众商城用户
-	"""
-	webapp_id = models.CharField(max_length=20)
-	is_active = models.BooleanField(default=True)
-	created_at = models.DateTimeField(auto_now_add=True)
-
-	class Meta(object):
-		db_table = 'weizoom_mall'
-
-	@staticmethod
-	def is_weizoom_mall(webapp_id):
-		if WeizoomMall.objects.filter(webapp_id=webapp_id).count() > 0:
-			return WeizoomMall.objects.filter(webapp_id=webapp_id)[0].is_active
-		else:
-			return False
-		
-
-class WeizoomMallHasOtherMallProduct(models.Model):
-	"""
-	<微众商城, 商品>关系
-	"""
-	weizoom_mall = models.ForeignKey(WeizoomMall)
-	webapp_id = models.CharField(max_length=20)
-	is_checked = models.BooleanField(default=False,)  # 是否审核通过
-	product_id = models.IntegerField(default=-1)  # 商品id
+########################################################################
+# OrderOperationLog:订单操作日志
+########################################################################
+class OrderOperationLog(models.Model):
+	order_id = models.CharField(max_length=50)
+	remark = models.TextField(default='')
+	action = models.CharField(max_length=50)
+	operator = models.CharField(max_length=50)
 	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间
 
 	class Meta(object):
-		db_table = 'weizoom_mall_has_other_mall_product'
+		db_table = 'mall_order_operation_log'
+		verbose_name = '订单后台操作日志'
+		verbose_name_plural = '订单后台操作日志'
 
 
+########################################################################
+# OrderStatusLog:订单状态日志
+########################################################################
+class OrderStatusLog(models.Model):
+	order_id = models.CharField(max_length=50)
+	from_status = models.IntegerField()
+	to_status = models.IntegerField()
+	remark = models.TextField(default='')
+	operator = models.CharField(max_length=50)
+	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间
+
+	class Meta(object):
+		db_table = 'mall_order_status_log'
+		verbose_name = '订单状态日志'
+		verbose_name_plural = '订单状态日志'
+
+
+########################################################################
+# Supplier:供货商信息
+########################################################################
+class Supplier(models.Model):
+	owner = models.ForeignKey(User)
+	name = models.CharField(max_length=16)  # 供货商名称
+	responsible_person = models.CharField(max_length=100) # 供货商负责人
+	supplier_tel = models.CharField(max_length=100) # 供货商电话
+	supplier_address = models.CharField(max_length=256) # 供货商地址
+	remark = models.CharField(max_length=256) # 备注
+	is_delete = models.BooleanField(default=False)  # 是否已经删除
+	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间
+
+	class Meta(object):
+		verbose_name = "供货商"
+		verbose_name_plural = "供货商操作"
+		db_table = "mall_supplier"
+
+
+
+
+
+########################################################################
+# MarketToolsIndustry: 行业信息
+########################################################################
+INDUSTR_IT = 0 #IT科技
+INDUSTR_CONSUMER_GOODS = 1  #消费品
+INDUSTR_AMOUNT = 2   #金融
+INDUSTR_RESTAURANT = 3 #餐饮
+INDUSTR_TRANSPORT = 4 #运输
+INDUSTR_EDUCATION = 5 #教育education
+INDUSTR_GOVERNMENT = 6 #government
+INDUSTR_MEDICAL = 7 #medical
+INDUSTR_TRAFFIC = 8 #traffic 交通
+INDUSTR_ESTATE = 9 #state 房地产
+INDUSTR_BUSINESS_SERVICE = 10 #business service 商业服务
+INDUSTR_ENTERTAINMENT = 11 #entertainment 文体娱乐
+INDUSTR_TRAVEL = 12 #旅游
+INDUSTR_PRINTING = 13 #印刷 printing
+INDUSTR_OTHER = 14 #其它
+TYPE2INDUSTRY = {
+	INDUSTR_IT: u'IT科技',
+	INDUSTR_CONSUMER_GOODS: u'消费品',
+	INDUSTR_AMOUNT: u'金融',
+	INDUSTR_RESTAURANT: u'餐饮',
+	INDUSTR_TRANSPORT: u'运输',
+	INDUSTR_EDUCATION: u'教育',
+	INDUSTR_GOVERNMENT: u'政府',
+	INDUSTR_MEDICAL: u'医药',
+	INDUSTR_TRAFFIC: u'交通',
+	INDUSTR_ESTATE: u'房地产',
+	INDUSTR_BUSINESS_SERVICE: u'商业服务',
+	INDUSTR_ENTERTAINMENT: u'文体娱乐',
+	INDUSTR_TRAVEL: u'旅游',
+	INDUSTR_PRINTING: u'印刷',
+	INDUSTR_OTHER: u'其他'
+}
+INDUSTRY2TYPE = {
+	u'IT科技': INDUSTR_IT,
+	u'消费品': INDUSTR_CONSUMER_GOODS,
+	u'金融': INDUSTR_AMOUNT,
+	u'餐饮': INDUSTR_RESTAURANT,
+	u'运输': INDUSTR_TRANSPORT,
+	u'教育': INDUSTR_EDUCATION,
+	u'政府': INDUSTR_GOVERNMENT,
+	u'医药': INDUSTR_MEDICAL,
+	u'交通': INDUSTR_TRAFFIC,
+	u'房地产': INDUSTR_ESTATE,
+	u'商业服务': INDUSTR_BUSINESS_SERVICE,
+	u'文体娱乐': INDUSTR_ENTERTAINMENT,
+	u'旅游': INDUSTR_TRAVEL,
+	u'印刷': INDUSTR_PRINTING,
+	u'其他': INDUSTR_OTHER
+}
+class MarketToolsIndustry(models.Model):
+	industry_type = models.IntegerField(default=INDUSTR_IT)
+	industry_name = models.TextField() #模版id
+
+	class Meta(object):
+		db_table = 'market_tools_industry'
+		verbose_name = '行业信息'
+		verbose_name_plural = '行业信息'
+
+
+########################################################################
+# TemplateMessage: 模版消息  模版消息不同类型的行业模版格式不同
+########################################################################
+PAY_ORDER_SUCCESS = 0 		#订单支付成功
+PAY_DELIVER_NOTIFY = 1 		#发货通知
+COUPON_ARRIVAL_NOTIFY = 2 	#优惠劵到账通知
+COUPON_EXPIRED_REMIND = 3 	#优惠劵过期提醒
+class MarketToolsTemplateMessage(models.Model):
+	industry = models.IntegerField(default=INDUSTR_IT)
+	title = models.CharField(max_length=256) #标题
+	send_point = models.IntegerField(default=PAY_ORDER_SUCCESS) #发送点
+	attribute =models.TextField() #属性1  orderProductPrice:final_price,
+
+	created_at = models.DateTimeField(auto_now_add=True) #添加时间
+
+	class Meta(object):
+		db_table = 'market_tools_template_message'
+		verbose_name = '模板消息'
+		verbose_name_plural = 'template_message'
+
+
+########################################################################
+# MarketToolsTemplateMessageDetail: 模版消息详情
+########################################################################
+MAJOR_INDUSTRY_TYPE = 0 #主营行业
+DEPUTY_INDUSTRY_TYPE = 1 #副营行业
+class MarketToolsTemplateMessageDetail(models.Model):
+	owner = models.ForeignKey(User)
+	template_message = models.ForeignKey(MarketToolsTemplateMessage)
+	industry = models.IntegerField(default=INDUSTR_IT)
+	template_id = models.TextField() #模版id
+	first_text = models.CharField(max_length=1024)
+	remark_text = models.CharField(max_length=1024)
+	# type = models.SmallIntegerField(default=MAJOR_INDUSTRY_TYPE)
+	# status = models.SmallIntegerField(default=0)
+	type = models.IntegerField(default=MAJOR_INDUSTRY_TYPE)
+	status = models.IntegerField(default=0)
+	created_at = models.DateTimeField(auto_now_add=True) #添加时间
+
+	class Meta(object):
+		db_table = 'market_tools_template_message_detail'
+		verbose_name = '模板消息详情'
+		verbose_name_plural = 'market_tools_template_message_detail'
+		ordering = ['-status', 'type']
+
+
+########################################################################
+# MarketToolsTemplateMessageSendDetail: 模版消息发送信息
+########################################################################
+class MarketToolsTemplateMessageSendRecord(models.Model):
+	owner = models.ForeignKey(User)
+	template_id = models.TextField() #模版id
+	member_id = models.IntegerField(default=0)
+	status = models.IntegerField(default=0)
+	order_id = models.CharField(max_length=200, default='')
+	created_at = models.DateTimeField(auto_now_add=True) #添加时间
+
+	class Meta(object):
+		db_table = 'market_tools_template_message_send_record'
+		verbose_name = '模板消息发送记录'
+		verbose_name_plural = 'market_tools_template_message_send_record'

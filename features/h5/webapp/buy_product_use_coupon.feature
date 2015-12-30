@@ -189,7 +189,7 @@ Background:
 		}]
 		"""
 
-@mall3 @mall.webapp @mall.coupon @bc1 @ztq
+@mall3 @mall.webapp @mall.coupon @bc1
 Scenario:1 使用少于商品价格的优惠券金额进行购买
 	bill购买jobs的商品时，能使用少于商品价格的优惠券
 	1. 创建订单成功，订单状态为“等待支付”
@@ -283,7 +283,7 @@ Scenario:1 使用少于商品价格的优惠券金额进行购买
 		}
 		"""
 
-@todo @mall2 @mall.webapp @mall.coupon
+@mall3 @mall.webapp @mall.coupon
 Scenario:2 使用多于商品价格的优惠券金额进行购买
 	bill购买jobs的商品时，能使用多于商品价格的优惠券
 	1. 订单状态直接变为'等待发货'
@@ -347,7 +347,7 @@ Scenario:2 使用多于商品价格的优惠券金额进行购买
 		}
 		"""
 
-@todo @mall2 @mall.webapp @mall.coupon
+@mall3 @mall.webapp @mall.coupon
 Scenario:3 使用等于商品价格的优惠券金额进行购买
 	bill购买jobs的商品时，能使用等于商品价格的优惠券
 	1. 订单状态直接变为'等待发货'
@@ -374,8 +374,8 @@ Scenario:3 使用等于商品价格的优惠券金额进行购买
 			"coupon_money": 100.0
 		}
 		"""
-	Given jobs登录系统
-	Then jobs能获得优惠券'优惠券2'的码库
+	Given jobs登录系统:weapp
+	Then jobs能获得优惠券'优惠券2'的码库:weapp
 		"""
 		{
 			"coupon2_id_1": {
@@ -393,7 +393,7 @@ Scenario:3 使用等于商品价格的优惠券金额进行购买
 		}
 		"""
 
-@mall3 @mall.webapp @mall.coupon
+@mall3 @mall.webapp @mall.coupon @wip.bpuc4
 Scenario:4 输入错误的优惠券码进行购买
 	bill购买jobs的商品时，输入错误的优惠券码
 	1. 创建订单失败
@@ -462,7 +462,6 @@ Scenario:5 输入未领取的可用优惠券码进行购买，bill创建订单�
 			"coupon": "coupon3_id_4"
 		}
 		"""
-	# Then bill获得创建订单失败的信息'请输入正确的优惠券号'
 
 	Then bill成功创建订单
 		"""
@@ -838,7 +837,7 @@ Scenario:12 使用多于商品价格的优惠券进行购买，且不能抵扣�
 		"""
 
 #editor: "新新" "雪静"
-@mall3 @meberGrade @coupon
+@mall3 @meberGrade @coupon @wip.bpuc13
 Scenario:13 不同等级的会员购买有会员价同时使用全体券的商品
 	#（全体券和会员价可以同时使用，但是满多少钱可以使用计算的是会员价）
 	Given jobs登录系统:weapp
@@ -981,7 +980,7 @@ Scenario:13 不同等级的会员购买有会员价同时使用全体券的商�
 			}
 		}
 		"""
-		#可以使用全体券(满100元,会员价后也是100)
+	#可以使用全体券(满100元,会员价后也是100)
 	When tom访问jobs的webapp
 	When tom购买jobs的商品
 		"""
@@ -1022,7 +1021,6 @@ Scenario:13 不同等级的会员购买有会员价同时使用全体券的商�
 			"coupon": "coupon9_id_2"
 		}
 		"""
-#	Then bill获得错误提示'该优惠券不满足使用金额限制'
 	Then bill获得创建订单失败的信息'该优惠券不满足使用金额限制'
 	When bill购买jobs的商品
 		"""
@@ -1049,7 +1047,7 @@ Scenario:13 不同等级的会员购买有会员价同时使用全体券的商�
 			}]
 		}
 		"""
-		#购买多种会员价使用全体券
+	#购买多种会员价使用全体券
 	When nokia访问jobs的webapp
 	When nokia加入jobs的商品到购物车
 		"""
@@ -1148,7 +1146,7 @@ Scenario:13 不同等级的会员购买有会员价同时使用全体券的商�
 		"""
 
 #editor: "王丽"
-@mall3 @meberGrade @coupon @todo
+@mall3 @meberGrade @coupon
 Scenario:14 【优惠券】-未到使用日期，不能使用
 	Given jobs登录系统:weapp
 	And jobs已添加了优惠券规则:weapp

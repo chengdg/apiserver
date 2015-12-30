@@ -4,24 +4,10 @@
 
 """
 
-#import copy
-#from datetime import datetime
-
 from core import api_resource
 from wapi.decorators import param_required
-#from db.mall import models as mall_models
-#from db.mall import promotion_models
-#from utils import dateutil as utils_dateutil
-#import resource
-#from wapi.mall.a_purchasing import APurchasing as PurchasingApiResource
-#from core.cache import utils as cache_utils
-#from business.mall.order_factory import OrderFactory
-#from business.mall.purchase_info import PurchaseInfo
-#from business.mall.pay_interface import PayInterface
-from business.mall.order_review import OrderReview
-from business.mall.product_review import ProductReview
+from business.mall.review.product_reviews import ProductReviews
 import logging
-#from core.watchdog.utils import watchdog_info
 
 class AProductReviews(api_resource.ApiResource):
 	"""
@@ -30,28 +16,8 @@ class AProductReviews(api_resource.ApiResource):
 	app = 'mall'
 	resource = 'product_reviews'
 
-	@staticmethod
-	def to_dict(product_review):
-		"""
-		将ProductReview转成dict
-		"""
-		# TODO: 实现to_dict()
-		#return product_review.to_dict()
-		return {
-			"status": product_review.status,
-			"order_review_id": product_review.order_review_id,
-			"product_id": product_review.product_id,
-			"order_id": product_review.product_id,
-			"created_at": product_review.created_at,
-			"product_score": product_review.product_score,
-			"review_detail": product_review.review_detail,
-			"order_has_product_id": product_review.order_has_product_id,
-			"member_id": product_review.member_id,
-			"id": product_review.id,
-			"top_name": product_review.top_name
-        	}
 
-	@param_required(['woid', 'product_id'])
+	@param_required(['product_id'])
 	def get(args):
 		"""
 		获取审核通过的product review
@@ -63,16 +29,15 @@ class AProductReviews(api_resource.ApiResource):
 		product_id = args['product_id']
 		limit = args.get('limit', 2)
 		
-		product_reviews = ProductReview.get_latest_product_reviews({
+		product_reviews = ProductReviews.get_from_product_id({
 				'webapp_owner': webapp_owner,
 				'product_id': product_id,
-				'limit': limit,
 			})
-		#product_reviews = ProductReview.from_id({
-		#	'webapp_owner': webapp_owner,
-		#	'product_id': product_id
-		#	})
-		data = [AProductReviews.to_dict(product_review) for product_review in product_reviews]
+		
+		products = product_reviews.products
+		# if limit and products:
+		# 	products = products[:2]
+
 		return {
-			'reviews': data
+			'reviews': products
 		}

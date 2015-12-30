@@ -17,7 +17,7 @@ from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
 from db.mall import models as mall_models
-import resource
+#import resource
 from core.watchdog.utils import watchdog_alert
 from business import model as business_model 
 from business.mall.product import Product
@@ -61,26 +61,6 @@ class PurchaseOrder(business_model.Model):
 		business_model.Model.__init__(self)
 
 		self.type = mall_models.PRODUCT_DEFAULT_TYPE
-
-		ship_info = webapp_user.selected_ship_info
-		if ship_info:
-			self.ship_info = {
-				"name": ship_info['name'],
-				"id": ship_info['id'],
-				"tel": ship_info['tel'],
-				"address": ship_info['address'],
-				"area": ship_info['area'],
-				"display_area": regional_util.get_str_value_by_string_ids(ship_info['area'])
-			}
-		else:# TODO 收货地址
-			self.ship_info = {
-				"name": 1,
-				"id": 2,
-				"tel": 3,
-				"address": 4,
-				"area": 5,
-				"display_area": 6
-			}
 
 		#计算折扣
 		#product.original_price = product.price

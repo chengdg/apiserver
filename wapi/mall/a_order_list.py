@@ -8,11 +8,12 @@ from wapi.decorators import param_required
 from db.mall import models as mall_models
 from db.mall import promotion_models
 from utils import dateutil as utils_dateutil
-import resource
+#import resource
 from wapi.mall.a_purchasing import APurchasing as PurchasingApiResource
 from core.cache import utils as cache_utils
 from business.mall.order import Order
 from business.mall.order_products import OrderProducts
+from business.mall.review.waiting_review_order import WaitingReviewOrder
 
 
 class AOrderList(api_resource.ApiResource):
@@ -42,6 +43,18 @@ class AOrderList(api_resource.ApiResource):
 
 		order_datas = []
 		for order in orders:
+			#子订单不显示在订单列表中
+			if order.origin_order_id > 0:
+				continue
+
+			waiting_review_order = WaitingReviewOrder.get_for_order({
+				'webapp_owner': webapp_owner,
+				'order': order,
+				'webapp_user': webapp_user
+				})
+
+			review_is_finished = waiting_review_order.reviewed
+			
 			data = {
 				'id': order.id,
 				'order_id': order.order_id,
@@ -51,7 +64,9 @@ class AOrderList(api_resource.ApiResource):
 				'final_price': order.final_price,
 				'has_sub_order': order.has_sub_order,
 				'express_number': order.express_number,
-				'review_is_finished': False,
+				'review_is_finished': review_is_finished,
+				'red_envelope': order.red_envelope,
+				'red_envelope_created': order.red_envelope_created,
 				'products': []
 			}
 
@@ -67,7 +82,8 @@ class AOrderList(api_resource.ApiResource):
 					'id': order_product.id,
 					'name': order_product.name,
 					'purchase_count': order_product.purchase_count,
-					'thumbnails_url': order_product.thumbnails_url
+					'thumbnails_url': order_product.thumbnails_url,
+					'model': order_product.model.to_dict() if order_product.model else None
 				}
 				total_product_count += order_product.purchase_count
 				data['products'].append(product_data)

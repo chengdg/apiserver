@@ -10,7 +10,7 @@
 
 
 ## 源码文档 ##
-用Doxygen生成文档：`doxygen Doxygen`。也可以直接访问[在线文档](http://s01.gaoliqi.com:82/doc/apiserver)（由[weapp_apiserver_doc](http://s01.gaoliqi.com:8081/jenkins/job/weapp_apiserver_doc/)自动构建）。
+用Doxygen生成文档：`doxygen Doxygen`。也可以直接访问[在线文档](http://s01.gaoliqi.com:82/doc/apiserver)（由[weapp_apiserver_doc](http://s01.gaoliqi.com:8081/jenkins/view/doc/job/doc_weapp_apiserver/)自动构建）。
 
 ## 启动 API server ##
 
@@ -23,7 +23,8 @@ source bin/activate或者 Scripts\activate.bat
 
 安装必要的组件：
 ```
-pip install -U falcon "peewee<2.7" "pymongo==2.5" beautifulsoup4 redis PyMySQL celery pycrypto
+yum install -y sqlite-devel
+pip install -U Cython falcon "peewee<2.7" "pymongo==2.5" beautifulsoup4 redis PyMySQL celery pycrypto pysqlite
 ```
 
 需要有的hosts

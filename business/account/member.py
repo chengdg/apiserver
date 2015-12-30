@@ -15,7 +15,7 @@ from db.mall import models as mall_models
 from db.mall import promotion_models
 from db.member import models as member_models
 
-import resource
+#import resource
 import settings
 from core.watchdog.utils import watchdog_alert
 from core.cache import utils as cache_util
@@ -164,28 +164,56 @@ class Member(business_model.Model):
 			return None
 
 		try:
-			member_info = member_models.MemberInfo.get(member=member_model.id)
+			member_info = member_models.MemberInfo.get(member=member_model)
 		except:
 			member_info = member_models.MemberInfo()
-			member_info.member_id = member_model.id
+			member_info.member = member_model
 			member_info.name = ''
 			member_info.weibo_name = ''
-			member_info.phone_number = None
+			member_info.phone_number = ''
 			member_info.sex = member_models.SEX_TYPE_UNKOWN
 			member_info.is_binded = False
+			member_info.weibo_nickname = ''
+			member_info.phone_number = ''
+			member_info.save()
 
 		if member_info.phone_number and len(member_info.phone_number) > 10:
 			member_info.phone =  '%s****%s' % (member_info.phone_number[:3], member_info.phone_number[-4:])
+		else:
+			member_info.phone = ''
 
 		return member_info
 
 	@property
 	def phone(self):
 		"""
-		[property] 会员绑定的手机号码
+		[property] 会员绑定的手机号码加密
 		"""
 
 		return self.__info.phone
+	
+	@cached_context_property
+	def phone_number(self):
+		"""
+		[property] 会员绑定的手机号码
+		"""
+
+		return self.__info.phone_number
+
+
+	@cached_context_property
+	def captcha(self):
+		"""
+		[property] 手机验证码
+		"""
+		return self.__info.captcha
+
+	@cached_context_property
+	def captcha_session_id(self):
+		"""
+		[property] 手机验证码
+		"""
+		return self.__info.session_id
 
 	@property
 	def name(self):

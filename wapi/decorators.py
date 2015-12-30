@@ -5,7 +5,6 @@ WAPI检查是否有权限的decorator
 """
 
 #from functools import wraps
-#from django.utils.decorators import available_attrs
 
 #from core.jsonresponse import create_response
 

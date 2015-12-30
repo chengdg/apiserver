@@ -18,22 +18,22 @@
 
 """
 
-import json
-from bs4 import BeautifulSoup
-import math
-import itertools
-from datetime import datetime
+#import json
+#from bs4 import BeautifulSoup
+#import math
+#import itertools
+#from datetime import datetime
 
 from wapi.decorators import param_required
-from wapi import wapi_utils
-from core.cache import utils as cache_util
+#from wapi import wapi_utils
+#from core.cache import utils as cache_util
 from db.mall import models as mall_models
-from db.mall import promotion_models
-import resource
-from core.watchdog.utils import watchdog_alert
+#from db.mall import promotion_models
+#import resource
+#from core.watchdog.utils import watchdog_alert
 from business import model as business_model 
 from business.mall.product import Product
-import settings
+#import settings
 from business.decorator import cached_context_property
 
 
@@ -100,12 +100,13 @@ class ReservedProduct(business_model.Model):
 
 		return reserved_product
 
-	def __init__(self, webapp_owner, webapp_user, product_info):
+	def __init__(self, webapp_owner, webapp_user, product_info=None):
 		business_model.Model.__init__(self)
 
 		self.context['webapp_owner'] = webapp_owner
 		self.context['webapp_user'] = webapp_user
-		self.__fill_detail(webapp_user, product_info)
+		if product_info:
+			self.__fill_detail(webapp_user, product_info)
 
 		
 	def __fill_detail(self, webapp_user, product_info):
@@ -130,6 +131,7 @@ class ReservedProduct(business_model.Model):
 		self.shopping_cart_id = product_info.get('shopping_cart_id', 0)
 		self.integral_sale = product.integral_sale
 		self.is_use_cod_pay_interface = product.is_use_cod_pay_interface
+		self.min_limit = product.min_limit
 
 		self.model_name = product_info['model_name']
 		self.expected_promotion_id = product_info.get('expected_promotion_id', 0)
@@ -145,8 +147,6 @@ class ReservedProduct(business_model.Model):
 		self.price = model.price
 		self.original_price = model.price
 		self.weight = model.weight
-		if not hasattr(product, 'min_limit'):
-			self.min_limit = model.stocks
 		self.stock_type = model.stock_type
 		self.stocks = model.stocks
 		self.model = model
@@ -204,6 +204,13 @@ class ReservedProduct(business_model.Model):
 			}
 		else:
 			return webapp_owner.system_postage_config
+
+	def disable_integral_sale(self):
+		"""
+		禁用积分应用
+		"""
+		self.integral_sale = None
+		self.active_integral_sale_rule = None
 
 	# def apply_promotion(self):
 	# 	"""

@@ -90,3 +90,4 @@ def step_impl(context, user, mp_user_name):
 	db_webapp_user = member_models.WebAppUser.get(member_id=member.id)
 	client.webapp_user.id = db_webapp_user.id
 	context.webapp_user = client.webapp_user
+	context.fmt = ''

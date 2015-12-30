@@ -18,7 +18,7 @@ from wapi import wapi_utils
 from core.cache import utils as cache_util
 from db.mall import models as mall_models
 from db.mall import promotion_models
-import resource
+#import resource
 from core.watchdog.utils import watchdog_alert
 from business import model as business_model 
 from business.mall.product import Product
@@ -73,6 +73,14 @@ class PromotionProductGroup(business_model.Model):
 			for product in self.products:
 				product.active_integral_sale_rule = self.active_integral_sale_rule
 
+	def disable_integral_sale(self):
+		"""
+		禁用积分应用
+		"""
+		self.integral_sale = None
+		for product in self.products:
+			product.disable_integral_sale()
+
 	def apply_promotion(self, purchase_info=None):
 		"""
 		执行促销活动
@@ -85,10 +93,12 @@ class PromotionProductGroup(business_model.Model):
 				for product in self.products:
 					product.disable_promotion()
 			else:
-				self.promotion_result = self.promotion.apply_promotion(self, purchase_info)
+				self.promotion_result = self.promotion.apply_promotion(self, purchase_info)					
 				self.promotion_saved_money = self.promotion_result.saved_money
 				for product in self.products:
 					product.set_promotion_result(self.promotion_result)
+					if self.promotion_result.need_disable_discount:
+						product.disable_discount()
 		else:
 			if purchase_info:
 				if purchase_info.group2integralinfo and (self.uid in purchase_info.group2integralinfo):
@@ -122,7 +132,8 @@ class PromotionProductGroup(business_model.Model):
 				'can_use_promotion': self.can_use_promotion,
 				'promotion': self.promotion.to_dict() if self.promotion else None,
 				'promotion_result': self.promotion_result.to_dict() if self.promotion_result else None,
-				'integral_sale_rule': self.integral_sale_rule
+				'integral_sale_rule': self.integral_sale_rule,
+				'active_integral_sale_rule': self.active_integral_sale_rule
 			}
 
 			product_datas = []

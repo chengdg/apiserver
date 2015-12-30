@@ -2,7 +2,7 @@
 
 from core import api_resource
 from wapi.decorators import param_required
-import resource
+#import resource
 
 from db.mall import models as mall_models
 from business.mall.realtime_stock import RealtimeStock
@@ -29,13 +29,25 @@ class AProductStocks(api_resource.ApiResource):
 
 		#获取商品的库存信息
 		if product_ids:
-			for product_id in product_ids:
+			for product_id in product_ids.split('_'):
 				realtime_stock = RealtimeStock.from_product_id({
 					'product_id': product_id
 				})
 
 				if realtime_stock:
-					result_data.update(realtime_stock.model2stock)
+					merged_stock_info = {
+						'stock_type': mall_models.PRODUCT_STOCK_TYPE_LIMIT,
+						'stocks': 0
+					}
+					for model, stock_info in realtime_stock.model2stock.items():
+						if stock_info['stock_type'] == mall_models.PRODUCT_STOCK_TYPE_UNLIMIT:
+							merged_stock_info['stock_type'] = mall_models.PRODUCT_STOCK_TYPE_UNLIMIT
+							merged_stock_info['stocks'] = -1
+							break
+						else:
+							merged_stock_info['stocks'] = merged_stock_info['stocks'] + stock_info.get('stocks', 0)
+
+				result_data.update({product_id: merged_stock_info})
 		else:
 			if product_id:
 				realtime_stock = RealtimeStock.from_product_id({

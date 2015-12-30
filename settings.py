@@ -104,7 +104,8 @@ INSTALLED_TASKS = [
     # Celery for Falcon
     'resource.member.tasks',
     'core.watchdog.tasks',
-    'services.example_service.tasks.example_log_service'
+    'services.example_service.tasks.example_log_service',
+    'services.order_notify_mail_service.task.notify_order_mail'
     ]
 
 #redis celery相关
@@ -117,5 +118,25 @@ CTYPT_INFO = {
 }
 
 COMPONENT_INFO = {
-        'app_id' : 'wxa823309fb403f661',
+        'app_id' : 'wx9b89fe19768a02d2',
     }
+
+
+PROMOTION_RESULT_VERSION = '2' #促销结果数据版本号
+
+
+UPLOAD_DIR = os.path.join(PROJECT_HOME, '../static', 'upload')
+
+# MAIL_NOTIFY_USERNAME = u'noreply@weizoom.com'
+# MAIL_NOTIFY_PASSWORD = u'#weizoom2013'
+# MAIL_NOTIFY_ACCOUNT_SMTP = u'smtp.mxhichina.com'
+MAIL_NOTIFY_USERNAME = u'972122220@qq.com'
+MAIL_NOTIFY_PASSWORD = u'irocwdrjrpkzbcfa'
+MAIL_NOTIFY_ACCOUNT_SMTP = u'smtp.qq.com'
+
+#最为oauthserver时候使用
+OAUTHSERVER_HOST = 'http://api.mall3.weizzz.com/'
+
+WEAPP_DOMAIN = 'docker.test.weizzz.com'
+H5_DOMAIN = 'h5.mall3.weizzz.com'
+

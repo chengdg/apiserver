@@ -11,6 +11,7 @@ from bs4 import BeautifulSoup
 import math
 from datetime import datetime
 
+from core.exceptionutil import unicode_full_stack
 from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
@@ -37,58 +38,48 @@ class CachedProduct(object):
 		从数据库中获取商品详情
 		"""
 		def inner_func():
-			try:
-				#获取product及其model
-				product_model = mall_models.Product.get(id = product_id)
-				if product_model.owner_id != webapp_owner_id:
-					pass
-					# product.postage_id = -1
-					# product.unified_postage_money = 0
-					# product.postage_type = mall_models.POSTAGE_TYPE_UNIFIED
-				
-				#product.created_at = product.created_at.strftime("%Y-%m-%d %H:%M:%S")
+			#获取product及其model
+			product_model = mall_models.Product.get(id = product_id)
+			if product_model.owner_id != webapp_owner_id:
+				raise Exception(u'')
+				# product.postage_id = -1
+				# product.unified_postage_money = 0
+				# product.postage_type = mall_models.POSTAGE_TYPE_UNIFIED
 
-				product = Product.from_model({
-					'webapp_owner': CachedProduct.webapp_owner, 
-					'model': product_model, 
-					'fill_options': {
-						"with_price": True,
-						"with_product_model": True,
-						"with_model_property_info": True,
-						"with_image": True,
-						"with_property": True,
-						"with_product_promotion": True
-					}
-				})
+			#product.created_at = product.created_at.strftime("%Y-%m-%d %H:%M:%S")
 
-				#获取商品的评论
-				#TODO: 恢复获取评论的逻辑
-				# product_review = ProductReview.objects.filter(
-				# 							Q(product_id=product.id) &
-				# 							Q(status__in=['1', '2'])
-				# 				).order_by('-top_time', '-id')[:2]
-				# product.product_review = product_review
-				#
-				# if product_review:
-				# 	member_ids = [review.member_id for review in product_review]
-				# 	members = get_member_by_id_list(member_ids)
-				# 	member_id2member = dict([(m.id, m) for m in members])
-				# 	for review in product_review:
-				# 		if member_id2member.has_key(review.member_id):
-				# 			review.member_name = member_id2member[review.member_id].username_for_html
-				# 			review.user_icon = member_id2member[review.member_id].user_icon
-				# 		else:
-				# 			review.member_name = '*'
-			except:
-				if settings.DEBUG:
-					raise
-				else:
-					#记录日志
-					alert_message = u"获取商品记录失败,商品id: {} cause:\n{}".format(product_id, unicode_full_stack())
-					watchdog_alert(alert_message, type='WEB')
-					#返回"被删除"商品
-					product = Product()
-					product.is_deleted = True
+			product = Product.from_model({
+				'webapp_owner': CachedProduct.webapp_owner,
+				'model': product_model,
+				'fill_options': {
+					"with_price": True,
+					"with_product_model": True,
+					"with_model_property_info": True,
+					"with_image": True,
+					"with_property": True,
+					"with_product_promotion": True
+				}
+			})
+
+			#获取商品的评论
+			#TODO: 恢复获取评论的逻辑
+			# product_review = ProductReview.objects.filter(
+			# 							Q(product_id=product.id) &
+			# 							Q(status__in=['1', '2'])
+			# 				).order_by('-top_time', '-id')[:2]
+			# product.product_review = product_review
+			#
+			# if product_review:
+			# 	member_ids = [review.member_id for review in product_review]
+			# 	members = get_member_by_id_list(member_ids)
+			# 	member_id2member = dict([(m.id, m) for m in members])
+			# 	for review in product_review:
+			# 		if member_id2member.has_key(review.member_id):
+			# 			review.member_name = member_id2member[review.member_id].username_for_html
+			# 			review.user_icon = member_id2member[review.member_id].user_icon
+			# 		else:
+			# 			review.member_name = '*'
+
 
 			data = product.to_dict()
 
@@ -141,19 +132,15 @@ class CachedProduct(object):
 			if product.is_deleted:
 				return product
 
-			for product_model in product.models:
-				#获取折扣后的价格
-				if webapp_owner_id != product.owner_id and product.weshop_sync == 2:
-					product_model.price = round(product_model.price * 1.1, 2)
 		except:
-			if settings.DEBUG:
+			if settings.DEBUG and not settings.IS_UNDER_BDD:
 				raise
 			else:
 				#记录日志
 				alert_message = u"获取商品记录失败,商品id: {} cause:\n{}".format(product_id, unicode_full_stack())
 				watchdog_alert(alert_message, type='WEB')
 				#返回"被删除"商品
-				product = mall_modules.Product()
+				product = Product()
 				product.is_deleted = True
 
 		return product
@@ -184,6 +171,7 @@ class Product(business_model.Model):
 		'bar_code',
 		'min_limit',
 		'categories',
+		'id2category',
 		'properties',
 		'created_at',
 		'supplier',
@@ -206,8 +194,10 @@ class Product(business_model.Model):
 		
 		#促销信息
 		'promotion',
+		'promotion_title',
 		'integral_sale',
 		'product_review',
+		'is_deleted'
 	)
 
 	@staticmethod
@@ -250,8 +240,9 @@ class Product(business_model.Model):
 		if model:
 			self._init_slot_from_model(model)
 			self.owner_id = model.owner_id
-			self.thumbnails_url = '%s%s' % (settings.IMAGE_HOST, model.thumbnails_url)
-			self.pic_url = '%s%s' % (settings.IMAGE_HOST, model.pic_url)
+			self.min_limit = model.stocks
+			self.thumbnails_url = '%s%s' % (settings.IMAGE_HOST, model.thumbnails_url) if model.thumbnails_url.find('http') == -1 else model.thumbnails_url
+			self.pic_url = '%s%s' % (settings.IMAGE_HOST, model.pic_url) if model.pic_url.find('http') == -1 else model.pic_url
 
 	def __set_image_to_lazy_load(self):
 		"""将商品详情图片设置微lazy load
@@ -261,7 +252,10 @@ class Product(business_model.Model):
 		soup = BeautifulSoup(self.detail)
 		for img in soup.find_all('img'):
 			try:
-				img['data-url'] = img['src']
+				if 'http:' in img['src']:
+					img['data-url'] = img['src']
+				else:
+					img['data-url'] = '%s%s' % (settings.IMAGE_HOST, img['src'])
 				del img['src']
 				del img['title']
 			except:
@@ -290,12 +284,13 @@ class Product(business_model.Model):
 		context = self.context
 		if not 'total_stocks' in context:
 			context['total_stocks'] = 0
-			if self.is_use_custom_model:
-				models = self.models[1:]
-			else:
-				models = self.models
+			models = self.models
+			# if self.is_use_custom_model:
+			# 	models = self.models[1:]
+			# else:
+			# 	models = self.models
 
-			if len(models) == 0:
+			if not models or len(models) == 0:
 				context['total_stocks'] = 0
 				return context['total_stocks']
 			is_dict = (type(models[0]) == dict)
@@ -469,14 +464,26 @@ class Product(business_model.Model):
 						'max_price': max_price,
 					}
 			else:
-				standard_model = product.models[0]
-				product.price_info = {
-					'display_price': str("%.2f" % standard_model.price),
-					'display_original_price': str("%.2f" % standard_model.original_price),
-					'display_market_price': str("%.2f" % standard_model.market_price),
-					'min_price': standard_model.price,
-					'max_price': standard_model.price,
-				}
+				standard_model = None
+				if product.models:
+					standard_model = product.models[0]
+					
+				if standard_model:
+					product.price_info = {
+						'display_price': str("%.2f" % standard_model.price),
+						'display_original_price': str("%.2f" % standard_model.original_price),
+						'display_market_price': str("%.2f" % standard_model.market_price),
+						'min_price': standard_model.price,
+						'max_price': standard_model.price,
+					}
+				else:
+					product.price_info = {
+						'display_price': str("%.2f" % 0),
+						'display_original_price': str("%.2f" % 0),
+						'display_market_price': str("%.2f" % 0),
+						'min_price': 0,
+						'max_price': 0,
+					}
 
 	@staticmethod
 	def __fill_model_detail(webapp_owner_id, products, is_enable_model_property_info=False):
@@ -503,7 +510,7 @@ class Product(business_model.Model):
 		for product in products:
 			product.swipe_images = [{
 				'id': img.id, 
-				'url': '%s%s' % (settings.IMAGE_HOST, img.url),
+				'url': '%s%s' % (settings.IMAGE_HOST, img.url) if img.url.find('http') == -1 else img.url,
 				'linkUrl': img.link_url, 
 				'width': img.width, 
 				'height': img.height
@@ -636,7 +643,7 @@ class Product(business_model.Model):
 				True)
 
 		if options.get('with_all_category', False):
-			self.__fill_category_detail(
+			Product.__fill_category_detail(
 				webapp_owner_id,
 				products,
 				product_ids,
@@ -649,6 +656,10 @@ class Product(business_model.Model):
 		# 	Product.__fill_promotion_detail(webapp_owner_id, products, product_ids)
 
 	def to_dict(self, **kwargs):
+		promotion_title = self.promotion_title
+		if self.promotion and self.promotion.promotion_title:
+			promotion_title = self.promotion.promotion_title
+
 		result = {
 			'id': self.id,
 			'owner_id': self.owner_id,
@@ -671,7 +682,7 @@ class Product(business_model.Model):
 			'sales': getattr(self, 'sales', 0),
 			'is_use_custom_model': self.is_use_custom_model,
 			'is_use_cod_pay_interface': self.is_use_cod_pay_interface,
-			'models': [model.to_dict() for model in self.models],
+			'models': [model.to_dict() for model in self.models] if self.models else [],
 			'used_system_model_properties': getattr(self, 'used_system_model_properties', None),
 			'total_stocks': self.total_stocks,
 			'is_sellout': self.is_sellout,
@@ -681,6 +692,7 @@ class Product(business_model.Model):
 			'is_member_product': self.is_member_product,
 			'swipe_images': getattr(self, 'swipe_images', []),
 			'promotion': self.promotion.to_dict() if self.promotion else None,
+			'promotion_title': promotion_title,
 			'integral_sale': self.integral_sale.to_dict() if self.integral_sale else None,
 			'product_review': getattr(self, 'product_review', None),
 			'price_info': getattr(self, 'price_info', None),

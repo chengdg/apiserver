@@ -78,6 +78,7 @@ Background:
 	And tom关注jobs的公众号
 
 @mall3 @mall.webapp @mall.webapp.shopping_cart
+#购买流程.购物车
 Scenario:1 放入多个商品（商品1,2,3）到购物车，商品1是限时抢购活动，商品2是买赠活动，商品3是多规格商品，没有参加任何活动
 	jobs添加商品后
 	1. bill能在webapp中将jobs添加的商品放入购物车

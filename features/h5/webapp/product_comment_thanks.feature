@@ -10,8 +10,9 @@ Feature: bill在webapp中对已到货的商品进行评价
 """
 
 Background:
-    Given jobs登录系统
-    And jobs已添加商品
+    Given 重置weapp的bdd环境
+    Given jobs登录系统:weapp
+    And jobs已添加商品:weapp
         """
         [{
             "name": "商品1",
@@ -22,7 +23,7 @@ Background:
         }]
         """
     Given bill关注jobs的公众号
-    And jobs已有的订单
+    And jobs已有的订单:weapp
         """
         [{
             "order_no":"1",
@@ -80,13 +81,13 @@ Background:
         }]
         """
 
-@todo @mall2 @mall.webapp.comment.cc
+@mall2 @mall.webapp.comment.cc @mall3 @bert
 Scenario:1 评价完成后会有“感谢评价”页面
     1 如果还有待评价的商品那么该页面有“继续评价”和“返回首页”两个选项
     2 如果没有待评价的页面那么只有“返回首页”的选项
 
     When bill访问jobs的webapp
-    And bill完成订单'1'中'商品1'的评价包括'文字与晒图'
+    And bill完成订单'1'中'商品1'的评价
         """
         {
             "product_score": "4",
@@ -114,7 +115,7 @@ Scenario:1 评价完成后会有“感谢评价”页面
             }]
         }]
         """
-    When bill完成订单'2'中'商品2'的评价包括'文字'
+    When bill完成订单'2'中'商品2'的评价
         """
         {
             "product_score": "4",

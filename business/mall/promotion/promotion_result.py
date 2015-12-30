@@ -35,10 +35,11 @@ class PromotionResult(business_model.Model):
 	def __init__(self, saved_money=0, subtotal=0, detail=None):
 		business_model.Model.__init__(self)
 
-		self.version = '2'
+		self.version = settings.PROMOTION_RESULT_VERSION
 		self.is_success = True
 		self.saved_money = saved_money
 		self.subtotal = subtotal
+		self.need_disable_discount = False
 		if detail:
 			self.detail = detail
 
@@ -46,6 +47,7 @@ class PromotionResult(business_model.Model):
 		result = {
 			'version': self.version,
 			'saved_money': self.saved_money,
+			'promotion_saved_money': self.saved_money,  #为了兼容weapp后端系统，此字段在apiserver中无用
 			'subtotal': self.subtotal
 		}
 		if self.detail:

@@ -14,7 +14,7 @@ from wapi.decorators import param_required
 from wapi import wapi_utils
 from core.cache import utils as cache_util
 from db.mall import models as mall_models
-import resource
+#import resource
 from core.watchdog.utils import watchdog_alert
 from business import model as business_model 
 from business.mall.product import Product
@@ -43,9 +43,10 @@ class ProductsResource(business_model.Resource):
 		
 	# 	return product_resource
 
-	def __init__(self, resources):
+	def __init__(self, resources, resource_type):
 		business_model.Resource.__init__(self)
-		self.type = business_model.RESOURCE_TYPE_PRODUCT
+		self.type = resource_type
+		#self.type = business_model.RESOURCE_TYPE_PRODUCTS
 		self.resources = resources
 
 	def get_type(self):

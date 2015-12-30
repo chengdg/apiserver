@@ -91,22 +91,6 @@ class UserProfile(models.Model):
 	class Meta(object):
 		db_table = 'account_user_profile'
 
-	@property
-	def host(self):
-		if hasattr(self, '_host'):
-			return self._host
-
-		if self.host_name and len(self.host_name.strip()) > 0:
-			self._host = self.host_name
-		else:
-			self._host = settings.DOMAIN
-
-		return self._host
-
-	@property
-	def is_manager(self):
-		return (self.user_id == self.manager_id) or (self.manager_id == 2) #2 is manager's id
-
 
 class OperationSettings(models.Model):
 	"""
@@ -119,17 +103,6 @@ class OperationSettings(models.Model):
 	class Meta(object):
 		db_table = 'account_operation_settings'
 
-	@staticmethod
-	def get_settings_for_user(userid):
-		if userid is None:
-			return None
-
-		settings_list = list(OperationSettings.select().dj_where(owner_id=userid)) 
-		if len(settings_list) == 0:
-			return OperationSettings.create(owner=userid)
-		else:
-			return settings_list[0]
-
 
 class AccountHasWeizoomCardPermissions(models.Model):
 	"""
@@ -141,15 +114,6 @@ class AccountHasWeizoomCardPermissions(models.Model):
 
 	class Meta(object):
 		db_table = 'market_tool_weizoom_card_account_has_permissions'
-
-	@staticmethod
-	def is_can_use_weizoom_card_by_owner_id(owner_id):
-		permissions = AccountHasWeizoomCardPermissions.select().dj_where(owner_id=owner_id)
-		if permissions.count() > 0:
-			return permissions[0].is_can_use_weizoom_card
-		else:
-			return False
-
 
 class TemplateGlobalNavbar(models.Model):
 	'''
@@ -164,15 +128,36 @@ class TemplateGlobalNavbar(models.Model):
 	class Meta(object):
 		db_table = 'template_global_navbar'
 
-	@staticmethod
-	def get_object(user_id):
-		if user_id > 0:
-			global_navbar = TemplateGlobalNavbar.get(
-				owner=user_id
-			)
-			return global_navbar
-		else:
-			return None
+
+class AccessToken(models.Model):
+	"""
+	"""
+	access_token = models.CharField(max_length=256, verbose_name='access_token')
+	woid = models.CharField(max_length=100, verbose_name='woid')
+	openid = models.CharField(max_length=100, verbose_name='openid')
+	expires_in = models.CharField(max_length=100, verbose_name='openid')
+	times = models.IntegerField(default=0)
+	created_at = models.DateTimeField(auto_now_add=True)
+
+	class Meta(object):
+		db_table = 'access_token'
 
 
+PLACE_ORDER = 0  # 下单
+PAY_ORDER = 1  # 付款
+SHIP_ORDER = 2  # 发货
+SUCCESSED_ORDER = 3  # 完成
+CANCEL_ORDER = 4  # 已取消
+
+
+class UserOrderNotifySettings(models.Model):
+	user = models.ForeignKey(User)
+	emails = models.TextField(default='')  # '|'分割
+	black_member_ids = models.TextField(default='')  # '|'分割，会员id
+	status = models.IntegerField(default=0)
+	is_active = models.BooleanField(default=False)
+	created_at = models.DateTimeField(auto_now_add=True)
+
+	class Meta(object):
+		db_table = 'user_order_notify_setting'
 

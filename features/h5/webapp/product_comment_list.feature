@@ -26,7 +26,7 @@ Background:
         }]
         """
     Given bill关注jobs的公众号
-    Given jobs已有的订单
+    Given jobs已有的订单:weapp
         """
         [{
             "order_no":"1",
@@ -90,7 +90,7 @@ Background:
 #        """
 
     When bill访问jobs的webapp
-    When bill完成订单'1'中'商品1'的评价包括'文字与晒图'
+    When bill完成订单'1'中'商品1'的评价
         """
         {
             "product_score": "4",
@@ -101,7 +101,7 @@ Background:
             "picture_list": "['/static/upload/webapp/3_20151102/2015_11_02_18_24_49_948000.png']"
         }
         """
-    When bill完成订单'2'中'商品2'的评价包括'文字'
+    When bill完成订单'2'中'商品2'的评价
         """
         {
             "product_score": "4",
@@ -113,7 +113,7 @@ Background:
         """
 
     Given tom关注jobs的公众号
-    And jobs已有的订单
+    And jobs已有的订单:weapp
         """
         [{
             "order_no":"3",
@@ -154,7 +154,7 @@ Background:
         }]
         """
     When tom访问jobs的webapp
-    When tom完成订单'3'中'商品1'的评价包括'文字与晒图'
+    When tom完成订单'3'中'商品1'的评价
         """
         {
             "product_score": "4",
@@ -165,7 +165,7 @@ Background:
             "picture_list": "['/static/upload/webapp/3_20151102/2015_11_02_18_24_49_948000.png']"
         }
         """
-    When tom完成订单'4'中'商品2'的评价包括'文字'
+    When tom完成订单'4'中'商品2'的评价
         """
         {
             "product_score": "4",
@@ -193,7 +193,7 @@ Background:
         """
 
 
-@mall3 @mall2 @wip.comment @ProductDetail
+@mall3 @mall2 @wip.comment @ProductDetail @bert @taaa
 Scenario: 1在weapp的商品详情中如果多余两条评价，只显示两条评价信息，如果只有一条评价信息，就显示一条，如果没有评价信息则不显示,只显示审核通过的评价
     1）该评价信息，如果是后台进行了置顶操作，则显示出来，
     2）否则把最后两条信息显示出来

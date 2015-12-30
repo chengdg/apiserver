@@ -3,7 +3,7 @@
 from core import api_resource
 from wapi.decorators import param_required
 
-import resource
+#import resource
 from db.mall import models as mall_models
 from business.mall.shopping_cart import ShoppingCart
 

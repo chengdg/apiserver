@@ -27,7 +27,7 @@ from utils.regional_util import get_str_value_by_string_ids
 from wapi.decorators import param_required
 from core.cache import utils as cache_util
 from db.mall import models as mall_models
-from business import model as business_model 
+from business import model as business_model
 from business.mall.product import Product
 from business.mall.order_products import OrderProducts
 from business.mall.log_operator import LogOperator
@@ -80,7 +80,7 @@ class Order(business_model.Model):
 		'integral',
 		'integral_money',
 		'coupon_money',
-		
+
 		'coupon_id',
 		'status',
 		'origin_order_id',
@@ -91,7 +91,7 @@ class Order(business_model.Model):
 
 		'created_at',
 		'update_at',
-		
+
 		'supplier',
 		'integral_each_yuan',
 		'webapp_id',
@@ -149,7 +149,7 @@ class Order(business_model.Model):
 		@todo 需要与get_orders_for_webapp_user()合并
 		"""
 		orders = Order.get_orders_for_webapp_user(args)
-		# 改写自`Order.by_webapp_user_id(webapp_user_id).filter(status=5)` 
+		# 改写自`Order.by_webapp_user_id(webapp_user_id).filter(status=5)`
 		completed = filter(lambda o: o.status==mall_models.ORDER_STATUS_SUCCESSED, orders)
 		return completed
 
@@ -276,7 +276,7 @@ class Order(business_model.Model):
 	@product_groups.setter
 	def product_groups(self, product_groups):
 		self.context['product_groups'] = product_groups
-		
+
 	@property
 	def has_sub_order(self):
 		"""
@@ -379,7 +379,7 @@ class Order(business_model.Model):
 			express = expresses[0]
 			logging.info("express: {}".format(express.id))
 			db_details = express_models.ExpressDetail.select().dj_where(express_id=express.id).order_by(-express_models.ExpressDetail.display_index)
-			details = [ExpressDetail(detail) for detail in db_details]	
+			details = [ExpressDetail(detail) for detail in db_details]
 		except Exception as e:
 			#innerErrMsg = full_stack()
 			#watchdog_fatal(u'获取快递详情失败，order_id={}, case:{}'.format(order.id, innerErrMsg), EXPRESS_TYPE)
@@ -551,7 +551,7 @@ class Order(business_model.Model):
 
 		# 微众卡抵扣金额
 		db_model.weizoom_card_money = self.weizoom_card_money
-		
+
 		logging.info("Order db_model: {}".format(db_model))
 		db_model.save()
 		self.id = db_model.id
@@ -642,7 +642,6 @@ class Order(business_model.Model):
 
 		@param[in] pay_interface_type: 支付所使用的支付接口的type
 		"""
-		print('----------hereeee111111111')
 		pay_result = False
 
 		if self.status == mall_models.ORDER_STATUS_NOT:
@@ -699,7 +698,7 @@ class Order(business_model.Model):
 		"""
 		取消订单
 
-		@todo 需要释放订单资源	
+		@todo 需要释放订单资源
 		"""
 		logging.info(u"Order id:{} is to be cancelled. Resources should be released first.".format(self.id))
 		self.__release_order_resources()
@@ -832,20 +831,10 @@ class Order(business_model.Model):
 	def __get_order_send_message_dict(self,user_profile, template_message, order, send_point):
 		template_data = dict()
 		social_account = self.context['webapp_user'].social_account
-		print(type(social_account),social_account)
 		if social_account and social_account.openid:
 			template_data['touser'] = self.context['webapp_user'].openid
 			template_data['template_id'] = template_message.template_id
-
-			# if user_profile.host.find('http') > -1:
-			# 	host ="%s/workbench/jqm/preview/" % user_profile.host
-			# else:
-			# 	host = "http://%s/workbench/jqm/preview/" % user_profile.host
-			# todo
-			host = ''
-
-			template_data['url'] = '%s?woid=%s&module=mall&model=order&action=pay&order_id=%s&workspace_id=mall&sct=%s' % (host, user_profile.user_id, order.order_id, social_account.token)
-
+			template_data['url'] = 'http://%s/mall/order_detail/?woid=%s&order_id=%s' % (settings.H5_DOMAIN, user_profile.user_id, order.order_id)
 			template_data['topcolor'] = "#FF0000"
 			detail_data = {}
 			template_message_detail = template_message.template_message

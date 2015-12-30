@@ -480,13 +480,6 @@ class Order(business_model.Model):
 				if sub_order['status'] < order_status_info:
 					order_status_info = sub_order['status']
 
-				#是否显示确认收货按钮交由前端进行判断 duhao
-				# if sub_order['status'] == mall_models.ORDER_STATUS_PAYED_SHIPED and ((datetime.today() - sub_order['update_at']).days >= 3 or not self.express_number):
-				# 	#已发货订单：有物流信息订单发货后3天显示确认收货按钮，没有物流的立即显示
-				# 	if not hasattr(sub_order, 'session_data'):
-				# 		sub_order['session_data'] = dict()
-				# 	sub_order['session_data']['has_comfire_button'] = '1'
-
 				# sub_order['has_promotion_saved_money'] = sub_order['promotion_saved_money > 0
 				# sub_order['order_status_info'] = mall_models.STATUS2TEXT[sub_order['status']]
 

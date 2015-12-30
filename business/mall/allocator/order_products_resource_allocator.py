@@ -32,12 +32,6 @@ class OrderProductsResourceAllocator(business_model.Service):
 			logging.info(u"`product_resource` should not be None. It's meaningless.")
 			return
 
-		if not isinstance(product_resource, ProductsResource):
-			logging.info(u"ONLY to release OrderProductsResources")
-			return
-
-		#release_resources = []
-
 		product_resource_allocator = ProductResourceAllocator.get()
 
 		for resource in product_resource.resources:

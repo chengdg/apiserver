@@ -381,7 +381,7 @@ Scenario:2 启用"付款时"邮件通知
 			}
 			"""
 
-@configuration @mail @ztqb3
+@mall3 @configuration @mail
 Scenario:3 启用"取消时"邮件通知
 	#1 bill购买单个商品（积分活动）；配置运营接收邮件，可以正确只收到一次邮件通知
 	#2 tom购买多个商品（买赠、限时抢购、优惠券）；配置运营接收邮件，可以正确只收到一次邮件通知

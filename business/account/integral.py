@@ -208,7 +208,7 @@ class Integral(business_model.Model):
 			#print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.5 fmt:',fmt
 			if member.token != fmt:
 				try:
-					followed_member = mall_models.Member.get(token=fmt)
+					followed_member = member_models.Member.get(token=fmt)
 					if followed_member.webapp_id != member.webapp_id:
 						followed_member = None
 				except:

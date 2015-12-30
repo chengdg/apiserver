@@ -2024,3 +2024,12 @@ class MarketToolsTemplateMessageSendRecord(models.Model):
 		db_table = 'market_tools_template_message_send_record'
 		verbose_name = '模板消息发送记录'
 		verbose_name_plural = 'market_tools_template_message_send_record'
+
+
+class MallOrderFromSharedRecord(models.Model):
+	order_id = models.IntegerField()
+	fmt = models.CharField(default='', max_length=255)
+	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间
+
+	class Meta(object):
+		db_table = "mall_order_from_shared_record"

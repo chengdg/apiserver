@@ -578,7 +578,7 @@ class WebAppUser(business_model.Model):
 		if money > 0:
 			member = member_models.Member.get(id=self.member.id)
 			member.pay_money = member.pay_money + money
-			member.pay_times = member.pay_times + pay_times
+			member.pay_times = member.pay_times + 1
 			try:
 				member.unit_price = member.pay_money/member.pay_times
 			except:

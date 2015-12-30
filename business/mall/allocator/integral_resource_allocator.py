@@ -61,7 +61,7 @@ class IntegralResourceAllocator(business_model.Service):
 				# integral_log_id=-1 表示积分返还
 				Integral.return_integral({
 							'webapp_user': webapp_user,
-							'integral_count': integral,
+							'return_count': integral,
 					})
 		return
 

@@ -53,6 +53,7 @@ class OrderResourceExtractor(business_model.Model):
 				'type': resource_type
 			})
 		integral_resource.integral = order.integral
+		integral_resource.integral_log_id = -1 # 表示不删除integral_log
 		#integral_resource.money = order.integral_money
 
 		resources.append(integral_resource)

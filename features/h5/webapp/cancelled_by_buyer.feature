@@ -301,7 +301,7 @@ Scenario:3 bill不能取消使用了积分的待发货订单
 		}
 		"""
 
-@mall2 @order @allOrder   @mall.order_cancel_status @mall.order_cancel_status.integral_and_coupon_member @pyliu @wip.cbb4
+@mall3 @mall2 @order @allOrder   @mall.order_cancel_status @mall.order_cancel_status.integral_and_coupon_member @pyliu @wip.cbb4
 Scenario:4 bill能取消使用积分的待支付订单
 	bill取消订单'004'
 	1. bill手机端订单状态改变为'已取消'

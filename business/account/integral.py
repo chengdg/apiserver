@@ -161,6 +161,11 @@ class Integral(business_model.Model):
 
 	@staticmethod
 	def return_integral(args):
+		"""
+		返还积分
+
+		与roll_back_integral()区别：return_integral()不删除integral_log。
+		"""
 		webapp_user = args['webapp_user']
 		return_count = args['return_count']
 		

@@ -72,7 +72,7 @@ Background:
 		"""
 	And bill关注jobs的公众号
 
-@mall3 @mall2 @wip.victor1 @mall.pay_weizoom_card
+@mall3 @mall2 @wip.bpuc1 @mall.pay_weizoom_card
 #购买流程.编辑订单.微众卡使用
 Scenario:1 微众卡金额大于订单金额时进行支付
 	bill用微众卡购买jobs的商品时,微众卡金额大于订单金额

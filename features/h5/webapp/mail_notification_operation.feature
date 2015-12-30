@@ -381,8 +381,7 @@ Scenario:2 启用"付款时"邮件通知
 			}
 			"""
 
-
-@mall3 @configuration @mail
+@configuration @mail @ztqb3
 Scenario:3 启用"取消时"邮件通知
 	#1 bill购买单个商品（积分活动）；配置运营接收邮件，可以正确只收到一次邮件通知
 	#2 tom购买多个商品（买赠、限时抢购、优惠券）；配置运营接收邮件，可以正确只收到一次邮件通知
@@ -430,7 +429,7 @@ Scenario:3 启用"取消时"邮件通知
 				}]
 			}
 			"""
-		When bill'能'取消订单'0000001'
+		When bill取消订单'0000001'
 
 		Then server能发送邮件
 			"""
@@ -500,7 +499,6 @@ Scenario:3 启用"取消时"邮件通知
 				"coupon_money": 50.0
 			}
 			"""
-		When tom使用支付方式'微信支付'进行支付
 		When tom取消订单'0000002'
 
 		Then server能发送邮件

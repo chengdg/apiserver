@@ -89,7 +89,10 @@ class AOrderList(api_resource.ApiResource):
 				data['products'].append(product_data)
 
 			data['product_count'] = total_product_count
+
+			data['pay_info'] = order.pay_info
 			order_datas.append(data)
+
 
 		return {
 			'orders': order_datas

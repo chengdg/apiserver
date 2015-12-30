@@ -45,6 +45,8 @@ from business.mall.express.express_info import ExpressInfo
 from services.order_notify_mail_service.task import notify_order_mail
 from business.mall.allocator.allocate_order_resource_service import AllocateOrderResourceService
 from business.account.integral import Integral
+from business.mall.pay_interface import PayInterface
+
 ORDER_STATUS2NOTIFY_STATUS = {
 	mall_models.ORDER_STATUS_NOT: accout_models.PLACE_ORDER,
 	mall_models.ORDER_STATUS_PAYED_NOT_SHIP: accout_models.PAY_ORDER,
@@ -182,6 +184,7 @@ class Order(business_model.Model):
 				self._init_slot_from_model(order_db_model)
 				self.context['is_valid'] = True
 				self.ship_area = regional_util.get_str_value_by_string_ids(order_db_model.area)
+				
 			except:
 				webapp_owner_id = webapp_owner.id
 				error_msg = u"获得order_id('{}')对应的Order model失败, cause:\n{}"\
@@ -326,6 +329,18 @@ class Order(business_model.Model):
 			return True
 
 		return False
+
+	@property
+	def pay_info(self):
+		if self.status == 0:
+			pay_interface = PayInterface.from_type({
+				"webapp_owner": self.context['webapp_owner'],
+				"pay_interface_type": self.pay_interface_type
+			})
+			return pay_interface.get_pay_url_info_for_order(self)
+		else:
+			return {}
+
 
 	@cached_context_property
 	def latest_express_detail(self):
@@ -474,7 +489,7 @@ class Order(business_model.Model):
 
 
 	def to_dict(self, *extras):
-		properties = ['has_sub_order', 'sub_orders', 'pay_interface_name', 'status_text', 'red_envelope', 'red_envelope_created']
+		properties = ['has_sub_order', 'sub_orders', 'pay_interface_name', 'status_text', 'red_envelope', 'red_envelope_created', 'pay_info']
 		if extras:
 			properties.extend(extras)
 
@@ -494,7 +509,7 @@ class Order(business_model.Model):
 		#因为self.products这个property返回的是ReservedProduct或OrderProduct的对象集合，所以需要再次处理
 		if 'products' in result:
 			result['products'] = [product.to_dict() for product in result['products']]
-
+		
 		return result
 
 

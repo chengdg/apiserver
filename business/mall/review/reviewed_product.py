@@ -22,6 +22,7 @@ from utils import emojicons_util
 from business import model as business_model
 from business.mall.review.reviewed_product_picture import ReviewedProductPicture
 from business.mall.product import Product
+from business.account.webapp_user import WebAppUser
 
 
 class ReviewedProduct(business_model.Model):
@@ -33,7 +34,7 @@ class ReviewedProduct(business_model.Model):
 		'member_id',
 		'owner_id',
 		'review_detail',
-		'member_id',
+		'member_name',
 		'status',
 		'created_at',
 		'reviewed_product_pictures',
@@ -127,6 +128,16 @@ class ReviewedProduct(business_model.Model):
 		business_model.Model.__init__(self)
 		self.context['db_model'] = model
 		self.context['webapp_owner'] = webapp_owner
+
+		webapp_user = WebAppUser.from_member_id({
+			'webapp_owner': webapp_owner,
+			'member_id': model.member_id
+			})
+
+		if webapp_user:
+			self.member_name = webapp_user.username_for_html
+		else:
+			self.member_name = ''
 
 		self.product_score = model.product_score
 

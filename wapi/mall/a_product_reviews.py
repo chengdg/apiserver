@@ -17,7 +17,7 @@ class AProductReviews(api_resource.ApiResource):
 	resource = 'product_reviews'
 
 
-	@param_required(['woid', 'product_id'])
+	@param_required(['product_id'])
 	def get(args):
 		"""
 		获取审核通过的product review
@@ -35,8 +35,8 @@ class AProductReviews(api_resource.ApiResource):
 			})
 		
 		products = product_reviews.products
-		if limit and products:
-			products = products[:2]
+		# if limit and products:
+		# 	products = products[:2]
 
 		return {
 			'reviews': products

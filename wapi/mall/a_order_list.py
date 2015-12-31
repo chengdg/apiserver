@@ -13,6 +13,7 @@ from wapi.mall.a_purchasing import APurchasing as PurchasingApiResource
 from core.cache import utils as cache_utils
 from business.mall.order import Order
 from business.mall.order_products import OrderProducts
+from business.mall.review.waiting_review_order import WaitingReviewOrder
 
 
 class AOrderList(api_resource.ApiResource):
@@ -42,6 +43,16 @@ class AOrderList(api_resource.ApiResource):
 
 		order_datas = []
 		for order in orders:
+			waiting_review_order = WaitingReviewOrder.get_for_order({
+				'webapp_owner': webapp_owner,
+				'order': order,
+				'webapp_user': webapp_user
+				})
+
+			review_is_finished = True
+			if waiting_review_order and waiting_review_order.order_is_reviewed is False:
+				review_is_finished = False
+
 			data = {
 				'id': order.id,
 				'order_id': order.order_id,
@@ -51,7 +62,7 @@ class AOrderList(api_resource.ApiResource):
 				'final_price': order.final_price,
 				'has_sub_order': order.has_sub_order,
 				'express_number': order.express_number,
-				'review_is_finished': False,
+				'review_is_finished': review_is_finished,
 				'red_envelope': order.red_envelope,
 				'red_envelope_created': order.red_envelope_created,
 				'products': []

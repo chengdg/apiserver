@@ -7,6 +7,7 @@ from db.mall import models as mall_models
 from utils import dateutil as utils_dateutil
 #import resource
 from business.mall.product import Product
+from business.mall.review.product_reviews import ProductReviews
 
 
 class AProduct(api_resource.ApiResource):
@@ -45,10 +46,20 @@ class AProduct(api_resource.ApiResource):
 		else:
 			product.apply_discount(args['webapp_user'])
 
+			product_reviews = ProductReviews.get_from_product_id({
+				'webapp_owner': webapp_owner,
+				'product_id': product_id,
+			})
+			if product_reviews:
+				reviews = product_reviews.products
+			else:
+				reviews = []
+
 			result = product.to_dict(extras=['hint'])
 
 			result['webapp_owner_integral_setting'] = {
 				'integarl_per_yuan': webapp_owner.integral_strategy_settings.integral_each_yuan
 			}
+			result['product_reviews'] = reviews
 
 		return result

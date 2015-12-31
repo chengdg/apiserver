@@ -66,7 +66,6 @@ class OrderResourceExtractor(business_model.Model):
 		抽取ProductsResource
 		"""
 		logging.info(u"to extract ProductsResource from order")
-		resources = []
 
 		webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user']
@@ -75,18 +74,19 @@ class OrderResourceExtractor(business_model.Model):
 		product_resources = []
 		resource_type = ProductResourceAllocator(webapp_owner, webapp_user).resource_type
 
-		# TODO: 以后改成用order.products之类的
-		db_order_has_products = mall_models.OrderHasProduct.select().dj_where(order=order.id)
-		for db_record in db_order_has_products:
+		order_products = order.products
+		for order_product in order_products:
+			purchase_count = order_product.purchase_count
+			model_id = order_product.model.id
 			product_resource = ProductResource.get({
 					'type': resource_type
 				})
-			product_resource.purchase_count = db_record.number
-			product_resource.model_id = 0
+			product_resource.purchase_count = purchase_count
+			product_resource.model_id = model_id
 			product_resources.append(product_resource)
 
-		resources.append(ProductsResource(product_resources))
-		return resources
+		products_resource = ProductsResource(product_resources, "order_products")
+		return products_resource
 
 	def extract(self, order):
 		"""
@@ -100,9 +100,13 @@ class OrderResourceExtractor(business_model.Model):
 		resources = []
 
 		# 抽取积分资源
-		extracted_resources = self.__extract_integral(order)
-		if extracted_resources:
-			resources.extend(extracted_resources)
+		integral_resources = self.__extract_integral(order)
+		products_resource = self.__extract_products_resource(order)
+		if integral_resources:
+			resources.extend(integral_resources)
+
+		if products_resource:
+			resources.append(products_resource)
 
 		logging.info(u"extracted {} resources".format(len(resources)))
 		return resources

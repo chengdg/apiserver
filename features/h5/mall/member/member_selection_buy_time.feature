@@ -249,11 +249,33 @@ Scenario:1 按照会员的"最后购买时间"进行查询
 			}]
 			"""
 		Then jobs可以获得会员列表:weapp
-			| name  | member_rank | pay_money | unit_price | pay_times |
-			| marry | 普通会员    |   200.00  |   200.00   |     1     |
-			| nokia | 普通会员    |   100.00  |   100.00   |     1     |
-			| tom   | 普通会员    |   200.00  |   200.00   |     1     |
-			| bill  | 普通会员    |   400.00  |   133.33   |     3     |
+			"""
+			[{
+				"name":"marry",
+				"member_rank":"普通会员",
+				"pay_money":200.00,
+				"unit_price":200.00,
+				"pay_times":1
+			},{
+				"name":"nokia",
+				"member_rank":"普通会员",
+				"pay_money":100.00,
+				"unit_price":100.00,
+				"pay_times":1
+			},{
+				"name":"tom",
+				"member_rank":"普通会员",
+				"pay_money":200.00,
+				"unit_price":200.00,
+				"pay_times":1
+			},{
+				"name":"bill",
+				"member_rank":"普通会员",
+				"pay_money":400.00,
+				"unit_price":133.33,
+				"pay_times":3
+			}]
+			"""
 
 	#无查询结果
 		When jobs设置会员查询条件:weapp

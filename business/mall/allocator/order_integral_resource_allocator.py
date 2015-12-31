@@ -118,11 +118,32 @@ class OrderIntegralResourceAllocator(business_model.Service):
 		group2integralinfo =  purchase_info.group2integralinfo
 		uid2group = dict((group.uid, group) for group in order.product_groups)
 		for group_uid, integral_info in group2integralinfo.items():
-			try:
-				promotion_product_group = uid2group[group_uid]
-			except:
-				info = str(uid2group)
-				raise RuntimeError("Key error %s, %s" % (group_uid, info))
+			if not group_uid in uid2group:
+				#当积分应用的促销状态从"进行中"变到"已过期"后，商品会从独立group转移到和普通商品在一个group
+				#因此，purchase_info中要求的group已经不存在，所以当uid2group中不存在group_uid时
+				#意味着"积分折扣已过期"
+				reason = {
+					'type': 'integral:integral_sale:expired',
+					'msg': u'积分折扣已经过期',
+					'short_msg': u'已经过期'
+				}
+
+				#确定积分应用过期的商品
+				target_product = None
+				for product_group in order.product_groups:
+					for product in product_group.products:
+						product_group_uid = '%s_%s' % (product.id, product.model.name)
+						if group_uid == product_group_uid:
+							target_product = product
+							break
+					if not target_product:
+						break
+
+				if target_product:
+					self.__supply_product_info_into_fail_reason(target_product, reason)
+				return False, reason
+
+			promotion_product_group = uid2group[group_uid]
 
 			if not promotion_product_group.active_integral_sale_rule:
 				#当purchase_info提交的信息中存在group的积分信息
@@ -135,7 +156,6 @@ class OrderIntegralResourceAllocator(business_model.Service):
 				}
 				self.__supply_product_info_into_fail_reason(promotion_product_group.products[0], reason)
 				return False, reason
-
 
 			use_integral = int(integral_info['integral'])
 			integral_money = round(float(integral_info['money']), 2)

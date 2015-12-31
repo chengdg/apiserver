@@ -49,6 +49,7 @@ Background:
 			}]
 		}
 		"""
+
 	#已取消订单 002 200
 	When bill访问jobs的webapp
 	And bill购买jobs的商品
@@ -91,7 +92,8 @@ Background:
 			}]
 		}
 		"""
-	And jobs对订单进行发货:weapp
+	Given jobs登录系统:weapp
+	When jobs对订单进行发货:weapp
 		"""
 		{
 			"order_no":"004",
@@ -113,7 +115,8 @@ Background:
 			}]
 		}
 		"""
-	And jobs对订单进行发货:weapp
+	Given jobs登录系统:weapp
+	When jobs对订单进行发货:weapp
 		"""
 		{
 			"order_no":"004",
@@ -151,12 +154,13 @@ Background:
 			}]
 		}
 		"""
-	And jobs对订单进行发货:weapp
+	Given jobs登录系统:weapp
+	When jobs对订单进行发货:weapp
 		"""
 		{
 			"order_no":"007",
 			"logistics":"顺丰速运",
-			"number":"123456789"
+			"number":"12356"
 		}
 		"""
 
@@ -173,7 +177,8 @@ Background:
 			}]
 		}
 		"""
-	And jobs对订单进行发货:weapp
+	Given jobs登录系统:weapp
+	When jobs对订单进行发货:weapp
 		"""
 		{
 			"order_no":"008",
@@ -184,7 +189,7 @@ Background:
 	When marry访问jobs的webapp
 	And marry确认收货订单'008'
 
-@order @allOrder
+@mall3 @order @allOrder
 Scenario:1 统计整个系统有订单的：消费金额、订单数、客单价
     Given jobs登录系统:weapp
     When jobs设置筛选日期:weapp

@@ -24,6 +24,7 @@ from business.resource.coupon_resource import CouponResource
 from business.mall.allocator.coupon_resource_allocator import CouponResourceAllocator
 from db.mall import models as mall_models
 from business.mall.coupon.coupon import Coupon
+from db.mall import promotion_models
 
 class OrderResourceExtractor(business_model.Model):
 	"""
@@ -106,15 +107,20 @@ class OrderResourceExtractor(business_model.Model):
 		resource_type = CouponResourceAllocator(webapp_owner, webapp_user).resource_type
 
 		logging.info("coupon_id: {}".format(order.coupon_id))
-		coupon = Coupon.from_coupon_id({
-				'coupon_id': order.coupon_id
+		coupon = Coupon.from_id({
+				'id': order.coupon_id
 			})
 		if coupon:
 			resource = CouponResource.get({
 					'type': resource_type,
 				})
+
+			logging.info('Coupon to be released: {}'.format(coupon.to_dict()))
 			resource.coupon = coupon
 			resource.money = coupon.money
+			#resource.raw_status = coupon.status
+			resource.raw_status = promotion_models.COUPON_STATUS_UNUSED
+			resource.raw_member_id = coupon.member_id
 
 			resources.append(resource)
 		else:

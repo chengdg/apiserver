@@ -14,7 +14,12 @@ class CouponResource(business_model.Resource):
 	__slots__ = (
 		'type',
 		'coupon',
-		'money'
+		'money',
+
+		'raw_status', # 原来属性？
+		'raw_member_id',
+
+		'red_envelope2member',
 	)
 
 	@staticmethod
@@ -31,6 +36,7 @@ class CouponResource(business_model.Resource):
 	def __init__(self, type):
 		business_model.Resource.__init__(self)
 		self.type = type
+		self.red_envelope2member = None
 
 	def get_type(self):
 		return self.type

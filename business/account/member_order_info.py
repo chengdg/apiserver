@@ -28,7 +28,8 @@ class MemberOrderInfo(business_model.Model):
 		'not_payed_order_count',
 		'not_ship_order_count',
 		'shiped_order_count',
-		'review_count'
+		'review_count',
+		'finished_count'
 	)
 
 	@staticmethod
@@ -87,6 +88,7 @@ class MemberOrderInfo(business_model.Model):
 				"not_ship_count": mall_models.Order.select().dj_where(webapp_user_id=webapp_user_id, status=mall_models.ORDER_STATUS_PAYED_NOT_SHIP).count(),
 				"shiped_count": mall_models.Order.select().dj_where(webapp_user_id=webapp_user_id, status=mall_models.ORDER_STATUS_PAYED_SHIPED).count(),
 				"review_count": self.__get_count_of_unfinished_product_review_picture(webapp_user_id),
+				"finished_count": mall_models.Order.select().dj_where(webapp_user_id=webapp_user_id, status=mall_models.ORDER_STATUS_SUCCESSED,origin_order_id__lte=0).count()
 			}
 			ret = {
 				'keys': [cache_key],
@@ -110,6 +112,7 @@ class MemberOrderInfo(business_model.Model):
 		self.not_ship_order_count = stats["not_ship_count"]
 		self.shiped_order_count = stats["shiped_count"]
 		self.review_count = stats["review_count"]
+		self.finished_count = stats['finished_count']
 
 
 

@@ -670,6 +670,7 @@ class Order(business_model.Model):
 				mall_models.Order.update(status=mall_models.ORDER_STATUS_PAYED_NOT_SHIP, pay_interface_type=pay_interface_type, payment_time=now).dj_where(origin_order_id=self.id).execute()
 
 			mall_models.Order.update(status=mall_models.ORDER_STATUS_PAYED_NOT_SHIP, pay_interface_type=pay_interface_type, payment_time=now).dj_where(order_id=self.order_id).execute()
+			self.payment_time = now
 			self.raw_status = self.status
 			self.status = mall_models.ORDER_STATUS_PAYED_NOT_SHIP
 			self.pay_interface_type = pay_interface_type
@@ -690,7 +691,7 @@ class Order(business_model.Model):
 
 			#支付后，更新会员支付数据
 			webapp_user = self.context['webapp_user']
-			webapp_user.update_pay_info(float(self.final_price) + float(self.weizoom_card_money))
+			webapp_user.update_pay_info(float(self.final_price) + float(self.weizoom_card_money), self.payment_time)
 
 			self.__after_update_status('pay')
 			self.__send_template_message()
@@ -764,7 +765,8 @@ class Order(business_model.Model):
 			'webapp_owner': self.context['webapp_owner'],
 			'order_id': self.id
 		})
-
+		# 订单完成后更新会员等级
+		# self.context['webapp_user'].update_member_grade()
 		self.__after_update_status('finish')
 
 	def __after_update_status(self, action):

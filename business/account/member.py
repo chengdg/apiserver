@@ -40,7 +40,8 @@ class Member(business_model.Model):
 		'is_subscribed',
 		'created',
 		'token',
-		'webapp_id'
+		'webapp_id',
+		'pay_money'
 	)
 
 	@staticmethod

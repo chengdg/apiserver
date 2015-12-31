@@ -319,6 +319,13 @@ class WebAppUser(business_model.Model):
 		"""
 		return self.__order_info.review_count
 
+	@property
+	def finished_order_count(self):
+		"""
+		[property] webapp user已完成状态订单单数
+		"""
+		return self.__order_info.finished_count
+
 	def to_dict(self, *extras):
 		data = {}
 		data['id'] = self.id
@@ -574,16 +581,35 @@ class WebAppUser(business_model.Model):
 		"""
 		return self.context.get('is_force_purchase', False)
 
-	def update_pay_info(self, money):
+	def update_pay_info(self, money, order_payment_time):
 		self.set_purchased()
 		if money > 0:
 			member = member_models.Member.get(id=self.member.id)
 			member.pay_money = member.pay_money + money
 			member.pay_times = member.pay_times + 1
+			member.last_pay_time = order_payment_time
 			try:
 				member.unit_price = member.pay_money/member.pay_times
 			except:
 				member.unit_price = 0
 			member.save()
 
+	def update_member_grade(self):
+		pay_money = self.member.pay_money
+		finished_order_count = self.finished_order_count
+		webapp_owner = self.context['webapp_owner']
+		grades = sorted(filter(lambda x: x.is_auto_upgrade and x.id > self.grade.id, webapp_owner.member_grades))
+		is_all_conditions = webapp_owner.integral_strategy_settings.is_all_conditions
 
+		new_grade = None
+		for grade in grades:
+			if is_all_conditions:
+				if pay_money >= grade.pay_money and finished_order_count >= grade.pay_times:
+					new_grade = grade
+			else:
+				if pay_money >= grade.pay_money or finished_order_count >= grade.pay_times:
+					new_grade = grade
+
+			if new_grade:
+				member_models.Member.update(grade=new_grade).dj_where(id=self.member.id).execute()
+				break

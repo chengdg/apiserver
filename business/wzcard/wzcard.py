@@ -263,6 +263,7 @@ class WZCard(business_model.Model):
 			self.status = wzcard_models.WEIZOOM_CARD_STATUS_USED 
 		# 更新数据库
 		self.save()
+	
 		return use_price
 
 

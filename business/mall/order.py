@@ -47,6 +47,8 @@ from business.mall.allocator.allocate_order_resource_service import AllocateOrde
 from business.account.integral import Integral
 from business.mall.pay_interface import PayInterface
 from decimal import Decimal
+from business.mall.allocator.allocate_price_related_resource_service import AllocatePriceRelatedResourceService
+from business.mall.log_operator import LogOperator
 
 ORDER_STATUS2NOTIFY_STATUS = {
 	mall_models.ORDER_STATUS_NOT: accout_models.PLACE_ORDER,
@@ -717,9 +719,19 @@ class Order(business_model.Model):
 		webapp_user = self.context['webapp_user']
 		order_resource_extractor = OrderResourceExtractor(webapp_owner, webapp_user)
 		resources = order_resource_extractor.extract(self)
-		# 释放资源
+		
+		# 释放价格无关资源
 		service = AllocateOrderResourceService(webapp_owner, webapp_user)
 		service.release(resources)
+
+		# 释放价格有关资源
+		service = AllocatePriceRelatedResourceService(webapp_owner, webapp_user)
+		service.release(resources)
+
+		# 需要删除WZCard的log
+		# TODO: 待优化，应该在释放微众卡资源时删除wzcard_log
+		LogOperator.remove_wzcard_logs_by_order_id(order.order_id)
+			
 		return
 
 

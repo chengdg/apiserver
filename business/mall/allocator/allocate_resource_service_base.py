@@ -87,8 +87,8 @@ class AllocateResourceServiceBase(business_model.Service):
 					allocator.release(resource)
 					logging.info("Resorce {} released".format(resource))
 				else:
-					logging.error("No such allocator of resource type '{}', resource: {}".format(resource.type, resource))
+					logging.warning("No allocator of resource type '{}', resource: {}".format(resource.type, resource))
 			else:
-				logging.info("Unexpected NULL resource, skipped")
+				logging.error("Unexpected None resource, skipped")
 		#for allocator in self.__allocators:
 		#	allocator.release(resources)

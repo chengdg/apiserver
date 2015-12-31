@@ -2,6 +2,7 @@
 """@package business.mall.log_operator
 操作日志记录器
 
+@todo 待重构（这个应该包括在WZCard中）
 """
 from business import model as business_model
 from db.mall import models as mall_models
@@ -61,3 +62,28 @@ class LogOperator(business_model.Model):
 			event_type = event_type,
 		)
 		return wzcard_log
+
+	@staticmethod
+	def get_used_wzcards(order_id):
+		"""
+		根据订单号查微众卡信息
+		"""
+		used_wzcards = []
+		logs = wzcard_models.WeizoomCardHasOrder.select().dj_where(order_id=order_id)
+		for log in logs:
+			# 三元组表示：card_id, money, last_status
+			# TODO: 待重构（相当于这里知道了WZCardResource的细节）
+			used_wzcards.append( (log.card_id, log.money, -1) )
+		return used_wzcards
+
+	@staticmethod
+	def remove_logs_by_order_id(order_id):
+		"""
+		删除order_id所用的WZCard
+
+		@todo 整合至WZCard.refund()
+		"""
+		records = wzcard_models.WeizoomCardHasOrder.delete().dj_where(order_id=order_id).execute()
+		logging.warning("REMOVED wzcard logs. order_id: {}, result: {}".format(order_id, records))
+		return
+

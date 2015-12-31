@@ -22,9 +22,12 @@ from business.resource.product_resource import ProductResource
 from business.resource.products_resource import ProductsResource
 from business.resource.coupon_resource import CouponResource
 from business.mall.allocator.coupon_resource_allocator import CouponResourceAllocator
-from db.mall import models as mall_models
+#from db.mall import models as mall_models
 from business.mall.coupon.coupon import Coupon
 from db.mall import promotion_models
+from business.wzcard.wzcard_resource_allocator import WZCardResourceAllocator
+from business.mall.log_operator import LogOperator
+from business.wzcard.wzcard_resource import WZCardResource
 
 class OrderResourceExtractor(business_model.Model):
 	"""
@@ -129,6 +132,29 @@ class OrderResourceExtractor(business_model.Model):
 		return resources
 
 
+	def __extract_wzcard_resource(self, order):
+		"""
+		抽取使用的WZCardResource
+
+		@todo 待重构，增加WZCardResourceExtractor
+		"""
+		logging.info(u"to extract WZCardResource from order, order_id:{}".format(order.order_id))
+		resources = []
+
+		webapp_owner = self.context['webapp_owner']
+		webapp_user = self.context['webapp_user']
+
+		resource_type = WZCardResourceAllocator(webapp_owner, webapp_user).resource_type
+
+		# 从微众卡日志找出信息
+		used_wzcards = LogOperator.get_used_wzcards(order.order_id)
+		logging.info("extracted wzcard resource: {}".format(used_wzcards))
+		resource = WZCardResource(resource_type, used_wzcards)
+		resources.append(resource)
+
+		return resources
+
+
 
 	def extract(self, order):
 		"""
@@ -152,6 +178,11 @@ class OrderResourceExtractor(business_model.Model):
 
 		# 抽取优惠券资源
 		extracted_resources = self.__extract_coupon_resource(order)
+		if extracted_resources:
+			resources.extend(extracted_resources)
+
+		# 抽取微众卡资源
+		extracted_resources = self.__extract_wzcard_resource(order)
 		if extracted_resources:
 			resources.extend(extracted_resources)
 

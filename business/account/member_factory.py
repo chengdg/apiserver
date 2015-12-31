@@ -129,7 +129,8 @@ class MemberFactory(business_model.Model):
 				token = member_token,
 				is_for_test = is_for_test,
 				is_subscribed = is_subscribed,
-				status = status
+				status = status,
+				source = member_models.SOURCE_BY_URL
 			)
 			# if not member:
 			# 	return None

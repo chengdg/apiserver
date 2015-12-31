@@ -118,7 +118,11 @@ class OrderIntegralResourceAllocator(business_model.Service):
 		group2integralinfo =  purchase_info.group2integralinfo
 		uid2group = dict((group.uid, group) for group in order.product_groups)
 		for group_uid, integral_info in group2integralinfo.items():
-			promotion_product_group = uid2group[group_uid]
+			try:
+				promotion_product_group = uid2group[group_uid]
+			except:
+				info = str(uid2group)
+				raise RuntimeError("Key error %s, %s" % (group_uid, info))
 
 			if not promotion_product_group.active_integral_sale_rule:
 				#当purchase_info提交的信息中存在group的积分信息

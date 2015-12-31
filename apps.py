@@ -92,7 +92,7 @@ class FalconResource:
 			response['errMsg'] = str(e).strip()
 			response['innerErrMsg'] = unicode_full_stack()
 		except Exception as e:
-			response['code'] = 500
+			response['code'] = 531 #不要改动这个code，531是表明apiserver内部发生异常的返回码
 			response['errMsg'] = str(e).strip()
 			response['innerErrMsg'] = unicode_full_stack()
 		resp.body = json.dumps(response, default=_default)

@@ -355,7 +355,7 @@ Scenario:3 购买多个商品包括会员价商品
 		}
 		"""
 
-@mall3 @meberGrade @robert.wip @ztqb
+@mall3 @meberGrade @robert.wip
 Scenario:4 订单完成后，达到自动升级的条件
 	jobs添加商品后
 	1. tom能在webapp中购买jobs的商品后，完成订单后
@@ -512,7 +512,7 @@ Scenario:4 订单完成后，达到自动升级的条件
 		}]
 		"""
 
-@mall3 @integral_experience @robert.wip @ztqb2
+@mall3 @integral_experience @robert.wip
 Scenario:5 使用积分购买商品后，取消订单，积分返回
 	jobs添加商品后
 	1. bill能在webapp中使用积分购买jobs的商品后，创建订单后

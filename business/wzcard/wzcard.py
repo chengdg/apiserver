@@ -11,7 +11,7 @@ from wapi.decorators import param_required
 #from db.wzcard.models import WeizoomCardRule, WeizoomCard
 import logging
 from decimal import Decimal
-
+from core.decorator import deprecated
 
 class WZCard(business_model.Model):
 	"""
@@ -133,9 +133,12 @@ class WZCard(business_model.Model):
 		return db_model.status
 
 	@status.setter
+	@deprecated
 	def status(self, value):
 		"""
 		[setter] 微众卡状态
+
+		@todo 改成通过操作调整status
 		"""
 		#self.status = value
 		db_model = self.context['db_model']	
@@ -247,6 +250,10 @@ class WZCard(business_model.Model):
 		"""
 		# 如果price_to_pay是float/str，转成Decimal
 		price_to_pay = price_to_pay if isinstance(price_to_pay, Decimal) else Decimal(price_to_pay)
+		if price_to_pay < 1e-3:
+			# 没有实际支付
+			return Decimal(0)
+
 		use_price = min(price_to_pay, self.balance)
 		self.balance = self.balance - use_price
 		if self.balance < 1e-3:
@@ -259,12 +266,13 @@ class WZCard(business_model.Model):
 		return use_price
 
 
-	def refund(self, amount, reason=None):
+	def refund(self, amount, reason=None, last_status=None):
 		"""
 		微众卡退款（用于release）
 
 		@param amount 退款金额
 		@param reason 退款原因
+		@param last_status 退款之前的状态
 
 		@return 退款后余额
 		@note 不同于微众卡"充值"
@@ -274,6 +282,8 @@ class WZCard(business_model.Model):
 		amount = amount if isinstance(amount, Decimal) else Decimal(amount)
 		if amount>0:
 			self.balance += amount
+		if last_status:
+			self.status = last_status
 		# 更新数据库
 		is_success = True
 		try:

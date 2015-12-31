@@ -48,6 +48,8 @@ class WZCardResourceAllocator(business_model.Service):
 			1. 获取微众卡信息；
 			2. 依次扣除微众卡金额；
 			3. 返回微众卡资源(WZCardResource)对象
+
+		@todo 应该先抽取微众卡资源，然后判断是否有效，再执行扣资源的操作
 		"""
 		is_success = True
 		reason = ''
@@ -96,16 +98,17 @@ class WZCardResourceAllocator(business_model.Service):
 
 			if is_success:
 				# 验证微众卡可用
+				last_status = wzcard.status
 				used_amount = wzcard.pay(final_price)
-				logging.info("order.final_price={}, used_amount={}".format(order.final_price, used_amount))
+				logging.info("Use WZCard {}, used_amount={}, final_price={}, last_status={}".format(wzcard.wzcard_id, used_amount, final_price, last_status))
 
 				# 保存微众卡使用的信息，完成扣除微众卡金额动作
 				wzcard.save()
 				total_used_amount += used_amount
 				final_price -= used_amount
 
-				# 保存微众卡号、使用金额
-				used_wzcards.append( (wzcard, used_amount) )
+				# 保存微众卡号、使用金额、上一次状态
+				used_wzcards.append( (wzcard, used_amount, last_status) )
 			else:
 				break
 
@@ -116,7 +119,7 @@ class WZCardResourceAllocator(business_model.Service):
 			# 分配WZCardResource
 			wzcard_resource = WZCardResource(
 				self.resource_type,
-				[(item[0].wzcard_id, item[1]) for item in used_wzcards]
+				[(item[0].wzcard_id, item[1], item[2]) for item in used_wzcards]
 				)
 			logging.info("total_used_amount: {}, order.final_price: {}".format(total_used_amount, order.final_price))
 
@@ -129,7 +132,8 @@ class WZCardResourceAllocator(business_model.Service):
 			for item in used_wzcards:
 				wzcard = item[0]
 				used_amount = item[1]
-				wzcard.refund(used_amount)
+				last_status = item[2]
+				wzcard.refund(used_amount, None, last_status)
 			wzcard_resource = None
 			order.weizoom_card_money = Decimal(0)
 			
@@ -145,19 +149,19 @@ class WZCardResourceAllocator(business_model.Service):
 		@todo 退款记录
 		"""
 		logging.info("calling WZCardResourceAllocator.release() to release resources, resource: {}".format(resource))
-		if isinstance(resource, WZCardResource):
-			used_wzcards = resource.used_wzcards
-			# 退回扣款记录
-			for wzcard_id, used_amount in used_wzcards:
-				# 找到对应的卡
-				wzcard = WZCard.from_wzcard_id({
-					"webapp_owner": self.__webapp_owner,
-					"wzcard_id": wzcard_id,
-					})
-				# 退款
-				is_success, balance = wzcard.refund(used_amount, u'refund')
-				# TODO: 如果退款失败怎么办？
-				logging.info("WZCard refunded: is_success: {}, balance: {}".format(is_success, balance))
+		
+		used_wzcards = resource.used_wzcards
+		# 退回扣款记录
+		for wzcard_id, used_amount, last_status in used_wzcards:
+			# 找到对应的卡
+			wzcard = WZCard.from_wzcard_id({
+				"webapp_owner": self.__webapp_owner,
+				"wzcard_id": wzcard_id,
+				})
+			# 退款
+			is_success, balance = wzcard.refund(used_amount, u'refund', last_status)
+			# TODO: 如果退款失败怎么办？
+			logging.info("WZCard refunded: is_success: {}, balance: {}".format(is_success, balance))
 		return
 
 	@property

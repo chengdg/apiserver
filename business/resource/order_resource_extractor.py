@@ -85,7 +85,9 @@ class OrderResourceExtractor(business_model.Model):
 		order_products = order.products
 		for order_product in order_products:
 			purchase_count = order_product.purchase_count
-			model_id = order_product.model.id
+			model_id = -1
+			if order_product.model:
+				model_id = order_product.model.id
 			product_resource = ProductResource.get({
 					'type': resource_type
 				})

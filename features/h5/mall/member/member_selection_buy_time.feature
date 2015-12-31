@@ -235,7 +235,7 @@ Background:
 		"""
 	And tom2取消订单'010'
 
-@member @memberList
+@mall3 @member @memberList @ztq
 Scenario:1 按照会员的"最后购买时间"进行查询
 	Given jobs登录系统:weapp
 
@@ -245,7 +245,7 @@ Scenario:1 按照会员的"最后购买时间"进行查询
 			[{
 				"status":"全部",
 				"last_buy_start_time":"今天",
-				"last_buy_end_time":"今天"
+				"last_buy_end_time":"1天后"
 			}]
 			"""
 		Then jobs可以获得会员列表:weapp
@@ -282,8 +282,8 @@ Scenario:1 按照会员的"最后购买时间"进行查询
 			"""
 			[{
 				"status":"全部",
-				"last_buy_start_time":"今天",
-				"last_buy_end_time":"今天"
+				"last_buy_start_time":"2015-08-11 00:00",
+				"last_buy_end_time":"2015-08-11 00:10"
 			}]
 			"""
 		Then jobs获得刷选结果人数:weapp

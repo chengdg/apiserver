@@ -494,7 +494,7 @@ Scenario:8 bill能取消使用了微众卡的待支付订单
 			"stocks": 4
 		}
 		"""
-	Then jobs能获取微众卡'0000002':weapp
+	Then jobs能获取微众卡'0000002'
 		"""
 		{
 			"status":"已使用",

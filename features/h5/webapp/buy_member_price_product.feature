@@ -355,7 +355,7 @@ Scenario:3 购买多个商品包括会员价商品
 		}
 		"""
 
-@mall3 @meberGrade @robert.wip
+@mall3 @meberGrade @robert.wip @ztqb
 Scenario:4 订单完成后，达到自动升级的条件
 	jobs添加商品后
 	1. tom能在webapp中购买jobs的商品后，完成订单后
@@ -417,6 +417,7 @@ Scenario:4 订单完成后，达到自动升级的条件
 	And tom购买jobs的商品
 		"""
 		{
+			"order_id": "告别2015",
 			"ship_name": "tom",
 			"ship_tel": "13811223344",
 			"ship_area": "北京市 北京市 海淀区",
@@ -481,7 +482,9 @@ Scenario:4 订单完成后，达到自动升级的条件
 		}
 		"""
 	#tom已经满足一个升级条件，自动升级为铜牌会员
-	When jobs'完成'最新订单:weapp
+	When tom访问jobs的webapp
+	And tom确认收货订单'告别2015'
+	Given jobs登录系统:weapp
 	Then jobs能获得tom的积分日志:weapp
 		"""
 		[{
@@ -492,7 +495,7 @@ Scenario:4 订单完成后，达到自动升级的条件
 			"integral": 20
 		}]
 		"""
-	And jobs可以获得会员列表:weapp
+	Then jobs可以获得会员列表:weapp
 		"""
 		[{
 			"name": "tom",
@@ -509,7 +512,7 @@ Scenario:4 订单完成后，达到自动升级的条件
 		}]
 		"""
 
-@mall3 @integral_experience @robert.wip
+@mall3 @integral_experience @robert.wip @ztqb2
 Scenario:5 使用积分购买商品后，取消订单，积分返回
 	jobs添加商品后
 	1. bill能在webapp中使用积分购买jobs的商品后，创建订单后

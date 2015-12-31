@@ -766,7 +766,7 @@ class Order(business_model.Model):
 			'order_id': self.id
 		})
 		# 订单完成后更新会员等级
-		# self.context['webapp_user'].update_member_grade()
+		self.context['webapp_user'].update_member_grade()
 		self.__after_update_status('finish')
 
 	def __after_update_status(self, action):

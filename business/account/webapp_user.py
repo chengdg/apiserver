@@ -611,5 +611,7 @@ class WebAppUser(business_model.Model):
 					new_grade = grade
 
 			if new_grade:
-				member_models.Member.update(grade=new_grade).dj_where(id=self.member.id).execute()
+				member = member_models.Member.get(id=self.member.id)
+				member.grade = new_grade
+				member.save()
 				break

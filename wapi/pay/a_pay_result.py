@@ -76,7 +76,6 @@ class APayResult(api_resource.ApiResource):
 				error_msg = u'weixin pay, stage:[get_pay_result], result:{}, exception:\n{}'.format(msg, msg)
 				watchdog_error(error_msg)
 				return 500, msg
-			print('hereeeeee222222222')
 			is_pay_success = order.pay(pay_interface.type)
 			if is_pay_success:
 				# webapp_user.set_purchased()  #这个不应该在这处理 duhao

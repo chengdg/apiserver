@@ -8,6 +8,18 @@ Feature:会员列表查询会员的最后购买时间weapp
 Background:
 	Given 重置weapp的bdd环境
 	Given jobs登录系统:weapp
+	And jobs添加会员等级:weapp
+		"""
+		[{
+			"name": "银牌会员",
+			"upgrade": "手动升级",
+			"shop_discount": "10"
+		},{
+			"name": "金牌会员",
+			"upgrade": "手动升级",
+			"shop_discount": "9"
+		}]
+		"""
 
 	And jobs已添加支付方式:weapp
 		"""
@@ -33,6 +45,8 @@ Background:
 	And tom关注jobs的公众号
 	And nokia关注jobs的公众号
 	And marry关注jobs的公众号
+	And tom1关注jobs的公众号
+	And tom2关注jobs的公众号
 
 	#bill购买jobs的数据
 	#待支付订单 001 100 
@@ -77,7 +91,7 @@ Background:
 			}]
 		}
 		"""
-	And bill使用支付方式'微信支付'进行支付于'2015-10-10 10:30:00'
+	And bill使用支付方式'微信支付'进行支付
 
 	#已发货订单 004 200  ***
 	When bill访问jobs的webapp
@@ -92,7 +106,7 @@ Background:
 			}]
 		}
 		"""
-	And bill使用支付方式'微信支付'进行支付于'2015-10-11 10:30:00'
+	And bill使用支付方式'微信支付'进行支付
 	Given jobs登录系统:weapp
 	When jobs对订单进行发货:weapp
 		"""
@@ -116,7 +130,7 @@ Background:
 			}]
 		}
 		"""
-	And bill使用支付方式'微信支付'进行支付于'2015-10-12 10:30:00'
+	And bill使用支付方式'微信支付'进行支付
 	Given jobs登录系统:weapp
 	When jobs对订单进行发货:weapp
 		"""
@@ -134,14 +148,14 @@ Background:
 		"""
 		{
 			"order_id": "006",
-			"pay_type":"支付宝",
+			"pay_type":"微信支付",
 			"products": [{
 				"name": "商品2",
 				"count": 1
 			}]
 		}
 		"""
-	And tom使用支付方式'支付宝'进行支付于'2015-10-10 10:30:00'
+	And tom使用支付方式'微信支付'进行支付
 
 	#nokia购买已发货订单 007 100  ***
 	When nokia访问jobs的webapp
@@ -149,21 +163,20 @@ Background:
 		"""
 		{
 			"order_id": "007",
-			"pay_type":"支付宝",
+			"pay_type":"货到付款",
 			"products": [{
 				"name": "商品1",
 				"count": 1
 			}]
 		}
 		"""
-	And nokia使用支付方式'支付宝'进行支付于'2015-10-09 10:30:00'
 	Given jobs登录系统:weapp
 	When jobs对订单进行发货:weapp
 		"""
 		{
 			"order_no":"007",
 			"logistics":"顺丰速运",
-			"number":"123456789"
+			"number":"12356"
 		}
 		"""
 
@@ -173,14 +186,13 @@ Background:
 		"""
 		{
 			"order_id": "008",
-			"pay_type":"支付宝",
+			"pay_type":"货到付款",
 			"products": [{
 				"name": "商品2",
 				"count": 1
 			}]
 		}
 		"""
-	And bill使用支付方式'支付宝'进行支付于'2015-10-08 10:30:00'
 	Given jobs登录系统:weapp
 	When jobs对订单进行发货:weapp
 		"""
@@ -190,7 +202,38 @@ Background:
 			"number":"123456789"
 		}
 		"""
+	When marry访问jobs的webapp
 	And marry确认收货订单'008'
+
+	#tom1购买jobs的数据 待支付订单 009 100 
+	When tom1访问jobs的webapp
+	And tom1购买jobs的商品
+		"""
+		{
+			"order_id": "009",
+			"pay_type":"微信支付",
+			"products": [{
+				"name": "商品1",
+				"count": 1
+			}]
+		}
+		"""
+
+	#tom2购买jobs的数据
+	#已取消订单 010 200
+	When tom2访问jobs的webapp
+	And tom2购买jobs的商品
+		"""
+		{
+			"order_id": "010",
+			"pay_type":"微信支付",
+			"products": [{
+				"name": "商品2",
+				"count": 1
+			}]
+		}
+		"""
+	And tom2取消订单'010'
 
 @member @memberList
 Scenario:1 按照会员的"最后购买时间"进行查询
@@ -201,39 +244,16 @@ Scenario:1 按照会员的"最后购买时间"进行查询
 			"""
 			[{
 				"status":"全部",
-				"last_buy_start_time":"2015-10-09 10:30:00",
-				"last_buy_end_time":"2015-10-10 10:30:00"
-			}]
-			"""
-		Then jobs获得刷选结果人数:weapp
-			"""
-			[{
-				"result_quantity":2
+				"last_buy_start_time":"今天",
+				"last_buy_end_time":"今天"
 			}]
 			"""
 		Then jobs可以获得会员列表:weapp
-			| name  | pay_money | unit_price | pay_times |
-			| tom   |   200.00  |   200.00   |     1     |
-			| nokia |   100.00  |   100.00   |     1     |
-
-	#区间时间边界值查询，开始时间等于结束时间
-		When jobs设置会员查询条件:weapp
-			"""
-			[{
-				"status":"全部",
-				"last_buy_start_time":"2015-10-12 10:30:00",
-				"last_buy_end_time":"2015-10-12 10:30:00"
-			}]
-			"""
-		Then jobs获得刷选结果人数:weapp
-			"""
-			[{
-				"result_quantity":3
-			}]
-			"""
-		Then jobs可以获得会员列表:weapp
-			| name  | pay_money | unit_price | pay_times |
-			| bill  |   400.00  |   133.33   |     3     |
+			| name  | member_rank | pay_money | unit_price | pay_times |
+			| marry | 普通会员    |   200.00  |   200.00   |     1     |
+			| nokia | 普通会员    |   100.00  |   100.00   |     1     |
+			| tom   | 普通会员    |   200.00  |   200.00   |     1     |
+			| bill  | 普通会员    |   400.00  |   133.33   |     3     |
 
 	#无查询结果
 		When jobs设置会员查询条件:weapp

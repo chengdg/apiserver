@@ -684,9 +684,19 @@ class Order(business_model.Model):
 					continue
 
 				if mall_models.ProductSales.select().dj_where(product_id=product.id).first():
-					mall_models.ProductSales.update(sales=mall_models.ProductSales.sales + product.purchase_count).execute()
+					mall_models.ProductSales.update(sales=mall_models.ProductSales.sales + product.purchase_count).dj_where(product_id=product.id).execute()
 				else:
 					mall_models.ProductSales.create(product=product.id, sales=product.purchase_count)
+			# for relation in mall_models.OrderHasProduct.select().dj_where(order_id=self.id):
+			# 	product_id = relation.product.id
+			# 	count = relation.number
+			# 	if mall_models.ProductSales.select().dj_where(product_id=product_id).count() > 0:
+			# 		mall_models.ProductSales.select().dj_where(product_id=product_id).update(sales=F('sales') + count)
+			# 	else:
+			# 		mall_models.ProductSales.create(
+			# 				product=product_id,
+			# 				sales=count
+			# 		)
 
 
 			#支付后，更新会员支付数据

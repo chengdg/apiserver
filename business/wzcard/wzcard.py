@@ -270,6 +270,7 @@ class WZCard(business_model.Model):
 		@note 不同于微众卡"充值"
 		"""
 		# 如果amount是float/str，转成Decimal
+		logging.info(u"to refund wzcard: wzcard_id: {}, amount: {}, reason: {}".format(self.wzcard_id, amount, reason))
 		amount = amount if isinstance(amount, Decimal) else Decimal(amount)
 		if amount>0:
 			self.balance += amount

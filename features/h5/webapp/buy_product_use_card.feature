@@ -880,9 +880,8 @@ Scenario:11 用微众卡购买商品时，输入两张同样的卡号密码
 
 	Then bill获得创建订单失败的信息'该微众卡已经添加'
 
-
 	Given jobs登录系统:weapp
-	Then jobs能获取微众卡'0000001':weapp
+	Then jobs能获取微众卡'0000001'
 		"""
 		{
 			"status":"未使用",

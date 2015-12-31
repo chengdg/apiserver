@@ -15,6 +15,26 @@ class WZCardChecker(object):
 	def __init__(self):
 		self.checked_wzcard = dict()
 
+	@staticmethod
+	def check_not_duplicated(wzcard_info_list):
+		"""
+		检查微众卡号是否重复
+		"""
+		id_set = set()
+		for wzcard_info in wzcard_info_list:
+			wzcard_id = wzcard_info['card_name']
+			if wzcard_id in id_set:
+				reason = u'该微众卡已经添加'
+				logging.error("{}, wzcard_info: {}".format(reason, wzcard_info))
+				return False, {
+					"is_success": False,
+					"type": 'wzcard:duplicated',
+					"msg": reason,
+					"short_msg": u'已添加'
+				}
+			id_set.add(wzcard_id)
+		return True, {}
+
 	def check(self, wzcard_id, password, wzcard):
 		"""
 		检查微众卡是否可用

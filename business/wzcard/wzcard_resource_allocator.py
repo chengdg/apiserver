@@ -73,6 +73,11 @@ class WZCardResourceAllocator(business_model.Service):
 			}			
 			return False, [reason], None
 
+		# 检查是否有重复（避免出现重复后release 资源但不改变wzcard状态）
+		is_success, reason = WZCardChecker.check_not_duplicated(wzcard_info_list)
+		if not is_success:
+			return False, [reason], None
+
 		checker = WZCardChecker()
 		# 遍历微众卡信息，扣除微众卡
 		final_price = Decimal(order.final_price)
@@ -87,6 +92,7 @@ class WZCardResourceAllocator(business_model.Service):
 			logging.info("wzcard_id: {}, wzcard: {}".format(wzcard_id, wzcard))
 			
 			is_success, reason = checker.check(wzcard_id, wzcard_password, wzcard)
+			logging.info(u"wzcard_id:{}, status: {}, price: {}, check_result:{}, reason:{}".format(wzcard.wzcard_id, wzcard.readable_status, wzcard.money, is_success, reason))
 
 			if is_success:
 				# 验证微众卡可用

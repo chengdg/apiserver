@@ -121,7 +121,8 @@ Background:
 			"number":"123456789"
 		}
 		"""
-	And bill对订单'005'进行确认收货
+	When bill访问jobs的webapp
+	And bill确认收货订单'005'
 
 	#tom购买待发货订单 006 200 ***
 	When tom访问jobs的webapp
@@ -180,7 +181,8 @@ Background:
 			"number":"123456789"
 		}
 		"""
-	And marry对订单'008'进行确认收货
+	When marry访问jobs的webapp
+	And marry确认收货订单'008'
 
 @order @allOrder
 Scenario:1 统计整个系统有订单的：消费金额、订单数、客单价
@@ -203,7 +205,7 @@ Scenario:1 统计整个系统有订单的：消费金额、订单数、客单价
         }
         """
 
-@order @allOrder
+@mall3 @order @allOrder @ztq
 Scenario:2 统计单个会员有订单的：消费金额、订单数、客单价
 	Given jobs登录系统:weapp
 	When jobs访问'bill'会员详情:weapp

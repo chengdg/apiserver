@@ -48,6 +48,7 @@ Background:
 			}]
 		}
 		"""
+
 	#已取消订单 002 200
 	When bill访问jobs的webapp
 	And bill购买jobs的商品
@@ -92,7 +93,8 @@ Background:
 		}
 		"""
 	And bill使用支付方式'微信支付'进行支付于'2015-10-11 10:30:00'
-	And jobs对订单进行发货:weapp
+	Given jobs登录系统:weapp
+	When jobs对订单进行发货:weapp
 		"""
 		{
 			"order_no":"004",
@@ -115,7 +117,8 @@ Background:
 		}
 		"""
 	And bill使用支付方式'微信支付'进行支付于'2015-10-12 10:30:00'
-	And jobs对订单进行发货:weapp
+	Given jobs登录系统:weapp
+	When jobs对订单进行发货:weapp
 		"""
 		{
 			"order_no":"004",
@@ -123,7 +126,7 @@ Background:
 			"number":"123456789"
 		}
 		"""
-	And bill对订单'005'进行确认收货
+	And bill确认收货订单'005'
 
 	#tom购买待发货订单 006 200 ***
 	When tom访问jobs的webapp
@@ -154,7 +157,8 @@ Background:
 		}
 		"""
 	And nokia使用支付方式'支付宝'进行支付于'2015-10-09 10:30:00'
-	And jobs对订单进行发货:weapp
+	Given jobs登录系统:weapp
+	When jobs对订单进行发货:weapp
 		"""
 		{
 			"order_no":"007",
@@ -177,7 +181,8 @@ Background:
 		}
 		"""
 	And bill使用支付方式'支付宝'进行支付于'2015-10-08 10:30:00'
-	And jobs对订单进行发货:weapp
+	Given jobs登录系统:weapp
+	When jobs对订单进行发货:weapp
 		"""
 		{
 			"order_no":"008",
@@ -185,7 +190,7 @@ Background:
 			"number":"123456789"
 		}
 		"""
-	And marry对订单'008'进行确认收货
+	And marry确认收货订单'008'
 
 @member @memberList
 Scenario:1 按照会员的"最后购买时间"进行查询

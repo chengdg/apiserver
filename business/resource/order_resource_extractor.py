@@ -20,6 +20,10 @@ from business.mall.allocator.integral_resource_allocator import IntegralResource
 from business.mall.allocator.product_resource_allocator import ProductResourceAllocator
 from business.resource.product_resource import ProductResource
 from business.resource.products_resource import ProductsResource
+from business.resource.coupon_resource import CouponResource
+from business.mall.allocator.coupon_resource_allocator import CouponResourceAllocator
+from db.mall import models as mall_models
+from business.mall.coupon.coupon import Coupon
 
 class OrderResourceExtractor(business_model.Model):
 	"""
@@ -88,6 +92,38 @@ class OrderResourceExtractor(business_model.Model):
 		products_resource = ProductsResource(product_resources, "order_products")
 		return products_resource
 
+
+	def __extract_coupon_resource(self, order):
+		"""
+		抽取订单优惠券资源
+		"""
+		logging.info(u"to extract CouponResource from order")
+		resources = []
+
+		webapp_owner = self.context['webapp_owner']
+		webapp_user = self.context['webapp_user']
+
+		resource_type = CouponResourceAllocator(webapp_owner, webapp_user).resource_type
+
+		logging.info("coupon_id: {}".format(order.coupon_id))
+		coupon = Coupon.from_coupon_id({
+				'coupon_id': order.coupon_id
+			})
+		if coupon:
+			resource = CouponResource.get({
+					'type': resource_type,
+				})
+			resource.coupon = coupon
+			resource.money = coupon.money
+
+			resources.append(resource)
+		else:
+			logging.info("`coupon` is None?")
+			
+		return resources
+
+
+
 	def extract(self, order):
 		"""
 		根据Order实例抽取资源，用于释放
@@ -101,12 +137,17 @@ class OrderResourceExtractor(business_model.Model):
 
 		# 抽取积分资源
 		integral_resources = self.__extract_integral(order)
-		products_resource = self.__extract_products_resource(order)
 		if integral_resources:
 			resources.extend(integral_resources)
 
+		products_resource = self.__extract_products_resource(order)
 		if products_resource:
 			resources.append(products_resource)
+
+		# 抽取优惠券资源
+		extracted_resources = self.__extract_coupon_resource(order)
+		if extracted_resources:
+			resources.extend(extracted_resources)
 
 		logging.info(u"extracted {} resources".format(len(resources)))
 		return resources

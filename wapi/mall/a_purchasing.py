@@ -116,7 +116,7 @@ class APurchasing(api_resource.ApiResource):
 		mall_config = webapp_owner.mall_config
 		use_ceiling = webapp_owner.integral_strategy_settings.use_ceiling
 
-		product_group_datas = [group.to_dict(with_price_factor=True) for group in order.promotion_product_groups]
+		product_group_datas = [group.to_dict(with_price_factor=True, with_coupon_info=True) for group in order.promotion_product_groups]
 
 		order_info = {
 			'type': order.type,

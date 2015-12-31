@@ -38,20 +38,34 @@ class WZCard(business_model.Model):
 		'active_card_user_id',
 	)
 
-	def __init__(self, wzcard_id, wzcard_owner=None):
+	def __init__(self, db_model, wzcard_owner=None):
 		business_model.Model.__init__(self)
 
 		# webapp_owner是不需要暴露的property，因此放在context中
 		# wzcard_owner表示创建微众卡的用户
 		self.context['wzcard_owner'] = wzcard_owner
-		self.wzcard_id = wzcard_id
 
-		db_model = wzcard_models.WeizoomCard.get(weizoom_card_id=wzcard_id)
-		#TODO：加入对专属卡的检查
+		self.wzcard_id = db_model.weizoom_card_id
 		self.context['db_model'] = db_model
-		#logging.info('db_model: {}'.format(db_model))
-		logging.info('db_model.money: {}'.format(db_model.money))
+
 		self._init_slot_from_model(db_model)
+
+
+	@staticmethod
+	@param_required(['id'])
+	def from_id(args):
+		"""
+		获取微众卡对象的工厂方法
+
+		@return 如果不存在此卡，返回None
+		"""
+		try:	
+			db_model = wzcard_models.WeizoomCard.get(id=args['id'])
+			wzcard = WZCard(db_model)
+			return wzcard
+		except Exception as e:
+			logging.error("Exception: " + str(e))
+		return None
 
 
 	@staticmethod
@@ -63,7 +77,8 @@ class WZCard(business_model.Model):
 		@return 如果不存在此卡，返回None
 		"""
 		try:	
-			wzcard = WZCard(args['wzcard_id'])
+			db_model = wzcard_models.WeizoomCard.get(weizoom_card_id=args['wzcard_id'])
+			wzcard = WZCard(db_model)
 			return wzcard
 		except Exception as e:
 			logging.error("Exception: " + str(e))

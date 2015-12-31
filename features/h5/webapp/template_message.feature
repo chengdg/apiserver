@@ -60,7 +60,7 @@ Background:
 	And bill关注jobs的公众号
 	And tom关注jobs的公众号
 
-@message @templateMessage  @ztqb
+@message @templateMessage
 Scenario:1 启用模板消息，配置正确的模板ID，可以成功接收到消息
 	When bill访问jobs的webapp
 	#购买商品，支付成功模板消息

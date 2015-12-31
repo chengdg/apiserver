@@ -156,7 +156,7 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 		# 		"money": round(integral / integral_each_yuan, 2)
 		# 	}
 
-	order_type = args.get('type', 'normal')
+	order_type = args.get('type', 'object')
 
 	# 处理中文地区转化为id，如果数据库不存在的地区则自动添加该地区
 	ship_area = get_area_ids(args.get('ship_area'))

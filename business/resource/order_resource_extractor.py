@@ -20,6 +20,14 @@ from business.mall.allocator.integral_resource_allocator import IntegralResource
 from business.mall.allocator.product_resource_allocator import ProductResourceAllocator
 from business.resource.product_resource import ProductResource
 from business.resource.products_resource import ProductsResource
+from business.resource.coupon_resource import CouponResource
+from business.mall.allocator.coupon_resource_allocator import CouponResourceAllocator
+#from db.mall import models as mall_models
+from business.mall.coupon.coupon import Coupon
+from db.mall import promotion_models
+from business.wzcard.wzcard_resource_allocator import WZCardResourceAllocator
+from business.mall.log_operator import LogOperator
+from business.wzcard.wzcard_resource import WZCardResource
 
 class OrderResourceExtractor(business_model.Model):
 	"""
@@ -88,6 +96,66 @@ class OrderResourceExtractor(business_model.Model):
 		products_resource = ProductsResource(product_resources, "order_products")
 		return products_resource
 
+
+	def __extract_coupon_resource(self, order):
+		"""
+		抽取订单优惠券资源
+		"""
+		logging.info(u"to extract CouponResource from order")
+		resources = []
+
+		webapp_owner = self.context['webapp_owner']
+		webapp_user = self.context['webapp_user']
+
+		resource_type = CouponResourceAllocator(webapp_owner, webapp_user).resource_type
+
+		logging.info("coupon_id: {}".format(order.coupon_id))
+		coupon = Coupon.from_id({
+				'id': order.coupon_id
+			})
+		if coupon:
+			resource = CouponResource.get({
+					'type': resource_type,
+				})
+
+			logging.info('Coupon to be released: {}'.format(coupon.to_dict()))
+			resource.coupon = coupon
+			resource.money = coupon.money
+			#resource.raw_status = coupon.status
+			resource.raw_status = promotion_models.COUPON_STATUS_UNUSED
+			resource.raw_member_id = coupon.member_id
+
+			resources.append(resource)
+		else:
+			logging.info("`coupon` is None?")
+			
+		return resources
+
+
+	def __extract_wzcard_resource(self, order):
+		"""
+		抽取使用的WZCardResource
+
+		@todo 待重构，增加WZCardResourceExtractor
+		"""
+		logging.info(u"to extract WZCardResource from order, order_id:{}".format(order.order_id))
+		resources = []
+
+		webapp_owner = self.context['webapp_owner']
+		webapp_user = self.context['webapp_user']
+
+		resource_type = WZCardResourceAllocator(webapp_owner, webapp_user).resource_type
+
+		# 从微众卡日志找出信息
+		used_wzcards = LogOperator.get_used_wzcards(order.order_id)
+		logging.info("extracted wzcard resource: {}".format(used_wzcards))
+		resource = WZCardResource(resource_type, used_wzcards)
+		resources.append(resource)
+
+		return resources
+
+
+
 	def extract(self, order):
 		"""
 		根据Order实例抽取资源，用于释放
@@ -101,12 +169,22 @@ class OrderResourceExtractor(business_model.Model):
 
 		# 抽取积分资源
 		integral_resources = self.__extract_integral(order)
-		products_resource = self.__extract_products_resource(order)
 		if integral_resources:
 			resources.extend(integral_resources)
 
+		products_resource = self.__extract_products_resource(order)
 		if products_resource:
 			resources.append(products_resource)
+
+		# 抽取优惠券资源
+		extracted_resources = self.__extract_coupon_resource(order)
+		if extracted_resources:
+			resources.extend(extracted_resources)
+
+		# 抽取微众卡资源
+		extracted_resources = self.__extract_wzcard_resource(order)
+		if extracted_resources:
+			resources.extend(extracted_resources)
 
 		logging.info(u"extracted {} resources".format(len(resources)))
 		return resources

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""@package business.mall.allocator.allocator_order_resource_service.AllocateOrderResourceService
+"""@package business.mall.allocator.allocate_price_related_resource_service.AllocatePriceRelatedResourceService
 订单资源分配器
 
 """
@@ -17,6 +17,3 @@ class AllocatePriceRelatedResourceService(AllocateResourceServiceBase):
 		AllocateResourceServiceBase.__init__(self, webapp_owner, webapp_user)
 
 		self.register_allocator(WZCardResourceAllocator(webapp_owner, webapp_user))
-
-
-

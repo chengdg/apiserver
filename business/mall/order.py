@@ -688,16 +688,10 @@ class Order(business_model.Model):
 					mall_models.ProductSales.create(product=product.id, sales=product.purchase_count)
 
 
-			#更新webapp_user的has_purchased字段
+			#支付后，更新会员支付数据
 			webapp_user = self.context['webapp_user']
-			webapp_user.set_purchased()
 			webapp_user.update_pay_info(float(self.final_price) + float(self.weizoom_card_money))
 
-			Integral.increase_after_order_payed_finsh({
-				'webapp_user': webapp_user,
-				'webapp_owner': self.context['webapp_owner'],
-				'order_id': self.id
-				})
 			self.__after_update_status('pay')
 			self.__send_template_message()
 		return pay_result
@@ -764,8 +758,14 @@ class Order(business_model.Model):
 		if self.origin_order_id == -1:
 			mall_models.Order.update(status=mall_models.ORDER_STATUS_SUCCESSED).dj_where(origin_order_id=self.id).execute()
 
+		# 订单完成后会员积分处理
+		Integral.increase_after_order_payed_finsh({
+			'webapp_user': self.context['webapp_user'],
+			'webapp_owner': self.context['webapp_owner'],
+			'order_id': self.id
+		})
+
 		self.__after_update_status('finish')
-		# todo 更新会员数据
 
 	def __after_update_status(self, action):
 		"""

@@ -575,6 +575,7 @@ class WebAppUser(business_model.Model):
 		return self.context.get('is_force_purchase', False)
 
 	def update_pay_info(self, money):
+		self.set_purchased()
 		if money > 0:
 			member = member_models.Member.get(id=self.member.id)
 			member.pay_money = member.pay_money + money

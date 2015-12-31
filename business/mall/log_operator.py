@@ -9,6 +9,7 @@ from db.mall import models as mall_models
 from db.wzcard import models as wzcard_models
 from business.mall.supplier import Supplier
 import logging
+from business.wzcard.wzcard import WZCard
 
 class LogOperator(business_model.Model):
 	"""操作日志记录器
@@ -73,11 +74,18 @@ class LogOperator(business_model.Model):
 		for log in logs:
 			# 三元组表示：card_id, money, last_status
 			# TODO: 待重构（相当于这里知道了WZCardResource的细节）
-			used_wzcards.append( (log.card_id, log.money, -1) )
+
+			# 将wzcard.id转成wzcard_id
+			wzcard = WZCard.from_id({'id': log.card_id})
+			if wzcard:
+				# 因为没有存储微众卡回滚之前的状态，这里只能设个默认值
+				# TODO: 后续改成根据微众卡金额判断状态
+				default_wzcard_status = wzcard_models.WEIZOOM_CARD_STATUS_USED
+				used_wzcards.append( (wzcard.wzcard_id, log.money, default_wzcard_status) )
 		return used_wzcards
 
 	@staticmethod
-	def remove_logs_by_order_id(order_id):
+	def remove_wzcard_logs_by_order_id(order_id):
 		"""
 		删除order_id所用的WZCard
 

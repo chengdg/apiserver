@@ -48,7 +48,7 @@ from business.account.integral import Integral
 from business.mall.pay_interface import PayInterface
 from decimal import Decimal
 from business.mall.allocator.allocate_price_related_resource_service import AllocatePriceRelatedResourceService
-from business.mall.log_operator import LogOperator
+
 
 ORDER_STATUS2NOTIFY_STATUS = {
 	mall_models.ORDER_STATUS_NOT: accout_models.PLACE_ORDER,
@@ -730,7 +730,7 @@ class Order(business_model.Model):
 
 		# 需要删除WZCard的log
 		# TODO: 待优化，应该在释放微众卡资源时删除wzcard_log
-		LogOperator.remove_wzcard_logs_by_order_id(order.order_id)
+		LogOperator.remove_wzcard_logs_by_order_id(self.order_id)
 			
 		return
 

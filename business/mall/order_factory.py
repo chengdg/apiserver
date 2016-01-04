@@ -78,34 +78,6 @@ class OrderFactory(business_model.Model):
 		self.context['webapp_owner'] = webapp_owner
 		self.context['webapp_user'] = webapp_user
 
-	# def validate(self):
-	# 	"""判断订单是否有效
-
-	# 	@return True, None: 订单有效；False, reason: 订单无效, 无效原因
-	# 	"""
-	# 	order_checker = OrderChecker(self.context['webapp_owner'], self.context['webapp_user'], self)
-		
-	# 	return order_checker.check()
-
-
-	def __create_order_id(self):
-		"""创建订单id
-
-		目前采用基于时间戳＋随机数的算法生成订单id，在确定id可使用之前，通过查询mall_order表里是否有相同id来判断是否可以使用id
-		这种方式比较低效，同时存在id重复的潜在隐患，后续需要改进
-
-		@todo 可以考虑用时间戳加MD5方式
-		@bug 这里不应该暴露存储层
-		"""
-		# TODO2: 使用uuid替换这里的算法
-		order_id = time.strftime("%Y%m%d%H%M%S", time.localtime())
-		order_id = '%s%03d' % (order_id, random.randint(1, 999))
-		if mall_models.Order.select().dj_where(order_id=order_id).count() > 0:
-			return self.__create_order_id()
-		else:
-			return order_id
-
-
 	def __allocate_price_free_resources(self, order, purchase_info):
 		"""
 		申请订单价无关资源
@@ -201,7 +173,7 @@ class OrderFactory(business_model.Model):
 		order.type = purchase_info.order_type
 		order.pay_interface_type = purchase_info.used_pay_interface_type
 		order.status = mall_models.ORDER_STATUS_NOT
-		order.order_id = self.__create_order_id()
+
 		return order
 
 

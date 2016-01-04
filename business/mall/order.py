@@ -13,7 +13,7 @@ import time
 #import random
 from datetime import datetime
 import copy
-
+import random
 import settings
 from core.exceptionutil import unicode_full_stack
 from core.sendmail import sendmail
@@ -523,6 +523,23 @@ class Order(business_model.Model):
 		return self.context['order']
 
 
+	def __create_order_id(self):
+		"""创建订单id
+
+		目前采用基于时间戳＋随机数的算法生成订单id，在确定id可使用之前，通过查询mall_order表里是否有相同id来判断是否可以使用id
+		这种方式比较低效，同时存在id重复的潜在隐患，后续需要改进
+
+		@todo 可以考虑用时间戳加MD5方式
+		@bug 这里不应该暴露存储层
+		"""
+		# TODO2: 使用uuid替换这里的算法
+		order_id = time.strftime("%Y%m%d%H%M%S", time.localtime())
+		order_id = '%s%03d' % (order_id, random.randint(1, 999))
+		if mall_models.Order.select().dj_where(order_id=order_id).count() > 0:
+			return self.__create_order_id()
+		else:
+			return order_id
+
 	def save(self):
 		"""
 		业务模型序列化
@@ -544,7 +561,7 @@ class Order(business_model.Model):
 		db_model.customer_message = self.customer_message
 		db_model.type = self.type
 		db_model.pay_interface_type = self.pay_interface_type
-		db_model.order_id = self.order_id
+
 		#db_model.webapp_source_id = 0 	# 兼容老数据
 
 		if self.supplier:
@@ -570,7 +587,20 @@ class Order(business_model.Model):
 		db_model.weizoom_card_money = self.weizoom_card_money
 
 		logging.info("Order db_model: {}".format(db_model))
-		db_model.save()
+
+		# order_id重复时重试保存
+		save_retry_count = 0
+		save_retry_max_count = 20
+		while save_retry_count <= save_retry_max_count:
+			try:
+				db_model.order_id = self.__create_order_id()
+				db_model.save()
+				self.order_id = db_model.order_id
+			except:
+				save_retry_count += 1
+			else:
+				break
+
 		self.id = db_model.id
 
 		# 建立订单相关数据

@@ -323,6 +323,7 @@ def __check_order(context, webapp_user_name):
 		# TODO 验证订单页面操作
 		del expected['actions']
 	bdd_util.assert_dict(expected, actual_order)
+	context.latest_order_id = order_id
 
 
 #bill支付订单成功的校验其实跟成功创建订单的校验是一样的

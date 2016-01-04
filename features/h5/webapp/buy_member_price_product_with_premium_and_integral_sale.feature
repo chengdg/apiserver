@@ -59,6 +59,8 @@ Background:
 			"member_rank":"银牌会员"
 		}
 		"""
+	When jobs访问会员列表:weapp
+	Then jobs获得会员列表默认查询条件:weapp
 	Then jobs可以获得会员列表:weapp
 		"""
 		[{

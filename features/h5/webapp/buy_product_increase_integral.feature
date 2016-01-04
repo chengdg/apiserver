@@ -159,6 +159,8 @@ Scenario:2 点击给已购买的分享者增加积分
 	When bill购买jobs的商品
 		"""
 		{
+			"pay_type": "货到付款",
+			"order_id": "001",
 			"products": [{
 				"name": "商品1",
 				"count": 1
@@ -166,10 +168,10 @@ Scenario:2 点击给已购买的分享者增加积分
 			"customer_message": "bill的订单备注1"
 		}
 		"""
-	When bill使用支付方式'货到付款'进行支付
 	Then bill支付订单成功
 		"""
-		{
+		{	
+			"order_id": "001",
 			"status": "待发货",
 			"final_price": 100.00,
 			"products": [{
@@ -193,8 +195,16 @@ Scenario:2 点击给已购买的分享者增加积分
 
 	When 清空浏览器:weapp
 	Given jobs登录系统:weapp
-	When jobs对最新订单进行发货:weapp
-	When jobs'完成'最新订单:weapp
+	When jobs对订单进行发货:weapp
+		"""
+		{
+			"order_no": "001",
+			"logistics": "申通快递",
+			"number": "229388967650",
+			"shipper": "jobs"
+		}
+		"""
+	When jobs完成订单'001':weapp
 	When 清空浏览器:weapp
 	When bill访问jobs的webapp
 	Then bill在jobs的webapp中拥有91会员积分
@@ -282,7 +292,8 @@ Scenario:3 通过分享链接购买后给分享者增加积分
 	When nokia点击bill分享链接
 	When nokia通过bill分享的链接购买jobs的商品
 		"""
-		{
+		{	
+			"order_id": "001",
 			"products": [{
 				"name": "商品2",
 				"count": 1
@@ -293,6 +304,7 @@ Scenario:3 通过分享链接购买后给分享者增加积分
 	Then nokia支付订单成功
 		"""
 		{
+			"order_no": "001",
 			"status": "待发货",
 			"final_price": 100.00,
 			"products": [{
@@ -319,8 +331,16 @@ Scenario:3 通过分享链接购买后给分享者增加积分
 
 	When 清空浏览器:weapp
 	Given jobs登录系统:weapp
-	When jobs对最新订单进行发货:weapp
-	When jobs'完成'最新订单:weapp
+	When jobs对订单进行发货:weapp
+		"""
+		{
+			"order_no": "001",
+			"logistics": "申通快递",
+			"number": "229388967650",
+			"shipper": "jobs"
+		}
+		"""
+	When jobs完成订单'001':weapp
 
 	When 清空浏览器:weapp
 	When bill访问jobs的webapp
@@ -345,7 +365,8 @@ Scenario:3 通过分享链接购买后给分享者增加积分
 	When nokia点击bill分享链接
 	When nokia通过bill分享的链接购买jobs的商品
 		"""
-		{
+		{	
+			"order_id": "002",
 			"products": [{
 				"name": "商品2",
 				"count": 1
@@ -356,7 +377,8 @@ Scenario:3 通过分享链接购买后给分享者增加积分
 	When nokia使用支付方式'货到付款'进行支付
 	Then nokia支付订单成功
 		"""
-		{
+		{	
+			"order_no": "002",
 			"status": "待发货",
 			"final_price": 100.00,
 			"products": [{
@@ -369,8 +391,16 @@ Scenario:3 通过分享链接购买后给分享者增加积分
 
 	When 清空浏览器:weapp
 	Given jobs登录系统:weapp
-	When jobs对最新订单进行发货:weapp
-	When jobs'完成'最新订单:weapp
+	When jobs对订单进行发货:weapp
+		"""
+		{
+			"order_no": "002",
+			"logistics": "申通快递",
+			"number": "002",
+			"shipper": "jobs"
+		}
+		"""
+	When jobs完成订单'002':weapp
 
 	When 清空浏览器:weapp
 	When bill访问jobs的webapp
@@ -396,7 +426,8 @@ Scenario:3 通过分享链接购买后给分享者增加积分
 	When tom点击bill分享链接
 	When tom通过bill分享的链接购买jobs的商品
 		"""
-		{
+		{	
+			"order_id": "003",
 			"products": [{
 				"name": "商品2",
 				"count": 1
@@ -407,7 +438,8 @@ Scenario:3 通过分享链接购买后给分享者增加积分
 	When tom使用支付方式'货到付款'进行支付
 	Then tom支付订单成功
 		"""
-		{
+		{	
+			"order_no": "003",
 			"status": "待发货",
 			"final_price": 100.00,
 			"products": [{
@@ -419,8 +451,17 @@ Scenario:3 通过分享链接购买后给分享者增加积分
 		"""
 	When 清空浏览器:weapp
 	Given jobs登录系统:weapp
-	When jobs对最新订单进行发货:weapp
-	When jobs'完成'最新订单:weapp
+	When jobs对订单进行发货:weapp
+		"""
+		{
+			"order_no": "003",
+			"logistics": "申通快递",
+			"number": "003",
+			"shipper": "jobs"
+		}
+		"""
+	When jobs完成订单'003':weapp
+	
 
 	When 清空浏览器:weapp
 	When bill访问jobs的webapp
@@ -448,7 +489,7 @@ Scenario:3 通过分享链接购买后给分享者增加积分
 		}]
 		"""
 
-@mall2 @member @member.shared_integral @mall3 @bert
+@mall2 @member @member.shared_integral @mall3 @bert  
 Scenario:4 每次购买给邀请者增加积分
 	1.bill是tom的邀请者
 	2.tom每次购买jobs的商品，给bill增加积分
@@ -476,13 +517,29 @@ Scenario:4 每次购买给邀请者增加积分
 	When tom访问jobs的webapp
 	When tom购买jobs的商品
 		"""
-		{
+		{	
+			"order_id": "001",
 			"products": [{
 				"name": "商品2",
 				"count": 1
 			}]
 		}
 		"""
+	When tom使用支付方式'货到付款'进行支付
+	Then tom支付订单成功
+		"""
+		{	
+			"order_no": "001",
+			"status": "待发货",
+			"final_price": 100.00,
+			"products": [{
+				"name": "商品2",
+				"price":100.00,
+				"count": 1
+			}]
+		}
+		"""
+
 	When 清空浏览器:weapp
 	When bill访问jobs的webapp
 	Then bill在jobs的webapp中拥有31会员积分
@@ -499,9 +556,16 @@ Scenario:4 每次购买给邀请者增加积分
 
 	When 清空浏览器:weapp
 	Given jobs登录系统:weapp
-	When jobs'支付'最新订单:weapp
-	When jobs对最新订单进行发货:weapp
-	When jobs'完成'最新订单:weapp
+	When jobs对订单进行发货:weapp
+		"""
+		{
+			"order_no": "001",
+			"logistics": "申通快递",
+			"number": "001",
+			"shipper": "jobs"
+		}
+		"""
+	When jobs完成订单'001':weapp
 
 	When 清空浏览器:weapp
 	When bill访问jobs的webapp
@@ -523,7 +587,7 @@ Scenario:4 每次购买给邀请者增加积分
 		}]
 		"""
 
-@mall2 @member @member.shared_integral @mall3 @bert
+@mall2 @member @member.shared_integral @mall3 @bert 
 Scenario:5 购买商品返积分 基础积分设为0，额外积分奖励不为零
 
 	Given jobs登录系统:weapp
@@ -546,9 +610,24 @@ Scenario:5 购买商品返积分 基础积分设为0，额外积分奖励不为�
 	When bill访问jobs的webapp
 	When bill购买jobs的商品
 		"""
-		{
+		{	
+			"order_id": "001",
 			"products": [{
 				"name": "商品3",
+				"count": 1
+			}]
+		}
+		"""
+	When bill使用支付方式'货到付款'进行支付
+	Then bill支付订单成功
+		"""
+		{	
+			"order_no": "001",
+			"status": "待发货",
+			"final_price": 150.00,
+			"products": [{
+				"name": "商品3",
+				"price":150.00,
 				"count": 1
 			}]
 		}
@@ -556,9 +635,18 @@ Scenario:5 购买商品返积分 基础积分设为0，额外积分奖励不为�
 
 	When 清空浏览器:weapp
 	Given jobs登录系统:weapp
-	When jobs'支付'最新订单:weapp
-	When jobs对最新订单进行发货:weapp
-	When jobs'完成'最新订单:weapp
+	When jobs对订单进行发货:weapp
+		"""
+		{
+			"order_no": "001",
+			"logistics": "申通快递",
+			"number": "001",
+			"shipper": "jobs"
+		}
+		"""
+	When jobs完成订单'001':weapp
+
+
 	When 清空浏览器:weapp
 	When bill访问jobs的webapp
 	Then bill在jobs的webapp中拥有21会员积分
@@ -573,7 +661,7 @@ Scenario:5 购买商品返积分 基础积分设为0，额外积分奖励不为�
 		}]
 		"""
 
-@mall2 @member @member.shared_integral @mall3 @bert
+@mall2 @member @member.shared_integral @mall3 @bert 
 Scenario:6 基础积分不为0，额外积分奖励，小数部分直接舍掉，最后积分为零的，没有积分明细奖励记录
 
 	Given jobs登录系统:weapp
@@ -596,9 +684,24 @@ Scenario:6 基础积分不为0，额外积分奖励，小数部分直接舍掉�
 	When bill访问jobs的webapp
 	When bill购买jobs的商品
 		"""
-		{
+		{	
+			"order_id": "001",
 			"products": [{
 				"name": "商品4",
+				"count": 1
+			}]
+		}
+		"""
+	When bill使用支付方式'货到付款'进行支付
+	Then bill支付订单成功
+		"""
+		{	
+			"order_no": "001",
+			"status": "待发货",
+			"final_price": 50.00,
+			"products": [{
+				"name": "商品4",
+				"price":50.00,
 				"count": 1
 			}]
 		}
@@ -606,9 +709,17 @@ Scenario:6 基础积分不为0，额外积分奖励，小数部分直接舍掉�
 
 	When 清空浏览器:weapp
 	Given jobs登录系统:weapp
-	When jobs'支付'最新订单:weapp
-	When jobs对最新订单进行发货:weapp
-	When jobs'完成'最新订单:weapp
+	When jobs对订单进行发货:weapp
+		"""
+		{
+			"order_no": "001",
+			"logistics": "申通快递",
+			"number": "001",
+			"shipper": "jobs"
+		}
+		"""
+	When jobs完成订单'001':weapp
+
 	When 清空浏览器:weapp
 	When bill访问jobs的webapp
 	Then bill在jobs的webapp中拥有30会员积分
@@ -623,7 +734,7 @@ Scenario:6 基础积分不为0，额外积分奖励，小数部分直接舍掉�
 		}]
 		"""
 
-@mall2 @member @member.shared_integral @mall3 @bert
+@mall2 @member @member.shared_integral @mall3 @bert @ta
 Scenario:7 推荐关注的好友购买奖励 基础积分设为0，额外积分奖励不为零
 	1.bill是tom的邀请者
 	2.tom每次购买jobs的商品，给bill增加积分
@@ -660,7 +771,20 @@ Scenario:7 推荐关注的好友购买奖励 基础积分设为0，额外积分�
 	When tom访问jobs的webapp
 	When tom购买jobs的商品
 		"""
-		{
+		{	
+			"order_id": "001",
+			"products": [{
+				"name": "商品2",
+				"count": 1
+			}]
+		}
+		"""
+	When tom使用支付方式'货到付款'进行支付
+	Then tom支付订单成功
+		"""
+		{	
+			"order_no": "001",
+			"status": "待发货",
 			"products": [{
 				"name": "商品2",
 				"count": 1
@@ -670,9 +794,17 @@ Scenario:7 推荐关注的好友购买奖励 基础积分设为0，额外积分�
 	
 	When 清空浏览器:weapp
 	Given jobs登录系统:weapp
-	When jobs'支付'最新订单:weapp
-	When jobs对最新订单进行发货:weapp
-	When jobs'完成'最新订单:weapp
+	When jobs对订单进行发货:weapp
+		"""
+		{
+			"order_no": "001",
+			"logistics": "申通快递",
+			"number": "001",
+			"shipper": "jobs"
+		}
+		"""
+	When jobs完成订单'001':weapp
+
 	When 清空浏览器:weapp
 	When bill访问jobs的webapp
 	Then bill在jobs的webapp中拥有21会员积分

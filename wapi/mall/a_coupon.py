@@ -62,7 +62,7 @@ class ACoupon(api_resource.ApiResource):
 		if can_use_coupon:
 			return {
 				'is_success': True,
-				'id': coupon.id,
+				'id': coupon.coupon_id,
 				'money': coupon.money,
 				'productid': coupon.limit_product_id				
 			}

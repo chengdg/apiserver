@@ -120,24 +120,29 @@ def get_market_tool_name_from(path):
 
 def remove_querystr_filed_from_request_url(url):
 	if url.find('?') != -1:
+
 		path_list = url.split('?')
-		path_url = url.split('?')[0]
-		query_str = url.split('?')[1]
+		path_url =path_list[0]
+		query_str = path_list[1]
 	else:
 		path_url = url
 		query_str = ''
 
 	ignore_key = ['from', 'isappinstalled', 'code', 'state', 'appid', 'workspace_id']
-	parse_dict = parse_qs(urlparse(query_str).query)
+	parse_dict = parse_qs(urlparse(url).query)
 	if not parse_dict:
 		return url
+
 	new_data = {}
 	for key, value in parse_dict.items():
 		if key not in ignore_key:
 			new_data[key] = value
 
 	sorted(new_data.iteritems(), key=lambda a:a[0])
-	return '%s?%s' % (path_url, urllib.urlencode(new_data, doseq=True))
+	if urllib.urlencode(new_data, doseq=True):
+		return '%s?%s' % (path_url, urllib.urlencode(new_data, doseq=True))
+	else:
+		return path_url
 
 def url_hexdigest(url):
 	return hashlib.md5(url).hexdigest()

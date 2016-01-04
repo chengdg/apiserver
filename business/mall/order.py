@@ -420,10 +420,8 @@ class Order(business_model.Model):
 
 		@note 原来的发邮件用的是`weizoom.com`邮箱，发邮件有被拒收的风险。应该改成商用的发邮件服务，比如**mailgun**。
 
-		@todo 待实现
 		"""
-		# print '[TODO2]: send order notify mail...'
-		# return
+
 		# todo 修改
 		order_has_products = mall_models.OrderHasProduct.select().dj_where(order=self.id)
 		buy_count = ''
@@ -589,7 +587,6 @@ class Order(business_model.Model):
 			if not supplier in supplier_ids:
 				supplier_ids.append(supplier)
 
-			# TODO: 将存储隐藏到Order.save()中
 			mall_models.OrderHasProduct.create(
 				order = self.db_model,
 				product = product.id,
@@ -689,16 +686,6 @@ class Order(business_model.Model):
 					mall_models.ProductSales.update(sales=mall_models.ProductSales.sales + product.purchase_count).dj_where(product_id=product.id).execute()
 				else:
 					mall_models.ProductSales.create(product=product.id, sales=product.purchase_count)
-			# for relation in mall_models.OrderHasProduct.select().dj_where(order_id=self.id):
-			# 	product_id = relation.product.id
-			# 	count = relation.number
-			# 	if mall_models.ProductSales.select().dj_where(product_id=product_id).count() > 0:
-			# 		mall_models.ProductSales.select().dj_where(product_id=product_id).update(sales=F('sales') + count)
-			# 	else:
-			# 		mall_models.ProductSales.create(
-			# 				product=product_id,
-			# 				sales=count
-			# 		)
 
 
 			#支付后，更新会员支付数据
@@ -738,8 +725,6 @@ class Order(business_model.Model):
 	def cancel(self):
 		"""
 		取消订单
-
-		@todo 需要释放订单资源
 		"""
 		logging.info(u"Order id:{} is to be cancelled. Resources should be released first.".format(self.id))
 		self.__release_order_resources()
@@ -758,7 +743,6 @@ class Order(business_model.Model):
 		self.__after_update_status('cancel')
 
 
-	# todo
 	def finish(self):
 		"""
 		完成订单（确认收货）

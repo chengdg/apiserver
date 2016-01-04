@@ -354,7 +354,7 @@ Scenario:3 通过分享链接购买后给分享者增加积分
 		}
 		"""
 	When nokia使用支付方式'货到付款'进行支付
-	Then nokia支付订单成功:weapp
+	Then nokia支付订单成功
 		"""
 		{
 			"status": "待发货",

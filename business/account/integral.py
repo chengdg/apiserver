@@ -14,11 +14,15 @@ import string
 
 from wapi.decorators import param_required
 from db.member import models as member_models
+from db.mall import models as mall_models
+
 from business import model as business_model 
 import settings
 from business.decorator import cached_context_property
 from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
 from core.exceptionutil import unicode_full_stack
+
+from business.account.webapp_user import WebAppUser
 
 class Integral(business_model.Model):
 	"""
@@ -178,3 +182,129 @@ class Integral(business_model.Model):
 			'member':webapp_user.member,
 			'event_type':  member_models.RETURN_BY_SYSTEM
 			})
+
+	@staticmethod
+	def increase_after_order_payed_finsh(args):
+		#print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.1'
+		order_id = args['order_id']
+		webapp_owner = args['webapp_owner']	
+		webapp_user = args['webapp_user']
+		#print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.2',order_id
+		integral_strategy = webapp_owner.integral_strategy_settings
+		order = mall_models.Order.get(id=order_id)
+		#print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.3'
+		try:
+			mall_order_from_shared = mall_models.MallOrderFromSharedRecord.select().dj_where(order_id=order_id).first()
+			if mall_order_from_shared:
+				fmt = mall_order_from_shared.fmt
+			else:
+				fmt = None
+		except:
+			fmt = None
+		#print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.4 fmt:',fmt
+		member = webapp_user.member
+
+		if member and order:
+			#print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.5 fmt:',fmt
+			if member.token != fmt:
+				try:
+					followed_member = member_models.Member.get(token=fmt)
+					if followed_member.webapp_id != member.webapp_id:
+						followed_member = None
+				except:
+					followed_member = None 
+			else:
+				followed_member = None
+
+			if not integral_strategy:
+				integral_strategy_settings = member_models.IntegralStrategySttings.get(webapp_id=webapp_owner.webapp_id)
+			#print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.46fmt:',integral_strategy
+			if integral_strategy:
+				#print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.7:'
+				increase_count = integral_strategy.buy_via_shared_url_increase_count_for_author
+				#给好友奖励（分享链接购买）
+
+				if increase_count > 0 and followed_member:
+
+					followed_webapp_user = WebAppUser.from_member_id({
+						'webapp_owner': webapp_owner,
+						'member_id': followed_member.id
+						})
+					
+					Integral.increase_member_integral({
+						'integral_increase_count': increase_count,
+						'webapp_user': followed_webapp_user,
+						'member': followed_member,
+						'event_type':  member_models.FOLLOWER_BUYED_VIA_SHARED_URL
+						})
+
+					#self.increase_member_integral(followed_member, \
+					#		increase_count, FOLLOWER_BUYED_VIA_SHARED_URL, None)
+				#购物返利
+				#print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.8:'
+				if  integral_strategy.buy_award_count_for_buyer > 0:
+					#print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.81:',integral_strategy.buy_award_count_for_buyer
+					Integral.increase_member_integral({
+						'integral_increase_count': integral_strategy.buy_award_count_for_buyer,
+						'webapp_user': webapp_user,
+						'member': member,
+						'event_type':  member_models.BUY_AWARD
+						})
+
+					#self.increase_member_integral(member, \
+					#	integral_strategy.buy_award_count_for_buyer, BUY_AWARD)
+
+				#购物返利 按订单比例增加
+				if order and order.final_price > 0:
+					#print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.9:'
+					order_money_percentage_for_each_buy = float(integral_strategy.order_money_percentage_for_each_buy)
+					increase_count_integral = int(order_money_percentage_for_each_buy * float(order.final_price))
+					if increase_count_integral > 0:
+						#self.increase_member_integral(member, increase_count_integral, BUY_AWARD)
+						Integral.increase_member_integral({
+							'integral_increase_count': increase_count_integral,
+							'webapp_user': webapp_user,
+							'member': member,
+							'event_type':  member_models.BUY_AWARD
+							})
+				#print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.10:'
+
+				if member and member.is_subscribed:
+					member_relation = member_models.MemberFollowRelation.select().dj_where(follower_member_id=member.id, is_fans=True).first()
+					if member_relation:
+						try:
+							father_member = member_models.Member.get(id=member_relation.member_id)
+						except:
+							father_member = None
+					else:
+						father_member = None
+
+					if father_member:
+						if integral_strategy.buy_via_offline_increase_count_for_author > 0:
+							#self.increase_member_integral(father_member, integral_strategy.buy_via_offline_increase_count_for_author, BUY_INCREST_COUNT_FOR_FATHER)
+							father_webapp_user = WebAppUser.from_member_id({
+								'webapp_owner': webapp_owner,
+								'member_id': father_member.id
+								})
+							Integral.increase_member_integral({
+								'integral_increase_count': integral_strategy.buy_via_offline_increase_count_for_author,
+								'webapp_user': father_webapp_user,
+								'member': father_member,
+								'event_type':  member_models.BUY_INCREST_COUNT_FOR_FATHER
+								})
+
+
+						if order.final_price > 0 and integral_strategy.buy_via_offline_increase_count_percentage_for_author:
+							try:
+								buy_via_offline_increase_count_percentage_for_author = float(integral_strategy.buy_via_offline_increase_count_percentage_for_author)
+								integral_count = int(order.final_price * buy_via_offline_increase_count_percentage_for_author)
+								#self.increase_member_integral(father_member, integral_count, BUY_INCREST_COUNT_FOR_FATHER)
+								Integral.increase_member_integral({
+									'integral_increase_count': integral_count,
+									'webapp_user': father_webapp_user,
+									'member': father_member,
+									'event_type':  member_models.BUY_INCREST_COUNT_FOR_FATHER
+									})
+							except:
+								notify_message = u"increase_father_member_integral_by_child_member_buyed cause:\n{}".format(unicode_full_stack())
+								watchdog_error(notify_message)	

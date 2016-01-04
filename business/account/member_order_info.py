@@ -28,7 +28,8 @@ class MemberOrderInfo(business_model.Model):
 		'not_payed_order_count',
 		'not_ship_order_count',
 		'shiped_order_count',
-		'review_count'
+		'review_count',
+		'finished_count'
 	)
 
 	@staticmethod
@@ -57,7 +58,7 @@ class MemberOrderInfo(business_model.Model):
 		'''
 		count = 0
 		# 得到用户所有已完成订单
-		orders = mall_models.Order.select().dj_where(webapp_user_id=webapp_user_id, status=mall_models.ORDER_STATUS_SUCCESSED)
+		orders = mall_models.Order.select().dj_where(webapp_user_id=webapp_user_id, status=mall_models.ORDER_STATUS_SUCCESSED, origin_order_id__lte=0)
 
 		# 得到用户所以已完成订单中的商品order_has_product.id列表
 		orderIds = [order.id for order in orders]
@@ -82,11 +83,12 @@ class MemberOrderInfo(business_model.Model):
 			#try:
 			# TODO2: 需要优化：一次SQL，获取全部数据
 			stats = {
-				"total_count": mall_models.Order.select().dj_where(webapp_user_id=webapp_user_id).count(),
-				"not_paid": mall_models.Order.select().dj_where(webapp_user_id=webapp_user_id, status=mall_models.ORDER_STATUS_NOT).count(),
-				"not_ship_count": mall_models.Order.select().dj_where(webapp_user_id=webapp_user_id, status=mall_models.ORDER_STATUS_PAYED_NOT_SHIP).count(),
-				"shiped_count": mall_models.Order.select().dj_where(webapp_user_id=webapp_user_id, status=mall_models.ORDER_STATUS_PAYED_SHIPED).count(),
+				"total_count": mall_models.Order.select().dj_where(webapp_user_id=webapp_user_id, origin_order_id__lte=0).count(),
+				"not_paid": mall_models.Order.select().dj_where(webapp_user_id=webapp_user_id, status=mall_models.ORDER_STATUS_NOT, origin_order_id__lte=0).count(),
+				"not_ship_count": mall_models.Order.select().dj_where(webapp_user_id=webapp_user_id, status=mall_models.ORDER_STATUS_PAYED_NOT_SHIP, origin_order_id__lte=0).count(),
+				"shiped_count": mall_models.Order.select().dj_where(webapp_user_id=webapp_user_id, status=mall_models.ORDER_STATUS_PAYED_SHIPED, origin_order_id__lte=0).count(),
 				"review_count": self.__get_count_of_unfinished_product_review_picture(webapp_user_id),
+				"finished_count": mall_models.Order.select().dj_where(webapp_user_id=webapp_user_id, status=mall_models.ORDER_STATUS_SUCCESSED,origin_order_id__lte=0).count()
 			}
 			ret = {
 				'keys': [cache_key],
@@ -110,6 +112,7 @@ class MemberOrderInfo(business_model.Model):
 		self.not_ship_order_count = stats["not_ship_count"]
 		self.shiped_order_count = stats["shiped_count"]
 		self.review_count = stats["review_count"]
+		self.finished_count = stats['finished_count']
 
 
 

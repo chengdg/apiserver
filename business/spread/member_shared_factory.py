@@ -28,7 +28,8 @@ class MemberSharedUrlFactory(business_model.Model):
 		'member_id',
 		'url',
 		'shared_url_digest',
-		'followed'
+		'followed',
+		'title'
 	)
 
 	@staticmethod
@@ -38,16 +39,18 @@ class MemberSharedUrlFactory(business_model.Model):
 
 		@return MemberFollowRelaton对象
 		"""
-		member_factory = MemberSharedUrlFactory(args['member_id'], args['url'], args['shared_url_digest'], args['followed'])
+		title = args.get('title', '')
+		member_factory = MemberSharedUrlFactory(args['member_id'], args['url'], args['shared_url_digest'], args['followed'], title)
 
 		return member_factory
 
-	def __init__(self, member_id, url, shared_url_digest, followed):
+	def __init__(self, member_id, url, shared_url_digest, followed, title=''):
 		business_model.Model.__init__(self)
 		self.member_id = member_id
 		self.url = url
 		self.shared_url_digest = shared_url_digest
 		self.followed = followed
+		self.title = title
 
 	def save(self):
 		"""创建分享链接
@@ -59,7 +62,8 @@ class MemberSharedUrlFactory(business_model.Model):
 						shared_url_digest = self.shared_url_digest,
 						pv = 1,
 						leadto_buy_count = 0,
-						followers = 1
+						followers = 1,
+						title = self.title
 						)
 		else:
 			member_models.MemberSharedUrlInfo.create(
@@ -68,7 +72,8 @@ class MemberSharedUrlFactory(business_model.Model):
 						shared_url_digest = self.shared_url_digest,
 						pv = 1,
 						leadto_buy_count = 0,
-						followers = 0
+						followers = 0,
+						title = self.title
 						)
 
 	def update(self):

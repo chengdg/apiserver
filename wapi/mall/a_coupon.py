@@ -33,32 +33,36 @@ class ACoupon(api_resource.ApiResource):
 		coupon = Coupon.from_coupon_id({
 			'coupon_id': args['coupon_id']
 		})
+		if coupon:
+			forbidden_coupon_product_ids = ForbiddenCouponProductIds.get_for_webapp_owner({
+				'webapp_owner': webapp_owner
+			}).ids
 
-		forbidden_coupon_product_ids = ForbiddenCouponProductIds.get_for_webapp_owner({
-			'webapp_owner': webapp_owner
-		}).ids
+			reserved_products = []
+			product2info = json.loads(args['product2info'])
+			for product_id, product_info in product2info.items():
+				product_id = int(product_id)
+				reserved_product = ReservedProduct(webapp_owner, webapp_user)
+				reserved_product.id = product_id
+				reserved_product.price = product_info['price']
+				reserved_product.original_price = product_info['original_price']
+				reserved_product.purchase_count = product_info['count']
+				if product_id in forbidden_coupon_product_ids:
+					reserved_product.can_use_coupon = False
+				else:
+					reserved_product.can_use_coupon = True
 
-		reserved_products = []
-		product2info = json.loads(args['product2info'])
-		for product_id, product_info in product2info.items():
-			product_id = int(product_id)
-			reserved_product = ReservedProduct(webapp_owner, webapp_user)
-			reserved_product.id = product_id
-			reserved_product.price = product_info['price']
-			reserved_product.original_price = product_info['original_price']
-			reserved_product.purchase_count = product_info['count']
-			if product_id in forbidden_coupon_product_ids:
-				reserved_product.can_use_coupon = False
-			else:
-				reserved_product.can_use_coupon = True
+				reserved_products.append(reserved_product)
 
-			reserved_products.append(reserved_product)
-
-		can_use_coupon, reason = coupon.is_can_use_for_products(webapp_user, reserved_products)
+			can_use_coupon, reason = coupon.is_can_use_for_products(webapp_user, reserved_products)
+		else:
+			# 输入的优惠卷号不存在时
+			can_use_coupon = False
+			reason = u'请输入正确的优惠券号'
 		if can_use_coupon:
 			return {
 				'is_success': True,
-				'id': coupon.id,
+				'id': coupon.coupon_id,
 				'money': coupon.money,
 				'productid': coupon.limit_product_id				
 			}

@@ -360,7 +360,7 @@ bill能取消订单'005'
 	Then jobs能获得订单'005':weapp
 		"""
 		{
-			"order_no": "001",
+			"order_no": "005",
 			"status": "已取消"
 		}
 		"""
@@ -494,7 +494,7 @@ Scenario:8 bill能取消使用了微众卡的待支付订单
 			"stocks": 4
 		}
 		"""
-	Then jobs能获取微众卡'0000002':weapp
+	Then jobs能获取微众卡'0000002'
 		"""
 		{
 			"status":"已使用",

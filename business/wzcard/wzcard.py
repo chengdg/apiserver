@@ -11,7 +11,7 @@ from wapi.decorators import param_required
 #from db.wzcard.models import WeizoomCardRule, WeizoomCard
 import logging
 from decimal import Decimal
-
+from core.decorator import deprecated
 
 class WZCard(business_model.Model):
 	"""
@@ -38,20 +38,34 @@ class WZCard(business_model.Model):
 		'active_card_user_id',
 	)
 
-	def __init__(self, wzcard_id, wzcard_owner=None):
+	def __init__(self, db_model, wzcard_owner=None):
 		business_model.Model.__init__(self)
 
 		# webapp_owner是不需要暴露的property，因此放在context中
 		# wzcard_owner表示创建微众卡的用户
 		self.context['wzcard_owner'] = wzcard_owner
-		self.wzcard_id = wzcard_id
 
-		db_model = wzcard_models.WeizoomCard.get(weizoom_card_id=wzcard_id)
-		#TODO：加入对专属卡的检查
+		self.wzcard_id = db_model.weizoom_card_id
 		self.context['db_model'] = db_model
-		#logging.info('db_model: {}'.format(db_model))
-		logging.info('db_model.money: {}'.format(db_model.money))
+
 		self._init_slot_from_model(db_model)
+
+
+	@staticmethod
+	@param_required(['id'])
+	def from_id(args):
+		"""
+		获取微众卡对象的工厂方法
+
+		@return 如果不存在此卡，返回None
+		"""
+		try:	
+			db_model = wzcard_models.WeizoomCard.get(id=args['id'])
+			wzcard = WZCard(db_model)
+			return wzcard
+		except Exception as e:
+			logging.error("Exception: " + str(e))
+		return None
 
 
 	@staticmethod
@@ -63,7 +77,8 @@ class WZCard(business_model.Model):
 		@return 如果不存在此卡，返回None
 		"""
 		try:	
-			wzcard = WZCard(args['wzcard_id'])
+			db_model = wzcard_models.WeizoomCard.get(weizoom_card_id=args['wzcard_id'])
+			wzcard = WZCard(db_model)
 			return wzcard
 		except Exception as e:
 			logging.error("Exception: " + str(e))
@@ -133,9 +148,12 @@ class WZCard(business_model.Model):
 		return db_model.status
 
 	@status.setter
+	@deprecated
 	def status(self, value):
 		"""
 		[setter] 微众卡状态
+
+		@todo 改成通过操作调整status
 		"""
 		#self.status = value
 		db_model = self.context['db_model']	
@@ -247,6 +265,10 @@ class WZCard(business_model.Model):
 		"""
 		# 如果price_to_pay是float/str，转成Decimal
 		price_to_pay = price_to_pay if isinstance(price_to_pay, Decimal) else Decimal(price_to_pay)
+		if price_to_pay < 1e-3:
+			# 没有实际支付
+			return Decimal(0)
+
 		use_price = min(price_to_pay, self.balance)
 		self.balance = self.balance - use_price
 		if self.balance < 1e-3:
@@ -256,23 +278,28 @@ class WZCard(business_model.Model):
 			self.status = wzcard_models.WEIZOOM_CARD_STATUS_USED 
 		# 更新数据库
 		self.save()
+	
 		return use_price
 
 
-	def refund(self, amount, reason=None):
+	def refund(self, amount, reason=None, last_status=None):
 		"""
 		微众卡退款（用于release）
 
 		@param amount 退款金额
 		@param reason 退款原因
+		@param last_status 退款之前的状态
 
 		@return 退款后余额
 		@note 不同于微众卡"充值"
 		"""
 		# 如果amount是float/str，转成Decimal
+		logging.info(u"to refund wzcard: wzcard_id: {}, amount: {}, reason: {}".format(self.wzcard_id, amount, reason))
 		amount = amount if isinstance(amount, Decimal) else Decimal(amount)
 		if amount>0:
 			self.balance += amount
+		if last_status:
+			self.status = last_status
 		# 更新数据库
 		is_success = True
 		try:

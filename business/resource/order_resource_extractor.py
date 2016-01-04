@@ -20,6 +20,14 @@ from business.mall.allocator.integral_resource_allocator import IntegralResource
 from business.mall.allocator.product_resource_allocator import ProductResourceAllocator
 from business.resource.product_resource import ProductResource
 from business.resource.products_resource import ProductsResource
+from business.resource.coupon_resource import CouponResource
+from business.mall.allocator.coupon_resource_allocator import CouponResourceAllocator
+#from db.mall import models as mall_models
+from business.mall.coupon.coupon import Coupon
+from db.mall import promotion_models
+from business.wzcard.wzcard_resource_allocator import WZCardResourceAllocator
+from business.mall.log_operator import LogOperator
+from business.wzcard.wzcard_resource import WZCardResource
 
 class OrderResourceExtractor(business_model.Model):
 	"""
@@ -66,7 +74,6 @@ class OrderResourceExtractor(business_model.Model):
 		抽取ProductsResource
 		"""
 		logging.info(u"to extract ProductsResource from order")
-		resources = []
 
 		webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user']
@@ -75,18 +82,81 @@ class OrderResourceExtractor(business_model.Model):
 		product_resources = []
 		resource_type = ProductResourceAllocator(webapp_owner, webapp_user).resource_type
 
-		# TODO: 以后改成用order.products之类的
-		db_order_has_products = mall_models.OrderHasProduct.select().dj_where(order=order.id)
-		for db_record in db_order_has_products:
+		order_products = order.products
+		for order_product in order_products:
+			purchase_count = order_product.purchase_count
+			model_id = -1
+			if order_product.model:
+				model_id = order_product.model.id
 			product_resource = ProductResource.get({
 					'type': resource_type
 				})
-			product_resource.purchase_count = db_record.number
-			product_resource.model_id = 0
+			product_resource.purchase_count = purchase_count
+			product_resource.model_id = model_id
 			product_resources.append(product_resource)
 
-		resources.append(ProductsResource(product_resources))
+		products_resource = ProductsResource(product_resources, "order_products")
+		return products_resource
+
+
+	def __extract_coupon_resource(self, order):
+		"""
+		抽取订单优惠券资源
+		"""
+		logging.info(u"to extract CouponResource from order")
+		resources = []
+
+		webapp_owner = self.context['webapp_owner']
+		webapp_user = self.context['webapp_user']
+
+		resource_type = CouponResourceAllocator(webapp_owner, webapp_user).resource_type
+
+		logging.info("coupon_id: {}".format(order.coupon_id))
+		coupon = Coupon.from_id({
+				'id': order.coupon_id
+			})
+		if coupon:
+			resource = CouponResource.get({
+					'type': resource_type,
+				})
+
+			logging.info('Coupon to be released: {}'.format(coupon.to_dict()))
+			resource.coupon = coupon
+			resource.money = coupon.money
+			#resource.raw_status = coupon.status
+			resource.raw_status = promotion_models.COUPON_STATUS_UNUSED
+			resource.raw_member_id = coupon.member_id
+
+			resources.append(resource)
+		else:
+			logging.info("`coupon` is None?")
+			
 		return resources
+
+
+	def __extract_wzcard_resource(self, order):
+		"""
+		抽取使用的WZCardResource
+
+		@todo 待重构，增加WZCardResourceExtractor
+		"""
+		logging.info(u"to extract WZCardResource from order, order_id:{}".format(order.order_id))
+		resources = []
+
+		webapp_owner = self.context['webapp_owner']
+		webapp_user = self.context['webapp_user']
+
+		resource_type = WZCardResourceAllocator(webapp_owner, webapp_user).resource_type
+
+		# 从微众卡日志找出信息
+		used_wzcards = LogOperator.get_used_wzcards(order.order_id)
+		logging.info("extracted wzcard resource: {}".format(used_wzcards))
+		resource = WZCardResource(resource_type, used_wzcards)
+		resources.append(resource)
+
+		return resources
+
+
 
 	def extract(self, order):
 		"""
@@ -100,7 +170,21 @@ class OrderResourceExtractor(business_model.Model):
 		resources = []
 
 		# 抽取积分资源
-		extracted_resources = self.__extract_integral(order)
+		integral_resources = self.__extract_integral(order)
+		if integral_resources:
+			resources.extend(integral_resources)
+
+		products_resource = self.__extract_products_resource(order)
+		if products_resource:
+			resources.append(products_resource)
+
+		# 抽取优惠券资源
+		extracted_resources = self.__extract_coupon_resource(order)
+		if extracted_resources:
+			resources.extend(extracted_resources)
+
+		# 抽取微众卡资源
+		extracted_resources = self.__extract_wzcard_resource(order)
 		if extracted_resources:
 			resources.extend(extracted_resources)
 

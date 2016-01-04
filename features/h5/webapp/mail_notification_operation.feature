@@ -90,7 +90,7 @@ Background:
 	Given jobs已添加了优惠券规则:weapp
 		"""
 		[{
-			"name": "优惠券",
+			"name": "单品券4",
 			"money": 50,
 			"start_date": "今天",
 			"end_date": "2天后",

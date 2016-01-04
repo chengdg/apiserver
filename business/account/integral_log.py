@@ -116,9 +116,9 @@ class IntegralLog(business_model.Model):
 		self.is_friend = False
 		if u'好友' in self.event_type or u'推荐扫码' in self.event_type:
 			self.is_friend = True
-			if follower_member and friend_member.user_icon and friend_member.user_icon != '':
-				self.pic = friend_member.user_icon
-				self.name = friend_member.username_size_ten
+			if follower_member and follower_member.user_icon and follower_member.user_icon != '':
+				self.pic = follower_member.user_icon
+				self.name = follower_member.username_size_ten
 			else:
 				self.pic = SCAN_REWARDES_IMGE
 				self.name = ''

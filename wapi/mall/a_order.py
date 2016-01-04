@@ -188,7 +188,9 @@ class AOrder(api_resource.ApiResource):
 			"weizoom_card_money",
 			"red_envelope",
 			"red_envelope_created",
+			"pay_info"
 		]
+
 		data = {}
 		for key in api_keys:
 			data[key] = order_dict.get(key)

@@ -46,6 +46,17 @@ class Coupon(business_model.Model):
 			self.__check_coupon_status()
 
 	@staticmethod
+	@param_required(['id'])
+	def from_id(args):
+		try:
+			coupon_db_model = promotion_models.Coupon.get(id=args['id'])
+			coupons = Coupon.__create_coupons([coupon_db_model])
+			return coupons[0]
+		except:
+			return None
+
+
+	@staticmethod
 	@param_required(['coupon_id'])
 	def from_coupon_id(args):
 		coupon_id = args['coupon_id']

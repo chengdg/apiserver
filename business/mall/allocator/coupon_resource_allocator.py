@@ -21,8 +21,10 @@ class CouponResourceAllocator(business_model.Service):
 		coupon_resource.coupon = coupon
 		coupon_resource.money = coupon.money
 
-		coupon_resource.context['raw_status'] = coupon.status
-		coupon_resource.context['raw_member_id'] = coupon.member_id
+		#coupon_resource.context['raw_status'] = coupon.status
+		#coupon_resource.context['raw_member_id'] = coupon.member_id
+		coupon_resource.raw_status = coupon.status
+		coupon_resource.raw_member_id = coupon.member_id
 
 		promotion_models.Coupon.update(status=promotion_models.COUPON_STATUS_USED, member_id=member_id).where(
 			promotion_models.Coupon.id == coupon.id).execute()
@@ -41,21 +43,24 @@ class CouponResourceAllocator(business_model.Service):
 					red_envelope_rule_id=red_envelope2member.red_envelope_rule_id,
 					red_envelope_relation_id=red_envelope2member.red_envelope_relation_id,
 					member_id=red_envelope2member.introduced_by).execute()
-			self.context['red_envelope2member'] = red_envelope2member
+			self.red_envelope2member = red_envelope2member
 		return True, '', coupon_resource
 
 	@staticmethod
 	def release(resource):
+		"""
+		释放优惠券资源
+		"""
 		if resource.coupon:
-			promotion_models.Coupon.update(status=resource.context['raw_status'],
-			                               member_id=resource.context['raw_member_id']).where(
+			promotion_models.Coupon.update(status=resource.raw_status,
+			                               member_id=resource.raw_member_id).where(
 				promotion_models.Coupon.id == resource.coupon.id).execute()
-			if not resource.context['raw_member_id']:
+			if not resource.raw_member_id:
 				promotion_models.CouponRule.update(remained_count=promotion_models.CouponRule.remained_count + 1)
 
 			promotion_models.CouponRule.update(use_count=promotion_models.CouponRule.use_count - 1)
 
-			red_envelope2member = resource.context.get('red_envelope2member', None)
+			red_envelope2member = resource.red_envelope2member
 			if red_envelope2member and red_envelope2member.introduced_by != 0:
 				promotion_models.RedEnvelopeParticipences.update(
 						introduce_used_number=promotion_models.RedEnvelopeParticipences.introduce_used_number - 1).dj_where(

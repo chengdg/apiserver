@@ -62,7 +62,7 @@ class PayInterface(business_model.Model):
 
 		self.context['webapp_owner'] = webapp_owner
 
-		if pay_interface_type:
+		if pay_interface_type != None:
 			self.context['interface'] = next(interface for interface in webapp_owner.pay_interfaces if interface['type'] == pay_interface_type)
 		elif interface_id:
 			self.context['interface'] = next(interface for interface in webapp_owner.pay_interfaces if interface['id'] == interface_id)
@@ -91,7 +91,14 @@ class PayInterface(business_model.Model):
 			}
 			
 		if mall_models.PAY_INTERFACE_ALIPAY == interface_type:
-			return '/mall/alipay/?woid={}&order_id={}&related_config_id={}'.format(webapp_owner_id, order.order_id, interface['related_config_id'])
+			return {
+				'type': 'alipay',
+				'woid': webapp_owner_id,
+				'order_id': order.order_id,
+				'pay_interface_type': mall_models.PAY_INTERFACE_ALIPAY,
+				'pay_url':  '/mall/alipay/?woid={}&order_id={}&related_config_id={}'.format(webapp_owner_id, order.order_id, interface['related_config_id'])
+			}
+
 		elif mall_models.PAY_INTERFACE_TENPAY == interface_type:
 			# from account.models import UserProfile
 			# user_profile = UserProfile.objects.get(user_id=webapp_owner_id)

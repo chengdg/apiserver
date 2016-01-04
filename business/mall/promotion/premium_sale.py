@@ -95,6 +95,7 @@ class PremiumSale(promotion.Promotion):
 				if webapp_user.is_force_purchase():
 					#强制购买，改变赠品数量
 					premium_product['premium_count'] = 0
+					premium_product['count'] = premium_product['premium_count']
 				else:
 					reason = PromotionFailure({
 						'type': 'promotion:premium_sale:no_premium_product_stocks',
@@ -107,6 +108,7 @@ class PremiumSale(promotion.Promotion):
 				if webapp_user.is_force_purchase():
 					#强制购买，改变赠品数量
 					premium_product['premium_count'] = stocks
+					premium_product['count'] = premium_product['premium_count']
 					#商品库存小于赠品，直接将库存设置为0
 					mall_models.ProductModel.update(stocks=0).dj_where(product_id=premium_product['premium_product_id'], name='standard').execute()
 				else:
@@ -153,7 +155,7 @@ class PremiumSale(promotion.Promotion):
 				'product_id': premium_product['premium_product_id']
 			})
 			premium_product['price'] = product.price_info['min_price']
-			premium_product['supplier'] = product.supplier
+			# premium_product['supplier'] = product.supplier
 
 	def apply_promotion(self, promotion_product_group, purchase_info=None):
 		products = promotion_product_group.products

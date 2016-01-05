@@ -756,6 +756,8 @@ Scenario:18 不同等级的会员购买有会员价同时有运费配置
 			"discount": "9"
 		}]
 		"""
+	When jobs访问会员列表:weapp
+	Then jobs获得会员列表默认查询条件:weapp
 	And jobs可以获得会员列表:weapp
 		"""
 		[{

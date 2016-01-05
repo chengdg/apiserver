@@ -495,6 +495,8 @@ Scenario:4 订单完成后，达到自动升级的条件
 			"integral": 20
 		}]
 		"""
+	When jobs访问会员列表:weapp
+	Then jobs获得会员列表默认查询条件:weapp
 	Then jobs可以获得会员列表:weapp
 		"""
 		[{
@@ -604,6 +606,8 @@ Scenario:5 使用积分购买商品后，取消订单，积分返回
 			"integral": 20
 		}]
 		"""
+	When jobs访问会员列表:weapp
+	Then jobs获得会员列表默认查询条件:weapp
 	And jobs可以获得会员列表:weapp
 		"""
 		[{

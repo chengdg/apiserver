@@ -658,6 +658,8 @@ Scenario: 11 不同等级的会员购买有会员价同时有积分统一设置�
 			"member_rank": "金牌会员"
 		}
 		"""
+	When jobs访问会员列表:weapp
+	Then jobs获得会员列表默认查询条件:weapp
 	Then jobs可以获得会员列表:weapp
 		"""
 		[{
@@ -847,6 +849,8 @@ Scenario: 12 不同等级的会员购买有会员价同时有根据等级设置�
 			"member_rank": "金牌会员"
 		}
 		"""
+	When jobs访问会员列表:weapp
+	Then jobs获得会员列表默认查询条件:weapp
 	Then jobs可以获得会员列表:weapp
 		"""
 		[{
@@ -1090,6 +1094,8 @@ Scenario: 13 不同等级的会员购买原价同时有根据等级设置积分�
 			"member_rank": "金牌会员"
 		}
 		"""
+	When jobs访问会员列表:weapp
+	Then jobs获得会员列表默认查询条件:weapp
 	Then jobs可以获得会员列表:weapp
 		"""
 		[{

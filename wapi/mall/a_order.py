@@ -22,6 +22,7 @@ from business.mall.purchase_info import PurchaseInfo
 from business.mall.pay_interface import PayInterface
 from business.mall.order import Order
 from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
+from business.spread.member_spread import MemberSpread
 
 class AOrder(api_resource.ApiResource):
 	"""
@@ -93,12 +94,16 @@ class AOrder(api_resource.ApiResource):
 		if pay_url_info:
 			data['pay_url_info'] = pay_url_info
 
-		#记录分享来的订单
-		fmt = args.get('fmt', None)
-		from db.member import models as member_models
-		if fmt and fmt != webapp_user.member.token:
-			member_models.MallOrderFromSharedRecord.create(order_id=order.id, fmt=fmt)
-
+		#处理分享来的订单
+		
+		url = args.get('url', None)
+		if url:
+			MemberSpread.record_order_from_spread({
+				'order_id' : order.id,
+				'webapp_user' : webapp_user,
+				'url' : url 
+				})
+		
 		return data
 
 	@param_required(['order_id', 'action'])

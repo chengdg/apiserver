@@ -132,15 +132,15 @@ def step_get_presonal_review_list(context, webapp_user):
 	actual = []
 	if orders:
 		for order in orders:
-			logging.error(order['order_is_reviewed'])	
+			#logging.error(order['order_is_reviewed'])	
 			if not order['order_is_reviewed']:
 				data = {}
 				data['order_no'] = order['order_id']
 				data['products'] = []
 				for product in order['products']:
-					logging.error('>>>>>>>>>>>.1')
-					logging.error(product)
-					logging.error('>>>>>>>>>>>.2')
+					# logging.error('>>>>>>>>>>>.1')
+					# logging.error(product)
+					# logging.error('>>>>>>>>>>>.2')
 					if not product['has_review'] or not product['has_picture']:
 						p_data = {}
 						p_data['product_name'] = product['name']
@@ -162,8 +162,8 @@ def step_get_presonal_review_list(context, webapp_user):
 	if not actual:
 		actual.append({})
 
-	logging.error(actual)
-	logging.error(expected)
+	# logging.error(actual)
+	# logging.error(expected)
 	bdd_util.assert_list(expected, actual)
 
 

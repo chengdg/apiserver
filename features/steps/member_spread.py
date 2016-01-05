@@ -27,6 +27,8 @@ def step_impl(context, user, shared_user, webapp_owner_name):
 	openid = '%s_%s' % (user, webapp_owner_name)
 	member = __get_member_by_openid(openid)
 	context.fmt = member.token
+	shared_url = u'/mall/product/?fmt=%s' % (member.token)
+	context.shared_url = shared_url
 	# if member:
 	# 	fmt = member.token
 	# 	webapp_owner_id = bdd_util.get_user_id_for(webapp_owner_name)
@@ -40,7 +42,9 @@ def step_impl(context, shared_url, webapp_owner_name, product_name):
 	member = __get_member_by_openid(openid)
 	context.fmt = member.token
 	context.webapp_owner_name = webapp_owner_name
-	context.shared_url = product_name
+	#context.shared_url = product_name
+	shared_url = u'/mall/product/?fmt=%s&product_name=%s' % (member.token, product_name)
+	context.shared_url = shared_url
 	# if member:
 	# 	fmt = member.token
 	# 	webapp_owner_id = bdd_util.get_user_id_for(webapp_owner_name)
@@ -59,13 +63,14 @@ def step_impl(context, webapp_user_name, shared_webapp_user_name):
 	# logging.error('>>>>>>>>.aaaaaaaaaaaaaaaaaaa')
 	# logging.error(shared_member.token)
 	# logging.error('>>>>>>>bbbbbbbbbbbbbbbbbbbbbbb')
-	
+	context.shared_url = '/mall/products/?fmt='+shared_member.token
+	shared_url = context.shared_url
 	if not current_member:
 		webapp_owner_id = context.webapp_owner_id
 		webapp_owner = WebAppOwner.get({
 			'woid': webapp_owner_id
 		})
-		context.shared_url = '/mall/products/?fmt='+shared_member.token
+		
 		member_account = MemberSpread.process_openid_for({
 			'openid': current_openid,
 			'for_oauth':'1',
@@ -74,11 +79,13 @@ def step_impl(context, webapp_user_name, shared_webapp_user_name):
 			'webapp_owner': webapp_owner
 			})
 
+
 	new_step = u'''When %s访问%s的webapp'''% (webapp_user_name, webapp_owner_name)
 	logging.info("Converted step:\n %s" % new_step)
 	context.execute_steps(new_step)
 
 	context.fmt = shared_member.token
+	context.shared_url = shared_url
 
 	response = context.client.put('/wapi/member/member_spread/', {
 		'fmt': shared_member.token,

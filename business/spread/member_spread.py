@@ -7,7 +7,13 @@ from wapi.decorators import param_required
 from utils import url_helper
 import urlparse 
 
+from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
+from core.exceptionutil import unicode_full_stack
+
 import settings
+from db.member import models as member_models
+from db.mall import models as mall_models
+
 from business import model as business_model
 from business.decorator import cached_context_property
 from business.account.member_factory import MemberFactory
@@ -166,3 +172,63 @@ class MemberSpread(business_model.Model):
 						'click_shared_url_increase_count': integral.click_shared_url_increase_count
 						})
 
+
+
+	@staticmethod
+	@param_required(['order_id', 'webapp_user', 'url'])
+	def record_order_from_spread(args):
+		"""静态方法 记录通过订单
+
+		@param[in] order_id 订单id
+		@param[in] webapp_user 当前下单用户
+		@param[in] url: 通过分享来的url
+		"""
+		webapp_user = args['webapp_user']
+		shared_url = args['url']
+		order_id = args['order_id']
+		
+		#TODO 从url中解析出来fmt
+		member = webapp_user.member
+
+		query_strings_dict = dict(urlparse.parse_qs(urlparse.urlparse(shared_url).query))
+		fmt = query_strings_dict.get('fmt', None)
+		if fmt:
+			fmt = fmt[0]
+
+
+		if member.token == fmt or fmt == 'notfmt':
+			return
+		
+		shared_url = url_helper.remove_querystr_filed_from_request_url(shared_url)
+		if fmt and fmt != webapp_user.member.token:
+			a = mall_models.MallOrderFromSharedRecord.create(order_id=order_id, fmt=fmt, url=shared_url)
+		# 更新leader_to_buy 放到会支付成功后 或者异步里
+
+	@staticmethod
+	@param_required(['order_id', 'webapp_user'])
+	def process_order_from_spread(args):
+		"""静态方法 订单完成后处理分享链接相关
+
+		@param[in] order_id 订单id
+		@param[in] webapp_user 当前下单用户
+		"""
+		order_id = args['order_id']
+		webapp_user = args['webapp_user']
+
+		mall_order_from_shared = mall_models.MallOrderFromSharedRecord.select().dj_where(order_id=order_id).first()
+		if mall_order_from_shared:
+			shared_url = mall_order_from_shared.url
+			fmt = mall_order_from_shared.fmt
+
+			if shared_url and fmt:
+				try:
+					followed_member = member_models.Member.get(token=fmt)
+					member_models.MemberSharedUrlInfo.update(leadto_buy_count = member_models.MemberSharedUrlInfo.leadto_buy_count + 1).dj_where(shared_url=shared_url,).execute()
+
+					mall_order_from_shared.is_updated = True
+					mall_order_from_shared.save()
+				except:
+					notify_message = u"process_order_from_spread cause:\n{}, fmt:{}".format(unicode_full_stack(), fmt)
+					watchdog_error(notify_message)	
+					print notify_message
+				

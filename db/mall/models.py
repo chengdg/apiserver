@@ -2029,6 +2029,8 @@ class MarketToolsTemplateMessageSendRecord(models.Model):
 class MallOrderFromSharedRecord(models.Model):
 	order_id = models.IntegerField()
 	fmt = models.CharField(default='', max_length=255)
+	url = models.CharField(default='', max_length=255)
+	is_updated = models.BooleanField(default=False)
 	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间
 
 	class Meta(object):

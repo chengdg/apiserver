@@ -91,3 +91,4 @@ def step_impl(context, user, mp_user_name):
 	client.webapp_user.id = db_webapp_user.id
 	context.webapp_user = client.webapp_user
 	context.fmt = ''
+	context.shared_url = ''

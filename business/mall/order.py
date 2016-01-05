@@ -32,6 +32,7 @@ from business.mall.product import Product
 from business.mall.order_products import OrderProducts
 from business.mall.log_operator import LogOperator
 from business.mall.red_envelope import RedEnvelope
+from business.spread.member_spread import MemberSpread
 from business.decorator import cached_context_property
 from utils import regional_util
 from business.resource.order_resource_extractor import OrderResourceExtractor
@@ -48,6 +49,7 @@ from business.account.integral import Integral
 from business.mall.pay_interface import PayInterface
 from decimal import Decimal
 from business.mall.allocator.allocate_price_related_resource_service import AllocatePriceRelatedResourceService
+
 
 
 ORDER_STATUS2NOTIFY_STATUS = {
@@ -768,6 +770,21 @@ class Order(business_model.Model):
 		# 订单完成后更新会员等级
 		self.context['webapp_user'].update_member_grade()
 		self.__after_update_status('finish')
+
+		# 通过分享链接来的订单处理
+		# TODO-bert  优化celery中处理
+		#try:
+		MemberSpread.process_order_from_spread({
+			'order_id': self.id,
+			'webapp_user': self.context['webapp_user']
+			})
+		# except:
+		# 	error_msg = u"MemberSpread.process_order_from_spread失败, cause:\n{}"\
+		# 				.format(unicode_full_stack())
+		# 	watchdog_error(error_msg)
+		# 	print error_msg
+		
+
 
 	def __after_update_status(self, action):
 		"""

@@ -186,9 +186,9 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 		"xa-choseInterfaces": PAYNAME2ID.get(args.get("pay_type", u"微信支付"),-1)
 	}
 
-	if hasattr(context, 'fmt'):
-		data['fmt'] = context.fmt
-		logging.info('fmt: {}'.format(data['fmt']))
+	if hasattr(context, 'shared_url'):
+		data['url'] = context.shared_url
+		logging.info('>>>>>>>>>>>>>>>>>>>>>>>>.shared_url: {}'.format(data['url']))
 
 	if args.get('force', False):
 		data['forcing_submit'] = 1

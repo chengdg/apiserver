@@ -116,7 +116,7 @@ class MemberInfoUpdater(business_model.Model):
 					username_hexstr=username_hexstr,
 					city=city,
 					province=province,
-					country=scountry,
+					country=country,
 					sex=sex,
 					status=1).dj_where(id=member.id)
 

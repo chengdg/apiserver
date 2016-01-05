@@ -90,7 +90,7 @@ Background:
 	Given bill关注jobs的公众号
 	And tom关注jobs的公众号
 
-@mall3 @mall2 @mall.promotion @mall.webapp.promotion @bert
+@mall3 @mall2 @mall.promotion @mall.webapp.promotion @bert @wip.bapwis1
 Scenario:1 购买单种一个商品，积分金额小于最大折扣金额
 	When bill访问jobs的webapp
 	When bill获得jobs的50会员积分

@@ -45,7 +45,7 @@ EVENT_DISPATCHER = 'redis'
 
 # settings for WAPI Logger
 if MODE == 'develop':
-    WAPI_LOGGER_ENABLED = False # Debug环境下不记录wapi详细数据
+    WAPI_LOGGER_ENABLED = True # Debug环境下不记录wapi详细数据
     WAPI_LOGGER_SERVER_HOST = 'mongo.weapp.com'
     WAPI_LOGGER_SERVER_PORT = 27017
     WAPI_LOGGER_DB = 'wapi'
@@ -64,8 +64,9 @@ if MODE == 'develop':
 
 else:
     # 真实环境暂时关闭
-    WAPI_LOGGER_ENABLED = False
-    #WAPI_LOGGER_ENABLED = True
+    #WAPI_LOGGER_ENABLED = False
+    # 生产环境开启API Logger
+    WAPI_LOGGER_ENABLED = True
     WAPI_LOGGER_SERVER_HOST = 'mongo.weapp.com'
     WAPI_LOGGER_SERVER_PORT = 27017
     WAPI_LOGGER_DB = 'wapi'
@@ -76,8 +77,8 @@ else:
     logging.basicConfig(level=logging.INFO,
         format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s : %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S',
-        filename='apiserver.log',
-        filemode='w+'
+        #filename='apiserver.log',
+        #filemode='w+'
         )
 
 
@@ -128,6 +129,7 @@ PROMOTION_RESULT_VERSION = '2' #促销结果数据版本号
 
 UPLOAD_DIR = os.path.join(PROJECT_HOME, '../static', 'upload')
 
+# 通知用邮箱
 MAIL_NOTIFY_USERNAME = u'noreply@weizoom.com'
 MAIL_NOTIFY_PASSWORD = u'#weizoom2013'
 MAIL_NOTIFY_ACCOUNT_SMTP = u'smtp.mxhichina.com'

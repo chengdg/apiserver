@@ -105,7 +105,8 @@ INSTALLED_TASKS = [
     'resource.member.tasks',
     'core.watchdog.tasks',
     'services.example_service.tasks.example_log_service',
-    'services.order_notify_mail_service.task.notify_order_mail'
+    'services.order_notify_mail_service.task.notify_order_mail',
+    'services.record_member_pv_service.task.record_member_pv',
     ]
 
 #redis celery相关

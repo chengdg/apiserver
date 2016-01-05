@@ -6,6 +6,7 @@ from business.account.webapp_owner import WebAppOwner
 from business.account.member import Member
 from business.account.webapp_user import WebAppUser
 from business.account.system_account import SystemAccount
+from services.record_member_pv_service.task import record_member_pv
 from wapi.user.access_token import AccessToken
 from utils import msg_crypt,auth_util
 import settings
@@ -74,3 +75,8 @@ class WebAppAccountMiddleware(object):
 		req.context.update({
 			'webapp_user': system_account.webapp_user
 		})
+		# 记录会员访问轨迹
+		# browse_url = req.params.get('browse_url', '')
+		# page_title = req.params.get('page_title', '')
+        #
+		# record_member_pv.delay(req.context['webapp_user'].member.id, browse_url, page_title)

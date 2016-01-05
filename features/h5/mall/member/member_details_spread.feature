@@ -15,6 +15,9 @@ Feature: 会员列表-会员详情-传播能力
 				备注：只能是购买分享的链接的商品
 	"""
 
+Background:
+	Given 重置weapp的bdd环境
+
 @mall2 @member @memberList
 Scenario:1 会员详情-传播能力(分享链接引流)
 	Given jobs登录系统:weapp
@@ -75,6 +78,7 @@ Scenario:1 会员详情-传播能力(分享链接引流)
 				}
 				"""
 		#已取消
+			#bill手机端取消订单
 			When bill访问tom分享jobs的微站链接
 			And bill购买jobs的商品
 				"""
@@ -88,12 +92,27 @@ Scenario:1 会员详情-传播能力(分享链接引流)
 				}
 				"""
 			And bill取消订单'002'
-		#待发货
+
+			#jobs后台取消订单
 			When bill访问tom分享jobs的微站链接
 			And bill购买jobs的商品
 				"""
 				{
 					"order_id": "003",
+					"products": [{
+						"name": "商品1",
+						"count": 1
+					}],
+					"pay_type": "微信支付"
+				}
+				"""
+			And jobs'取消'订单'003':weapp
+		#待发货
+			When bill访问tom分享jobs的微站链接
+			And bill购买jobs的商品
+				"""
+				{
+					"order_id": "004",
 					"products": [{
 						"name": "商品1",
 						"count": 1
@@ -110,32 +129,6 @@ Scenario:1 会员详情-传播能力(分享链接引流)
 			And bill购买jobs的商品
 				"""
 				{
-					"order_id": "004",
-					"products": [{
-						"name": "商品1",
-						"count": 1
-					}],
-					"pay_type": "微信支付"
-				}
-				"""
-			When 清空浏览器:weapp
-			Given jobs登录系统:weapp
-			When jobs'支付'订单'004':weapp
-
-			When jobs对订单进行发货:weapp
-				"""
-				{
-					"order_no": "004",
-					"logistics": "off",
-					"shipper": ""
-				}
-				"""
-		#退款中
-			When 清空浏览器:weapp
-			When bill访问tom分享jobs的微站链接
-			And bill购买jobs的商品
-				"""
-				{
 					"order_id": "005",
 					"products": [{
 						"name": "商品1",
@@ -144,12 +137,18 @@ Scenario:1 会员详情-传播能力(分享链接引流)
 					"pay_type": "微信支付"
 				}
 				"""
-			When 清空浏览器:weapp
+			And bill使用支付方式'微信支付'进行支付
 			Given jobs登录系统:weapp
-			When jobs'支付'订单'005':weapp
-			And jobs'申请退款'订单'005':weapp
-		#退款成功
-			When 清空浏览器
+			When jobs对订单进行发货:weapp
+				"""
+				{
+					"order_no":"005",
+					"logistics":"顺丰速运",
+					"number":"123456789"
+				}
+				"""
+		#退款中
+			When 清空浏览器:weapp
 			When bill访问tom分享jobs的微站链接
 			And bill购买jobs的商品
 				"""
@@ -162,11 +161,79 @@ Scenario:1 会员详情-传播能力(分享链接引流)
 					"pay_type": "微信支付"
 				}
 				"""
-			When 清空浏览器:weapp
+			And bill使用支付方式'微信支付'进行支付
 			Given jobs登录系统:weapp
-			When jobs'支付'订单'006':weapp
 			And jobs'申请退款'订单'006':weapp
-			And jobs通过财务审核'退款成功'订单'006':weapp
+		#退款成功
+			When 清空浏览器
+			When bill访问tom分享jobs的微站链接
+			And bill购买jobs的商品
+				"""
+				{
+					"order_id": "007",
+					"products": [{
+						"name": "商品1",
+						"count": 1
+					}],
+					"pay_type": "微信支付"
+				}
+				"""
+			And bill使用支付方式'微信支付'进行支付
+			Given jobs登录系统:weapp
+			And jobs'申请退款'订单'007':weapp
+			And jobs通过财务审核'退款成功'订单'007':weapp
+		#已完成
+			#bill完成订单
+			When 清空浏览器
+			When bill访问tom分享jobs的微站链接
+			And bill购买jobs的商品
+				"""
+				{
+					"order_id": "008",
+					"products": [{
+						"name": "商品1",
+						"count": 1
+					}],
+					"pay_type": "微信支付"
+				}
+				"""
+			When bill使用支付方式'微信支付'进行支付
+			Given jobs登录系统:weapp
+			When jobs对订单进行发货:weapp
+				"""
+				{
+					"order_no": "008",
+					"logistics": "off",
+					"shipper": ""
+				}
+				"""
+			And bill确认收货订单'008'
+
+			#jobs后台完成订单
+			When 清空浏览器
+			When bill访问tom分享jobs的微站链接
+			And bill购买jobs的商品
+				"""
+				{
+					"order_id": "009",
+					"products": [{
+						"name": "商品1",
+						"count": 1
+					}],
+					"pay_type": "微信支付"
+				}
+				"""
+			When bill使用支付方式'微信支付'进行支付
+			Given jobs登录系统:weapp
+			When jobs对订单进行发货:weapp
+				"""
+				{
+					"order_no": "009",
+					"logistics": "off",
+					"shipper": ""
+				}
+				"""
+			When jobs'完成'订单'009':weapp
 
 	#2 bill2关注公众号，点击分享链接，购买商品
 		
@@ -183,12 +250,12 @@ Scenario:1 会员详情-传播能力(分享链接引流)
 		When bill2点击tom分享链接
 
 		#bill2通过tom分享的商品链接下单购买jobs的商品1
-		#待发货
+		#已完成
 			When bill2访问tom分享jobs的微站链接
 			And bill2购买jobs的商品
 				"""
 				{
-					"order_id": "007",
+					"order_id": "0010",
 					"products": [{
 						"name": "商品1",
 						"count": 1
@@ -197,15 +264,16 @@ Scenario:1 会员详情-传播能力(分享链接引流)
 				}
 				"""
 			And bill2使用支付方式'微信支付'进行支付
-			Then bill2支付订单成功
+			Given jobs登录系统:weapp
+			When jobs对订单进行发货:weapp
 				"""
 				{
-					"status": "待发货",
-					"products": [{
-						"name": "商品1"
-					}]
+					"order_no": "0010",
+					"logistics": "off",
+					"shipper": ""
 				}
 				"""
+			And bill确认收货订单'0010'
 
 	#3 bill3关注公众号，点击marry分享的tom分享的jobs的商品链接
 		When bill3关注jobs的公众号
@@ -220,12 +288,12 @@ Scenario:1 会员详情-传播能力(分享链接引流)
 		When bill3点击marry分享链接
 
 		#bill3通过marry分享的商品链接下单购买jobs的商品1
-		#待发货
+		#已完成
 			When bill3访问marry分享jobs的微站链接
 			And bill3购买jobs的商品
 				"""
 				{
-					"order_id": "008",
+					"order_id": "0011",
 					"products": [{
 						"name": "商品1",
 						"count": 1
@@ -234,15 +302,16 @@ Scenario:1 会员详情-传播能力(分享链接引流)
 				}
 				"""
 			And bill3使用支付方式'微信支付'进行支付
-			Then bill3支付订单成功
+			Given jobs登录系统:weapp
+			When jobs对订单进行发货:weapp
 				"""
 				{
-					"status": "待发货",
-					"products": [{
-						"name": "商品1"
-					}]
+					"order_no": "0011",
+					"logistics": "off",
+					"shipper": ""
 				}
 				"""
+			And bill确认收货订单'0011'
 
 	#4 tom分享链接，没有人点击
 		When tom访问jobs的webapp
@@ -265,7 +334,7 @@ Scenario:1 会员详情-传播能力(分享链接引流)
 						"share_url":"商品1",
 						"click_number":3,
 						"new_member":1,
-						"order":4
+						"order":3
 					}]
 			}
 			"""

@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
 
-import copy
-from datetime import datetime
+#import copy
+#from datetime import datetime
 
 from core import api_resource
 from wapi.decorators import param_required
 #from db.mall import models as mall_models
 #from db.mall import promotion_models
-from utils import dateutil as utils_dateutil
+#from utils import dateutil as utils_dateutil
 #import resource
-from wapi.mall.a_purchasing import APurchasing as PurchasingApiResource
-from core.cache import utils as cache_utils
-from business.mall.order_factory import OrderFactory
-from business.mall.purchase_info import PurchaseInfo
-from business.mall.pay_interface import PayInterface
+#from wapi.mall.a_purchasing import APurchasing as PurchasingApiResource
+#from core.cache import utils as cache_utils
+#from business.mall.order_factory import OrderFactory
+#from business.mall.purchase_info import PurchaseInfo
+#from business.mall.pay_interface import PayInterface
 from business.mall.shopping_cart import ShoppingCart
 
 from services.update_member_from_weixin.task import update_member_info
@@ -31,7 +31,7 @@ class AUserCenter(api_resource.ApiResource):
 		获取个人中心
 		"""
 		webapp_user = args['webapp_user']
-		webapp_owner = args['webapp_owner']
+		#webapp_owner = args['webapp_owner']
 		member = webapp_user.member
 
 		shopping_cart = ShoppingCart.get_for_webapp_user({

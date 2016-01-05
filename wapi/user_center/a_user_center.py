@@ -31,7 +31,7 @@ class AUserCenter(api_resource.ApiResource):
 		获取个人中心
 		"""
 		webapp_user = args['webapp_user']
-		#webapp_owner = args['webapp_owner']
+		webapp_owner = args['webapp_owner']
 		member = webapp_user.member
 
 		today = datetime.now()

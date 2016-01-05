@@ -91,19 +91,32 @@ class OrderFactory(business_model.Model):
 	def __create_order_id(self):
 		"""创建订单id
 
+		order_id格式：order_id = '%s%03d' % (now, random.randint(1, 999))
+
 		目前采用基于时间戳＋随机数的算法生成订单id，在确定id可使用之前，通过查询mall_order表里是否有相同id来判断是否可以使用id
 		这种方式比较低效，同时存在id重复的潜在隐患，后续需要改进
 
-		@todo 可以考虑用时间戳加MD5方式
-		@bug 这里不应该暴露存储层
+		@todo 和产品确认支持一秒内产生超过999个订单
 		"""
-		# TODO2: 使用uuid替换这里的算法
-		order_id = time.strftime("%Y%m%d%H%M%S", time.localtime())
-		order_id = '%s%03d' % (order_id, random.randint(1, 999))
-		if mall_models.Order.select().dj_where(order_id=order_id).count() > 0:
-			return self.__create_order_id()
-		else:
-			return order_id
+		now = time.strftime("%Y%m%d%H%M%S", time.localtime())
+		key_name = 'order_ids:' + now
+
+		retry_max_count = 100
+		retry_count = 1
+
+		while retry_count <= retry_max_count:
+			tail = random.randint(1, 999)
+
+			# 不存在key则创建空集合，并设置过期时间
+			if not cache_util.exists_key(key_name):
+				cache_util.sadd(key_name, '')
+				cache_util.set_key_expire(key_name, 3)
+
+			if cache_util.sadd(key_name, tail):
+				return '%s%03d' % (now, tail)
+			else:
+				retry_count += 1
+
 
 
 	def __allocate_price_free_resources(self, order, purchase_info):

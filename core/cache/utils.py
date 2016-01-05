@@ -273,4 +273,18 @@ def get_many_from_cache(key_infos):
 	return objs
 
 
+# redis 集合操作
+def sadd(name, *values):
+	return r.sadd(name, *values)
 
+
+def sismember(name, value):
+	return r.sismember(name, value)
+
+
+def set_key_expire(name, time):
+	r.expire(name, time)
+
+
+def exists_key(name):
+	return r.exists(name)

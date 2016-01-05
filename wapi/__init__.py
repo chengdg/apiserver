@@ -2,15 +2,12 @@
 
 #import sys
 #import os
-
 import settings
-from wapi_utils import wapi_log
-import datetime as dt
+#import datetime as dt
 import time
 import logging
-from wapi import wapi_utils
+from wapi.tasks import wapi_log, param_to_text
 from core import api_resource
-import json
 
 """
 wapi_path = os.path.join(settings.PROJECT_HOME, '..', 'wapi')
@@ -34,7 +31,7 @@ def wapi_call(method, app, resource, data, req=None):
 	key = '%s-%s' % (app, resource)
 	#if settings.WAPI_LOGGER_ENABLED:
 	if settings.MODE == 'develop':
-		logging.info("called WAPI: {} {}/{}, param: {}".format(method, app, resource, wapi_utils.param_to_text(data)))
+		logging.info("called WAPI: {} {}/{}, param: {}".format(method, app, resource, param_to_text(data)))
 
 	#start_at = dt.datetime.now()
 	start_at = time.clock()

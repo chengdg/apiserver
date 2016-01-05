@@ -101,10 +101,12 @@ IS_UNDER_BDD = False
 TASKQUEUE_ENABLED = True
 
 
+# Celery for Falcon
 INSTALLED_TASKS = [
-    # Celery for Falcon
-    'resource.member.tasks',
+    #'resource.member.tasks',
     'core.watchdog.tasks',
+    'wapi.tasks',
+    
     'services.example_service.tasks.example_log_service',
     'services.order_notify_mail_service.task.notify_order_mail',
     'services.record_member_pv_service.task.record_member_pv',

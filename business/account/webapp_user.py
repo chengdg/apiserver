@@ -61,6 +61,24 @@ class WebAppUser(business_model.Model):
 		return webapp_user
 		# except:
 		# 	return None
+
+	@staticmethod
+	@param_required(['webapp_owner', 'id'])
+	def from_id(args):
+		"""
+		工厂方法，根据webapp user model获取WebAppUser业务对象
+
+		@param[in] webapp_owner
+		@param[in] id
+
+		@return WebAppUser业务对象
+		"""
+		webapp_owner = args['webapp_owner']
+		id = args['id']
+		#try:
+		model = member_models.WebAppUser.get(id=id)
+		webapp_user = WebAppUser(webapp_owner, model)
+		return webapp_user
 		
 
 	@staticmethod

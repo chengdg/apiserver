@@ -34,6 +34,11 @@ class AUserCenter(api_resource.ApiResource):
 		#webapp_owner = args['webapp_owner']
 		member = webapp_user.member
 
+		today = datetime.now()
+		today_str = datetime.today().strftime('%Y-%m-%d')
+		#if member.update_time.strftime("%Y-%m-%d") != today_str:
+		update_member_info.delay(webapp_user.id, webapp_owner.id)
+
 		shopping_cart = ShoppingCart.get_for_webapp_user({
 			'webapp_user': args['webapp_user'],
 			'webapp_owner': args['webapp_owner'],

@@ -43,7 +43,7 @@ class WebAppAccountMiddleware(object):
 			req.context['webapp_user'] = account_info['system_account'].webapp_user
 			return 
 
-		elif settings.MODE == "develop":
+		elif settings.MODE == "develop" or settings.MODE == "test":
 			# 开发测试支持 不传递woid使用jobs用户，不传递openid使用bill_jobs会员
 			# if not 'woid' in req.params:
 			# 	return

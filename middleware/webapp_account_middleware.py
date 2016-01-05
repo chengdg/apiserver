@@ -3,12 +3,12 @@
 from db.account import models as account_models
 #import resource
 from business.account.webapp_owner import WebAppOwner
-from business.account.member import Member
-from business.account.webapp_user import WebAppUser
+#from business.account.member import Member
+#from business.account.webapp_user import WebAppUser
 from business.account.system_account import SystemAccount
-from services.record_member_pv_service.task import record_member_pv
+#from services.record_member_pv_service.task import record_member_pv
 from wapi.user.access_token import AccessToken
-from utils import msg_crypt,auth_util
+#from utils import msg_crypt,auth_util
 import settings
 import logging
 
@@ -22,7 +22,8 @@ class WebAppAccountMiddleware(object):
 	@note 获取access_token时，如果无openid（会员创建时无openid）,使用notopenid 进行授权取得会员openid后重新发起授权
 	"""
 	def process_request(sel, req, resp):
-		if '/user/access_token' in req.path:
+		if '/user/access_token' in req.path or '/console/' in req.path:
+			logging.info("skipped in WebAppAccountMiddleware. req.path: {}".format(req.path))
 			return
 
 		if 'access_token' in req.params:

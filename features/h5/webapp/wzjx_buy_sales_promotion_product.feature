@@ -489,8 +489,8 @@ Scenario: 3 使用积分购买不同供货商的商品
 			"final_price": 100.00
 		}
 		"""
-	When bill访问jobs的webapp
-	And bill使用支付方式'货到付款'进行支付
+	When tom访问jobs的webapp
+	And tom使用支付方式'货到付款'进行支付
 	Given jobs登录系统:weapp
 	Then jobs可以看到订单列表:weapp
 		"""

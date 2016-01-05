@@ -71,6 +71,9 @@ class APayResult(api_resource.ApiResource):
 				'order_id': order_id
 			})
 
+			if order.webapp_user_id != webapp_user.id:
+				return 500, {}
+
 			if not order.is_valid():
 				msg = u'订单({})不存在'.format(order_id)
 				error_msg = u'weixin pay, stage:[get_pay_result], result:{}, exception:\n{}'.format(msg, msg)

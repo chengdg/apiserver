@@ -116,3 +116,32 @@ def step_impl(context, webapp_user_name, order_id):
 
 	bdd_util.assert_dict(expected_order, actual_order)
 
+
+@then(u"{webapp_user_name}不能'{action}'订单'{order_id}'")
+def step_impl(context, webapp_user_name, action, order_id):
+
+	if action == '支付':
+		pay_url = '/wapi/pay/pay_result/?_method=put'
+		data = {
+			'pay_interface_type': 2,
+			'order_id': context.created_order_id
+		}
+		response = context.client.post(pay_url, data)
+		context.tc.assertTrue(200 != response.body['code'])
+
+		a_action = ''
+
+	elif action == '取消':
+		a_action = 'cancel'
+	elif action == '确认收货':
+		a_action = 'finish'
+	else:
+		a_action = ''
+	if a_action:
+		response = context.client.post('/wapi/mall/order/', {
+			'woid': context.client.woid,
+			'order_id': order_id,
+			'action': a_action
+		})
+
+	context.tc.assertTrue(200 != response.body['code'])

@@ -65,7 +65,7 @@ Scenario:1 会员详情-传播能力(分享链接引流)
 
 		#bill通过tom分享的商品链接下单购买jobs的商品1
 		#待支付
-			When bill访问tom分享jobs的微站链接
+			When bill点击tom分享链接
 			And bill购买jobs的商品
 				"""
 				{
@@ -79,7 +79,7 @@ Scenario:1 会员详情-传播能力(分享链接引流)
 				"""
 		#已取消
 			#bill手机端取消订单
-			When bill访问tom分享jobs的微站链接
+			When bill点击tom分享链接
 			And bill购买jobs的商品
 				"""
 				{
@@ -94,7 +94,7 @@ Scenario:1 会员详情-传播能力(分享链接引流)
 			And bill取消订单'002'
 
 			#jobs后台取消订单
-			When bill访问tom分享jobs的微站链接
+			When bill点击tom分享链接
 			And bill购买jobs的商品
 				"""
 				{
@@ -106,9 +106,10 @@ Scenario:1 会员详情-传播能力(分享链接引流)
 					"pay_type": "微信支付"
 				}
 				"""
-			And jobs'取消'订单'003':weapp
+			Given jobs登录系统:weapp
+			When jobs'取消'订单'003':weapp
 		#待发货
-			When bill访问tom分享jobs的微站链接
+			When bill点击tom分享链接
 			And bill购买jobs的商品
 				"""
 				{
@@ -122,10 +123,10 @@ Scenario:1 会员详情-传播能力(分享链接引流)
 				"""
 			When 清空浏览器:weapp
 			Given jobs登录系统:weapp
-			When jobs'支付'订单'003':weapp
+			When jobs'支付'订单'004':weapp
 		#已发货
-			When 清空浏览器
-			When bill访问tom分享jobs的微站链接
+			When 清空浏览器:weapp
+			When bill点击tom分享链接
 			And bill购买jobs的商品
 				"""
 				{
@@ -149,7 +150,7 @@ Scenario:1 会员详情-传播能力(分享链接引流)
 				"""
 		#退款中
 			When 清空浏览器:weapp
-			When bill访问tom分享jobs的微站链接
+			When bill点击tom分享链接
 			And bill购买jobs的商品
 				"""
 				{
@@ -163,10 +164,10 @@ Scenario:1 会员详情-传播能力(分享链接引流)
 				"""
 			And bill使用支付方式'微信支付'进行支付
 			Given jobs登录系统:weapp
-			And jobs'申请退款'订单'006':weapp
+			When jobs'申请退款'订单'006':weapp
 		#退款成功
-			When 清空浏览器
-			When bill访问tom分享jobs的微站链接
+			When 清空浏览器:weapp
+			When bill点击tom分享链接
 			And bill购买jobs的商品
 				"""
 				{
@@ -180,12 +181,11 @@ Scenario:1 会员详情-传播能力(分享链接引流)
 				"""
 			And bill使用支付方式'微信支付'进行支付
 			Given jobs登录系统:weapp
-			And jobs'申请退款'订单'007':weapp
+			When jobs'申请退款'订单'007':weapp
 			And jobs通过财务审核'退款成功'订单'007':weapp
 		#已完成
 			#bill完成订单
-			When 清空浏览器
-			When bill访问tom分享jobs的微站链接
+			When bill点击tom分享链接
 			And bill购买jobs的商品
 				"""
 				{
@@ -197,7 +197,7 @@ Scenario:1 会员详情-传播能力(分享链接引流)
 					"pay_type": "微信支付"
 				}
 				"""
-			When bill使用支付方式'微信支付'进行支付
+			And bill使用支付方式'微信支付'进行支付
 			Given jobs登录系统:weapp
 			When jobs对订单进行发货:weapp
 				"""
@@ -207,11 +207,11 @@ Scenario:1 会员详情-传播能力(分享链接引流)
 					"shipper": ""
 				}
 				"""
-			And bill确认收货订单'008'
+			When bill确认收货订单'008'
 
 			#jobs后台完成订单
-			When 清空浏览器
-			When bill访问tom分享jobs的微站链接
+			When 清空浏览器:weapp
+			When bill点击tom分享链接
 			And bill购买jobs的商品
 				"""
 				{
@@ -251,7 +251,7 @@ Scenario:1 会员详情-传播能力(分享链接引流)
 
 		#bill2通过tom分享的商品链接下单购买jobs的商品1
 		#已完成
-			When bill2访问tom分享jobs的微站链接
+			When bill2点击tom分享链接
 			And bill2购买jobs的商品
 				"""
 				{
@@ -275,45 +275,7 @@ Scenario:1 会员详情-传播能力(分享链接引流)
 				"""
 			And bill确认收货订单'0010'
 
-	#3 bill3关注公众号，点击marry分享的tom分享的jobs的商品链接
-		When bill3关注jobs的公众号
-		When bill3访问jobs的webapp
-
-		#bill3和tom建立好友关系，点击marry分享的tom分享的jobs的商品链接
-		When tom访问jobs的webapp
-		When tom把jobs的商品"商品1"的链接分享到朋友圈
-
-		When 清空浏览器:weapp
-		When marry分享bill分享jobs的微站链接到朋友圈
-		When bill3点击marry分享链接
-
-		#bill3通过marry分享的商品链接下单购买jobs的商品1
-		#已完成
-			When bill3访问marry分享jobs的微站链接
-			And bill3购买jobs的商品
-				"""
-				{
-					"order_id": "0011",
-					"products": [{
-						"name": "商品1",
-						"count": 1
-					}],
-					"pay_type": "微信支付"
-				}
-				"""
-			And bill3使用支付方式'微信支付'进行支付
-			Given jobs登录系统:weapp
-			When jobs对订单进行发货:weapp
-				"""
-				{
-					"order_no": "0011",
-					"logistics": "off",
-					"shipper": ""
-				}
-				"""
-			And bill确认收货订单'0011'
-
-	#4 tom分享链接，没有人点击
+	#3 tom分享链接，没有人点击
 		When tom访问jobs的webapp
 		When tom把jobs的商品"商品2"的链接分享到朋友圈
 
@@ -332,9 +294,9 @@ Scenario:1 会员详情-传播能力(分享链接引流)
 						"order":0
 					},{
 						"share_url":"商品1",
-						"click_number":3,
+						"click_number":2,
 						"new_member":1,
-						"order":3
+						"order":2
 					}]
 			}
 			"""
@@ -364,16 +326,16 @@ Scenario:2 会员详情-传播能力(二维码引流)
 	When bill访问jobs的webapp
 	When bill进入推广扫描链接
 
-	When 清空浏览器
+	When 清空浏览器:weapp
 	When marry扫描bill的推广二维码关注jobs公众号
 
-	When 清空浏览器
+	When 清空浏览器:weapp
 	When jack扫描bill的推广二维码关注jobs公众号
 
-	When 清空浏览器
+	When 清空浏览器:weapp
 	When nokia扫描bill的推广二维码关注jobs公众号
 
-	When 清空浏览器
+	When 清空浏览器:weapp
 	When tom扫描bill的推广二维码关注jobs公众号
 
 	When 清空浏览器

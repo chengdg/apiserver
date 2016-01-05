@@ -16,7 +16,7 @@ from hashlib import md5
 from datetime import datetime
 
 from wapi.decorators import param_required
-from wapi import wapi_utils
+#from wapi import wapi_utils
 from db.mall import models as mall_models
 #import resource
 from core.watchdog.utils import watchdog_alert

@@ -12,7 +12,7 @@ import math
 import itertools
 
 from wapi.decorators import param_required
-from wapi import wapi_utils
+#from wapi import wapi_utils
 from core.cache import utils as cache_util
 from db.mall import models as mall_models
 from core.watchdog.utils import watchdog_alert

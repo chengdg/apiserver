@@ -257,7 +257,7 @@ Background:
 	When jobs'申请退款'订单'007':weapp
 	When jobs通过财务审核'退款成功'订单'007':weapp
 
-@order @zr
+@mall3 @order @zr @ztq
 Scenario:1 校验后台订单列表的所有订单数
 	Given jobs登录系统:weapp
 	Then jobs获得订单列表筛选结果:weapp

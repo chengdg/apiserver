@@ -105,7 +105,7 @@ class MemberInfoUpdater(business_model.Model):
 					status = 0
 				else:
 					status = member.status
-				member_models.Member.update(is_subscribed=False, status=status).dj_where(id=member.id)
+				member_models.Member.update(is_subscribed=False, status=status).dj_where(id=member.id)..execute()
 			else:
 				member_models.Member.update(
 					is_subscribed=True, 
@@ -115,6 +115,6 @@ class MemberInfoUpdater(business_model.Model):
 					province=province,
 					country=country,
 					sex=sex,
-					status=1).dj_where(id=member.id)
+					status=1).dj_where(id=member.id).execute()
 
 			webapp_user.cleanup_cache()

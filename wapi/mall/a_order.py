@@ -9,6 +9,7 @@ from datetime import datetime
 
 from core import api_resource
 from core.exceptionutil import unicode_full_stack
+import settings
 from wapi.decorators import param_required
 from db.mall import models as mall_models
 from db.mall import promotion_models
@@ -112,6 +113,9 @@ class AOrder(api_resource.ApiResource):
 				'order_id': args['order_id']
 			})
 
+			if order.webapp_user_id != args['webapp_user'].id:
+				raise Exception(u'非法操作')
+
 			action = args['action']
 			if action == 'cancel':
 				order.cancel()
@@ -123,10 +127,11 @@ class AOrder(api_resource.ApiResource):
 				'success': True
 			}
 		except:
-			# TODO: 规范错误信息
-			notify_message = u"apiserver中修改订单状态失败, order_id:{}, action:{}, cause:\n{}".format(args['order_id'], args['action'], unicode_full_stack())
-			watchdog_error(notify_message)
-			return 500
+			if not settings.IS_UNDER_BDD:
+				# TODO: 规范错误信息
+				notify_message = u"apiserver中修改订单状态失败, order_id:{}, action:{}, cause:\n{}".format(args['order_id'], args['action'], unicode_full_stack())
+				watchdog_error(notify_message)
+			return 500, {}
 
 	@param_required(['order_id'])
 	def delete(args):

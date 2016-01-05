@@ -194,7 +194,7 @@ def call_api(weixin_api, api_instance_class):
 			weixin_api._raise_system_error(api_desc, weixin_api.mpuser_access_token.mpuser.owner_id)
 
 		result = api_response
-
+		print 'api call result>>>>>>>>>>>>>>>>>:',result
 		"""
 			TODO:
 				记录微信api调用记录

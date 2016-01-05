@@ -22,3 +22,4 @@ class AMemberBrowseRecord(api_resource.ApiResource):
         page_title = args['page_title']
 
         record_member_pv.delay(member_id, url, page_title)
+        return {}

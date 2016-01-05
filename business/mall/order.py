@@ -545,13 +545,6 @@ class Order(business_model.Model):
 		db_model.type = self.type
 		db_model.pay_interface_type = self.pay_interface_type
 		db_model.order_id = self.order_id
-		#db_model.webapp_source_id = 0 	# 兼容老数据
-
-		if self.supplier:
-			db_model.supplier = self.supplier
-
-		if self.origin_order_id:
-			db_model.origin_order_id = self.origin_order_id
 
 		if self.coupon_id:
 			db_model.coupon_id = self.coupon_id
@@ -570,23 +563,30 @@ class Order(business_model.Model):
 		db_model.weizoom_card_money = self.weizoom_card_money
 
 		logging.info("Order db_model: {}".format(db_model))
+
+		# 处理拆带相关字段
+		products = self.products
+		supplier_ids = []
+		for product in products:
+			supplier = product.supplier
+			if supplier not in supplier_ids:
+				supplier_ids.append(supplier)
+
+		if len(supplier_ids) > 1:
+			# 标记有子订单
+			db_model.origin_order_id = -1
+			self.origin_order_id = -1
+		elif supplier_ids[0] != 0:
+			self.supplier = supplier_ids[0]
+			db_model.supplier = supplier_ids[0]
+
 		db_model.save()
 		self.id = db_model.id
 
 		# 建立订单相关数据
-		products = self.products
-		product_groups = self.product_groups
 
 		#建立<order, product>的关系
-		supplier_ids = []
-		for product_group in product_groups:
-			print product_group.integral_sale
-
 		for product in products:
-			supplier = product.supplier
-			if not supplier in supplier_ids:
-				supplier_ids.append(supplier)
-
 			mall_models.OrderHasProduct.create(
 				order = self.db_model,
 				product = product.id,
@@ -603,10 +603,6 @@ class Order(business_model.Model):
 
 		if len(supplier_ids) > 1:
 			# 进行拆单，生成子订单
-			self.db_model.origin_order_id = -1
-			# 标记有子订单
-			# TODO: 改成method
-			self.origin_order_id = -1
 			for supplier in supplier_ids:
 				new_order = copy.deepcopy(self.db_model)
 				new_order.id = None
@@ -614,9 +610,8 @@ class Order(business_model.Model):
 				new_order.origin_order_id = self.id
 				new_order.supplier = supplier
 				new_order.save()
-		elif supplier_ids[0] != 0:
-			self.supplier = supplier_ids[0]
 
+		product_groups = self.product_groups
 		#建立<order, promotion>的关系
 		for product_group in product_groups:
 			if product_group.promotion:
@@ -637,7 +632,6 @@ class Order(business_model.Model):
 						integral_count=integral_count,
 				)
 
-		db_model.save()
 
 		self.__after_update_status('buy')
 

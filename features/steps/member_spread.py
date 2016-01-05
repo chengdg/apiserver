@@ -44,7 +44,15 @@ def step_impl(context, shared_url, webapp_owner_name, product_name):
 	context.webapp_owner_name = webapp_owner_name
 	#context.shared_url = product_name
 	shared_url = u'/mall/product/?fmt=%s&product_name=%s' % (member.token, product_name)
+
+
 	context.shared_url = shared_url
+
+	response = context.client.put('/wapi/member/shared_url/', {
+		'title': product_name,
+		'shared_url': shared_url
+	})
+
 	# if member:
 	# 	fmt = member.token
 	# 	webapp_owner_id = bdd_util.get_user_id_for(webapp_owner_name)
@@ -63,8 +71,13 @@ def step_impl(context, webapp_user_name, shared_webapp_user_name):
 	# logging.error('>>>>>>>>.aaaaaaaaaaaaaaaaaaa')
 	# logging.error(shared_member.token)
 	# logging.error('>>>>>>>bbbbbbbbbbbbbbbbbbbbbbb')
-	context.shared_url = '/mall/products/?fmt='+shared_member.token
-	shared_url = context.shared_url
+	if hasattr(context, 'shared_url') and context.shared_url:
+		shared_url = context.shared_url
+	else:	
+		shared_url = context.o_shared_url
+		context.shared_url = context.o_shared_url #'/mall/products/?fmt='+shared_member.token
+		context.fmt = context.o_fmt
+
 	if not current_member:
 		webapp_owner_id = context.webapp_owner_id
 		webapp_owner = WebAppOwner.get({
@@ -84,9 +97,12 @@ def step_impl(context, webapp_user_name, shared_webapp_user_name):
 	logging.info("Converted step:\n %s" % new_step)
 	context.execute_steps(new_step)
 
+	# logging.error('>>>>>>>>.aaaaaaaaaaaaaaaaaaa')
+	# logging.error(shared_member.token)
+	# logging.error('>>>>>>>bbbbbbbbbbbbbbbbbbbbbbb')
+
 	context.fmt = shared_member.token
 	context.shared_url = shared_url
-
 	response = context.client.put('/wapi/member/member_spread/', {
 		'fmt': shared_member.token,
 		'url': context.shared_url

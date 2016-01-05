@@ -137,7 +137,7 @@ Scenario:1 点击给未购买的分享者增加积分
 		}]
 		"""
 
-@mall2 @member @member.shared_integral @mall3 @bert 
+@mall2 @member @member.shared_integral @mall3 @bert
 Scenario:2 点击给已购买的分享者增加积分
 	bill购买jobs的商品1后，把商品1的链接分享到朋友圈
 	1.nokia点击bill分享的链接后，给bill增加积分
@@ -489,7 +489,7 @@ Scenario:3 通过分享链接购买后给分享者增加积分
 		}]
 		"""
 
-@mall2 @member @member.shared_integral @mall3 @bert   
+@mall2 @member @member.shared_integral @mall3 @bert   @aace 
 Scenario:4 每次购买给邀请者增加积分
 	1.bill是tom的邀请者
 	2.tom每次购买jobs的商品，给bill增加积分

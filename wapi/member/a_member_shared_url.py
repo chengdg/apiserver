@@ -37,7 +37,8 @@ class AMemberSharedUrl(api_resource.ApiResource):
 				'url': url,
 				'shared_url_digest': shared_url_digest,
 				'followed': False,
-				'title': title
+				'title': title,
+				'member_created': True
 				}).save()
 
 		return {

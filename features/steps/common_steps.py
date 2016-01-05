@@ -90,5 +90,12 @@ def step_impl(context, user, mp_user_name):
 	db_webapp_user = member_models.WebAppUser.get(member_id=member.id)
 	client.webapp_user.id = db_webapp_user.id
 	context.webapp_user = client.webapp_user
+	if hasattr(context, 'fmt'):
+		if hasattr(context, 'o_fmt') and context.o_fmt:
+			pass
+		else:
+			context.o_fmt = context.fmt
+			context.o_shared_url = context.shared_url
+
 	context.fmt = ''
 	context.shared_url = ''

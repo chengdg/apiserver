@@ -16,6 +16,8 @@ from business.mall.purchase_info import PurchaseInfo
 from business.mall.pay_interface import PayInterface
 from business.mall.shopping_cart import ShoppingCart
 
+from services.update_member_from_weixin.task import update_member_info
+
 class AUserCenter(api_resource.ApiResource):
 	"""
 	个人中心

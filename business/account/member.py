@@ -41,7 +41,8 @@ class Member(business_model.Model):
 		'created',
 		'token',
 		'webapp_id',
-		'pay_money'
+		'pay_money',
+		'update_time'
 	)
 
 	@staticmethod

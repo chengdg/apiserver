@@ -32,7 +32,7 @@ class MemberInfoUpdater(business_model.Model):
 
 		self.context['webapp_owner'] = webapp_owner
 
-	def update(member):
+	def update(webapp_user):
 		"""更新会员信息
 
 		每天更新一次，处理以下情况：

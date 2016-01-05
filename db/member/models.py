@@ -343,3 +343,15 @@ class MemberIntegralLog(models.Model):
 		db_table = 'member_integral_log'
 		verbose_name = '积分日志'
 		verbose_name_plural = '积分日志'
+
+
+class MemberBrowseRecord(models.Model):
+	member = models.ForeignKey(Member)
+	title = models.CharField(max_length=256, default='') #页面标题
+	url = models.TextField()
+	created_at = models.DateTimeField(auto_now_add=True)
+
+	class Meta(object):
+		db_table = 'member_browse_record'
+		verbose_name = '会员浏览记录'
+		verbose_name_plural = '会员浏览记录'

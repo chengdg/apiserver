@@ -48,14 +48,11 @@ class MemberInfoUpdater(business_model.Model):
 			'webapp_owner': self.context['webapp_owner'],
 			'id': webapp_user_id
 			})
-		print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>u1111111111111111'
 		webapp_owner = self.context['webapp_owner']
 		mpuser_access_token = webapp_owner.weixin_mp_user_access_token
 		weixin_api = get_weixin_api(mpuser_access_token)
-		print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>2222222222222'
 		userinfo = weixin_api.get_user_info(webapp_user.openid)
 
-		print userinfo,'>>>>>>>>>>>>>>>>>>>>>>>>>>>>>userinfo'
 
 		if not userinfo:
 			member = webapp_user.member

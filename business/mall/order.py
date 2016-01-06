@@ -846,7 +846,15 @@ class Order(business_model.Model):
 						set_bdd_mock('template_message', mock)
 						return False
 
-					send_template_message.delay(mpuser_access_token.to_dict(), message)
+
+					mpuser_access_token_dict = mpuser_access_token.to_dict()
+					# mpuser_access_token_dict['update_time'] = mpuser_access_token_dict['update_time'].strftime('%Y_%m_%d_%H_%M_%S_%f')
+					# mpuser_access_token_dict['expire_time'] = mpuser_access_token_dict['expire_time'].strftime('%Y_%m_%d_%H_%M_%S_%f')
+					# mpuser_access_token_dict['created_at'] = mpuser_access_token_dict['created_at'].strftime('%Y_%m_%d_%H_%M_%S_%f')
+					del mpuser_access_token_dict['update_time']
+					del mpuser_access_token_dict['expire_time']
+					del mpuser_access_token_dict['created_at']
+					send_template_message.delay(mpuser_access_token_dict, message)
 					# weixin_api = get_weixin_api(mpuser_access_token)
 					# result = weixin_api.send_template_message(message, True)
 

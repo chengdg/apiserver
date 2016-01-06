@@ -50,8 +50,10 @@ class MemberSpread(business_model.Model):
 		@param for_oauth 是否是授权是调用
 		
 		"""
-		query_strings = dict(urlparse.parse_qs(urlparse.urlparse(args['url']).query))
+		query_strings = dict(urlparse.parse_qs(urlparse.urlparse(url).query))
 		fmt = query_strings.get('fmt', None)
+		if fmt:
+			fmt = fmt[0]
 		#创建会员
 		member = MemberFactory.create({
 			"webapp_owner": args['webapp_owner'],
@@ -81,13 +83,14 @@ class MemberSpread(business_model.Model):
 		"""
 			将会员关系创建和url处理放到celery
 		"""
-		MemberSpread.process_member_spread({
-			'webapp_owner':  args['webapp_owner'],
-			'webapp_user': webapp_user,
-			'fmt': fmt,
-			'url': args['url'],
-			'is_fans': created
-			})
+		if fmt:
+			MemberSpread.process_member_spread({
+				'webapp_owner':  args['webapp_owner'],
+				'webapp_user': webapp_user,
+				'fmt': fmt,
+				'url': args['url'],
+				'is_fans': created
+				})
 
 	
 
@@ -98,8 +101,15 @@ class MemberSpread(business_model.Model):
 		webapp_owner = args['webapp_owner']
 		webapp_user = args['webapp_user']
 		fmt = args['fmt']
-		shared_url = args['url']
+		
 		is_fans = args.get('is_fans', False)
+
+		url_obj = urlparse.urlparse(args['url'])
+
+		if url_obj.query:
+			shared_url = url_obj.path + '?' + url.query
+		else:
+			shared_url = url_obj.path
 
 		member = webapp_user.member
 

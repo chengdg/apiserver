@@ -107,7 +107,7 @@ class MemberSpread(business_model.Model):
 		url_obj = urlparse.urlparse(args['url'])
 
 		if url_obj.query:
-			shared_url = url_obj.path + '?' + url.query
+			shared_url = url_obj.path + '?' + url_obj.query
 		else:
 			shared_url = url_obj.path
 

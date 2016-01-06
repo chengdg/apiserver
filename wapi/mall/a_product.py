@@ -51,7 +51,7 @@ class AProduct(api_resource.ApiResource):
 				#检查促销是否能使用
 				if not product.promotion.can_use_for(webapp_user):
 					product.promotion = None
-					product.promotion_title = ''
+					product.promotion_title = product.product_promotion_title
 
 			product_reviews = ProductReviews.get_from_product_id({
 				'webapp_owner': webapp_owner,

@@ -191,10 +191,11 @@ class Product(business_model.Model):
 		'postage_type',
 		'unified_postage_money',
 		'is_use_cod_pay_interface',
+		'product_promotion_title', #商品的促销标题
 		
 		#促销信息
 		'promotion',
-		'promotion_title',
+		'promotion_title', #商品关联的促销活动的促销标题
 		'integral_sale',
 		'product_review',
 		'is_deleted'
@@ -656,6 +657,7 @@ class Product(business_model.Model):
 		# 	Product.__fill_promotion_detail(webapp_owner_id, products, product_ids)
 
 	def to_dict(self, **kwargs):
+		self.product_promotion_title = self.promotion_title
 		promotion_title = self.promotion_title
 		if self.promotion and self.promotion.promotion_title:
 			promotion_title = self.promotion.promotion_title
@@ -693,6 +695,7 @@ class Product(business_model.Model):
 			'swipe_images': getattr(self, 'swipe_images', []),
 			'promotion': self.promotion.to_dict() if self.promotion else None,
 			'promotion_title': promotion_title,
+			'product_promotion_title': self.product_promotion_title,
 			'integral_sale': self.integral_sale.to_dict() if self.integral_sale else None,
 			'product_review': getattr(self, 'product_review', None),
 			'price_info': getattr(self, 'price_info', None),

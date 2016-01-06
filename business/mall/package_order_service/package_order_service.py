@@ -88,7 +88,12 @@ class PackageOrderService(business_model.Service):
 			order.integral = integral_resource.integral
 			order.integral_money = integral_resource.money
 			order.integral_each_yuan = webapp_owner.integral_strategy_settings.integral_each_yuan
-			final_price -= integral_resource.money
+			use_ceiling = webapp_owner.integral_strategy_settings.use_ceiling
+			if use_ceiling > 0:
+				if integral_resource.money > round(order.product_price * use_ceiling / 100, 2):
+					order.integral_money =  round(order.product_price * use_ceiling / 100, 2)
+
+			final_price -= order.integral_money
 		logging.info("`final_price` in __process_integral(): {}".format(final_price))
 		return final_price
 

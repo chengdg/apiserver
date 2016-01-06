@@ -87,5 +87,6 @@ class IntegralResource(business_model.Resource):
 			logging.error("ERROR: count_per_yuan SHOULD NOT be ZERO!")
 			integral_money = round(float(self.integral), 2)
 		else:
-			integral_money = round(float(self.integral/count_per_yuan), 2)
+			integral_money = round(float(float(self.integral)/count_per_yuan), 2)
+		
 		return integral_money

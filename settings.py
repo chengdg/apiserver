@@ -94,8 +94,17 @@ WEAPP_BDD_SERVER_PORT = 8170
 ENABLE_BDD_DUMP_RESPONSE = True
 
 #watchdog相关
-WATCH_DOG_DEVICE = 'mysql'
+#WATCH_DOG_DEVICE = 'mysql'
+WATCH_DOG_DEVICE = 'mongo'
 WATCH_DOG_LEVEL = 200
+WATCHDOG_CONFIG = {
+    'TYPE': 'mongo',
+    'SERVER_HOST': 'mongo.weapp.com',
+    'SERVER_PORT': 27017,
+    'DATABASE': 'watchdog'
+}
+
+
 IS_UNDER_BDD = False
 # 是否开启TaskQueue(基于Celery)
 TASKQUEUE_ENABLED = True

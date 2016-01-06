@@ -8,7 +8,7 @@ import urllib2
 # ------------------ CONFIG ---------------------
 
 if settings.MODE == 'test':
-	BUCKETNAME = 'testweapp'
+	BUCKETNAME = 'weappimgtest'
 else:
 	BUCKETNAME = 'weappimg'
 USERNAME = 'weizoom'

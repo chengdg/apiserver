@@ -36,9 +36,12 @@ class AMemberAccount(api_resource.ApiResource):
 		webapp_user = args['webapp_user']
 		social_account = webapp_user.social_account
 
+		webapp_owner = args['webapp_owner']
+
 		data = {}
 		data['webapp_user'] = webapp_user.to_dict()
 		data['social_account'] = social_account.to_dict()
+		data['qrcode_img'] = webapp_owner.qrcode_img
 
 		return data
 

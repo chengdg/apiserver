@@ -10,8 +10,8 @@ from core.watchdog.utils import watchdog_warning
 from features.util.bdd_util import set_bdd_mock
 
 
-@task
-def notify_order_mail(user_id, member_id, status, order_id, buyed_time, order_status, buy_count, total_price, bill, coupon, product_name, integral, buyer_name, buyer_address, buyer_tel, remark, product_pic_list, postage='0', express_company_name=None, express_number=None):
+@task(bind=True)
+def notify_order_mail(self, user_id, member_id, status, order_id, buyed_time, order_status, buy_count, total_price, bill, coupon, product_name, integral, buyer_name, buyer_address, buyer_tel, remark, product_pic_list, postage='0', express_company_name=None, express_number=None):
 		"""
 		发送邮件，通知订单消息
 

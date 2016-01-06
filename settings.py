@@ -111,6 +111,7 @@ INSTALLED_TASKS = [
     'services.order_notify_mail_service.task.notify_order_mail',
     'services.record_member_pv_service.task.record_member_pv',
     'services.update_member_from_weixin.task.update_member_info',
+    'services.record_order_status_log_service.task.record_order_status_log',
     ]
 
 #redis celery相关

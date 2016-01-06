@@ -35,21 +35,6 @@ class LogOperator(business_model.Model):
 
 
 	@staticmethod
-	def record_status_log(order, operator, from_status, to_status):
-		"""
-		创建订单状态日志
-		"""
-		logging.info("to create an OrderStatusLog...")
-		order_status_log = mall_models.OrderStatusLog.create(
-			order_id = order.order_id,
-			from_status = from_status,
-			to_status = to_status,
-			operator = operator
-		)
-		return order_status_log
-
-
-	@staticmethod
 	def record_wzcard_log(owner_id, order_id, card_id, money, event_type=wzcard_models.WEIZOOM_CARD_LOG_TYPE_BUY_USE):
 		"""
 		记录微众卡日志

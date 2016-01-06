@@ -21,6 +21,9 @@ from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
 import db.account.models as accout_models
 from core.wxapi import get_weixin_api
 from features.util.bdd_util import set_bdd_mock
+from services.record_order_status_log_service.task import record_order_status_log
+from services.send_template_message_service.task import send_template_message
+from services.update_product_sale_service.task import update_product_sale
 from utils.regional_util import get_str_value_by_string_ids
 
 #import settings
@@ -671,18 +674,19 @@ class Order(business_model.Model):
 			self.pay_interface_type = pay_interface_type
 
 			# 处理销量
-			# todo weapp及数据库修改为必定存在销量记录
 			products = self.products
+
+			product_sale_infos = []
 			for product in products:
 				# 赠品不计销量
-				if product.promotion == {'type_name': 'premium_sale:premium_product'}:
-					continue
+				if product.promotion != {'type_name': 'premium_sale:premium_product'}:
+					product_sale_infos.append({
+						'product_id': product.id,
+						'purchase_count': product. purchase_count
+					})
 
-				if mall_models.ProductSales.select().dj_where(product_id=product.id).first():
-					mall_models.ProductSales.update(sales=mall_models.ProductSales.sales + product.purchase_count).dj_where(product_id=product.id).execute()
-				else:
-					mall_models.ProductSales.create(product=product.id, sales=product.purchase_count)
-
+			# 异步更新商品销量
+			update_product_sale.delay(product_sale_infos)
 
 			#支付后，更新会员支付数据
 			webapp_user = self.context['webapp_user']
@@ -815,8 +819,8 @@ class Order(business_model.Model):
 		# 记录日志
 
 		LogOperator.record_operation_log(self, u'客户', mall_models.ACTION2MSG[action])
-		if self.raw_status != None:
-			LogOperator.record_status_log(self, u'客户', self.raw_status, self.status)
+		if self.raw_status:
+			record_order_status_log.delay(self.order_id, u'客户', self.raw_status, self.status)
 		self.__send_notify_mail()
 
 
@@ -841,8 +845,10 @@ class Order(business_model.Model):
 							mock[key] = value['value']
 						set_bdd_mock('template_message', mock)
 						return False
-					weixin_api = get_weixin_api(mpuser_access_token)
-					result = weixin_api.send_template_message(message, True)
+
+					send_template_message.delay(mpuser_access_token.to_dict(), message)
+					# weixin_api = get_weixin_api(mpuser_access_token)
+					# result = weixin_api.send_template_message(message, True)
 
 					#_record_send_template_info(order, template_message.template_id, user)
 					# if result.has_key('msg_id'):

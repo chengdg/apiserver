@@ -22,6 +22,7 @@ import db.account.models as accout_models
 from core.wxapi import get_weixin_api
 from features.util.bdd_util import set_bdd_mock
 from services.record_order_status_log_service.task import record_order_status_log
+from services.update_product_sale_service.task import update_product_sale
 from utils.regional_util import get_str_value_by_string_ids
 
 #import settings
@@ -672,18 +673,19 @@ class Order(business_model.Model):
 			self.pay_interface_type = pay_interface_type
 
 			# 处理销量
-			# todo weapp及数据库修改为必定存在销量记录
 			products = self.products
+
+			product_sale_infos = []
 			for product in products:
 				# 赠品不计销量
-				if product.promotion == {'type_name': 'premium_sale:premium_product'}:
-					continue
+				if product.promotion != {'type_name': 'premium_sale:premium_product'}:
+					product_sale_infos.append({
+						'product_id': product.id,
+						'purchase_count': product. purchase_count
+					})
 
-				if mall_models.ProductSales.select().dj_where(product_id=product.id).first():
-					mall_models.ProductSales.update(sales=mall_models.ProductSales.sales + product.purchase_count).dj_where(product_id=product.id).execute()
-				else:
-					mall_models.ProductSales.create(product=product.id, sales=product.purchase_count)
-
+			# 异步更新商品销量
+			update_product_sale.delay(product_sale_infos)
 
 			#支付后，更新会员支付数据
 			webapp_user = self.context['webapp_user']

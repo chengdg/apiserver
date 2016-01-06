@@ -50,7 +50,7 @@ class MemberSpread(business_model.Model):
 		@param for_oauth 是否是授权是调用
 		
 		"""
-		query_strings = dict(urlparse.parse_qs(urlparse.urlparse(url).query))
+		query_strings = dict(urlparse.parse_qs(urlparse.urlparse(args['url']).query))
 		fmt = query_strings.get('fmt', None)
 		if fmt:
 			fmt = fmt[0]

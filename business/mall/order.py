@@ -22,6 +22,7 @@ import db.account.models as accout_models
 from core.wxapi import get_weixin_api
 from features.util.bdd_util import set_bdd_mock
 from services.record_order_status_log_service.task import record_order_status_log
+from services.send_template_message_service.task import send_template_message
 from services.update_product_sale_service.task import update_product_sale
 from utils.regional_util import get_str_value_by_string_ids
 
@@ -844,8 +845,10 @@ class Order(business_model.Model):
 							mock[key] = value['value']
 						set_bdd_mock('template_message', mock)
 						return False
-					weixin_api = get_weixin_api(mpuser_access_token)
-					result = weixin_api.send_template_message(message, True)
+
+					send_template_message.delay(mpuser_access_token.to_dict(), message)
+					# weixin_api = get_weixin_api(mpuser_access_token)
+					# result = weixin_api.send_template_message(message, True)
 
 					#_record_send_template_info(order, template_message.template_id, user)
 					# if result.has_key('msg_id'):

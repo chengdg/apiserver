@@ -146,7 +146,7 @@ class AMemberReviewProduct(api_resource.ApiResource):
 
 			if has_waiting_review:
 				break
-		webapp_user.cleanup_order_info_cache()
+		#webapp_user.cleanup_order_info_cache()
 		return {'status': 1, 'errmsg': '', 'has_waiting_review': 1 if has_waiting_review else 0}
 
 

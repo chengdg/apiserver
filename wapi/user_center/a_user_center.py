@@ -15,6 +15,7 @@ from wapi.decorators import param_required
 #from business.mall.purchase_info import PurchaseInfo
 #from business.mall.pay_interface import PayInterface
 from business.mall.shopping_cart import ShoppingCart
+from business.mall.review.waiting_review_orders import WaitingReviewOrders
 
 from services.update_member_from_weixin.task import update_member_info
 
@@ -51,6 +52,15 @@ class AUserCenter(api_resource.ApiResource):
 		else:
 			phone = ''
 
+		#评价相关
+		waiting_review_orders = WaitingReviewOrders.get_for_webapp_user({
+			'webapp_owner': webapp_owner,
+			'webapp_user': webapp_user
+			})
+
+		orders = waiting_review_orders.orders
+		wishlist_product_count = len(orders)
+
 		member_data = {
 			'user_icon': webapp_user.user_icon,
 			'is_binded': is_binded,
@@ -62,7 +72,7 @@ class AUserCenter(api_resource.ApiResource):
 			'shiped_order_count': webapp_user.shiped_order_count,
 			'review_count': webapp_user.review_count,
 			'integral': webapp_user.integral,
-			'wishlist_product_count': webapp_user.collected_product_count,
+			'wishlist_product_count': wishlist_product_count,
 			'market_tools': member.market_tools,
 			'shopping_cart_product_count': shopping_cart_product_count,
 			'phone': phone

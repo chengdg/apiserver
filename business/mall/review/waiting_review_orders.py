@@ -67,4 +67,16 @@ class WaitingReviewOrders(business_model.Model):
 			if waiting_review_order:
 				waiting_review_orders.append(waiting_review_order)
 		self.orders = waiting_review_orders
+
+
+	def waiting_count(self):
+		if self.orders:
+			count = 0
+			for order in self.orders:
+				if order.order_is_reviewed is False:
+					count = count + 1
+
+			return 0
+		else:
+			return 0
 	

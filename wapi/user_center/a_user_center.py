@@ -58,8 +58,7 @@ class AUserCenter(api_resource.ApiResource):
 			'webapp_user': webapp_user
 			})
 
-		orders = waiting_review_orders.orders
-		wishlist_product_count = len(orders)
+		wishlist_product_count = waiting_review_orders.waiting_count()
 
 		member_data = {
 			'user_icon': webapp_user.user_icon,

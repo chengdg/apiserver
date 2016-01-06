@@ -32,12 +32,11 @@ class AMemberIntegralLog(api_resource.ApiResource):
 
 	@param_required(['webapp_owner', 'webapp_user'])
 	def get(args):
-
-		print '>>>>>>>>>>>>>>>>>>>>'
-		print args
-		print args['webapp_owner']
-		print args['webapp_user']
-		print '>>>>>>>>>>>>>>>>>>>>>'
+		# print '>>>>>>>>>>>>>>>>>>>>'
+		# print args
+		# print args['webapp_owner']
+		# print args['webapp_user']
+		# print '>>>>>>>>>>>>>>>>>>>>>'
 		integral_logs = IntegralLogs.get({
 				'webapp_owner': args['webapp_owner'], 
 				'webapp_user': args['webapp_user']

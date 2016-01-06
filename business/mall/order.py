@@ -21,6 +21,7 @@ from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
 import db.account.models as accout_models
 from core.wxapi import get_weixin_api
 from features.util.bdd_util import set_bdd_mock
+from services.record_order_status_log_service.task import record_order_status_log
 from utils.regional_util import get_str_value_by_string_ids
 
 #import settings
@@ -815,8 +816,8 @@ class Order(business_model.Model):
 		# 记录日志
 
 		LogOperator.record_operation_log(self, u'客户', mall_models.ACTION2MSG[action])
-		if self.raw_status != None:
-			LogOperator.record_status_log(self, u'客户', self.raw_status, self.status)
+		if self.raw_status:
+			record_order_status_log.delay(self.order_id, u'客户', self.raw_status, self.status)
 		self.__send_notify_mail()
 
 

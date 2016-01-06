@@ -1,6 +1,6 @@
 #author: 王丽 2016-01-05
 
-Feature: 会员确认、支付、取消非本会员的订单
+Feature: 会员确认、取消非本会员的订单
 
 Background:
 	Given 重置weapp的bdd环境
@@ -63,36 +63,9 @@ Scenario:1 会员"取消"非本会员的订单
 		}
 		"""
 
-@mall3 @mall.webapp @ztq
-Scenario:2 会员"支付"非本会员的订单
-	When bill访问jobs的webapp
-	And bill购买jobs的商品
-		"""
-		{
-			"order_id": "002",
-			"products": [{
-				"name": "商品1",
-				"count": 1
-			}],
-			"pay_type": "微信支付"
-		}
-		"""
-
-	When tom访问jobs的webapp
-	Then tom不能'支付'订单'002'
-
-	When bill访问jobs的webapp
-	When bill使用支付方式'微信支付'进行支付
-	Then bill手机端获取订单'002'
-		"""
-		{
-			"order_no": "002",
-			"status": "待发货"
-		}
-		"""
 
 @mall3 @mall.webapp @ztq
-Scenario:3 会员"确认收货"非本会员的订单
+Scenario:2 会员"确认收货"非本会员的订单
 	When bill访问jobs的webapp
 	And bill购买jobs的商品
 		"""

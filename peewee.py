@@ -3411,9 +3411,12 @@ class Database(object):
                         stop = time()
                         duration = stop - start
                         sql = sql % tuple(params)
+
+                        from core.exceptionutil import unicode_full_stack
                         QUERIES.append({
                             'sql': sql,
                             'time': "%.3f" % duration,
+                            'stack': unicode_full_stack().replace('\n', '<br>')
                         })
                         logger.debug((sql, params))
                     except Exception as e:

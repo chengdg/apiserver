@@ -35,6 +35,7 @@ class AProduct(api_resource.ApiResource):
 		"""
 		product_id = args['product_id']
 		webapp_owner = args['webapp_owner']
+		webapp_user = args['webapp_user']
 
 		product = Product.from_id({
 			'webapp_owner': webapp_owner,
@@ -45,6 +46,12 @@ class AProduct(api_resource.ApiResource):
 			return {'is_deleted': True}
 		else:
 			product.apply_discount(args['webapp_user'])
+
+			if product.promotion:
+				#检查促销是否能使用
+				if not product.promotion.can_use_for(webapp_user):
+					product.promotion = None
+					product.promotion_title = ''
 
 			product_reviews = ProductReviews.get_from_product_id({
 				'webapp_owner': webapp_owner,

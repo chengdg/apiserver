@@ -3,6 +3,7 @@
 会员
 """
 
+import re
 import json
 from bs4 import BeautifulSoup
 import math
@@ -343,7 +344,7 @@ class Member(business_model.Model):
 				        output_str += span
 				        count += 1
 				        name_str = name_str[length:]
-				        if count == 10:
+			 	        if count == 10:
 				            break
 				    if count == 10:
 				        break

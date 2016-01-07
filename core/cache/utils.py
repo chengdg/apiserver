@@ -218,7 +218,7 @@ def get_from_cache(key, on_miss):
 	从cache获取数据，构建对象
 	"""
 	obj = GET_CACHE(key)
-	if obj:
+	if obj or exists_key(key):
 		return obj
 	else:
 		try:

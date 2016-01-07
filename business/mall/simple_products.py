@@ -76,6 +76,7 @@ class SimpleProducts(business_model.Model):
 				category = mall_models.ProductCategory()
 				category.id = category_dict['id']
 				category.name = category_dict['name']
+				category.is_deleted = False
 			else:
 				category = mall_models.ProductCategory()
 				category.is_deleted = True

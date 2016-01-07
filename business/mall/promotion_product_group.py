@@ -88,8 +88,9 @@ class PromotionProductGroup(business_model.Model):
 		if self.promotion:
 			self.can_use_promotion = self.promotion.can_apply_promotion(self)
 			if not self.can_use_promotion:
-				self.promotion = None
-				self.promotion_result = None
+				# self.promotion = None
+				if self.promotion.type == promotion_models.PROMOTION_TYPE_PREMIUM_SALE:
+					self.promotion_result = self.promotion.get_detail()
 				for product in self.products:
 					product.disable_promotion()
 			else:
@@ -124,6 +125,7 @@ class PromotionProductGroup(business_model.Model):
 		无论self.products中的product是Product, OrderProduct, 还是ShoppingCartProduct，
 		我们都通过其product.to_dict来获取其json数据
 		"""
+		print('-------------9')
 		data = self.context.get('_data', None)
 		if not data:
 			data = {

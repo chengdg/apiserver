@@ -191,3 +191,13 @@ class PremiumSale(promotion.Promotion):
 
 	def after_from_dict(self):
 		self.type_name = 'premium_sale'
+
+	def get_detail(self):
+		detail = {
+			'count': self.count,
+			'is_enable_cycle_mode': self.is_enable_cycle_mode,
+			'promotion_price': -1,
+			'premium_products': self.premium_products
+		}
+		promotion_result = PromotionResult(saved_money=0, subtotal=0, detail=detail)
+		return promotion_result

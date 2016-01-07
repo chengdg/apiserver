@@ -172,3 +172,55 @@ Scenario:1 放入多个商品（商品1,2,3）到购物车，商品1是限时抢
 		}
 		"""
 
+@mall.webapp @mall.webapp.shopping_cart
+Scenario:2 买赠活动商品，加入购物车的主商品数量小于买赠活动主商品的买赠基数数量
+	Given jobs登录系统:weapp
+	When jobs已添加商品:weapp
+		"""
+		[{
+			"name": "商品5",
+			"price": 100
+		},{
+			"name": "商品6",
+			"price": 50,
+			"stock_type": "有限",
+			"stocks": 2
+		}]
+		"""
+	When jobs创建买赠活动:weapp
+		"""
+		[{
+			"name": "商品5买三赠一",
+			"start_date": "今天",
+			"end_date": "1天后",
+			"product_name": "商品5",
+			"premium_products": [{
+				"name": "商品6",
+				"count": 1
+			}],
+			"count": 3,
+			"is_enable_cycle_mode": false
+		}]
+		"""
+	When bill访问jobs的webapp
+	And bill加入jobs的商品到购物车
+		"""
+		[{
+			"name": "商品5",
+			"count": 2
+		}]
+		"""
+	Then bill能获得购物车
+		"""
+		{
+			"product_groups": [{
+				"can_use_promotion": true,
+				"products": [{
+					"name": "商品5",
+					"price": 100,
+					"count": 2
+				}]
+			}],
+			"invalid_products": []
+		}
+		"""

@@ -172,7 +172,7 @@ Scenario:1 放入多个商品（商品1,2,3）到购物车，商品1是限时抢
 		}
 		"""
 
-@mall.webapp @mall.webapp.shopping_cart
+@mall.webapp @mall.webapp.shopping_cart @ztqb
 Scenario:2 买赠活动商品，加入购物车的主商品数量小于买赠活动主商品的买赠基数数量
 	Given jobs登录系统:weapp
 	When jobs已添加商品:weapp
@@ -214,7 +214,7 @@ Scenario:2 买赠活动商品，加入购物车的主商品数量小于买赠活
 		"""
 		{
 			"product_groups": [{
-				"can_use_promotion": true,
+
 				"products": [{
 					"name": "商品5",
 					"price": 100,

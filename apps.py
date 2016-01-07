@@ -53,8 +53,8 @@ def _default(obj):
 		return obj.strftime('%Y-%m-%d') 
 	elif isinstance(obj, decimal.Decimal):
 		return str(obj)
-	elif settings.DEBUG and isinstance(obj, models.Model):
-		return obj.to_dict()
+	# elif settings.DEBUG and isinstance(obj, models.Model):
+	# 	return obj.to_dict()
 	else: 
 		raise TypeError('%r is not JSON serializable (type %s)' % (obj, type(obj)))
 

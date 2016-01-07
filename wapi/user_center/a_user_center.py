@@ -55,7 +55,7 @@ class AUserCenter(api_resource.ApiResource):
 			'user_icon': webapp_user.user_icon,
 			'is_binded': is_binded,
 			'username_for_html': webapp_user.username_for_html,
-			'grade': webapp_user.grade,
+			'grade': webapp_user.grade.to_dict(),
 			'history_order_count': webapp_user.history_order_count,
 			'not_payed_order_count': webapp_user.not_payed_order_count,
 			'not_ship_order_count': webapp_user.not_ship_order_count,

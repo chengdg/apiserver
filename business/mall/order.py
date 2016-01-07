@@ -428,24 +428,25 @@ class Order(business_model.Model):
 		"""
 
 		# todo 修改
-		order_has_products = mall_models.OrderHasProduct.select().dj_where(order=self.id)
-		buy_count = ''
-		product_name = ''
-		product_pic_list = []
-		for order_has_product in order_has_products:
-			buy_count = buy_count+str(order_has_product.number)+','
-			product_name = product_name+order_has_product.product.name+','
-			product_pic_list.append(order_has_product.product.thumbnails_url)
-		buy_count = buy_count[:-1]
-		product_name = product_name[:-1]
-		user = accout_models.UserProfile.get(webapp_id=self.webapp_id).user
-		if self.coupon_id:
-			coupon = str(promotion_models.Coupon.get(id=int(self.coupon_id)).coupon_id) + u',￥' + str(self.coupon_money)
-		else:
-			coupon = ''
+		# order_has_products = mall_models.OrderHasProduct.select().dj_where(order=self.id)
+		# buy_count = ''
+		# product_name = ''
+		# product_pic_list = []
+		# for order_has_product in order_has_products:
+		# 	buy_count = buy_count+str(order_has_product.number)+','
+		# 	product_name = product_name+order_has_product.product.name+','
+		# 	product_pic_list.append(order_has_product.product.thumbnails_url)
+		# buy_count = buy_count[:-1]
+		# product_name = product_name[:-1]
+		#user = accout_models.UserProfile.get(webapp_id=self.webapp_id).user
+		
+		# if self.coupon_id:
+		# 	coupon = str(promotion_models.Coupon.get(id=int(self.coupon_id)).coupon_id) + u',￥' + str(self.coupon_money)
+		# else:
+		# 	coupon = ''
 
 		try:
-			print(self.ship_area)
+			#print(self.ship_area)
 			area = get_str_value_by_string_ids(self.ship_area)
 		except:
 			area = self.ship_area
@@ -471,23 +472,25 @@ class Order(business_model.Model):
 			express_number = ''
 
 		notify_order_mail.delay(
-				user_id=user.id,
+				user_id=self.context['webapp_owner'].id,
 				member_id=member_id,
 				status=email_notify_status,
+				oid=self.id,
 				order_id=self.order_id,
 				buyed_time=time.strftime('%Y-%m-%d %H:%M', time.localtime(time.time())),
 				order_status=order_status,
-				buy_count=buy_count,
+				#buy_count=buy_count,
 				total_price=self.final_price,
 				bill='',
-				coupon=coupon,
-				product_name=product_name,
+				coupon=self.coupon_id,
+				coupon_money=self.coupon_money,
+				#product_name=product_name,
 				integral=self.integral,
 				buyer_name=self.ship_name,
 				buyer_address=buyer_address,
 				buyer_tel=self.ship_tel,
 				remark=self.customer_message,
-				product_pic_list=product_pic_list,
+				#product_pic_list=product_pic_list,
 				postage=self.postage,
 				express_company_name=express_company_name,
 				express_number=express_number

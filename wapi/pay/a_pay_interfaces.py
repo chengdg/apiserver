@@ -4,7 +4,7 @@ from core import api_resource
 from wapi.decorators import param_required
 # import resource
 from business.mall.pay_interface import PayInterface
-
+from db.mall import models as mall_modles
 
 class APayResult(api_resource.ApiResource):
 	"""
@@ -27,7 +27,9 @@ class APayResult(api_resource.ApiResource):
 
 		pay_interfaces = PayInterface.get_order_pay_interfaces(webapp_owner, webapp_user, order_id)
 
+		order = mall_modles.Order.get(id=order_id)
 		return {
-			'order_id': order_id,
+			'id': order.id,
+			'order_id': order.order_id,
 			'pay_interfaces': pay_interfaces
 		}

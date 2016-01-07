@@ -661,3 +661,70 @@ Scenario: 8 使用积分能抵扣小数
 		}
 		"""
 	Then bill在jobs的webapp中拥有46会员积分
+
+#补充.王丽 2016-01-07
+@mall2 @integral @bert
+Scenario: 9 单品积分活动小数抵扣数据错误
+	单品积分活动使用积分抵扣带有小数的金额
+	1.抵扣金额小于1元的小数
+	2.抵扣金额大于1元的小数
+
+	Given jobs登录系统:weapp
+	And jobs设定会员积分策略:weapp
+		"""
+		{
+			"integral_each_yuan": 2
+		}
+		"""
+	And jobs已添加商品:weapp
+		"""
+		[{
+			"name": "商品11",
+			"price": 2.50
+		}]
+		"""
+	When jobs创建积分应用活动:weapp
+		"""
+		[{
+			"name": "商品11积分应用",
+			"start_date": "今天",
+			"end_date": "1天后",
+			"product_name": "商品11",
+			"is_permanant_active": false,
+			"rules": [{
+				"member_grade": "全部",
+				"discount": 50,
+				"discount_money": 1.25
+			}]
+		}]
+		"""
+	When bill访问jobs的webapp
+	When bill获得jobs的50会员积分
+	Then bill在jobs的webapp中拥有50会员积分
+	When bill购买jobs的商品
+		"""
+		{
+			"pay_type": "微信支付",
+			"integral_money": 1.25,
+			"integral": 3,
+			"products": [{
+				"name": "商品11",
+				"count": 1
+			}]
+		}
+		"""
+	Then bill成功创建订单
+		"""
+		{
+			"status": "待支付",
+			"final_price": 1.25,
+			"product_price": 2.50,
+			"integral_money": 1.25,
+			"integral": 3,
+			"products": [{
+				"name": "商品11",
+				"count": 1
+			}]
+		}
+		"""
+	Then bill在jobs的webapp中拥有47会员积分

@@ -64,7 +64,7 @@ Background:
 	And bill关注jobs的公众号:weapp
 	And 开启手动清除cookie模式:weapp
 
-@mall2 @member @member.shared_integral @mall3 @bert 
+@mall2 @member @member.shared_integral @mall3 @bert @aced
 Scenario:1 点击给未购买的分享者增加积分
 	bill没有购买jobs的商品1，把商品1的链接分享到朋友圈
 	1.nokia点击bill分享的链接后，给bill增加积分

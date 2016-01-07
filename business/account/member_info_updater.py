@@ -44,6 +44,8 @@ class MemberInfoUpdater(business_model.Model):
 		"""
 		print 'TODO2: update member info'
 
+		if settings.MODE == 'develop':
+			return
 		webapp_user = WebAppUser.from_id({
 			'webapp_owner': self.context['webapp_owner'],
 			'id': webapp_user_id

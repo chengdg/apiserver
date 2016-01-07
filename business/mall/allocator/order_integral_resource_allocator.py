@@ -238,6 +238,12 @@ class OrderIntegralResourceAllocator(business_model.Service):
 
 			return True, [{}], resources
 
+		integral_resource_allocator = IntegralResourceAllocator(webapp_owner, webapp_user)
+		is_success, reason, resource = integral_resource_allocator.allocate_resource(0)
+		self.context['resource2allocator'][resource] = integral_resource_allocator
+
+		return True, [{}], resource
+
 		
 
 

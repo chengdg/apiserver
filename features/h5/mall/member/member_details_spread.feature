@@ -18,7 +18,7 @@ Feature: 会员列表-会员详情-传播能力
 Background:
 	Given 重置weapp的bdd环境
 
-@mall2 @member @memberList @mall3 @bert
+@mall2 @member @memberList @mall3 @bert @aav
 Scenario:1 会员详情-传播能力(分享链接引流)
 	Given jobs登录系统:weapp
 	And 开启手动清除cookie模式:weapp

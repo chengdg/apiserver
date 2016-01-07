@@ -195,7 +195,7 @@ Scenario:3 购买多个商品，已有总积分金额大于最大折扣金额
 		"""
 	Then bill在jobs的webapp中拥有10会员积分
 
-@mall3 @mall2 @mall.promotion @mall.webapp.promotion @bert
+@mall3 @mall2 @mall.promotion @mall.webapp.promotion @bert @acb
 Scenario:4 购买单个多规格商品+一个普通商品
 	When bill访问jobs的webapp
 	When bill获得jobs的150会员积分
@@ -663,7 +663,7 @@ Scenario: 8 使用积分能抵扣小数
 	Then bill在jobs的webapp中拥有46会员积分
 
 #补充.王丽 2016-01-07
-@mall2 @integral @bert
+@mall2 @integral @bert @aa
 Scenario: 9 单品积分活动小数抵扣数据错误
 	单品积分活动使用积分抵扣带有小数的金额
 	1.抵扣金额小于1元的小数

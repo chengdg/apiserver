@@ -9,7 +9,7 @@ from features.util.bdd_util import set_bdd_mock
 import settings
 
 
-# todo 改回阿里邮箱
+
 class MyMail(object):
     def __init__(self):
         self.account = settings.MAIL_NOTIFY_USERNAME
@@ -23,7 +23,7 @@ class MyMail(object):
         msg['Subject'] = str(Header('%s' % title, 'utf-8'))
         c = MIMEText(content, _subtype='html', _charset='utf-8')
         msg.attach(c)
-        server = smtplib.SMTP(settings.MAIL_NOTIFY_ACCOUNT_SMTP)
+        server = smtplib.SMTP(settings.MAIL_NOTIFY_ACCOUNT_SMTP, 25)
         # server = smtplib.SMTP_SSL(settings.MAIL_NOTIFY_ACCOUNT_SMTP)
         # server.docmd("EHLO server" )
         # server.starttls()

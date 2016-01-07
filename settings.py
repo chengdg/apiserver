@@ -145,12 +145,17 @@ PROMOTION_RESULT_VERSION = '2' #促销结果数据版本号
 UPLOAD_DIR = os.path.join(PROJECT_HOME, '../static', 'upload')
 
 # 通知用邮箱
-MAIL_NOTIFY_USERNAME = u'noreply@weizoom.com'
-MAIL_NOTIFY_PASSWORD = u'#weizoom2013'
-MAIL_NOTIFY_ACCOUNT_SMTP = u'smtp.mxhichina.com'
+# MAIL_NOTIFY_USERNAME = u'noreply@weizoom.com'
+# MAIL_NOTIFY_PASSWORD = u'#weizoom2013'
+# MAIL_NOTIFY_ACCOUNT_SMTP = u'smtp.mxhichina.com'
 # MAIL_NOTIFY_USERNAME = u'972122220@qq.com'
 # MAIL_NOTIFY_PASSWORD = u'irocwdrjrpkzbcfa'
 # MAIL_NOTIFY_ACCOUNT_SMTP = u'smtp.qq.com'
+
+MAIL_NOTIFY_USERNAME = u'noreply@notice.weizoom.com'
+MAIL_NOTIFY_PASSWORD = u'Weizoom2015'
+MAIL_NOTIFY_ACCOUNT_SMTP = u'smtp.dm.aliyun.com'
+
 
 #最为oauthserver时候使用
 OAUTHSERVER_HOST = 'http://api.mall3.weizzz.com/'

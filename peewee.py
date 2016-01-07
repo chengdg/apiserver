@@ -164,7 +164,10 @@ except ImportError:
 try:
     import pymysql as mysql
 except ImportError:
-    mysql = None
+    try:
+        import MySQLdb as mysql
+    except ImportError:
+        mysql = None
 
 try:
     from playhouse.speedups import strip_parens

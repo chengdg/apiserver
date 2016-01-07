@@ -111,9 +111,11 @@ class PromotionProductGroup(business_model.Model):
 					has_permanant_integral_sale = promotion_models.IntegralSale.select().dj_where(id__in=integral_sale_detail_ids, is_permanant_active=True).count() > 0
 					if has_permanant_integral_sale:
 						integral_info = purchase_info.group2integralinfo[self.uid]
-						self.active_integral_sale_rule = {
-							'discount': 100
-						}
+						print '>>>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA<>>>>>>>>>>>>>',integral_info
+						self.active_integral_sale_rule = integral_info
+						# self.active_integral_sale_rule = {
+						# 	'discount': 100
+						# }
 						self.promotion_result = PromotionResult(saved_money=0, subtotal=0, detail={
 							'integral_money': integral_info['money'],
 							'use_integral': integral_info['integral']

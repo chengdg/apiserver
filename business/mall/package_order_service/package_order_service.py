@@ -72,7 +72,7 @@ class PackageOrderService(business_model.Service):
 		return final_price
 
 
-	def __process_integral(self, order, final_price):
+	def __process_integral(self, order, final_price, purchase_info):
 		"""
 		处理积分
 
@@ -178,7 +178,7 @@ class PackageOrderService(business_model.Service):
 
 		# 处理积分
 		# TODO: 确认积分应用
-		final_price = self.__process_integral(order, final_price)
+		final_price = self.__process_integral(order, final_price, purchase_info)
 
 		# 处理运费
 		final_price = self.__process_postage(order, final_price, purchase_info)

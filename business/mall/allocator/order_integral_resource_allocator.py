@@ -51,7 +51,11 @@ class OrderIntegralResourceAllocator(business_model.Service):
 
 	def release(self, to_release_resource):
 		release_resources = []
-		resources = [to_release_resource]
+		if type(to_release_resource) != list:
+			resources = [to_release_resource]
+		else:
+			resources = to_release_resource
+
 		for resource in resources:
 			if resource.get_type() == self.resource_type:
 				release_resources.append(resource)
@@ -117,6 +121,7 @@ class OrderIntegralResourceAllocator(business_model.Service):
 
 		group2integralinfo =  purchase_info.group2integralinfo
 		uid2group = dict((group.uid, group) for group in order.product_groups)
+		group_uid2max_integral_price = {}
 		for group_uid, integral_info in group2integralinfo.items():
 			if not group_uid in uid2group:
 				#当积分应用的促销状态从"进行中"变到"已过期"后，商品会从独立group转移到和普通商品在一个group
@@ -141,7 +146,7 @@ class OrderIntegralResourceAllocator(business_model.Service):
 
 				if target_product:
 					self.__supply_product_info_into_fail_reason(target_product, reason)
-				return False, reason
+				return False, reason, None
 
 			promotion_product_group = uid2group[group_uid]
 
@@ -155,7 +160,7 @@ class OrderIntegralResourceAllocator(business_model.Service):
 					'short_msg': u'已经过期'
 				}
 				self.__supply_product_info_into_fail_reason(promotion_product_group.products[0], reason)
-				return False, reason
+				return False, reason, None
 
 			use_integral = int(integral_info['integral'])
 			integral_money = round(float(integral_info['money']), 2)
@@ -165,6 +170,7 @@ class OrderIntegralResourceAllocator(business_model.Service):
 			product_price = sum([product.price * product.purchase_count for product in promotion_product_group.products])
 			integral_sale_rule = promotion_product_group.active_integral_sale_rule
 			max_integral_price = round(product_price * integral_sale_rule['discount'] / 100, 2)
+			group_uid2max_integral_price[group_uid] = max_integral_price
 			if max_integral_price < (integral_money - 0.01) \
 				or (integral_money * count_per_yuan) > (use_integral + 1):
 				reason = {
@@ -173,9 +179,9 @@ class OrderIntegralResourceAllocator(business_model.Service):
 					'short_msg': u'使用积分不能大于促销限额'
 				}
 				self.__supply_product_info_into_fail_reason(promotion_product_group.products[0], reason)
-				return False, reason
+				return False, reason, None
 
-		return True, None
+		return True, None, group_uid2max_integral_price
 
 	def allocate_resource(self, order, purchase_info):
 		"""
@@ -196,23 +202,43 @@ class OrderIntegralResourceAllocator(business_model.Service):
 				return False, [reason], None
 
 			total_integral = purchase_info.order_integral_info['integral']
+
+			integral_resource_allocator = IntegralResourceAllocator(webapp_owner, webapp_user)
+			is_success, reason, resource = integral_resource_allocator.allocate_resource(total_integral)
+
+			if is_success:
+				self.context['resource2allocator'][resource] = integral_resource_allocator
+				return True, [{}], resource
+			else:
+				return False, [reason], None
 		elif purchase_info.group2integralinfo:
 			#使用积分应用
-			is_success, reason = self.__allocate_integral_sale(webapp_owner, order, purchase_info)
+			is_success, reason, group_uid2max_integral_price = self.__allocate_integral_sale(webapp_owner, order, purchase_info)
 			if not is_success:
 				return False, [reason], None
 
+			resources = []
 			for group_uid, integral_info in purchase_info.group2integralinfo.items():
-				total_integral += int(integral_info['integral'])
+				
+				max_integral_price = group_uid2max_integral_price[group_uid]
+				
+				
+				integral_resource_allocator = IntegralResourceAllocator(webapp_owner, webapp_user)
+				is_success, reason, resource = integral_resource_allocator.allocate_resource(int(integral_info['integral']))
 
-		integral_resource_allocator = IntegralResourceAllocator(webapp_owner, webapp_user)
-		is_success, reason, resource = integral_resource_allocator.allocate_resource(total_integral)
+				if is_success:
+					self.context['resource2allocator'][resource] = integral_resource_allocator
+					if resource.money > max_integral_price:
+						resource.money = max_integral_price
 
-		if is_success:
-			self.context['resource2allocator'][resource] = integral_resource_allocator
-			return True, [{}], resource
-		else:
-			return False, [reason], None
+					resources.append(resource)
+					#return True, [{}], resource
+				else:
+					return False, [reason], None
+
+			return True, [{}], resources
+
+		
 
 
 	@property

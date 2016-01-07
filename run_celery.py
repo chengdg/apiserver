@@ -37,7 +37,7 @@ PIDFILE = os.path.join(WEAPP_CELERY_LOG_DIR, 'celery-%i.pid')
 LOGFILE = os.path.join(WEAPP_CELERY_LOG_DIR, 'celery-%i.log')
 
 SERVICE_BLACKLIST = {
-    'watchdog.send':True,
+   # 'watchdog.send':True,
 }
 
 CELERY_BUILTINS = {

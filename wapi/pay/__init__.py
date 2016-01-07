@@ -2,3 +2,5 @@
 
 import a_wxpay
 import a_pay_result
+import a_pay_interfaces
+

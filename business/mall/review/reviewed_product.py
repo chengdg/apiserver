@@ -81,6 +81,18 @@ class ReviewedProduct(business_model.Model):
 			return None
 
 	@staticmethod
+	@param_required(['product_id'])
+	def cleanup_cache(args):
+		"""
+		根据product 清理缓存
+
+		@param[in] product_id: product_id
+
+		"""
+		key = 'p_r_{id:%s}' % args['product_id']
+		cache_util.delete_cache(key)
+
+	@staticmethod
 	@param_required(['reviewed_order_id', 'product_id'])
 	def from_product_id(args):
 		"""

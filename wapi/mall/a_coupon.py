@@ -40,8 +40,8 @@ class ACoupon(api_resource.ApiResource):
 
 			reserved_products = []
 			product2info = json.loads(args['product2info'])
-			for product_id, product_info in product2info.items():
-				product_id = int(product_id)
+			for product_info in product2info:
+				product_id = int(product_info['id'])
 				reserved_product = ReservedProduct(webapp_owner, webapp_user)
 				reserved_product.id = product_id
 				reserved_product.price = product_info['price']

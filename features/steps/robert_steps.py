@@ -184,7 +184,7 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 					sale_integral_money = args['integral_money']
 				else:
 					sale_integral = product['integral']
-					sale_integral_money = produc['integral_money']
+					sale_integral_money = product['integral_money']
 
 				group2integralinfo['%s_%s' % (product_obj.id, _product_model_name)]['integral'] = sale_integral
 				group2integralinfo['%s_%s' % (product_obj.id, _product_model_name)]['money'] = sale_integral_money

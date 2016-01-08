@@ -705,11 +705,11 @@ Scenario: 9 单品积分活动小数抵扣数据错误
 		"""
 		{
 			"pay_type": "微信支付",
-			"integral_money": 1.25,
-			"integral": 3,
 			"products": [{
 				"name": "商品11",
-				"count": 1
+				"count": 1,
+				"integral_money": 1.25,
+				"integral": 3
 			}]
 		}
 		"""

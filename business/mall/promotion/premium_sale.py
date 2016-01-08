@@ -167,7 +167,8 @@ class PremiumSale(promotion.Promotion):
 		total_product_price = 0.0
 		for product in products:
 			total_purchase_count += product.purchase_count
-			total_product_price += product.price * product.purchase_count
+			# 买赠优先于会员价，使用原价计算“小计”
+			total_product_price += product.original_price * product.purchase_count
 
 		#如果满足循环满赠，则调整赠品数量
 		if self.is_enable_cycle_mode:

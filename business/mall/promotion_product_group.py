@@ -127,7 +127,6 @@ class PromotionProductGroup(business_model.Model):
 		无论self.products中的product是Product, OrderProduct, 还是ShoppingCartProduct，
 		我们都通过其product.to_dict来获取其json数据
 		"""
-		print('-------------9')
 		data = self.context.get('_data', None)
 		if not data:
 			data = {

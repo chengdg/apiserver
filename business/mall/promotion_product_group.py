@@ -108,6 +108,7 @@ class PromotionProductGroup(business_model.Model):
 					product = self.products[0]
 					promotion_ids = [relation.promotion_id for relation in promotion_models.ProductHasPromotion.select().dj_where(product_id=product.id)]
 					integral_sale_detail_ids = [promotion.detail_id for promotion in promotion_models.Promotion.select().dj_where(type=promotion_models.PROMOTION_TYPE_INTEGRAL_SALE, id__in=promotion_ids)]
+					print '>>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA>>>>>>>>>>>>>>>>>1::',integral_sale_detail_ids
 					has_permanant_integral_sale = promotion_models.IntegralSale.select().dj_where(id__in=integral_sale_detail_ids, is_permanant_active=True).count() > 0
 					if has_permanant_integral_sale:
 						integral_info = purchase_info.group2integralinfo[self.uid]

@@ -12,6 +12,9 @@ class CouponResourceAllocator(business_model.Service):
 		self.context['webapp_user'] = webapp_user
 
 	def allocate_resource(self, coupon):
+		"""
+		申请优惠券资源
+		"""
 		member_id = self.context['webapp_user'].member.id
 
 		coupon_resource = CouponResource.get({
@@ -21,8 +24,6 @@ class CouponResourceAllocator(business_model.Service):
 		coupon_resource.coupon = coupon
 		coupon_resource.money = coupon.money
 
-		#coupon_resource.context['raw_status'] = coupon.status
-		#coupon_resource.context['raw_member_id'] = coupon.member_id
 		coupon_resource.raw_status = coupon.status
 		coupon_resource.raw_member_id = coupon.member_id
 
@@ -30,9 +31,9 @@ class CouponResourceAllocator(business_model.Service):
 			promotion_models.Coupon.id == coupon.id).execute()
 
 		if not coupon.member_id:
-			promotion_models.CouponRule.update(remained_count=promotion_models.CouponRule.remained_count - 1)
+			promotion_models.CouponRule.update(remained_count=promotion_models.CouponRule.remained_count - 1).dj_where(id=coupon.coupon_rule.id).execute()
 
-		promotion_models.CouponRule.update(use_count=promotion_models.CouponRule.use_count + 1)
+		promotion_models.CouponRule.update(use_count=promotion_models.CouponRule.use_count + 1).dj_where(id=coupon.coupon_rule.id).execute()
 
 		# 更新红包优惠券分析数据 by Eugene
 		red_envelope2member = promotion_models.RedEnvelopeParticipences.select().dj_where(coupon_id=coupon.id).first()
@@ -56,9 +57,9 @@ class CouponResourceAllocator(business_model.Service):
 			                               member_id=resource.raw_member_id).where(
 				promotion_models.Coupon.id == resource.coupon.id).execute()
 			if not resource.raw_member_id:
-				promotion_models.CouponRule.update(remained_count=promotion_models.CouponRule.remained_count + 1)
+				promotion_models.CouponRule.update(remained_count=promotion_models.CouponRule.remained_count + 1).dj_where(id=resource.coupon.coupon_rule.id).execute()
 
-			promotion_models.CouponRule.update(use_count=promotion_models.CouponRule.use_count - 1)
+			promotion_models.CouponRule.update(use_count=promotion_models.CouponRule.use_count - 1).dj_where(id=resource.coupon.coupon_rule.id).execute()
 
 			red_envelope2member = resource.red_envelope2member
 			if red_envelope2member and red_envelope2member.introduced_by != 0:

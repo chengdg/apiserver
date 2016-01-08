@@ -273,15 +273,37 @@ def get_many_from_cache(key_infos):
 	return objs
 
 
+@modify_keys
+def set_key_expire(key, time):
+	r.expire(key, time)
+
+
+@modify_keys
+def exists_key(key):
+	return r.exists(key)
+
+
 # redis 集合操作
 @modify_keys
 def sadd(key, *values):
 	return r.sadd(key, *values)
 
-@modify_keys
-def set_key_expire(key, time):
-	r.expire(key, time)
 
 @modify_keys
-def exists_key(key):
-	return r.exists(key)
+def srem(key, *values):
+	return r.srem(key, *values)
+
+
+@modify_keys
+def sismember(name, value):
+	return r.sismember(name, value)
+
+
+@modify_keys
+def smemebrs(key):
+	return r.smembers(key)
+
+
+@modify_keys
+def scard(key):
+	return r.scard(key)

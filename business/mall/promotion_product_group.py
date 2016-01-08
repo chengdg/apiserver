@@ -90,7 +90,7 @@ class PromotionProductGroup(business_model.Model):
 			if not self.can_use_promotion:
 				# self.promotion = None
 				if self.promotion.type == promotion_models.PROMOTION_TYPE_PREMIUM_SALE:
-					self.promotion_result = self.promotion.get_detail()
+					self.promotion_result = self.promotion.get_detail(self, purchase_info)
 				for product in self.products:
 					product.disable_promotion()
 			else:

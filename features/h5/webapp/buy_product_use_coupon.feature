@@ -156,6 +156,12 @@ Background:
 			"end_date": "2天后",
 			"using_limit": "满50元可以使用",
 			"coupon_id_prefix": "coupon5_id_"
+		}, {
+			"name": "未领取优惠券",
+			"money": 100,
+			"start_date": "今天",
+			"end_date": "2天后",
+			"coupon_id_prefix": "coupon6_id_"
 		}]
 		"""
 	When bill关注jobs的公众号

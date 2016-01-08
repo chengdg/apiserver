@@ -147,8 +147,8 @@ Background:
 		"""
 	Given bill关注jobs的公众号:weapp
 
-@mall3 @
- @mall.promotion @mall.webapp.promotion @mall.promotion.integral @robert.wip
+@mall3 
+ @mall.promotion @mall.webapp.promotion @mall.promotion.integral @robert.wip 
 Scenario: 1 购买单个积分折扣商品，积分金额小于最大折扣金额
 
 	When bill访问jobs的webapp
@@ -160,7 +160,8 @@ Scenario: 1 购买单个积分折扣商品，积分金额小于最大折扣金�
 			"products": [{
 				"name": "商品1",
 				"count": 1,
-				"integral": 50
+				"integral": 50,
+				"integral_money": 25.00
 			}]
 		}
 		"""
@@ -182,7 +183,7 @@ Scenario: 1 购买单个积分折扣商品，积分金额小于最大折扣金�
 		"""
 	Then bill在jobs的webapp中拥有0会员积分
 
-@mall3 @promotion @mall.promotion @mall.webapp.promotion @mall.promotion.integral @robert.wip
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @mall.promotion.integral @robert.wip 
 Scenario: 2 购买单个积分折扣商品，积分金额等于最大折扣金额
 
 	When bill访问jobs的webapp
@@ -194,7 +195,8 @@ Scenario: 2 购买单个积分折扣商品，积分金额等于最大折扣金�
 			"products": [{
 				"name": "商品1",
 				"count": 1,
-				"integral": 140
+				"integral": 140,
+				"integral_money":70.00
 			}]
 		}
 		"""
@@ -227,14 +229,15 @@ Scenario: 3 购买单个积分折扣商品，积分金额大于最大折扣金�
 			"products": [{
 				"name": "商品1",
 				"count": 1,
-				"integral": 150
+				"integral": 150,
+				"integral_money":75.00
 			}]
 		}
 		"""
 	Then bill获得创建订单失败的信息'使用积分不能大于促销限额'
 	Then bill在jobs的webapp中拥有150会员积分
 
-@mall3 @promotion @mall.promotion @mall.webapp.promotion @mall.promotion.integral @robert.wip
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @mall.promotion.integral @robert.wip 
 Scenario: 4 购买多个积分折扣商品，总积分金额小于最大折扣金额
 
 	When bill访问jobs的webapp
@@ -246,11 +249,13 @@ Scenario: 4 购买多个积分折扣商品，总积分金额小于最大折扣�
 			"products": [{
 				"name": "商品1",
 				"count": 1,
-				"integral": 100
+				"integral": 100,
+				"integral_money": 50.00
 			}, {
 				"name": "商品3",
 				"count": 1,
-				"integral": 50
+				"integral": 50,
+				"integral_money": 25.00
 			}]
 		}
 		"""
@@ -275,7 +280,7 @@ Scenario: 4 购买多个积分折扣商品，总积分金额小于最大折扣�
 		"""
 	Then bill在jobs的webapp中拥有0会员积分
 
-@mall3 @promotion @mall.promotion @mall.webapp.promotion @mall.promotion.integral @robert.wip
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @mall.promotion.integral @robert.wip 
 Scenario: 5 购买单个积分折扣商品，积分活动还未开始
 	积分活动还未开始，按原价下单
 
@@ -327,7 +332,7 @@ Scenario: 5 购买单个积分折扣商品，积分活动还未开始
 		"""
 	Then bill在jobs的webapp中拥有150会员积分
 
-@mall3 @promotion @mall.promotion @mall.webapp.promotion @mall.promotion.integral @robert.wip
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @mall.promotion.integral @robert.wip  
 Scenario: 6 购买单个积分折扣商品，积分活动已结束，积分活动不是永久有效
 	积分活动还未开始，按原价下单
 
@@ -394,7 +399,7 @@ Scenario: 6 购买单个积分折扣商品，积分活动已结束，积分活�
 		"""
 	Then bill在jobs的webapp中拥有150会员积分
 
-@mall3 @promotion @mall.promotion @mall.webapp.promotion @mall.promotion.integral @robert.wip @bn
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @mall.promotion.integral @robert.wip 
 Scenario: 7 购买单个积分折扣商品，积分活动时间已结束，但积分活动设置为永久有效
 	积分活动永久有效，按积分折扣后的价格下单
 
@@ -443,7 +448,7 @@ Scenario: 7 购买单个积分折扣商品，积分活动时间已结束，但�
 		"""
 	Then bill在jobs的webapp中拥有110会员积分
 
-@mall3 @promotion @mall.promotion @mall.webapp.promotion @mall.promotion.integral @robert.wip
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @mall.promotion.integral @robert.wip 
 Scenario: 8 购买单个积分折扣商品，超出库存限制 后台进行库存数量验证
 	第一次购买1个，成功；第二次购买2个，超出商品库存，确保缓存更新
 
@@ -484,7 +489,7 @@ Scenario: 8 购买单个积分折扣商品，超出库存限制 后台进行库�
 		}
 		"""
 
-@mall3 @promotion @mall.promotion @mall.webapp.promotion @mall.promotion.integral @robert.wip
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @mall.promotion.integral @robert.wip 
 Scenario: 9 购买单个,多规格积分折扣商品，积分活动已结束，但积分活动设置为永久有效
 	积分活动永久有效，按积分折扣后的价格下单
 
@@ -514,11 +519,13 @@ Scenario: 9 购买单个,多规格积分折扣商品，积分活动已结束，�
 				"name": "商品5",
 				"count": 1,
 				"integral": 40,
+				"integral_money": 20.00,
 				"model": "S"
-			}, {
+			},{
 				"name": "商品5",
 				"count": 1,
 				"integral": 40,
+				"integral_money": 20.00,
 				"model": "M"
 			}]
 		}
@@ -543,7 +550,7 @@ Scenario: 9 购买单个,多规格积分折扣商品，积分活动已结束，�
 		"""
 	Then bill在jobs的webapp中拥有70会员积分
 
-@mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip @aac
 Scenario: 10 购买单个积分应用活动商品，购买时活动进行中，提交订单时，该活动被商家手工结束
 
 	Given jobs登录系统:weapp
@@ -591,7 +598,7 @@ Scenario: 10 购买单个积分应用活动商品，购买时活动进行中，�
 	Then bill在jobs的webapp中拥有150会员积分
 
 #补充：张三香
-@mall3 @promotion @integral @meberGrade @robert.wip
+@mall3 @promotion @integral @meberGrade @robert.wip 
 Scenario: 11 不同等级的会员购买有会员价同时有积分统一设置抵扣5的商品
 	#会员价和积分抵扣可以同时使用，会员价后再算积分抵扣的比例
 	When tom1关注jobs的公众号
@@ -1046,7 +1053,7 @@ Scenario: 12 不同等级的会员购买有会员价同时有根据等级设置�
 	Then bill4在jobs的webapp中拥有402会员积分
 	
 
-@mall3 @promotion @robert.wip
+@mall3 @promotion @robert.wip 
 Scenario: 13 不同等级的会员购买原价同时有根据等级设置积分抵扣的商品
 
 	Given bill1关注jobs的公众号

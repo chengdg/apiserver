@@ -137,6 +137,7 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 		webapp_owner = WebAppOwner.get({
 			'woid': webapp_owner_id
 		})
+		group2integralinfo = {}
 		for product in products:
 			product_counts.append(str(product['count']))
 			product_name = product['name']
@@ -176,18 +177,21 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 				}
 			
 			if product_obj.integral_sale:
-				group2integralinfo = {}
-				print '>>>>>>>>>>>DDDDDDD,',product_obj.to_dict()['integral_sale']
+
 				group2integralinfo['%s_%s' % (product_obj.id, _product_model_name)] = product_obj.to_dict()['integral_sale']['rules'][0]
 				if args.has_key('integral'):
 					sale_integral = args['integral']
 					sale_integral_money = args['integral_money']
 				else:
-					sale_integral = product['integral']
-					sale_integral_money = product['integral_money']
-
+					if product.has_key('integral'):
+						sale_integral = product['integral']
+						sale_integral_money = product['integral_money']
+					else:
+						sale_integral = 0
+						sale_integral_money = 0
 				group2integralinfo['%s_%s' % (product_obj.id, _product_model_name)]['integral'] = sale_integral
 				group2integralinfo['%s_%s' % (product_obj.id, _product_model_name)]['money'] = sale_integral_money
+
 		# if integral:
 		# 	group2integralinfo['-'.join(integral_group_items)] = {
 		# 		"integral": integral,

@@ -243,7 +243,6 @@ class OrderIntegralResourceAllocator(business_model.Service):
 		integral_resource_allocator = IntegralResourceAllocator(webapp_owner, webapp_user)
 		is_success, reason, resource = integral_resource_allocator.allocate_resource(total_integral)
 		self.context['resource2allocator'][resource] = integral_resource_allocator
-
 		if purchase_info.group2integralinfo:
 			if total_money and resource.money > total_money:
 				resource.money = total_money

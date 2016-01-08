@@ -112,7 +112,7 @@ Background:
 		}
 		"""
 
-@mall3 @configuration @mail
+@mall3 @configuration @mail 
 Scenario:1 启用"下单时"邮件通知
 	#1 bill购买单个商品（积分活动）；配置两个运营接收邮件，可以正确只收到一次邮件通知
 	#2 tom购买多个商品（买赠、限时抢购、优惠券）；配置两个运营接收邮件，可以正确只收到一次邮件通知
@@ -141,7 +141,8 @@ Scenario:1 启用"下单时"邮件通知
 				"products": [{
 					"name": "商品1",
 					"count": 1,
-					"integral": 100
+					"integral": 100,
+					"integral_money":50.00
 				}]
 			}
 			"""
@@ -273,7 +274,8 @@ Scenario:2 启用"付款时"邮件通知
 				"products": [{
 					"name": "商品1",
 					"count": 1,
-					"integral": 100
+					"integral": 100,
+					"integral_money":50.00
 				}]
 			}
 			"""
@@ -381,7 +383,7 @@ Scenario:2 启用"付款时"邮件通知
 			}
 			"""
 
-@mall3 @configuration @mail
+@mall3 @configuration @mail  @aac
 Scenario:3 启用"取消时"邮件通知
 	#1 bill购买单个商品（积分活动）；配置运营接收邮件，可以正确只收到一次邮件通知
 	#2 tom购买多个商品（买赠、限时抢购、优惠券）；配置运营接收邮件，可以正确只收到一次邮件通知
@@ -410,7 +412,8 @@ Scenario:3 启用"取消时"邮件通知
 				"products": [{
 					"name": "商品1",
 					"count": 1,
-					"integral": 100
+					"integral": 100,
+					"integral_money":50.00
 				}]
 			}
 			"""

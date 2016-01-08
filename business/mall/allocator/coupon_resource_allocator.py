@@ -27,7 +27,7 @@ class CouponResourceAllocator(business_model.Service):
 		coupon_resource.raw_status = coupon.status
 		coupon_resource.raw_member_id = coupon.member_id
 
-		promotion_models.Coupon.update(status=promotion_models.COUPON_STATUS_USED, member_id=member_id).where(
+		promotion_models.Coupon.update(status=promotion_models.COUPON_STATUS_USED).where(
 			promotion_models.Coupon.id == coupon.id).execute()
 
 		if not coupon.member_id:

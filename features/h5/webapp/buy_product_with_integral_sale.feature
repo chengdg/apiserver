@@ -147,7 +147,8 @@ Background:
 		"""
 	Given bill关注jobs的公众号:weapp
 
-@mall3 @promotion @mall.promotion @mall.webapp.promotion @mall.promotion.integral @robert.wip
+@mall3 @
+ @mall.promotion @mall.webapp.promotion @mall.promotion.integral @robert.wip
 Scenario: 1 购买单个积分折扣商品，积分金额小于最大折扣金额
 
 	When bill访问jobs的webapp
@@ -393,7 +394,7 @@ Scenario: 6 购买单个积分折扣商品，积分活动已结束，积分活�
 		"""
 	Then bill在jobs的webapp中拥有150会员积分
 
-@mall3 @promotion @mall.promotion @mall.webapp.promotion @mall.promotion.integral @robert.wip
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @mall.promotion.integral @robert.wip @bn
 Scenario: 7 购买单个积分折扣商品，积分活动时间已结束，但积分活动设置为永久有效
 	积分活动永久有效，按积分折扣后的价格下单
 
@@ -422,7 +423,8 @@ Scenario: 7 购买单个积分折扣商品，积分活动时间已结束，但�
 			"products": [{
 				"name": "商品4",
 				"count": 1,
-				"integral": 40
+				"integral": 40,
+				"integral_money": 20.00
 			}]
 		}
 		"""

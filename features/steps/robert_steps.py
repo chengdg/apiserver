@@ -132,7 +132,6 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 		product_model_names = []
 		promotion_ids = []
 		products = args['products']
-		print "!!!!!!!!!!>>>>>>>>>>>>>>>>>>>>>>>>.products:::",products
 		# integral = 0
 		# integral_group_items = []
 		webapp_owner = WebAppOwner.get({
@@ -143,7 +142,7 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 			product_name = product['name']
 			product_obj = mall_models.Product.get(owner=webapp_owner_id, name=product_name)
 
-			product = business_product.from_model({
+			product_obj = business_product.from_model({
 				'webapp_owner': webapp_owner,
 				'model': product_obj,
 				'fill_options': {
@@ -154,10 +153,9 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 					"with_property": True,
 					"with_product_promotion": True
 				}
-				}).to_dict()
+				})
 				
 			product_ids.append(str(product_obj.id))
-			print "!!!!!!!!!!>>>>>>>>>>>>>>>>>>>>>>>>.produc:::",product
 			try:
 				if product.has_key('promotion'):
 					promotion = promotion_models.Promotion.get(name=product['promotion']['name'])
@@ -176,12 +174,20 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 					"integral": product['integral'],
 					"money": round(product['integral'] / integral_each_yuan, 2)
 				}
-
-			if 'integral_sale' in product and product['integral_sale']:
+			
+			if product_obj.integral_sale:
 				group2integralinfo = {}
-				group2integralinfo['%s_%s' % (product_obj.id, _product_model_name)] =product['integral_sale']
-				group2integralinfo['%s_%s' % (product_obj.id, _product_model_name)]['integral'] = args['integral']
-				group2integralinfo['%s_%s' % (product_obj.id, _product_model_name)]['money'] = args['integral_money']
+				print '>>>>>>>>>>>DDDDDDD,',product_obj.to_dict()['integral_sale']
+				group2integralinfo['%s_%s' % (product_obj.id, _product_model_name)] = product_obj.to_dict()['integral_sale']['rules'][0]
+				if args.has_key('integral'):
+					sale_integral = args['integral']
+					sale_integral_money = args['integral_money']
+				else:
+					sale_integral = product['integral']
+					sale_integral_money = produc['integral_money']
+
+				group2integralinfo['%s_%s' % (product_obj.id, _product_model_name)]['integral'] = sale_integral
+				group2integralinfo['%s_%s' % (product_obj.id, _product_model_name)]['money'] = sale_integral_money
 		# if integral:
 		# 	group2integralinfo['-'.join(integral_group_items)] = {
 		# 		"integral": integral,

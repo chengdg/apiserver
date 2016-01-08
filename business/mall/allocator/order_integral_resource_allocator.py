@@ -203,14 +203,14 @@ class OrderIntegralResourceAllocator(business_model.Service):
 
 			total_integral = purchase_info.order_integral_info['integral']
 
-			integral_resource_allocator = IntegralResourceAllocator(webapp_owner, webapp_user)
-			is_success, reason, resource = integral_resource_allocator.allocate_resource(total_integral)
+			#integral_resource_allocator = IntegralResourceAllocator(webapp_owner, webapp_user)
+			#is_success, reason, resource = integral_resource_allocator.allocate_resource(total_integral)
 
-			if is_success:
-				self.context['resource2allocator'][resource] = integral_resource_allocator
-				return True, [{}], resource
-			else:
-				return False, [reason], None
+			#if is_success:
+			#	self.context['resource2allocator'][resource] = integral_resource_allocator
+			#	return True, [{}], resource
+			#else:
+			#	return False, [reason], None
 		elif purchase_info.group2integralinfo:
 			#使用积分应用
 			is_success, reason, group_uid2max_integral_price = self.__allocate_integral_sale(webapp_owner, order, purchase_info)
@@ -218,29 +218,36 @@ class OrderIntegralResourceAllocator(business_model.Service):
 				return False, [reason], None
 
 			resources = []
+			total_money = 0.0
 			for group_uid, integral_info in purchase_info.group2integralinfo.items():
 				
 				max_integral_price = group_uid2max_integral_price[group_uid]
+				total_money += max_integral_price
+				total_integral += int(integral_info['integral'])
 				
-				
-				integral_resource_allocator = IntegralResourceAllocator(webapp_owner, webapp_user)
-				is_success, reason, resource = integral_resource_allocator.allocate_resource(int(integral_info['integral']))
+				#integral_resource_allocator = IntegralResourceAllocator(webapp_owner, webapp_user)
+				#is_success, reason, resource = integral_resource_allocator.allocate_resource(int(integral_info['integral']))
 
-				if is_success:
-					self.context['resource2allocator'][resource] = integral_resource_allocator
-					if resource.money > max_integral_price:
-						resource.money = max_integral_price
+				#if is_success:
+					#self.context['resource2allocator'][resource] = integral_resource_allocator
+				#	if resource.money > max_integral_price:
+				#		resource.money = max_integral_price
 
-					resources.append(resource)
+				#	resources.append(resource)
 					#return True, [{}], resource
-				else:
-					return False, [reason], None
+				#else:
+				#	return False, [reason], None
 
-			return True, [{}], resources
+			# return True, [{}], resources
 
 		integral_resource_allocator = IntegralResourceAllocator(webapp_owner, webapp_user)
-		is_success, reason, resource = integral_resource_allocator.allocate_resource(0)
+		is_success, reason, resource = integral_resource_allocator.allocate_resource(total_integral)
 		self.context['resource2allocator'][resource] = integral_resource_allocator
+
+		if purchase_info.group2integralinfo:
+			if total_money and resource.money > total_money:
+				resource.money = total_money
+
 
 		return True, [{}], resource
 

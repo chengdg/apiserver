@@ -1223,8 +1223,9 @@ Scenario:14 【优惠券】-未到使用日期，不能使用
 		"""
 
 #补充: 张三香 2016.01.08
-@coupon
-Scenario:15 使用未被领取的优惠券购买，取消订单后查看该优惠券的信息
+#针对重构过程中发现的bug7135补充
+@mall3 @coupon 
+Scenario:15 使用未被领取的优惠券购买，手机端取消订单后查看该优惠券的信息
 	Given jobs登录系统:weapp
 	Then jobs能获得优惠券'未领取优惠券'的码库:weapp
 		"""
@@ -1307,7 +1308,116 @@ Scenario:15 使用未被领取的优惠券购买，取消订单后查看该优�
 		{
 			"coupon6_id_1": {
 				"money": 100.0,
+				"status": "未使用",
+				"consumer": "",
+				"target": ""
+			},
+			"coupon6_id_2": {
+				"money": 100.0,
 				"status": "未领取",
+				"consumer": "",
+				"target": ""
+			},
+			"coupon6_id_3": {
+				"money": 100.0,
+				"status": "未领取",
+				"consumer": "",
+				"target": ""
+			},
+			"coupon6_id_4": {
+				"money": 100.0,
+				"status": "未领取",
+				"consumer": "",
+				"target": ""
+			}
+		}
+		"""
+
+@mall3 @coupon
+Scenario:16 使用未被领取的优惠券购买，后台取消订单后查看该优惠券的信息
+	Given jobs登录系统:weapp
+	Then jobs能获得优惠券'未领取优惠券'的码库:weapp
+		"""
+		{
+			"coupon6_id_1": {
+				"money": 100.0,
+				"status": "未领取",
+				"consumer": "",
+				"target": ""
+			},
+			"coupon6_id_2": {
+				"money": 100.0,
+				"status": "未领取",
+				"consumer": "",
+				"target": ""
+			},
+			"coupon6_id_3": {
+				"money": 100.0,
+				"status": "未领取",
+				"consumer": "",
+				"target": ""
+			},
+			"coupon6_id_4": {
+				"money": 100.0,
+				"status": "未领取",
+				"consumer": "",
+				"target": ""
+			}
+		}
+		"""
+	When bill访问jobs的webapp
+	When bill购买jobs的商品
+		"""
+		{
+			"pay_type": "微信支付",
+			"order_id": "001",
+			"products": [{
+				"name": "商品3",
+				"count": 2
+			}],
+			"coupon": "coupon6_id_1"
+		}
+		"""
+
+	Given jobs登录系统:weapp
+	Then jobs能获得优惠券'未领取优惠券'的码库:weapp
+		"""
+		{
+			"coupon6_id_1": {
+				"money": 100.0,
+				"status": "已使用",
+				"consumer": "bill",
+				"target": ""
+			},
+			"coupon6_id_2": {
+				"money": 100.0,
+				"status": "未领取",
+				"consumer": "",
+				"target": ""
+			},
+			"coupon6_id_3": {
+				"money": 100.0,
+				"status": "未领取",
+				"consumer": "",
+				"target": ""
+			},
+			"coupon6_id_4": {
+				"money": 100.0,
+				"status": "未领取",
+				"consumer": "",
+				"target": ""
+			}
+		}
+		"""
+
+	When jobs'取消'订单'001':weapp
+	Given jobs登录系统:weapp
+	Then jobs能获得优惠券'未领取优惠券'的码库:weapp
+		"""
+		{
+			"coupon6_id_1": {
+				"money": 100.0,
+				"status": "未使用",
 				"consumer": "",
 				"target": ""
 			},

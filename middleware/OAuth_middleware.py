@@ -44,6 +44,8 @@ class OAuthMiddleware(object):
 
 		args = req.params
 		woid = args.get('woid', None)
+		if not woid:
+			woid = args.get('webapp_owner_id', None)
 		# 验证woid
 		if not woid:
 			body = {"errorcode": error_codes.ILLEGAL_WOID_CODE, "errmsg": error_codes.code2msg[error_codes.ILLEGAL_WOID_CODE]}

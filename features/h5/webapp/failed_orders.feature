@@ -228,7 +228,8 @@ Scenario:2 下单失败后，校验会员的积分变化
 			"products": [{
 				"name": "商品2",
 				"count": 1,
-				"integral": 40
+				"integral": 40,
+				"integral_money": 20
 			}]
 		}
 		"""

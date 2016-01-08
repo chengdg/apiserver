@@ -530,7 +530,8 @@ Scenario:5 使用积分购买商品后，取消订单，积分返回
 				"name": "商品1",
 				"count": 1
 			}],
-			"integral": 20
+			"integral": 20,
+			"integral_money": 2
 		}
 		"""
 	Then bill成功创建订单
@@ -539,6 +540,7 @@ Scenario:5 使用积分购买商品后，取消订单，积分返回
 			"status": "待发货",
 			"final_price": 88.00,
 			"integral": 20,
+			"integral_money": 2,
 			"products": [{
 				"name": "商品1",
 				"price": 90.00,

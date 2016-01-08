@@ -124,7 +124,8 @@ Background:
 				"name": "商品1",
 				"count": 1
 			}],
-			"integral": 100
+			"integral": 100,
+			"integral_money": 100
 		}
 		"""
 	And bill购买jobs的商品
@@ -136,7 +137,8 @@ Background:
 				"name": "商品1",
 				"count": 1
 			}],
-			"integral": 50
+			"integral": 50,
+			"integral_money": 50
 		}
 		"""
 	And bill购买jobs的商品

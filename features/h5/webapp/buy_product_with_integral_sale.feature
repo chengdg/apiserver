@@ -1305,12 +1305,6 @@ Scenario: 14 单品积分活动小数抵扣数据错误
 	2.抵扣金额大于1元的小数
 
 	Given jobs登录系统:weapp
-	And jobs设定会员积分策略:weapp
-		"""
-		{
-			"integral_each_yuan": 2
-		}
-		"""
 	And jobs已添加商品:weapp
 		"""
 		[{

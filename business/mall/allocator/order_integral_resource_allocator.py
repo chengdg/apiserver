@@ -150,7 +150,9 @@ class OrderIntegralResourceAllocator(business_model.Service):
 
 			promotion_product_group = uid2group[group_uid]
 
+			print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>',promotion_product_group.active_integral_sale_rule
 			if not promotion_product_group.active_integral_sale_rule:
+
 				#当purchase_info提交的信息中存在group的积分信息
 				#但是该group当前没有了active_integral_sale_rule
 				#意味着商品的积分应用已经过期

@@ -805,7 +805,6 @@ Scenario: 11 不同等级的会员购买有会员价同时有积分统一设置�
 		"""
 	Then bill在jobs的webapp中拥有330会员积分
 	
-
 @mall3 @promotion @robert.wip
 Scenario: 12 不同等级的会员购买有会员价同时有根据等级设置积分抵扣的商品
 	#会员价和积分抵扣可以同时使用，会员价后再算积分抵扣的比例
@@ -1052,7 +1051,6 @@ Scenario: 12 不同等级的会员购买有会员价同时有根据等级设置�
 		"""
 	Then bill4在jobs的webapp中拥有402会员积分
 	
-
 @mall3 @promotion @robert.wip 
 Scenario: 13 不同等级的会员购买原价同时有根据等级设置积分抵扣的商品
 
@@ -1298,3 +1296,167 @@ Scenario: 13 不同等级的会员购买原价同时有根据等级设置积分�
 		"""
 	Then bill4在jobs的webapp中拥有360会员积分
 	
+
+#补充.王丽 2016-01-07
+@mall2 @integral @bert
+Scenario: 14 单品积分活动小数抵扣数据错误
+	单品积分活动使用积分抵扣带有小数的金额
+	1.抵扣金额小于1元的小数
+	2.抵扣金额大于1元的小数
+
+	Given jobs登录系统:weapp
+	And jobs设定会员积分策略:weapp
+		"""
+		{
+			"integral_each_yuan": 2
+		}
+		"""
+	And jobs已添加商品:weapp
+		"""
+		[{
+			"name": "商品10",
+			"price": 1.50
+		},{
+			"name": "商品11",
+			"price": 2.50
+		},{
+			"name": "商品12",
+			"price": 1.98
+		}]
+		"""
+	When jobs创建积分应用活动:weapp
+		"""
+		[{
+			"name": "商品10积分应用",
+			"start_date": "今天",
+			"end_date": "1天后",
+			"product_name": "商品10",
+			"is_permanant_active": false,
+			"rules": [{
+				"member_grade": "全部",
+				"discount": 50,
+				"discount_money": 0.75
+			}]
+		},{
+			"name": "商品11积分应用",
+			"start_date": "今天",
+			"end_date": "1天后",
+			"product_name": "商品11",
+			"is_permanant_active": false,
+			"rules": [{
+				"member_grade": "全部",
+				"discount": 50,
+				"discount_money": 1.25
+			}]
+		},{
+			"name": "商品12积分应用",
+			"start_date": "今天",
+			"end_date": "1天后",
+			"product_name": "商品12",
+			"is_permanant_active": false,
+			"rules": [{
+				"member_grade": "全部",
+				"discount": 50,
+				"discount_money": 0.99
+			}]
+		}]
+		"""
+
+	When bill访问jobs的webapp
+	When bill获得jobs的50会员积分
+	Then bill在jobs的webapp中拥有50会员积分
+	When bill购买jobs的商品
+		"""
+		{
+			"pay_type": "微信支付",
+			"products": [{
+				"name": "商品10",
+				"count": 1,
+				"integral_money":0.75,
+				"integral":2
+			}]
+		}
+		"""
+	Then bill成功创建订单
+		"""
+		{
+			"status": "待支付",
+			"final_price": 0.75,
+			"product_price": 1.50,
+			"integral_money": 0.75,
+			"integral": 2,
+			"products": [{
+				"name": "商品10",
+				"count": 1
+			}]
+		}
+		"""
+	Then bill在jobs的webapp中拥有48会员积分
+
+	When bill访问jobs的webapp
+	Then bill在jobs的webapp中拥有48会员积分
+	When bill购买jobs的商品
+		"""
+		{
+			"pay_type": "微信支付",
+			"products": [{
+				"name": "商品11",
+				"count": 1,
+				"integral_money": 1.25,
+				"integral": 3
+			}]
+		}
+		"""
+	Then bill成功创建订单
+		"""
+		{
+			"status": "待支付",
+			"final_price": 1.25,
+			"product_price": 2.50,
+			"integral_money": 1.25,
+			"integral": 3,
+			"products": [{
+				"name": "商品11",
+				"count": 1
+			}]
+		}
+		"""
+	Then bill在jobs的webapp中拥有45会员积分
+
+	When bill访问jobs的webapp
+	Then bill在jobs的webapp中拥有45会员积分
+	When bill购买jobs的商品
+		"""
+		{
+			"pay_type": "微信支付",
+			"products": [{
+				"name": "商品12",
+				"count": 1,
+				"integral_money":0.99,
+				"integral":2
+			},{
+				"name": "商品11",
+				"count": 1,
+				"integral_money": 1.25,
+				"integral": 3
+			}]
+		}
+		"""
+	Then bill成功创建订单
+		"""
+		{
+			"status": "待支付",
+			"final_price": 2.24,
+			"product_price": 4.48,
+			"integral_money": 2.24,
+			"integral": 5,
+			"products": [{
+				"name": "商品12",
+				"count": 1
+			},{
+				"name": "商品11",
+				"count": 1
+			}]
+		}
+		"""
+	Then bill在jobs的webapp中拥有40会员积分

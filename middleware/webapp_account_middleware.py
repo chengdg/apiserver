@@ -59,12 +59,15 @@ class WebAppAccountMiddleware(object):
 		if req.context.has_key('webapp_owner') and req.context.has_key('webapp_user'):
 			return
 		#TODO2: 支持开发的临时解决方案，需要删除
+		print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.1111'
 		openid = 'bill_jobs'
 		#填充webapp_owner
 		webapp_owner = WebAppOwner.get({
 			'woid': woid
 		})
 		req.context['webapp_owner'] = webapp_owner
+		
+		print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.222222',openid
 		if openid == 'notopenid':
 			return
 		#填充会员帐号信息
@@ -72,7 +75,7 @@ class WebAppAccountMiddleware(object):
 			'webapp_owner':  webapp_owner,
 			'openid': openid
 		})
-		
+		print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.3333',system_account
 		req.context.update({
 			'webapp_user': system_account.webapp_user
 		})

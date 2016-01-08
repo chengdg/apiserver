@@ -107,12 +107,10 @@ class PromotionProductGroup(business_model.Model):
 					#TODO2: 在前端react重构完成后，这里要重新设计实现，目前硬编码实现
 					product = self.products[0]
 					promotion_ids = [relation.promotion_id for relation in promotion_models.ProductHasPromotion.select().dj_where(product_id=product.id)]
-					integral_sale_detail_ids = [promotion.detail_id for promotion in promotion_models.Promotion.select().dj_where(type=promotion_models.PROMOTION_TYPE_INTEGRAL_SALE, id__in=promotion_ids)]
-					print '>>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA>>>>>>>>>>>>>>>>>1::',integral_sale_detail_ids
+					integral_sale_detail_ids = [promotion.detail_id for promotion in promotion_models.Promotion.select().dj_where(type=promotion_models.PROMOTION_TYPE_INTEGRAL_SALE, id__in=promotion_ids, status=promotion_models.PROMOTION_STATUS_STARTED)]
 					has_permanant_integral_sale = promotion_models.IntegralSale.select().dj_where(id__in=integral_sale_detail_ids, is_permanant_active=True).count() > 0
 					if has_permanant_integral_sale:
 						integral_info = purchase_info.group2integralinfo[self.uid]
-						print '>>>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA<>>>>>>>>>>>>>',integral_info
 						self.active_integral_sale_rule = integral_info
 						# self.active_integral_sale_rule = {
 						# 	'discount': 100

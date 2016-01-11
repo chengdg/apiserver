@@ -61,11 +61,11 @@ def _watchdog(type, message, severity=WATCHDOG_INFO, user_id='0', db_name='defau
 
 #取消无限制重试
 @task(bind=True, max_retries=3)
-def send_watchdog(self, level, message, severity=WATCHDOG_INFO, user_id='0', db_name='default'):
+def send_watchdog(self, type, message, severity=WATCHDOG_INFO, user_id='0', db_name='default'):
 	try:
 		if not settings.IS_UNDER_BDD:
-			logging.info(u'received watchdog message: [%s] [%s]' % (level, message))
-		_watchdog(level, message, severity, user_id, db_name)
+			logging.info(u'received watchdog message: [%s] [%s]' % (type, message))
+		_watchdog(type, message, severity, user_id, db_name)
 	except:
 		print "Failed to send watchdog message, retrying.:Cause:\n{}".format(full_stack())
 		raise self.retry()

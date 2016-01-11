@@ -233,7 +233,9 @@ class WebAppUser(business_model.Model):
 
 	def modify_ship_info(self, ship_info_id, new_ship_info):
 		"""
-		修改收货地址
+		@param ship_info_id: 收货地址id
+		@param new_ship_info: 新信息
+		@return: bool
 		"""
 		try:
 			member_models.ShipInfo.update(is_selected=False).where(member_models.ShipInfo.webapp_user_id == self.id).execute()

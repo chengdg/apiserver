@@ -13,9 +13,12 @@ class AShipInfo(api_resource.ApiResource):
 	@param_required(['ship_id', 'ship_name', 'ship_address', 'ship_tel', 'area'])
 	def post(args):
 		"""
-		修改收货地址
-		Returns:ship_id
-
+		@param ship_id
+		@param ship_name
+		@param ship_address
+		@param ship_tel
+		@param area
+		@return:{result:True}
 		"""
 		webapp_user = args['webapp_user']
 		ship_info_id = int(args['ship_id']),
@@ -31,7 +34,7 @@ class AShipInfo(api_resource.ApiResource):
 				'result': result
 			}
 		else:
-			return 500
+			return 500, {}
 
 	@param_required(['ship_name', 'ship_address', 'ship_tel', 'area'])
 	def put(args):

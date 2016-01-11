@@ -281,7 +281,7 @@ class WebAppOwnerInfo(business_model.Model):
 		if  obj.auth_appid_info:
 			obj.qrcode_img = obj.auth_appid_info.qrcode_url
 			obj.mp_head_img = obj.auth_appid_info.head_img
-			obj.mp_nick_name = = obj.auth_appid_info.nick_name
+			obj.mp_nick_name = obj.auth_appid_info.nick_name
 		else:
 			obj.qrcode_img = ''
 			obj.mp_head_img = ''

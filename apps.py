@@ -90,12 +90,14 @@ class FalconResource:
 			response['innerErrMsg'] = unicode_full_stack()
 			message = u"req:{}, error:{}".format(req.params, unicode_full_stack())
 			watchdog_error(message)
+			print '>>>>>>>>>>>>>error_message',message
 		except Exception as e:
 			response['code'] = 531 #不要改动这个code，531是表明apiserver内部发生异常的返回码
 			response['errMsg'] = str(e).strip()
 			response['innerErrMsg'] = unicode_full_stack()
 			message = u"req:{}, error:{}".format(req.params, unicode_full_stack())
 			watchdog_error(message)
+			print '>>>>>>>>>>>>>error_message',message
 
 		resp.body = json.dumps(response, default=_default)
 

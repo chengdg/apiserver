@@ -31,7 +31,7 @@ from kombu import Queue, Exchange
 
 
 QUEUE_LIST = []
-QUEUE_LIST.append(Queue('default', Exchange('default'), routing_key='default'))
+#QUEUE_LIST.append(Queue('default', Exchange('default'), routing_key='default'))
 for task in settings.INSTALLED_TASKS:
 	QUEUE_LIST.append(Queue(task, routing_key=task))
 CELERY_QUEUES = tuple(QUEUE_LIST)

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from core import api_resource
+from core.watchdog.utils import watchdog_error
 from wapi.decorators import param_required
 
 
@@ -29,6 +30,12 @@ class AShipInfo(api_resource.ApiResource):
 			'ship_tel': args['ship_tel'],
 			'area': args['area']
 		}
+		area = args['area']
+		if '_' not in area:
+			webapp_user_id = args['webapp_user'].id
+			message = u'错误的收货地址地区信息：webapp_user_id:%s,ship_info_id:%s,area:%s' % (webapp_user_id, ship_info_id, area)
+			watchdog_error(message)
+
 		result = webapp_user.modify_ship_info(ship_info_id, new_ship_info)
 		if result:
 			return {
@@ -56,6 +63,13 @@ class AShipInfo(api_resource.ApiResource):
 			'area': args['area']
 		}
 		result, ship_info_id = webapp_user.create_ship_info(ship_info)
+
+		area = args['area']
+		if '_' not in area:
+			webapp_user_id = args['webapp_user'].id
+			message = u'错误的收货地址地区信息：webapp_user_id:%s,ship_info_id:%s,area:%s' % (webapp_user_id, ship_info_id, area)
+			watchdog_error(message)
+
 		if result:
 			return {
 				'ship_info_id': ship_info_id

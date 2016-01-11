@@ -15,6 +15,8 @@ class AShipInfos(api_resource.ApiResource):
 	def get(args):
 		"""
 		获取收货地址列表
+		@param 无
+		@return 'ship_infos': ship_infos(列表)
 
 		"""
 		webapp_user = args['webapp_user']
@@ -28,7 +30,8 @@ class AShipInfos(api_resource.ApiResource):
 	def post(args):
 		"""
 		选择默认收货地址
-		Returns:ship_id
+		@param ship_id
+		@return  {'result': True}
 
 		"""
 		webapp_user = args['webapp_user']

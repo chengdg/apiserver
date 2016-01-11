@@ -211,10 +211,8 @@ class WebAppUser(business_model.Model):
 	def delete_ship_info(self, ship_info_id):
 		"""
 		删除收货地址
-		Args:
-		    ship_id:
-
-		Returns:
+		@param ship_info_id
+		@return selected_id
 
 		"""
 		member_models.ShipInfo.update(is_deleted=True).where(member_models.ShipInfo.id == ship_info_id).execute()
@@ -235,7 +233,7 @@ class WebAppUser(business_model.Model):
 		"""
 		@param ship_info_id: 收货地址id
 		@param new_ship_info: 新信息
-		@return: bool
+		@return bool
 		"""
 		try:
 			member_models.ShipInfo.update(is_selected=False).where(member_models.ShipInfo.webapp_user_id == self.id).execute()
@@ -254,12 +252,8 @@ class WebAppUser(business_model.Model):
 
 	def create_ship_info(self, ship_info):
 		"""
-		创建收货地址
-		Args:
-		    ship_info:
-
-		Returns:
-
+		@param ship_info: 收货地址信息，字典类型
+		@return ship_info_id
 		"""
 		try:
 			member_models.ShipInfo.update(is_selected=0).where(member_models.ShipInfo.webapp_user_id == self.id).execute()

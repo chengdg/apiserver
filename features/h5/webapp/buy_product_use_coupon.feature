@@ -161,7 +161,7 @@ Background:
 			"money": 100,
 			"start_date": "今天",
 			"end_date": "2天后",
-			"coupon_id_prefix": "coupon6_id_"
+			"coupon_id_prefix": "coupon7_id_"
 		}]
 		"""
 	When bill关注jobs的公众号
@@ -453,7 +453,7 @@ Scenario:4 输入错误的优惠券码进行购买
 		}
 		"""
 
-@mall3 @mall.webapp @mall.coupon
+@mall3 @mall.webapp @mall.coupon 
 Scenario:5 输入未领取的可用优惠券码进行购买，bill创建订单成功，优惠券状态变为已使用
 
 	When bill访问jobs的webapp
@@ -1230,25 +1230,25 @@ Scenario:15 使用未被领取的优惠券购买，手机端取消订单后查�
 	Then jobs能获得优惠券'未领取优惠券'的码库:weapp
 		"""
 		{
-			"coupon6_id_1": {
+			"coupon7_id_1": {
 				"money": 100.0,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
-			"coupon6_id_2": {
+			"coupon7_id_2": {
 				"money": 100.0,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
-			"coupon6_id_3": {
+			"coupon7_id_3": {
 				"money": 100.0,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
-			"coupon6_id_4": {
+			"coupon7_id_4": {
 				"money": 100.0,
 				"status": "未领取",
 				"consumer": "",
@@ -1266,7 +1266,7 @@ Scenario:15 使用未被领取的优惠券购买，手机端取消订单后查�
 				"name": "商品2",
 				"count": 1
 			}],
-			"coupon": "coupon6_id_1"
+			"coupon": "coupon7_id_1"
 		}
 		"""
 
@@ -1274,25 +1274,25 @@ Scenario:15 使用未被领取的优惠券购买，手机端取消订单后查�
 	Then jobs能获得优惠券'未领取优惠券'的码库:weapp
 		"""
 		{
-			"coupon6_id_1": {
+			"coupon7_id_1": {
 				"money": 100.0,
 				"status": "已使用",
 				"consumer": "bill",
 				"target": ""
 			},
-			"coupon6_id_2": {
+			"coupon7_id_2": {
 				"money": 100.0,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
-			"coupon6_id_3": {
+			"coupon7_id_3": {
 				"money": 100.0,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
-			"coupon6_id_4": {
+			"coupon7_id_4": {
 				"money": 100.0,
 				"status": "未领取",
 				"consumer": "",
@@ -1306,25 +1306,25 @@ Scenario:15 使用未被领取的优惠券购买，手机端取消订单后查�
 	Then jobs能获得优惠券'未领取优惠券'的码库:weapp
 		"""
 		{
-			"coupon6_id_1": {
+			"coupon7_id_1": {
 				"money": 100.0,
 				"status": "未使用",
 				"consumer": "",
 				"target": ""
 			},
-			"coupon6_id_2": {
+			"coupon7_id_2": {
 				"money": 100.0,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
-			"coupon6_id_3": {
+			"coupon7_id_3": {
 				"money": 100.0,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
-			"coupon6_id_4": {
+			"coupon7_id_4": {
 				"money": 100.0,
 				"status": "未领取",
 				"consumer": "",
@@ -1339,25 +1339,25 @@ Scenario:16 使用未被领取的优惠券购买，后台取消订单后查看�
 	Then jobs能获得优惠券'未领取优惠券'的码库:weapp
 		"""
 		{
-			"coupon6_id_1": {
+			"coupon7_id_1": {
 				"money": 100.0,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
-			"coupon6_id_2": {
+			"coupon7_id_2": {
 				"money": 100.0,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
-			"coupon6_id_3": {
+			"coupon7_id_3": {
 				"money": 100.0,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
-			"coupon6_id_4": {
+			"coupon7_id_4": {
 				"money": 100.0,
 				"status": "未领取",
 				"consumer": "",
@@ -1375,7 +1375,7 @@ Scenario:16 使用未被领取的优惠券购买，后台取消订单后查看�
 				"name": "商品3",
 				"count": 2
 			}],
-			"coupon": "coupon6_id_1"
+			"coupon": "coupon7_id_1"
 		}
 		"""
 
@@ -1383,25 +1383,25 @@ Scenario:16 使用未被领取的优惠券购买，后台取消订单后查看�
 	Then jobs能获得优惠券'未领取优惠券'的码库:weapp
 		"""
 		{
-			"coupon6_id_1": {
+			"coupon7_id_1": {
 				"money": 100.0,
 				"status": "已使用",
 				"consumer": "bill",
 				"target": ""
 			},
-			"coupon6_id_2": {
+			"coupon7_id_2": {
 				"money": 100.0,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
-			"coupon6_id_3": {
+			"coupon7_id_3": {
 				"money": 100.0,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
-			"coupon6_id_4": {
+			"coupon7_id_4": {
 				"money": 100.0,
 				"status": "未领取",
 				"consumer": "",
@@ -1415,25 +1415,25 @@ Scenario:16 使用未被领取的优惠券购买，后台取消订单后查看�
 	Then jobs能获得优惠券'未领取优惠券'的码库:weapp
 		"""
 		{
-			"coupon6_id_1": {
+			"coupon7_id_1": {
 				"money": 100.0,
 				"status": "未使用",
 				"consumer": "",
 				"target": ""
 			},
-			"coupon6_id_2": {
+			"coupon7_id_2": {
 				"money": 100.0,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
-			"coupon6_id_3": {
+			"coupon7_id_3": {
 				"money": 100.0,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
-			"coupon6_id_4": {
+			"coupon7_id_4": {
 				"money": 100.0,
 				"status": "未领取",
 				"consumer": "",

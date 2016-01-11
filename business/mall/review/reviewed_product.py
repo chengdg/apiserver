@@ -35,6 +35,7 @@ class ReviewedProduct(business_model.Model):
 		'owner_id',
 		'review_detail',
 		'member_name',
+		'member_icon',
 		'status',
 		'created_at',
 		'reviewed_product_pictures',
@@ -148,8 +149,10 @@ class ReviewedProduct(business_model.Model):
 
 		if webapp_user:
 			self.member_name = webapp_user.username_for_html
+			self.member_icon = webapp_user.user_icon
 		else:
 			self.member_name = ''
+			self.member_icon = ''
 
 		self.product_score = model.product_score
 

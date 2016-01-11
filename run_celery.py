@@ -112,7 +112,7 @@ class CeleryTaskMonitor(logging.Filter):
             consumer_log.handlers = self.handlers
             consumer_log.propagate = False
             consumer_log.setLevel(level)
-            consumer_log.addFilter(self)
+            #consumer_log.addFilter(self)
 
             strategy_log = celery_logger('celery.worker.strategy')
             strategy_log.setLevel(logging.WARNING)
@@ -126,30 +126,30 @@ class CeleryTaskMonitor(logging.Filter):
     def filter(self, r):
         if r.module== 'consumer' :
             if r.funcName == 'on_unknown_task':
-                try:
-                    r.msg = u'\n收到未注册Task:\n [ %s ]:\n    1. 请确认该Task已经添加到 settings.py:INSTALLED_TASKS;\n    2. Celery重启完毕以加载该Task；\n  参数和异常信息:\n    %s'
-                    r.args = (r.args[0].args[0], r.args[1].split('Traceback')[0])
-                    s = r.args[1] 
-                    s = s[s.find('{'): 1+s.rfind('}')]
-                    ctx = None
-                    try:
-                        ctx = eval(s)
-                    except:
-                        pass
-                    if ctx:
-                        if ctx['task'] in SERVICE_BLACKLIST:
-                            return False
-                        # jz 2015-11-24
-                        # svslog(ctx['task'], r.process, ctx['id'], status=TASK_UNKNOWN, message=s)
-                    subject = u'测试邮件：　服务异常: Celery收到未注册Task: %s' % ctx['task']
-                    message = u'1. 请确认该Task已经添加到 settings.py:INSTALLED_TASKS;\n2. Celery重启完毕以加载该Task；\n3. 参数和异常信息:\n4. %s' % r.args[1]
-                    logging.info("Email Message: "+message)
-                    #send_mail(subject,
-                              # message, 
-                              # 'heyijun@weizoom.com',
-                              # ['heyijun@weizoom.com'], fail_silently=False)
-                except:
-                    pass
+                # try:
+                #     r.msg = u'\n收到未注册Task:\n [ %s ]:\n    1. 请确认该Task已经添加到 settings.py:INSTALLED_TASKS;\n    2. Celery重启完毕以加载该Task；\n  参数和异常信息:\n    %s'
+                #     r.args = (r.args[0].args[0], r.args[1].split('Traceback')[0])
+                #     s = r.args[1] 
+                #     s = s[s.find('{'): 1+s.rfind('}')]
+                #     ctx = None
+                #     try:
+                #         ctx = eval(s)
+                #     except:
+                #         pass
+                #     if ctx:
+                #         if ctx['task'] in SERVICE_BLACKLIST:
+                #             return False
+                #         # jz 2015-11-24
+                #         # svslog(ctx['task'], r.process, ctx['id'], status=TASK_UNKNOWN, message=s)
+                #     subject = u'测试邮件：　服务异常: Celery收到未注册Task: %s' % ctx['task']
+                #     message = u'1. 请确认该Task已经添加到 settings.py:INSTALLED_TASKS;\n2. Celery重启完毕以加载该Task；\n3. 参数和异常信息:\n4. %s' % r.args[1]
+                #     logging.info("Email Message: "+message)
+                #     #send_mail(subject,
+                #               # message, 
+                #               # 'heyijun@weizoom.com',
+                #               # ['heyijun@weizoom.com'], fail_silently=False)
+                # except:
+                #     pass
                 return True
             return False
         else:

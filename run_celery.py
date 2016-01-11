@@ -108,10 +108,10 @@ class CeleryTaskMonitor(logging.Filter):
             celery_task_log.propagate = False
             celery_task_log.setLevel(logging.WARNING)
 
-            consumer_log = celery_logger('celery.worker.consumer')
-            consumer_log.handlers = self.handlers
-            consumer_log.propagate = False
-            consumer_log.setLevel(level)
+            # consumer_log = celery_logger('celery.worker.consumer')
+            # consumer_log.handlers = self.handlers
+            # consumer_log.propagate = False
+            # consumer_log.setLevel(level)
             #consumer_log.addFilter(self)
 
             strategy_log = celery_logger('celery.worker.strategy')

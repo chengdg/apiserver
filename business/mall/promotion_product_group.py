@@ -44,7 +44,8 @@ class PromotionProductGroup(business_model.Model):
 		'active_integral_sale_rule',
 		'can_use_promotion',
 		'promotion_json',
-		'member_grade_id'
+		'member_grade_id',
+		'integral_result'
 	)
 
 	def __init__(self, group_info):
@@ -100,9 +101,23 @@ class PromotionProductGroup(business_model.Model):
 					product.set_promotion_result(self.promotion_result)
 					if self.promotion_result.need_disable_discount:
 						product.disable_discount()
+			if purchase_info:
+				if purchase_info.group2integralinfo and (self.uid in purchase_info.group2integralinfo):
+					integral_result_info = self.uid.replace('_', '-', 1)
+					self.integral_result = {'integral_product_info': integral_result_info}
+					integral_info = purchase_info.group2integralinfo[self.uid]
+					self.integral_result['integral_money'] = integral_info['money']
+					self.integral_result['use_integral'] = integral_info['integral']
 		else:
 			if purchase_info:
 				if purchase_info.group2integralinfo and (self.uid in purchase_info.group2integralinfo):
+					integral_result_info = self.uid.replace('_', '-', 1)
+					self.integral_result = {'integral_product_info': integral_result_info}
+					integral_info = purchase_info.group2integralinfo[self.uid]
+					self.integral_result['integral_money'] = integral_info['money']
+					self.integral_result['use_integral'] = integral_info['integral']
+
+
 					#当前product group存在is_permanant_active的积分应用
 					#TODO2: 在前端react重构完成后，这里要重新设计实现，目前硬编码实现
 					product = self.products[0]

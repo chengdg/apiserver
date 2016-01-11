@@ -627,19 +627,32 @@ class Order(business_model.Model):
 				promotion_result = product_group.promotion_result
 				integral_money = 0
 				integral_count = 0
-				if promotion.type_name == 'integral_sale':
-					integral_money = promotion_result['integral_money']
-					integral_count = promotion_result['use_integral']
+
+				promotion_result_json_dict = promotion_result.to_dict()
+				if product_group.integral_result:
+					integral_money = product_group.integral_result['integral_money']
+					integral_count = product_group.integral_result['use_integral']
+					promotion_result_json_dict['integral_product_info'] = product_group.integral_result['integral_product_info']
 				mall_models.OrderHasPromotion.create(
 						order=self.db_model,
 						webapp_user_id=self.webapp_user_id,
 						promotion_id=promotion.id,
 						promotion_type=promotion.type_name,
-						promotion_result_json=json.dumps(promotion_result.to_dict()),
+						promotion_result_json=json.dumps(promotion_result_json_dict),
 						integral_money=integral_money,
 						integral_count=integral_count,
 				)
+			elif product_group.integral_result:
 
+				mall_models.OrderHasPromotion.create(
+						order=self.db_model,
+						webapp_user_id=self.webapp_user_id,
+						promotion_id=0,
+						promotion_type='integral_sale',
+						promotion_result_json=json.dumps(product_group.integral_result),
+						integral_money=product_group.integral_result['integral_money'],
+						integral_count=product_group.integral_result['use_integral'],
+				)
 
 		self.__after_update_status('buy')
 

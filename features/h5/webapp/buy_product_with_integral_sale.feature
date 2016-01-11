@@ -147,8 +147,7 @@ Background:
 		"""
 	Given bill关注jobs的公众号:weapp
 
-@mall3 
- @mall.promotion @mall.webapp.promotion @mall.promotion.integral @robert.wip 
+@mall3 @mall.promotion @mall.webapp.promotion @mall.promotion.integral @robert.wip
 Scenario: 1 购买单个积分折扣商品，积分金额小于最大折扣金额
 
 	When bill访问jobs的webapp

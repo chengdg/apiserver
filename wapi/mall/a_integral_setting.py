@@ -32,7 +32,10 @@ class AIntegralSetting(api_resource.ApiResource):
 
 	@param_required(['webapp_owner', 'webapp_user'])
 	def get(args):
-
+		"""
+		@param 无
+		@return  {'integral_strategy_setting': integral.to_dict()}
+		"""
 		integral = Integral.from_webapp_id({
 					'webapp_owner': args['webapp_owner'], 
 					})

@@ -18,6 +18,10 @@ class AProducts(api_resource.ApiResource):
 		获取商品详情
 
 		@param category_id 商品分类ID
+		@return {
+			'categories': simple_products.categories,
+			'products': simple_products.products,
+			'category': category_dict}
 		"""
 		category_id = args['category_id']
 		webapp_owner = args['webapp_owner']

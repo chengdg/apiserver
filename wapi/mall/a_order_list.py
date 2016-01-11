@@ -28,7 +28,7 @@ class AOrderList(api_resource.ApiResource):
 		"""
 		会员订单列表
 
-		@param id 商品ID
+		@param type
 		"""
 		webapp_user = args['webapp_user']
 		webapp_owner = args['webapp_owner']

@@ -59,24 +59,6 @@ class AOrder(api_resource.ApiResource):
 			# 实际上detail是reason列表
 			return 500, {'detail': e.value}
 
-		# order_factory = OrderFactory.get({
-		# 	"webapp_owner": webapp_owner,
-		# 	"webapp_user": webapp_user,
-		# 	#"purchase_info": purchase_info,
-		# })
-
-		# order_validation = order_factory.validate()
-
-		# if (not order_validation['is_valid']):
-		# 	return 500, order_validation['reason']
-
-		# order_validation = order_factory.resource_allocator()
-		# if (not order_validation['is_valid']):
-		# 	return 500, order_validation['reason']
-		# else:
-		# 	order = order_validation['order']
-
-		# order = order_factory.save()
 		pay_url_info = None
 		if order:
 			if purchase_info.used_pay_interface_type != '-1':

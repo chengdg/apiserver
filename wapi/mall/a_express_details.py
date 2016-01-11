@@ -22,7 +22,8 @@ class AExpressDetails(api_resource.ApiResource):
 	def get(args):
 		"""
 		获取物流详情
-
+		@param order_id
+		@return
 		结果示例：
 		```
 		{

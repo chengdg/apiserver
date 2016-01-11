@@ -37,7 +37,7 @@ PIDFILE = os.path.join(WEAPP_CELERY_LOG_DIR, 'celery-%i.pid')
 LOGFILE = os.path.join(WEAPP_CELERY_LOG_DIR, 'celery-%i.log')
 
 SERVICE_BLACKLIST = {
-   'core.watchdog.tasks':True,
+  
 }
 
 CELERY_BUILTINS = {
@@ -51,9 +51,9 @@ CELERY_BUILTINS = {
         'celery.starmap':True,
         }
 
-for k,v in CELERY_BUILTINS.iteritems():
-    if not SERVICE_BLACKLIST.has_key(k):
-        SERVICE_BLACKLIST[k] = v
+# for k,v in CELERY_BUILTINS.iteritems():
+#     if not SERVICE_BLACKLIST.has_key(k):
+#         SERVICE_BLACKLIST[k] = v
 
 logging.info("in run_celery.py")
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """@package wapi.mall.a_coupon
-优惠券接口
+优惠券接口 - 下订单时填写优惠码的教研
 
 """
 import os
@@ -20,13 +20,33 @@ from business.mall.forbidden_coupon_product_ids import ForbiddenCouponProductIds
 
 class ACoupon(api_resource.ApiResource):
 	"""
-	优惠券
+	优惠券接口 - 下订单时填写优惠码的教研
 	"""
 	app = 'mall'
 	resource = 'coupon'
 
 	@param_required(['woid', 'coupon_id', 'order_price', 'product2info'])
 	def get(args):
+		"""
+		优惠券接口 - 下订单时填写优惠码的教研
+		@param coupon_id
+		@param order_price
+		@param product2info
+		@return
+			if can_use_coupon:
+				return {
+					'is_success': True,
+					'id': coupon.coupon_id,
+					'money': coupon.money,
+					'productid': coupon.limit_product_id
+				}
+			else:
+				return {
+					'is_success': False,
+					'msg': reason
+				}
+
+		"""
 		webapp_user = args['webapp_user']
 		webapp_owner = args['webapp_owner']
 

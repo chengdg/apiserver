@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """@package wapi.mall.a_coupons
-优惠券列表资源
+编辑订单页显示优惠券列表
 
 """
 
@@ -20,13 +20,24 @@ from business.mall.forbidden_coupon_product_ids import ForbiddenCouponProductIds
 
 class ACoupons(api_resource.ApiResource):
 	"""
-	优惠券列表
+	编辑订单页显示优惠券列表
 	"""
 	app = 'mall'
 	resource = 'coupons'
 
 	@param_required(['woid'])
 	def get(args):
+		"""
+		编辑订单页显示优惠券列表
+		@param 无
+		@return
+			return {
+				'unused_coupons': unused_coupons,
+				'used_coupons': used_coupons,
+				'expired_coupons': expired_coupons
+			}
+
+		"""
 		webapp_user = args['webapp_user']
 		unused_coupons = []
 		used_coupons = []

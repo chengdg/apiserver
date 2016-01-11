@@ -134,8 +134,13 @@ CTYPT_INFO = {
     'encodingAESKey': 'BPQSp7DFZSs1lz3EBEoIGe6RVCJCFTnGim2mzJw5W4I'
 }
 
+if MODE == 'test':
+    APPID = 'wx9b89fe19768a02d2'
+else:
+    APPID = 'wx8209f1f63f0b1d26'
+
 COMPONENT_INFO = {
-        'app_id' : 'wx9b89fe19768a02d2',
+        'app_id' : APPID,
     }
 
 
@@ -158,11 +163,14 @@ MAIL_NOTIFY_ACCOUNT_SMTP = u'smtp.dm.aliyun.com'
 
 
 #最为oauthserver时候使用
-if settings.MODE == 'test':
+if MODE == 'test':
     OAUTHSERVER_HOST = 'http://api.mall3.weizzz.com/'
+    H5_DOMAIN = 'h5.mall3.weizzz.com'
+    WEAPP_DOMAIN = 'docker.test.weizzz.com'
 else:
     OAUTHSERVER_HOST = 'http://api.weizoom.com/'
+    H5_DOMAIN = 'mall.weizoom.com'
+    WEAPP_DOMAIN = 'weapp.weizoom.com'
 
-WEAPP_DOMAIN = 'docker.test.weizzz.com'
-H5_DOMAIN = 'h5.mall3.weizzz.com'
+
 

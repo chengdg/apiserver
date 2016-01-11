@@ -16,4 +16,3 @@ def record_order_status_log(self, order_id, operator, from_status, to_status):
             to_status=to_status,
             operator=operator
     )
-    return order_status_log

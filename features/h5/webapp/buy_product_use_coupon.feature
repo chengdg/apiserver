@@ -453,7 +453,7 @@ Scenario:4 输入错误的优惠券码进行购买
 		}
 		"""
 
-@mall3 @mall.webapp @mall.coupon 
+@mall3 @mall.webapp @mall.coupon
 Scenario:5 输入未领取的可用优惠券码进行购买，bill创建订单成功，优惠券状态变为已使用
 
 	When bill访问jobs的webapp
@@ -518,7 +518,7 @@ Scenario:5 输入未领取的可用优惠券码进行购买，bill创建订单�
 				"money": 1.0,
 				"status": "已使用",
 				"consumer": "bill",
-				"target": "bill"
+				"target": ""
 			}
 		}
 		"""

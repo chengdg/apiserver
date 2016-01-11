@@ -235,5 +235,19 @@ class WebAppOwner(business_model.Model):
 		"""
 		return self.__webapp_owner_info.mpuser_preview_info
 
+	@property
+	def mp_head_img(self):
+		"""
+		[property] mp_head_img
+		"""
+		return self.__webapp_owner_info.mp_head_img
+
+	@property
+	def mp_nick_name(self):
+		"""
+		[property] mp_nick_name
+		"""
+		return self.__webapp_owner_info.mp_nick_name
+
 
 

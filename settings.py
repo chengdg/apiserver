@@ -158,7 +158,10 @@ MAIL_NOTIFY_ACCOUNT_SMTP = u'smtp.dm.aliyun.com'
 
 
 #最为oauthserver时候使用
-OAUTHSERVER_HOST = 'http://api.mall3.weizzz.com/'
+if settings.MODE == 'test':
+    OAUTHSERVER_HOST = 'http://api.mall3.weizzz.com/'
+else:
+    OAUTHSERVER_HOST = 'http://api.weizoom.com/'
 
 WEAPP_DOMAIN = 'docker.test.weizzz.com'
 H5_DOMAIN = 'h5.mall3.weizzz.com'

@@ -835,7 +835,9 @@ class Order(business_model.Model):
 		user_profile = webapp_owner.user_profile
 		user = user_profile.user
 		send_point = ORDER_STATUS2SEND_PONINT.get(self.status, '')
-		template_message = mall_models.MarketToolsTemplateMessageDetail.select().dj_where(owner=user, template_message__send_point=send_point, status=1).first()
+		# template_message = mall_models.MarketToolsTemplateMessageDetail.select().dj_where(owner=user, template_message__send_point=send_point, status=1).first()
+		template_message = mall_models.MarketToolsTemplateMessageDetail.select().join(mall_models.MarketToolsTemplateMessage).where(mall_models.MarketToolsTemplateMessageDetail.owner==user, mall_models.MarketToolsTemplateMessage.send_point==send_point, mall_models.MarketToolsTemplateMessageDetail.status==1).first()
+
 		if user_profile and template_message and template_message.template_id:
 			mpuser_access_token = webapp_owner.weixin_mp_user_access_token
 			if mpuser_access_token:

@@ -19,7 +19,10 @@ import logging
 
 __author__ = 'chuter, victor, bert'
 
-WATCHDOG_DB = settings.DATABASES['watchdog']
+if settings.MODE == 'develop':
+	WATCHDOG_DB = settings.DATABASES['default']
+else:
+	WATCHDOG_DB = settings.DATABASES['watchdog']
 
 DB_URL = '%s://%s:%s@%s/%s' % (WATCHDOG_DB['ENGINE'], WATCHDOG_DB['USER'], WATCHDOG_DB['PASSWORD'], \
 	"%s:%s" % (WATCHDOG_DB['HOST'], WATCHDOG_DB['PORT']) if len(WATCHDOG_DB['PORT'])>0 else WATCHDOG_DB['HOST'], WATCHDOG_DB['NAME'])

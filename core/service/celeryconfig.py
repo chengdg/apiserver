@@ -43,6 +43,11 @@ CELERY_DEFAULT_ROUTING_KEY = 'default'
 class Router(object):
 
 	def route_for_task(self, task, args=None, kwargs=None):
+		if task == 'watchdog.send':
+			return {
+					'queue': 'default',
+					}
+
 		if task == 'apiwatchdog.send':
 			return {
 					'queue': 'core.watchdog.tasks.send_watchdog',

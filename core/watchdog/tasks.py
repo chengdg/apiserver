@@ -12,7 +12,7 @@ from .models import WATCHDOG_ALERT,WATCHDOG_DEBUG,WATCHDOG_EMERGENCY,WATCHDOG_ER
 
 CONFIG = getattr(settings, 'WATCHDOG_CONFIG', {})
 TASK_CONFIG = {
-	'name': 'apiwatchdog.send'
+	'name': 'api_watchdog'
 }
 TASK_CONFIG.update(CONFIG)
 

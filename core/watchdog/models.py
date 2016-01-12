@@ -10,6 +10,7 @@ from core.db import models
 # from playhouse.db_url import connect
 from core.hack_peewee import connect
 #from core.exceptionutil import full_stack
+import logging
 
 
 # 异步service

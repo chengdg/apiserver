@@ -20,8 +20,8 @@ DATABASES = {
     },
     'watchdog': {
         'ENGINE': 'mysql+retry',
-        'NAME': 'weapp',
-        'USER': 'weapp',                      # Not used with sqlite3.
+        'NAME': 'operation',
+        'USER': 'operation',                      # Not used with sqlite3.
         'PASSWORD': 'weizoom',                  # Not used with sqlite3.
         'HOST': 'db.operation.com',
         'PORT': '',

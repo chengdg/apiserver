@@ -298,6 +298,7 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 		if 'date' in args:
 			mall_models.Order.update(created_at=bdd_util.get_datetime_str(args['date'])).dj_where(order_id=context.created_order_id).execute()
 		if 'order_id' in args:
+			context.response.data['order_id'] = args['order_id']
 			db_order = mall_models.Order.get(order_id=context.created_order_id)
 			if db_order.weizoom_card_money > 0:
 				wzcard_has_orders = wzcard_models.WeizoomCardHasOrder.select().dj_where(order_id=db_order.order_id)
@@ -373,6 +374,16 @@ def __check_order(context, webapp_user_name):
 def step_impl(context, webapp_user_name):
 	__check_order(context, webapp_user_name)
 
+@then(u"{webapp_user_name}获得订单支付结果")
+def step_impl(context, webapp_user_name):
+	if 'order' in context.response.data:
+		actual = context.response.data['order']
+		actual['pay_type'] = mall_models.PAYTYPE2NAME[actual['pay_interface_type']]
+	else:
+		actual = context.response.data
+		actual['pay_type'] = mall_models.PAYTYPE2NAME[actual['pay_url_info']['pay_interface_type']]
+	expected = json.loads(context.text)
+	bdd_util.assert_dict(expected, actual)
 
 @then(u"{webapp_usr_name}手机端获取订单'{order_id}'")
 def step_impl(context, webapp_usr_name, order_id):
@@ -883,4 +894,4 @@ def step_impl(context, webapp_user_name, pay_interface_name):
 		'pay_interface_type': pay_interface.type,
 		'order_id': context.created_order_id
 	}
-	context.client.post(pay_url, data)
+	context.response = context.client.post(pay_url, data)

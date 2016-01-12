@@ -3,6 +3,7 @@
 Feature:校验手机端支付结果页面
 
 Background:
+	Given 重置weapp的bdd环境
 	Given jobs登录系统:weapp
 	And jobs已有微众卡支付权限:weapp
 	And jobs已添加支付方式:weapp
@@ -48,11 +49,13 @@ Background:
 
 	And bill关注jobs的公众号
 
+@mall3 @ztq
 Scenario:1 支付结果页面支付方式为'微信支付'
 	When bill访问jobs的webapp
 	When bill购买jobs的商品
 		"""
 		{
+			"order_id": "001",
 			"pay_type": "微信支付",
 			"products":[{
 				"name":"商品1",
@@ -79,6 +82,17 @@ Scenario:1 支付结果页面支付方式为'微信支付'
 			"is_sync": true
 		}
 		"""
+
+	Then bill获得订单支付结果
+		"""
+		{
+			"order_id":"001",
+			"final_price":100.00,
+			"pay_type": "微信支付"
+		}
+		"""
+
+
 	Then bill支付订单成功
 		"""
 		{
@@ -91,20 +105,14 @@ Scenario:1 支付结果页面支付方式为'微信支付'
 			}]
 		}
 		"""
-	Then bill获得订单支付结果
-		"""
-		{
-			"order_id":"001",
-			"final_price":100.00,
-			"pay_type": "微信支付"
-		}
-		"""
+
 
 Scenario:2 支付结果页面支付方式为'支付宝'
 	When bill访问jobs的webapp
 	When bill购买jobs的商品
 		"""
 		{
+			"order_id":"001",
 			"pay_type": "支付宝",
 			"products":[{
 				"name":"商品1",
@@ -126,6 +134,14 @@ Scenario:2 支付结果页面支付方式为'支付宝'
 		}
 		"""
 	When bill使用支付方式'支付宝'进行支付
+	Then bill获得订单支付结果
+		"""
+		{
+			"order_id":"001",
+			"final_price":100.00,
+			"pay_type": "支付宝"
+		}
+		"""
 	Then bill支付订单成功
 		"""
 		{
@@ -138,26 +154,28 @@ Scenario:2 支付结果页面支付方式为'支付宝'
 			}]
 		}
 		"""
-	Then bill获得订单支付结果
-		"""
-		[{
-			"order_id":"001",
-			"final_price":100.00,
-			"pay_type": "支付宝"
-		}]
-		"""
 
+@mall3 @ztq
 Scenario:3 支付结果页面支付方式为'货到付款'
 	When bill访问jobs的webapp
 	When bill购买jobs的商品
 		"""
 		{
+			"order_id": "001",
 			"pay_type": "货到付款",
 			"products":[{
 				"name":"商品1",
 				"price":100.00,
 				"count":1
 			}]
+		}
+		"""
+	Then bill获得订单支付结果
+		"""
+		{
+			"order_id":"001",
+			"final_price":100.00,
+			"pay_type": "货到付款"
 		}
 		"""
 	Then bill成功创建订单
@@ -172,15 +190,8 @@ Scenario:3 支付结果页面支付方式为'货到付款'
 			}]
 		}
 		"""
-	Then bill获得订单支付结果
-		"""
-		[{
-			"order_id":"001",
-			"final_price":100.00,
-			"pay_type": "货到付款"
-		}]
-		"""
 
+@mall3 @ztq
 Scenario:4 支付结果页面支付方式为'优惠抵扣'，使用优惠券支付
 	#bill选择'支付宝'支付方式，单品券抵扣全部
 
@@ -207,6 +218,7 @@ Scenario:4 支付结果页面支付方式为'优惠抵扣'，使用优惠券支�
 	When bill购买jobs的商品
 		"""
 		{
+			"order_id":"001",
 			"pay_type": "支付宝",
 			"products":[{
 				"name":"商品1",
@@ -214,6 +226,14 @@ Scenario:4 支付结果页面支付方式为'优惠抵扣'，使用优惠券支�
 				"count":1
 			}],
 			"coupon": "coupon1_id_1"
+		}
+		"""
+	Then bill获得订单支付结果
+		"""
+		{
+			"order_id":"001",
+			"final_price":0.00,
+			"pay_type": "优惠抵扣"
 		}
 		"""
 	Then bill成功创建订单
@@ -230,15 +250,8 @@ Scenario:4 支付结果页面支付方式为'优惠抵扣'，使用优惠券支�
 			}]
 		}
 		"""
-	Then bill获得订单支付结果
-		"""
-		[{
-			"order_id":"001",
-			"final_price":0.00,
-			"pay_type": "优惠抵扣"
-		}]
-		"""
 
+@mall3 @ztq
 Scenario:5 支付结果页面支付方式为'优惠抵扣'，使用整单积分抵扣
 	#bill选择'货到付款'支付方式，整单积分抵扣全部
 
@@ -255,6 +268,7 @@ Scenario:5 支付结果页面支付方式为'优惠抵扣'，使用整单积分�
 	When bill购买jobs的商品
 		"""
 		{
+			"order_id":"001",
 			"pay_type": "货到付款",
 			"integral": 200,
 			"integral_money": 100.00,
@@ -263,6 +277,14 @@ Scenario:5 支付结果页面支付方式为'优惠抵扣'，使用整单积分�
 				"price":100.00,
 				"count":1
 			}]
+		}
+		"""
+	Then bill获得订单支付结果
+		"""
+		{
+			"order_id":"001",
+			"final_price":0.00,
+			"pay_type": "优惠抵扣"
 		}
 		"""
 	Then bill成功创建订单
@@ -279,15 +301,8 @@ Scenario:5 支付结果页面支付方式为'优惠抵扣'，使用整单积分�
 			}]
 		}
 		"""
-	Then bill获得订单支付结果
-		"""
-		[{
-			"order_id":"001",
-			"final_price":0.00,
-			"pay_type": "优惠抵扣"
-		}]
-		"""
 
+@mall3 @ztq
 Scenario:6 支付结果页面支付方式为'优惠抵扣'，使用微众卡支付
 	#bill选择'微信支付'支付方式，使用微众卡抵扣全部
 
@@ -295,6 +310,7 @@ Scenario:6 支付结果页面支付方式为'优惠抵扣'，使用微众卡支�
 	When bill购买jobs的商品
 		"""
 		{
+			"order_id":"001",
 			"pay_type": "微信支付",
 			"products":[{
 				"name":"商品1",
@@ -305,6 +321,14 @@ Scenario:6 支付结果页面支付方式为'优惠抵扣'，使用微众卡支�
 				"card_name":"0000001",
 				"card_pass":"1234567"
 			}]
+		}
+		"""
+	Then bill获得订单支付结果
+		"""
+		{
+			"order_id":"001",
+			"final_price":0.00,
+			"pay_type": "优惠抵扣"
 		}
 		"""
 	Then bill成功创建订单
@@ -321,15 +345,8 @@ Scenario:6 支付结果页面支付方式为'优惠抵扣'，使用微众卡支�
 			}]
 		}
 		"""
-	Then bill获得订单支付结果
-		"""
-		[{
-			"order_id":"001",
-			"final_price":0.00,
-			"pay_type": "优惠抵扣"
-		}]
-		"""
 
+@mall3 @ztq
 Scenario:7 支付结果页面支付方式为'优惠抵扣'，使用微众卡和优惠券支付
 	#bill选择'微信支付'支付方式，使用微众卡和全体券抵扣全部
 
@@ -355,6 +372,7 @@ Scenario:7 支付结果页面支付方式为'优惠抵扣'，使用微众卡和�
 	When bill购买jobs的商品
 		"""
 		{
+			"order_id":"001",
 			"pay_type": "微信支付",
 			"products":[{
 				"name":"商品1",
@@ -366,6 +384,14 @@ Scenario:7 支付结果页面支付方式为'优惠抵扣'，使用微众卡和�
 				"card_pass":"1234567"
 			}],
 			"coupon": "coupon1_id_1"
+		}
+		"""
+	Then bill获得订单支付结果
+		"""
+		{
+			"order_id":"001",
+			"final_price":0.00,
+			"pay_type": "优惠抵扣"
 		}
 		"""
 	Then bill成功创建订单
@@ -383,15 +409,8 @@ Scenario:7 支付结果页面支付方式为'优惠抵扣'，使用微众卡和�
 			}]
 		}
 		"""
-	Then bill获得订单支付结果
-		"""
-		[{
-			"order_id":"001",
-			"final_price":0.00,
-			"pay_type": "优惠抵扣"
-		}]
-		"""
 
+@mall3 @ztq
 Scenario:8 支付结果页面支付方式为'优惠抵扣'，使用微众卡和积分支付
 	#bill选择'微信支付'支付方式，使用微众卡和单品积分抵扣全部
 
@@ -422,6 +441,7 @@ Scenario:8 支付结果页面支付方式为'优惠抵扣'，使用微众卡和�
 	When bill购买jobs的商品
 		"""
 		{
+			"order_id":"001",
 			"pay_type": "微信支付",
 			"products":[{
 				"name":"商品1",
@@ -434,6 +454,14 @@ Scenario:8 支付结果页面支付方式为'优惠抵扣'，使用微众卡和�
 				"card_name":"0000003",
 				"card_pass":"1234567"
 			}]
+		}
+		"""
+	Then bill获得订单支付结果
+		"""
+		{
+			"order_id":"001",
+			"final_price":0.00,
+			"pay_type": "优惠抵扣"
 		}
 		"""
 	Then bill成功创建订单
@@ -451,11 +479,4 @@ Scenario:8 支付结果页面支付方式为'优惠抵扣'，使用微众卡和�
 			}]
 		}
 		"""
-	Then bill获得订单支付结果
-		"""
-		[{
-			"order_id":"001",
-			"final_price":0.00,
-			"pay_type": "优惠抵扣"
-		}]
-		"""
+

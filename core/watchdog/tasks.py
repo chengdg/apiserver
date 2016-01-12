@@ -10,13 +10,19 @@ from .mongo_watchdog import MongoWatchdog
 from .mysql_watchdog import MySQLWatchdog
 from .models import WATCHDOG_ALERT,WATCHDOG_DEBUG,WATCHDOG_EMERGENCY,WATCHDOG_ERROR,WATCHDOG_FATAL,WATCHDOG_INFO,WATCHDOG_NOTICE,WATCHDOG_WARNING
 
+CONFIG = getattr(settings, 'WATCHDOG_CONFIG', {})
+TASK_CONFIG = {
+	'name': 'apiwatchdog.send'
+}
+TASK_CONFIG.update(CONFIG)
+
 _watchdog_logger = None
 
 def _watchdog(type, message, severity=WATCHDOG_INFO, user_id='0', db_name='default'):
 	"""
 	watchdog : 向日志记录表添加一条日志信息
 	"""
-	#try:
+	#try:'
 	if isinstance(user_id, int):
 		user_id = str(user_id)
 
@@ -65,8 +71,10 @@ def send_watchdog(self, type, message, severity=WATCHDOG_INFO, user_id='0', db_n
 	try:
 		if not settings.IS_UNDER_BDD:
 			logging.info(u'received watchdog message: [%s] [%s]' % (type, message))
+
 		_watchdog(type, message, severity, user_id, db_name)
 	except:
+
 		print "Failed to send watchdog message, retrying.:Cause:\n{}".format(full_stack())
 		raise self.retry()
 	return 'OK'

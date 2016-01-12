@@ -85,9 +85,14 @@ def watchdog_warning(message, type=DEFAULT_WATCHDOG_TYPE, user_id='0', db_name='
 
 def watchdog_error(message, type=DEFAULT_WATCHDOG_TYPE, user_id='0', noraise=False, db_name='default'):
 	result = None
+
 	if not celeryconfig.CELERY_ALWAYS_EAGER:
+
 		if WATCHDOG_ERROR >= settings.WATCH_DOG_LEVEL:
+
 			result = send_watchdog.delay(type, message, WATCHDOG_ERROR, user_id, db_name)
+
+
 		if settings.DEBUG and (not noraise):
 			exception_type, value, tb = sys.exc_info()
 			if exception_type:

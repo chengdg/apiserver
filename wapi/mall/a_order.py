@@ -62,11 +62,16 @@ class AOrder(api_resource.ApiResource):
 		pay_url_info = None
 		if order:
 			if purchase_info.used_pay_interface_type != '-1':
-				pay_interface = PayInterface.from_type({
-					"webapp_owner": webapp_owner,
-					"pay_interface_type": purchase_info.used_pay_interface_type
-				})
-				pay_url_info = pay_interface.get_pay_url_info_for_order(order)
+				try:
+					pay_interface = PayInterface.from_type({
+						"webapp_owner": webapp_owner,
+						"pay_interface_type": purchase_info.used_pay_interface_type
+					})
+					pay_url_info = pay_interface.get_pay_url_info_for_order(order)
+				except:
+					notify_message = u"order_id:{}, used_pay_interface_type:{}, cause:\n{}".format(order.id,  purchase_info.used_pay_interface_type, unicode_full_stack())
+					watchdog_error(notify_message)
+					print notify_message
 
 		data = {
 			'order_id' : order.order_id,

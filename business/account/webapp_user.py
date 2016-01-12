@@ -557,7 +557,8 @@ class WebAppUser(business_model.Model):
 	#绑定相关
 	@staticmethod
 	def can_binding_phone(webapp_id, phone_number):
-		return member_models.MemberInfo.select().dj_where(member__webapp_id=webapp_id, phone_number=phone_number, is_binded=True).count() == 0
+		# return member_models.MemberInfo.select().dj_where(member__webapp_id=webapp_id, phone_number=phone_number, is_binded=True).count() == 0
+		return member_models.MemberInfo.select().join(member_models.Member).where(member_models.Member.webapp_id==webapp_id, member_models.MemberInfo.phone_number==phone_number, member_models.MemberInfo.is_binded==True).count() == 0
 
 	def update_phone_captcha(self, phone_number, captcha, sessionid):
 		if phone_number and captcha:

@@ -16,7 +16,7 @@ from tasks import _watchdog, send_watchdog
 
 __author__ = 'victor'
 
-DEFAULT_WATCHDOG_TYPE = 'API'
+DEFAULT_WATCHDOG_TYPE = 'APISERVER'
 
 def watchdog_debug(message, type=DEFAULT_WATCHDOG_TYPE, user_id='0', db_name='default'):
 	"""

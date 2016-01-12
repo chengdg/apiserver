@@ -8,6 +8,11 @@ PROJECT_HOME = os.path.dirname(os.path.abspath(__file__))
 
 MODE = 'develop'
 
+if MODE == 'develop':
+    OPERATION_DB = 'weapp'
+else:
+    OPERATION_DB = 'operation'
+
 DATABASES = {
     'default': {
         'ENGINE': 'mysql+retry',
@@ -20,10 +25,10 @@ DATABASES = {
     },
     'watchdog': {
         'ENGINE': 'mysql+retry',
-        'NAME': 'operation',
+        'NAME': OPERATION_DB,
         'USER': 'operation',                      # Not used with sqlite3.
         'PASSWORD': 'weizoom',                  # Not used with sqlite3.
-        'HOST': 'db.operation.com',
+        'HOST': 'db.weapp.com',
         'PORT': '',
         'CONN_MAX_AGE': 100
     }

@@ -61,15 +61,22 @@ class PayInterface(business_model.Model):
 		business_model.Model.__init__(self)
 
 		self.context['webapp_owner'] = webapp_owner
-		print '>>>>>>>>>>>pay_interface_type:',pay_interface_type,'>>>>>>>>>>>webapp_owner.pay_interfaces>>>>', webapp_owner.pay_interfaces
-		if pay_interface_type != None:
-			self.context['interface'] = next(interface for interface in webapp_owner.pay_interfaces if interface['type'] == pay_interface_type)
-		elif interface_id:
-			self.context['interface'] = next(interface for interface in webapp_owner.pay_interfaces if interface['id'] == interface_id)
+		#TODO delete
+		#print '>>>>>>>>>>>pay_interface_type:',pay_interface_type,'>>>>>>>>>>>webapp_owner.pay_interfaces>>>>', webapp_owner.pay_interfaces
+		try:
+			if pay_interface_type != None:
+				self.context['interface'] = next(interface for interface in webapp_owner.pay_interfaces if interface['type'] == pay_interface_type)
+			elif interface_id:
+				self.context['interface'] = next(interface for interface in webapp_owner.pay_interfaces if interface['id'] == interface_id)
 
-		interface = self.context['interface']
-		self.type = interface['type']
-		self.related_config_id = interface['related_config_id']
+			interface = self.context['interface']
+			self.type = interface['type']
+			self.related_config_id = interface['related_config_id']
+		except:
+			interface = None
+			self.type = pay_interface_type
+			self.related_config_id = None
+		
 
 	def get_pay_url_info_for_order(self, order):
 		"""获取订单的支付链接
@@ -182,6 +189,9 @@ class PayInterface(business_model.Model):
 			is_trade_success = True
 			order_id = pay_result.get('order_id')
 		elif mall_models.PAY_INTERFACE_WEIXIN_PAY == self.type:
+			is_trade_success = True
+			order_id = pay_result.get('order_id')
+		elif mall_models.PAY_INTERFACE_PREFERENCE == self.type:
 			is_trade_success = True
 			order_id = pay_result.get('order_id')
 		else:

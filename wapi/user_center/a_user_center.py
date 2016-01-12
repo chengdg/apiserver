@@ -15,7 +15,7 @@ from wapi.decorators import param_required
 #from business.mall.purchase_info import PurchaseInfo
 #from business.mall.pay_interface import PayInterface
 from business.mall.shopping_cart import ShoppingCart
-
+from core.watchdog.utils import watchdog_info, watchdog_error
 from services.update_member_from_weixin.task import update_member_info
 
 class AUserCenter(api_resource.ApiResource):
@@ -39,6 +39,7 @@ class AUserCenter(api_resource.ApiResource):
 		if member.update_time.strftime("%Y-%m-%d") != today_str:
 			update_member_info.delay(webapp_user.id, webapp_owner.id)
 
+
 		shopping_cart = ShoppingCart.get_for_webapp_user({
 			'webapp_user': args['webapp_user'],
 			'webapp_owner': args['webapp_owner'],
@@ -50,7 +51,7 @@ class AUserCenter(api_resource.ApiResource):
 			phone = webapp_user.phone
 		else:
 			phone = ''
-
+		watchdog_info('visit AUserCenter')
 		member_data = {
 			'user_icon': webapp_user.user_icon,
 			'is_binded': is_binded,

@@ -892,6 +892,8 @@ def step_impl(context, webapp_user_name, pay_interface_name):
 	pay_url = '/wapi/pay/pay_result/?_method=put'
 	data = {
 		'pay_interface_type': pay_interface.type,
-		'order_id': context.created_order_id
+		'order_id': context.created_order_id,
+		'result': 'success',
+		'out_trade_no': context.created_order_id
 	}
 	context.response = context.client.post(pay_url, data)

@@ -106,7 +106,7 @@ Scenario:1 支付结果页面支付方式为'微信支付'
 		}
 		"""
 
-
+@mall3 @ztq
 Scenario:2 支付结果页面支付方式为'支付宝'
 	When bill访问jobs的webapp
 	When bill购买jobs的商品

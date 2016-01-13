@@ -355,3 +355,140 @@ Scenario: 4 购买买赠商品(赠品为非主商品)成功支付订单后，主
 			}
 		}
 		"""
+@product @saleingProduct
+Scenario: 5 购买买赠商品(赠品为非主商品)成功支付订单后，主商品有基础销量，赠品也有基础销量,基础上购买买赠商品销量和库存问题
+	jobs创建买赠活动后
+	1.bill成功下单后，主商品库存羲少,销量增加;赠品库存减少,销量不变;
+	Given jobs登录系统:weapp
+	And jobs已添加商品:weapp
+		"""
+		[{
+			"name": "主商品",
+			"sales": 12,
+			"model": {
+				"models": {
+					"standard": {
+						"price": 100.00,
+						"stock_type": "有限",
+						"stocks": 9
+					}
+				}
+			}
+		},{
+			"name": "赠品",
+			"sales": 77,
+			"model": {
+				"models": {
+					"standard": {
+						"price": 100.00,
+						"stock_type": "有限",
+						"stocks": 8
+					}
+				}
+			}
+		}]
+		"""
+	When jobs创建买赠活动:weapp
+		"""
+		[{
+			"name": "主商品买一赠二",
+			"start_date": "今天",
+			"end_date": "1天后",
+			"product_name": "主商品",
+			"premium_products": [{
+				"name": "赠品",
+				"count": 2
+			}],
+			"count": 1,
+			"is_enable_cycle_mode": true
+		}]
+		"""	
+	When bill访问jobs的webapp
+	When bill购买jobs的商品
+		"""
+		{
+			"products": [{
+				"name": "主商品",
+				"count": 1
+			}]
+		}
+		"""
+	Then bill成功创建订单
+		"""
+		{
+			"status": "待支付",
+			"final_price": 100.00,
+			"products": [{
+				"name": "主商品",
+				"count": 1,
+				"promotion": {
+					"type": "premium_sale"
+				}
+			}, {
+				"name": "赠品",
+				"count": 2,
+				"promotion": {
+					"type": "premium_sale:premium_product"
+				}
+			}]
+		}
+		"""
+	When bill使用支付方式'货到付款'进行支付
+	Then bill支付订单成功
+		"""
+		{
+			"status": "待发货",
+			"final_price": 100.00,
+			"products": [{
+				"name": "主商品",
+				"count": 1,
+				"promotion": {
+					"type": "premium_sale"
+				}
+			},{
+				"name": "赠品",
+				"count": 2,
+				"promotion": {
+					"type": "premium_sale:premium_product"
+				}
+			}]
+		}
+		"""
+	#买赠活动：赠品扣库存，但是不算销量
+	Given jobs登录系统:weapp
+	Then jobs能获取商品'主商品':weapp
+		"""
+		{
+			"name": "主商品",
+			"sales": 13,
+			"model": {
+				"models": {
+					"standard": {
+						"price": 100.00,
+						"stock_type": "有限",
+						"stocks": 8
+					}
+				}
+			}
+		}
+		"""
+	Then jobs能获取商品'赠品':weapp
+		"""
+		{
+			"name": "商品2",
+			"sales": 77,
+			"model": {
+				"models": {
+					"standard": {
+						"price": 100.00,
+						"stock_type": "有限",
+						"stocks": 6
+					}
+				}
+			}
+		}
+		"""
+
+
+
+

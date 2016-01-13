@@ -356,7 +356,7 @@ Scenario: 4 购买买赠商品(赠品为非主商品)成功支付订单后，主
 		}
 		"""
 #editor:新新 2016.1.13
-@product @saleingProduct
+@mall3 @product @saleingProduct @ztq
 Scenario: 5 购买买赠商品(赠品为非主商品)成功支付订单后，主商品有基础销量，赠品也有基础销量,基础上购买买赠商品销量和库存问题
 	jobs创建买赠活动后
 	1.bill成功下单后，主商品库存减少,销量增加;赠品库存减少,销量不变;

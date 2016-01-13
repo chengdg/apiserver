@@ -48,13 +48,13 @@ class Router(object):
 		# 			'queue': 'default',
 		# 			}
 
-		# if task == 'apiwatchdog.send':
+		# if task == 'api_watchdog':
 		# 	return {
 		# 			'queue': 'core.watchdog.tasks.send_watchdog',
 		# 			}
 
-		if task.find('.tasks.') > -1:
-			task = task[:task.find('.tasks.')]
+		# if task.find('.tasks.') > -1:
+		# 	task = task[:task.find('.tasks.')]
 
 		if task in settings.INSTALLED_TASKS:
 			return {

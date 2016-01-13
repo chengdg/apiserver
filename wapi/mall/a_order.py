@@ -110,8 +110,12 @@ class AOrder(api_resource.ApiResource):
 
 			action = args['action']
 			if action == 'cancel':
+				if order.status != mall_models.ORDER_STATUS_NOT:
+					raise Exception(u'非法操作')
 				order.cancel()
 			elif action == 'finish':
+				if order.status != mall_models.ORDER_STATUS_PAYED_SHIPED:
+					raise Exception(u'非法操作')
 				order.finish()
 			else:
 				raise Exception(u'非法操作')

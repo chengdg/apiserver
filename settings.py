@@ -10,8 +10,10 @@ MODE = 'develop'
 
 if MODE == 'develop':
     OPERATION_DB = 'weapp'
+    OPERATION_USER = 'weapp'
 else:
     OPERATION_DB = 'operation'
+    OPERATION_USER = 'operation'
 
 DATABASES = {
     'default': {
@@ -26,7 +28,7 @@ DATABASES = {
     'watchdog': {
         'ENGINE': 'mysql+retry',
         'NAME': OPERATION_DB,
-        'USER': 'operation',                      # Not used with sqlite3.
+        'USER': OPERATION_USER,                      # Not used with sqlite3.
         'PASSWORD': 'weizoom',                  # Not used with sqlite3.
         'HOST': 'db.weapp.com',
         'PORT': '',

@@ -29,6 +29,7 @@ Background:
 		"""
 	And bill关注jobs的公众号
 
+@mall3
 Scenario:1 后台取消使用优惠券的'待支付'状态的订单
 	Given jobs登录系统:weapp
 	When jobs添加优惠券规则:weapp
@@ -102,6 +103,7 @@ Scenario:1 后台取消使用优惠券的'待支付'状态的订单
 		}]
 		"""
 
+@mall3
 Scenario:2 手机端取消使用优惠券的'待支付'状态的订单
 	Given jobs登录系统:weapp
 	When jobs添加优惠券规则:weapp
@@ -176,6 +178,7 @@ Scenario:2 手机端取消使用优惠券的'待支付'状态的订单
 		}]
 		"""
 
+@mall3
 Scenario:3 后台取消只使用优惠券支付的'待发货'状态的订单
 	Given jobs登录系统:weapp
 	When jobs添加优惠券规则:weapp
@@ -249,6 +252,7 @@ Scenario:3 后台取消只使用优惠券支付的'待发货'状态的订单
 		}]
 		"""
 
+@mall3
 Scenario:4 后台取消使用微众卡和优惠券支付的'待发货'状态的订单
 	Given jobs登录系统:weapp
 	And jobs已创建微众卡:weapp

@@ -11,9 +11,12 @@ MODE = 'develop'
 if MODE == 'develop':
     OPERATION_DB = 'weapp'
     OPERATION_USER = 'weapp'
+    OPERATION_HOST = 'db.weapp.com'
 else:
     OPERATION_DB = 'operation'
     OPERATION_USER = 'operation'
+    OPERATION_HOST = 'db.operation.com'
+
 
 DATABASES = {
     'default': {
@@ -30,7 +33,7 @@ DATABASES = {
         'NAME': OPERATION_DB,
         'USER': OPERATION_USER,                      # Not used with sqlite3.
         'PASSWORD': 'weizoom',                  # Not used with sqlite3.
-        'HOST': 'db.weapp.com',
+        'HOST': OPERATION_HOST,
         'PORT': '',
         'CONN_MAX_AGE': 100
     }

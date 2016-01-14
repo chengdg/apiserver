@@ -39,7 +39,7 @@ class LogOperator(business_model.Model):
 		"""
 		记录微众卡日志
 		"""
-		logging.info("to create an WeizoomCardHasOrder log...")
+		logging.info("to create an WeizoomCardHasOrder log: order_id={}, card_id={}, money={}, event_type={}".format(order_id, card_id, money, event_type))
 		wzcard_log = wzcard_models.WeizoomCardHasOrder.create(
 			owner_id = owner_id,
 			order_id = order_id,

@@ -23,6 +23,7 @@ from business.mall.pay_interface import PayInterface
 from business.mall.order import Order
 from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
 from business.spread.member_spread import MemberSpread
+import logging
 
 class AOrder(api_resource.ApiResource):
 	"""
@@ -110,8 +111,13 @@ class AOrder(api_resource.ApiResource):
 
 			action = args['action']
 			if action == 'cancel':
-				if order.status != mall_models.ORDER_STATUS_NOT:
-					raise Exception(u'非法操作')
+				logging.info("order status: {}/{}".format(order.status, order.status_text))
+				# TODO: 不应该用此方式判断状态。增加method。
+				if order.status != mall_models.ORDER_STATUS_NOT and order.status != mall_models.ORDER_STATUS_PAYED_NOT_SHIP:
+					#raise Exception(u'非法操作')
+					return 500, {
+						'msg': u'非待支付或已支付订单，无法取消'
+					}
 				order.cancel()
 			elif action == 'finish':
 				if order.status != mall_models.ORDER_STATUS_PAYED_SHIPED:

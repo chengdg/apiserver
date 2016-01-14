@@ -128,7 +128,9 @@ class WZCardResourceAllocator(business_model.Service):
 			#记录微众卡消费日志 duhao
 			#TODO 这种方式太low了。。。
 			for item in used_wzcards:
-				LogOperator.record_wzcard_log(self.__webapp_owner.id, order.order_id, item[0].id, used_amount)
+				wzcard = item[0]
+				used_amount = item[1]
+				LogOperator.record_wzcard_log(self.__webapp_owner.id, order.order_id, wzcard.id, used_amount)
 		else:
 			# 退还微众卡
 			for item in used_wzcards:

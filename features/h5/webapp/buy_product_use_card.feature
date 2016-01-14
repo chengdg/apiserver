@@ -944,7 +944,7 @@ Scenario:12 用两张微众卡购买，第一张卡的金额大于商品金额
 			"price":30.00
 		}
 		"""
-#根据bug补充7240
+#根据bug补充7240#新新
 @mall3 @mall.pay_weizoom_card @victor
 #购买流程.编辑订单.微众卡使用
 Scenario:13 用两张微众卡购买，第二张卡的金额大于商品金额
@@ -1015,4 +1015,96 @@ Scenario:13 用两张微众卡购买，第二张卡的金额大于商品金额
 			"price":100.00
 		}
 		"""
+#根据bug补充7240#新新
+@mall.pay_weizoom_card @victor
+#购买流程.编辑订单.微众卡使用
+Scenario:14 用两张微众卡购买，2张卡小于商品金额,购买待支付状态
+	1.使用两张微众卡进行购买，bill取消订单
 
+	Given jobs登录系统:weapp
+	And jobs已创建微众卡:weapp
+		"""
+		{
+			"cards":[{
+				"id":"0000008",
+				"password":"1234567",
+				"status":"已使用",
+				"price":10
+			},{
+				"id":"0000009",
+				"password":"1234567",
+				"status":"未使用",
+				"price":30
+			}]
+		}
+		"""
+
+	When bill访问jobs的webapp
+	When bill购买jobs的商品
+		"""
+		{
+			"order_id":"001",
+			"pay_type": "微信支付",
+			"products":[{
+				"name":"商品1",
+				"price":50,
+				"count":1
+			}],
+			"weizoom_card":[{
+				"card_name":"0000008",
+				"card_pass":"1231231"
+			}, {
+				"card_name":"0000009",
+				"card_pass":"1234567"
+			}]
+		}
+		"""
+	Then bill成功创建订单
+		"""
+		{
+			"order_id":"001",
+			"status": "待支付",
+			"final_price": 10.0,
+			"product_price": 50.0,
+			"weizoom_card_money":40.00,
+			"products":[{
+				"name":"商品1",
+				"price":50.00,
+				"count":1
+			}]
+		}
+		"""
+	Given jobs登录系统:weapp
+	Then jobs能获取微众卡'0000008':weapp
+		"""
+		{
+			"status":"已用完",
+			"price":0.00
+		}
+		"""
+	Then jobs能获取微众卡'0000009':weapp
+		"""
+		{
+			"status":"已用完",
+			"price":0.00
+		}
+		"""
+	When bill访问jobs的webapp
+	Then bill'能'取消订单'001'
+	When bill取消订单'001'
+
+	Given jobs登录系统:weapp
+	Then jobs能获取微众卡'0000008':weapp
+		"""
+		{
+			"status":"已使用",
+			"price":10.00
+		}
+		"""
+	Then jobs能获取微众卡'0000009':weapp
+		"""
+		{
+			"status":"已使用",
+			"price":30.00
+		}
+		"""

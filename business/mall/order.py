@@ -192,7 +192,7 @@ class Order(business_model.Model):
 				self._init_slot_from_model(order_db_model)
 				self.context['is_valid'] = True
 				self.ship_area = regional_util.get_str_value_by_string_ids(order_db_model.area)
-				
+
 			except:
 				webapp_owner_id = webapp_owner.id
 				error_msg = u"获得order_id('{}')对应的Order model失败, cause:\n{}"\
@@ -439,7 +439,7 @@ class Order(business_model.Model):
 		# buy_count = buy_count[:-1]
 		# product_name = product_name[:-1]
 		#user = accout_models.UserProfile.get(webapp_id=self.webapp_id).user
-		
+
 		# if self.coupon_id:
 		# 	coupon = str(promotion_models.Coupon.get(id=int(self.coupon_id)).coupon_id) + u',￥' + str(self.coupon_money)
 		# else:
@@ -518,7 +518,7 @@ class Order(business_model.Model):
 		#因为self.products这个property返回的是ReservedProduct或OrderProduct的对象集合，所以需要再次处理
 		if 'products' in result:
 			result['products'] = [product.to_dict() for product in result['products']]
-		
+
 		return result
 
 
@@ -722,7 +722,7 @@ class Order(business_model.Model):
 		webapp_user = self.context['webapp_user']
 		order_resource_extractor = OrderResourceExtractor(webapp_owner, webapp_user)
 		resources = order_resource_extractor.extract(self)
-		
+
 		# 释放价格无关资源
 		service = AllocateOrderResourceService(webapp_owner, webapp_user)
 		service.release(resources)
@@ -734,7 +734,7 @@ class Order(business_model.Model):
 		# 需要删除WZCard的log
 		# TODO: 待优化，应该在释放微众卡资源时删除wzcard_log
 		LogOperator.remove_wzcard_logs_by_order_id(self.order_id)
-			
+
 		return
 
 
@@ -766,7 +766,7 @@ class Order(business_model.Model):
 
 		# 更新红包引入消费金额的数据
 		if self.coupon_id and promotion_models.RedEnvelopeParticipences.select().dj_where(coupon_id=self.coupon_id, introduced_by__gt=0).count() > 0:
-			red_envelope2member = promotion_models.RedEnvelopeParticipences.get(promotion_models.RedEnvelopeParticipences.coupon_id==self.coupon_id)
+			red_envelope2member = promotion_models.RedEnvelopeParticipences.select().dj_where(coupon_id=self.coupon_id).first()
 			promotion_models.RedEnvelopeParticipences.update(introduce_sales_number = promotion_models.RedEnvelopeParticipences.introduce_sales_number + self.final_price + self.postage).dj_where(
 				red_envelope_rule_id=red_envelope2member.red_envelope_rule_id,
 				red_envelope_relation_id=red_envelope2member.red_envelope_relation_id,
@@ -803,7 +803,7 @@ class Order(business_model.Model):
 		# 				.format(unicode_full_stack())
 		# 	watchdog_error(error_msg)
 		# 	print error_msg
-		
+
 
 
 	def __after_update_status(self, action):

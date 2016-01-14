@@ -98,6 +98,7 @@ class AOrder(api_resource.ApiResource):
 	def post(args):
 		"""
 		更改订单状态
+		@todo 目前取消订单和确认收货都是通过此接口，需要分离
 		"""
 		try:
 			order = Order.from_id({
@@ -113,7 +114,7 @@ class AOrder(api_resource.ApiResource):
 			if action == 'cancel':
 				logging.info("order status: {}/{}".format(order.status, order.status_text))
 				# TODO: 不应该用此方式判断状态。增加method。
-				if order.status != mall_models.ORDER_STATUS_NOT and order.status != mall_models.ORDER_STATUS_PAYED_NOT_SHIP:
+				if order.status != mall_models.ORDER_STATUS_NOT:
 					#raise Exception(u'非法操作')
 					return 500, {
 						'msg': u'非待支付或已支付订单，无法取消'
@@ -135,21 +136,23 @@ class AOrder(api_resource.ApiResource):
 				watchdog_error(notify_message)
 			return 500, {}
 
-	@param_required(['order_id'])
-	def delete(args):
-		"""
-		取消订单
-		"""
-		order = Order.from_id({
-			'webapp_user': args['webapp_user'],
-			'webapp_owner': args['webapp_owner'],
-			'order_id': args['order_id']
-		})
 
-		order.cancel()
-		return {
-			'success': True
-		}
+
+	# @param_required(['order_id'])
+	# def delete(args):
+	# 	"""
+	# 	取消订单
+	# 	"""
+	# 	order = Order.from_id({
+	# 		'webapp_user': args['webapp_user'],
+	# 		'webapp_owner': args['webapp_owner'],
+	# 		'order_id': args['order_id']
+	# 	})
+	#
+	# 	order.cancel()
+	# 	return {
+	# 		'success': True
+	# 	}
 
 
 

@@ -945,7 +945,7 @@ Scenario:12 用两张微众卡购买，第一张卡的金额大于商品金额
 		}
 		"""
 #根据bug补充7240#新新
-@mall3 @mall.pay_weizoom_card @victor 
+@mall3 @mall.pay_weizoom_card @victor @wip.bpuc13
 #购买流程.编辑订单.微众卡使用
 Scenario:13 用两张微众卡购买，第二张卡的金额大于商品金额
 	1.使用两张微众卡进行购买，微众卡金额大于商品金额
@@ -1018,7 +1018,7 @@ Scenario:13 用两张微众卡购买，第二张卡的金额大于商品金额
 		}
 		"""
 #根据bug补充7240#新新
-@mall.pay_weizoom_card @victor
+@mall.pay_weizoom_card @victor @wip.bpuc14
 #购买流程.编辑订单.微众卡使用
 Scenario:14 用两张微众卡购买，2张卡小于商品金额,购买待支付状态
 	1.使用两张微众卡进行购买，bill取消订单

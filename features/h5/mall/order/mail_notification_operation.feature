@@ -96,6 +96,12 @@ Background:
 			"end_date": "2天后",
 			"coupon_id_prefix": "coupon1_id_",
 			"coupon_product": "商品4"
+		},{
+			"name": "全体券",
+			"money": 100,
+			"start_date": "今天",
+			"end_date": "2天后",
+			"coupon_id_prefix": "coupon2_id_"
 		}]
 		"""
 	And jobs初始化邮件通知:weapp
@@ -109,6 +115,14 @@ Background:
 			"name": "单品券4",
 			"count": 1,
 			"members": ["tom"]
+		}
+		"""
+	When jobs为会员发放优惠券:weapp
+		"""
+		{
+			"name": "全体券",
+			"count": 1,
+			"members": ["bill"]
 		}
 		"""
 
@@ -395,6 +409,68 @@ Scenario:2 启用"取消时"邮件通知
 					"ship_tel": "13811223344",
 					"buyer_address":"北京市 北京市 海淀区 泰兴大厦"
 
+				},
+				"mails":"ceshi@weizoom.com"
+			}
+			"""
+	#购买单个商品（积分活动），成功下单，优惠券抵扣的订单，订单完成后取消
+		When bill访问jobs的webapp
+		When bill获得jobs的200会员积分
+		When bill购买jobs的商品
+			"""
+			{
+				"order_id":"0000003",
+				"ship_name": "bill",
+				"ship_tel": "13811223344",
+				"ship_area": "北京市 北京市 海淀区",
+				"ship_address": "泰兴大厦",
+				"pay_type": "微信支付",
+				"products": [{
+					"name": "商品1",
+					"count": 1
+				}],
+				"coupon": "coupon2_id_1"
+			}
+			"""
+		Then bill成功创建订单
+			"""
+			{
+				"order_no":"0000003",
+				"status": "待发货",
+				"final_price": 0.00,
+				"product_price": 100.00,
+				"products": [{
+					"name": "商品1",
+					"count": 1
+				}],
+				"coupon_money": 100.00
+			}
+			"""
+		Given jobs登录系统:weapp
+		When jobs对订单进行发货:weapp
+			"""
+			{
+				"order_no":"0000003",
+				"logistics":"顺丰速运",
+				"number":"123456789"
+			}
+			"""
+		When jobs完成订单'0000003':weapp
+		When jobs取消订单'0000003'
+
+		Then server能发送邮件
+			"""
+			{
+				"content":{
+					"buyer_name": "bill",
+					"product_name":"商品1",
+					"order_status":"已取消",
+					"buy_count":"1",
+					"total_price":0.0,
+					"coupon":"coupon2_id_1,￥100.0",	
+					"ship_name":"bill",
+					"ship_tel": "13811223344",
+					"buyer_address":"北京市 北京市 海淀区 泰兴大厦"
 				},
 				"mails":"ceshi@weizoom.com"
 			}

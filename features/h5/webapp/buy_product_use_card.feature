@@ -988,14 +988,14 @@ Scenario:13 用两张微众卡购买，第二张卡的金额大于商品金额
 		}
 		"""
 	Given jobs登录系统:weapp
-	Then jobs能获取微众卡'0000003':weapp
+	Then jobs能获取微众卡'0000003'
 		"""
 		{
 			"status":"已用完",
 			"price":0.00
 		}
 		"""
-	Then jobs能获取微众卡'0000001':weapp
+	Then jobs能获取微众卡'0000001'
 		"""
 		{
 			"status":"已使用",
@@ -1003,14 +1003,14 @@ Scenario:13 用两张微众卡购买，第二张卡的金额大于商品金额
 		}
 		"""
 	When jobs取消订单'001':weapp
-	Then jobs能获取微众卡'0000003':weapp
+	Then jobs能获取微众卡'0000003'
 		"""
 		{
 			"status":"已使用",
 			"price":30.00
 		}
 		"""
-	Then jobs能获取微众卡'0000001':weapp
+	Then jobs能获取微众卡'0000001'
 		"""
 		{
 			"status":"已使用",
@@ -1054,7 +1054,7 @@ Scenario:14 用两张微众卡购买，2张卡小于商品金额,购买待支付
 			}],
 			"weizoom_card":[{
 				"card_name":"0000008",
-				"card_pass":"1231231"
+				"card_pass":"1234567"
 			}, {
 				"card_name":"0000009",
 				"card_pass":"1234567"
@@ -1077,14 +1077,14 @@ Scenario:14 用两张微众卡购买，2张卡小于商品金额,购买待支付
 		}
 		"""
 	Given jobs登录系统:weapp
-	Then jobs能获取微众卡'0000008':weapp
+	Then jobs能获取微众卡'0000008'
 		"""
 		{
 			"status":"已用完",
 			"price":0.00
 		}
 		"""
-	Then jobs能获取微众卡'0000009':weapp
+	Then jobs能获取微众卡'0000009'
 		"""
 		{
 			"status":"已用完",
@@ -1092,18 +1092,18 @@ Scenario:14 用两张微众卡购买，2张卡小于商品金额,购买待支付
 		}
 		"""
 	When bill访问jobs的webapp
-	Then bill'能'取消订单'001'
+	#Then bill'能'取消订单'001'
 	When bill取消订单'001'
 
 	Given jobs登录系统:weapp
-	Then jobs能获取微众卡'0000008':weapp
+	Then jobs能获取微众卡'0000008'
 		"""
 		{
 			"status":"已使用",
 			"price":10.00
 		}
 		"""
-	Then jobs能获取微众卡'0000009':weapp
+	Then jobs能获取微众卡'0000009'
 		"""
 		{
 			"status":"已使用",

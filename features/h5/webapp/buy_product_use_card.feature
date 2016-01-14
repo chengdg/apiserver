@@ -944,7 +944,7 @@ Scenario:12 用两张微众卡购买，第一张卡的金额大于商品金额
 			"price":30.00
 		}
 		"""
-
+#根据bug补充7240
 @mall3 @mall.pay_weizoom_card @victor
 #购买流程.编辑订单.微众卡使用
 Scenario:13 用两张微众卡购买，第二张卡的金额大于商品金额
@@ -1000,3 +1000,19 @@ Scenario:13 用两张微众卡购买，第二张卡的金额大于商品金额
 			"price":80.00
 		}
 		"""
+	When jobs'取消'最新订单:weapp
+	Then jobs能获取微众卡'0000003':weapp
+		"""
+		{
+			"status":"已使用",
+			"price":30.00
+		}
+		"""
+	Then jobs能获取微众卡'0000001':weapp
+		"""
+		{
+			"status":"已使用",
+			"price":100.00
+		}
+		"""
+

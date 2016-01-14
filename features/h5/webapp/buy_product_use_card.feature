@@ -945,7 +945,7 @@ Scenario:12 用两张微众卡购买，第一张卡的金额大于商品金额
 		}
 		"""
 #根据bug补充7240#新新
-@mall3 @mall.pay_weizoom_card @victor
+@mall3 @mall.pay_weizoom_card @victor 
 #购买流程.编辑订单.微众卡使用
 Scenario:13 用两张微众卡购买，第二张卡的金额大于商品金额
 	1.使用两张微众卡进行购买，微众卡金额大于商品金额
@@ -956,6 +956,7 @@ Scenario:13 用两张微众卡购买，第二张卡的金额大于商品金额
 	When bill购买jobs的商品
 		"""
 		{
+			"order_id":"001",
 			"pay_type": "微信支付",
 			"products":[{
 				"name":"商品1",
@@ -974,6 +975,7 @@ Scenario:13 用两张微众卡购买，第二张卡的金额大于商品金额
 	Then bill成功创建订单
 		"""
 		{
+			"order_id":"001",
 			"status": "待发货",
 			"final_price": 0.0,
 			"product_price": 50.0,
@@ -1000,7 +1002,7 @@ Scenario:13 用两张微众卡购买，第二张卡的金额大于商品金额
 			"price":80.00
 		}
 		"""
-	When jobs'取消'最新订单:weapp
+	When jobs取消订单'001':weapp
 	Then jobs能获取微众卡'0000003':weapp
 		"""
 		{

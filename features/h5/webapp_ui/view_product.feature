@@ -680,6 +680,7 @@ Scenario:5 参与积分活动的商品详情页
 		}
 		"""
 	When jobs创建积分应用活动
+		"""
 		[{
 			"name": "商品1积分应用",
 			"start_date": "今天",
@@ -692,6 +693,7 @@ Scenario:5 参与积分活动的商品详情页
 				"discount_money": "5.0~10.0"
 			}]
 		}]
+		"""
 	When bill访问jobs的webapp
 	When bill获得jobs的100会员积分
 	Then bill在jobs的webapp中拥有100会员积分

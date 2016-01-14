@@ -241,10 +241,10 @@ Scenario:2 会员购买时输入未领取的优惠券码后，查看优惠列表
 			"end_date": "1天后"
 		}, {
 			"name": "优惠券1",
-			"remained_count": 5,
+			"remained_count": 4,
 			"limit_counts":"无限",
-			"get_person_count":1,
-			"get_number":1,
+			"get_person_count":0,
+			"get_number":0,
 			"start_date": "今天",
 			"end_date": "1天后"
 		}]
@@ -279,8 +279,8 @@ Scenario:2 会员购买时输入未领取的优惠券码后，查看优惠列表
 			"name": "优惠券1",
 			"remained_count": 3,
 			"limit_counts":"无限",
-			"get_person_count":1,
-			"get_number":2,
+			"get_person_count":0,
+			"get_number":0,
 			"start_date": "今天",
 			"end_date": "1天后"
 		}]
@@ -315,8 +315,8 @@ Scenario:2 会员购买时输入未领取的优惠券码后，查看优惠列表
 			"name": "优惠券1",
 			"remained_count": 2,
 			"limit_counts":"无限",
-			"get_person_count":2,
-			"get_number":3,
+			"get_person_count":0,
+			"get_number":0,
 			"start_date": "今天",
 			"end_date": "1天后"
 		}]

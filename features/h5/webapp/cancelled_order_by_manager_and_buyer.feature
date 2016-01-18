@@ -29,6 +29,7 @@ Background:
 		"""
 	And bill关注jobs的公众号
 
+@mall3 @ztq
 Scenario:1 后台先取消,手机端再取消
 	bill购买商品，使用优惠券金额小于商品金额
 	生成'待支付'订单
@@ -98,101 +99,9 @@ Scenario:1 后台先取消,手机端再取消
 
 	Given jobs登录系统:weapp
 	When jobs'取消'订单'001':weapp
-	When bill取消订单'001'
-	Then bill获得错误提示'取消订单失败，请重试'
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券规则列表:weapp
-		"""
-		[{
-			"name": "单品券1",
-			"remained_count": 3,
-			"use_count": 0,
-			"start_date": "今天",
-			"end_date": "1天后"
-		}]
-		"""
-
-Scenario:2 手机端先取消,后台再取消
-	bill购买商品，使用优惠券金额小于商品金额
-	生成'待支付'订单
-	手机端再进行取消订单操作
-	jobs在后台进行取消订单操作（后台订单列表不刷新页面）
-
-
-	Given jobs登录系统:weapp
-	When jobs添加优惠券规则:weapp
-		"""
-		[{
-			"name": "单品券1",
-			"money": 50.00,
-			"count": 4,
-			"limit_counts": 1,
-			"start_date": "今天",
-			"end_date": "1天后",
-			"coupon_id_prefix": "coupon1_id_",
-			"coupon_product": "商品1"
-		}]
-		"""
-	When jobs为会员发放优惠券:weapp
-		"""
-		{
-			"name": "单品券1",
-			"count": 1,
-			"members": ["bill"],
-			"coupon_ids": ["coupon1_id_1"]
-		}
-		"""
-	Then jobs能获得优惠券规则列表:weapp
-		"""
-		[{
-			"name": "单品券1",
-			"remained_count": 3,
-			"use_count": 0,
-			"start_date": "今天",
-			"end_date": "1天后"
-		}]
-		"""
-
 	When bill访问jobs的webapp
-	When bill购买jobs的商品
-		"""
-		{
-			"order_id": "001",
-			"pay_type": "微信支付",
-			"products":[{
-				"name":"商品1",
-				"price":100.00,
-				"count":1
-			}],
-			"coupon":"coupon1_id_1"
-		}
-		"""
-
+	Then bill'不能'取消订单'001'
 	Given jobs登录系统:weapp
-	Then jobs能获得优惠券规则列表:weapp
-		"""
-		[{
-			"name": "单品券1",
-			"remained_count": 3,
-			"use_count": 1,
-			"start_date": "今天",
-			"end_date": "1天后"
-		}]
-		"""
-	When bill取消订单'001'
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券规则列表:weapp
-		"""
-		[{
-			"name": "单品券1",
-			"remained_count": 3,
-			"use_count": 0,
-			"start_date": "今天",
-			"end_date": "1天后"
-		}]
-		"""
-	When jobs'取消'订单'001':weapp
-	Then jobs获得错误提示'取消订单失败，请重试'
 	Then jobs能获得优惠券规则列表:weapp
 		"""
 		[{

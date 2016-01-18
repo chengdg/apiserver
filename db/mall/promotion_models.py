@@ -263,7 +263,7 @@ class Coupon(models.Model):
 	coupon_record_id = models.IntegerField(default=0) #优惠券记录的id
 	status = models.IntegerField(default=COUPON_STATUS_UNUSED) #优惠券状态
 	coupon_id = models.CharField(max_length=50) #优惠券号
-	provided_time = models.DateTimeField() #领取时间
+	provided_time = models.DateTimeField(default=DEFAULT_DATETIME) #领取时间
 	start_time = models.DateTimeField() #优惠券有效期开始时间
 	expired_time = models.DateTimeField() #过期时间
 	money = models.FloatField() #金额

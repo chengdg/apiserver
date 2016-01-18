@@ -125,6 +125,8 @@ class OrderResourceExtractor(business_model.Model):
 			resource.money = coupon.money
 			#resource.raw_status = coupon.status
 			resource.raw_status = promotion_models.COUPON_STATUS_UNUSED
+			if coupon.provided_time == promotion_models.DEFAULT_DATETIME:
+				resource.raw_status = promotion_models.COUPON_STATUS_UNGOT
 			resource.raw_member_id = coupon.member_id
 
 			resources.append(resource)

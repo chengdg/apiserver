@@ -542,7 +542,8 @@ class Order(business_model.Model):
 		db_model.webapp_user_id = self.webapp_user_id
 		db_model.member_grade_id = self.member_grade_id
 		db_model.member_grade_discount = self.member_grade_discount
-		db_model.buyer_name = self.buyer_name
+		# order.buyer_name 已弃用
+		db_model.buyer_name = ''
 
 		# 读取purchase_info信息
 		db_model.ship_name = self.ship_name

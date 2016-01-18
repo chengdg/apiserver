@@ -108,10 +108,13 @@ class ReviewedProduct(business_model.Model):
 		reviewed_order_id = args['reviewed_order_id']
 		try:
 			db_model = mall_models.ProductReview.get(order_review_id=reviewed_order_id, product_id=product_id)
-			return ReviewedProduct.from_model({
-				'webapp_owner': webapp_owner,
-				'model': db_model
-			})
+			if db_model:
+				return ReviewedProduct.from_model({
+					'webapp_owner': webapp_owner,
+					'model': db_model
+				})
+			else:
+				return None
 		except:
 			return None
 
@@ -130,10 +133,13 @@ class ReviewedProduct(business_model.Model):
 		order_has_product_id = args['order_has_product_id']
 		try:
 			db_model = mall_models.ProductReview.get(order_has_product=order_has_product_id)
-			return ReviewedProduct.from_model({
-				'webapp_owner': webapp_owner,
-				'model': db_model
-			})
+			if db_model:
+				return ReviewedProduct.from_model({
+					'webapp_owner': webapp_owner,
+					'model': db_model
+				})
+			else:
+				return None
 		except:
 			return None
 

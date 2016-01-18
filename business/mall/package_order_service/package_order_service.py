@@ -204,4 +204,4 @@ class PackageOrderService(business_model.Service):
 			order.final_price = round(order.final_price, 2)
 	
 		logging.info("order.final_price={}".format(order.final_price))
-		return order, is_success, reason
+		return order, is_success, reason, price_related_resources

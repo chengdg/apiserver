@@ -5,6 +5,7 @@
 """
 
 import copy
+import json
 from datetime import datetime
 
 from core import api_resource
@@ -59,6 +60,9 @@ class AOrder(api_resource.ApiResource):
 		except OrderException as e:
 			# 实际上detail是reason列表
 			return 500, {'detail': e.value}
+
+		except:
+			return 500, {'detail': []}
 
 		pay_url_info = None
 		if order:

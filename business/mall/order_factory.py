@@ -27,6 +27,7 @@ import random
 import copy
 import logging
 
+from business.mall.allocator.allocate_price_related_resource_service import AllocatePriceRelatedResourceService
 from business.mall.order import Order
 
 #from business.mall.package_order_service.package_order_service import CalculatePriceService
@@ -246,9 +247,10 @@ class OrderFactory(business_model.Model):
 				#mall_signals.post_pay_order.send(sender=Order, order=order, request=request)
 
 		except:
+			print('----------------0')
 			notify_message = u"__save_order error cause:\n{}".format(unicode_full_stack())
 			logging.error(notify_message)
-			watchdog_error(notify_message)
+			watchdog_error(notify_message, noraise=True)
 			return None
 
 		
@@ -280,7 +282,7 @@ class OrderFactory(business_model.Model):
 		# 填充order
 		package_order_service = PackageOrderService(webapp_owner, webapp_user)
 		# 如果is_success=False, 表示分配资源失败
-		order, is_success, reasons = package_order_service.package_order(order, price_free_resources, purchase_info)
+		order, is_success, reasons, price_related_resources = package_order_service.package_order(order, price_free_resources, purchase_info)
 
 		if is_success: # 组装订单成功
 			#如果前端提交了积分使用信息，识别哪些商品使用了积分
@@ -296,17 +298,45 @@ class OrderFactory(business_model.Model):
 			# 保存订单
 			order = self.__save_order(order)
 			# 如果需要（比如订单保存失败），释放资源
+			print('----------------4',type(order))
 			if order and order.is_saved:
+				print('----------------5')
 				#删除购物车
 				# TODO: 删除购物车不应该放在这里
 				logging.warning('to clean the CART')
 				if purchase_info.is_purchase_from_shopping_cart:
 					for product in order.products:
 						webapp_user.shopping_cart.remove_product(product)
-			return order
+				return order
 
 		# 创建订单失败
 		logging.error("Failed to create Order object or save the order! Release all resources. order={}".format(order))
-		self.release(price_free_resources)
+		print ('------------------2')
+		self.__release_order(order, price_free_resources, price_related_resources)
+
 		# PackageOrderService分配资源失败，price_related_resources应为[]，不需要release
 		raise OrderException(reasons)
+
+
+
+	def __release_order(self, order, price_free_resources, price_related_resources):
+
+		webapp_owner = self.context['webapp_owner']
+		webapp_user = self.context['webapp_user']
+
+		# 释放价格无关资源
+		self.release(price_free_resources)
+
+		# 释放价格有关资源
+		service = AllocatePriceRelatedResourceService(webapp_owner, webapp_user)
+		service.release(price_related_resources)
+
+		# 删除Order相关数据库记录
+		if order:
+			mall_models.OrderHasPromotion.delete().dj_where(order_id=order.id)
+			mall_models.OrderHasProduct.delete().dj_where(order_id=order.id)
+			mall_models.Order.delete().dj_where(id=order.id)
+
+		raise BaseException('bbbbbbbbbbbb')
+
+

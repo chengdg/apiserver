@@ -84,13 +84,18 @@ class AOrder(api_resource.ApiResource):
 
 		#处理分享来的订单
 		
-		url = args.get('url', None)
-		if url:
-			MemberSpread.record_order_from_spread({
-				'order_id' : order.id,
-				'webapp_user' : webapp_user,
-				'url' : url 
-				})
+		try:
+			url = args.get('url', None)
+			if url:
+				MemberSpread.record_order_from_spread({
+					'order_id' : order.id,
+					'webapp_user' : webapp_user,
+					'url' : url 
+					})
+		except:
+			pass
+
+		
 		
 		return data
 

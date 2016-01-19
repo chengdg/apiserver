@@ -57,21 +57,17 @@ class OAuthMiddleware(object):
 		if not webapp_owner:
 			body = {"errorcode": error_codes.ILLEGAL_WOID_CODE, "errmsg": error_codes.code2msg[error_codes.ILLEGAL_WOID_CODE]}
 			self.raise_response(body)
-		print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>1'
 		# 验证callback
 		callback_uri = args.get('callback_uri', None)
 		if not args.has_key('callback_uri'):
 			body = {"errorcode": error_codes.LACK_CALLBACK_URI, "errmsg": error_codes.code2msg[error_codes.LACK_CALLBACK_URI]}	
 			self.raise_response(body)
-		print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>2'
 		# 获取公众号的access_token信息
 		weixin_mp_user_access_token = webapp_owner.weixin_mp_user_access_token
 		code = args.get('code', None)
 		appid = args.get('appid', None)
 		component_info = settings.COMPONENT_INFO
-		print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>3'
 		if not code or not appid:
-			print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>4'
 			"""
 				使用微信网页授权
 			"""
@@ -81,7 +77,6 @@ class OAuthMiddleware(object):
 			url = 'https://open.weixin.qq.com/connect/oauth2/authorize' \
 			+ '?appid=%s&redirect_uri=%s&response_type=code&scope=%s&state=123&component_appid=%s#wechat_redirect' \
 			% (weixin_mp_user_access_token.app_id, urllib.quote(url).replace('/','%2F'), api_style, component_info['app_id'])
-			print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>5',url
 		else:
 			"""
 				通过code获取openid，
@@ -89,16 +84,15 @@ class OAuthMiddleware(object):
 				通过callbackuri信息创建会员关系
 				通过会员信息获取access_token
 			"""
-			print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>6'
 			openid = self.get_openid_from(component_info, appid, code)
-			print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>7',openid
+			print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>1',openid
 			if not openid:
 				url = callback_uri
 			else:
 				apiserver_access_token = self.get_access_token_from(callback_uri, openid, webapp_owner)
 				url = self.get_url(callback_uri, apiserver_access_token)
 				#url = args['callback_uri'] + '&access_token=' + apiserver_access_token
-			print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>8',url
+			print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>2',url
 		raise redirects.HTTPFound(str(url))
 
 	def get_url(self, callback_uri, access_token):

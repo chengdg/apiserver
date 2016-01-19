@@ -1297,7 +1297,7 @@ Scenario: 13 不同等级的会员购买原价同时有根据等级设置积分�
 	
 
 #补充.王丽 2016-01-07
-@mall2 @integral @bert
+@mall3 @mall2 @integral @bert
 Scenario: 14 单品积分活动小数抵扣数据错误
 	单品积分活动使用积分抵扣带有小数的金额
 	1.抵扣金额小于1元的小数

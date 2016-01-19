@@ -29,7 +29,6 @@ class OrderCouponResourceAllocator(business_model.Model):
 		is_success = True
 		reason = ''
 		coupon_resource = None
-		print '>>>>>>>>>>>>>OrderCouponResourceAllocator>>>>:',purchase_info.coupon_id, type(purchase_info.coupon_id)
 		if not purchase_info.coupon_id or purchase_info.coupon_id == '0':
 			# 未使用优惠券
 			self.__return_empty_coupon()

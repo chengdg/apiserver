@@ -195,7 +195,7 @@ Background:
 		}]
 		"""
 
-@mall3 @mall.webapp @mall.coupon @bc1 @ztqb
+@mall3 @mall.webapp @mall.coupon @bc1
 Scenario:1 使用少于商品价格的优惠券金额进行购买
 	bill购买jobs的商品时，能使用少于商品价格的优惠券
 	1. 创建订单成功，订单状态为“等待支付”

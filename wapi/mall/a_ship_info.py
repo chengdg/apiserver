@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from core import api_resource
-from core.watchdog.utils import watchdog_error
+from core.watchdog.utils import watchdog_alert
 from wapi.decorators import param_required
 
 
@@ -34,7 +34,7 @@ class AShipInfo(api_resource.ApiResource):
 		if '_' not in area:
 			webapp_user_id = args['webapp_user'].id
 			message = u'错误的收货地址地区信息：webapp_user_id:%s,ship_info_id:%s,area:%s' % (webapp_user_id, ship_info_id, area)
-			watchdog_error(message)
+			watchdog_alert(message)
 
 		result = webapp_user.modify_ship_info(ship_info_id, new_ship_info)
 		if result:
@@ -42,7 +42,7 @@ class AShipInfo(api_resource.ApiResource):
 				'result': result
 			}
 		else:
-			return 500, {}
+			return 500, ''
 
 	@param_required(['ship_name', 'ship_address', 'ship_tel', 'area'])
 	def put(args):
@@ -68,14 +68,14 @@ class AShipInfo(api_resource.ApiResource):
 		if '_' not in area:
 			webapp_user_id = args['webapp_user'].id
 			message = u'错误的收货地址地区信息：webapp_user_id:%s,ship_info_id:%s,area:%s' % (webapp_user_id, ship_info_id, area)
-			watchdog_error(message)
+			watchdog_alert(message)
 
 		if result:
 			return {
 				'ship_info_id': ship_info_id
 			}
 		else:
-			return 500, {}
+			return 500, ''
 
 	@param_required(['ship_id'])
 	def delete(args):

@@ -283,17 +283,15 @@ class OrderFactory(business_model.Model):
 				return order
 			else:
 				# 创建订单失败
-				pass
-			logging.error("Failed to create Order object or save the order! Release all resources. order={}".format(order))
-			self.release(price_free_resources)
-			# PackageOrderService分配资源失败，price_related_resources应为[]，不需要release
-			raise OrderResourcesException(reasons)
+				logging.error("Failed to create Order object or save the order! Release all resources. order={}".format(order))
+				self.__release_price_related_resources(price_free_resources)
+				# PackageOrderService分配资源失败，price_related_resources应为[]，不需要release
+				raise OrderResourcesException(reasons)
 		except OrderResourcesException as e:
 			raise e
 		except:
 			msg = unicode_full_stack()
 			watchdog_alert(msg)
-
 			self.__release_order(order, price_free_resources, price_related_resources)
 			raise OrderFailureException
 
@@ -304,9 +302,6 @@ class OrderFactory(business_model.Model):
 		2. price_related_resources
 		3. Order、OrderHasProduct、OrderHasPromotion表
 		"""
-
-
-
 		if price_free_resources:
 			self.__release_price_free_resources(price_free_resources)
 		if price_related_resources:

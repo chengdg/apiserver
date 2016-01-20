@@ -227,6 +227,7 @@ class OrderFactory(business_model.Model):
 		return order
 
 
+
 	def __save_order(self, order):
 		"""
 		保存订单

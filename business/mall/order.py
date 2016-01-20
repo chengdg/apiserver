@@ -536,7 +536,6 @@ class Order(business_model.Model):
 		业务模型序列化
 		"""
 
-		raise BaseException('Boom!')
 		db_model = self.context['order']
 
 		# 读取基本信息

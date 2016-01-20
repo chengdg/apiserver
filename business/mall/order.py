@@ -657,7 +657,6 @@ class Order(business_model.Model):
 
 		self.__after_update_status('buy')
 
-		return
 
 	@property
 	def is_saved(self):

@@ -591,7 +591,6 @@ class Order(business_model.Model):
 
 		db_model.save()
 		self.id = db_model.id
-
 		# 建立订单相关数据
 
 		#建立<order, product>的关系
@@ -654,7 +653,6 @@ class Order(business_model.Model):
 						integral_money=product_group.integral_result['integral_money'],
 						integral_count=product_group.integral_result['use_integral'],
 				)
-
 		self.__after_update_status('buy')
 
 

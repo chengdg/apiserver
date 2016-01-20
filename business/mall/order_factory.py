@@ -257,7 +257,6 @@ class OrderFactory(business_model.Model):
 			package_order_service = PackageOrderService(webapp_owner, webapp_user)
 			# 如果is_success=False, 表示分配资源失败
 			order, is_success, reasons, price_related_resources = package_order_service.package_order(order, price_free_resources, purchase_info)
-
 			if is_success: # 组装订单成功
 				#如果前端提交了积分使用信息，识别哪些商品使用了积分
 				# Todo 确认是否不需要
@@ -305,13 +304,14 @@ class OrderFactory(business_model.Model):
 		if price_free_resources:
 			self.__release_price_free_resources(price_free_resources)
 		if price_related_resources:
-			self.__release_price_related_resources(price_free_resources)
+			self.__release_price_related_resources(price_related_resources)
 
 		# 删除Order相关数据库记录
 		if order and order.id:
-			mall_models.OrderHasPromotion.delete().dj_where(order_id=order.id)
-			mall_models.OrderHasProduct.delete().dj_where(order_id=order.id)
-			mall_models.Order.delete().dj_where(id=order.id)
+			mall_models.OrderHasPromotion.delete().dj_where(order_id=order.id).execute()
+			mall_models.OrderHasProduct.delete().dj_where(order_id=order.id).execute()
+			mall_models.Order.delete().dj_where(origin_order_id=order.id).execute()
+			mall_models.Order.delete().dj_where(id=order.id).execute()
 
 	def __release_price_free_resources(self, resources):
 		"""

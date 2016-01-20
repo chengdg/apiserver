@@ -42,7 +42,7 @@ class AOrder(api_resource.ApiResource):
 		webapp_user = args['webapp_user']
 		webapp_owner = args['webapp_owner']
 		refueling_order = args.get('refueling_order', '')
-		
+
 		#解析购买参数
 		purchase_info = PurchaseInfo.parse({
 			'request_args': args
@@ -85,20 +85,20 @@ class AOrder(api_resource.ApiResource):
 			data['pay_url_info'] = pay_url_info
 
 		#处理分享来的订单
-		
+
 		try:
 			url = args.get('url', None)
 			if url:
 				MemberSpread.record_order_from_spread({
 					'order_id' : order.id,
 					'webapp_user' : webapp_user,
-					'url' : url 
+					'url' : url
 					})
 		except:
 			pass
 
-		
-		
+
+
 		return data
 
 	@param_required(['order_id', 'action'])
@@ -195,7 +195,9 @@ class AOrder(api_resource.ApiResource):
 			"weizoom_card_money",
 			"red_envelope",
 			"red_envelope_created",
-			"pay_info"
+			"pay_info",
+			"bill_type",
+			"bill"
 		]
 
 		data = {}

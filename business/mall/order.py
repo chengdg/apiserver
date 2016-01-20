@@ -937,3 +937,29 @@ class Order(business_model.Model):
 							detail_data[key] = {"value" : product_names, "color" : "#173177"}
 			template_data['data'] = detail_data
 		return template_data
+
+	def validate_order_action(self, action, from_webapp_user_id):
+		"""
+		@param action: 有效操作为cancel、finish
+		@param from_webapp_user_id: 发起操作的webapp_user_id
+		@return: bool值, msg
+		"""
+		# 校验操作用户
+		if self.webapp_user_id != from_webapp_user_id:
+				return False, 'error_user'
+
+		# 校验不是子订单
+		if self.is_sub_order:
+			return False, 'sub_order'
+
+		# 校验操作类型
+		if action not in ('cancel', 'finish'):
+			return False, 'error_action'
+
+		# 校验操作和状态
+		if action == 'cancel' and self.status == mall_models.ORDER_STATUS_NOT:
+			return True, ''
+		elif action == 'finish' and self.status == mall_models.ORDER_STATUS_PAYED_SHIPED:
+			return True, ''
+		else:
+			return False, 'error_status'

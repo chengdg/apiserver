@@ -17,7 +17,7 @@ from utils import dateutil as utils_dateutil
 #import resource
 from wapi.mall.a_purchasing import APurchasing as PurchasingApiResource
 from core.cache import utils as cache_utils
-from business.mall.order_factory import OrderFactory, OrderException
+from business.mall.order_factory import OrderFactory, OrderResourcesException
 from business.mall.purchase_info import PurchaseInfo
 from business.mall.pay_interface import PayInterface
 from business.mall.order import Order
@@ -56,9 +56,11 @@ class AOrder(api_resource.ApiResource):
 				"webapp_user": webapp_user
 			})
 			order = order_factory.create_order(purchase_info)
-		except OrderException as e:
+		except OrderResourcesException as e:
 			# 实际上detail是reason列表
 			return 500, {'detail': e.value}
+		except:
+			return 500, {'detail': ''}
 
 		pay_url_info = None
 		if order:

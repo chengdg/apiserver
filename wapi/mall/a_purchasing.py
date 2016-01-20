@@ -132,7 +132,8 @@ class APurchasing(api_resource.ApiResource):
 		order_info = {
 			'type': order.type,
 			'pay_interfaces': order.pay_interfaces,
-			'product_groups': product_group_datas
+			'product_groups': product_group_datas,
+			'is_delivery': order.is_delivery # 是否勾选配送时间,发货时间判断字段
 		}
 
 		return {

@@ -198,7 +198,8 @@ class AOrder(api_resource.ApiResource):
 			"weizoom_card_money",
 			"red_envelope",
 			"red_envelope_created",
-			"pay_info"
+			"pay_info",
+			"delivery_time"
 		]
 
 		data = {}

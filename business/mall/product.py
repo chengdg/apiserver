@@ -194,7 +194,8 @@ class Product(business_model.Model):
 		'promotion_title', #商品关联的促销活动的促销标题
 		'integral_sale',
 		'product_review',
-		'is_deleted'
+		'is_deleted',
+		'is_delivery', # 是否勾选配送时间
 	)
 
 	@staticmethod
@@ -696,7 +697,8 @@ class Product(business_model.Model):
 			'product_review': getattr(self, 'product_review', None),
 			'price_info': getattr(self, 'price_info', None),
 			'postage_type': self.postage_type, 
-			'unified_postage_money': self.unified_postage_money
+			'unified_postage_money': self.unified_postage_money,
+			'is_delivery': self.is_delivery,
 		}
 
 		if 'extras' in kwargs:

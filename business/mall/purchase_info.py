@@ -43,6 +43,7 @@ class PurchaseInfo(business_model.Model):
         'is_force_purchase',
         'coupon_id',
         'wzcard_info', # 微众卡信息
+        'delivery_time',
     )
 
     @staticmethod
@@ -88,7 +89,8 @@ class PurchaseInfo(business_model.Model):
         self.is_purchase_from_shopping_cart = (request_args.get('is_order_from_shopping_cart', 'false') == 'true')
         self.is_force_purchase = (request_args.get('forcing_submit', '0') == '1')
 
-        self.__parse_integral_info(request_args) 
+        self.__parse_integral_info(request_args)
+        self.delivery_time = request_args.get('delivery_time', '')
 
     def __parse_ship_info(self, request_args):
         """

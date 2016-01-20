@@ -85,6 +85,8 @@ class Order(business_model.Model):
 		'ship_tel',
 		'ship_area',
 		'ship_address',
+		'bill_type',
+		'bill',
 
 		'postage',
 		'integral',
@@ -550,6 +552,8 @@ class Order(business_model.Model):
 		db_model.ship_address = self.ship_address
 		db_model.ship_tel = self.ship_tel
 		db_model.area = self.ship_area
+		db_model.bill_type = self.bill_type
+		db_model.bill = self.bill
 		db_model.customer_message = self.customer_message
 		db_model.type = self.type
 		db_model.pay_interface_type = self.pay_interface_type

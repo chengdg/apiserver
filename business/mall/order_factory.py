@@ -37,7 +37,7 @@ from db.mall import models as mall_models
 #import resource
 from core.watchdog.utils import watchdog_alert,watchdog_error
 from core.exceptionutil import unicode_full_stack
-from business import model as business_model 
+from business import model as business_model
 from business.mall.product import Product
 import settings
 from business.decorator import cached_context_property
@@ -69,7 +69,7 @@ class OrderFactory(business_model.Model):
 		@return Order对象
 		"""
 		order_factory = OrderFactory(args['webapp_owner'], args['webapp_user'])
-		
+
 		return order_factory
 
 	def __init__(self, webapp_owner, webapp_user):
@@ -84,7 +84,7 @@ class OrderFactory(business_model.Model):
 	# 	@return True, None: 订单有效；False, reason: 订单无效, 无效原因
 	# 	"""
 	# 	order_checker = OrderChecker(self.context['webapp_owner'], self.context['webapp_user'], self)
-		
+
 	# 	return order_checker.check()
 
 
@@ -131,7 +131,7 @@ class OrderFactory(business_model.Model):
 				"msg": u"该活动已经过期",
 				"short_msg": u"已经过期"
 			}
-		
+
 		@see __allocation_promotion()
 
 		@return price_free_resources
@@ -140,9 +140,9 @@ class OrderFactory(business_model.Model):
 		webapp_user = self.context['webapp_user']
 
 		allocate_order_resource_service = AllocateOrderResourceService(webapp_owner, webapp_user)
-		
+
 		successed, reasons, resources = allocate_order_resource_service.allocate_resource_for(order, purchase_info)
-		
+
 		if successed:
 			logging.info(u"Allocated resources successfully. count: {}".format(len(resources)))
 
@@ -160,7 +160,7 @@ class OrderFactory(business_model.Model):
 			for reason in reasons:
 				logging.info(u"reason: name: {}, short_msg: {}".format(reason.get('name'), reason.get('short_msg')))
 			allocate_order_resource_service.release(resources)
-			raise OrderException(reasons)	
+			raise OrderException(reasons)
 
 
 	def __process_products(self, order, purchase_info):
@@ -210,6 +210,13 @@ class OrderFactory(business_model.Model):
 		order.ship_address = ship_info['address']
 		order.ship_tel = ship_info['tel']
 		order.ship_area = ship_info['area']
+		bill_info = purchase_info.bill_info
+		if bill_info:
+			order.bill_type = bill_info['bill_type']
+			order.bill = bill_info['bill']
+		else:
+			order.bill_type = 0
+			order.bill = ""
 		order.customer_message = purchase_info.customer_message
 		order.type = purchase_info.order_type
 		order.pay_interface_type = purchase_info.used_pay_interface_type
@@ -222,7 +229,7 @@ class OrderFactory(business_model.Model):
 		"""
 		释放资源
 		"""
-		allocator_order_resource_service = self.context['allocator_order_resource_service'] 
+		allocator_order_resource_service = self.context['allocator_order_resource_service']
 		if isinstance(allocator_order_resource_service, AllocateOrderResourceService):
 			allocator_order_resource_service.release(resources)
 
@@ -251,7 +258,7 @@ class OrderFactory(business_model.Model):
 			watchdog_error(notify_message)
 			return None
 
-		
+
 		return order
 
 
@@ -261,7 +268,7 @@ class OrderFactory(business_model.Model):
 		由PurchaseInfo创建订单
 
 		"""
-		
+
 		webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user']
 

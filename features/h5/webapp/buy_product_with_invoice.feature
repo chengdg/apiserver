@@ -225,7 +225,7 @@ Scenario:2 购买多个支持开发票的商品,选择'单位'发票
 		}
 		"""
 
-Scenario:3 购买支持开发票和不支持开发的商品
+Scenario:3 购买支持开发票和不支持开发票的商品
 	When bill访问jobs的webapp
 	And bill加入jobs的商品到购物车
 		"""

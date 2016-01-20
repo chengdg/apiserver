@@ -223,6 +223,7 @@ class OrderFactory(business_model.Model):
 		order.type = purchase_info.order_type
 		order.pay_interface_type = purchase_info.used_pay_interface_type
 		order.status = mall_models.ORDER_STATUS_NOT
+		order.delivery_time = purchase_info.delivery_time # 配送时间字符串
 		order.order_id = self.__create_order_id()
 		return order
 

@@ -197,7 +197,8 @@ class AOrder(api_resource.ApiResource):
 			"red_envelope_created",
 			"pay_info",
 			"bill_type",
-			"bill"
+			"bill",
+			"delivery_time"
 		]
 
 		data = {}

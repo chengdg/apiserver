@@ -233,6 +233,7 @@ class Product(models.Model):
 	supplier = models.IntegerField(default=0) # 供货商
 	purchase_price = models.FloatField(default=0.0) # 进货价格
 	is_enable_bill = models.BooleanField(default=False)  # 商品是否开具发票
+	is_delivery = models.BooleanField(default=False) # 是否勾选配送时间
 
 	class Meta(object):
 		db_table = 'mall_product'
@@ -1411,6 +1412,7 @@ class Order(models.Model):
 	# origin_order_id=-1表示有子订单，>0表示有父母订单，=0为默认数据
 	supplier = models.IntegerField(default=0) # 订单供货商，用于微众精选拆单
 	is_100 = models.BooleanField(default=True) # 是否是快递100能够查询的快递
+	delivery_time = models.CharField(max_length=50, default='')  # 配送时间字符串
 
 	class Meta(object):
 		db_table = 'mall_order'

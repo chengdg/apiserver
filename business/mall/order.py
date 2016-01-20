@@ -114,6 +114,7 @@ class Order(business_model.Model):
 		'buyer_name',
 
 		'weizoom_card_money',
+		'delivery_time', # 配送时间字符串
 	)
 
 	@staticmethod
@@ -559,6 +560,7 @@ class Order(business_model.Model):
 		db_model.type = self.type
 		db_model.pay_interface_type = self.pay_interface_type
 		db_model.order_id = self.order_id
+		db_model.delivery_time = self.delivery_time
 
 		if self.coupon_id:
 			db_model.coupon_id = self.coupon_id

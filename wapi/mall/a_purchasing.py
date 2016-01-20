@@ -133,7 +133,8 @@ class APurchasing(api_resource.ApiResource):
 			'type': order.type,
 			'pay_interfaces': order.pay_interfaces,
 			'product_groups': product_group_datas,
-			'is_enable_bill': order.is_enable_bill
+			'is_enable_bill': order.is_enable_bill,
+			'is_delivery': order.is_delivery # 是否勾选配送时间,发货时间判断字段
 		}
 
 		return {

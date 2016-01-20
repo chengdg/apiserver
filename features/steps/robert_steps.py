@@ -282,6 +282,10 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 		data['is_use_coupon'] = 'true'
 		data['coupon_id'] = coupon
 
+	if args.has_key("distribution_time"):
+		time_str = args.get("distribution_time")
+		time_strs = time_str.split(" ")
+		data["delivery_time"] = "{} {}".format(bdd_util.get_date_str(time_strs[0]),time_strs[1])
 	url = '/wapi/mall/order/?_method=put'
 	data['woid'] = context.webapp_owner_id
 	print '>>>>>>>>>>>>>>>>>>>>>dddddddd>>>>',data
@@ -443,8 +447,15 @@ def step_impl(context, webapp_usr_name, order_id):
 		actual['products'] = products
 	else:
 		products = __fix_field_for(actual['products'])
+	actual["distribution_time"] = actual.get("delivery_time","")
 
 	expected = json.loads(context.text)
+	if expected.has_key("distribution_time"):
+		time_str = expected.get("distribution_time")
+		time_strs = time_str.split(" ")
+		expected["distribution_time"] = "{} {}".format(bdd_util.get_date_str(time_strs[0]),time_strs[1])
+	if expected["status"] == u"已处理":
+		expected["status"] = u"待收货"
 	bdd_util.assert_dict(expected, actual)
 
 

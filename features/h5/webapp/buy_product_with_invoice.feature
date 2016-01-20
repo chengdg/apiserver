@@ -61,7 +61,7 @@ Background:
 		"""
 		[{
 			"name": "支持开票1",
-			"category": "",
+			"category": "分类1",
 			"detail": "商品1的详情",
 			"status": "在售",
 			"invoice":ture,
@@ -96,10 +96,10 @@ Background:
 				}
 		},{
 			"name": "不支持开票3",
-			"category": "",
+			"category": "分类2",
 			"detail": "商品3的详情",
 			"status": "在售",
-			"invoice":ture,
+			"invoice":false,
 			"model": {
 					"models": {
 						"standard": {

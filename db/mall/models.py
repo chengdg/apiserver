@@ -232,6 +232,7 @@ class Product(models.Model):
 	is_member_product = models.BooleanField(default=False)  # 是否参加会员折扣
 	supplier = models.IntegerField(default=0) # 供货商
 	purchase_price = models.FloatField(default=0.0) # 进货价格
+	is_enable_bill = models.BooleanField(default=False)  # 商品是否开具发票
 
 	class Meta(object):
 		db_table = 'mall_product'
@@ -690,10 +691,10 @@ class Product(models.Model):
 	def fill_image_detail(webapp_owner_id, products, product_ids):
 		for product in products:
 			product.swipe_images = [{
-				'id': img.id, 
+				'id': img.id,
 				'url': '%s%s' % (settings.IMAGE_HOST, img.url),
-				'linkUrl': img.link_url, 
-				'width': img.width, 
+				'linkUrl': img.link_url,
+				'width': img.width,
 				'height': img.height
 			} for img in ProductSwipeImage.select().dj_where(product_id=product.id)]
 
@@ -701,7 +702,7 @@ class Product(models.Model):
 	def fill_property_detail(webapp_owner_id, products, product_ids):
 		for product in products:
 			product.properties = [{
-				"id": property.id, 
+				"id": property.id,
 				"name": property.name,
 				"value": property.value
 			} for property in ProductProperty.select().dj_where(product_id=product.id)]
@@ -1005,7 +1006,7 @@ ONLINE_PAY_INTERFACE = [
 	PAY_INTERFACE_ALIPAY,
 	PAY_INTERFACE_WEIZOOM_COIN,
 	PAY_INTERFACE_TENPAY]
-	
+
 class PayInterface(models.Model):
 	"""
 	支付方式
@@ -1138,8 +1139,8 @@ class UserWeixinPayOrderConfig(models.Model):
 	app_id = models.CharField(max_length=32, verbose_name='微信公众号app_id')
 	app_secret = models.CharField(max_length=64)
 	partner_id = models.CharField(max_length=32, verbose_name='合作商户id')
-	partner_key = models.CharField(max_length=32, verbose_name='合作商初始密钥')	
-	paysign_key = models.CharField(max_length=128, verbose_name='支付专用签名串')	
+	partner_key = models.CharField(max_length=32, verbose_name='合作商初始密钥')
+	paysign_key = models.CharField(max_length=128, verbose_name='支付专用签名串')
 	pay_version  = models.IntegerField(default=V2)
 
 	class Meta(object):
@@ -1378,8 +1379,8 @@ class Order(models.Model):
 	area = models.CharField(max_length=100)
 	status = models.IntegerField(default=ORDER_STATUS_NOT)  # 订单状态
 	order_source = models.IntegerField(default=ORDER_SOURCE_OWN)  # 订单来源 0本店 1商城 已废弃，新订单使用默认值兼容老数据
-	bill_type = models.IntegerField(default=ORDER_BILL_TYPE_NONE)  # 发票类型，已废弃
-	bill = models.CharField(max_length=100, default='')  # 发票信息 已废弃
+	bill_type = models.IntegerField(default=ORDER_BILL_TYPE_NONE)  # 发票类型 2016-01-20重新启用by Eugene
+	bill = models.CharField(max_length=100, default='')  # 发票信息 2016-01-20重新启用by Eugene
 	remark = models.TextField(default='')  # 备注
 	product_price = models.FloatField(default=0.0)  # 商品金额（应用促销后的商品总价）
 	coupon_id = models.IntegerField(default=0)  # 优惠券id，用于支持返还优惠券

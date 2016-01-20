@@ -188,7 +188,8 @@ class Product(business_model.Model):
 		'unified_postage_money',
 		'is_use_cod_pay_interface',
 		'product_promotion_title', #商品的促销标题
-		
+		'is_enable_bill',
+
 		#促销信息
 		'promotion',
 		'promotion_title', #商品关联的促销活动的促销标题
@@ -227,7 +228,7 @@ class Product(business_model.Model):
 
 		@return Product对象集合
 		"""
-		#update by bert 
+		#update by bert
 		return [Product.from_id({"product_id":product_id,"webapp_owner": args['webapp_owner']}) for product_id in args['product_ids']]
 
 	def __init__(self, model=None):
@@ -464,7 +465,7 @@ class Product(business_model.Model):
 				standard_model = None
 				if product.models:
 					standard_model = product.models[0]
-					
+
 				if standard_model:
 					product.price_info = {
 						'display_price': str("%.2f" % standard_model.price),
@@ -506,10 +507,10 @@ class Product(business_model.Model):
 		"""
 		for product in products:
 			product.swipe_images = [{
-				'id': img.id, 
+				'id': img.id,
 				'url': '%s%s' % (settings.IMAGE_HOST, img.url) if img.url.find('http') == -1 else img.url,
-				'linkUrl': img.link_url, 
-				'width': img.width, 
+				'linkUrl': img.link_url,
+				'width': img.width,
 				'height': img.height
 			} for img in mall_models.ProductSwipeImage.select().dj_where(product_id=product.id)]
 
@@ -519,7 +520,7 @@ class Product(business_model.Model):
 		"""
 		for product in products:
 			product.properties = [{
-				"id": property.id, 
+				"id": property.id,
 				"name": property.name,
 				"value": property.value
 			} for property in mall_models.ProductProperty.select().dj_where(product_id=product.id)]
@@ -657,7 +658,6 @@ class Product(business_model.Model):
 		promotion_title = self.promotion_title
 		if self.promotion and self.promotion.promotion_title:
 			promotion_title = self.promotion.promotion_title
-
 		result = {
 			'id': self.id,
 			'owner_id': self.owner_id,
@@ -684,6 +684,7 @@ class Product(business_model.Model):
 			'used_system_model_properties': getattr(self, 'used_system_model_properties', None),
 			'total_stocks': self.total_stocks,
 			'is_sellout': self.is_sellout,
+			'is_enable_bill': self.is_enable_bill,
 			'created_at': self.created_at if type(self.created_at) == str else datetime.strftime(self.created_at, '%Y-%m-%d %H:%M'),
 			'supplier': self.supplier,
 			'display_index': self.display_index,
@@ -695,7 +696,7 @@ class Product(business_model.Model):
 			'integral_sale': self.integral_sale.to_dict() if self.integral_sale else None,
 			'product_review': getattr(self, 'product_review', None),
 			'price_info': getattr(self, 'price_info', None),
-			'postage_type': self.postage_type, 
+			'postage_type': self.postage_type,
 			'unified_postage_money': self.unified_postage_money
 		}
 

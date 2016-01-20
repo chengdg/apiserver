@@ -15,7 +15,7 @@ from core.cache import utils as cache_util
 from db.mall import models as mall_models
 #import resource
 from core.watchdog.utils import watchdog_alert
-from business import model as business_model 
+from business import model as business_model
 import settings
 import logging
 
@@ -33,6 +33,7 @@ class PurchaseInfo(business_model.Model):
         'product_model_names',
 
         'ship_info',
+        'bill_info', # 发票信息
         'used_pay_interface_type',
         'customer_message',
         'order_type',
@@ -78,6 +79,7 @@ class PurchaseInfo(business_model.Model):
         self.product_model_names = result['product_model_names']
 
         self.__parse_ship_info(request_args)
+        self.__parse_bill_info(request_args)
         self.__parse_pay_interface(request_args)
         self.__parse_custom_message(request_args)
         self.__parse_coupon_id(request_args)
@@ -88,7 +90,7 @@ class PurchaseInfo(business_model.Model):
         self.is_purchase_from_shopping_cart = (request_args.get('is_order_from_shopping_cart', 'false') == 'true')
         self.is_force_purchase = (request_args.get('forcing_submit', '0') == '1')
 
-        self.__parse_integral_info(request_args) 
+        self.__parse_integral_info(request_args)
 
     def __parse_ship_info(self, request_args):
         """
@@ -104,11 +106,23 @@ class PurchaseInfo(business_model.Model):
         else:
             self.ship_info = None
 
+    def __parse_bill_info(self, request_args):
+        """
+        解析订单发票的信息
+        """
+        if 'bill_type' in request_args:
+            self.bill_info = {
+                "bill_type": request_args['bill_type'],
+                "bill": request_args['bill'] if request_args.has_key('bill') else ""
+            }
+        else:
+            self.bill_info = None
+
     def __parse_wzcard_info(self, request_args):
         """
         解析微众卡信息
 
-        @return 微众卡信息的list        
+        @return 微众卡信息的list
         """
         card_names = request_args.get('card_name', '').split(',')
         card_passwords = request_args.get('card_pass', '').split(',')

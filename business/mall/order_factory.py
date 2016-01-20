@@ -38,7 +38,7 @@ from db.mall import models as mall_models
 #import resource
 from core.watchdog.utils import watchdog_alert,watchdog_error
 from core.exceptionutil import unicode_full_stack
-from business import model as business_model 
+from business import model as business_model
 from business.mall.product import Product
 import settings
 from business.decorator import cached_context_property
@@ -70,7 +70,7 @@ class OrderFactory(business_model.Model):
 		@return Order对象
 		"""
 		order_factory = OrderFactory(args['webapp_owner'], args['webapp_user'])
-		
+
 		return order_factory
 
 	def __init__(self, webapp_owner, webapp_user):
@@ -85,7 +85,7 @@ class OrderFactory(business_model.Model):
 	# 	@return True, None: 订单有效；False, reason: 订单无效, 无效原因
 	# 	"""
 	# 	order_checker = OrderChecker(self.context['webapp_owner'], self.context['webapp_user'], self)
-		
+
 	# 	return order_checker.check()
 
 
@@ -140,7 +140,7 @@ class OrderFactory(business_model.Model):
 				"msg": u"该活动已经过期",
 				"short_msg": u"已经过期"
 			}
-		
+
 		@see __allocation_promotion()
 
 		@return price_free_resources
@@ -149,9 +149,9 @@ class OrderFactory(business_model.Model):
 		webapp_user = self.context['webapp_user']
 
 		allocate_order_resource_service = AllocateOrderResourceService(webapp_owner, webapp_user)
-		
+
 		successed, reasons, resources = allocate_order_resource_service.allocate_resource_for(order, purchase_info)
-		
+
 		if successed:
 			logging.info(u"Allocated resources successfully. count: {}".format(len(resources)))
 			self.context['allocator_order_resource_service'] = allocate_order_resource_service
@@ -212,12 +212,20 @@ class OrderFactory(business_model.Model):
 		order.ship_address = ship_info['address']
 		order.ship_tel = ship_info['tel']
 		order.ship_area = ship_info['area']
+		bill_info = purchase_info.bill_info
+		if bill_info:
+			order.bill_type = bill_info['bill_type']
+			order.bill = bill_info['bill']
+		else:
+			order.bill_type = 0
+			order.bill = ""
 		order.customer_message = purchase_info.customer_message
 		order.type = purchase_info.order_type
 		order.pay_interface_type = purchase_info.used_pay_interface_type
 		order.status = mall_models.ORDER_STATUS_NOT
 		order.order_id = self.__create_order_id()
 		return order
+
 
 	def __save_order(self, order):
 		"""
@@ -230,6 +238,7 @@ class OrderFactory(business_model.Model):
 		if order.final_price == 0:
 			# 优惠券或积分金额直接可支付完成，直接调用pay_order，完成支付
 			order.pay(mall_models.PAY_INTERFACE_PREFERENCE)
+
 		return order
 
 

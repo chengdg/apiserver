@@ -9,6 +9,7 @@
 #import math
 from datetime import datetime
 
+from business.mall.realtime_stock import RealtimeStock
 from wapi.decorators import param_required
 ##from wapi import wapi_utils
 #from core.cache import utils as cache_util
@@ -100,6 +101,12 @@ class PromotionRepository(business_model.Model):
 			main_product = product2promotion.product
 
 			product_id = premium_sale_product.product_id
+
+			realtime_stock = RealtimeStock.from_product_id({
+					'product_id': product_id
+				})
+			realtime_stock_dict = realtime_stock.model2stock.values()[0]
+
 			product = id2product[product_id]
 			data = {
 				'id': product.id,
@@ -109,7 +116,9 @@ class PromotionRepository(business_model.Model):
 				'premium_count': premium_sale_product.count,
 				'premium_unit': premium_sale_product.unit,
 				'premium_product_id': premium_sale_product.product_id,
-				'supplier': main_product.supplier
+				'supplier': main_product.supplier,
+				'stock_type': realtime_stock_dict['stock_type'],
+				'stocks': realtime_stock_dict['stocks']
 			}
 			id2sale[premium_sale_id].premium_products.append(data)
 

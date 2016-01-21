@@ -64,7 +64,7 @@ Background:
 			"category": "分类1",
 			"detail": "商品1的详情",
 			"status": "在售",
-			"invoice":ture,
+			"invoice":true,
 			"model": {
 					"models": {
 						"standard": {
@@ -78,7 +78,7 @@ Background:
 			},{
 				"name": "支持开票2",
 				"is_enable_model": "启用规格",
-				"invoice":ture,
+				"invoice":true,
 				"model": {
 					"models": {
 						"黑色 S": {
@@ -123,6 +123,7 @@ Scenario:1 购买单个支持开发票的商品，选择'个人'发票
 			"ship_tel": "13811223344",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
+			"order_id":"001",
 			"pay_type":"微信支付",
 			"invoice":{
 					"type":"个人",
@@ -142,13 +143,28 @@ Scenario:1 购买单个支持开发票的商品，选择'个人'发票
 			"ship_tel": "13811223344",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
+			"final_price": 10.00,
+			"products": [{
+				"name": "支持开票1",
+				"price": 10.00,
+				"count": 1
+			}]
+		}
+		"""
+	When bill访问jobs的webapp
+	Then bill手机端获取订单'001'
+		"""
+		{
+			"order_no": "001",
+			"status":"待支付",
+			"methods_of_payment":"微信支付",
 			"invoice":{
 					"type":"个人",
 					"value":"李李"
 				},
 			"final_price": 10.00,
 			"products": [{
-				"name": "支持开票1",
+				"name": "配送商品1",
 				"price": 10.00,
 				"count": 1
 			}]
@@ -176,7 +192,7 @@ Scenario:2 购买多个支持开发票的商品,选择'单位'发票
 	When bill从购物车发起购买操作
 		"""
 		{
-			"action": "click",
+			"action": "pay",
 			"context": [{
 					"name": "支持开票1"
 				},{
@@ -207,11 +223,7 @@ Scenario:2 购买多个支持开发票的商品,选择'单位'发票
 			"ship_tel": "13811223344",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
-			"final_price": 30.00
-			"invoice":{
-					"type":"单位",
-					"value":"北京微众文化传媒有限公司"
-				},
+			"final_price": 30.00,
 			"products": [{
 				"name": "支持开票1",
 				"price": 10.00,
@@ -249,7 +261,7 @@ Scenario:3 购买支持开发票和不支持开发票的商品
 	When bill从购物车发起购买操作
 		"""
 		{
-			"action": "click",
+			"action": "pay",
 			"context": [{
 					"name": "支持开票1"
 				},{
@@ -282,11 +294,7 @@ Scenario:3 购买支持开发票和不支持开发票的商品
 			"ship_tel": "13811223344",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
-			"final_price": 60.00
-			"invoice":{
-					"type":"单位",
-					"value":"北京微众文化传媒有限公司"
-				},
+			"final_price": 60.00,
 			"products": [{
 				"name": "支持开票1",
 				"price": 10.00,

@@ -9,7 +9,7 @@ import math
 from datetime import datetime
 
 from wapi.decorators import param_required
-from wapi import wapi_utils
+#from wapi import wapi_utils
 from core.cache import utils as cache_util
 from db.mall import models as mall_models
 from db.mall import promotion_models
@@ -47,8 +47,11 @@ class ProductModelGenerator(business_model.Model):
 		"""
 		if not is_enable_model_property_info:
 			return {}, {}
-
-		properties = list(mall_models.ProductModelProperty.select().dj_where(owner_id=webapp_owner_id))
+		# 兼容微众商城老数据
+		if webapp_owner_id == 216 or webapp_owner_id == 119:
+			properties = list(mall_models.ProductModelProperty.select())
+		else:
+			properties = list(mall_models.ProductModelProperty.select().dj_where(owner_id=webapp_owner_id))
 		property_ids = [property.id for property in properties]
 		id2property = dict([(str(property.id), property)
 						   for property in properties])

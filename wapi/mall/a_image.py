@@ -20,6 +20,10 @@ class AImage(api_resource.ApiResource):
 
 	@param_required(['file'])
 	def put(args):
+		"""
+		@param file
+		@return {"image_path": image_path}
+		"""
 		webapp_owner = args['webapp_owner']
 		file_data = args['file']
 		image_path = upload_img.save_base64_img_file_local_for_webapp(webapp_owner.id, file_data)

@@ -10,7 +10,7 @@ import math
 from datetime import datetime
 
 from wapi.decorators import param_required
-from wapi import wapi_utils
+#from wapi import wapi_utils
 from core.cache import utils as cache_util
 from db.mall import models as mall_models
 from db.mall import promotion_models
@@ -234,6 +234,20 @@ class WebAppOwner(business_model.Model):
 		[property] 默认MpUserInfo
 		"""
 		return self.__webapp_owner_info.mpuser_preview_info
+
+	@property
+	def mp_head_img(self):
+		"""
+		[property] mp_head_img
+		"""
+		return self.__webapp_owner_info.mp_head_img
+
+	@property
+	def mp_nick_name(self):
+		"""
+		[property] mp_nick_name
+		"""
+		return self.__webapp_owner_info.mp_nick_name
 
 
 

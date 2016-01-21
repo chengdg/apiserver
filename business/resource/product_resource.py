@@ -11,7 +11,7 @@ import itertools
 from datetime import datetime
 
 from wapi.decorators import param_required
-from wapi import wapi_utils
+#from wapi import wapi_utils
 from core.cache import utils as cache_util
 from db.mall import models as mall_models
 #import resource
@@ -61,9 +61,7 @@ class ProductResource(business_model.Resource):
 		"""
 
 		product_resource_checker = ProductResourceChecker()
-
 		is_succeeded, reason = product_resource_checker.check(product)
-
 		if not is_succeeded:
 			logging.info("reason in `ProductResource.get_resources(): {}".format(reason))
 			return False, reason
@@ -87,7 +85,6 @@ class ProductResource(business_model.Resource):
 				'product_id': product.id
 			})
 		model2stock = realtime_stock.model2stock
-
 		if not model2stock and len(model2stock) != 1:
 			return False, {
 				'is_successed': False,

@@ -1,6 +1,7 @@
 #author: 崔帅帅
 #author: 王丽
 #editor: 张三香 2015.10.16
+#说明：此feature与重构时不相关，于2016.01.19移除到ignore文件夹下
 
 Feature: 微信用户关注公众号成为系统会员
 """

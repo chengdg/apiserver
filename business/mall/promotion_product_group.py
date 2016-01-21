@@ -14,7 +14,7 @@ import itertools
 from datetime import datetime
 
 from wapi.decorators import param_required
-from wapi import wapi_utils
+#from wapi import wapi_utils
 from core.cache import utils as cache_util
 from db.mall import models as mall_models
 from db.mall import promotion_models
@@ -44,7 +44,8 @@ class PromotionProductGroup(business_model.Model):
 		'active_integral_sale_rule',
 		'can_use_promotion',
 		'promotion_json',
-		'member_grade_id'
+		'member_grade_id',
+		'integral_result'
 	)
 
 	def __init__(self, group_info):
@@ -88,8 +89,9 @@ class PromotionProductGroup(business_model.Model):
 		if self.promotion:
 			self.can_use_promotion = self.promotion.can_apply_promotion(self)
 			if not self.can_use_promotion:
-				self.promotion = None
-				self.promotion_result = None
+				# self.promotion = None
+				if self.promotion.type == promotion_models.PROMOTION_TYPE_PREMIUM_SALE:
+					self.promotion_result = self.promotion.get_detail(self, purchase_info)
 				for product in self.products:
 					product.disable_promotion()
 			else:
@@ -99,20 +101,35 @@ class PromotionProductGroup(business_model.Model):
 					product.set_promotion_result(self.promotion_result)
 					if self.promotion_result.need_disable_discount:
 						product.disable_discount()
+			if purchase_info:
+				if purchase_info.group2integralinfo and (self.uid in purchase_info.group2integralinfo):
+					integral_result_info = self.uid.replace('_', '-', 1)
+					self.integral_result = {'integral_product_info': integral_result_info}
+					integral_info = purchase_info.group2integralinfo[self.uid]
+					self.integral_result['integral_money'] = integral_info['money']
+					self.integral_result['use_integral'] = integral_info['integral']
 		else:
 			if purchase_info:
 				if purchase_info.group2integralinfo and (self.uid in purchase_info.group2integralinfo):
+					integral_result_info = self.uid.replace('_', '-', 1)
+					self.integral_result = {'integral_product_info': integral_result_info}
+					integral_info = purchase_info.group2integralinfo[self.uid]
+					self.integral_result['integral_money'] = integral_info['money']
+					self.integral_result['use_integral'] = integral_info['integral']
+
+
 					#当前product group存在is_permanant_active的积分应用
 					#TODO2: 在前端react重构完成后，这里要重新设计实现，目前硬编码实现
 					product = self.products[0]
 					promotion_ids = [relation.promotion_id for relation in promotion_models.ProductHasPromotion.select().dj_where(product_id=product.id)]
-					integral_sale_detail_ids = [promotion.detail_id for promotion in promotion_models.Promotion.select().dj_where(type=promotion_models.PROMOTION_TYPE_INTEGRAL_SALE, id__in=promotion_ids)]
+					integral_sale_detail_ids = [promotion.detail_id for promotion in promotion_models.Promotion.select().dj_where(type=promotion_models.PROMOTION_TYPE_INTEGRAL_SALE, id__in=promotion_ids, status=promotion_models.PROMOTION_STATUS_STARTED)]
 					has_permanant_integral_sale = promotion_models.IntegralSale.select().dj_where(id__in=integral_sale_detail_ids, is_permanant_active=True).count() > 0
 					if has_permanant_integral_sale:
 						integral_info = purchase_info.group2integralinfo[self.uid]
-						self.active_integral_sale_rule = {
-							'discount': 100
-						}
+						self.active_integral_sale_rule = integral_info
+						# self.active_integral_sale_rule = {
+						# 	'discount': 100
+						# }
 						self.promotion_result = PromotionResult(saved_money=0, subtotal=0, detail={
 							'integral_money': integral_info['money'],
 							'use_integral': integral_info['integral']

@@ -16,7 +16,7 @@ from hashlib import md5
 from datetime import datetime
 
 from wapi.decorators import param_required
-from wapi import wapi_utils
+#from wapi import wapi_utils
 # from cache import utils as cache_util
 from db.member import models as member_models
 #import resource

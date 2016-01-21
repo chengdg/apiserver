@@ -19,6 +19,9 @@ class AShoppingCartItem(api_resource.ApiResource):
 	def put(args):
 		"""
 		创建购物车项目
+		@param product_id
+		@param count
+		@param product_model_name
 		"""
 		product_id = args['product_id']
 		product_model_name = args.get('product_model_name', 'standard')
@@ -48,6 +51,12 @@ class AShoppingCartItem(api_resource.ApiResource):
 	def delete(args):
 		"""
 		删除购物车项目
+		@param id
+		@return
+		 {
+			'success': True,
+			'count': 1
+		}
 		"""
 		shopping_cart = ShoppingCart.get_for_webapp_user({
 			'webapp_user': args['webapp_user'],

@@ -2,16 +2,13 @@
 
 import json
 import decimal
-#from wsgiref import simple_server
 from datetime import datetime, date
 
 import falcon
 from core import api_resource
-#from core import auth
 from core.exceptionutil import unicode_full_stack
+from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
 import settings
-#import resource as resource_module
-#import resource.resources
 import wapi.resources
 import wapi as wapi_resource
 from core.db import models
@@ -53,8 +50,8 @@ def _default(obj):
 		return obj.strftime('%Y-%m-%d') 
 	elif isinstance(obj, decimal.Decimal):
 		return str(obj)
-	elif settings.DEBUG and isinstance(obj, models.Model):
-		return obj.to_dict()
+	# elif settings.DEBUG and isinstance(obj, models.Model):
+	# 	return obj.to_dict()
 	else: 
 		raise TypeError('%r is not JSON serializable (type %s)' % (obj, type(obj)))
 
@@ -91,10 +88,17 @@ class FalconResource:
 			response['code'] = 404
 			response['errMsg'] = str(e).strip()
 			response['innerErrMsg'] = unicode_full_stack()
+			message = u"req:{}, error:{}".format(req.params, unicode_full_stack())
+			watchdog_error(message)
+			print '>>>>>>>>>>>>>error_message',message
 		except Exception as e:
 			response['code'] = 531 #不要改动这个code，531是表明apiserver内部发生异常的返回码
 			response['errMsg'] = str(e).strip()
 			response['innerErrMsg'] = unicode_full_stack()
+			message = u"req:{}, error:{}".format(req.params, unicode_full_stack())
+			watchdog_error(message)
+			print '>>>>>>>>>>>>>error_message',message
+
 		resp.body = json.dumps(response, default=_default)
 
 	def on_get(self, req, resp, app, resource):

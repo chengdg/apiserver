@@ -9,7 +9,7 @@ import math
 from datetime import datetime
 
 from wapi.decorators import param_required
-from wapi import wapi_utils
+#from wapi import wapi_utils
 from core.cache import utils as cache_util
 from db.mall import models as mall_models
 from db.mall import promotion_models
@@ -90,13 +90,14 @@ class ProductModel(business_model.Model):
 				'id': _value['id'],
 				'name': _value['name']
 			}
-
+			a_image = _value['image'] if _value['image'] else ''
 			property_values.append({
 				'propertyId': _property['id'],
 				'propertyName': _property['name'],
 				'id': _value['id'],
 				'name': _value['name'],
-				'image': '%s%s' % (settings.IMAGE_HOST, _value['image']) if _value['image'] else ''
+				'image': '%s%s' % (settings.IMAGE_HOST, a_image) if a_image and a_image.find('http') == -1 else a_image
 			})
+
 		self.property_values = property_values
 		self.property2value = property2value

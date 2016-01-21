@@ -12,6 +12,14 @@ class ARegional(api_resource.ApiResource):
 
 	@param_required(['type', 'id'])
 	def get(args):
+		"""
+		@param type
+		@param id
+		@return
+		{
+			'regional_info': regional_info
+		}
+		"""
 		regional = Regional()
 		regional_type = args['type']
 		regional_id = args['id']

@@ -4,21 +4,9 @@
 
 """
 
-import copy
-from datetime import datetime
-
 from core import api_resource
 from wapi.decorators import param_required
-from db.mall import models as mall_models
-from db.mall import promotion_models
-from utils import dateutil as utils_dateutil
 #import resource
-from wapi.mall.a_purchasing import APurchasing as PurchasingApiResource
-from core.cache import utils as cache_utils
-from business.mall.order_factory import OrderFactory, OrderException
-from business.mall.purchase_info import PurchaseInfo
-from business.mall.pay_interface import PayInterface
-from business.mall.order import Order
 from business.account.integral_logs import IntegralLogs
 
 
@@ -32,12 +20,11 @@ class AMemberIntegralLog(api_resource.ApiResource):
 
 	@param_required(['webapp_owner', 'webapp_user'])
 	def get(args):
-
-		print '>>>>>>>>>>>>>>>>>>>>'
-		print args
-		print args['webapp_owner']
-		print args['webapp_user']
-		print '>>>>>>>>>>>>>>>>>>>>>'
+		# print '>>>>>>>>>>>>>>>>>>>>'
+		# print args
+		# print args['webapp_owner']
+		# print args['webapp_user']
+		# print '>>>>>>>>>>>>>>>>>>>>>'
 		integral_logs = IntegralLogs.get({
 				'webapp_owner': args['webapp_owner'], 
 				'webapp_user': args['webapp_user']

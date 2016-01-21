@@ -1,20 +1,22 @@
 # -*- coding: utf-8 -*-
 
-import copy
+#import copy
 from datetime import datetime
 
 from core import api_resource
 from wapi.decorators import param_required
 #from db.mall import models as mall_models
 #from db.mall import promotion_models
-from utils import dateutil as utils_dateutil
+#from utils import dateutil as utils_dateutil
 #import resource
-from wapi.mall.a_purchasing import APurchasing as PurchasingApiResource
-from core.cache import utils as cache_utils
-from business.mall.order_factory import OrderFactory
-from business.mall.purchase_info import PurchaseInfo
-from business.mall.pay_interface import PayInterface
+#from wapi.mall.a_purchasing import APurchasing as PurchasingApiResource
+#from core.cache import utils as cache_utils
+#from business.mall.order_factory import OrderFactory
+#from business.mall.purchase_info import PurchaseInfo
+#from business.mall.pay_interface import PayInterface
 from business.mall.shopping_cart import ShoppingCart
+from core.watchdog.utils import watchdog_info, watchdog_error
+from services.update_member_from_weixin.task import update_member_info
 
 class AUserCenter(api_resource.ApiResource):
 	"""
@@ -32,6 +34,12 @@ class AUserCenter(api_resource.ApiResource):
 		webapp_owner = args['webapp_owner']
 		member = webapp_user.member
 
+		today = datetime.now()
+		today_str = datetime.today().strftime('%Y-%m-%d')
+		if member.update_time.strftime("%Y-%m-%d") != today_str:
+			update_member_info.delay(webapp_user.id, webapp_owner.id)
+
+
 		shopping_cart = ShoppingCart.get_for_webapp_user({
 			'webapp_user': args['webapp_user'],
 			'webapp_owner': args['webapp_owner'],
@@ -43,12 +51,12 @@ class AUserCenter(api_resource.ApiResource):
 			phone = webapp_user.phone
 		else:
 			phone = ''
-
+		watchdog_info('visit AUserCenter')
 		member_data = {
 			'user_icon': webapp_user.user_icon,
 			'is_binded': is_binded,
 			'username_for_html': webapp_user.username_for_html,
-			'grade': webapp_user.grade,
+			'grade': webapp_user.grade.to_dict(),
 			'history_order_count': webapp_user.history_order_count,
 			'not_payed_order_count': webapp_user.not_payed_order_count,
 			'not_ship_order_count': webapp_user.not_ship_order_count,

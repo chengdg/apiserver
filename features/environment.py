@@ -15,6 +15,8 @@ from pymongo import Connection
 import settings
 from features.util import bdd_util
 from core.cache import utils as cache_utils
+from core.service import celeryconfig
+
 ######################################################################################
 # __clear_all_account_data: 清空账号数据
 ######################################################################################
@@ -64,6 +66,10 @@ def before_all(context):
 
 	#登录添加App
 	#client = bdd_util.login('manager')
+
+	# 让Celery以同步方式运行
+	celeryconfig.CELERY_ALWAYS_EAGER = True
+
 
 
 def after_all(context):

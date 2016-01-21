@@ -21,6 +21,9 @@ from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
 import db.account.models as accout_models
 from core.wxapi import get_weixin_api
 from features.util.bdd_util import set_bdd_mock
+from services.record_order_status_log_service.task import record_order_status_log
+from services.send_template_message_service.task import send_template_message
+from services.update_product_sale_service.task import update_product_sale
 from utils.regional_util import get_str_value_by_string_ids
 
 #import settings
@@ -32,6 +35,7 @@ from business.mall.product import Product
 from business.mall.order_products import OrderProducts
 from business.mall.log_operator import LogOperator
 from business.mall.red_envelope import RedEnvelope
+from business.spread.member_spread import MemberSpread
 from business.decorator import cached_context_property
 from utils import regional_util
 from business.resource.order_resource_extractor import OrderResourceExtractor
@@ -48,6 +52,7 @@ from business.account.integral import Integral
 from business.mall.pay_interface import PayInterface
 from decimal import Decimal
 from business.mall.allocator.allocate_price_related_resource_service import AllocatePriceRelatedResourceService
+
 
 
 ORDER_STATUS2NOTIFY_STATUS = {
@@ -187,7 +192,7 @@ class Order(business_model.Model):
 				self._init_slot_from_model(order_db_model)
 				self.context['is_valid'] = True
 				self.ship_area = regional_util.get_str_value_by_string_ids(order_db_model.area)
-				
+
 			except:
 				webapp_owner_id = webapp_owner.id
 				error_msg = u"获得order_id('{}')对应的Order model失败, cause:\n{}"\
@@ -423,24 +428,25 @@ class Order(business_model.Model):
 		"""
 
 		# todo 修改
-		order_has_products = mall_models.OrderHasProduct.select().dj_where(order=self.id)
-		buy_count = ''
-		product_name = ''
-		product_pic_list = []
-		for order_has_product in order_has_products:
-			buy_count = buy_count+str(order_has_product.number)+','
-			product_name = product_name+order_has_product.product.name+','
-			product_pic_list.append(order_has_product.product.thumbnails_url)
-		buy_count = buy_count[:-1]
-		product_name = product_name[:-1]
-		user = accout_models.UserProfile.get(webapp_id=self.webapp_id).user
-		if self.coupon_id:
-			coupon = str(promotion_models.Coupon.get(id=int(self.coupon_id)).coupon_id) + u',￥' + str(self.coupon_money)
-		else:
-			coupon = ''
+		# order_has_products = mall_models.OrderHasProduct.select().dj_where(order=self.id)
+		# buy_count = ''
+		# product_name = ''
+		# product_pic_list = []
+		# for order_has_product in order_has_products:
+		# 	buy_count = buy_count+str(order_has_product.number)+','
+		# 	product_name = product_name+order_has_product.product.name+','
+		# 	product_pic_list.append(order_has_product.product.thumbnails_url)
+		# buy_count = buy_count[:-1]
+		# product_name = product_name[:-1]
+		#user = accout_models.UserProfile.get(webapp_id=self.webapp_id).user
+
+		# if self.coupon_id:
+		# 	coupon = str(promotion_models.Coupon.get(id=int(self.coupon_id)).coupon_id) + u',￥' + str(self.coupon_money)
+		# else:
+		# 	coupon = ''
 
 		try:
-			print(self.ship_area)
+			#print(self.ship_area)
 			area = get_str_value_by_string_ids(self.ship_area)
 		except:
 			area = self.ship_area
@@ -466,23 +472,25 @@ class Order(business_model.Model):
 			express_number = ''
 
 		notify_order_mail.delay(
-				user_id=user.id,
+				user_id=self.context['webapp_owner'].id,
 				member_id=member_id,
 				status=email_notify_status,
+				oid=self.id,
 				order_id=self.order_id,
 				buyed_time=time.strftime('%Y-%m-%d %H:%M', time.localtime(time.time())),
 				order_status=order_status,
-				buy_count=buy_count,
+				#buy_count=buy_count,
 				total_price=self.final_price,
 				bill='',
-				coupon=coupon,
-				product_name=product_name,
+				coupon=self.coupon_id,
+				coupon_money=self.coupon_money,
+				#product_name=product_name,
 				integral=self.integral,
 				buyer_name=self.ship_name,
 				buyer_address=buyer_address,
 				buyer_tel=self.ship_tel,
 				remark=self.customer_message,
-				product_pic_list=product_pic_list,
+				#product_pic_list=product_pic_list,
 				postage=self.postage,
 				express_company_name=express_company_name,
 				express_number=express_number
@@ -510,7 +518,7 @@ class Order(business_model.Model):
 		#因为self.products这个property返回的是ReservedProduct或OrderProduct的对象集合，所以需要再次处理
 		if 'products' in result:
 			result['products'] = [product.to_dict() for product in result['products']]
-		
+
 		return result
 
 
@@ -527,6 +535,7 @@ class Order(business_model.Model):
 		"""
 		业务模型序列化
 		"""
+
 		db_model = self.context['order']
 
 		# 读取基本信息
@@ -534,7 +543,8 @@ class Order(business_model.Model):
 		db_model.webapp_user_id = self.webapp_user_id
 		db_model.member_grade_id = self.member_grade_id
 		db_model.member_grade_discount = self.member_grade_discount
-		db_model.buyer_name = self.buyer_name
+		# order.buyer_name 已弃用
+		db_model.buyer_name = ''
 
 		# 读取purchase_info信息
 		db_model.ship_name = self.ship_name
@@ -545,13 +555,6 @@ class Order(business_model.Model):
 		db_model.type = self.type
 		db_model.pay_interface_type = self.pay_interface_type
 		db_model.order_id = self.order_id
-		#db_model.webapp_source_id = 0 	# 兼容老数据
-
-		if self.supplier:
-			db_model.supplier = self.supplier
-
-		if self.origin_order_id:
-			db_model.origin_order_id = self.origin_order_id
 
 		if self.coupon_id:
 			db_model.coupon_id = self.coupon_id
@@ -570,23 +573,29 @@ class Order(business_model.Model):
 		db_model.weizoom_card_money = self.weizoom_card_money
 
 		logging.info("Order db_model: {}".format(db_model))
-		db_model.save()
-		self.id = db_model.id
 
-		# 建立订单相关数据
+		# 处理拆带相关字段
 		products = self.products
-		product_groups = self.product_groups
-
-		#建立<order, product>的关系
 		supplier_ids = []
-		for product_group in product_groups:
-			print product_group.integral_sale
-
 		for product in products:
 			supplier = product.supplier
-			if not supplier in supplier_ids:
+			if supplier not in supplier_ids:
 				supplier_ids.append(supplier)
 
+		if len(supplier_ids) > 1:
+			# 标记有子订单
+			db_model.origin_order_id = -1
+			self.origin_order_id = -1
+		elif supplier_ids[0] != 0:
+			self.supplier = supplier_ids[0]
+			db_model.supplier = supplier_ids[0]
+
+		db_model.save()
+		self.id = db_model.id
+		# 建立订单相关数据
+
+		#建立<order, product>的关系
+		for product in products:
 			mall_models.OrderHasProduct.create(
 				order = self.db_model,
 				product = product.id,
@@ -603,10 +612,6 @@ class Order(business_model.Model):
 
 		if len(supplier_ids) > 1:
 			# 进行拆单，生成子订单
-			self.db_model.origin_order_id = -1
-			# 标记有子订单
-			# TODO: 改成method
-			self.origin_order_id = -1
 			for supplier in supplier_ids:
 				new_order = copy.deepcopy(self.db_model)
 				new_order.id = None
@@ -614,9 +619,8 @@ class Order(business_model.Model):
 				new_order.origin_order_id = self.id
 				new_order.supplier = supplier
 				new_order.save()
-		elif supplier_ids[0] != 0:
-			self.supplier = supplier_ids[0]
 
+		product_groups = self.product_groups
 		#建立<order, promotion>的关系
 		for product_group in product_groups:
 			if product_group.promotion:
@@ -624,24 +628,34 @@ class Order(business_model.Model):
 				promotion_result = product_group.promotion_result
 				integral_money = 0
 				integral_count = 0
-				if promotion.type_name == 'integral_sale':
-					integral_money = promotion_result['integral_money']
-					integral_count = promotion_result['use_integral']
+
+				promotion_result_json_dict = promotion_result.to_dict()
+				if product_group.integral_result:
+					integral_money = product_group.integral_result['integral_money']
+					integral_count = product_group.integral_result['use_integral']
+					promotion_result_json_dict['integral_product_info'] = product_group.integral_result['integral_product_info']
 				mall_models.OrderHasPromotion.create(
 						order=self.db_model,
 						webapp_user_id=self.webapp_user_id,
 						promotion_id=promotion.id,
 						promotion_type=promotion.type_name,
-						promotion_result_json=json.dumps(promotion_result.to_dict()),
+						promotion_result_json=json.dumps(promotion_result_json_dict),
 						integral_money=integral_money,
 						integral_count=integral_count,
 				)
+			elif product_group.integral_result:
 
-		db_model.save()
-
+				mall_models.OrderHasPromotion.create(
+						order=self.db_model,
+						webapp_user_id=self.webapp_user_id,
+						promotion_id=0,
+						promotion_type='integral_sale',
+						promotion_result_json=json.dumps(product_group.integral_result),
+						integral_money=product_group.integral_result['integral_money'],
+						integral_count=product_group.integral_result['use_integral'],
+				)
 		self.__after_update_status('buy')
 
-		return
 
 	@property
 	def is_saved(self):
@@ -675,18 +689,19 @@ class Order(business_model.Model):
 			self.pay_interface_type = pay_interface_type
 
 			# 处理销量
-			# todo weapp及数据库修改为必定存在销量记录
 			products = self.products
+
+			product_sale_infos = []
 			for product in products:
 				# 赠品不计销量
-				if product.promotion == {'type_name': 'premium_sale:premium_product'}:
-					continue
+				if product.promotion != {'type_name': 'premium_sale:premium_product'}:
+					product_sale_infos.append({
+						'product_id': product.id,
+						'purchase_count': product. purchase_count
+					})
 
-				if mall_models.ProductSales.select().dj_where(product_id=product.id).first():
-					mall_models.ProductSales.update(sales=mall_models.ProductSales.sales + product.purchase_count).dj_where(product_id=product.id).execute()
-				else:
-					mall_models.ProductSales.create(product=product.id, sales=product.purchase_count)
-
+			# 异步更新商品销量
+			update_product_sale.delay(product_sale_infos)
 
 			#支付后，更新会员支付数据
 			webapp_user = self.context['webapp_user']
@@ -706,7 +721,7 @@ class Order(business_model.Model):
 		webapp_user = self.context['webapp_user']
 		order_resource_extractor = OrderResourceExtractor(webapp_owner, webapp_user)
 		resources = order_resource_extractor.extract(self)
-		
+
 		# 释放价格无关资源
 		service = AllocateOrderResourceService(webapp_owner, webapp_user)
 		service.release(resources)
@@ -718,7 +733,7 @@ class Order(business_model.Model):
 		# 需要删除WZCard的log
 		# TODO: 待优化，应该在释放微众卡资源时删除wzcard_log
 		LogOperator.remove_wzcard_logs_by_order_id(self.order_id)
-			
+
 		return
 
 
@@ -750,7 +765,7 @@ class Order(business_model.Model):
 
 		# 更新红包引入消费金额的数据
 		if self.coupon_id and promotion_models.RedEnvelopeParticipences.select().dj_where(coupon_id=self.coupon_id, introduced_by__gt=0).count() > 0:
-			red_envelope2member = promotion_models.RedEnvelopeParticipences.get(promotion_models.RedEnvelopeParticipences.coupon_id==self.coupon_id)
+			red_envelope2member = promotion_models.RedEnvelopeParticipences.select().dj_where(coupon_id=self.coupon_id).first()
 			promotion_models.RedEnvelopeParticipences.update(introduce_sales_number = promotion_models.RedEnvelopeParticipences.introduce_sales_number + self.final_price + self.postage).dj_where(
 				red_envelope_rule_id=red_envelope2member.red_envelope_rule_id,
 				red_envelope_relation_id=red_envelope2member.red_envelope_relation_id,
@@ -774,6 +789,21 @@ class Order(business_model.Model):
 		# 订单完成后更新会员等级
 		self.context['webapp_user'].update_member_grade()
 		self.__after_update_status('finish')
+
+		# 通过分享链接来的订单处理
+		# TODO-bert  优化celery中处理
+		#try:
+		MemberSpread.process_order_from_spread({
+			'order_id': self.id,
+			'webapp_user': self.context['webapp_user']
+			})
+		# except:
+		# 	error_msg = u"MemberSpread.process_order_from_spread失败, cause:\n{}"\
+		# 				.format(unicode_full_stack())
+		# 	watchdog_error(error_msg)
+		# 	print error_msg
+
+
 
 	def __after_update_status(self, action):
 		"""
@@ -804,8 +834,8 @@ class Order(business_model.Model):
 		# 记录日志
 
 		LogOperator.record_operation_log(self, u'客户', mall_models.ACTION2MSG[action])
-		if self.raw_status != None:
-			LogOperator.record_status_log(self, u'客户', self.raw_status, self.status)
+		if self.raw_status:
+			record_order_status_log.delay(self.order_id, u'客户', self.raw_status, self.status)
 		self.__send_notify_mail()
 
 
@@ -817,7 +847,9 @@ class Order(business_model.Model):
 		user_profile = webapp_owner.user_profile
 		user = user_profile.user
 		send_point = ORDER_STATUS2SEND_PONINT.get(self.status, '')
-		template_message = mall_models.MarketToolsTemplateMessageDetail.select().dj_where(owner=user, template_message__send_point=send_point, status=1).first()
+		# template_message = mall_models.MarketToolsTemplateMessageDetail.select().dj_where(owner=user, template_message__send_point=send_point, status=1).first()
+		template_message = mall_models.MarketToolsTemplateMessageDetail.select().join(mall_models.MarketToolsTemplateMessage).where(mall_models.MarketToolsTemplateMessageDetail.owner==user, mall_models.MarketToolsTemplateMessage.send_point==send_point, mall_models.MarketToolsTemplateMessageDetail.status==1).first()
+
 		if user_profile and template_message and template_message.template_id:
 			mpuser_access_token = webapp_owner.weixin_mp_user_access_token
 			if mpuser_access_token:
@@ -830,8 +862,18 @@ class Order(business_model.Model):
 							mock[key] = value['value']
 						set_bdd_mock('template_message', mock)
 						return False
-					weixin_api = get_weixin_api(mpuser_access_token)
-					result = weixin_api.send_template_message(message, True)
+
+
+					mpuser_access_token_dict = mpuser_access_token.to_dict()
+					# mpuser_access_token_dict['update_time'] = mpuser_access_token_dict['update_time'].strftime('%Y_%m_%d_%H_%M_%S_%f')
+					# mpuser_access_token_dict['expire_time'] = mpuser_access_token_dict['expire_time'].strftime('%Y_%m_%d_%H_%M_%S_%f')
+					# mpuser_access_token_dict['created_at'] = mpuser_access_token_dict['created_at'].strftime('%Y_%m_%d_%H_%M_%S_%f')
+					del mpuser_access_token_dict['update_time']
+					del mpuser_access_token_dict['expire_time']
+					del mpuser_access_token_dict['created_at']
+					send_template_message.delay(mpuser_access_token_dict, message)
+					# weixin_api = get_weixin_api(mpuser_access_token)
+					# result = weixin_api.send_template_message(message, True)
 
 					#_record_send_template_info(order, template_message.template_id, user)
 					# if result.has_key('msg_id'):

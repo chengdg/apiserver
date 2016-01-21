@@ -24,7 +24,8 @@ source bin/activate或者 Scripts\activate.bat
 安装必要的组件：
 ```
 yum install -y sqlite-devel
-pip install -U Cython falcon "peewee<2.7" "pymongo==2.5" beautifulsoup4 redis PyMySQL celery pycrypto pysqlite
+pip install -U Cython falcon "peewee<2.7" "pymongo==2.5" beautifulsoup4 redis PyMySQL celery pycrypto pysqlite "Django<1.7" poster Pillow requests beautifulsoup
+pip install upyun
 ```
 
 需要有的hosts

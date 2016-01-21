@@ -44,6 +44,8 @@ class OAuthMiddleware(object):
 
 		args = req.params
 		woid = args.get('woid', None)
+		if not woid:
+			woid = args.get('webapp_owner_id', None)
 		# 验证woid
 		if not woid:
 			body = {"errorcode": error_codes.ILLEGAL_WOID_CODE, "errmsg": error_codes.code2msg[error_codes.ILLEGAL_WOID_CODE]}
@@ -55,13 +57,11 @@ class OAuthMiddleware(object):
 		if not webapp_owner:
 			body = {"errorcode": error_codes.ILLEGAL_WOID_CODE, "errmsg": error_codes.code2msg[error_codes.ILLEGAL_WOID_CODE]}
 			self.raise_response(body)
-
 		# 验证callback
 		callback_uri = args.get('callback_uri', None)
 		if not args.has_key('callback_uri'):
 			body = {"errorcode": error_codes.LACK_CALLBACK_URI, "errmsg": error_codes.code2msg[error_codes.LACK_CALLBACK_URI]}	
 			self.raise_response(body)
-		
 		# 获取公众号的access_token信息
 		weixin_mp_user_access_token = webapp_owner.weixin_mp_user_access_token
 		code = args.get('code', None)
@@ -85,13 +85,14 @@ class OAuthMiddleware(object):
 				通过会员信息获取access_token
 			"""
 			openid = self.get_openid_from(component_info, appid, code)
+			print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>1',openid
 			if not openid:
 				url = callback_uri
 			else:
 				apiserver_access_token = self.get_access_token_from(callback_uri, openid, webapp_owner)
 				url = self.get_url(callback_uri, apiserver_access_token)
 				#url = args['callback_uri'] + '&access_token=' + apiserver_access_token
-		
+			print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>2',url
 		raise redirects.HTTPFound(str(url))
 
 	def get_url(self, callback_uri, access_token):

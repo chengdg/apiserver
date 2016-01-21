@@ -3,11 +3,12 @@
 from db.account import models as account_models
 #import resource
 from business.account.webapp_owner import WebAppOwner
-from business.account.member import Member
-from business.account.webapp_user import WebAppUser
+#from business.account.member import Member
+#from business.account.webapp_user import WebAppUser
 from business.account.system_account import SystemAccount
+#from services.record_member_pv_service.task import record_member_pv
 from wapi.user.access_token import AccessToken
-from utils import msg_crypt,auth_util
+#from utils import msg_crypt,auth_util
 import settings
 import logging
 
@@ -21,7 +22,8 @@ class WebAppAccountMiddleware(object):
 	@note 获取access_token时，如果无openid（会员创建时无openid）,使用notopenid 进行授权取得会员openid后重新发起授权
 	"""
 	def process_request(sel, req, resp):
-		if '/user/access_token' in req.path:
+		if '/user/access_token' in req.path or '/console/' in req.path:
+			logging.info("skipped in WebAppAccountMiddleware. req.path: {}".format(req.path))
 			return
 
 		if 'access_token' in req.params:
@@ -41,7 +43,7 @@ class WebAppAccountMiddleware(object):
 			req.context['webapp_user'] = account_info['system_account'].webapp_user
 			return 
 
-		elif settings.MODE == "develop":
+		elif settings.MODE == "develop" or settings.MODE == "test":
 			# 开发测试支持 不传递woid使用jobs用户，不传递openid使用bill_jobs会员
 			# if not 'woid' in req.params:
 			# 	return
@@ -57,12 +59,15 @@ class WebAppAccountMiddleware(object):
 		if req.context.has_key('webapp_owner') and req.context.has_key('webapp_user'):
 			return
 		#TODO2: 支持开发的临时解决方案，需要删除
+		print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.1111'
 		openid = 'bill_jobs'
 		#填充webapp_owner
 		webapp_owner = WebAppOwner.get({
 			'woid': woid
 		})
 		req.context['webapp_owner'] = webapp_owner
+		
+		print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.222222',openid
 		if openid == 'notopenid':
 			return
 		#填充会员帐号信息
@@ -70,7 +75,7 @@ class WebAppAccountMiddleware(object):
 			'webapp_owner':  webapp_owner,
 			'openid': openid
 		})
-		
+		print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.3333',system_account
 		req.context.update({
 			'webapp_user': system_account.webapp_user
 		})

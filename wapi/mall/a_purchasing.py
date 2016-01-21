@@ -86,7 +86,18 @@ class APurchasing(api_resource.ApiResource):
 		"""
 		获取购物车项目
 
-		@param id 商品ID
+		@param 无
+		@return
+		{
+			'order': order_info,
+			'enable_wzcard': webapp_owner.has_wzcard_permission,
+			'mall_config': mall_config,
+			'integral_info': integral_info,
+			'coupons': coupons,
+			'limit_coupons': limit_coupons,
+			'use_ceiling': use_ceiling,
+			'postage_factor': postage_factor
+		}
 		"""
 		webapp_user = args['webapp_user']
 		webapp_owner = args['webapp_owner']

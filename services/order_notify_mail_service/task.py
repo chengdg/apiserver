@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import db.account.models as accout_models
+from db.mall import models as mall_models
+from db.mall import promotion_models
 from celery import task
 
 import settings
@@ -10,13 +12,30 @@ from core.watchdog.utils import watchdog_warning
 from features.util.bdd_util import set_bdd_mock
 
 
-@task
-def notify_order_mail(user_id, member_id, status, order_id, buyed_time, order_status, buy_count, total_price, bill, coupon, product_name, integral, buyer_name, buyer_address, buyer_tel, remark, product_pic_list, postage='0', express_company_name=None, express_number=None):
+@task(bind=True)
+def notify_order_mail(self, user_id, member_id, status, oid, order_id, buyed_time, order_status, total_price, bill, coupon, coupon_money, integral, buyer_name, buyer_address, buyer_tel, remark, postage='0', express_company_name=None, express_number=None):
 		"""
 		发送邮件，通知订单消息
 
 		@todo 用模板改造沟通邮件内容的代码
 		"""
+		if coupon:
+			coupon = str(promotion_models.Coupon.get(id=int(coupon)).coupon_id) + u',￥' + str(coupon_money)
+		else:
+			coupon = ''
+
+		order_has_products = mall_models.OrderHasProduct.select().dj_where(order=oid)
+		buy_count = ''
+		product_name = ''
+		product_pic_list = []
+		for order_has_product in order_has_products:
+			buy_count = buy_count+str(order_has_product.number)+','
+			product_name = product_name+order_has_product.product.name+','
+			product_pic_list.append(order_has_product.product.thumbnails_url)
+		buy_count = buy_count[:-1]
+		product_name = product_name[:-1]
+
+
 		order_notify = accout_models.UserOrderNotifySettings.select().dj_where(user_id=user_id, status=status, is_active=True).first()
 		if order_notify and str(member_id) not in order_notify.black_member_ids.split('|') and order_notify.emails != '':
 			# TODO: 可以用模板改造这段代码

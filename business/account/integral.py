@@ -280,12 +280,13 @@ class Integral(business_model.Model):
 						father_member = None
 
 					if father_member:
+						father_webapp_user = WebAppUser.from_member_id({
+							'webapp_owner': webapp_owner,
+							'member_id': father_member.id
+							})
 						if integral_strategy.buy_via_offline_increase_count_for_author > 0:
 							#self.increase_member_integral(father_member, integral_strategy.buy_via_offline_increase_count_for_author, BUY_INCREST_COUNT_FOR_FATHER)
-							father_webapp_user = WebAppUser.from_member_id({
-								'webapp_owner': webapp_owner,
-								'member_id': father_member.id
-								})
+							
 							Integral.increase_member_integral({
 								'integral_increase_count': integral_strategy.buy_via_offline_increase_count_for_author,
 								'webapp_user': father_webapp_user,

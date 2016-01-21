@@ -10,7 +10,7 @@ import math
 from datetime import datetime
 
 from wapi.decorators import param_required
-from wapi import wapi_utils
+#from wapi import wapi_utils
 from core.cache import utils as cache_util
 from core.exceptionutil import unicode_full_stack
 from db.mall import models as mall_models
@@ -61,6 +61,24 @@ class WebAppUser(business_model.Model):
 		return webapp_user
 		# except:
 		# 	return None
+
+	@staticmethod
+	@param_required(['webapp_owner', 'id'])
+	def from_id(args):
+		"""
+		工厂方法，根据webapp user model获取WebAppUser业务对象
+
+		@param[in] webapp_owner
+		@param[in] id
+
+		@return WebAppUser业务对象
+		"""
+		webapp_owner = args['webapp_owner']
+		id = args['id']
+		#try:
+		model = member_models.WebAppUser.get(id=id)
+		webapp_user = WebAppUser(webapp_owner, model)
+		return webapp_user
 		
 
 	@staticmethod
@@ -193,10 +211,8 @@ class WebAppUser(business_model.Model):
 	def delete_ship_info(self, ship_info_id):
 		"""
 		删除收货地址
-		Args:
-		    ship_id:
-
-		Returns:
+		@param ship_info_id
+		@return selected_id
 
 		"""
 		member_models.ShipInfo.update(is_deleted=True).where(member_models.ShipInfo.id == ship_info_id).execute()
@@ -215,7 +231,9 @@ class WebAppUser(business_model.Model):
 
 	def modify_ship_info(self, ship_info_id, new_ship_info):
 		"""
-		修改收货地址
+		@param ship_info_id: 收货地址id
+		@param new_ship_info: 新信息
+		@return bool
 		"""
 		try:
 			member_models.ShipInfo.update(is_selected=False).where(member_models.ShipInfo.webapp_user_id == self.id).execute()
@@ -234,12 +252,8 @@ class WebAppUser(business_model.Model):
 
 	def create_ship_info(self, ship_info):
 		"""
-		创建收货地址
-		Args:
-		    ship_info:
-
-		Returns:
-
+		@param ship_info: 收货地址信息，字典类型
+		@return ship_info_id
 		"""
 		try:
 			member_models.ShipInfo.update(is_selected=0).where(member_models.ShipInfo.webapp_user_id == self.id).execute()
@@ -543,7 +557,8 @@ class WebAppUser(business_model.Model):
 	#绑定相关
 	@staticmethod
 	def can_binding_phone(webapp_id, phone_number):
-		return member_models.MemberInfo.select().dj_where(member__webapp_id=webapp_id, phone_number=phone_number, is_binded=True).count() == 0
+		# return member_models.MemberInfo.select().dj_where(member__webapp_id=webapp_id, phone_number=phone_number, is_binded=True).count() == 0
+		return member_models.MemberInfo.select().join(member_models.Member).where(member_models.Member.webapp_id==webapp_id, member_models.MemberInfo.phone_number==phone_number, member_models.MemberInfo.is_binded==True).count() == 0
 
 	def update_phone_captcha(self, phone_number, captcha, sessionid):
 		if phone_number and captcha:

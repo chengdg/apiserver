@@ -21,7 +21,7 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT=['json']
 CELERY_TIMEZONE = 'Asia/Shanghai'
 CELERY_ENABLE_UTC = True
-CELERYD_CONCURRENCY =  1
+CELERYD_CONCURRENCY =  15
 CELERYD_TASK_TIME_LIMIT = 60
 
 if CELERY_ALWAYS_EAGER:
@@ -31,7 +31,7 @@ from kombu import Queue, Exchange
 
 
 QUEUE_LIST = []
-QUEUE_LIST.append(Queue('default', Exchange('default'), routing_key='default'))
+#QUEUE_LIST.append(Queue('default', Exchange('default'), routing_key='default'))
 for task in settings.INSTALLED_TASKS:
 	QUEUE_LIST.append(Queue(task, routing_key=task))
 CELERY_QUEUES = tuple(QUEUE_LIST)
@@ -43,8 +43,18 @@ CELERY_DEFAULT_ROUTING_KEY = 'default'
 class Router(object):
 
 	def route_for_task(self, task, args=None, kwargs=None):
-		if task.find('.tasks.') > -1:
-			task = task[:task.find('.tasks.')]
+		# if task == 'watchdog.send':
+		# 	return {
+		# 			'queue': 'default',
+		# 			}
+
+		# if task == 'api_watchdog':
+		# 	return {
+		# 			'queue': 'core.watchdog.tasks.send_watchdog',
+		# 			}
+
+		# if task.find('.tasks.') > -1:
+		# 	task = task[:task.find('.tasks.')]
 
 		if task in settings.INSTALLED_TASKS:
 			return {

@@ -13,7 +13,7 @@ from datetime import datetime
 
 from core.exceptionutil import unicode_full_stack
 from wapi.decorators import param_required
-from wapi import wapi_utils
+#from wapi import wapi_utils
 from core.cache import utils as cache_util
 from db.mall import models as mall_models
 from db.mall import promotion_models
@@ -40,8 +40,6 @@ class CachedProduct(object):
 		def inner_func():
 			#获取product及其model
 			product_model = mall_models.Product.get(id = product_id)
-			if product_model.owner_id != webapp_owner_id:
-				raise Exception(u'')
 				# product.postage_id = -1
 				# product.unified_postage_money = 0
 				# product.postage_type = mall_models.POSTAGE_TYPE_UNIFIED
@@ -128,10 +126,8 @@ class CachedProduct(object):
 
 		try:
 			product = CachedProduct.__get_from_cache(webapp_owner_id, product_id, member_grade_id)
-
-			if product.is_deleted:
-				return product
-
+			if product.owner_id != webapp_owner_id:
+				product.is_deleted = True
 		except:
 			if settings.DEBUG and not settings.IS_UNDER_BDD:
 				raise
@@ -191,10 +187,11 @@ class Product(business_model.Model):
 		'postage_type',
 		'unified_postage_money',
 		'is_use_cod_pay_interface',
+		'product_promotion_title', #商品的促销标题
 		
 		#促销信息
 		'promotion',
-		'promotion_title',
+		'promotion_title', #商品关联的促销活动的促销标题
 		'integral_sale',
 		'product_review',
 		'is_deleted'
@@ -656,6 +653,7 @@ class Product(business_model.Model):
 		# 	Product.__fill_promotion_detail(webapp_owner_id, products, product_ids)
 
 	def to_dict(self, **kwargs):
+		self.product_promotion_title = self.promotion_title
 		promotion_title = self.promotion_title
 		if self.promotion and self.promotion.promotion_title:
 			promotion_title = self.promotion.promotion_title
@@ -693,6 +691,7 @@ class Product(business_model.Model):
 			'swipe_images': getattr(self, 'swipe_images', []),
 			'promotion': self.promotion.to_dict() if self.promotion else None,
 			'promotion_title': promotion_title,
+			'product_promotion_title': self.product_promotion_title,
 			'integral_sale': self.integral_sale.to_dict() if self.integral_sale else None,
 			'product_review': getattr(self, 'product_review', None),
 			'price_info': getattr(self, 'price_info', None),

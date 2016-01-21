@@ -19,7 +19,7 @@ import logging
 #from datetime import datetime
 
 from wapi.decorators import param_required
-#from wapi import wapi_utils
+##from wapi import wapi_utils
 #from core.cache import utils as cache_util
 from db.mall import models as mall_models
 #import resource
@@ -57,6 +57,7 @@ class IntegralResource(business_model.Resource):
 		self.type = type
 		self.context['webapp_user'] = webapp_user
 		self.context['webapp_owner'] = webapp_owner
+		self.context['money'] = None
 
 	def get_type(self):
 		return self.type
@@ -78,14 +79,22 @@ class IntegralResource(business_model.Resource):
 			else:
 				return False, u'扣除积分失败'
 
-	@cached_context_property
+	@property
 	def money(self):
-		webapp_owner = self.context['webapp_owner']
-		count_per_yuan = webapp_owner.integral_strategy_settings.integral_each_yuan
-
-		if count_per_yuan == 0:
-			logging.error("ERROR: count_per_yuan SHOULD NOT be ZERO!")
-			integral_money = round(float(self.integral), 2)
+		if self.context['money']:
+			return self.context['money'] 
 		else:
-			integral_money = round(float(self.integral/count_per_yuan), 2)
-		return integral_money
+			webapp_owner = self.context['webapp_owner']
+			count_per_yuan = webapp_owner.integral_strategy_settings.integral_each_yuan
+
+			if count_per_yuan == 0:
+				logging.error("ERROR: count_per_yuan SHOULD NOT be ZERO!")
+				integral_money = round(float(self.integral), 2)
+			else:
+				integral_money = round(float(float(self.integral)/count_per_yuan), 2)
+			
+			return integral_money
+
+	@money.setter
+	def money(self, money):
+		self.context['money'] = money

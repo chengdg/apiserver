@@ -1,4 +1,6 @@
 # __author__ : "冯雪静"
+#说明：ui的feature暂时无法实现，2016.01.19移除到ignore文件夹下
+
 @func:webapp.modules.mall.views.list_products
 Feature: 在webapp中浏览商品
 	bill能在webapp中看到jobs添加的"商品"
@@ -189,7 +191,6 @@ Background:
 			"member_rank": "铜牌会员"
 		}]
 		"""
-
 
 @product @ui @ProductDetail
 Scenario: 1 浏览商品
@@ -430,6 +431,7 @@ Scenario: 2 浏览商品列表
 			"price": 10.00
 		}]
 		"""
+
 @product @ui @ProductList
 Scenario: 3 浏览商品分类
 	jobs添加商品后
@@ -664,3 +666,120 @@ Scenario:4 查看商品详情页（买赠和会员价同时，买赠优先）
 				}
 			}
 			"""
+
+
+#补充：雪静 2016.1.13
+	#针对积分活动商品详情页积分抵扣的详情
+@product @ui @ProductList
+Scenario:5 参与积分活动的商品详情页
+
+	Given jobs登录系统
+	Given jobs设定会员积分策略
+		"""
+		{
+			"integral_each_yuan": 3
+		}
+		"""
+	When jobs创建积分应用活动
+		"""
+		[{
+			"name": "商品1积分应用",
+			"start_date": "今天",
+			"end_date": "1天后",
+			"product_name": "商品1",
+			"is_permanant_active": false,
+			"rules": [{
+				"member_grade": "全部",
+				"discount": 50,
+				"discount_money": "5.0~10.0"
+			}]
+		}]
+		"""
+	When bill访问jobs的webapp
+	When bill获得jobs的100会员积分
+	Then bill在jobs的webapp中拥有100会员积分
+	And bill浏览jobs的webapp的'商品1'商品页
+	#享受会员价的会员能获取商品原价和会员价
+	#设置了起购数量3，商品详情页提示“至少购买3件”
+	#设置了积分活动，商品详情页会显示
+	#会员积分大于商品抵扣的积分
+	Then webapp页面标题为'商品1'
+	And bill获得webapp商品
+		"""
+		{
+			"name": "商品1",
+			"promotion_title": "促销的东坡肘子",
+			"detail": "东坡肘子的详情",
+			"swipe_images": [{
+				"url": "/standard_static/test_resource_img/hangzhou1.jpg"
+			}, {
+				"url": "/standard_static/test_resource_img/hangzhou2.jpg"
+			}, {
+				"url": "/standard_static/test_resource_img/hangzhou3.jpg"
+			}],
+			"model": {
+				"models": {
+					"黑色 S": {
+						"price": 20.00,
+						"member_price": 18.00,
+						"stocks": 3,
+						"count": 3,
+						"提示信息": "库存不足",
+						"提示信息": "至少购买3件",
+						"提示信息": "最多可使用27积分，抵扣9.00元"
+					},
+					"白色 S": {
+						"price": 10.00,
+						"member_price": 9.00,
+						"count": 3,
+						"提示信息": "至少购买3件",
+						"提示信息": "最多可使用14积分，抵扣4.50元"
+					}
+				}
+			}
+		}
+		"""
+	When bill访问jobs的webapp
+	When bill获得jobs的20会员积分
+	Then bill在jobs的webapp中拥有20会员积分
+	And bill浏览jobs的webapp的'商品1'商品页
+	#享受会员价的会员能获取商品原价和会员价
+	#设置了起购数量3，商品详情页提示“至少购买3件”
+	#设置了积分活动，商品详情页会显示
+	#会员积分小于商品抵扣的积分
+	Then webapp页面标题为'商品1'
+	And bill获得webapp商品
+		"""
+		{
+			"name": "商品1",
+			"promotion_title": "促销的东坡肘子",
+			"detail": "东坡肘子的详情",
+			"swipe_images": [{
+				"url": "/standard_static/test_resource_img/hangzhou1.jpg"
+			}, {
+				"url": "/standard_static/test_resource_img/hangzhou2.jpg"
+			}, {
+				"url": "/standard_static/test_resource_img/hangzhou3.jpg"
+			}],
+			"model": {
+				"models": {
+					"黑色 S": {
+						"price": 20.00,
+						"member_price": 18.00,
+						"stocks": 3,
+						"count": 3,
+						"提示信息": "库存不足",
+						"提示信息": "至少购买3件",
+						"提示信息": "最多可使用20积分，抵扣6.67元"
+					},
+					"白色 S": {
+						"price": 10.00,
+						"member_price": 9.00,
+						"count": 3,
+						"提示信息": "至少购买3件",
+						"提示信息": "最多可使用14积分，抵扣4.50元"
+					}
+				}
+			}
+		}
+		"""

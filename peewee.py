@@ -1,3 +1,4 @@
+# coding: utf-8
 # May you do good and not evil
 # May you find forgiveness for yourself and forgive others
 # May you share freely, never taking more than you give.  -- SQLite source code
@@ -156,11 +157,15 @@ try:
     from psycopg2 import extensions as pg_extensions
 except ImportError:
     psycopg2 = None
+# 使用MySQLdb在uwsgi时会有冲突，使用pymysql代替
+#try:
+#    import MySQLdb as mysql  # prefer the C module.
+#except ImportError:
 try:
-    import MySQLdb as mysql  # prefer the C module.
+    import pymysql as mysql
 except ImportError:
     try:
-        import pymysql as mysql
+        import MySQLdb as mysql
     except ImportError:
         mysql = None
 
@@ -3411,9 +3416,12 @@ class Database(object):
                         stop = time()
                         duration = stop - start
                         sql = sql % tuple(params)
+
+                        from core.exceptionutil import unicode_full_stack
                         QUERIES.append({
                             'sql': sql,
                             'time': "%.3f" % duration,
+                            'stack': unicode_full_stack().replace('\n', '<br>')
                         })
                         logger.debug((sql, params))
                     except Exception as e:

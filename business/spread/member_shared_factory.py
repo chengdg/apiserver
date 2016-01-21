@@ -13,7 +13,7 @@ import random
 import string
 
 from wapi.decorators import param_required
-from wapi import wapi_utils
+#from wapi import wapi_utils
 from db.member import models as member_models
 #import resource
 from core.watchdog.utils import watchdog_alert
@@ -40,12 +40,15 @@ class MemberSharedUrlFactory(business_model.Model):
 		@return MemberFollowRelaton对象
 		"""
 		title = args.get('title', '')
-		member_factory = MemberSharedUrlFactory(args['member_id'], args['url'], args['shared_url_digest'], args['followed'], title)
+		member_created = args.get('member_created', False)
+
+		member_factory = MemberSharedUrlFactory(args['member_id'], args['url'], args['shared_url_digest'], args['followed'], title, member_created)
 
 		return member_factory
 
-	def __init__(self, member_id, url, shared_url_digest, followed, title=''):
+	def __init__(self, member_id, url, shared_url_digest, followed, title='', member_created=False):
 		business_model.Model.__init__(self)
+		self.context['member_created'] = member_created
 		self.member_id = member_id
 		self.url = url
 		self.shared_url_digest = shared_url_digest
@@ -66,11 +69,16 @@ class MemberSharedUrlFactory(business_model.Model):
 						title = self.title
 						)
 		else:
+			if self.context['member_created']:
+				pv = 0
+			else:
+				pv = 1
+
 			member_models.MemberSharedUrlInfo.create(
 						member = self.member_id,
 						shared_url = self.url,
 						shared_url_digest = self.shared_url_digest,
-						pv = 1,
+						pv = pv,
 						leadto_buy_count = 0,
 						followers = 0,
 						title = self.title

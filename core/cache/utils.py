@@ -218,7 +218,7 @@ def get_from_cache(key, on_miss):
 	从cache获取数据，构建对象
 	"""
 	obj = GET_CACHE(key)
-	if obj:
+	if obj or exists_key(key):
 		return obj
 	else:
 		try:
@@ -273,4 +273,15 @@ def get_many_from_cache(key_infos):
 	return objs
 
 
+# redis 集合操作
+@modify_keys
+def sadd(key, *values):
+	return r.sadd(key, *values)
 
+@modify_keys
+def set_key_expire(key, time):
+	r.expire(key, time)
+
+@modify_keys
+def exists_key(key):
+	return r.exists(key)

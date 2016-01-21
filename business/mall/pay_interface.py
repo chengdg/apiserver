@@ -13,7 +13,7 @@ import time
 import random
 
 from wapi.decorators import param_required
-from wapi import wapi_utils
+#from wapi import wapi_utils
 from core.cache import utils as cache_util
 from db.mall import models as mall_models
 #import resource
@@ -61,15 +61,22 @@ class PayInterface(business_model.Model):
 		business_model.Model.__init__(self)
 
 		self.context['webapp_owner'] = webapp_owner
+		#TODO delete
+		#print '>>>>>>>>>>>pay_interface_type:',pay_interface_type,'>>>>>>>>>>>webapp_owner.pay_interfaces>>>>', webapp_owner.pay_interfaces
+		try:
+			if pay_interface_type != None:
+				self.context['interface'] = next(interface for interface in webapp_owner.pay_interfaces if interface['type'] == pay_interface_type)
+			elif interface_id:
+				self.context['interface'] = next(interface for interface in webapp_owner.pay_interfaces if interface['id'] == interface_id)
 
-		if pay_interface_type != None:
-			self.context['interface'] = next(interface for interface in webapp_owner.pay_interfaces if interface['type'] == pay_interface_type)
-		elif interface_id:
-			self.context['interface'] = next(interface for interface in webapp_owner.pay_interfaces if interface['id'] == interface_id)
-
-		interface = self.context['interface']
-		self.type = interface['type']
-		self.related_config_id = interface['related_config_id']
+			interface = self.context['interface']
+			self.type = interface['type']
+			self.related_config_id = interface['related_config_id']
+		except:
+			interface = None
+			self.type = pay_interface_type
+			self.related_config_id = None
+		
 
 	def get_pay_url_info_for_order(self, order):
 		"""获取订单的支付链接
@@ -84,10 +91,10 @@ class PayInterface(business_model.Model):
 
 		if order.final_price == 0:
 			return {
-				'type': 'cod',
+				'type': order.pay_interface_type,
 				'woid': webapp_owner_id,
 				'order_id': order.order_id,
-				'pay_interface_type': mall_models.PAY_INTERFACE_COD
+				'pay_interface_type': order.pay_interface_type
 			}
 			
 		if mall_models.PAY_INTERFACE_ALIPAY == interface_type:
@@ -184,6 +191,9 @@ class PayInterface(business_model.Model):
 		elif mall_models.PAY_INTERFACE_WEIXIN_PAY == self.type:
 			is_trade_success = True
 			order_id = pay_result.get('order_id')
+		elif mall_models.PAY_INTERFACE_PREFERENCE == self.type:
+			is_trade_success = True
+			order_id = pay_result.get('order_id')
 		else:
 			pass
 
@@ -199,5 +209,28 @@ class PayInterface(business_model.Model):
 			'error_msg': error_msg
 		}
 
+	@staticmethod
+	def get_order_pay_interfaces(webapp_owner, webapp_user, order_id):
+		products = [h.product for h in mall_models.OrderHasProduct.select().dj_where(order_id=order_id)]
 
+		pay_interfaces = [pay_interface for pay_interface in webapp_owner.pay_interfaces if
+		                  pay_interface['is_active'] and not pay_interface['type'] == mall_models.PAY_INTERFACE_WEIZOOM_COIN]
 
+		types = [p['type'] for p in pay_interfaces]
+
+		# 如果不包含货到付款，直接返回所有的在线支付
+		if mall_models.PAY_INTERFACE_COD not in types:
+			return pay_interfaces
+
+		# 商品中是 货到付款方式
+		pay_interface_cod_count = 0
+		for product in products:
+			if product.is_use_cod_pay_interface:
+				pay_interface_cod_count = pay_interface_cod_count + 1
+
+		if pay_interface_cod_count == len(list(products)):
+			return pay_interfaces
+		else:
+			# return pay_interfaces.filter(type__in = ONLINE_PAY_INTERFACE)
+			return [pay_interface for pay_interface in pay_interfaces if
+			        pay_interface['type'] in mall_models.ONLINE_PAY_INTERFACE]

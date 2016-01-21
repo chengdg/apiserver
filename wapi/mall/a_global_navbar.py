@@ -42,4 +42,4 @@ class AGlobalNavbar(api_resource.ApiResource):
 			'is_enable': global_navbar.is_enable,
 			'webapp_owner_id': global_navbar.owner_id
 		}
-		return webapp_owner.global_navbar.to_dict()
+

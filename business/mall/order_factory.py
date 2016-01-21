@@ -27,11 +27,12 @@ import random
 import copy
 import logging
 
+from business.mall.allocator.allocate_price_related_resource_service import AllocatePriceRelatedResourceService
 from business.mall.order import Order
 
 #from business.mall.package_order_service.package_order_service import CalculatePriceService
 from wapi.decorators import param_required
-from wapi import wapi_utils
+#from wapi import wapi_utils
 from core.cache import utils as cache_util
 from db.mall import models as mall_models
 #import resource
@@ -50,7 +51,7 @@ from business.mall.package_order_service.package_order_service import PackageOrd
 
 from business.mall.reserved_product_repository import ReservedProductRepository
 from business.mall.group_reserved_product_service import GroupReservedProductService
-from business.mall.order_exception import OrderException
+from business.mall.order_exception import OrderResourcesException, OrderFailureException
 
 
 class OrderFactory(business_model.Model):
@@ -91,19 +92,32 @@ class OrderFactory(business_model.Model):
 	def __create_order_id(self):
 		"""创建订单id
 
+		order_id格式：order_id = '%s%03d' % (now, random.randint(1, 999))
+
 		目前采用基于时间戳＋随机数的算法生成订单id，在确定id可使用之前，通过查询mall_order表里是否有相同id来判断是否可以使用id
 		这种方式比较低效，同时存在id重复的潜在隐患，后续需要改进
 
-		@todo 可以考虑用时间戳加MD5方式
-		@bug 这里不应该暴露存储层
+		@todo 和产品确认支持一秒内产生超过999个订单
 		"""
-		# TODO2: 使用uuid替换这里的算法
-		order_id = time.strftime("%Y%m%d%H%M%S", time.localtime())
-		order_id = '%s%03d' % (order_id, random.randint(1, 999))
-		if mall_models.Order.select().dj_where(order_id=order_id).count() > 0:
-			return self.__create_order_id()
-		else:
-			return order_id
+		now = time.strftime("%Y%m%d%H%M%S", time.localtime())
+		key_name = 'order_ids:' + now
+
+		retry_max_count = 100
+		retry_count = 1
+
+		while retry_count <= retry_max_count:
+			tail = random.randint(1, 999)
+
+			# 不存在key则创建空集合，并设置过期时间
+			if not cache_util.exists_key(key_name):
+				cache_util.sadd(key_name, '')
+				cache_util.set_key_expire(key_name, 3)
+
+			if cache_util.sadd(key_name, tail):
+				return '%s%03d' % (now, tail)
+			else:
+				retry_count += 1
+
 
 
 	def __allocate_price_free_resources(self, order, purchase_info):
@@ -132,13 +146,7 @@ class OrderFactory(business_model.Model):
 		
 		if successed:
 			logging.info(u"Allocated resources successfully. count: {}".format(len(resources)))
-
 			self.context['allocator_order_resource_service'] = allocate_order_resource_service
-			#self.resources = resources
-			# #临时方案：TODO使用pricesevice处理
-			# for resource in resources:
-			# 	if resource.get_type() == business_model.RESOURCE_TYPE_INTEGRAL:
-			# 		self.__process_order_integral_for(resource)
 			return resources
 		else:
 			# 如果分配资源失败，则抛异常
@@ -146,8 +154,7 @@ class OrderFactory(business_model.Model):
 			logging.info(u"reasons in OrderFactory.create_order: ")
 			for reason in reasons:
 				logging.info(u"reason: name: {}, short_msg: {}".format(reason.get('name'), reason.get('short_msg')))
-			allocate_order_resource_service.release(resources)
-			raise OrderException(reasons)	
+			raise OrderResourcesException(reasons)
 
 
 	def __process_products(self, order, purchase_info):
@@ -204,41 +211,17 @@ class OrderFactory(business_model.Model):
 		order.order_id = self.__create_order_id()
 		return order
 
-
-	def release(self, resources):
-		"""
-		释放资源
-		"""
-		allocator_order_resource_service = self.context['allocator_order_resource_service'] 
-		if isinstance(allocator_order_resource_service, AllocateOrderResourceService):
-			allocator_order_resource_service.release(resources)
-
-
 	def __save_order(self, order):
 		"""
 		保存订单
 
 		@param[in] order Order对象(业务模型)
 		"""
-		#webapp_owner = self.context['webapp_owner']
-		webapp_user = self.context['webapp_user']
-
 		logging.debug("order.db_model={}".format(order.db_model))
-		try:
-			order.save()
-			if order.final_price == 0:
-				# 优惠券或积分金额直接可支付完成，直接调用pay_order，完成支付
-				order.pay(mall_models.PAY_INTERFACE_PREFERENCE)
-				# 支付后的操作
-				#mall_signals.post_pay_order.send(sender=Order, order=order, request=request)
-
-		except:
-			notify_message = u"__save_order error cause:\n{}".format(unicode_full_stack())
-			logging.error(notify_message)
-			watchdog_error(notify_message)
-			return None
-
-		
+		order.save()
+		if order.final_price == 0:
+			# 优惠券或积分金额直接可支付完成，直接调用pay_order，完成支付
+			order.pay(mall_models.PAY_INTERFACE_PREFERENCE)
 		return order
 
 
@@ -248,52 +231,95 @@ class OrderFactory(business_model.Model):
 		由PurchaseInfo创建订单
 
 		"""
-		
-		webapp_owner = self.context['webapp_owner']
-		webapp_user = self.context['webapp_user']
+		# 预定义变量
+		order = None
+		price_free_resources = None
+		price_related_resources = None
+		try:
+			webapp_owner = self.context['webapp_owner']
+			webapp_user = self.context['webapp_user']
 
-		# 创建空订单
-		order = Order.empty_order(webapp_owner, webapp_user)
+			# 创建空订单
+			order = Order.empty_order(webapp_owner, webapp_user)
 
-		# 初始化，不需要资源信息
-		order = self.__init_order(order, purchase_info)
-		# 初始化商品信息
-		order = self.__process_products(order, purchase_info)
+			# 初始化，不需要资源信息
+			order = self.__init_order(order, purchase_info)
+			# 初始化商品信息
+			order = self.__process_products(order, purchase_info)
 
-		# 申请订单价无关资源
-		price_free_resources = self.__allocate_price_free_resources(order, purchase_info)
-		logging.info(u"price_free_resources={}".format(price_free_resources))
+			# 申请订单价无关资源
+			price_free_resources = self.__allocate_price_free_resources(order, purchase_info)
+			logging.info(u"price_free_resources={}".format(price_free_resources))
 
-		# 填充order
-		package_order_service = PackageOrderService(webapp_owner, webapp_user)
-		# 如果is_success=False, 表示分配资源失败
-		order, is_success, reasons = package_order_service.package_order(order, price_free_resources, purchase_info)
-
-		if is_success: # 组装订单成功
-			#如果前端提交了积分使用信息，识别哪些商品使用了积分
-			if purchase_info.group2integralinfo:
-				group2integralinfo = purchase_info.group2integralinfo
-				for product_group in order.product_groups:
-					if not product_group.uid in group2integralinfo:
+			# 填充order
+			package_order_service = PackageOrderService(webapp_owner, webapp_user)
+			# 如果is_success=False, 表示分配资源失败
+			order, is_success, reasons, price_related_resources = package_order_service.package_order(order, price_free_resources, purchase_info)
+			if is_success: # 组装订单成功
+				#如果前端提交了积分使用信息，识别哪些商品使用了积分
+				# Todo 确认是否不需要
+				if purchase_info.group2integralinfo:
+					group2integralinfo = purchase_info.group2integralinfo
+					for product_group in order.product_groups:
+						if not product_group.uid in group2integralinfo:
+							product_group.disable_integral_sale()
+				else:
+					for product_group in order.product_groups:
 						product_group.disable_integral_sale()
+
+				# 保存订单
+				order = self.__save_order(order)
+				# 如果需要（比如订单保存失败），释放资源
+				if order and order.is_saved:
+					#删除购物车
+					# TODO: 删除购物车不应该放在这里
+					logging.warning('to clean the CART')
+					if purchase_info.is_purchase_from_shopping_cart:
+						for product in order.products:
+							webapp_user.shopping_cart.remove_product(product)
+				return order
 			else:
-				for product_group in order.product_groups:
-					product_group.disable_integral_sale()
+				# 创建订单失败
+				logging.error("Failed to create Order object or save the order! Release all resources. order={}".format(order))
+				self.__release_price_related_resources(price_free_resources)
+				# PackageOrderService分配资源失败，price_related_resources应为[]，不需要release
+				raise OrderResourcesException(reasons)
+		except OrderResourcesException as e:
+			raise e
+		except:
+			msg = unicode_full_stack()
+			watchdog_alert(msg)
+			self.__release_order(order, price_free_resources, price_related_resources)
+			raise OrderFailureException
 
-			# 保存订单
-			order = self.__save_order(order)
-			# 如果需要（比如订单保存失败），释放资源
-			if order and order.is_saved:
-				#删除购物车
-				# TODO: 删除购物车不应该放在这里
-				logging.warning('to clean the CART')
-				if purchase_info.is_purchase_from_shopping_cart:
-					for product in order.products:
-						webapp_user.shopping_cart.remove_product(product)
-			return order
+	def __release_order(self, order, price_free_resources, price_related_resources):
+		"""
+		当订单失败时，释放资源、清除数据库订单记录
+		1. price_free_resources
+		2. price_related_resources
+		3. Order、OrderHasProduct、OrderHasPromotion表
+		"""
+		if price_free_resources:
+			self.__release_price_free_resources(price_free_resources)
+		if price_related_resources:
+			self.__release_price_related_resources(price_related_resources)
 
-		# 创建订单失败
-		logging.error("Failed to create Order object or save the order! Release all resources. order={}".format(order))
-		self.release(price_free_resources)
-		# PackageOrderService分配资源失败，price_related_resources应为[]，不需要release
-		raise OrderException(reasons)
+		# 删除Order相关数据库记录
+		if order and order.id:
+			mall_models.OrderHasPromotion.delete().dj_where(order_id=order.id).execute()
+			mall_models.OrderHasProduct.delete().dj_where(order_id=order.id).execute()
+			mall_models.Order.delete().dj_where(origin_order_id=order.id).execute()
+			mall_models.Order.delete().dj_where(id=order.id).execute()
+
+	def __release_price_free_resources(self, resources):
+		"""
+		释放资源
+		"""
+		allocator_order_resource_service = self.context['allocator_order_resource_service']
+		if isinstance(allocator_order_resource_service, AllocateOrderResourceService):
+			allocator_order_resource_service.release(resources)
+
+	def __release_price_related_resources(self, resources):
+		service = AllocatePriceRelatedResourceService(self.context['webapp_owner'], self.context['webapp_user'])
+		service.release(resources)
+

@@ -12,6 +12,8 @@ from db.mall import models as mall_models
 from db.mall import promotion_models
 from db.member import models as member_models
 from db.wzcard import models as wzcard_models
+from business.mall.product import Product as business_product
+from business.account.webapp_owner import WebAppOwner
 from .steps_db_util import (
 	get_custom_model_id_from_name, get_product_model_keys, get_area_ids
 )
@@ -132,16 +134,38 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 		products = args['products']
 		# integral = 0
 		# integral_group_items = []
+		webapp_owner = WebAppOwner.get({
+			'woid': webapp_owner_id
+		})
+		group2integralinfo = {}
 		for product in products:
 			product_counts.append(str(product['count']))
 			product_name = product['name']
 			product_obj = mall_models.Product.get(owner=webapp_owner_id, name=product_name)
+
+			product_obj = business_product.from_model({
+				'webapp_owner': webapp_owner,
+				'model': product_obj,
+				'fill_options': {
+					"with_price": True,
+					"with_product_model": True,
+					"with_model_property_info": True,
+					"with_image": True,
+					"with_property": True,
+					"with_product_promotion": True
+				}
+				})
+				
 			product_ids.append(str(product_obj.id))
-			if product.has_key('promotion'):
-				promotion = promotion_models.Promotion.get(name=product['promotion']['name'])
-				promotion_ids.append(str(promotion.id))
-			else:
-				promotion_ids.append(str(__get_current_promotion_id_for_product(product_obj, member.grade_id)))
+			try:
+				if product.has_key('promotion'):
+					promotion = promotion_models.Promotion.get(name=product['promotion']['name'])
+					promotion_ids.append(str(promotion.id))
+				else:
+					promotion_ids.append(str(__get_current_promotion_id_for_product(product_obj, member.grade_id)))
+			except:
+				promotion_ids = ''
+			
 			_product_model_name = _get_product_model_ids_from_name(webapp_owner_id, product.get('model', None))
 			product_model_names.append(_product_model_name)
 			if 'integral' in product and product['integral'] > 0:
@@ -151,6 +175,23 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 					"integral": product['integral'],
 					"money": round(product['integral'] / integral_each_yuan, 2)
 				}
+			
+			if product_obj.integral_sale:
+
+				group2integralinfo['%s_%s' % (product_obj.id, _product_model_name)] = product_obj.to_dict()['integral_sale']['rules'][0]
+				if args.has_key('integral'):
+					sale_integral = args['integral']
+					sale_integral_money = args['integral_money']
+				else:
+					if product.has_key('integral'):
+						sale_integral = product['integral']
+						sale_integral_money = product['integral_money']
+					else:
+						sale_integral = 0
+						sale_integral_money = 0
+				group2integralinfo['%s_%s' % (product_obj.id, _product_model_name)]['integral'] = sale_integral
+				group2integralinfo['%s_%s' % (product_obj.id, _product_model_name)]['money'] = sale_integral_money
+
 		# if integral:
 		# 	group2integralinfo['-'.join(integral_group_items)] = {
 		# 		"integral": integral,
@@ -186,23 +227,23 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 		"xa-choseInterfaces": PAYNAME2ID.get(args.get("pay_type", u"微信支付"),-1)
 	}
 
-	if hasattr(context, 'fmt'):
-		data['fmt'] = context.fmt
-		logging.info('fmt: {}'.format(data['fmt']))
+	if hasattr(context, 'shared_url'):
+		data['url'] = context.shared_url
+		logging.info('>>>>>>>>>>>>>>>>>>>>>>>>.shared_url: {}'.format(data['url']))
 
 	if args.get('force', False):
 		data['forcing_submit'] = 1
-		
-	if 'integral' in args and args['integral'] > 0:
-		# 整单积分抵扣
-		# orderIntegralInfo:{"integral":20,"money":"10.00"}"
-		orderIntegralInfo = dict()
-		orderIntegralInfo['integral'] = args['integral']
-		if 'integral_money' in args:
-			orderIntegralInfo['money'] = args['integral_money']
-		else:
-			orderIntegralInfo['money'] = round(int(args['integral'])/integral_each_yuan, 2)
-		data["orderIntegralInfo"] = json.JSONEncoder().encode(orderIntegralInfo)
+	if not group2integralinfo:
+		if 'integral' in args and args['integral'] > 0:
+			# 整单积分抵扣
+			# orderIntegralInfo:{"integral":20,"money":"10.00"}"
+			orderIntegralInfo = dict()
+			orderIntegralInfo['integral'] = args['integral']
+			if 'integral_money' in args:
+				orderIntegralInfo['money'] = args['integral_money']
+			else:
+				orderIntegralInfo['money'] = round(int(args['integral'])/integral_each_yuan, 2)
+			data["orderIntegralInfo"] = json.JSONEncoder().encode(orderIntegralInfo)
 	if order_type == u'测试购买':
 		data['order_type'] = mall_models.PRODUCT_TEST_TYPE
 	else:
@@ -226,6 +267,7 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 
 	url = '/wapi/mall/order/?_method=put'
 	data['woid'] = context.webapp_owner_id
+	print '>>>>>>>>>>>>>>>>>>>>>dddddddd>>>>',data
 	response = context.client.post(url, data)
 	# bdd_util.assert_api_call_success(response)
 	context.response = response
@@ -256,6 +298,7 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 		if 'date' in args:
 			mall_models.Order.update(created_at=bdd_util.get_datetime_str(args['date'])).dj_where(order_id=context.created_order_id).execute()
 		if 'order_id' in args:
+			context.response.data['order_id'] = args['order_id']
 			db_order = mall_models.Order.get(order_id=context.created_order_id)
 			if db_order.weizoom_card_money > 0:
 				wzcard_has_orders = wzcard_models.WeizoomCardHasOrder.select().dj_where(order_id=db_order.order_id)
@@ -331,6 +374,16 @@ def __check_order(context, webapp_user_name):
 def step_impl(context, webapp_user_name):
 	__check_order(context, webapp_user_name)
 
+@then(u"{webapp_user_name}获得订单支付结果")
+def step_impl(context, webapp_user_name):
+	if 'order' in context.response.data:
+		actual = context.response.data['order']
+		actual['pay_type'] = mall_models.PAYTYPE2NAME[actual['pay_interface_type']]
+	else:
+		actual = context.response.data
+		actual['pay_type'] = mall_models.PAYTYPE2NAME[actual['pay_url_info']['pay_interface_type']]
+	expected = json.loads(context.text)
+	bdd_util.assert_dict(expected, actual)
 
 @then(u"{webapp_usr_name}手机端获取订单'{order_id}'")
 def step_impl(context, webapp_usr_name, order_id):
@@ -839,6 +892,8 @@ def step_impl(context, webapp_user_name, pay_interface_name):
 	pay_url = '/wapi/pay/pay_result/?_method=put'
 	data = {
 		'pay_interface_type': pay_interface.type,
-		'order_id': context.created_order_id
+		'order_id': context.created_order_id,
+		'result': 'success',
+		'out_trade_no': context.created_order_id
 	}
-	context.client.post(pay_url, data)
+	context.response = context.client.post(pay_url, data)

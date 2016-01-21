@@ -3,13 +3,14 @@
 会员
 """
 
+import re
 import json
 from bs4 import BeautifulSoup
 import math
 from datetime import datetime
 
 from wapi.decorators import param_required
-from wapi import wapi_utils
+#from wapi import wapi_utils
 
 from db.mall import models as mall_models
 from db.mall import promotion_models
@@ -41,7 +42,9 @@ class Member(business_model.Model):
 		'created',
 		'token',
 		'webapp_id',
-		'pay_money'
+		'pay_money',
+		'update_time',
+		'status'
 	)
 
 	@staticmethod
@@ -341,7 +344,7 @@ class Member(business_model.Model):
 				        output_str += span
 				        count += 1
 				        name_str = name_str[length:]
-				        if count == 10:
+			 	        if count == 10:
 				            break
 				    if count == 10:
 				        break

@@ -146,7 +146,10 @@ class AMemberReviewProduct(api_resource.ApiResource):
 
 			if has_waiting_review:
 				break
-
+		webapp_user.cleanup_order_info_cache()
+		ReviewedProduct.cleanup_cache({
+			'product_id': product_id
+			})
 		return {'status': 1, 'errmsg': '', 'has_waiting_review': 1 if has_waiting_review else 0}
 
 
@@ -208,7 +211,6 @@ class AMemberReviewProduct(api_resource.ApiResource):
 			reviewed_product['review_detail'] = product_review.review_detail
 			reviewed_product['reviewed_product_pictures'] = product_review.reviewed_product_pictures
 
-		print '>>>>>>>>>>>>>>>>>>>>>>>',order.id
 		return {
 			'order_has_product_id': order_has_product_id,
 			'order_id': order.id,
@@ -273,7 +275,11 @@ class AMemberReviewProduct(api_resource.ApiResource):
 
 			if has_waiting_review:
 				break
-
+				
+		webapp_user.cleanup_order_info_cache()
+		ReviewedProduct.cleanup_cache({
+			'product_id': product_id
+			})
 		return {'status': 1, 'errmsg': '', 'has_waiting_review': 1 if has_waiting_review else 0}
 
 

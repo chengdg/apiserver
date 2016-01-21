@@ -10,7 +10,7 @@ import math
 from datetime import datetime
 
 from wapi.decorators import param_required
-from wapi import wapi_utils
+#from wapi import wapi_utils
 from core.cache import utils as cache_util
 from db.mall import models as mall_models
 from db.mall import promotion_models
@@ -46,7 +46,9 @@ class WebAppOwnerInfo(business_model.Model):
 		'weixin_mp_user_access_token',
 
 		'webapp_owner_id',
-		'mpuser_preview_info'
+		'mpuser_preview_info',
+		'mp_head_img',
+		'mp_nick_name'
 	)
 
 	@staticmethod
@@ -278,8 +280,12 @@ class WebAppOwnerInfo(business_model.Model):
 		obj.auth_appid_info = weixin_user_models.ComponentAuthedAppidInfo.from_dict(data['auth_appid_info'])
 		if  obj.auth_appid_info:
 			obj.qrcode_img = obj.auth_appid_info.qrcode_url
+			obj.mp_head_img = obj.auth_appid_info.head_img
+			obj.mp_nick_name = obj.auth_appid_info.nick_name
 		else:
 			obj.qrcode_img = ''
+			obj.mp_head_img = ''
+			obj.mp_nick_name = ''
 
 		obj.default_member_tag = member_models.MemberTag.from_dict(data['default_member_tag'])	
 		return obj

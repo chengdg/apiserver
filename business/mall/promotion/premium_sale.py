@@ -10,7 +10,7 @@ import math
 from datetime import datetime
 
 from wapi.decorators import param_required
-from wapi import wapi_utils
+#from wapi import wapi_utils
 from core.cache import utils as cache_util
 from db.mall import models as mall_models
 from db.mall import promotion_models
@@ -167,7 +167,8 @@ class PremiumSale(promotion.Promotion):
 		total_product_price = 0.0
 		for product in products:
 			total_purchase_count += product.purchase_count
-			total_product_price += product.price * product.purchase_count
+			# 买赠优先于会员价，使用原价计算“小计”
+			total_product_price += product.original_price * product.purchase_count
 
 		#如果满足循环满赠，则调整赠品数量
 		if self.is_enable_cycle_mode:
@@ -191,3 +192,24 @@ class PremiumSale(promotion.Promotion):
 
 	def after_from_dict(self):
 		self.type_name = 'premium_sale'
+
+	def get_detail(self,promotion_product_group, purchase_info=None):
+
+		products = promotion_product_group.products
+
+		total_purchase_count = 0
+		total_product_price = 0.0
+		for product in products:
+			total_purchase_count += product.purchase_count
+			# 买赠优先于会员价，使用原价计算“小计”
+			total_product_price += product.price * product.purchase_count
+
+
+		detail = {
+			'count': self.count,
+			'is_enable_cycle_mode': self.is_enable_cycle_mode,
+			'promotion_price': -1,
+			'premium_products': self.premium_products
+		}
+		promotion_result = PromotionResult(saved_money=0, subtotal=total_product_price, detail=detail)
+		return promotion_result

@@ -10,7 +10,7 @@ import itertools
 from operator import attrgetter
 
 from wapi.decorators import param_required
-from wapi import wapi_utils
+#from wapi import wapi_utils
 from core.cache import utils as cache_util
 from db.mall import models as mall_models
 from core.watchdog.utils import watchdog_alert
@@ -76,6 +76,7 @@ class SimpleProducts(business_model.Model):
 				category = mall_models.ProductCategory()
 				category.id = category_dict['id']
 				category.name = category_dict['name']
+				category.is_deleted = False
 			else:
 				category = mall_models.ProductCategory()
 				category.is_deleted = True

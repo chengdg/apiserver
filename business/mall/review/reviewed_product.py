@@ -9,7 +9,7 @@ import math
 from datetime import datetime
 
 from wapi.decorators import param_required
-from wapi import wapi_utils
+#from wapi import wapi_utils
 
 from db.mall import models as mall_models
 
@@ -35,6 +35,7 @@ class ReviewedProduct(business_model.Model):
 		'owner_id',
 		'review_detail',
 		'member_name',
+		'member_icon',
 		'status',
 		'created_at',
 		'reviewed_product_pictures',
@@ -81,6 +82,18 @@ class ReviewedProduct(business_model.Model):
 			return None
 
 	@staticmethod
+	@param_required(['product_id'])
+	def cleanup_cache(args):
+		"""
+		根据product 清理缓存
+
+		@param[in] product_id: product_id
+
+		"""
+		key = 'p_r_{id:%s}' % args['product_id']
+		cache_util.delete_cache(key)
+
+	@staticmethod
 	@param_required(['reviewed_order_id', 'product_id'])
 	def from_product_id(args):
 		"""
@@ -95,10 +108,13 @@ class ReviewedProduct(business_model.Model):
 		reviewed_order_id = args['reviewed_order_id']
 		try:
 			db_model = mall_models.ProductReview.get(order_review_id=reviewed_order_id, product_id=product_id)
-			return ReviewedProduct.from_model({
-				'webapp_owner': webapp_owner,
-				'model': db_model
-			})
+			if db_model:
+				return ReviewedProduct.from_model({
+					'webapp_owner': webapp_owner,
+					'model': db_model
+				})
+			else:
+				return None
 		except:
 			return None
 
@@ -117,10 +133,13 @@ class ReviewedProduct(business_model.Model):
 		order_has_product_id = args['order_has_product_id']
 		try:
 			db_model = mall_models.ProductReview.get(order_has_product=order_has_product_id)
-			return ReviewedProduct.from_model({
-				'webapp_owner': webapp_owner,
-				'model': db_model
-			})
+			if db_model:
+				return ReviewedProduct.from_model({
+					'webapp_owner': webapp_owner,
+					'model': db_model
+				})
+			else:
+				return None
 		except:
 			return None
 
@@ -136,8 +155,10 @@ class ReviewedProduct(business_model.Model):
 
 		if webapp_user:
 			self.member_name = webapp_user.username_for_html
+			self.member_icon = webapp_user.user_icon
 		else:
 			self.member_name = ''
+			self.member_icon = ''
 
 		self.product_score = model.product_score
 

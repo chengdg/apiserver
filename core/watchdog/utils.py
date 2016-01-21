@@ -16,7 +16,9 @@ from tasks import _watchdog, send_watchdog
 
 __author__ = 'victor'
 
-def watchdog_debug(message, type='WEB', user_id='0', db_name='default'):
+DEFAULT_WATCHDOG_TYPE = 'API3'
+
+def watchdog_debug(message, type=DEFAULT_WATCHDOG_TYPE, user_id='0', db_name='default'):
 	"""
 	用异步方式发watchdog
 
@@ -33,7 +35,7 @@ def watchdog_debug(message, type='WEB', user_id='0', db_name='default'):
 	#print message
 
 
-def watchdog_info(message, type='WEB', user_id='0', db_name='default'):
+def watchdog_info(message, type=DEFAULT_WATCHDOG_TYPE, user_id='0', db_name='default'):
 	"""
 	用异步方式发watchdog
 
@@ -49,7 +51,7 @@ def watchdog_info(message, type='WEB', user_id='0', db_name='default'):
 	return result
 
 
-def watchdog_notice(message, type='WEB', user_id='0', db_name='default'):
+def watchdog_notice(message, type=DEFAULT_WATCHDOG_TYPE, user_id='0', db_name='default'):
 	"""
 	用异步方式发watchdog
 
@@ -65,7 +67,7 @@ def watchdog_notice(message, type='WEB', user_id='0', db_name='default'):
 	return result
 
 
-def watchdog_warning(message, type='WEB', user_id='0', db_name='default'):
+def watchdog_warning(message, type=DEFAULT_WATCHDOG_TYPE, user_id='0', db_name='default'):
 	"""
 	用异步方式发watchdog
 
@@ -81,11 +83,16 @@ def watchdog_warning(message, type='WEB', user_id='0', db_name='default'):
 	return result
 
 
-def watchdog_error(message, type='WEB', user_id='0', noraise=False, db_name='default'):
+def watchdog_error(message, type=DEFAULT_WATCHDOG_TYPE, user_id='0', noraise=False, db_name='default'):
 	result = None
+
 	if not celeryconfig.CELERY_ALWAYS_EAGER:
+
 		if WATCHDOG_ERROR >= settings.WATCH_DOG_LEVEL:
+
 			result = send_watchdog.delay(type, message, WATCHDOG_ERROR, user_id, db_name)
+
+
 		if settings.DEBUG and (not noraise):
 			exception_type, value, tb = sys.exc_info()
 			if exception_type:
@@ -100,7 +107,7 @@ def watchdog_error(message, type='WEB', user_id='0', noraise=False, db_name='def
 	return result
 
 
-def watchdog_fatal(message, type='WEB', user_id='0', noraise=False, db_name='default'):
+def watchdog_fatal(message, type=DEFAULT_WATCHDOG_TYPE, user_id='0', noraise=False, db_name='default'):
 	result = None
 	if not celeryconfig.CELERY_ALWAYS_EAGER:
 		if WATCHDOG_FATAL >= settings.WATCH_DOG_LEVEL:
@@ -119,7 +126,7 @@ def watchdog_fatal(message, type='WEB', user_id='0', noraise=False, db_name='def
 	return result
 
 
-def watchdog_alert(message, type='WEB', user_id='0', db_name='default'):
+def watchdog_alert(message, type=DEFAULT_WATCHDOG_TYPE, user_id='0', db_name='default'):
 	result = None
 	if not celeryconfig.CELERY_ALWAYS_EAGER:
 		if WATCHDOG_ALERT >= settings.WATCH_DOG_LEVEL:
@@ -130,7 +137,7 @@ def watchdog_alert(message, type='WEB', user_id='0', db_name='default'):
 	return result
 
 
-def watchdog_emergency(message, type='WEB', user_id='0', db_name='default'):
+def watchdog_emergency(message, type=DEFAULT_WATCHDOG_TYPE, user_id='0', db_name='default'):
 	result = None
 	if not celeryconfig.CELERY_ALWAYS_EAGER:
 		if WATCHDOG_EMERGENCY >= settings.WATCH_DOG_LEVEL:
@@ -139,4 +146,3 @@ def watchdog_emergency(message, type='WEB', user_id='0', db_name='default'):
 		if WATCHDOG_EMERGENCY >= settings.WATCH_DOG_LEVEL:
 			_watchdog(type, message, WATCHDOG_EMERGENCY, user_id, db_name)
 	return result
-

@@ -10,7 +10,7 @@ import math
 import itertools
 
 from wapi.decorators import param_required
-from wapi import wapi_utils
+#from wapi import wapi_utils
 from core.cache import utils as cache_util
 from db.mall import models as mall_models
 from core.watchdog.utils import watchdog_alert
@@ -44,25 +44,44 @@ class ProductReviews(business_model.Model):
 
 		self.context['webapp_owner'] = webapp_owner
 		self.context['product_id'] = product_id
-		self.__get_product_reviews_for(product_id)
+
+		self.__get_from_cache(product_id)
+		#self.__get_product_reviews_for(product_id)
+
+	def __get_from_cache(self, product_id):
+		"""
+		"""
+		key = 'p_r_{id:%s}' % product_id
+
+		data = cache_util.get_from_cache(key, self.__get_product_reviews_for(product_id))
+
+		self.products = data['products']
 
 	def __get_product_reviews_for(self, product_id):
-		webapp_owner = self.context['webapp_owner']
-		reviewed_products = mall_models.ProductReview.select().dj_where(
-			owner_id=webapp_owner.id, 
-			product_id=product_id,
-			status__in=[
-				mall_models.PRODUCT_REVIEW_STATUS_PASSED,
-				mall_models.PRODUCT_REVIEW_STATUS_PASSED_PINNED
-				]).order_by(-mall_models.ProductReview.top_time, -mall_models.ProductReview.id)
+		def inner_func():
+			webapp_owner = self.context['webapp_owner']
+			reviewed_products = mall_models.ProductReview.select().dj_where(
+				owner_id=webapp_owner.id, 
+				product_id=product_id,
+				status__in=[
+					mall_models.PRODUCT_REVIEW_STATUS_PASSED,
+					mall_models.PRODUCT_REVIEW_STATUS_PASSED_PINNED
+					]).order_by(-mall_models.ProductReview.top_time, -mall_models.ProductReview.id)
 
-		products = []
-		for reviewed_product in reviewed_products:
-			products.append(ReviewedProduct.from_model({
-				"webapp_owner": webapp_owner,
-				"model": reviewed_product
-				}).to_dict())
+			products = []
+			for reviewed_product in reviewed_products:
+				products.append(ReviewedProduct.from_model({
+					"webapp_owner": webapp_owner,
+					"model": reviewed_product
+					}).to_dict())
 
-		self.products = products
+			#self.products = products
 
+			return {
+				"value" : {
+					"products": products
+				}
+			}
+
+		return inner_func
 

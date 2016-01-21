@@ -21,7 +21,8 @@ class AProductReviews(api_resource.ApiResource):
 	def get(args):
 		"""
 		获取审核通过的product review
-
+		@param product_id
+		@return {'reviews': }
 		@note 在原Webapp中，review是包括product detail(商品详情)的`product`中。见`request_util.py:get_product()`。获得`product`需要woid, product_id, member_grade_id, wuid四项参数。实际通过`mall/module_api.py:get_product_detail()`获得product detail。而`get_product_detail()`调用`get_webapp_product_detail()`组装product detail。
 		在`get_product_detail_for_cache()`找到`product_review`
 		"""

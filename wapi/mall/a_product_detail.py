@@ -21,7 +21,8 @@ class AProductDetail(api_resource.ApiResource):
 		"""
 		获取商品详情
 
-		@param id 商品ID
+		@param member
+		@param product_id
 		"""
 		product = Product.from_id({
 			'woid': args['woid'],

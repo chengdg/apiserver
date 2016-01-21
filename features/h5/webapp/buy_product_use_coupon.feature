@@ -156,6 +156,12 @@ Background:
 			"end_date": "2天后",
 			"using_limit": "满50元可以使用",
 			"coupon_id_prefix": "coupon5_id_"
+		}, {
+			"name": "未领取优惠券",
+			"money": 100,
+			"start_date": "今天",
+			"end_date": "2天后",
+			"coupon_id_prefix": "coupon7_id_"
 		}]
 		"""
 	When bill关注jobs的公众号
@@ -512,7 +518,7 @@ Scenario:5 输入未领取的可用优惠券码进行购买，bill创建订单�
 				"money": 1.0,
 				"status": "已使用",
 				"consumer": "bill",
-				"target": "bill"
+				"target": ""
 			}
 		}
 		"""
@@ -1209,6 +1215,226 @@ Scenario:14 【优惠券】-未到使用日期，不能使用
 			},
 			"coupon6_id_4": {
 				"money": 1.0,
+				"status": "未领取",
+				"consumer": "",
+				"target": ""
+			}
+		}
+		"""
+
+#补充: 张三香 2016.01.08
+#针对重构过程中发现的bug7135补充
+@mall3 @coupon 
+Scenario:15 使用未被领取的优惠券购买，手机端取消订单后查看该优惠券的信息
+	Given jobs登录系统:weapp
+	Then jobs能获得优惠券'未领取优惠券'的码库:weapp
+		"""
+		{
+			"coupon7_id_1": {
+				"money": 100.0,
+				"status": "未领取",
+				"consumer": "",
+				"target": ""
+			},
+			"coupon7_id_2": {
+				"money": 100.0,
+				"status": "未领取",
+				"consumer": "",
+				"target": ""
+			},
+			"coupon7_id_3": {
+				"money": 100.0,
+				"status": "未领取",
+				"consumer": "",
+				"target": ""
+			},
+			"coupon7_id_4": {
+				"money": 100.0,
+				"status": "未领取",
+				"consumer": "",
+				"target": ""
+			}
+		}
+		"""
+	When bill访问jobs的webapp
+	When bill购买jobs的商品
+		"""
+		{
+			"pay_type": "微信支付",
+			"order_id": "001",
+			"products": [{
+				"name": "商品2",
+				"count": 1
+			}],
+			"coupon": "coupon7_id_1"
+		}
+		"""
+
+	Given jobs登录系统:weapp
+	Then jobs能获得优惠券'未领取优惠券'的码库:weapp
+		"""
+		{
+			"coupon7_id_1": {
+				"money": 100.0,
+				"status": "已使用",
+				"consumer": "bill",
+				"target": ""
+			},
+			"coupon7_id_2": {
+				"money": 100.0,
+				"status": "未领取",
+				"consumer": "",
+				"target": ""
+			},
+			"coupon7_id_3": {
+				"money": 100.0,
+				"status": "未领取",
+				"consumer": "",
+				"target": ""
+			},
+			"coupon7_id_4": {
+				"money": 100.0,
+				"status": "未领取",
+				"consumer": "",
+				"target": ""
+			}
+		}
+		"""
+
+	When bill取消订单'001'
+	Given jobs登录系统:weapp
+	Then jobs能获得优惠券'未领取优惠券'的码库:weapp
+		"""
+		{
+			"coupon7_id_1": {
+				"money": 100.0,
+				"status": "未使用",
+				"consumer": "",
+				"target": ""
+			},
+			"coupon7_id_2": {
+				"money": 100.0,
+				"status": "未领取",
+				"consumer": "",
+				"target": ""
+			},
+			"coupon7_id_3": {
+				"money": 100.0,
+				"status": "未领取",
+				"consumer": "",
+				"target": ""
+			},
+			"coupon7_id_4": {
+				"money": 100.0,
+				"status": "未领取",
+				"consumer": "",
+				"target": ""
+			}
+		}
+		"""
+
+@mall3 @coupon
+Scenario:16 使用未被领取的优惠券购买，后台取消订单后查看该优惠券的信息
+	Given jobs登录系统:weapp
+	Then jobs能获得优惠券'未领取优惠券'的码库:weapp
+		"""
+		{
+			"coupon7_id_1": {
+				"money": 100.0,
+				"status": "未领取",
+				"consumer": "",
+				"target": ""
+			},
+			"coupon7_id_2": {
+				"money": 100.0,
+				"status": "未领取",
+				"consumer": "",
+				"target": ""
+			},
+			"coupon7_id_3": {
+				"money": 100.0,
+				"status": "未领取",
+				"consumer": "",
+				"target": ""
+			},
+			"coupon7_id_4": {
+				"money": 100.0,
+				"status": "未领取",
+				"consumer": "",
+				"target": ""
+			}
+		}
+		"""
+	When bill访问jobs的webapp
+	When bill购买jobs的商品
+		"""
+		{
+			"pay_type": "微信支付",
+			"order_id": "001",
+			"products": [{
+				"name": "商品3",
+				"count": 2
+			}],
+			"coupon": "coupon7_id_1"
+		}
+		"""
+
+	Given jobs登录系统:weapp
+	Then jobs能获得优惠券'未领取优惠券'的码库:weapp
+		"""
+		{
+			"coupon7_id_1": {
+				"money": 100.0,
+				"status": "已使用",
+				"consumer": "bill",
+				"target": ""
+			},
+			"coupon7_id_2": {
+				"money": 100.0,
+				"status": "未领取",
+				"consumer": "",
+				"target": ""
+			},
+			"coupon7_id_3": {
+				"money": 100.0,
+				"status": "未领取",
+				"consumer": "",
+				"target": ""
+			},
+			"coupon7_id_4": {
+				"money": 100.0,
+				"status": "未领取",
+				"consumer": "",
+				"target": ""
+			}
+		}
+		"""
+
+	When jobs'取消'订单'001':weapp
+	Given jobs登录系统:weapp
+	Then jobs能获得优惠券'未领取优惠券'的码库:weapp
+		"""
+		{
+			"coupon7_id_1": {
+				"money": 100.0,
+				"status": "未使用",
+				"consumer": "",
+				"target": ""
+			},
+			"coupon7_id_2": {
+				"money": 100.0,
+				"status": "未领取",
+				"consumer": "",
+				"target": ""
+			},
+			"coupon7_id_3": {
+				"money": 100.0,
+				"status": "未领取",
+				"consumer": "",
+				"target": ""
+			},
+			"coupon7_id_4": {
+				"money": 100.0,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""

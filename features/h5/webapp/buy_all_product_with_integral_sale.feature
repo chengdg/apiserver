@@ -90,7 +90,7 @@ Background:
 	Given bill关注jobs的公众号
 	And tom关注jobs的公众号
 
-@mall3 @mall2 @mall.promotion @mall.webapp.promotion @bert
+@mall3 @mall2 @mall.promotion @mall.webapp.promotion @bert @wip.bapwis1
 Scenario:1 购买单种一个商品，积分金额小于最大折扣金额
 	When bill访问jobs的webapp
 	When bill获得jobs的50会员积分
@@ -195,7 +195,7 @@ Scenario:3 购买多个商品，已有总积分金额大于最大折扣金额
 		"""
 	Then bill在jobs的webapp中拥有10会员积分
 
-@mall3 @mall2 @mall.promotion @mall.webapp.promotion @bert
+@mall3 @mall2 @mall.promotion @mall.webapp.promotion @bert @acb
 Scenario:4 购买单个多规格商品+一个普通商品
 	When bill访问jobs的webapp
 	When bill获得jobs的150会员积分
@@ -584,3 +584,79 @@ Scenario: 7 不同等级的会员购买有会员价同时有全体积分抵扣50
 		}
 		"""
 	Then tom3在jobs的webapp中拥有0会员积分
+
+#补充.雪静
+@mall3 @mall2 @integral @bert 
+Scenario: 8 使用积分能抵扣小数
+	使用积分抵扣带有小数的金额
+	1.抵扣金额小于1元的小数
+	2.抵扣金额大于1元的小数
+
+	Given jobs登录系统:weapp
+	And jobs已添加商品:weapp
+		"""
+		[{
+			"name": "商品10",
+			"price": 1.00
+		},{
+			"name": "商品11",
+			"price": 2.50
+		}]
+		"""
+	When bill访问jobs的webapp
+	When bill获得jobs的50会员积分
+	Then bill在jobs的webapp中拥有50会员积分
+	When bill购买jobs的商品
+		"""
+		{
+			"pay_type": "微信支付",
+			"integral_money": 0.50,
+			"integral": 1,
+			"products": [{
+				"name": "商品10",
+				"count": 1
+			}]
+		}
+		"""
+	Then bill成功创建订单
+		"""
+		{
+			"status": "待支付",
+			"final_price": 0.50,
+			"product_price": 1.00,
+			"integral_money": 0.50,
+			"integral": 1,
+			"products": [{
+				"name": "商品10",
+				"count": 1
+			}]
+		}
+		"""
+	Then bill在jobs的webapp中拥有49会员积分
+	When bill购买jobs的商品
+		"""
+		{
+			"pay_type": "微信支付",
+			"integral_money": 1.25,
+			"integral": 3,
+			"products": [{
+				"name": "商品11",
+				"count": 1
+			}]
+		}
+		"""
+	Then bill成功创建订单
+		"""
+		{
+			"status": "待支付",
+			"final_price": 1.25,
+			"product_price": 2.50,
+			"integral_money": 1.25,
+			"integral": 3,
+			"products": [{
+				"name": "商品11",
+				"count": 1
+			}]
+		}
+		"""
+	Then bill在jobs的webapp中拥有46会员积分

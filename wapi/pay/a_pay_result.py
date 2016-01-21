@@ -45,7 +45,7 @@ class APayResult(api_resource.ApiResource):
 			'order_id': args['order_id'],
 
 			'out_trade_no': args.get('out_trade_no', ''), #alipay, tenpay
-			'result': args.get('out_trade_no', ''), #alipay
+			'result': args.get('result', ''), #alipay
 
 			'trade_status': args.get('trade_status', ''), #tenpay
 			'pay_info': args.get('pay_info', ''), #tenpay

@@ -155,7 +155,7 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 					"with_product_promotion": True
 				}
 				})
-				
+
 			product_ids.append(str(product_obj.id))
 			try:
 				if product.has_key('promotion'):
@@ -165,7 +165,7 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 					promotion_ids.append(str(__get_current_promotion_id_for_product(product_obj, member.grade_id)))
 			except:
 				promotion_ids = ''
-			
+
 			_product_model_name = _get_product_model_ids_from_name(webapp_owner_id, product.get('model', None))
 			product_model_names.append(_product_model_name)
 			if 'integral' in product and product['integral'] > 0:
@@ -175,7 +175,7 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 					"integral": product['integral'],
 					"money": round(product['integral'] / integral_each_yuan, 2)
 				}
-			
+
 			if product_obj.integral_sale:
 
 				group2integralinfo['%s_%s' % (product_obj.id, _product_model_name)] = product_obj.to_dict()['integral_sale']['rules'][0]
@@ -202,6 +202,18 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 
 	# 处理中文地区转化为id，如果数据库不存在的地区则自动添加该地区
 	ship_area = get_area_ids(args.get('ship_area'))
+	bill_info = args.get('invoice', None)
+	if bill_info:
+		if bill_info['type'] == '个人':
+			bill_type = 1
+		elif bill_info['type'] == '公司':
+			bill_type = 2
+		else:
+			bill_type = 0
+		bill = bill_info['value']
+	else:
+		bill_type = 0
+		bill = ""
 
 	data = {
 		"woid": webapp_owner_id,
@@ -218,6 +230,8 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 		"ship_address": args.get('ship_address', "长安大街"),
 		"ship_tel": args.get('ship_tel', "11111111111"),
 		"is_use_coupon": "false",
+		"bill_type": bill_type,
+		"bill": bill,
 		"coupon_id": 0,
 		# "coupon_coupon_id": "",
 		"message": args.get('customer_message', ''),
@@ -314,7 +328,7 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 			context.created_order_id = args['order_id']
 
 	logging.info("[Order Created] webapp_owner_id: {}, created_order_id: {}".format(webapp_owner_id, context.created_order_id))
-	
+
 	context.product_ids = product_ids
 	context.product_counts = product_counts
 	context.product_model_names = product_model_names
@@ -402,7 +416,16 @@ def step_impl(context, webapp_usr_name, order_id):
 	#actual.member = actual.buyer_name
 	actual['status'] = mall_models.ORDERSTATUS2MOBILETEXT[actual['status']]
 	actual['ship_area'] = actual['ship_area']
-
+	if actual['bill_type'] == 0:
+		bill_type = 0
+	elif actual['bill_type'] == 1:
+		bill_type = '个人'
+	elif actual['bill_type'] == 2:
+		bill_type = '公司'
+	actual['invoice'] = {
+		"type": bill_type,
+		"value": actual['bill']
+	}
 	if has_sub_order:
 		products = []
 		orders = actual['sub_orders']
@@ -815,7 +838,7 @@ def step_click_check_out(context, webapp_user_name):
 				'order_id': pay_url_info['order_id']
 			}
 			context.client.post(pay_url, data)
-		
+
 		context.created_order_id = response.data['order_id']
 	else:
 		context.created_order_id = -1

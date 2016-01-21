@@ -165,7 +165,7 @@ Scenario:1 购买单个支持开发票的商品，选择'个人'发票
 				},
 			"final_price": 10.00,
 			"products": [{
-				"name": "支持开票1",
+				"name": "配送商品1",
 				"price": 10.00,
 				"count": 1
 			}]

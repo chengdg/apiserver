@@ -118,6 +118,14 @@ class OrderFactory(business_model.Model):
 			else:
 				retry_count += 1
 
+		# while retry_count <= retry_max_count:
+		# 	tail = random.randint(1, 999)
+		# 	order_id_pool = DataPool(name=key_name, expire=3)
+		# 	is_success = order_id_pool.add(str(tail))
+		# 	if is_success:
+		# 		return '%s%03d' % (now, tail)
+		# 	else:
+		# 		retry_count += 1
 
 
 	def __allocate_price_free_resources(self, order, purchase_info):

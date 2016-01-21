@@ -31,6 +31,7 @@ from business.mall.allocator.allocate_price_related_resource_service import Allo
 from business.mall.order import Order
 
 #from business.mall.package_order_service.package_order_service import CalculatePriceService
+from core.data_pool import DataPool
 from wapi.decorators import param_required
 #from wapi import wapi_utils
 from core.cache import utils as cache_util
@@ -105,27 +106,27 @@ class OrderFactory(business_model.Model):
 		retry_max_count = 100
 		retry_count = 1
 
-		while retry_count <= retry_max_count:
-			tail = random.randint(1, 999)
-
-			# 不存在key则创建空集合，并设置过期时间
-			if not cache_util.exists_key(key_name):
-				cache_util.sadd(key_name, '')
-				cache_util.set_key_expire(key_name, 3)
-
-			if cache_util.sadd(key_name, tail):
-				return '%s%03d' % (now, tail)
-			else:
-				retry_count += 1
-
 		# while retry_count <= retry_max_count:
 		# 	tail = random.randint(1, 999)
-		# 	order_id_pool = DataPool(name=key_name, expire=3)
-		# 	is_success = order_id_pool.add(str(tail))
-		# 	if is_success:
+		#
+		# 	# 不存在key则创建空集合，并设置过期时间
+		# 	if not cache_util.exists_key(key_name):
+		# 		cache_util.sadd(key_name, '')
+		# 		cache_util.set_key_expire(key_name, 3)
+		#
+		# 	if cache_util.sadd(key_name, tail):
 		# 		return '%s%03d' % (now, tail)
 		# 	else:
 		# 		retry_count += 1
+
+		while retry_count <= retry_max_count:
+			tail = random.randint(1, 999)
+			order_id_pool = DataPool(name=key_name, expire=3)
+			is_success = order_id_pool.add(str(tail))
+			if is_success:
+				return '%s%03d' % (now, tail)
+			else:
+				retry_count += 1
 
 
 	def __allocate_price_free_resources(self, order, purchase_info):

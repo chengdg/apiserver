@@ -502,6 +502,10 @@ class WebAppUser(business_model.Model):
 		key = "webapp_order_stats_{wu:%d}" % (self.id)
 		cache_util.delete_cache(key)
 
+		# 清除后台订单计数角标缓存
+		key_for_weapp_order_list = 'webapp_unread_order_count_{wa:%s}' % self.member.webapp_id
+		cache_util.delete_cache(key_for_weapp_order_list)
+
 	@cached_context_property
 	def openid(self):
 		"""

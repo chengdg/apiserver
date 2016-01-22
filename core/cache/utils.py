@@ -307,3 +307,14 @@ def smemebrs(key):
 @modify_keys
 def scard(key):
 	return r.scard(key)
+
+
+@modify_keys
+def spop(key):
+	print('----------3',key)
+	return r.spop(key)
+
+
+@modify_keys
+def srandmember(key, number):
+	return r.srandmember(key, number)

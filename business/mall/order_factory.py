@@ -101,22 +101,25 @@ class OrderFactory(business_model.Model):
 		"""
 		now = time.strftime("%Y%m%d%H%M%S", time.localtime())
 		key_name = 'order_ids:' + now
-
-		retry_max_count = 100
-		retry_count = 1
-
-		while retry_count <= retry_max_count:
-			tail = random.randint(1, 999)
-
-			# 不存在key则创建空集合，并设置过期时间
-			if not cache_util.exists_key(key_name):
-				cache_util.sadd(key_name, '')
-				cache_util.set_key_expire(key_name, 3)
-
-			if cache_util.sadd(key_name, tail):
-				return '%s%03d' % (now, tail)
-			else:
-				retry_count += 1
+		print('--------2',key_name)
+		tail = int(cache_util.spop(key_name))
+		print('--------------------1',tail)
+		return '%s%03d' % (now, tail)
+		# retry_max_count = 100
+		# retry_count = 1
+		#
+		# while retry_count <= retry_max_count:
+		# 	tail = random.randint(1, 999)
+		#
+		# 	# 不存在key则创建空集合，并设置过期时间
+		# 	if not cache_util.exists_key(key_name):
+		# 		cache_util.sadd(key_name, '')
+		# 		cache_util.set_key_expire(key_name, 3)
+		#
+		# 	if cache_util.sadd(key_name, tail):
+		# 		return '%s%03d' % (now, tail)
+		# 	else:
+		# 		retry_count += 1
 
 		# while retry_count <= retry_max_count:
 		# 	tail = random.randint(1, 999)

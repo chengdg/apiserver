@@ -203,7 +203,9 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 	# 处理中文地区转化为id，如果数据库不存在的地区则自动添加该地区
 	ship_area = get_area_ids(args.get('ship_area'))
 	bill_info = args.get('invoice', None)
+	is_use_bill = ""
 	if bill_info:
+		is_use_bill = "on"
 		if bill_info['type'] == '个人':
 			bill_type = 1
 		elif bill_info['type'] == '公司':
@@ -230,6 +232,7 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 		"ship_address": args.get('ship_address', "长安大街"),
 		"ship_tel": args.get('ship_tel', "11111111111"),
 		"is_use_coupon": "false",
+		"is_use_bill": is_use_bill,
 		"bill_type": bill_type,
 		"bill": bill,
 		"coupon_id": 0,

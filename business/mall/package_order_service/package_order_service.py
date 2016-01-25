@@ -165,7 +165,6 @@ class PackageOrderService(business_model.Service):
 		"""
 
 		# 读取resources中的信息
-		# TODO: 如果有多个resource有同一个type呢？
 		self.type2resource = dict([(resource.type, resource) for resource in price_free_resources])
 
 
@@ -177,7 +176,6 @@ class PackageOrderService(business_model.Service):
 		final_price = self.__process_coupon(order, final_price)
 
 		# 处理积分
-		# TODO: 确认积分应用
 		final_price = self.__process_integral(order, final_price, purchase_info)
 
 		# 处理运费
@@ -186,22 +184,19 @@ class PackageOrderService(business_model.Service):
 		# 处理订单中的促销优惠金额
 		self.__process_promotion(order)
 
-		# todo 确认字段是否遗漏
 		logging.info("final_price={}".format(final_price))
 		if final_price < 0:
 			logging.error('`final_price` SHOULD NOT be negative! Please check it.')
 			final_price = 0
 		order.final_price = round(final_price, 2)
 
-		# TODO: 需要实现"订单价格相关资源"分配
 		is_success, reason, price_related_resources = self.__allocate_price_related_resource(order, purchase_info)
 
 		if is_success:
 			# 根据订单价格相关资源调整待支付价格
-			# TODO: 处理微众卡
 			order = self.__adjust_order_price(order, price_related_resources, purchase_info)
 
 			order.final_price = round(order.final_price, 2)
 	
 		logging.info("order.final_price={}".format(order.final_price))
-		return order, is_success, reason
+		return order, is_success, reason, price_related_resources

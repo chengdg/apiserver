@@ -17,11 +17,11 @@ from utils import dateutil as utils_dateutil
 #import resource
 from wapi.mall.a_purchasing import APurchasing as PurchasingApiResource
 from core.cache import utils as cache_utils
-from business.mall.order_factory import OrderFactory, OrderException
+from business.mall.order_factory import OrderFactory, OrderResourcesException
 from business.mall.purchase_info import PurchaseInfo
 from business.mall.pay_interface import PayInterface
 from business.mall.order import Order
-from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
+from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error, watchdog_info
 from business.spread.member_spread import MemberSpread
 import logging
 
@@ -56,9 +56,11 @@ class AOrder(api_resource.ApiResource):
 				"webapp_user": webapp_user
 			})
 			order = order_factory.create_order(purchase_info)
-		except OrderException as e:
+		except OrderResourcesException as e:
 			# 实际上detail是reason列表
 			return 500, {'detail': e.value}
+		except:
+			return 500, {'detail': ''}
 
 		pay_url_info = None
 		if order:
@@ -112,34 +114,24 @@ class AOrder(api_resource.ApiResource):
 				'order_id': args['order_id']
 			})
 
-			if order.webapp_user_id != args['webapp_user'].id:
-				raise Exception(u'非法操作')
-
 			action = args['action']
+
+			validate_result, reason = order.validate_order_action(action, args['webapp_user'].id)
+
+			msg = u"apiserver中修改订单状态失败, order_id:{}, action:{}, cause:\n{}".format(args['order_id'], args['action'], reason)
+			watchdog_info(msg)
+
+			if not validate_result:
+				return 500, {'msg': reason}
+
 			if action == 'cancel':
-				logging.info("order status: {}/{}".format(order.status, order.status_text))
-				# TODO: 不应该用此方式判断状态。增加method。
-				if order.status != mall_models.ORDER_STATUS_NOT:
-					#raise Exception(u'非法操作')
-					return 500, {
-						'msg': u'非待支付或已支付订单，无法取消'
-					}
 				order.cancel()
 			elif action == 'finish':
-				if order.status != mall_models.ORDER_STATUS_PAYED_SHIPED:
-					raise Exception(u'非法操作')
 				order.finish()
-			else:
-				raise Exception(u'非法操作')
-			return {
-				'success': True
-			}
 		except:
-			if not settings.IS_UNDER_BDD:
-				# TODO: 规范错误信息
-				notify_message = u"apiserver中修改订单状态失败, order_id:{}, action:{}, cause:\n{}".format(args['order_id'], args['action'], unicode_full_stack())
-				watchdog_error(notify_message)
-			return 500, {}
+			notify_message = u"apiserver中修改订单状态失败, order_id:{}, action:{}, cause:\n{}".format(args['order_id'], args['action'], unicode_full_stack())
+			watchdog_alert(notify_message)
+			return 500, ''
 
 
 

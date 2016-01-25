@@ -110,7 +110,7 @@ class PurchaseInfo(business_model.Model):
         """
         解析订单发票的信息
         """
-        if 'bill_type' in request_args:
+        if request_args.get('is_use_bill', "") == 'on':
             self.bill_info = {
                 "bill_type": request_args['bill_type'],
                 "bill": request_args['bill'] if request_args.has_key('bill') else ""

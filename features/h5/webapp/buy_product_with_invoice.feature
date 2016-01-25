@@ -114,6 +114,7 @@ Background:
 		"""
 	And bill关注jobs的公众号
 
+@mall3
 Scenario:1 购买单个支持开发票的商品，选择'个人'发票
 	When bill访问jobs的webapp
 	And bill购买jobs的商品
@@ -171,6 +172,7 @@ Scenario:1 购买单个支持开发票的商品，选择'个人'发票
 		}
 		"""
 
+@mall3
 Scenario:2 购买多个支持开发票的商品,选择'单位'发票
 	When bill访问jobs的webapp
 	And bill加入jobs的商品到购物车
@@ -236,6 +238,8 @@ Scenario:2 购买多个支持开发票的商品,选择'单位'发票
 			}]
 		}
 		"""
+
+@mall3
 Scenario:3 购买支持开发票和不支持开发票的商品
 	When bill访问jobs的webapp
 	And bill加入jobs的商品到购物车

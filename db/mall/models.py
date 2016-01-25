@@ -1212,7 +1212,7 @@ class ProductModel(models.Model):
 	market_price = models.FloatField(default=0.0)  # 商品市场价格
 	weight = models.FloatField(default=0.0)  # 重量
 	stock_type = models.IntegerField(default=PRODUCT_STOCK_TYPE_UNLIMIT)  # 0:无限 1:有限
-	stocks = models.IntegerField(default=-1)  # 有限：数量
+	stocks = models.IntegerField(default=0)  # 有限：数量
 	is_deleted = models.BooleanField(default=False)  # 是否已删除
 	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间
 	# v2

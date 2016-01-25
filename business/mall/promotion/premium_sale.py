@@ -68,7 +68,7 @@ class PremiumSale(promotion.Promotion):
 			})
 			model2stock = realtime_stock.model2stock
 			for model, stock_info in model2stock.items():
-				if stock_info['stock_type'] == 0:
+				if stock_info['stock_type'] == mall_models.PRODUCT_STOCK_TYPE_UNLIMIT:
 					product2stocks[premium_product_id] = -1
 				else:
 					if premium_product_id in product2stocks:

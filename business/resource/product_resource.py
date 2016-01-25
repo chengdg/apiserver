@@ -78,6 +78,8 @@ class ProductResource(business_model.Resource):
 	def consume_stocks(self, product):
 		"""
 		消耗库存
+		@note 库存的并发防超售（防止有限库存在并发时库存被扣为负数）依赖MySQL的unsigned int，而MySQL对于修改为负数的SQL不会报错，而pymsql和MySQLdb会抛出异常，以此异常为“扣为负数”的判断。
+		@todo redis接管库存
 		"""
 		#请求分配库存资源
 		realtime_stock = RealtimeStock.from_product_model_name({
@@ -96,26 +98,36 @@ class ProductResource(business_model.Resource):
 		current_model_id = model2stock.keys()[0]
 		current_model = model2stock[current_model_id]
 
-		if current_model['stock_type'] == mall_models.PRODUCT_STOCK_TYPE_LIMIT and product.purchase_count > current_model['stocks']:
-			if current_model['stocks'] == 0:
+		if current_model['stock_type'] == mall_models.PRODUCT_STOCK_TYPE_LIMIT:
+			if product.purchase_count > current_model['stocks']:
+				if current_model['stocks'] == 0:
+					return False, {
+						'is_successed': False,
+						'type': 'product:sellout',
+						'msg': u'商品已售罄',
+						'short_msg': u'商品已售罄'
+					}
+				else:
+					return False, {
+						'is_successed': False,
+						'type': 'product:not_enough_stocks',
+						'msg': u'',
+						'short_msg': u'库存不足'
+					}
+
+			# stocks字段类型为unsigned int
+			try:
+				mall_models.ProductModel.update(stocks=mall_models.ProductModel.stocks-product.purchase_count).dj_where(id=current_model_id).execute()
+			except:
 				return False, {
 					'is_successed': False,
 					'type': 'product:sellout',
 					'msg': u'商品已售罄',
 					'short_msg': u'商品已售罄'
 				}
-			else:
-				return False, {
-					'is_successed': False,
-					'type': 'product:not_enough_stocks',
-					'msg': u'',
-					'short_msg': u'库存不足'
-				}
-		else:
-			mall_models.ProductModel.update(stocks=mall_models.ProductModel.stocks-product.purchase_count).dj_where(id=current_model_id).execute()			
-			self.purchase_count = product.purchase_count
-			self.model_id = current_model_id
-			return True, {
-				'is_successed': True,
-				'count': product.purchase_count
-			}
+		self.purchase_count = product.purchase_count
+		self.model_id = current_model_id
+		return True, {
+			'is_successed': True,
+			'count': product.purchase_count
+		}

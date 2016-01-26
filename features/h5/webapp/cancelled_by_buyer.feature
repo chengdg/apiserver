@@ -506,7 +506,7 @@ Scenario:8 bill能取消使用了微众卡的待支付订单
 		"""
 
 
-
+@mall3 @mall2 @order @allOrder @mall.order_cancel_status @ztq
 Scenario:9 bill能取买赠订单，主商品和赠品库存正常
 	bill能取消买赠订单'009'
 	1. bill手机端订单状态为'待支付'

@@ -28,6 +28,7 @@ from db.mall import promotion_models
 from business.wzcard.wzcard_resource_allocator import WZCardResourceAllocator
 from business.mall.log_operator import LogOperator
 from business.wzcard.wzcard_resource import WZCardResource
+from db.mall import models as mall_models
 
 class OrderResourceExtractor(business_model.Model):
 	"""
@@ -85,9 +86,13 @@ class OrderResourceExtractor(business_model.Model):
 		order_products = order.products
 		for order_product in order_products:
 			purchase_count = order_product.purchase_count
-			model_id = -1
 			if order_product.model:
 				model_id = order_product.model.id
+			else:
+				try:
+					model_id = mall_models.ProductModel.select().dj_where(product_id=order_product.id, name='standard').first().id
+				except:
+					model_id = -1
 			product_resource = ProductResource.get({
 					'type': resource_type
 				})

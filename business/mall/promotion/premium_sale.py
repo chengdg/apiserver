@@ -121,7 +121,16 @@ class PremiumSale(promotion.Promotion):
 					failed_reasons.append(reason)
 			else:
 				#商品库存大于赠品，直接扣库存
-				mall_models.ProductModel.update(stocks=mall_models.ProductModel.stocks-premium_product['premium_count']).dj_where(product_id=premium_product['premium_product_id'], name='standard').execute()
+				try:
+					mall_models.ProductModel.update(stocks=mall_models.ProductModel.stocks-premium_product['premium_count']).dj_where(product_id=premium_product['premium_product_id'], name='standard').execute()
+				except:
+					reason = PromotionFailure({
+						'type': 'promotion:premium_sale:not_enough_premium_product_stocks',
+						'msg': u'库存不足',
+						'short_msg': u'库存不足'
+					})
+					self.__supply_product_info_into_fail_reason(premium_product, reason)
+					failed_reasons.append(reason)
 
 		if len(failed_reasons) > 0:
 			return failed_reasons

@@ -11,6 +11,7 @@ Feature:jobs管理系统里待支付的订单，用户可以在手机端直接�
 		6.手机端能取消使用全体券待支付的订单，验证库存，全体券
 		7.手机端不能取消使用微众卡待发货的订单
 		8.手机端能取消使用微众卡待支付的订单，验证库存，微众卡
+		9.
 	"""
 Background:
 	Given 重置weapp的bdd环境
@@ -342,11 +343,11 @@ Scenario:4 bill能取消使用积分的待支付订单
 
 @mall3 @wip.cbb5 @wip.cbb
 Scenario:5 bill能取消使用了单品券的待支付订单
-bill能取消订单'005'
-	1. bill手机端订单状态为'待支付'
-	2. jobs后端订单状态为'待支付'
-	3. '商品2'库存更新加1
-	4. 单品券'coupon2_id_1'状态改变为'未使用'
+	bill能取消订单'005'
+		1. bill手机端订单状态为'待支付'
+		2. jobs后端订单状态为'待支付'
+		3. '商品2'库存更新加1
+		4. 单品券'coupon2_id_1'状态改变为'未使用'
 
 	When bill访问jobs的webapp
 	Then bill'能'取消订单'005'
@@ -383,11 +384,11 @@ bill能取消订单'005'
 
 @mall3 @wip.cbb @wip.cbb6
 Scenario:6 bill能取消使用了优惠券的待支付订单
-bill能取消订单'006'
-	1. bill手机端订单状态为'待支付'
-	2. jobs后端订单状态为'待支付'
-	3. '商品2'库存更新加2
-	4. 优惠券'coupon1_id_2'状态改变为'未使用'
+	bill能取消订单'006'
+		1. bill手机端订单状态为'待支付'
+		2. jobs后端订单状态为'待支付'
+		3. '商品2'库存更新加2
+		4. 优惠券'coupon1_id_2'状态改变为'未使用'
 
 	When bill访问jobs的webapp
 	Then bill'能'取消订单'006'
@@ -503,3 +504,92 @@ Scenario:8 bill能取消使用了微众卡的待支付订单
 			"price":100.00
 		}
 		"""
+
+
+
+Scenario:9 bill能取买赠订单，主商品和赠品库存正常
+	bill能取消买赠订单'009'
+	1. bill手机端订单状态为'待支付'
+	2. jobs后端订单状态为'待支付'
+	3. '商品2'库存更新加2
+	4. 微众卡状态为'已使用'
+
+	Given jobs登录系统:weapp
+	When jobs创建买赠活动:weapp
+		"""
+		[{
+			"name": "商品1买一赠二",
+			"start_date": "今天",
+			"end_date": "1天后",
+			"product_name": "商品1",
+			"premium_products": [{
+				"name": "商品1",
+				"count": 1
+			}, {
+				"name": "商品2",
+				"count": 1
+			}],
+			"count": 1,
+			"is_enable_cycle_mode": true
+		}]
+		"""
+	When bill访问jobs的webapp
+	When bill购买jobs的商品
+		"""
+		{
+			"pay_type":"微信支付",
+			"order_id":"009",
+			"products": [{
+				"name": "商品1",
+				"count": 1
+			}]
+		}
+		"""
+	Given jobs登录系统:weapp
+	Then jobs能获取商品'商品1':weapp
+		"""
+		{
+			"name": "商品1",
+			"stocks": 2
+		}
+		"""
+	Then jobs能获取商品'商品2':weapp
+		"""
+		{
+			"name": "商品2",
+			"stocks": 1
+		}
+		"""
+	When bill访问jobs的webapp
+	Then bill'能'取消订单'009'
+	When bill取消订单'009'
+	Then bill手机端获取订单'009'
+		"""
+		{
+			"order_no": "009",
+			"status": "已取消"
+		}
+		"""
+	Given jobs登录系统:weapp
+	Then jobs能获得订单'009':weapp
+		"""
+		{
+			"order_no": "009",
+			"status": "已取消"
+		}
+		"""
+	Then jobs能获取商品'商品1':weapp
+		"""
+		{
+			"name": "商品1",
+			"stocks": 4
+		}
+		"""
+	Then jobs能获取商品'商品2':weapp
+		"""
+		{
+			"name": "商品2",
+			"stocks": 2
+		}
+		"""
+

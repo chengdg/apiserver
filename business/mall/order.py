@@ -578,6 +578,8 @@ class Order(business_model.Model):
 
 		# 微众卡抵扣金额
 		db_model.weizoom_card_money = self.weizoom_card_money
+		# 是否是用户的首单
+		db_model.is_first_order = self.is_first_order
 
 		logging.info("Order db_model: {}".format(db_model))
 

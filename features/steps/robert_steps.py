@@ -288,7 +288,6 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 		data["delivery_time"] = "{} {}".format(bdd_util.get_date_str(time_strs[0]),time_strs[1])
 	url = '/wapi/mall/order/?_method=put'
 	data['woid'] = context.webapp_owner_id
-	print '>>>>>>>>>>>>>>>>>>>>>dddddddd>>>>',data
 	response = context.client.post(url, data)
 	# bdd_util.assert_api_call_success(response)
 	context.response = response
@@ -312,6 +311,10 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 				'order_id': pay_url_info['order_id']
 			}
 			context.client.post(pay_url, data)
+
+		#同步更新支付时间
+		if mall_models.Order.get(order_id=context.created_order_id).status > mall_models.ORDER_STATUS_CANCEL and args.has_key('date'):
+			mall_models.Order.update(payment_time=bdd_util.get_datetime_str(args['date'])).dj_where(order_id=context.created_order_id).execute()
 	else:
 		context.created_order_id = -1
 
@@ -934,3 +937,13 @@ def step_impl(context, webapp_user_name, pay_interface_name):
 		'out_trade_no': context.created_order_id
 	}
 	context.response = context.client.post(pay_url, data)
+
+	if hasattr(context, 'order_payment_time'):
+		mall_models.Order.update(payment_time=context.order_payment_time).dj_where(order_id=context.created_order_id).execute()
+		delattr(context, 'order_payment_time')
+
+@when(u"{webapp_user_name}使用支付方式'{pay_interface_name}'进行支付订单'{order_no}'于{payment_time}")
+def step_impl(context, webapp_user_name, pay_interface_name, order_no, payment_time):
+	context.created_order_id = order_no
+	context.order_payment_time = payment_time
+	context.execute_steps(u"when %s使用支付方式'%s'进行支付" % (webapp_user_name, pay_interface_name))

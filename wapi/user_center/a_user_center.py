@@ -51,7 +51,6 @@ class AUserCenter(api_resource.ApiResource):
 			phone = webapp_user.phone
 		else:
 			phone = ''
-		watchdog_info('visit AUserCenter')
 		member_data = {
 			'user_icon': webapp_user.user_icon,
 			'is_binded': is_binded,

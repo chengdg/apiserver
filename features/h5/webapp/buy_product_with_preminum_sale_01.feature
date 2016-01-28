@@ -2209,7 +2209,7 @@ Scenario:13 B的库存不足,D的库存正好满足买赠活动
 			}
 		}
 		"""
-	Then jobs能获取商品'赠品D'
+	Then jobs能获取商品'赠品B'
 		"""
 		{
 			"name": "赠品B",

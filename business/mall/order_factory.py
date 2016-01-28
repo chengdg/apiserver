@@ -225,8 +225,17 @@ class OrderFactory(business_model.Model):
 		order.status = mall_models.ORDER_STATUS_NOT
 		order.delivery_time = purchase_info.delivery_time # 配送时间字符串
 		order.order_id = self.__create_order_id()
+		order.is_first_order = self.__is_member_first_order(webapp_owner.webapp_id, webapp_user.id)
 		return order
 
+	def __is_member_first_order(self, webapp_id, webapp_user_id):
+		"""
+		判断订单是否为首单
+		"""
+		if mall_models.Order.select().dj_where(webapp_id=webapp_id, webapp_user_id=webapp_user_id).count() > 0:
+			return False
+		else:
+			return True
 
 
 	def __save_order(self, order):

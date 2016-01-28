@@ -236,7 +236,7 @@ Scenario:2 bill不能取消使用了优惠券的待发货订单
 	1. bill手机端订单状态为'待发货'
 	2. jobs后端订单状态为'待发货'
 	3. '商品1'库存不变
-	4. 优惠券'coupon1_id_1'状态改变为'已使用'
+	4. 优惠券'coupon1_id_1'状态改变为'未领取'
 
 	When bill访问jobs的webapp
 	Then bill'不能'取消订单'002'
@@ -266,7 +266,7 @@ Scenario:2 bill不能取消使用了优惠券的待发货订单
 		"""
 		{
 			"coupon_code": "coupon1_id_1",
-			"coupon_status": "已使用"
+			"coupon_status": "未领取"
 		}
 		"""
 
@@ -347,7 +347,7 @@ Scenario:5 bill能取消使用了单品券的待支付订单
 		1. bill手机端订单状态为'待支付'
 		2. jobs后端订单状态为'待支付'
 		3. '商品2'库存更新加1
-		4. 单品券'coupon2_id_1'状态改变为'未使用'
+		4. 单品券'coupon2_id_1'状态改变为'未领取'
 
 	When bill访问jobs的webapp
 	Then bill'能'取消订单'005'
@@ -378,7 +378,7 @@ Scenario:5 bill能取消使用了单品券的待支付订单
 		"""
 		{
 			"coupon_code": "coupon2_id_1",
-			"coupon_status": "未使用"
+			"coupon_status": "未领取"
 		}
 		"""
 
@@ -388,7 +388,7 @@ Scenario:6 bill能取消使用了优惠券的待支付订单
 		1. bill手机端订单状态为'待支付'
 		2. jobs后端订单状态为'待支付'
 		3. '商品2'库存更新加2
-		4. 优惠券'coupon1_id_2'状态改变为'未使用'
+		4. 优惠券'coupon1_id_2'状态改变为'未领取'
 
 	When bill访问jobs的webapp
 	Then bill'能'取消订单'006'
@@ -419,7 +419,7 @@ Scenario:6 bill能取消使用了优惠券的待支付订单
 		"""
 		{
 			"coupon_code": "coupon1_id_2",
-			"coupon_status": "未使用"
+			"coupon_status": "未领取"
 		}
 		"""
 

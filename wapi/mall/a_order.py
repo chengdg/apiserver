@@ -107,11 +107,15 @@ class AOrder(api_resource.ApiResource):
 		更改订单状态
 		@todo 目前取消订单和确认收货都是通过此接口，需要分离
 		"""
+
+		# 兼容修改价格后订单从支付模块返回的跳转（支付模块会添加edit_money）
+		order_id = args['order_id'].split('-')[0]
+
 		try:
 			order = Order.from_id({
 				'webapp_user': args['webapp_user'],
 				'webapp_owner': args['webapp_owner'],
-				'order_id': args['order_id']
+				'order_id': order_id
 			})
 
 			action = args['action']

@@ -1413,7 +1413,6 @@ class Order(models.Model):
 	supplier = models.IntegerField(default=0) # 订单供货商，用于微众精选拆单
 	is_100 = models.BooleanField(default=True) # 是否是快递100能够查询的快递
 	delivery_time = models.CharField(max_length=50, default='')  # 配送时间字符串
-	is_first_order = models.BooleanField(default=False) # 是否是用户的首单
 
 	class Meta(object):
 		db_table = 'mall_order'

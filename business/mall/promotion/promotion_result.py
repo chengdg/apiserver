@@ -29,7 +29,8 @@ class PromotionResult(business_model.Model):
 		'saved_money', #促销优惠价格
 		'subtotal', #promotion product group应用促销后的金额小记
 		'need_disable_discount', #促销是否禁用会员折扣
-		'detail' #与具体促销相关的细节信息
+		'detail', #与具体促销相关的细节信息
+		'updated_premium_products'  # 已更新库存的赠品
 	)
 
 	def __init__(self, saved_money=0, subtotal=0, detail=None):
@@ -40,6 +41,7 @@ class PromotionResult(business_model.Model):
 		self.saved_money = saved_money
 		self.subtotal = subtotal
 		self.need_disable_discount = False
+		self.updated_premium_products = []
 		if detail:
 			self.detail = detail
 

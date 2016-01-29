@@ -76,7 +76,7 @@ Background:
 	And bill关注jobs的公众号
 
 #第1种情况
-@promotion @premium_sale
+@mall3 @promotion @premium_sale @ztq
 Scenario:1 两个买赠活动选择同一个商品作为赠品,购买A和C,赠品均提示'库存不足'
 	#买A赠B（买一赠二）
 	#买C赠B(买一赠三)
@@ -240,7 +240,7 @@ Scenario:1 两个买赠活动选择同一个商品作为赠品,购买A和C,赠�
 		}
 		"""
 
-@promotion @premium_sale
+@mall3 @promotion @premium_sale @ztq
 Scenario:2 两个买赠活动选择同一个商品作为赠品,购买C和A,赠品均提示'库存不足'
 	#买A赠B（买一赠二）
 	#买C赠B(买一赠三)
@@ -404,7 +404,7 @@ Scenario:2 两个买赠活动选择同一个商品作为赠品,购买C和A,赠�
 		}
 		"""
 
-@promotion @premium_sale
+@mall3 @promotion @premium_sale @ztq
 Scenario:3 两个买赠活动选择同一个商品作为赠品,购买A和C,赠品一个不提示和一个提示'已赠完'
 	#买A赠B（买一赠二）
 	#买C赠B(买一赠三)
@@ -565,7 +565,7 @@ Scenario:3 两个买赠活动选择同一个商品作为赠品,购买A和C,赠�
 		}
 		"""
 
-@promotion @premium_sale
+@mall3 @promotion @premium_sale @ztq
 Scenario:4 两个买赠活动选择同一个商品作为赠品,购买C和A,赠品一个提示'库存不足'和一个提示'已赠完'
 	#买A赠B（买一赠二）
 	#买C赠B(买一赠三)
@@ -661,10 +661,6 @@ Scenario:4 两个买赠活动选择同一个商品作为赠品,购买C和A,赠�
 				"id": "赠品B",
 				"msg": "库存不足",
 				"short_msg": "库存不足"
-			},{
-				"id": "赠品B",
-				"msg": "已赠完",
-				"short_msg": "已赠完"
 			}]
 		}
 		"""
@@ -731,7 +727,7 @@ Scenario:4 两个买赠活动选择同一个商品作为赠品,购买C和A,赠�
 		}
 		"""
 
-@promotion @premium_sale
+@mall3 @promotion @premium_sale @ztq
 Scenario:5 两个买赠活动选择同一个商品作为赠品,购买A和C,赠品一个不提示和一个提示'库存不足'
 	#买A赠B（买一赠二）
 	#买C赠B(买一赠三)
@@ -892,7 +888,7 @@ Scenario:5 两个买赠活动选择同一个商品作为赠品,购买A和C,赠�
 		}
 		"""
 
-@promotion @premium_sale
+@mall3 @promotion @premium_sale @ztq
 Scenario:6 两个买赠活动选择同一个商品作为赠品,购买C和A,赠品一个不提示和一个提示'已赠完'
 	#买A赠B（买一赠二）
 	#买C赠B(买一赠三)
@@ -1054,7 +1050,7 @@ Scenario:6 两个买赠活动选择同一个商品作为赠品,购买C和A,赠�
 		"""
 
 #第2种情况
-@promotion @premium_sale
+@mall3 @promotion @premium_sale @ztq
 Scenario:7 两个买赠活动选择同一商品作为赠品,购买A和B,赠品同时也是主商品,赠品均提示'已赠完'
 	#买A赠A（买一赠一）;
 	#买B赠A(买一赠一)
@@ -1217,7 +1213,7 @@ Scenario:7 两个买赠活动选择同一商品作为赠品,购买A和B,赠品�
 		}
 		"""
 
-@promotion @premium_sale
+@mall3 @promotion @premium_sale @ztq
 Scenario:8 两个买赠活动选择同一商品作为赠品,购买A和B,赠品同时也是主商品,赠品均提示'已赠完'
 	#买A赠A（买一赠一）;
 	#买B赠A(买一赠一)
@@ -1380,7 +1376,7 @@ Scenario:8 两个买赠活动选择同一商品作为赠品,购买A和B,赠品�
 		}
 		"""
 
-@promotion @premium_sale
+@mall3 @promotion @premium_sale @ztq
 Scenario:9 两个买赠活动选择同一商品作为赠品,购买A和B,赠品同时也是主商品
 	#买A赠A（买一赠一）;
 	#买B赠A(买一赠一)
@@ -1538,7 +1534,7 @@ Scenario:9 两个买赠活动选择同一商品作为赠品,购买A和B,赠品�
 		}
 		"""
 
-@promotion @premium_sale
+@mall3 @promotion @premium_sale @ztq
 Scenario:10 两个买赠活动选择同一商品作为赠品,购买B和A,赠品同时也是主商品
 	#买A赠A（买一赠一）;
 	#买B赠A(买一赠一)
@@ -1697,7 +1693,7 @@ Scenario:10 两个买赠活动选择同一商品作为赠品,购买B和A,赠品�
 		"""
 
 #第3种情况
-@promotion @premium_sale
+@mall3 @promotion @premium_sale @ztq
 Scenario:11 B的库存为0,D的库存正好满足买赠活动
 	#买A赠B(买1赠2,当B的库存为0时)
 	#买C赠D（买1赠2，当D的库存为2时）
@@ -1868,7 +1864,7 @@ Scenario:11 B的库存为0,D的库存正好满足买赠活动
 		}
 		"""
 
-@promotion @premium_sale
+@mall3 @promotion @premium_sale @ztq
 Scenario:12 B的为0,D的库存多余满足买赠活动
 	#买A赠B(买1赠2,当B的库存为0时)
 	#买C赠D（买1赠2，当D的库存为3时）
@@ -2039,7 +2035,7 @@ Scenario:12 B的为0,D的库存多余满足买赠活动
 		}
 		"""
 
-@promotion @premium_sale
+@mall3 @promotion @premium_sale @ztq
 Scenario:13 B的库存不足,D的库存正好满足买赠活动
 	#买A赠B(买1赠2,当B的库存为1时)
 	#买C赠D（买1赠2，当D的库存为2时）
@@ -2226,7 +2222,7 @@ Scenario:13 B的库存不足,D的库存正好满足买赠活动
 		}
 		"""
 
-@promotion @premium_sale
+@mall3 @promotion @premium_sale @ztq
 Scenario:14 B的库存不足,D的库存多余满足买赠活动
 	#买A赠B(买1赠2,当B的库存为1时)
 	#买C赠D（买1赠2，当D的库存为3时）

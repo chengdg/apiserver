@@ -187,7 +187,7 @@ Scenario:1 两个买赠活动选择同一个商品作为赠品,购买A和C,赠�
 		}
 		"""
 
-@promotion @premium_sale
+@mall3 @promotion @premium_sale @ztq
 Scenario:2 两个买赠活动选择同一个商品作为赠品,购买C和A,赠品均提示'库存不足'
 	#买A赠B（买一赠二）
 	#买C赠B(买一赠三)
@@ -521,10 +521,7 @@ Scenario:4 两个买赠活动选择同一个商品作为赠品,购买C和A,赠�
 				"id": "赠品B",
 				"msg": "库存不足",
 				"short_msg": "库存不足"
-			},{
-				"id": "赠品B",
-				"msg": "已赠完",
-				"short_msg": "已赠完"
+			}]
 		}
 		"""
 

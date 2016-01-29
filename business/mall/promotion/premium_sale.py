@@ -82,6 +82,7 @@ class PremiumSale(promotion.Promotion):
 
 		#检查赠品库存是否满足
 		failed_reasons = []
+		updated_premium_products = []
 		for premium_product in self.premium_products:
 			premium_product_id = premium_product['id']
 			stocks = product2stocks.get(premium_product_id, -2)
@@ -123,6 +124,7 @@ class PremiumSale(promotion.Promotion):
 				#商品库存大于赠品，直接扣库存
 				try:
 					mall_models.ProductModel.update(stocks=mall_models.ProductModel.stocks-premium_product['premium_count']).dj_where(product_id=premium_product['premium_product_id'], name='standard').execute()
+					updated_premium_products.append(premium_product)
 				except:
 					reason = PromotionFailure({
 						'type': 'promotion:premium_sale:not_enough_premium_product_stocks',
@@ -136,6 +138,7 @@ class PremiumSale(promotion.Promotion):
 			return failed_reasons
 		else:
 			result = PromotionResult()
+			result.updated_premium_products = updated_premium_products
 			result.need_disable_discount = True #买赠活动需要禁用会员折扣
 			return [result]
 

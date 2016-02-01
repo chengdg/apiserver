@@ -192,11 +192,10 @@ Scenario:1 两个买赠活动选择同一个商品作为赠品,购买A和C,赠�
 		"""
 
 	Given jobs登录系统:weapp
-	Then jobs能获取商品'赠品B'
+	Then jobs能获取商品'赠品B':weapp
 		"""
 		{
 			"name": "赠品B",
-			"status": "在售",
 			"model": {
 				"models": {
 					"standard": {
@@ -313,11 +312,10 @@ Scenario:2 两个买赠活动选择同一个商品作为赠品,购买C和A,赠�
 		"""
 
 	Given jobs登录系统:weapp
-	Then jobs能获取商品'赠品B'
+	Then jobs能获取商品'赠品B':weapp
 		"""
 		{
 			"name": "赠品B",
-			"status": "在售",
 			"model": {
 				"models": {
 					"standard": {
@@ -430,11 +428,10 @@ Scenario:3 两个买赠活动选择同一个商品作为赠品,购买A和C,赠�
 		"""
 
 	Given jobs登录系统:weapp
-	Then jobs能获取商品'赠品B'
+	Then jobs能获取商品'赠品B':weapp
 		"""
 		{
 			"name": "赠品B",
-			"status": "在售",
 			"model": {
 				"models": {
 					"standard": {
@@ -548,11 +545,10 @@ Scenario:4 两个买赠活动选择同一个商品作为赠品,购买C和A,赠�
 		"""
 
 	Given jobs登录系统:weapp
-	Then jobs能获取商品'赠品B'
+	Then jobs能获取商品'赠品B':weapp
 		"""
 		{
 			"name": "赠品B",
-			"status": "在售",
 			"model": {
 				"models": {
 					"standard": {
@@ -665,11 +661,10 @@ Scenario:5 两个买赠活动选择同一个商品作为赠品,购买A和C,赠�
 		"""
 
 	Given jobs登录系统:weapp
-	Then jobs能获取商品'赠品B'
+	Then jobs能获取商品'赠品B':weapp
 		"""
 		{
 			"name": "赠品B",
-			"status": "在售",
 			"model": {
 				"models": {
 					"standard": {
@@ -782,11 +777,10 @@ Scenario:6 两个买赠活动选择同一个商品作为赠品,购买C和A,赠�
 		"""
 
 	Given jobs登录系统:weapp
-	Then jobs能获取商品'赠品B'
+	Then jobs能获取商品'赠品B':weapp
 		"""
 		{
 			"name": "赠品B",
-			"status": "在售",
 			"model": {
 				"models": {
 					"standard": {
@@ -902,11 +896,10 @@ Scenario:7 两个买赠活动选择同一商品作为赠品,购买A和B,赠品�
 		"""
 
 	Given jobs登录系统:weapp
-	Then jobs能获取商品'商品A'
+	Then jobs能获取商品'商品A':weapp
 		"""
 		{
 			"name": "商品A",
-			"status": "在售",
 			"model": {
 				"models": {
 					"standard": {
@@ -1021,11 +1014,10 @@ Scenario:8 两个买赠活动选择同一商品作为赠品,购买A和B,赠品�
 		"""
 
 	Given jobs登录系统:weapp
-	Then jobs能获取商品'商品A'
+	Then jobs能获取商品'商品A':weapp
 		"""
 		{
 			"name": "商品A",
-			"status": "在售",
 			"model": {
 				"models": {
 					"standard": {
@@ -1135,11 +1127,10 @@ Scenario:9 两个买赠活动选择同一商品作为赠品,购买A和B,赠品�
 		"""
 
 	Given jobs登录系统:weapp
-	Then jobs能获取商品'商品A'
+	Then jobs能获取商品'商品A':weapp
 		"""
 		{
 			"name": "商品A",
-			"status": "在售",
 			"model": {
 				"models": {
 					"standard": {
@@ -1249,11 +1240,10 @@ Scenario:10 两个买赠活动选择同一商品作为赠品,购买B和A,赠品�
 		"""
 
 	Given jobs登录系统:weapp
-	Then jobs能获取商品'商品A'
+	Then jobs能获取商品'商品A':weapp
 		"""
 		{
 			"name": "商品A",
-			"status": "在售",
 			"model": {
 				"models": {
 					"standard": {
@@ -1377,11 +1367,10 @@ Scenario:11 B的库存为0,D的库存正好满足买赠活动
 		"""
 
 	Given jobs登录系统:weapp
-	Then jobs能获取商品'赠品D'
+	Then jobs能获取商品'赠品D':weapp
 		"""
 		{
 			"name": "赠品D",
-			"status": "在售",
 			"model": {
 				"models": {
 					"standard": {
@@ -1504,11 +1493,10 @@ Scenario:12 B的为0,D的库存多余满足买赠活动
 		"""
 
 	Given jobs登录系统:weapp
-	Then jobs能获取商品'赠品D'
+	Then jobs能获取商品'赠品D':weapp
 		"""
 		{
 			"name": "赠品D",
-			"status": "在售",
 			"model": {
 				"models": {
 					"standard": {
@@ -1631,11 +1619,10 @@ Scenario:13 B的库存不足,D的库存正好满足买赠活动
 		"""
 
 	Given jobs登录系统:weapp
-	Then jobs能获取商品'赠品B'
+	Then jobs能获取商品'赠品B':weapp
 		"""
 		{
 			"name": "赠品B",
-			"status": "在售",
 			"model": {
 				"models": {
 					"standard": {
@@ -1647,11 +1634,10 @@ Scenario:13 B的库存不足,D的库存正好满足买赠活动
 			}
 		}
 		"""
-	Then jobs能获取商品'赠品D'
+	Then jobs能获取商品'赠品D':weapp
 		"""
 		{
 			"name": "赠品D",
-			"status": "在售",
 			"model": {
 				"models": {
 					"standard": {
@@ -1774,11 +1760,10 @@ Scenario:14 B的库存不足,D的库存多余满足买赠活动
 		"""
 
 	Given jobs登录系统:weapp
-	Then jobs能获取商品'赠品B'
+	Then jobs能获取商品'赠品B':weapp
 		"""
 		{
 			"name": "赠品B",
-			"status": "在售",
 			"model": {
 				"models": {
 					"standard": {
@@ -1790,11 +1775,10 @@ Scenario:14 B的库存不足,D的库存多余满足买赠活动
 			}
 		}
 		"""
-	Then jobs能获取商品'赠品D'
+	Then jobs能获取商品'赠品D':weapp
 		"""
 		{
 			"name": "赠品D",
-			"status": "在售",
 			"model": {
 				"models": {
 					"standard": {
@@ -1884,7 +1868,6 @@ Scenario:15 买A赠A和B,赠品B'已赠完',购买A
 		"""
 		{
 			"name": "商品A",
-			"status": "在售",
 			"model": {
 				"models": {
 					"standard": {
@@ -1900,7 +1883,6 @@ Scenario:15 买A赠A和B,赠品B'已赠完',购买A
 		"""
 		{
 			"name": "商品B",
-			"status": "在售",
 			"model": {
 				"models": {
 					"standard": {
@@ -1989,7 +1971,6 @@ Scenario:15 买A赠A和B,赠品B'库存不足',购买A
 		"""
 		{
 			"name": "商品A",
-			"status": "在售",
 			"model": {
 				"models": {
 					"standard": {
@@ -2005,7 +1986,6 @@ Scenario:15 买A赠A和B,赠品B'库存不足',购买A
 		"""
 		{
 			"name": "商品B",
-			"status": "在售",
 			"model": {
 				"models": {
 					"standard": {

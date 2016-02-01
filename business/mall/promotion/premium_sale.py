@@ -135,6 +135,7 @@ class PremiumSale(promotion.Promotion):
 					failed_reasons.append(reason)
 
 		if len(failed_reasons) > 0:
+			failed_reasons[0].updated_premium_products = updated_premium_products
 			return failed_reasons
 		else:
 			result = PromotionResult()

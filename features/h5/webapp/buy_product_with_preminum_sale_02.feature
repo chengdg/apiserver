@@ -1792,7 +1792,7 @@ Scenario:14 B的库存不足,D的库存多余满足买赠活动
 		"""
 
 #第4种情况
-@promotion @premium_sale
+@mall3 @promotion @premium_sale @ztq
 Scenario:15 买A赠A和B,赠品B'已赠完',购买A
 	Given jobs登录系统:weapp
 	Given jobs已添加商品:weapp
@@ -1895,7 +1895,7 @@ Scenario:15 买A赠A和B,赠品B'已赠完',购买A
 		}
 		"""
 
-@promotion @premium_sale
+@mall3 @promotion @premium_sale @ztq
 Scenario:15 买A赠A和B,赠品B'库存不足',购买A
 	Given jobs登录系统:weapp
 	Given jobs已添加商品:weapp

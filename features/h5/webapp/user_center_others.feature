@@ -1,4 +1,6 @@
 #_author_：张三香 2015.12.14
+#_editor_: 三香 2016-02-02 
+#根据需求【7512-未到使用时间内的优惠券显示在'未使用'中，下单时显示在'不可用'中】修改场景1
 
 Feature:个人中心（我的优惠券、微众卡余额查询）
 
@@ -30,6 +32,13 @@ Background:
 			"end_date": "2天后",
 			"using_limit": "满50元可以使用",
 			"coupon_id_prefix": "coupon2_id_"
+		}, {
+			"name": "未开始3",
+			"money": 100.00,
+			"start_date": "明天",
+			"end_date": "2天后",
+			"using_limit": "满50元可以使用",
+			"coupon_id_prefix": "coupon3_id_"
 		}]
 		"""
 	And jobs已有微众卡支付权限:weapp
@@ -46,7 +55,7 @@ Background:
 	Given bill关注jobs的公众号
 	Given tom关注jobs的公众号
 
-@mall3 @personCenter @myCoupon @ztq
+@personCenter @myCoupon @ztq
 Scenario:1 个人中心-我的优惠券
 	Given jobs登录系统:weapp
 	When jobs为会员发放优惠券:weapp
@@ -67,12 +76,25 @@ Scenario:1 个人中心-我的优惠券
 			"coupon_ids": ["coupon2_id_1"]
 		}
 		"""
+	When jobs为会员发放优惠券:weapp
+		"""
+		{
+			"name": "未开始3",
+			"count": 1,
+			"members": ["bill"],
+			"coupon_ids": ["coupon3_id_1"]
+		}
+		"""
 	When bill访问jobs的webapp
 	Then bill能获得优惠券列表
 		"""
 		{
 			"unused_coupons":
 				[{
+					"coupon_id": "coupon3_id_1",
+					"money": 100.00,
+					"status": "未使用"
+				},{
 					"coupon_id": "coupon2_id_1",
 					"money": 100.00,
 					"status": "未使用"
@@ -111,6 +133,10 @@ Scenario:1 个人中心-我的优惠券
 		{
 			"unused_coupons":
 				[{
+					"coupon_id": "coupon3_id_1",
+					"money": 100.00,
+					"status": "未使用"
+				},{
 					"coupon_id": "coupon1_id_1",
 					"money": 10.00,
 					"status": "未使用"

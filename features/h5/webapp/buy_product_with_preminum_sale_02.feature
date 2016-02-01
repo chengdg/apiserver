@@ -67,6 +67,10 @@ Feature:购买参与买赠活动的商品,下单失败后校验赠品的库存
 		买A赠B(买1赠2,当B的库存为0时，当B的库存为1时)
 		买C赠D（买1赠2，当D的库存为2时；当D的库存为3时）
 		当B的库存不足或已赠完时，点击【提交订单】会扣除赠品D的库存
+	4.买A赠A和B,当赠品B已赠完或库存不足时
+		买A赠A和B（1个A赠1个A、2个B）:
+		A的库存为10,B的库存为0时
+		A的库存为10,B的库存为1时
 """
 Background:
 	Given 重置weapp的bdd环境
@@ -1797,6 +1801,217 @@ Scenario:14 B的库存不足,D的库存多余满足买赠活动
 						"stock_type": "有限",
 						"stocks": 3,
 						"price": 10.0
+					}
+				}
+			}
+		}
+		"""
+
+#第4种情况
+@promotion @premium_sale
+Scenario:15 买A赠A和B,赠品B'已赠完',购买A
+	Given jobs登录系统:weapp
+	Given jobs已添加商品:weapp
+		"""
+		[{
+			"name":"商品A",
+			"model": {
+				"models": {
+					"standard": {
+						"user_code": "1",
+						"price": 100.0,
+						"stock_type": "有限",
+						"stocks": 10
+					}
+				}
+			}
+		},{
+			"name": "商品B",
+			"model": {
+				"models": {
+					"standard": {
+						"user_code": "1",
+						"price": 100.0,
+						"stock_type": "有限",
+						"stocks": 0
+					}
+				}
+			}
+		}]
+		"""
+	When jobs创建买赠活动:weapp
+		"""
+		[{
+			"name": "商品A赠A和B",
+			"start_date": "今天",
+			"end_date": "1天后",
+			"product_name": "商品A",
+			"premium_products": [{
+				"name": "商品A",
+				"count": 1
+			},{
+				"name": "商品B",
+				"count": 2
+			}],
+			"count": 1,
+			"is_enable_cycle_mode": true
+		}]
+		"""
+	When bill访问jobs的webapp
+	When bill购买jobs的商品
+		"""
+		{
+			"pay_type":"微信支付",
+			"products": [{
+				"name": "商品A",
+				"count": 1
+			}]
+		}
+		"""
+	Then bill获得创建订单失败的信息
+		"""
+		{
+				"detail": [{
+				"id": "商品B",
+				"msg": "已赠完",
+				"short_msg": "已赠完"
+			}]
+		}
+		"""
+
+	Given jobs登录系统:weapp
+	Then jobs能获取商品'商品A'
+		"""
+		{
+			"name": "商品A",
+			"status": "在售",
+			"model": {
+				"models": {
+					"standard": {
+						"stock_type": "有限",
+						"stocks": 10,
+						"price": 100.0
+					}
+				}
+			}
+		}
+		"""
+	Then jobs能获取商品'商品B'
+		"""
+		{
+			"name": "商品B",
+			"status": "在售",
+			"model": {
+				"models": {
+					"standard": {
+						"stock_type": "有限",
+						"stocks": 0,
+						"price": 100.0
+					}
+				}
+			}
+		}
+		"""
+
+@promotion @premium_sale
+Scenario:15 买A赠A和B,赠品B'库存不足',购买A
+	Given jobs登录系统:weapp
+	Given jobs已添加商品:weapp
+		"""
+		[{
+			"name":"商品A",
+			"model": {
+				"models": {
+					"standard": {
+						"user_code": "1",
+						"price": 100.0,
+						"stock_type": "有限",
+						"stocks": 10
+					}
+				}
+			}
+		},{
+			"name": "商品B",
+			"model": {
+				"models": {
+					"standard": {
+						"user_code": "1",
+						"price": 100.0,
+						"stock_type": "有限",
+						"stocks": 1
+					}
+				}
+			}
+		}]
+		"""
+	When jobs创建买赠活动:weapp
+		"""
+		[{
+			"name": "商品A赠A和B",
+			"start_date": "今天",
+			"end_date": "1天后",
+			"product_name": "商品A",
+			"premium_products": [{
+				"name": "商品A",
+				"count": 1
+			},{
+				"name": "商品B",
+				"count": 2
+			}],
+			"count": 1,
+			"is_enable_cycle_mode": true
+		}]
+		"""
+	When bill访问jobs的webapp
+	When bill购买jobs的商品
+		"""
+		{
+			"pay_type":"微信支付",
+			"products": [{
+				"name": "商品A",
+				"count": 1
+			}]
+		}
+		"""
+	Then bill获得创建订单失败的信息
+		"""
+		{
+				"detail": [{
+				"id": "商品B",
+				"msg": "库存不足",
+				"short_msg": "库存不足"
+			}]
+		}
+		"""
+
+	Given jobs登录系统:weapp
+	Then jobs能获取商品'商品A':weapp
+		"""
+		{
+			"name": "商品A",
+			"status": "在售",
+			"model": {
+				"models": {
+					"standard": {
+						"stock_type": "有限",
+						"stocks": 10,
+						"price": 100.0
+					}
+				}
+			}
+		}
+		"""
+	Then jobs能获取商品'商品B':weapp
+		"""
+		{
+			"name": "商品B",
+			"status": "在售",
+			"model": {
+				"models": {
+					"standard": {
+						"stock_type": "有限",
+						"stocks": 1,
+						"price": 100.0
 					}
 				}
 			}

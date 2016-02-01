@@ -232,8 +232,6 @@ class MemberSpread(business_model.Model):
 
 			if shared_url and fmt:
 				try:
-					if isinstance(fmt, list):
-						fmt = fmt[0]
 					followed_member = member_models.Member.get(token=fmt)
 					member_models.MemberSharedUrlInfo.update(leadto_buy_count = member_models.MemberSharedUrlInfo.leadto_buy_count + 1).dj_where(shared_url=shared_url,).execute()
 

@@ -115,6 +115,7 @@ class Order(business_model.Model):
 
 		'weizoom_card_money',
 		'delivery_time', # 配送时间字符串
+		'is_first_order'
 	)
 
 	@staticmethod
@@ -694,6 +695,10 @@ class Order(business_model.Model):
 			self.status = mall_models.ORDER_STATUS_PAYED_NOT_SHIP
 			self.pay_interface_type = pay_interface_type
 
+			# 更新首单信息--2016-02-01 by Eugene
+			if mall_models.Order.select().dj_where(webapp_id=self.webapp_id, webapp_user_id=self.webapp_user_id, is_first_order=True).count() == 0:
+				mall_models.Order.update(is_first_order=True).dj_where(order_id=self.order_id).execute()
+
 			# 处理销量
 			products = self.products
 
@@ -759,6 +764,8 @@ class Order(business_model.Model):
 		if self.origin_order_id == mall_models.ORIGIN_ORDER:
 			# 此订单为主订单。更新其子订单也为“取消状态”
 			mall_models.Order.update(status=mall_models.ORDER_STATUS_CANCEL).dj_where(origin_order_id=self.id).execute()
+
+		# TODO:更新首单的信息(现在手机端只有在未支付的情况下才能取消订单，暂时不需要更新首单信息)
 
 		# TODO: 发出cancel_order事件
 		self.__after_update_status('cancel')

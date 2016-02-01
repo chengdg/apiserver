@@ -204,8 +204,8 @@ class MemberSpread(business_model.Model):
 		fmt = query_strings_dict.get('fmt', None)
 		if fmt:
 			fmt = fmt[0]
-
-
+			if fmt.find(',') > -1:
+				fmt = fmt.split(',')[0]
 		if member.token == fmt or fmt == 'notfmt':
 			return
 		
@@ -232,6 +232,8 @@ class MemberSpread(business_model.Model):
 
 			if shared_url and fmt:
 				try:
+					if isinstance(fmt, list):
+						fmt = fmt[0]
 					followed_member = member_models.Member.get(token=fmt)
 					member_models.MemberSharedUrlInfo.update(leadto_buy_count = member_models.MemberSharedUrlInfo.leadto_buy_count + 1).dj_where(shared_url=shared_url,).execute()
 

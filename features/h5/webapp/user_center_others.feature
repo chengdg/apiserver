@@ -55,7 +55,7 @@ Background:
 	Given bill关注jobs的公众号
 	Given tom关注jobs的公众号
 
-@personCenter @myCoupon @ztq
+@personCenter @myCoupon @ztq @mall3
 Scenario:1 个人中心-我的优惠券
 	Given jobs登录系统:weapp
 	When jobs为会员发放优惠券:weapp

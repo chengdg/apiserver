@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 import math
 from datetime import datetime
 
+from core.exceptionutil import unicode_full_stack
 from wapi.decorators import param_required
 #from wapi import wapi_utils
 from core.cache import utils as cache_util
@@ -79,6 +80,10 @@ class PremiumSale(promotion.Promotion):
 							product2stocks[premium_product_id] = product2stocks.get(premium_product_id, 0) + stock_info['stocks']
 					else:
 						product2stocks[premium_product_id] = stock_info['stocks']
+
+			# 买赠活动期间，赠品下架或删除，提示要求跟赠品库存为0时显示相同
+			if premium_product['shelve_type'] == mall_models.PRODUCT_SHELVE_TYPE_OFF or premium_product['is_deleted']:
+					product2stocks[premium_product_id] = 0
 
 		#检查赠品库存是否满足
 		failed_reasons = []

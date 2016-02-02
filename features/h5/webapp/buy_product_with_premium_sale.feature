@@ -1449,12 +1449,13 @@ Scenario: 14 通过购物车购买单个买赠商品，赠品数量超出库存�
 
 
 #根据需求7313补充.雪静
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @ztq
 Scenario: 15 购买有买赠活动的商品，活动进行中，把赠品下架和删除
 	jobs下架买赠活动中的赠品：商品2，jobs删除买赠活动中的赠品：商品3
 	1.bill购买买赠商品：商品1
 	2.bill获得创建订单失败的信息
 
-	Given jobs登录系统
+	Given jobs登录系统:weapp
 	When jobs'下架'商品'商品2':weapp
 	When jobs'永久删除'商品'商品3':weapp
 	When bill访问jobs的webapp

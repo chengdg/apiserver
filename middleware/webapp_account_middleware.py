@@ -47,6 +47,20 @@ class WebAppAccountMiddleware(object):
 			# 开发测试支持 不传递woid使用jobs用户，不传递openid使用bill_jobs会员
 			# if not 'woid' in req.params:
 			# 	return
+			if '/user/webapp_owner_info' in req.path:
+				woid = req.params.get('woid', None)
+				if woid:
+					webapp_owner = WebAppOwner.get({
+						'woid': woid
+					})
+					if webapp_owner:
+						req.context['webapp_owner'] = webapp_owner
+						return
+					else:
+						raise ValueError("error woid")
+				else:
+					raise ValueError("error woid")
+
 			woid = req.params.get('woid')
 			if not woid:
 				woid = account_models.User.select().dj_where(username='jobs')[0].id

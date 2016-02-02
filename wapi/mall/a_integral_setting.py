@@ -25,7 +25,7 @@ class AIntegralSetting(api_resource.ApiResource):
 		@return  {'integral_strategy_setting': integral.to_dict()}
 		"""
 		integral = Integral.from_webapp_id({
-					'webapp_owner': args['webapp_owner'], 
+					'webapp_owner': args['webapp_owner'],
 					})
 
 		return {

@@ -26,6 +26,20 @@ class WebAppAccountMiddleware(object):
 			logging.info("skipped in WebAppAccountMiddleware. req.path: {}".format(req.path))
 			return
 
+		if '/user/webapp_owner_info' in req.path:
+			woid = req.params.get('woid', None)
+			if woid:
+				webapp_owner = WebAppOwner.get({
+					'woid': woid
+				})
+				if webapp_owner:
+					req.context['webapp_owner'] = webapp_owner
+					return
+				else:
+					raise ValueError("error woid")
+			else:
+				raise ValueError("error woid")
+
 		if 'access_token' in req.params:
 			access_token = req.params.get('access_token', None)	
 			account_info = AccessToken.get_sys_account({
@@ -47,19 +61,6 @@ class WebAppAccountMiddleware(object):
 			# 开发测试支持 不传递woid使用jobs用户，不传递openid使用bill_jobs会员
 			# if not 'woid' in req.params:
 			# 	return
-			if '/user/webapp_owner_info' in req.path:
-				woid = req.params.get('woid', None)
-				if woid:
-					webapp_owner = WebAppOwner.get({
-						'woid': woid
-					})
-					if webapp_owner:
-						req.context['webapp_owner'] = webapp_owner
-						return
-					else:
-						raise ValueError("error woid")
-				else:
-					raise ValueError("error woid")
 
 			woid = req.params.get('woid')
 			if not woid:

@@ -644,7 +644,7 @@ Scenario: 8  多规格商品，买2赠1 循环买赠
 		"""
 
 @mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
-Scenario: 10  创建买赠活动，但活动时间没开始，按原有商品销售，不进行赠送
+Scenario: 9  创建买赠活动，但活动时间没开始，按原有商品销售，不进行赠送
 	Given jobs登录系统:weapp
 	And jobs已添加商品:weapp
 		"""
@@ -692,7 +692,7 @@ Scenario: 10  创建买赠活动，但活动时间没开始，按原有商品销
 		"""
 
 @mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
-Scenario: 11 创建买赠活动，活动结束后，按原有商品销售，不进行赠送
+Scenario: 10 创建买赠活动，活动结束后，按原有商品销售，不进行赠送
 	Given jobs登录系统:weapp
 	And jobs已添加商品:weapp
 		"""
@@ -739,7 +739,7 @@ Scenario: 11 创建买赠活动，活动结束后，按原有商品销售，不�
 		"""
 
 @mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
-Scenario: 12  创建买赠活动，选择商品时，活动进行中，但去付款时，活动已经结束了，系统提示：该活动已经过期
+Scenario: 11  创建买赠活动，选择商品时，活动进行中，但去付款时，活动已经结束了，系统提示：该活动已经过期
 	Given jobs登录系统:weapp
 	And jobs已添加商品:weapp
 		"""
@@ -788,7 +788,7 @@ Scenario: 12  创建买赠活动，选择商品时，活动进行中，但去付
 		"""
 
 @mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
-Scenario: 13 购买单个买赠活动商品，购买时活动进行中，提交订单时，该活动被商家手工结束
+Scenario: 12 购买单个买赠活动商品，购买时活动进行中，提交订单时，该活动被商家手工结束
 
 	Given jobs登录系统:weapp
 	And jobs已添加商品:weapp
@@ -842,7 +842,7 @@ Scenario: 13 购买单个买赠活动商品，购买时活动进行中，提交�
 
 # __edit__ : 王丽   补充 "雪静"
 @mall3 @promotion @promotionPremium @meberGrade @robert.wip
-Scenario: 14 不同等级的会员购买会员价，同时有会员等级买赠活动的商品
+Scenario: 13 不同等级的会员购买会员价，同时有会员等级买赠活动的商品
 	Given jobs登录系统:weapp
 	When jobs添加会员等级:weapp
 		"""
@@ -1286,7 +1286,7 @@ Scenario: 14 不同等级的会员购买会员价，同时有会员等级买赠�
 
 # __edit__ : 王丽 2015-12-25
 @mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
-Scenario: 15 通过购物车购买单个买赠商品，赠品数量超出库存限制
+Scenario: 14 通过购物车购买单个买赠商品，赠品数量超出库存限制
 	#赠品库存不为零，但是库存不足本次订单赠送，下单提示赠品库存不足，继续提交订单成功，赠品数量为现有库存数量
 	When bill访问jobs的webapp
 	When bill加入jobs的商品到购物车
@@ -1446,4 +1446,81 @@ Scenario: 15 通过购物车购买单个买赠商品，赠品数量超出库存�
 			}]
 		}
 		"""
+
+
+#根据需求7313补充.雪静
+Scenario: 15 购买有买赠活动的商品，活动进行中，把赠品下架和删除
+	jobs下架买赠活动中的赠品：商品2，jobs删除买赠活动中的赠品：商品3
+	1.bill购买买赠商品：商品1
+	2.bill获得创建订单失败的信息
+
+	Given jobs登录系统
+	When jobs'下架'商品'商品2':weapp
+	When jobs'永久删除'商品'商品3':weapp
+	When bill访问jobs的webapp
+	When bill购买jobs的商品
+		"""
+		{
+			"pay_type":"微信支付",
+			"products": [{
+				"name": "商品1",
+				"count": 2
+			}]
+		}
+		"""
+	Then bill获得创建订单失败的信息
+		"""
+		{
+			"detail": [{
+				"id": "商品2",
+				"msg": "已赠完",
+				"short_msg": "已赠完"
+			}, {
+				"id": "商品3",
+				"msg": "已赠完",
+				"short_msg": "已赠完"
+			}]
+		}
+		"""
+	#进行强制购买
+	When bill购买jobs的商品
+		"""
+		{
+			"force": true,
+			"products": [{
+				"name": "商品1",
+				"count": 2
+			}]
+		}
+		"""
+	Then bill成功创建订单
+		"""
+		{
+			"status": "待支付",
+			"final_price": 200.00,
+			"products": [{
+				"name": "商品1",
+				"count": 2,
+				"promotion": {
+					"type": "premium_sale"
+				}
+			}, {
+				"name": "商品2",
+				"count": 0,
+				"promotion": {
+					"type": "premium_sale:premium_product"
+				}
+			}, {
+				"name": "商品3",
+				"count": 0,
+				"promotion": {
+					"type": "premium_sale:premium_product"
+				}
+			}]
+		}
+		"""
+
+
+
+
 

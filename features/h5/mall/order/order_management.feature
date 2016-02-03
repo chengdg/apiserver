@@ -135,7 +135,7 @@ Background:
 		}
 		"""
 
-@order @setOrder
+@order @setOrder @mall3
 Scenario:1 支付后的订单，添加首单标记-会员订单
 	#用户支付的订单，按照【付款时间】付款时间最早的标记为“首单”
 	#非会员购买的订单，【买家】修改成“非会员”，关注之后显示成会员名称
@@ -182,7 +182,7 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 
 	#有多个支付的订单-手机端支付和后台支付，支付时间最早的标记为首单
 		When bill访问jobs的webapp
-		When bill使用支付方式'微信支付'进行支付订单'002'于2015-09-01 10:00:00:weapp
+		When bill使用支付方式'货到付款'进行支付订单'002'于2015-09-01 10:00:00
 
 		Given jobs登录系统:weapp
 		When jobs'支付'订单'003'于2015-09-02 10:00:00:weapp
@@ -211,7 +211,7 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 				"status": "待发货",
 				"order_time": "2015-08-09 00:00:00",
 				"payment_time":"2015-09-01 10:00:00",
-				"methods_of_payment": "微信支付",
+				"methods_of_payment": "货到付款",
 				"is_first_order":"true"
 			},{
 				"order_no": "001",
@@ -251,7 +251,7 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 				"status": "已取消",
 				"order_time": "2015-08-09 00:00:00",
 				"payment_time":"2015-09-01 10:00:00",
-				"methods_of_payment": "微信支付",
+				"methods_of_payment": "货到付款",
 				"is_first_order":"true"
 			},{
 				"order_no": "001",
@@ -334,7 +334,7 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 				"status": "已取消",
 				"order_time": "2015-08-09 00:00:00",
 				"payment_time":"2015-09-01 10:00:00",
-				"methods_of_payment": "微信支付",
+				"methods_of_payment": "货到付款",
 				"is_first_order":"true"
 			},{
 				"order_no": "001",
@@ -397,7 +397,7 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 				"status": "已取消",
 				"order_time": "2015-08-09 00:00:00",
 				"payment_time":"2015-09-01 10:00:00",
-				"methods_of_payment": "微信支付",
+				"methods_of_payment": "货到付款",
 				"is_first_order":"true"
 			},{
 				"order_no": "001",
@@ -451,7 +451,7 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 				"status": "已取消",
 				"order_time": "2015-08-09 00:00:00",
 				"payment_time":"2015-09-01 10:00:00",
-				"methods_of_payment": "微信支付",
+				"methods_of_payment": "货到付款",
 				"is_first_order":"true"
 			},{
 				"order_no": "001",
@@ -505,7 +505,7 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 				"status": "已取消",
 				"order_time": "2015-08-09 00:00:00",
 				"payment_time":"2015-09-01 10:00:00",
-				"methods_of_payment": "微信支付",
+				"methods_of_payment": "货到付款",
 				"is_first_order":"true"
 			},{
 				"order_no": "001",
@@ -559,7 +559,7 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 				"status": "已取消",
 				"order_time": "2015-08-09 00:00:00",
 				"payment_time":"2015-09-01 10:00:00",
-				"methods_of_payment": "微信支付",
+				"methods_of_payment": "货到付款",
 				"is_first_order":"true"
 			},{
 				"order_no": "001",
@@ -675,7 +675,7 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 				"status": "已取消",
 				"order_time": "2015-08-09 00:00:00",
 				"payment_time":"2015-09-01 10:00:00",
-				"methods_of_payment": "微信支付",
+				"methods_of_payment": "货到付款",
 				"is_first_order":"true"
 			},{
 				"order_no": "001",
@@ -754,7 +754,7 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 				"status": "已取消",
 				"order_time": "2015-08-09 00:00:00",
 				"payment_time":"2015-09-01 10:00:00",
-				"methods_of_payment": "微信支付",
+				"methods_of_payment": "货到付款",
 				"is_first_order":"true"
 			},{
 				"order_no": "001",
@@ -824,7 +824,7 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 				"status": "已取消",
 				"order_time": "2015-08-09 00:00:00",
 				"payment_time":"2015-09-01 10:00:00",
-				"methods_of_payment": "微信支付",
+				"methods_of_payment": "货到付款",
 				"is_first_order":"true"
 			},{
 				"order_no": "001",
@@ -894,7 +894,7 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 				"status": "已取消",
 				"order_time": "2015-08-09 00:00:00",
 				"payment_time":"2015-09-01 10:00:00",
-				"methods_of_payment": "微信支付",
+				"methods_of_payment": "货到付款",
 				"is_first_order":"true"
 			},{
 				"order_no": "001",
@@ -907,11 +907,14 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 			}]
 			"""
 
-@order @setOrder
+@order @setOrder @mall3
 Scenario:2 支付后的订单，添加首单标记-非会员订单
 	#用户支付的订单，按照【付款时间】付款时间最早的标记为“首单”
 	#非会员购买的订单，【买家】修改成“非会员”，关注之后显示成会员名称
 	#非会员购买首单按照会员的规则处理
+
+	Given marry关注jobs的公众号
+	When marry取消关注jobs的公众号:weapp
 
 	When marry访问jobs的webapp
 	And marry购买jobs的商品
@@ -922,12 +925,11 @@ Scenario:2 支付后的订单，添加首单标记-非会员订单
 				"name": "商品1",
 				"count": 1
 			}],
-			"coupon": "coupon2_id_1",
 			"pay_type": "支付宝",
 			"date":"2015-08-12 00:00:00"
 		}
 		"""
-	When marry使用支付方式'支付宝'进行支付订单'002'于'2015-08-12 10:00:00'
+	When marry使用支付方式'支付宝'进行支付订单'009'于2015-08-12 10:00:00
 	And marry购买jobs的商品
 		"""
 		{
@@ -936,12 +938,11 @@ Scenario:2 支付后的订单，添加首单标记-非会员订单
 				"name": "商品2",
 				"count": 1
 			}],
-			"coupon": "coupon2_id_1",
 			"pay_type": "货到付款",
 			"date":"2015-08-13 00:00:00"
 		}
 		"""
-	
+
 	Given jobs登录系统:weapp
 	Then jobs可以看到订单列表:weapp
 		"""

@@ -41,7 +41,6 @@ class OAuthMiddleware(object):
 	def process_request(self, req, resp):
 		if '/oauthserver' not in req.path:
 			return 
-		print '>>>>>>>>>>>>>>>1'
 		args = req.params
 		woid = args.get('woid', None)
 		if not woid:
@@ -50,17 +49,14 @@ class OAuthMiddleware(object):
 		if not woid:
 			body = {"errorcode": error_codes.ILLEGAL_WOID_CODE, "errmsg": error_codes.code2msg[error_codes.ILLEGAL_WOID_CODE]}
 			self.raise_response(body)
-		print '>>>>>>>>>>>>>>>2'
 		# 获取owner信息
 		webapp_owner = WebAppOwner.get({
 			'woid': args['woid']
 		})
-		print '>>>>>>>>>>>>>>>3'
 		if not webapp_owner:
 			body = {"errorcode": error_codes.ILLEGAL_WOID_CODE, "errmsg": error_codes.code2msg[error_codes.ILLEGAL_WOID_CODE]}
 			self.raise_response(body)
 		# 验证callback
-		print '>>>>>>>>>>>>>>>4'
 		callback_uri = args.get('callback_uri', None)
 		if not args.has_key('callback_uri'):
 			body = {"errorcode": error_codes.LACK_CALLBACK_URI, "errmsg": error_codes.code2msg[error_codes.LACK_CALLBACK_URI]}	
@@ -88,14 +84,14 @@ class OAuthMiddleware(object):
 				通过会员信息获取access_token
 			"""
 			openid = self.get_openid_from(component_info, appid, code)
-			print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>1',openid
+			print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>openid:',openid
 			if not openid:
 				url = callback_uri
 			else:
 				apiserver_access_token = self.get_access_token_from(callback_uri, openid, webapp_owner)
 				url = self.get_url(callback_uri, apiserver_access_token)
 				#url = args['callback_uri'] + '&access_token=' + apiserver_access_token
-			print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>2',url
+			print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>url:',url
 		print '>>>>>>>>>>>>>>>end',url
 		raise redirects.HTTPFound(str(url))
 

@@ -8,6 +8,8 @@ Watchdog接口
 
 import settings
 import sys
+import json
+import logging
 
 from core.service import celeryconfig
 from models import *
@@ -24,6 +26,12 @@ def watchdog_debug(message, type=DEFAULT_WATCHDOG_TYPE, user_id='0', db_name='de
 
 	异步方式调用 weapp.services.send_watchdog_service.send_watchdog()
 	"""
+	log = {
+		"message": message,
+		"user_id": user_id
+	}
+	logging.debug(json.dumps(log))
+
 	result = None
 	if not celeryconfig.CELERY_ALWAYS_EAGER:
 		if WATCHDOG_DEBUG >= settings.WATCH_DOG_LEVEL:
@@ -41,6 +49,12 @@ def watchdog_info(message, type=DEFAULT_WATCHDOG_TYPE, user_id='0', db_name='def
 
 	异步方式调用 weapp.services.send_watchdog_service.send_watchdog()
 	"""
+	log = {
+		"message": message,
+		"user_id": user_id
+	}
+	logging.info(json.dumps(log))
+
 	result = None
 	if not celeryconfig.CELERY_ALWAYS_EAGER:
 		if WATCHDOG_INFO >= settings.WATCH_DOG_LEVEL:
@@ -57,6 +71,12 @@ def watchdog_notice(message, type=DEFAULT_WATCHDOG_TYPE, user_id='0', db_name='d
 
 	异步方式调用 weapp.services.send_watchdog_service.send_watchdog()
 	"""
+	log = {
+		"message": message,
+		"user_id": user_id
+	}
+	logging.info(json.dumps(log))
+
 	result = None
 	if not celeryconfig.CELERY_ALWAYS_EAGER:
 		if WATCHDOG_NOTICE>= settings.WATCH_DOG_LEVEL:
@@ -73,6 +93,12 @@ def watchdog_warning(message, type=DEFAULT_WATCHDOG_TYPE, user_id='0', db_name='
 
 	异步方式调用 weapp.services.send_watchdog_service.send_watchdog()
 	"""
+	log = {
+		"message": message,
+		"user_id": user_id
+	}
+	logging.warning(json.dumps(log))
+
 	result = None
 	if not celeryconfig.CELERY_ALWAYS_EAGER:
 		if WATCHDOG_WARNING>= settings.WATCH_DOG_LEVEL:
@@ -85,6 +111,13 @@ def watchdog_warning(message, type=DEFAULT_WATCHDOG_TYPE, user_id='0', db_name='
 
 def watchdog_error(message, type=DEFAULT_WATCHDOG_TYPE, user_id='0', noraise=False, db_name='default'):
 	result = None
+
+	log = {
+		"message": message,
+		"user_id": user_id
+	}
+	logging.error(json.dumps(log))
+
 
 	if not celeryconfig.CELERY_ALWAYS_EAGER:
 
@@ -108,6 +141,12 @@ def watchdog_error(message, type=DEFAULT_WATCHDOG_TYPE, user_id='0', noraise=Fal
 
 
 def watchdog_fatal(message, type=DEFAULT_WATCHDOG_TYPE, user_id='0', noraise=False, db_name='default'):
+	log = {
+		"message": message,
+		"user_id": user_id
+	}
+	logging.exception(json.dumps(log))
+
 	result = None
 	if not celeryconfig.CELERY_ALWAYS_EAGER:
 		if WATCHDOG_FATAL >= settings.WATCH_DOG_LEVEL:
@@ -127,6 +166,12 @@ def watchdog_fatal(message, type=DEFAULT_WATCHDOG_TYPE, user_id='0', noraise=Fal
 
 
 def watchdog_alert(message, type=DEFAULT_WATCHDOG_TYPE, user_id='0', db_name='default'):
+	log = {
+		"message": message,
+		"user_id": user_id
+	}
+	logging.critical(json.dumps(log))
+
 	result = None
 	if not celeryconfig.CELERY_ALWAYS_EAGER:
 		if WATCHDOG_ALERT >= settings.WATCH_DOG_LEVEL:
@@ -138,6 +183,12 @@ def watchdog_alert(message, type=DEFAULT_WATCHDOG_TYPE, user_id='0', db_name='de
 
 
 def watchdog_emergency(message, type=DEFAULT_WATCHDOG_TYPE, user_id='0', db_name='default'):
+	log = {
+		"message": message,
+		"user_id": user_id
+	}
+	logging.critical(json.dumps(log))
+
 	result = None
 	if not celeryconfig.CELERY_ALWAYS_EAGER:
 		if WATCHDOG_EMERGENCY >= settings.WATCH_DOG_LEVEL:

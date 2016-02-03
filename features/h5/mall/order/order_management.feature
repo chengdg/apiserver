@@ -41,6 +41,7 @@ Background:
 		 }]
 		"""
 	And bill关注jobs的公众号
+	Given jobs登录系统:weapp
 	Given jobs已有的会员:weapp
 		"""
 		[{

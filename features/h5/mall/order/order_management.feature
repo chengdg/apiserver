@@ -71,7 +71,7 @@ Background:
 		}
 		"""
 	When bill访问jobs的webapp
-	And bill领取jobs的优惠券
+	And bill领取jobs的优惠券:weapp
 		"""
 		[{
 			"name": "优惠券1",
@@ -181,10 +181,10 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 
 	#有多个支付的订单-手机端支付和后台支付，支付时间最早的标记为首单
 		When bill访问jobs的webapp
-		When bill使用支付方式'微信支付'进行支付订单'002'于'2015-09-01 10:00:00'
+		When bill使用支付方式'微信支付'进行支付订单'002'于2015-09-01 10:00:00:weapp
 
 		Given jobs登录系统:weapp
-		When jobs'支付'订单'003'于'2015-09-02 10:00:00':weapp
+		When jobs'支付'订单'003'于2015-09-02 10:00:00:weapp
 
 		Then jobs可以看到订单列表:weapp
 			"""
@@ -573,7 +573,7 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 
 	#优惠抵扣的订单
 		Given jack关注jobs的公众号
-		When jack领取jobs的优惠券
+		When jack领取jobs的优惠券:weapp
 			"""
 			[{
 				"name": "优惠券1",

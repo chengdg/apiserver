@@ -187,7 +187,7 @@ Scenario:1 按照【订单类型】进行筛选
 			"methods_of_payment": "优惠抵扣",
 			"sources": "商城",
 			"ship_name": "tom",
-			"ship_tel": "13811223344",
+			"ship_tel": "13711223344",
 			"is_first_order":"false"
 		},{
 			"order_no": "00005",
@@ -198,7 +198,7 @@ Scenario:1 按照【订单类型】进行筛选
 			"methods_of_payment": "微信支付",
 			"sources": "商城",
 			"ship_name": "tom",
-			"ship_tel": "13811223344",
+			"ship_tel": "13711223344",
 			"is_first_order":"false"
 		},{
 			"order_no": "00004",
@@ -220,7 +220,7 @@ Scenario:1 按照【订单类型】进行筛选
 			"methods_of_payment": "货到付款",
 			"sources": "商城",
 			"ship_name": "tom",
-			"ship_tel": "13811223344",
+			"ship_tel": "13711223344",
 			"is_first_order":"true"
 		}]
 		"""
@@ -254,7 +254,7 @@ Scenario:1 按照【订单类型】进行筛选
 			"methods_of_payment": "货到付款",
 			"sources": "商城",
 			"ship_name": "tom",
-			"ship_tel": "13811223344",
+			"ship_tel": "13711223344",
 			"is_first_order":"true"
 		}]
 		"""
@@ -299,7 +299,7 @@ Scenario:1 按照【订单类型】进行筛选
 			"methods_of_payment": "优惠抵扣",
 			"sources": "商城",
 			"ship_name": "tom",
-			"ship_tel": "13811223344",
+			"ship_tel": "13711223344",
 			"is_first_order":"false"
 		},{
 			"order_no": "00005",
@@ -310,7 +310,7 @@ Scenario:1 按照【订单类型】进行筛选
 			"methods_of_payment": "微信支付",
 			"sources": "商城",
 			"ship_name": "tom",
-			"ship_tel": "13811223344",
+			"ship_tel": "13711223344",
 			"is_first_order":"false"
 		}]
 		"""
@@ -321,9 +321,9 @@ Scenario:2 混合条件进行筛选
 	When jobs根据给定条件查询订单:weapp
 		"""
 		{
-			"order_no": "00",
+			"order_no": "00003",
 			"ship_name": "o",
-			"ship_tel": "13811223344",
+			"ship_tel": "13711223344",
 			"product_name": "商品",
 			"date_interval": "2014-10-03|2014-10-04",
 			"date_interval_type": "付款时间",
@@ -346,7 +346,7 @@ Scenario:2 混合条件进行筛选
 			"methods_of_payment": "货到付款",
 			"sources": "商城",
 			"ship_name": "tom",
-			"ship_tel": "13811223344",
+			"ship_tel": "13711223344",
 			"is_first_order":"true"
 		}]
 		"""

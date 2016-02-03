@@ -18,13 +18,13 @@ Background:
 	When jobs已添加支付方式:weapp
 		"""
 		[{
+			"type": "微信支付",
+			"is_active": "启用"
+		}, {
 			"type": "货到付款",
 			"is_active": "启用"
-		},{
-			"type": "微信支付",
-			"is_active": "启用"
-		},{
-			"type": "微信支付",
+		}, {
+			"type": "支付宝",
 			"is_active": "启用"
 		}]
 		"""

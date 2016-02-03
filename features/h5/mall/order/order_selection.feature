@@ -9,16 +9,17 @@ Background:
 	Given jobs登录系统:weapp
 	And bill关注jobs的公众号
 	And tom关注jobs的公众号
+	Given jobs登录系统:weapp
 	And jobs已添加支付方式:weapp
 		"""
 		[{
 			"type": "微信支付",
 			"is_active": "启用"
 		}, {
-			"type": "微信支付",
+			"type": "货到付款",
 			"is_active": "启用"
 		}, {
-			"type": "货到付款",
+			"type": "支付宝",
 			"is_active": "启用"
 		}]
 		"""
@@ -141,7 +142,7 @@ Background:
 		}]
 		"""
 
-@order @allOrder
+@mall3 @order @allOrder
 Scenario:1 按照【订单类型】进行筛选
 	#筛选“订单类型”内容为“全部、首单、非首单” 
 	#"全部":筛选出所有订单；"首单"：筛选出带有首单标记的订单；"非首单":筛选出没有首单标记的订单
@@ -315,14 +316,14 @@ Scenario:1 按照【订单类型】进行筛选
 		}]
 		"""
 
-@order @allOrder
+@mall3 @order @allOrder
 Scenario:2 混合条件进行筛选
 	Given jobs登录系统:weapp
 	When jobs根据给定条件查询订单:weapp
 		"""
 		{
 			"order_no": "00003",
-			"ship_name": "o",
+			"ship_name": "tom",
 			"ship_tel": "13711223344",
 			"product_name": "商品",
 			"date_interval": "2014-10-03|2014-10-04",

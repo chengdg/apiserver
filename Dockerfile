@@ -26,7 +26,7 @@ RUN pip install -U \
 RUN pip install upyun
 
 # to support BDD
-RUN pip install behave factory_boy selenium \
+RUN pip install uwsgi behave factory_boy selenium \
   && rm -rf ~/.pip
 
 COPY . /weapp/api/

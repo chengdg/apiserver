@@ -1,7 +1,8 @@
 # __author__ : "冯雪静"
 # watcher: zhutianqi@weizoom.com
+
 @func:webapp.modules.mall.views.list_products
-Feature: 在webapp中购买商品
+Feature: 在webapp中购买商品111
 	bill能在webapp中购买jobs添加的"商品"
 
 Background:

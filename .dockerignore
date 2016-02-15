@@ -1,0 +1,6 @@
+.git*
+.docker*
+*.pyc
+*.log
+*.pid
+*~

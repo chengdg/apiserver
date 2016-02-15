@@ -17,17 +17,18 @@ RUN pip install -U \
   celery \
   pycrypto \
   pysqlite \
-  "Django<1.7" \
   poster \
   Pillow \
   requests \
-  beautifulsoup \
-  upyun
+  beautifulsoup
+
+# `upyun` requires `request`
+RUN pip install upyun
 
 # to support BDD
 RUN pip install behave factory_boy selenium \
   && rm -rf ~/.pip
 
-COPY * /weapp/api
+COPY . /weapp/api/
 
 CMD ["/bin/bash", "/weapp/api/start.sh"]

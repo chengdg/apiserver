@@ -3,6 +3,10 @@
 请求订单商品库存资源
 
 """
+from collections import OrderedDict
+
+from db.mall import models as mall_models
+
 from business import model as business_model
 from business.resource.products_resource import ProductsResource
 from business.mall.allocator.product_resource_allocator import ProductResourceAllocator
@@ -77,7 +81,7 @@ class OrderProductsResourceAllocator(business_model.Service):
 		if has_failed_promotion_result:
 			return False, promotion_results
 		else:
-			return True, [PromotionResult()]
+			return True, promotion_results
 
 	def __supply_product_info_into_fail_reason(self, product, result):
 		#如果失败原因中没有商品信息，则填充商品信息
@@ -102,7 +106,7 @@ class OrderProductsResourceAllocator(business_model.Service):
 		Returns
 			MergedReservedProduct对象集合
 		"""
-		id2product = {}
+		id2product = OrderedDict()
 		for product in products:
 			merged_reserved_product = id2product.get(product.id, None)
 			if not merged_reserved_product:
@@ -163,9 +167,13 @@ class OrderProductsResourceAllocator(business_model.Service):
 			resources = None
 
 		promotion_reasons = []
+		updated_premium_products = []
 		if successed:
 			for merged_reserved_product in merged_reserved_products:
 				__is_promotion_success, __promotion_reasons = self.__allocate_promotion(merged_reserved_product)
+				if isinstance(__promotion_reasons,list):
+					for __promotion_reason in __promotion_reasons:
+						updated_premium_products.extend(__promotion_reason.updated_premium_products)
 				if not __is_promotion_success:
 					is_promotion_success = __is_promotion_success
 					logging.info(u"appending reason: {}".format(promotion_reason))
@@ -191,6 +199,9 @@ class OrderProductsResourceAllocator(business_model.Service):
 			#has_real_fail_reason = len([reason for reason in promotion_reasons if reason['type'] != 'promotion:premium_sale:no_premium_product_stocks' and reason['type'] != 'promotion:premium_sale:not_enough_premium_product_stocks']) > 0
 			if len(promotion_reasons) > 0:
 				reasons.extend(promotion_reasons)
+				for premium_product in updated_premium_products:
+					mall_models.ProductModel.update(stocks=mall_models.ProductModel.stocks+premium_product['premium_count']).dj_where(product_id=premium_product['premium_product_id'], name='standard').execute()
+
 
 		if not successed:
 			return False, reasons, None

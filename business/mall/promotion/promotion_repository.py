@@ -118,7 +118,9 @@ class PromotionRepository(business_model.Model):
 				'premium_product_id': premium_sale_product.product_id,
 				'supplier': main_product.supplier,
 				'stock_type': realtime_stock_dict['stock_type'],
-				'stocks': realtime_stock_dict['stocks']
+				'stocks': realtime_stock_dict['stocks'],
+				'shelve_type': product.shelve_type,
+				'is_deleted': product.is_deleted
 			}
 			id2sale[premium_sale_id].premium_products.append(data)
 

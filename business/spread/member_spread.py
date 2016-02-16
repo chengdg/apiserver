@@ -204,8 +204,8 @@ class MemberSpread(business_model.Model):
 		fmt = query_strings_dict.get('fmt', None)
 		if fmt:
 			fmt = fmt[0]
-
-
+			if fmt.find(',') > -1:
+				fmt = fmt.split(',')[0]
 		if member.token == fmt or fmt == 'notfmt':
 			return
 		

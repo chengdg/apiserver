@@ -85,6 +85,8 @@ class Order(business_model.Model):
 		'ship_tel',
 		'ship_area',
 		'ship_address',
+		'bill_type',
+		'bill',
 
 		'postage',
 		'integral',
@@ -112,6 +114,7 @@ class Order(business_model.Model):
 		'buyer_name',
 
 		'weizoom_card_money',
+		'delivery_time', # 配送时间字符串
 	)
 
 	@staticmethod
@@ -551,10 +554,13 @@ class Order(business_model.Model):
 		db_model.ship_address = self.ship_address
 		db_model.ship_tel = self.ship_tel
 		db_model.area = self.ship_area
+		db_model.bill_type = self.bill_type
+		db_model.bill = self.bill
 		db_model.customer_message = self.customer_message
 		db_model.type = self.type
 		db_model.pay_interface_type = self.pay_interface_type
 		db_model.order_id = self.order_id
+		db_model.delivery_time = self.delivery_time
 
 		if self.coupon_id:
 			db_model.coupon_id = self.coupon_id
@@ -937,3 +943,29 @@ class Order(business_model.Model):
 							detail_data[key] = {"value" : product_names, "color" : "#173177"}
 			template_data['data'] = detail_data
 		return template_data
+
+	def validate_order_action(self, action, from_webapp_user_id):
+		"""
+		@param action: 有效操作为cancel、finish
+		@param from_webapp_user_id: 发起操作的webapp_user_id
+		@return: bool值, msg
+		"""
+		# 校验操作用户
+		if self.webapp_user_id != from_webapp_user_id:
+				return False, 'error_user'
+
+		# 校验不是子订单
+		if self.is_sub_order:
+			return False, 'sub_order'
+
+		# 校验操作类型
+		if action not in ('cancel', 'finish'):
+			return False, 'error_action'
+
+		# 校验操作和状态
+		if action == 'cancel' and self.status == mall_models.ORDER_STATUS_NOT:
+			return True, ''
+		elif action == 'finish' and self.status == mall_models.ORDER_STATUS_PAYED_SHIPED:
+			return True, ''
+		else:
+			return False, 'error_status'

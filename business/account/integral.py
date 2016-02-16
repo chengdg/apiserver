@@ -16,7 +16,7 @@ from wapi.decorators import param_required
 from db.member import models as member_models
 from db.mall import models as mall_models
 
-from business import model as business_model 
+from business import model as business_model
 import settings
 from business.decorator import cached_context_property
 from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
@@ -35,6 +35,9 @@ class Integral(business_model.Model):
 		'buy_award_count_for_buyer',
 		'buy_via_shared_url_increase_count_for_author',
 		'buy_via_offline_increase_count_for_author',
+		'review_increase',
+		'order_money_percentage_for_each_buy',
+		'buy_via_offline_increase_count_percentage_for_author',
 		'webapp_id',
 	)
 
@@ -120,9 +123,9 @@ class Integral(business_model.Model):
 			member_models.Member.update(integral=member_models.Member.integral + integral_increase_count).dj_where(id=member.id).execute()
 
 			integral_log = member_models.MemberIntegralLog.create(
-					member = member.id, 
-					follower_member_token = follower_member.token if follower_member else '', 
-					integral_count = integral_increase_count, 
+					member = member.id,
+					follower_member_token = follower_member.token if follower_member else '',
+					integral_count = integral_increase_count,
 					event_type = event_type,
 					webapp_user_id = webapp_user_id,
 					reason=reason,
@@ -137,7 +140,7 @@ class Integral(business_model.Model):
 			notify_message = u"update_member_integral member_id:{}, cause:\n{}".format(member.id, unicode_full_stack())
 			watchdog_error(notify_message)
 			return False, None
-		
+
 
 	@staticmethod
 	def use_integral_to_buy(args):
@@ -153,7 +156,7 @@ class Integral(business_model.Model):
 			'member':webapp_user.member,
 			'event_type':  member_models.USE
 			})
-		
+
 	@staticmethod
 	def roll_back_integral(args):
 		webapp_user = args['webapp_user']
@@ -172,7 +175,7 @@ class Integral(business_model.Model):
 		"""
 		webapp_user = args['webapp_user']
 		return_count = args['return_count']
-		
+
 		if return_count <= 0:
 			return
 
@@ -187,7 +190,7 @@ class Integral(business_model.Model):
 	def increase_after_order_payed_finsh(args):
 		#print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.1'
 		order_id = args['order_id']
-		webapp_owner = args['webapp_owner']	
+		webapp_owner = args['webapp_owner']
 		webapp_user = args['webapp_user']
 		#print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.2',order_id
 		integral_strategy = webapp_owner.integral_strategy_settings
@@ -212,7 +215,7 @@ class Integral(business_model.Model):
 					if followed_member.webapp_id != member.webapp_id:
 						followed_member = None
 				except:
-					followed_member = None 
+					followed_member = None
 			else:
 				followed_member = None
 
@@ -230,7 +233,7 @@ class Integral(business_model.Model):
 						'webapp_owner': webapp_owner,
 						'member_id': followed_member.id
 						})
-					
+
 					Integral.increase_member_integral({
 						'integral_increase_count': increase_count,
 						'webapp_user': followed_webapp_user,
@@ -286,7 +289,7 @@ class Integral(business_model.Model):
 							})
 						if integral_strategy.buy_via_offline_increase_count_for_author > 0:
 							#self.increase_member_integral(father_member, integral_strategy.buy_via_offline_increase_count_for_author, BUY_INCREST_COUNT_FOR_FATHER)
-							
+
 							Integral.increase_member_integral({
 								'integral_increase_count': integral_strategy.buy_via_offline_increase_count_for_author,
 								'webapp_user': father_webapp_user,
@@ -308,4 +311,4 @@ class Integral(business_model.Model):
 									})
 							except:
 								notify_message = u"increase_father_member_integral_by_child_member_buyed cause:\n{}".format(unicode_full_stack())
-								watchdog_error(notify_message)	
+								watchdog_error(notify_message)

@@ -17,7 +17,10 @@ class WebAppOwnerInfo(api_resource.ApiResource):
 		"""
 		创建商品
 		"""
-		_, webapp_owner_info_dict = resource.get('account', 'webapp_owner_info', {
-			"woid": args['woid']
-		})
-		return webapp_owner_info_dict
+		webapp_owner = args['webapp_owner']
+
+		data = {}
+		data['qrcode_img'] = webapp_owner.qrcode_img
+		data['mp_head_img'] = webapp_owner.mp_head_img
+		data['mp_nick_name'] = webapp_owner.mp_nick_name
+		return data

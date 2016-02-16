@@ -6,6 +6,7 @@
 import time
 
 from core import api_resource
+from utils.mysql_str_util import filter_invalid_str
 from wapi.decorators import param_required
 from business.mall.order_review import OrderReview
 from business.mall.review.review_product_factory import ReviewProductFactory
@@ -83,7 +84,9 @@ class AMemberReviewProduct(api_resource.ApiResource):
 		deliver_score = args.get('deliver_score', None)
 		process_score = args.get('process_score', None)
 		picture_list = args.get('picture_list', None)
-		
+
+		# 过滤MySQL utf-8不能存储的字符
+		review_detail = filter_invalid_str(review_detail)
 
 		if len(review_detail) == 0 or len(review_detail) > 200:
 			return {'status': 0, 'errmsg': 'error detail length'}

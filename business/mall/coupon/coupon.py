@@ -151,29 +151,29 @@ class Coupon(business_model.Model):
 		msg = ''
 		today = datetime.today()
 		if self.status == promotion_models.COUPON_STATUS_USED:
-			msg = '该优惠券已使用'
+			msg = u'该优惠券已使用'
 			self.display_status = 'used'
 		elif self.start_time > today:
-			msg = '该优惠券活动尚未开始'
+			msg = u'该优惠券活动尚未开始'
 			#兼容历史数据
 			if self.status == promotion_models.COUPON_STATUS_USED:
 				self.display_status = 'used'
 			else:
 				self.display_status = 'disable'
 		elif self.expired_time < today or self.status == promotion_models.COUPON_STATUS_EXPIRED:
-			msg = '该优惠券已过期'
+			msg = u'该优惠券已过期'
 			self.display_status = 'overdue'
 		elif self.status == promotion_models.COUPON_STATUS_Expired:
-			msg = '该优惠券已失效'
+			msg = u'该优惠券已失效'
 			self.display_status = 'overdue'
 		elif self.status == promotion_models.COUPON_STATUS_DISCARD:
-			msg = '该优惠券已作废'
+			msg = u'该优惠券已作废'
 			self.display_status = 'disable'
 		elif self.status == promotion_models.COUPON_STATUS_USED:
-			msg = '该优惠券已使用'
+			msg = u'该优惠券已使用'
 			self.display_status = 'used'
 		elif self.member_id > 0 and self.member_id != member_id:
-			msg = '该优惠券已被他人领取不能使用'
+			msg = u'该优惠券已被他人领取不能使用'
 			self.display_status = 'used'
 
 		self.invalid_reason = msg
@@ -185,7 +185,7 @@ class Coupon(business_model.Model):
 		"""
 		member_id = webapp_user.member.id if webapp_user.member else 0
 		msg = self.__check_coupon_status(member_id)
-		if msg:
+		if msg and msg != u'该优惠券活动尚未开始':
 			return False
 		else:
 			return True
@@ -245,7 +245,7 @@ class Coupon(business_model.Model):
 				if self.valid_restrictions > products_sum_price and self.valid_restrictions != -1:
 					msg = u'该优惠券不满足使用金额限制'
 
-		if msg:
+		if msg and msg != u'该优惠券活动尚未开始':
 			self.disable()
 			return False, msg
 		else:

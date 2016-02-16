@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-python .git/hooks/post-rewrite.py

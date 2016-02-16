@@ -21,7 +21,7 @@ from business.mall.order_factory import OrderFactory, OrderResourcesException
 from business.mall.purchase_info import PurchaseInfo
 from business.mall.pay_interface import PayInterface
 from business.mall.order import Order
-from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
+from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error, watchdog_info
 from business.spread.member_spread import MemberSpread
 import logging
 
@@ -42,7 +42,7 @@ class AOrder(api_resource.ApiResource):
 		webapp_user = args['webapp_user']
 		webapp_owner = args['webapp_owner']
 		refueling_order = args.get('refueling_order', '')
-		
+
 		#解析购买参数
 		purchase_info = PurchaseInfo.parse({
 			'request_args': args
@@ -85,20 +85,20 @@ class AOrder(api_resource.ApiResource):
 			data['pay_url_info'] = pay_url_info
 
 		#处理分享来的订单
-		
+
 		try:
 			url = args.get('url', None)
 			if url:
 				MemberSpread.record_order_from_spread({
 					'order_id' : order.id,
 					'webapp_user' : webapp_user,
-					'url' : url 
+					'url' : url
 					})
 		except:
 			pass
 
-		
-		
+
+
 		return data
 
 	@param_required(['order_id', 'action'])
@@ -107,41 +107,35 @@ class AOrder(api_resource.ApiResource):
 		更改订单状态
 		@todo 目前取消订单和确认收货都是通过此接口，需要分离
 		"""
+
+		# 兼容修改价格后订单从支付模块返回的跳转（支付模块会添加edit_money）
+		order_id = args['order_id'].split('-')[0]
+
 		try:
 			order = Order.from_id({
 				'webapp_user': args['webapp_user'],
 				'webapp_owner': args['webapp_owner'],
-				'order_id': args['order_id']
+				'order_id': order_id
 			})
 
-			if order.webapp_user_id != args['webapp_user'].id:
-				raise Exception(u'非法操作')
-
 			action = args['action']
+
+			validate_result, reason = order.validate_order_action(action, args['webapp_user'].id)
+
+			msg = u"apiserver中修改订单状态失败, order_id:{}, action:{}, cause:\n{}".format(args['order_id'], args['action'], reason)
+			watchdog_info(msg)
+
+			if not validate_result:
+				return 500, {'msg': reason}
+
 			if action == 'cancel':
-				logging.info("order status: {}/{}".format(order.status, order.status_text))
-				# TODO: 不应该用此方式判断状态。增加method。
-				if order.status != mall_models.ORDER_STATUS_NOT:
-					#raise Exception(u'非法操作')
-					return 500, {
-						'msg': u'非待支付或已支付订单，无法取消'
-					}
 				order.cancel()
 			elif action == 'finish':
-				if order.status != mall_models.ORDER_STATUS_PAYED_SHIPED:
-					raise Exception(u'非法操作')
 				order.finish()
-			else:
-				raise Exception(u'非法操作')
-			return {
-				'success': True
-			}
 		except:
-			if not settings.IS_UNDER_BDD:
-				# TODO: 规范错误信息
-				notify_message = u"apiserver中修改订单状态失败, order_id:{}, action:{}, cause:\n{}".format(args['order_id'], args['action'], unicode_full_stack())
-				watchdog_error(notify_message)
-			return 500, {}
+			notify_message = u"apiserver中修改订单状态失败, order_id:{}, action:{}, cause:\n{}".format(args['order_id'], args['action'], unicode_full_stack())
+			watchdog_alert(notify_message)
+			return 500, ''
 
 
 
@@ -205,7 +199,10 @@ class AOrder(api_resource.ApiResource):
 			"weizoom_card_money",
 			"red_envelope",
 			"red_envelope_created",
-			"pay_info"
+			"pay_info",
+			"bill_type",
+			"bill",
+			"delivery_time"
 		]
 
 		data = {}
@@ -217,10 +214,14 @@ class AOrder(api_resource.ApiResource):
 
 	@param_required(['order_id'])
 	def get(args):
+
+		# 兼容修改价格后订单从支付模块返回的跳转（支付模块会添加edit_money）
+		order_id = args['order_id'].split('-')[0]
+
 		order = Order.from_id({
 			'webapp_owner': args['webapp_owner'],
 			'webapp_user': args['webapp_user'],
-			'order_id': args['order_id']
+			'order_id': order_id
 		})
 
 		return AOrder.to_dict(order)

@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 import math
 from datetime import datetime
 
+from core.exceptionutil import unicode_full_stack
 from wapi.decorators import param_required
 #from wapi import wapi_utils
 from core.cache import utils as cache_util
@@ -68,7 +69,7 @@ class PremiumSale(promotion.Promotion):
 			})
 			model2stock = realtime_stock.model2stock
 			for model, stock_info in model2stock.items():
-				if stock_info['stock_type'] == 0:
+				if stock_info['stock_type'] == mall_models.PRODUCT_STOCK_TYPE_UNLIMIT:
 					product2stocks[premium_product_id] = -1
 				else:
 					if premium_product_id in product2stocks:
@@ -80,8 +81,13 @@ class PremiumSale(promotion.Promotion):
 					else:
 						product2stocks[premium_product_id] = stock_info['stocks']
 
+			# 买赠活动期间，赠品下架或删除，提示要求跟赠品库存为0时显示相同
+			if premium_product['shelve_type'] == mall_models.PRODUCT_SHELVE_TYPE_OFF or premium_product['is_deleted']:
+					product2stocks[premium_product_id] = 0
+
 		#检查赠品库存是否满足
 		failed_reasons = []
+		updated_premium_products = []
 		for premium_product in self.premium_products:
 			premium_product_id = premium_product['id']
 			stocks = product2stocks.get(premium_product_id, -2)
@@ -121,12 +127,24 @@ class PremiumSale(promotion.Promotion):
 					failed_reasons.append(reason)
 			else:
 				#商品库存大于赠品，直接扣库存
-				mall_models.ProductModel.update(stocks=mall_models.ProductModel.stocks-premium_product['premium_count']).dj_where(product_id=premium_product['premium_product_id'], name='standard').execute()
+				try:
+					mall_models.ProductModel.update(stocks=mall_models.ProductModel.stocks-premium_product['premium_count']).dj_where(product_id=premium_product['premium_product_id'], name='standard').execute()
+					updated_premium_products.append(premium_product)
+				except:
+					reason = PromotionFailure({
+						'type': 'promotion:premium_sale:not_enough_premium_product_stocks',
+						'msg': u'库存不足',
+						'short_msg': u'库存不足'
+					})
+					self.__supply_product_info_into_fail_reason(premium_product, reason)
+					failed_reasons.append(reason)
 
 		if len(failed_reasons) > 0:
+			failed_reasons[0].updated_premium_products = updated_premium_products
 			return failed_reasons
 		else:
 			result = PromotionResult()
+			result.updated_premium_products = updated_premium_products
 			result.need_disable_discount = True #买赠活动需要禁用会员折扣
 			return [result]
 

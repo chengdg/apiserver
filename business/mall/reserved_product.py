@@ -31,7 +31,7 @@ from db.mall import models as mall_models
 #from db.mall import promotion_models
 #import resource
 #from core.watchdog.utils import watchdog_alert
-from business import model as business_model 
+from business import model as business_model
 from business.mall.product import Product
 #import settings
 from business.decorator import cached_context_property
@@ -76,7 +76,9 @@ class ReservedProduct(business_model.Model):
 
 		'can_use_coupon',
 		'integral_sale',
-		'active_integral_sale_rule'
+		'active_integral_sale_rule',
+		'is_enable_bill',
+		'is_delivery' # 是否勾选配送时间,
 	)
 
 	@staticmethod
@@ -108,7 +110,7 @@ class ReservedProduct(business_model.Model):
 		if product_info:
 			self.__fill_detail(webapp_user, product_info)
 
-		
+
 	def __fill_detail(self, webapp_user, product_info):
 		"""
 		填充购物车商品的详情
@@ -132,6 +134,7 @@ class ReservedProduct(business_model.Model):
 		self.integral_sale = product.integral_sale
 		self.is_use_cod_pay_interface = product.is_use_cod_pay_interface
 		self.min_limit = product.min_limit
+		self.is_enable_bill = product.is_enable_bill
 
 		self.model_name = product_info['model_name']
 		self.expected_promotion_id = product_info.get('expected_promotion_id', 0)
@@ -141,6 +144,7 @@ class ReservedProduct(business_model.Model):
 
 		self.postage_type = product.postage_type
 		self.unified_postage_money = product.unified_postage_money
+		self.is_delivery = product.is_delivery
 		#获取商品规格信息
 		model = product.get_specific_model(product_info['model_name'])
 		self.is_model_deleted = model.is_deleted
@@ -296,7 +300,7 @@ class ReservedProduct(business_model.Model):
 		"""
 		[property] 订单商品的供应商
 		"""
-		return self.context['product'].supplier	
+		return self.context['product'].supplier
 
 	def has_expected_promotion(self):
 		"""

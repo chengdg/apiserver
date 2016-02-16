@@ -22,7 +22,7 @@ class APurchasing(api_resource.ApiResource):
 	resource = 'purchasing'
 
 	def __get_coupons(webapp_user, products):
-		coupons = webapp_user.all_coupons 
+		coupons = webapp_user.all_coupons
 		limit_coupons = []
 		result_coupons = []
 		if len(coupons) == 0:
@@ -132,7 +132,9 @@ class APurchasing(api_resource.ApiResource):
 		order_info = {
 			'type': order.type,
 			'pay_interfaces': order.pay_interfaces,
-			'product_groups': product_group_datas
+			'product_groups': product_group_datas,
+			'is_enable_bill': order.is_enable_bill,
+			'is_delivery': order.is_delivery # 是否勾选配送时间,发货时间判断字段
 		}
 
 		return {

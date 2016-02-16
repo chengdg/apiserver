@@ -19,7 +19,7 @@ from core.cache import utils as cache_util
 from db.mall import models as mall_models
 #import resource
 from core.watchdog.utils import watchdog_alert
-from business import model as business_model 
+from business import model as business_model
 from business.mall.product import Product
 import settings
 from utils import regional_util
@@ -39,7 +39,9 @@ class PurchaseOrder(business_model.Model):
 		'postage',
 		'promotion_product_groups',
 		'pay_interfaces',
-		'usable_integral'
+		'usable_integral',
+		'is_enable_bill',
+		'is_delivery'
 	)
 
 	@staticmethod
@@ -98,9 +100,20 @@ class PurchaseOrder(business_model.Model):
 			if not product.is_use_cod_pay_interface:
 				is_use_cod = False
 				break
+		self.is_enable_bill = False
+		for product in self.products:
+			if product.is_enable_bill:
+				self.is_enable_bill = True
+
 		if not is_use_cod:
 			self.pay_interfaces = filter(lambda x: x['type'] != mall_models.PAY_INTERFACE_COD, self.pay_interfaces)
-
+		#添加判断是否需要配送时间(是否勾选配送时间)
+		self.is_delivery = False
+		for product in self.products:
+			if product.is_delivery == True:
+				self.is_delivery = True
+				break
+		#添加判断是否需要配送时间
 	def __get_usable_integral(self, integral_info):
 		"""获得订单中用户可以使用的积分
 		"""

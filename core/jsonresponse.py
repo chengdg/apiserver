@@ -2,7 +2,6 @@
 import	copy
 from datetime import date
 
-from django.http import HttpResponse
 
 
 class JsonResponse(dict):

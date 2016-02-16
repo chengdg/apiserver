@@ -1,3 +1,4 @@
+# watcher: wangli@weizoom.com, benchi@weizoom.com
 # __author__ : "王丽" 2016-02-02
 
 Feature: 订单管理
@@ -135,7 +136,7 @@ Background:
 		}
 		"""
 
-@order @setOrder @mall3 @eugene
+@mall3 @order @setOrder @eugene
 Scenario:1 支付后的订单，添加首单标记-会员订单
 	#用户支付的订单，按照【付款时间】付款时间最早的标记为“首单”
 	#非会员购买的订单，【买家】修改成“非会员”，关注之后显示成会员名称
@@ -907,11 +908,12 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 			}]
 			"""
 
-@order @setOrder @mall3 @eugene
+@mall3 @order @setOrder @eugene
 Scenario:2 支付后的订单，添加首单标记-非会员订单
 	#用户支付的订单，按照【付款时间】付款时间最早的标记为“首单”
 	#非会员购买的订单，【买家】修改成“非会员”，关注之后显示成会员名称
 	#非会员购买首单按照会员的规则处理
+	#通过关注账号，再取消关注。来模拟非会员
 
 	Given marry关注jobs的公众号
 	When marry取消关注jobs的公众号:weapp

@@ -57,10 +57,8 @@ try:
                 for i in range(0, 5):
                     line = f.readline()
                     if line.startswith('# watcher:') or line.startswith('#watcher :'):
-                        print(line)
                         emails = line.split(':')[1].split(',')
                         emails = map(lambda x: x.replace('\n', '').replace(' ', ''), emails)
-                        print(emails)
 
             if emails:
                 username = git_shell('git config --local user.name')
@@ -79,5 +77,4 @@ try:
 
                 sendmail(emails, title, content)
 except BaseException as e:
-    raise e
     print('发送通知邮件失败')

@@ -1,8 +1,8 @@
 # hook_scripts 脚本说明
-本文介绍hook脚本的功能，启用的脚本见config.ini
+本文介绍hook脚本的功能，启用的脚本见config.ini。
 
 ## commit-msg-scripts
-
+填写commit信息到完成commit之间执行的脚本，commit-msg 钩子接收一个参数，此参数即上文提到的，存有当前提交信息的临时文件的路径。
 ### add_branch_name.py
 commit msg增加用户名
 
@@ -25,10 +25,22 @@ editor:xxx@weizoom.com
 branch:feature_watcher
 commit_msg:[feature_watcher][xxx@weizoom.com]test mail
 
-## pre-commit-scripts
+## pre-rebase-scripts
+钩子运行于变基之前，以非零值退出可以中止变基的过程。
 
 ### back_before_rebase.py
 
 执行rebase命令前，生成备份分支`'__bak_'+branch_name+'_' + now.strftime("%Y-%m-%d_%H-%M")`
 
+## pre-push-scripts
+pre-push 钩子会在 git push 运行期间， 更新了远程引用但尚未传送对象时被调用。
+
+### push_notify.py
+
+当用户push时发送邮件通知给特定的人。
+
+希望通知别人的用户，需要在项目目录下执行`git config --local --replace-all wzconfig.reviewTarget xxx@qq.com`,邮箱可以使用英文逗号(,)隔开。
+
+通知邮件示例：
+>[git push notice]用户：xxx,仓库：aaa，分支：one_branch URL:http://xxxxx.com
 

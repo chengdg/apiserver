@@ -1,3 +1,4 @@
+# watcher: zhangsanxiang@weizoom.com,benchi@weizoom.com
 #_author_:张三香 2015.12.25
 
 Feature:下单失败后校验库存、积分、优惠券和微众卡信息

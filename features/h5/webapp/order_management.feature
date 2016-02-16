@@ -1,3 +1,4 @@
+# watcher: zhangsanxiang@weizoom.com,wangxinrui@weizoom.com,benchi@weizoom.com
 #bc
 #editor 新新 2015.10.20
 #editor 三香 2015.11.26

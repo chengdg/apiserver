@@ -1,3 +1,4 @@
+# watcher: wangli@weizoom.com,benchi@weizoom.com
 # __author__ : "王丽" 2015-12-21
 
 Feature: 会员绑定手机号

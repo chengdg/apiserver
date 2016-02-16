@@ -1,3 +1,4 @@
+# watcher: fengxuejing@weizoom.com,benchi@weizoom.com
 #author: 冯雪静
 
 Feature:jobs管理系统里待支付的订单，用户可以在手机端直接取消

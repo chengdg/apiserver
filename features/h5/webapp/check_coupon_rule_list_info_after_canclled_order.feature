@@ -1,3 +1,4 @@
+# watcher: zhangsanxiang@weizoom.com,benchi@weizoom.com
 #_author_:张三香 2016.01.13
 #针对bug7125-使用优惠券购买商品，然后再取消订单，优惠券的已使用变成-1补充feature
 

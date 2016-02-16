@@ -925,7 +925,6 @@ Scenario:2 支付后的订单，添加首单标记-非会员订单
 				"name": "商品1",
 				"count": 1
 			}],
-			"coupon": "coupon2_id_1",
 			"pay_type": "支付宝",
 			"date":"2015-08-12 00:00:00"
 		}
@@ -939,11 +938,11 @@ Scenario:2 支付后的订单，添加首单标记-非会员订单
 				"name": "商品2",
 				"count": 1
 			}],
-			"coupon": "coupon2_id_1",
 			"pay_type": "货到付款",
 			"date":"2015-08-13 00:00:00"
 		}
 		"""
+
 	Given jobs登录系统:weapp
 	Then jobs可以看到订单列表:weapp
 		"""

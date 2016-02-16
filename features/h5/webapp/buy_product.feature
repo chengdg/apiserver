@@ -1,3 +1,4 @@
+# watcher: fengxuejing@weizoom.com, benchi@weizoom.com
 # __author__ : "冯雪静"
 @func:webapp.modules.mall.views.list_products
 Feature: 在webapp中购买商品

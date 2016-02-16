@@ -16,10 +16,10 @@ Background:
 			"type": "微信支付",
 			"is_active": "启用"
 		}, {
-			"type": "货到付款",
+			"type": "微信支付",
 			"is_active": "启用"
 		}, {
-			"type": "支付宝",
+			"type": "货到付款",
 			"is_active": "启用"
 		}]
 		"""
@@ -144,7 +144,7 @@ Background:
 
 @mall3 @order @allOrder
 Scenario:1 按照【订单类型】进行筛选
-	#筛选“订单类型”内容为“全部、首单、非首单” 
+	#筛选“订单类型”内容为“全部、首单、非首单”
 	#"全部":筛选出所有订单；"首单"：筛选出带有首单标记的订单；"非首单":筛选出没有首单标记的订单
 
 	Given jobs登录系统:weapp
@@ -188,7 +188,7 @@ Scenario:1 按照【订单类型】进行筛选
 			"methods_of_payment": "优惠抵扣",
 			"sources": "商城",
 			"ship_name": "tom",
-			"ship_tel": "13711223344",
+			"ship_tel": "13811223344",
 			"is_first_order":"false"
 		},{
 			"order_no": "00005",

@@ -41,36 +41,36 @@ status = git_shell('git status -s')
 try:
     role = git_shell('git config --global --get wzconfig.role')
     # 测试不触发此功能
-    if role == 'qa':
-        exit(0)
-    for file_line in status.split('\n'):
-        if not file_line.startswith(' ') and not file_line.startswith('?') and not file_line.startswith('D') and len(
-                file_line) and file_line.endswith(
-                '.feature'):
-            file_path = file_line.split()[-1]
-            emails = []
-            with open(file_path) as f:
-                for i in range(0, 5):
-                    line = f.readline()
-                    if line.startswith('# watcher:') or line.startswith('#watcher :'):
-                        emails = line.split(':')[1].split(',')
-                        emails = map(lambda x: x.replace('\n', '').replace(' ', ''), emails)
+    if role != 'qa':
+        for file_line in status.split('\n'):
+            if not file_line.startswith(' ') and not file_line.startswith('?') and not file_line.startswith('D') and len(
+                    file_line) and file_line.endswith(
+                    '.feature'):
+                file_path = file_line.split()[-1]
+                emails = []
+                with open(file_path) as f:
+                    for i in range(0, 5):
+                        line = f.readline()
+                        if line.startswith('# watcher:') or line.startswith('#watcher :'):
+                            emails = line.split(':')[1].split(',')
+                            emails = map(lambda x: x.replace('\n', '').replace(' ', ''), emails)
 
-            if emails:
-                username = git_shell('git config --local user.name')
-                if not username:
-                    username = git_shell('git config --system user.name')
-                if not username:
-                    username = git_shell('git config --global user.name')
+                if emails:
+                    username = git_shell('git config --local user.name')
+                    if not username:
+                        username = git_shell('git config --system user.name')
+                    if not username:
+                        username = git_shell('git config --global user.name')
 
-                branch_name = git_shell('git symbolic-ref --short HEAD')
+                    branch_name = git_shell('git symbolic-ref --short HEAD')
 
-                file_name = file_path.split('/')[-1]
-                title = 'feature修改通知：%s' % file_name
+                    file_name = file_path.split('/')[-1]
+                    title = 'feature修改通知：%s' % file_name
 
-                content = '<br>feature:%s</br> <br>editor:%s</br> <br>branch:%s</br> <br>commit_msg:%s</br>' % (
-                    file_path, username, branch_name, commit_msg)
+                    content = '<br>feature:%s</br> <br>editor:%s</br> <br>branch:%s</br> <br>commit_msg:%s</br>' % (
+                        file_path, username, branch_name, commit_msg)
 
-                sendmail(emails, title, content)
+                    sendmail(emails, title, content)
 except BaseException as e:
-    print('发送通知邮件失败')
+    print(e)
+    print('feature_watcher发送通知邮件失败')

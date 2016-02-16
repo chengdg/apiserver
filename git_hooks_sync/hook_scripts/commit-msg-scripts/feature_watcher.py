@@ -43,6 +43,10 @@ with open(commit_msg_file_path, 'r+') as f:
 status = git_shell('git status -s')
 
 try:
+    role = git_shell('git config --global --get wzconfig.role')
+    # 测试不触发此功能
+    if role == 'qa':
+        exit(0)
     for file_line in status.split('\n'):
         if not file_line.startswith(' ') and not file_line.startswith('?') and not file_line.startswith('D') and len(
                 file_line) and file_line.endswith(
@@ -67,7 +71,8 @@ try:
 
                 branch_name = git_shell('git symbolic-ref --short HEAD')
 
-                title = '%s changed.' % file_path
+                file_name = file_path.split('/')[-1]
+                title = '%feature修改通知：' % file_name
 
                 content = '<br>feature:%s</br> <br>editor:%s</br> <br>branch:%s</br> <br>commit_msg:%s</br>' % (
                     file_path, username, branch_name, commit_msg)

@@ -77,4 +77,5 @@ try:
 
                 sendmail(emails, title, content)
 except BaseException as e:
+    raise e
     print('发送通知邮件失败')

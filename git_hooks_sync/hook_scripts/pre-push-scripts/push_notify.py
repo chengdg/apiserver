@@ -38,30 +38,28 @@ try:
     if review_target:
         emails = review_target.split(',')
         emails = map(lambda x: x.replace(' ', ''), emails)
-    else:
-        exit(0)
-    username = git_shell('git config --local user.name')
+        username = git_shell('git config --local user.name')
 
-    if not username:
-        username = git_shell('git config --system user.name')
-    if not username:
-        username = git_shell('git config --global user.name')
+        if not username:
+            username = git_shell('git config --system user.name')
+        if not username:
+            username = git_shell('git config --global user.name')
 
-    branch_name = git_shell('git symbolic-ref --short HEAD')
+        branch_name = git_shell('git symbolic-ref --short HEAD')
 
-    repository_raw = git_shell('git remote -v')
-    repository_raw = (filter(lambda x: 'origin' in x and 'push' in x, repository_raw.split('\n')))[0]
-    repository_name = repository_raw.split('.git')[0].split('/')[-1]
+        repository_raw = git_shell('git remote -v')
+        repository_raw = (filter(lambda x: 'origin' in x and 'push' in x, repository_raw.split('\n')))[0]
+        repository_name = repository_raw.split('.git')[0].split('/')[-1]
 
-    repository_name_space = repository_raw.split('8083')[1].split('/')[1]
+        repository_name_space = repository_raw.split('8083')[1].split('/')[1]
 
-    repository_url = 'http://%s/%s/%s/commits/%s' % (GITLAB_URL, repository_name_space, repository_name, branch_name)
+        repository_url = 'http://%s/%s/%s/commits/%s' % (GITLAB_URL, repository_name_space, repository_name, branch_name)
 
-    content = "用户：%s,仓库：%s，分支：%s, URL:%s" % (username, repository_name, branch_name, repository_url)
+        content = "用户：%s,仓库：%s，分支：%s, URL:%s" % (username, repository_name, branch_name, repository_url)
 
-    title = '[git push notice]' + content
+        title = '[git push notice]' + content
 
-    sendmail(emails, title, content)
+        sendmail(emails, title, content)
 except BaseException as e:
     print(e)
-    print('发送通知邮件失败')
+    print('push_notify发送通知邮件失败')

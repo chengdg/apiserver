@@ -1,7 +1,7 @@
 # __author__ : "刘海鹏"
 # watcher: zhutianqi@weizoom.com
 #editor 新新 2015.10.20
-#editor 新新 2015.11.26
+#editor 新新 2015.11.2621212
 
 Feature: 后台取消订单,后台可获取订单状态,取消原因
 """

@@ -72,11 +72,12 @@ try:
                 branch_name = git_shell('git symbolic-ref --short HEAD')
 
                 file_name = file_path.split('/')[-1]
-                title = '%feature修改通知：' % file_name
+                title = 'feature修改通知：%s' % file_name
 
                 content = '<br>feature:%s</br> <br>editor:%s</br> <br>branch:%s</br> <br>commit_msg:%s</br>' % (
                     file_path, username, branch_name, commit_msg)
 
                 sendmail(emails, title, content)
-except:
+except BaseException as e:
+    raise e
     print('发送通知邮件失败')

@@ -32,6 +32,7 @@ def git_shell(git_command):
 	except:
 		return None
 
+
 try:
 	review_target = git_shell('git config --local --get wzconfig.reviewTarget')
 	if review_target:
@@ -49,9 +50,10 @@ try:
 	branch_name = git_shell('git symbolic-ref --short HEAD')
 
 	repository_raw = git_shell('git remote -v')
-	repository_name = repository_raw.split('\n')[0].split('.git')[0].split('/')[-1]
+	repository_raw = (filter(lambda x: 'origin' in x and 'push' in x, repository_raw.split('\n')))[0]
+	repository_name = repository_raw.split('.git')[0].split('/')[-1]
 
-	repository_name_space = repository_raw.split('\n')[0].split('8083')[1].split('/')[1]
+	repository_name_space = repository_raw.split('8083')[1].split('/')[1]
 
 	print('repository_name_space', repository_name_space)
 

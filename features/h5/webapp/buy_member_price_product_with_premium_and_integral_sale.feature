@@ -1,4 +1,4 @@
-
+# watcher: zhangsanxiang@weizoom.com, benchi@weizoom.com
 #author: 张三香
 
 Feature:手机端购买同时参与会员折扣,买赠和单品积分抵扣活动的商品

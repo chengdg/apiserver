@@ -1,3 +1,4 @@
+# watcher: benchi@weizoom.com, fengxuejing@weizoom.com
 #editor:robert 2015.12.07
 
 Feature: 添加普通商品，促销商品到购物车中

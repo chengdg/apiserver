@@ -1,3 +1,4 @@
+# watcher: benchi@weizoom.com
 #author: benchi
 #editor: 师帅 2015.10.19
 Feature: 添加商品到购物车中

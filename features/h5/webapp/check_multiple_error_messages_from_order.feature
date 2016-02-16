@@ -1,3 +1,4 @@
+# watcher: zhangsanxiang@weizoom.com,benchi@weizoom.com
 #_author_:张三香 2015.12.25
 
 Feature:校验多个下单错误提示信息

@@ -1,3 +1,4 @@
+# watcher: wangli@weizoom.com,benchi@weizoom.com
 #author: 王丽 2016-01-05
 
 Feature: 会员确认、取消非本会员的订单

@@ -1,7 +1,9 @@
+# watcher: wangxinrui@weizoom.com,benchi@weizoom.com
 #editor 新新 2015.11.26
 @func:webapp.modules.mall.views.list_products
 Feature: 在webapp中支付订单
 	bill能在webapp中支付订单
+
 
 Background:
 	Given 重置weapp的bdd环境

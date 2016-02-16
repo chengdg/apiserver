@@ -1,3 +1,4 @@
+# watcher: wangli@weizoom.com,benchi@weizoom.com
 #author: 王丽 2015-12-24
 
 Feature:运营邮件通知

@@ -1,3 +1,4 @@
+# watcher: zhangsanxiang@weizoom.com,benchi@weizoom.com
 #_author_：张三香 2015.12.14
 #_editor_: 三香 2016-02-02 
 #根据需求【7512-未到使用时间内的优惠券显示在'未使用'中，下单时显示在'不可用'中】修改场景1

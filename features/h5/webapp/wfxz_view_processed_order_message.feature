@@ -1,3 +1,4 @@
+# watcher: zhangsanxiang@weizoom.com,benchi@weizoom.com
 #_author_:张三香 2016.01.21
 
 Feature: 查看手机端已处理订单详情页的提示信息

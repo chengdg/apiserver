@@ -1,3 +1,4 @@
+# watcher: fengxuejing@weizoom.com,benchi@weizoom.com
 @func:webapp.modules.mall.order
 Feature: 测试"个人中心"有缓存的场景
 

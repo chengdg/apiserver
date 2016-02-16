@@ -1,3 +1,4 @@
+# watcher: songwenxin@weizoom.com,benchi@weizoom.com
 #author: 宋温馨
 Feature:添加商品到购物车后修改商品名称和库存
 Background:

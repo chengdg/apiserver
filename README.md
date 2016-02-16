@@ -24,7 +24,9 @@
 
 ## 安装与卸载
 
-运行`install.py`安装，运行`uninstall.py`卸载。每一个成员都需要执行安装才能在本地注册git_hooks_sync。
+运行`install.py`安装，运行`uninstall.py`卸载。每一个成员都需要执行安装才能在本地注册git_hooks_sync，**每个项目**都要安装。
+
+**注意**：执行`install.py`时，可能会把hooks目录安装到install.py同级目录下，请手动把hooks目录剪切到`.git/hooks`，替换原目录。
 
 ## 配置
 

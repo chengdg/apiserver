@@ -16,10 +16,6 @@ def sendmail(mail_address, title, content):
     from email.mime.multipart import MIMEMultipart
     from email.mime.text import MIMEText
 
-    # MAIL_NOTIFY_USERNAME = u'noreply@notice.weizoom.com'
-    # MAIL_NOTIFY_PASSWORD = u'Weizoom2015'
-    # MAIL_NOTIFY_ACCOUNT_SMTP = u'smtp.dm.aliyun.com'
-
     MAIL_NOTIFY_USERNAME = u'postmaster@noreply.itoldme.net'
     MAIL_NOTIFY_PASSWORD = u'db344fef68af413a5fa8502cbebd02f4'
     MAIL_NOTIFY_ACCOUNT_SMTP = u'smtp.mailgun.org'
@@ -43,6 +39,10 @@ with open(commit_msg_file_path, 'r+') as f:
 status = git_shell('git status -s')
 
 try:
+    role = git_shell('git config --global --get wzconfig.role')
+    # 测试不触发此功能
+    if role == 'qa':
+        exit(0)
     for file_line in status.split('\n'):
         if not file_line.startswith(' ') and not file_line.startswith('?') and not file_line.startswith('D') and len(
                 file_line) and file_line.endswith(
@@ -53,10 +53,8 @@ try:
                 for i in range(0, 5):
                     line = f.readline()
                     if line.startswith('# watcher:') or line.startswith('#watcher :'):
-                        print(line)
                         emails = line.split(':')[1].split(',')
                         emails = map(lambda x: x.replace('\n', '').replace(' ', ''), emails)
-                        print(emails)
 
             if emails:
                 username = git_shell('git config --local user.name')
@@ -67,11 +65,12 @@ try:
 
                 branch_name = git_shell('git symbolic-ref --short HEAD')
 
-                title = '%s changed.' % file_path
+                file_name = file_path.split('/')[-1]
+                title = 'feature修改通知：%s' % file_name
 
                 content = '<br>feature:%s</br> <br>editor:%s</br> <br>branch:%s</br> <br>commit_msg:%s</br>' % (
                     file_path, username, branch_name, commit_msg)
 
                 sendmail(emails, title, content)
-except:
+except BaseException as e:
     print('发送通知邮件失败')

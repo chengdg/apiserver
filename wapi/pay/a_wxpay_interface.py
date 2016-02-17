@@ -5,7 +5,7 @@ from wapi.decorators import param_required
 from business.mall.order import Order
 
 
-class APayInterface(api_resource.ApiResource):
+class AWXPayInterface(api_resource.ApiResource):
 	"""
 	获取订单微信支付的参数信息
 	"""
@@ -26,6 +26,7 @@ class APayInterface(api_resource.ApiResource):
 			'order_id': args['order_id']
 		})
 
-		return order.pay_info_for_pay_module
+		pay_info = order.pay_info_for_pay_module()
+		return pay_info
 
 

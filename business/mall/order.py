@@ -353,7 +353,7 @@ class Order(business_model.Model):
 		else:
 			return {}
 
-	@property
+
 	def pay_info_for_pay_module(self):
 		"""
 		用于pay模块的订单支付信息
@@ -379,15 +379,39 @@ class Order(business_model.Model):
 			return {'is_status_not': False}
 
 
-	def wx_package_pay_module(self,version):
+	def wx_package_for_pay_module(self):
 		wx_package_info ={}
 		wx_package_info['total_fee'] = int(Decimal(str(self.final_price)) * 100)
 		wx_package_info['woid'] = self.context['webapp_owner'].id
 
-		product_ids = [r.product_id for r in mall_models.OrderHasProduct.select().dj_where(order_id=order.id)]
-		product_names = ','.join([product.name for product in Product.objects.filter(id__in=product_ids)])
-		if version == 0:
-			pass
+		product_ids = [r.product_id for r in mall_models.OrderHasProduct.select().dj_where(order_id=self.id)]
+		product_names = ','.join([product.name for product in mall_models.Product.select().dj_where(id__in=product_ids)])
+		if len(product_names) > 45:
+			product_names = product_names[:45]
+		else:
+			product_names = product_names
+		wx_package_info['product_names'] = product_names
+
+		user_profile = accout_models.UserProfile.select().dj_where(user_id=self.context['webapp_owner'].id).first()
+
+
+		if user_profile.host_name and len(user_profile.host_name.strip()) > 0:
+			user_profile_host = user_profile.host_name
+		else:
+			# 临时处理，需要切换到apiserver
+			user_profile_host = settings.WEAPP_DOMAIN
+
+		wx_package_info['user_profile_host'] = user_profile_host
+
+		pay_interface = PayInterface.from_type({
+			"webapp_owner": self.context['webapp_owner'],
+			"pay_interface_type": self.pay_interface_type
+		})
+
+		wx_package = pay_interface.wx_package_for_pay_module()
+
+		wx_package_info.update(wx_package)
+		return wx_package_info
 
 
 	@cached_context_property

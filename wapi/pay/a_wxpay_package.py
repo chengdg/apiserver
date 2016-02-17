@@ -5,7 +5,7 @@ from wapi.decorators import param_required
 from business.mall.order import Order
 
 
-class APayPackage(api_resource.ApiResource):
+class AWXPayPackage(api_resource.ApiResource):
 	"""
 	获取订单微信支付的package参数信息
 	"""
@@ -26,9 +26,6 @@ class APayPackage(api_resource.ApiResource):
 			'order_id': args['order_id'].split('-')[0]
 		})
 
-
-		package_info = order.wx_package_pay_module(version=0)
+		package_info = order.wx_package_for_pay_module()
 
 		return package_info
-
-

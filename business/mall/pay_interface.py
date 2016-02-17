@@ -186,6 +186,32 @@ class PayInterface(business_model.Model):
 			return {}
 
 
+	def wx_package_for_pay_module(self):
+		"""
+		用于pay模块的微信package信息
+		@return:
+		"""
+		pay_config = self.pay_config
+		pay_version = self.pay_config['pay_version']
+
+		if pay_version == mall_models.V2:
+			package_info = {
+				'pay_r_id': pay_config['id'],
+				'partner_id': pay_config['partner_id'],
+				'partner_key': pay_config['partner_key'],
+				'paysign_key': pay_config['paysign_key'],
+				'app_id': pay_config['app_id'],
+			}
+		elif pay_version == mall_models.V3:
+			package_info = {
+				'pay_r_id': pay_config['id'],
+				'app_id': pay_config['partner_id'],
+				'mch_id': pay_config['partner_key']
+			}
+		else:
+			package_info = {}
+		return package_info
+
 	@cached_context_property
 	def pay_config(self):
 		"""

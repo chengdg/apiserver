@@ -156,6 +156,11 @@ class PayInterface(business_model.Model):
 
 
 	def get_order_pay_info_for_pay_module(self,order):
+		"""
+		用于pay模块的订单支付信息
+		@param order:
+		@return:
+		"""
 		interface = self.context['interface']
 		interface_type = interface['type']
 		webapp_owner_id = self.context['webapp_owner'].id

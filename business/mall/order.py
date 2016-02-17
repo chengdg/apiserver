@@ -355,6 +355,10 @@ class Order(business_model.Model):
 
 	@property
 	def pay_info_for_pay_module(self):
+		"""
+		用于pay模块的订单支付信息
+		@return:
+		"""
 		if self.status == mall_models.ORDER_STATUS_NOT:
 			pay_interface = PayInterface.from_type({
 				"webapp_owner": self.context['webapp_owner'],
@@ -369,9 +373,16 @@ class Order(business_model.Model):
 
 			pay_info['is_status_not'] = True
 			pay_info['order_id'] = order_id
+			pay_info['woid'] = self.context['webapp_owner'].id
 			return pay_info
 		else:
 			return {'is_status_not': False}
+
+
+	def wx_package_pay_module(self,version):
+		total_fee = int(Decimal(str(self.final_price)) * 100)
+		if version == 0:
+			pass
 
 
 	@cached_context_property

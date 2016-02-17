@@ -24,7 +24,7 @@ from business.mall.product import Product
 import settings
 from business.decorator import cached_context_property
 from business.mall.order_products import OrderProducts
-
+import db.account.models as accout_models
 
 class PayInterface(business_model.Model):
 	"""支付接口
@@ -181,7 +181,23 @@ class PayInterface(business_model.Model):
 				'app_id': self.pay_config['app_id']
 			}
 		elif mall_models.PAY_INTERFACE_ALIPAY == interface_type:
-			return {}
+			pay_config = self.pay_config
+			user_profile = accout_models.UserProfile.select().dj_where(user_id=self.context['webapp_owner'].id).first()
+			if user_profile.host_name and len(user_profile.host_name.strip()) > 0:
+				user_profile_host = user_profile.host_name
+			else:
+				# 临时处理，需要切换到apiserver
+				user_profile_host = settings.WEAPP_DOMAIN
+
+			return {
+				'pay_r_id': pay_config['id'],
+				'partner': pay_config['partner'],
+				'key': pay_config['key'],
+				'input_charset': pay_config['input_charset'],
+				'sign_type': pay_config['sign_type'],
+				'seller_email': pay_config['seller_email'],
+				'user_profile_host': user_profile_host
+			}
 		else:
 			return {}
 
@@ -221,6 +237,9 @@ class PayInterface(business_model.Model):
 		if interface['type'] == mall_models.PAY_INTERFACE_WEIXIN_PAY:
 			weixin_pay_config = mall_models.UserWeixinPayOrderConfig.get(id=interface['related_config_id'])
 			return weixin_pay_config.to_dict()
+		elif interface['type'] == mall_models.PAY_INTERFACE_ALIPAY:
+			ali_pay_config = mall_models.UserAlipayOrderConfig.get(id=interface['related_config_id'])
+			return ali_pay_config.to_dict()
 		else:
 			return None
 

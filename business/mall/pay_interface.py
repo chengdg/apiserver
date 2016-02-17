@@ -177,7 +177,8 @@ class PayInterface(business_model.Model):
 				'pay_interface_related_config_id': self.related_config_id,
 				'pay_interface_type': interface_type,
 				'pay_version': self.pay_config['pay_version'],
-				'component_appid': component_appid
+				'component_appid': component_appid,
+				'app_id': self.pay_config['app_id']
 			}
 		elif mall_models.PAY_INTERFACE_ALIPAY == interface_type:
 			return {}

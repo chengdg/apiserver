@@ -23,7 +23,7 @@ class APayPackage(api_resource.ApiResource):
 		order = Order.from_id({
 			'webapp_owner': args['webapp_owner'],
 			'webapp_user': args['webapp_user'],
-			'order_id': args['order_id']
+			'order_id': args['order_id'].split('-')[0]
 		})
 
 

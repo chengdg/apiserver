@@ -370,7 +370,7 @@ class Order(business_model.Model):
 				order_id = '{}-{}'.format(self.order_id, str(self.edit_money).replace('.','').replace('-',''))
 			else:
 				order_id = self.order_id
-
+			pay_info['final_price'] = self.final_price
 			pay_info['is_status_not'] = True
 			pay_info['order_id'] = order_id
 			pay_info['woid'] = self.context['webapp_owner'].id
@@ -380,7 +380,12 @@ class Order(business_model.Model):
 
 
 	def wx_package_pay_module(self,version):
-		total_fee = int(Decimal(str(self.final_price)) * 100)
+		wx_package_info ={}
+		wx_package_info['total_fee'] = int(Decimal(str(self.final_price)) * 100)
+		wx_package_info['woid'] = self.context['webapp_owner'].id
+
+		product_ids = [r.product_id for r in mall_models.OrderHasProduct.select().dj_where(order_id=order.id)]
+		product_names = ','.join([product.name for product in Product.objects.filter(id__in=product_ids)])
 		if version == 0:
 			pass
 

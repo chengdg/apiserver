@@ -353,6 +353,26 @@ class Order(business_model.Model):
 		else:
 			return {}
 
+	@property
+	def pay_info_for_pay_module(self):
+		if self.status == mall_models.ORDER_STATUS_NOT:
+			pay_interface = PayInterface.from_type({
+				"webapp_owner": self.context['webapp_owner'],
+				"pay_interface_type": self.pay_interface_type
+			})
+			pay_info = pay_interface.get_order_pay_info_for_pay_module(self)
+
+			if self.edit_money:
+				order_id = '{}-{}'.format(self.order_id, str(self.edit_money).replace('.','').replace('-',''))
+			else:
+				order_id = self.order_id
+
+			pay_info['is_status_not'] = True
+			pay_info['order_id'] = order_id
+			return pay_info
+		else:
+			return {'is_status_not': False}
+
 
 	@cached_context_property
 	def latest_express_detail(self):

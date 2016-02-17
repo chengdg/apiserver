@@ -18,7 +18,8 @@ from core.cache import utils as cache_util
 from db.mall import models as mall_models
 #import resource
 from core.watchdog.utils import watchdog_alert
-from business import model as business_model 
+from business import model as business_model
+from db.account import weixin_models as weixin_user_models
 from business.mall.product import Product
 import settings
 from business.decorator import cached_context_property
@@ -152,6 +153,32 @@ class PayInterface(business_model.Model):
 			# 	interface['id'])
 		else:
 			return ''
+
+
+	def get_order_pay_info_for_pay_module(self,order):
+		interface = self.context['interface']
+		interface_type = interface['type']
+		webapp_owner_id = self.context['webapp_owner'].id
+
+		if interface_type == mall_models.PAY_INTERFACE_WEIXIN_PAY:
+			try:
+				auth_appid = weixin_user_models.ComponentAuthedAppid.select().dj_where(user_id=webapp_owner_id)[0]
+				component_info = weixin_user_models.ComponentAuthedAppidInfo.select().dj_where(auth_appid=auth_appid)[0]
+				component_appid = component_info.app_id
+			except:
+				component_appid = ''
+
+			return {
+				'pay_interface_related_config_id': self.related_config_id,
+				'pay_interface_type': interface_type,
+				'pay_version': self.pay_config['pay_version'],
+				'component_appid': component_appid
+			}
+		elif mall_models.PAY_INTERFACE_ALIPAY == interface_type:
+			return {}
+		else:
+			return {}
+
 
 	@cached_context_property
 	def pay_config(self):

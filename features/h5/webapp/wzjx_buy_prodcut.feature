@@ -1,3 +1,4 @@
+# watcher: fengxuejing@weizoom.com,benchi@weizoom.com
 # __author__ : "冯雪静"
 #微众精选：手机端购买
 Feature: 购买商品

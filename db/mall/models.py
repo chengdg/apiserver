@@ -1151,9 +1151,21 @@ class UserWeixinPayOrderConfig(models.Model):
 
 
 
+#===============================================================================
+# UserAlipayOrderConfig : 支付宝支付配置信息
+#===============================================================================
+class UserAlipayOrderConfig(models.Model):
+	owner = models.ForeignKey(User)
+	partner = models.CharField(max_length=32, verbose_name='合作身份者ID，以2088开头由16位纯数字组成的字符串')
+	key = models.CharField(max_length=32, verbose_name='交易安全检验码，由数字和字母组成的32位字符串')
+	private_key = models.CharField(max_length=1024, blank=True, null=True, verbose_name='商户的私钥')
+	ali_public_key = models.CharField(max_length=1024, blank=True, null=True, verbose_name='支付宝的公钥')
+	input_charset = models.CharField(max_length=8, default='utf-8', verbose_name='字符编码格式 目前支持utf-8')
+	sign_type = models.CharField(max_length=8, default='MD5', verbose_name='签名方式')
+	seller_email = models.CharField(max_length=64, blank=True)
 
-
-
+	class Meta(object):
+		db_table = 'account_alipay_order_config'
 
 
 
@@ -1413,6 +1425,7 @@ class Order(models.Model):
 	supplier = models.IntegerField(default=0) # 订单供货商，用于微众精选拆单
 	is_100 = models.BooleanField(default=True) # 是否是快递100能够查询的快递
 	delivery_time = models.CharField(max_length=50, default='')  # 配送时间字符串
+	is_first_order = models.BooleanField(default=False) # 是否是用户的首单
 
 	class Meta(object):
 		db_table = 'mall_order'

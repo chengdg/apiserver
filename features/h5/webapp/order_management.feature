@@ -36,7 +36,7 @@ Background:
 		"""
 	And bill关注jobs的公众号
 
-@mall3 @mall2 @mall.webapp @mall.pay_order @p1 @duhao
+@mall3 @mall2 @mall.webapp @mall.pay_order @p1 @duhao @XXXX
 Scenario: 1 bill在下单购买jobs的商品后，使用货到付款进行支付，支付后
 	1. bill的订单中变为 待发货
 	2. jobs在后台看到订单变为待发货

@@ -115,6 +115,7 @@ class Order(business_model.Model):
 
 		'weizoom_card_money',
 		'delivery_time', # 配送时间字符串
+		'is_first_order'
 	)
 
 	@staticmethod
@@ -351,6 +352,66 @@ class Order(business_model.Model):
 			return pay_interface.get_pay_url_info_for_order(self)
 		else:
 			return {}
+
+
+	def pay_info_for_pay_module(self):
+		"""
+		用于pay模块的订单支付信息
+		@return:
+		"""
+		if self.status == mall_models.ORDER_STATUS_NOT:
+			pay_interface = PayInterface.from_type({
+				"webapp_owner": self.context['webapp_owner'],
+				"pay_interface_type": self.pay_interface_type
+			})
+			pay_info = pay_interface.get_order_pay_info_for_pay_module(self)
+
+			if self.edit_money:
+				order_id = '{}-{}'.format(self.order_id, str(self.edit_money).replace('.','').replace('-',''))
+			else:
+				order_id = self.order_id
+			pay_info['final_price'] = self.final_price
+			pay_info['is_status_not'] = True
+			pay_info['order_id'] = order_id
+			pay_info['woid'] = self.context['webapp_owner'].id
+			return pay_info
+		else:
+			return {'is_status_not': False}
+
+
+	def wx_package_for_pay_module(self):
+		wx_package_info ={}
+		wx_package_info['total_fee'] = int(Decimal(str(self.final_price)) * 100)
+		wx_package_info['woid'] = self.context['webapp_owner'].id
+
+		product_ids = [r.product_id for r in mall_models.OrderHasProduct.select().dj_where(order_id=self.id)]
+		product_names = ','.join([product.name for product in mall_models.Product.select().dj_where(id__in=product_ids)])
+		if len(product_names) > 45:
+			product_names = product_names[:45]
+		else:
+			product_names = product_names
+		wx_package_info['product_names'] = product_names
+
+		user_profile = accout_models.UserProfile.select().dj_where(user_id=self.context['webapp_owner'].id).first()
+
+
+		if user_profile.host_name and len(user_profile.host_name.strip()) > 0:
+			user_profile_host = user_profile.host_name
+		else:
+			# 临时处理，需要切换到apiserver
+			user_profile_host = settings.WEAPP_DOMAIN
+
+		wx_package_info['user_profile_host'] = user_profile_host
+
+		pay_interface = PayInterface.from_type({
+			"webapp_owner": self.context['webapp_owner'],
+			"pay_interface_type": self.pay_interface_type
+		})
+
+		wx_package = pay_interface.wx_package_for_pay_module()
+
+		wx_package_info.update(wx_package)
+		return wx_package_info
 
 
 	@cached_context_property
@@ -694,6 +755,10 @@ class Order(business_model.Model):
 			self.status = mall_models.ORDER_STATUS_PAYED_NOT_SHIP
 			self.pay_interface_type = pay_interface_type
 
+			# 更新首单信息--2016-02-01 by Eugene
+			if mall_models.Order.select().dj_where(webapp_id=self.webapp_id, webapp_user_id=self.webapp_user_id, is_first_order=True).count() == 0:
+				mall_models.Order.update(is_first_order=True).dj_where(order_id=self.order_id).execute()
+
 			# 处理销量
 			products = self.products
 
@@ -759,6 +824,8 @@ class Order(business_model.Model):
 		if self.origin_order_id == mall_models.ORIGIN_ORDER:
 			# 此订单为主订单。更新其子订单也为“取消状态”
 			mall_models.Order.update(status=mall_models.ORDER_STATUS_CANCEL).dj_where(origin_order_id=self.id).execute()
+
+		# TODO:更新首单的信息(现在手机端只有在未支付的情况下才能取消订单，暂时不需要更新首单信息)
 
 		# TODO: 发出cancel_order事件
 		self.__after_update_status('cancel')

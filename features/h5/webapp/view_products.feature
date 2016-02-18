@@ -1,3 +1,4 @@
+# watcher: zhaolei@weizoom.com,fengxuejing@weizoom.com,benchi@weizoom.com
 #editor 赵磊 2015.11.25代码重构
 
 Feature: 在webapp中浏览商品列表

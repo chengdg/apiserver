@@ -169,7 +169,7 @@ class PayInterface(business_model.Model):
 			try:
 				auth_appid = weixin_user_models.ComponentAuthedAppid.select().dj_where(user_id=webapp_owner_id)[0]
 				component_info = weixin_user_models.ComponentAuthedAppidInfo.select().dj_where(auth_appid=auth_appid)[0]
-				component_appid = component_info.app_id
+				component_appid = component_info.appid
 			except:
 				component_appid = ''
 

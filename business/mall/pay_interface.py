@@ -222,8 +222,9 @@ class PayInterface(business_model.Model):
 		elif pay_version == mall_models.V3:
 			package_info = {
 				'pay_r_id': pay_config['id'],
-				'app_id': pay_config['partner_id'],
-				'mch_id': pay_config['partner_key']
+				'app_id': pay_config['app_id'],
+				'mch_id': pay_config['partner_id'],
+				'partner_key': pay_config['partner_key']
 			}
 		else:
 			package_info = {}

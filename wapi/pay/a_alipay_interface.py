@@ -4,12 +4,12 @@ from wapi.decorators import param_required
 from business.mall.order import Order
 
 
-class AWXPayInterface(api_resource.ApiResource):
+class AAliPayInterface(api_resource.ApiResource):
 	"""
 	获取订单微信支付的参数信息
 	"""
 	app = 'pay'
-	resource = 'wxpay_interface'
+	resource = 'alipay_interface'
 
 	@param_required(['order_id'])
 	def get(args):

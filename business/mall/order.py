@@ -355,7 +355,7 @@ class Order(business_model.Model):
 			return {}
 
 
-	def pay_info_for_pay_module(self):
+	def pay_info_for_pay_module(self,pay_interface_type):
 		"""
 		用于pay模块的订单支付信息
 		@return:
@@ -363,7 +363,7 @@ class Order(business_model.Model):
 		if self.status == mall_models.ORDER_STATUS_NOT:
 			pay_interface = PayInterface.from_type({
 				"webapp_owner": self.context['webapp_owner'],
-				"pay_interface_type": self.pay_interface_type
+				"pay_interface_type": pay_interface_type
 			})
 			pay_info = pay_interface.get_order_pay_info_for_pay_module(self)
 

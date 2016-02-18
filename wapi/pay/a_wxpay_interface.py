@@ -3,6 +3,7 @@
 from core import api_resource
 from wapi.decorators import param_required
 from business.mall.order import Order
+import db.mall.models as mall_models
 
 
 class AWXPayInterface(api_resource.ApiResource):
@@ -26,7 +27,7 @@ class AWXPayInterface(api_resource.ApiResource):
 			'order_id': args['order_id']
 		})
 
-		pay_info = order.pay_info_for_pay_module()
+		pay_info = order.pay_info_for_pay_module(pay_interface_type=mall_models.PAY_INTERFACE_WEIXIN_PAY)
 		return pay_info
 
 

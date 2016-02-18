@@ -167,9 +167,10 @@ class PayInterface(business_model.Model):
 
 		if interface_type == mall_models.PAY_INTERFACE_WEIXIN_PAY:
 			try:
-				auth_appid = weixin_user_models.ComponentAuthedAppid.select().dj_where(user_id=webapp_owner_id)[0]
-				component_info = weixin_user_models.ComponentAuthedAppidInfo.select().dj_where(auth_appid=auth_appid)[0]
-				component_appid = component_info.appid
+				component_authed_appid = weixin_user_models.ComponentAuthedAppid.select().dj_where(user_id=webapp_owner_id)[0]
+				component_info = component_authed_appid.component_info
+				component_appid = component_info.app_id
+
 			except:
 				component_appid = ''
 

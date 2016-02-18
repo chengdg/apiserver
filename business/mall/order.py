@@ -374,6 +374,7 @@ class Order(business_model.Model):
 			pay_info['final_price'] = self.final_price
 			pay_info['is_status_not'] = True
 			pay_info['order_id'] = order_id
+			pay_info['order_dot_id'] = self.id
 			pay_info['woid'] = self.context['webapp_owner'].id
 			return pay_info
 		else:

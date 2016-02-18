@@ -24,6 +24,7 @@ from features.util.bdd_util import set_bdd_mock
 from services.record_order_status_log_service.task import record_order_status_log
 from services.send_template_message_service.task import send_template_message
 from services.update_product_sale_service.task import update_product_sale
+from utils.mysql_str_util import filter_invalid_str
 from utils.regional_util import get_str_value_by_string_ids
 
 #import settings
@@ -617,7 +618,11 @@ class Order(business_model.Model):
 		db_model.area = self.ship_area
 		db_model.bill_type = self.bill_type
 		db_model.bill = self.bill
-		db_model.customer_message = self.customer_message
+		
+		# 过滤MySQL utf-8不能存储的字符
+		customer_message = filter_invalid_str(self.customer_message)
+		db_model.customer_message = customer_message
+
 		db_model.type = self.type
 		db_model.pay_interface_type = self.pay_interface_type
 		db_model.order_id = self.order_id

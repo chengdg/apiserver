@@ -24,6 +24,7 @@ from features.util.bdd_util import set_bdd_mock
 from services.record_order_status_log_service.task import record_order_status_log
 from services.send_template_message_service.task import send_template_message
 from services.update_product_sale_service.task import update_product_sale
+from utils.mysql_str_util import filter_invalid_str
 from utils.regional_util import get_str_value_by_string_ids
 
 #import settings
@@ -354,7 +355,7 @@ class Order(business_model.Model):
 			return {}
 
 
-	def pay_info_for_pay_module(self):
+	def pay_info_for_pay_module(self,pay_interface_type):
 		"""
 		用于pay模块的订单支付信息
 		@return:
@@ -362,7 +363,7 @@ class Order(business_model.Model):
 		if self.status == mall_models.ORDER_STATUS_NOT:
 			pay_interface = PayInterface.from_type({
 				"webapp_owner": self.context['webapp_owner'],
-				"pay_interface_type": self.pay_interface_type
+				"pay_interface_type": pay_interface_type
 			})
 			pay_info = pay_interface.get_order_pay_info_for_pay_module(self)
 
@@ -373,6 +374,7 @@ class Order(business_model.Model):
 			pay_info['final_price'] = self.final_price
 			pay_info['is_status_not'] = True
 			pay_info['order_id'] = order_id
+			pay_info['order_dot_id'] = self.id
 			pay_info['woid'] = self.context['webapp_owner'].id
 			return pay_info
 		else:
@@ -617,7 +619,11 @@ class Order(business_model.Model):
 		db_model.area = self.ship_area
 		db_model.bill_type = self.bill_type
 		db_model.bill = self.bill
-		db_model.customer_message = self.customer_message
+		
+		# 过滤MySQL utf-8不能存储的字符
+		customer_message = filter_invalid_str(self.customer_message)
+		db_model.customer_message = customer_message
+
 		db_model.type = self.type
 		db_model.pay_interface_type = self.pay_interface_type
 		db_model.order_id = self.order_id

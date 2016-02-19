@@ -12,6 +12,7 @@ import uuid
 import time
 import random
 
+from core.exceptionutil import unicode_full_stack
 from wapi.decorators import param_required
 #from wapi import wapi_utils
 from core.cache import utils as cache_util
@@ -66,9 +67,9 @@ class PayInterface(business_model.Model):
 		#print '>>>>>>>>>>>pay_interface_type:',pay_interface_type,'>>>>>>>>>>>webapp_owner.pay_interfaces>>>>', webapp_owner.pay_interfaces
 		try:
 			if pay_interface_type != None:
-				self.context['interface'] = next(interface for interface in webapp_owner.pay_interfaces if interface['type'] == pay_interface_type)
+				self.context['interface'] = next(interface for interface in webapp_owner.all_pay_interfaces if interface['type'] == pay_interface_type)
 			elif interface_id:
-				self.context['interface'] = next(interface for interface in webapp_owner.pay_interfaces if interface['id'] == interface_id)
+				self.context['interface'] = next(interface for interface in webapp_owner.all_pay_interfaces if interface['id'] == interface_id)
 
 			interface = self.context['interface']
 			self.type = interface['type']

@@ -176,6 +176,10 @@ class OrderProducts(business_model.Model):
 				#将premium_product转换为order product
 				promotion_result = json.loads(promotion.promotion_result_json)
 				promotion_result_version = promotion_result.get('version', '0')
+
+				# 兼容weapp少量遗留订单产生错误数据，使得手机端和后台显示一致
+				if not promotion_result.get('premium_products'):
+					continue
 				for premium_product in promotion_result['premium_products']:
 					premium_order_product = OrderProduct(self.context['webapp_owner'], self.context['webapp_user'])
 					premium_order_product.name = premium_product['name']

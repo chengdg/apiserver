@@ -143,7 +143,6 @@ class WebAppOwnerInfo(business_model.Model):
 				all_pay_interfaces = [pay_interface.to_dict() for pay_interface in mall_models.PayInterface.select().dj_where(owner_id=webapp_owner_id)]
 				pay_interfaces = filter(lambda x: x['is_active'], all_pay_interfaces)
 
-				print('-------3',all_pay_interfaces)
 			except:
 				error_msg = u"获得user('{}')对应的PayInterface构建cache失败, cause:\n{}"\
 						.format(webapp_owner_id, unicode_full_stack())

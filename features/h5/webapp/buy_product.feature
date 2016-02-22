@@ -1,5 +1,6 @@
 # watcher: fengxuejing@weizoom.com, benchi@weizoom.com
 # __author__ : "冯雪静"
+#editor：王丽 2016-02-22
 @func:webapp.modules.mall.views.list_products
 Feature: 在webapp中购买商品
 	bill能在webapp中购买jobs添加的"商品"
@@ -21,6 +22,8 @@ Background:
 	And jobs已添加支付方式:weapp
 		"""
 		[{
+			"type": "支付宝"
+		},{
 			"type": "微众卡支付"
 		}, {
 			"type": "货到付款"
@@ -695,3 +698,272 @@ Scenario:13 会员购买的商品同时参加多个活动，然后删除商品
 		}
 		"""
 	Then bill获得'商品2'错误提示'商品已删除'
+
+# __author__ :王丽 2016-02-22
+@mall.webapp @robert.wip
+Scenario:14 会员购买的商品未支付，订单中选择的支付方式被停用，订单列表、订单详情，和订单支付的处理
+	#会员购买的商品未支付，订单中选择的支付方式被停用，订单列表、订单详情可以正确浏览
+	#会员购买的商品未支付，订单中选择的支付方式被停用，支付此订单时，跳转到支付方式列表
+
+	#微信支付
+		When bill访问jobs的webapp
+		And bill购买jobs的商品
+			"""
+			{
+				"order_ID":"0001",
+				"ship_name": "bill",
+				"ship_tel": "13811223344",
+				"ship_area": "北京市 北京市 海淀区",
+				"ship_address": "泰兴大厦",
+				"pay_type":"微信支付",
+				"products": [{
+					"name": "商品1",
+					"count": 2
+				}]
+			}
+			"""
+		Then bill成功创建订单
+			"""
+			{
+				"order_no":"0001",
+				"status": "待支付",
+				"ship_name": "bill",
+				"ship_tel": "13811223344",
+				"ship_area": "北京市 北京市 海淀区",
+				"ship_address": "泰兴大厦",
+				"final_price": 19.8,
+				"products": [{
+					"name": "商品1",
+					"price": 9.9,
+					"count": 2
+				}]
+			}
+			"""
+
+		Given jobs登录系统:weapp
+		When jobs'停用'支付方式'微信支付':weapp
+
+		When bill访问jobs的webapp
+		And bill访问个人中心
+		Then bill查看个人中心'待支付'订单列表
+			"""
+			[{
+				"status": "待支付",
+				"created_at": "今天",
+				"products": [{
+					"name": "商品1"
+				}],
+				"counts": 2,
+				"final_price": 19.8,
+				 "pay_info": {
+					"is_active": false,
+				}
+			}]
+			""" 
+		Then bill查看个人中心'全部'订单列表
+			"""
+			[{
+				"status": "待支付",
+				"created_at": "今天",
+				"products": [{
+					"name": "商品1"
+				}],
+				"counts": 2,
+				"final_price": 19.8,
+				 "pay_info": {
+					"is_active": false,
+				}
+			}]
+			"""
+
+		When bill使用支付方式'货到付款'进行支付订单'0001'
+
+		When bill访问个人中心
+		Then bill查看个人中心'待发货'订单列表
+			"""
+			[{
+				"status": "待发货",
+				"created_at": "今天",
+				"products": [{
+					"name": "商品1"
+				}],
+				"counts": 2,
+				"final_price": 19.8
+			}]
+			""" 
+
+	#支付宝
+		When bill访问jobs的webapp
+		And bill购买jobs的商品
+			"""
+			{
+				"order_ID":"0002",
+				"ship_name": "bill",
+				"ship_tel": "13811223344",
+				"ship_area": "北京市 北京市 海淀区",
+				"ship_address": "泰兴大厦",
+				"pay_type":"支付宝",
+				"products": [{
+					"name": "商品1",
+					"count": 2
+				}]
+			}
+			"""
+		Then bill成功创建订单
+			"""
+			{
+				"order_no":"0002",
+				"status": "待支付",
+				"ship_name": "bill",
+				"ship_tel": "13811223344",
+				"ship_area": "北京市 北京市 海淀区",
+				"ship_address": "泰兴大厦",
+				"final_price": 19.8,
+				"products": [{
+					"name": "商品1",
+					"price": 9.9,
+					"count": 2
+				}]
+			}
+			"""
+
+		Given jobs登录系统:weapp
+		When jobs'启用'支付方式'微信支付':weapp
+		When jobs'停用'支付方式'支付宝':weapp
+
+		When bill访问jobs的webapp
+		And bill访问个人中心
+		Then bill查看个人中心'待支付'订单列表
+			"""
+			[{
+				"status": "待支付",
+				"created_at": "今天",
+				"products": [{
+					"name": "商品1"
+				}],
+				"counts": 2,
+				"final_price": 19.8,
+				 "pay_info": {
+					"is_active": false,
+				}
+			}]
+			""" 
+		Then bill查看个人中心'全部'订单列表
+			"""
+			[{
+				"status": "待支付",
+				"created_at": "今天",
+				"products": [{
+					"name": "商品1"
+				}],
+				"counts": 2,
+				"final_price": 19.8,
+				 "pay_info": {
+					"is_active": false,
+				}
+			}]
+			"""
+
+		When bill使用支付方式'货到付款'进行支付订单'0002'
+
+		When bill访问个人中心
+		Then bill查看个人中心'待发货'订单列表
+			"""
+			[{
+				"status": "待发货",
+				"created_at": "今天",
+				"products": [{
+					"name": "商品1"
+				}],
+				"counts": 2,
+				"final_price": 19.8
+			}]
+			""" 
+
+	#货到付款
+		When bill访问jobs的webapp
+		And bill购买jobs的商品
+			"""
+			{
+				"order_ID":"0003",
+				"ship_name": "bill",
+				"ship_tel": "13811223344",
+				"ship_area": "北京市 北京市 海淀区",
+				"ship_address": "泰兴大厦",
+				"pay_type":"支付宝",
+				"products": [{
+					"name": "商品1",
+					"count": 2
+				}]
+			}
+			"""
+		Then bill成功创建订单
+			"""
+			{
+				"order_no":"0003",
+				"status": "待支付",
+				"ship_name": "bill",
+				"ship_tel": "13811223344",
+				"ship_area": "北京市 北京市 海淀区",
+				"ship_address": "泰兴大厦",
+				"final_price": 19.8,
+				"products": [{
+					"name": "商品1",
+					"price": 9.9,
+					"count": 2
+				}]
+			}
+			"""
+
+		Given jobs登录系统:weapp
+		When jobs'启用'支付方式'支付宝':weapp
+		When jobs'停用'支付方式'货到付款':weapp
+
+		When bill访问jobs的webapp
+		And bill访问个人中心
+		Then bill查看个人中心'待支付'订单列表
+			"""
+			[{
+				"status": "待支付",
+				"created_at": "今天",
+				"products": [{
+					"name": "商品1"
+				}],
+				"counts": 2,
+				"final_price": 19.8,
+				 "pay_info": {
+					"is_active": false,
+				}
+			}]
+			""" 
+		Then bill查看个人中心'全部'订单列表
+			"""
+			[{
+				"status": "待支付",
+				"created_at": "今天",
+				"products": [{
+					"name": "商品1"
+				}],
+				"counts": 2,
+				"final_price": 19.8,
+				 "pay_info": {
+					"is_active": false,
+				}
+			}]
+			"""
+
+		When bill使用支付方式'微信支付'进行支付订单'0003'
+
+		When bill访问个人中心
+		Then bill查看个人中心'待发货'订单列表
+			"""
+			[{
+				"status": "待发货",
+				"created_at": "今天",
+				"products": [{
+					"name": "商品1"
+				}],
+				"counts": 2,
+				"final_price": 19.8
+			}]
+			""" 

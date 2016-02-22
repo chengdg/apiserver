@@ -105,7 +105,8 @@ class PayInterface(business_model.Model):
 				'woid': webapp_owner_id,
 				'order_id': order.order_id,
 				'pay_interface_type': mall_models.PAY_INTERFACE_ALIPAY,
-				'pay_url':  '/mall/alipay/?woid={}&order_id={}&related_config_id={}'.format(webapp_owner_id, order.order_id, interface['related_config_id'])
+				'pay_url':  '/mall/alipay/?woid={}&order_id={}&related_config_id={}'.format(webapp_owner_id, order.order_id, interface['related_config_id']),
+				'is_active': interface['is_active']
 			}
 
 		elif mall_models.PAY_INTERFACE_TENPAY == interface_type:
@@ -134,7 +135,8 @@ class PayInterface(business_model.Model):
 				'type': 'cod',
 				'woid': webapp_owner_id,
 				'order_id': order.order_id,
-				'pay_interface_type': mall_models.PAY_INTERFACE_COD
+				'pay_interface_type': mall_models.PAY_INTERFACE_COD,
+				'is_active': interface['is_active']
 			}
 			# return '/wapi/mall/pay_result/?woid={}&pay_interface_type={}&order_id={}'.format(
 			# 	webapp_owner_id,
@@ -146,7 +148,8 @@ class PayInterface(business_model.Model):
 				'woid': webapp_owner_id,
 				'order_id': order.order_id,
 				'pay_id': interface['id'],
-				'showwxpaytitle': 1
+				'showwxpaytitle': 1,
+				'is_active': interface['is_active']
 			}
 			# return '/wapi/mall/wxpay/?woid={}&order_id={}&pay_id={}&showwxpaytitle=1'.format(
 			# 	webapp_owner_id,

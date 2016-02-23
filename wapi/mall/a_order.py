@@ -64,7 +64,6 @@ class AOrder(api_resource.ApiResource):
 
 		pay_url_info = None
 		if order:
-			print('---------111',order.status_text,order.status)
 			if purchase_info.used_pay_interface_type != '-1':
 				try:
 					pay_interface = PayInterface.from_type({
@@ -99,7 +98,6 @@ class AOrder(api_resource.ApiResource):
 			pass
 
 
-		print('---------222222222',order.status_text,order.status)
 		return data
 
 	@param_required(['order_id', 'action'])

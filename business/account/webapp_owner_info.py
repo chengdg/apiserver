@@ -38,7 +38,6 @@ class WebAppOwnerInfo(business_model.Model):
 		'global_navbar',
 		'integral_strategy_settings',
 		'pay_interfaces',
-		'all_pay_interfaces',
 		'is_weizoom_card_permission',
 		'qrcode_img',
 		'member2grade',
@@ -140,14 +139,11 @@ class WebAppOwnerInfo(business_model.Model):
 
 			#pay interface
 			try:
-				all_pay_interfaces = [pay_interface.to_dict() for pay_interface in mall_models.PayInterface.select().dj_where(owner_id=webapp_owner_id)]
-				pay_interfaces = filter(lambda x: x['is_active'], all_pay_interfaces)
-
+				pay_interfaces = [pay_interface.to_dict() for pay_interface in mall_models.PayInterface.select().dj_where(owner_id=webapp_owner_id) if pay_interface.is_active]
 			except:
 				error_msg = u"获得user('{}')对应的PayInterface构建cache失败, cause:\n{}"\
 						.format(webapp_owner_id, unicode_full_stack())
 				watchdog_error(error_msg, user_id=webapp_owner_id, noraise=True)
-				all_pay_interfaces = []
 				pay_interfaces = []
 
 			account_has_weizoom_card_permission = account_models.AccountHasWeizoomCardPermissions.select().dj_where(owner_id=webapp_owner_id).first()
@@ -198,7 +194,6 @@ class WebAppOwnerInfo(business_model.Model):
 					'integral_strategy_settings': integral_strategy_settings.to_dict(),
 					'member_grades': member_grades,
 					'pay_interfaces': pay_interfaces,
-					'all_pay_interfaces': all_pay_interfaces,
 					'has_permission': has_permission,
 					'operation_settings': operation_settings.to_dict(),
 					# 'global_navbar': {
@@ -271,7 +266,6 @@ class WebAppOwnerInfo(business_model.Model):
 		obj.member2grade = dict([(grade.id, grade) for grade in obj.member_grades])
 		#obj.pay_interfaces = mall_models.PayInterface.from_list(data['pay_interfaces'])
 		obj.pay_interfaces = data['pay_interfaces']
-		obj.all_pay_interfaces = data['all_pay_interfaces']
 		obj.is_weizoom_card_permission = data['has_permission']
 		obj.operation_settings = account_models.OperationSettings.from_dict(data['operation_settings'])
 		obj.red_envelope = red_envelope

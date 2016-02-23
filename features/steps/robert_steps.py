@@ -906,7 +906,6 @@ def step_visit_personal_orders(context, webapp_user_name, order_type):
 		order['status'] = mall_models.ORDERSTATUS2MOBILETEXT[actual_order['status']]
 		order['pay_interface'] = mall_models.PAYTYPE2NAME[actual_order['pay_interface_type']]
 		order['created_at'] = actual_order['created_at']
-		order['pay_info'] = actual_order['pay_info']
 		# BBD中购买的时间再未指定购买时间的情况下只能为今天
 		created_at = datetime.datetime.strptime(actual_order['created_at'], '%Y.%m.%d %H:%M')
 		if created_at.date() == datetime.date.today():
@@ -947,9 +946,4 @@ def step_impl(context, webapp_user_name, pay_interface_name):
 def step_impl(context, webapp_user_name, pay_interface_name, order_no, payment_time):
 	context.created_order_id = order_no
 	context.order_payment_time = payment_time
-	context.execute_steps(u"when %s使用支付方式'%s'进行支付" % (webapp_user_name, pay_interface_name))
-
-@when(u"{webapp_user_name}使用支付方式'{pay_interface_name}'进行支付订单'{order_no}'")
-def step_impl(context, webapp_user_name, pay_interface_name, order_no):
-	context.created_order_id = order_no
 	context.execute_steps(u"when %s使用支付方式'%s'进行支付" % (webapp_user_name, pay_interface_name))

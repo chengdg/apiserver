@@ -400,13 +400,25 @@ def step_impl(context, webapp_user_name):
 
 @then(u"{webapp_user_name}获得订单支付结果")
 def step_impl(context, webapp_user_name):
-	if 'order' in context.response.data:
-		actual = context.response.data['order']
-		actual['pay_type'] = mall_models.PAYTYPE2NAME[actual['pay_interface_type']]
-	else:
-		actual = context.response.data
-		actual['pay_type'] = mall_models.PAYTYPE2NAME[actual['pay_url_info']['pay_interface_type']]
 	expected = json.loads(context.text)
+	url = '/wapi/pay/pay_result/?order_id=%s' % expected['order_id']
+	actual = context.client.get(bdd_util.nginx(url), follow=True).data
+	order_info = actual['order']
+
+	actual = {
+		"order_id": order_info['order_id'],
+		"final_price": order_info['final_price'],
+		"pay_type": order_info['pay_interface_name']
+
+	}
+
+	# if 'order' in context.response.data:
+	# 	actual = context.response.data['order']
+	# 	actual['pay_type'] = mall_models.PAYTYPE2NAME[actual['pay_interface_type']]
+	# else:
+	# 	actual = context.response.data
+	# 	print('-------------------------1',actual)
+	# 	actual['pay_type'] = mall_models.PAYTYPE2NAME[actual['pay_url_info']['pay_interface_type']]
 	bdd_util.assert_dict(expected, actual)
 
 @then(u"{webapp_usr_name}手机端获取订单'{order_id}'")

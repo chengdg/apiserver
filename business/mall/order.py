@@ -407,7 +407,7 @@ class Order(business_model.Model):
 
 		pay_interface = PayInterface.from_type({
 			"webapp_owner": self.context['webapp_owner'],
-			"pay_interface_type": mall_models.PAY_INTERFACE_WEIXIN_PAY
+			"pay_interface_type": self.pay_interface_type
 		})
 
 		wx_package = pay_interface.wx_package_for_pay_module()

@@ -201,7 +201,7 @@ class PayInterface(business_model.Model):
 				'input_charset': pay_config['input_charset'],
 				'sign_type': pay_config['sign_type'],
 				'seller_email': pay_config['seller_email'],
-				'user_profile_host': user_profile_host
+				'user_profile_host': settings.WEAPP_DOMAIN
 			}
 		else:
 			return {}

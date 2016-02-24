@@ -403,7 +403,7 @@ class Order(business_model.Model):
 			# 临时处理，需要切换到apiserver
 			user_profile_host = settings.WEAPP_DOMAIN
 
-		wx_package_info['user_profile_host'] = user_profile_host
+		wx_package_info['user_profile_host'] = settings.WEAPP_DOMAIN
 
 		pay_interface = PayInterface.from_type({
 			"webapp_owner": self.context['webapp_owner'],

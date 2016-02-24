@@ -2051,3 +2051,20 @@ class MallOrderFromSharedRecord(models.Model):
 
 	class Meta(object):
 		db_table = "mall_order_from_shared_record"
+
+
+class WeizoomHasMallProductRelation(models.Model):
+	owner = models.ForeignKey(User) # 微众系列的商户
+	mall_id = models.IntegerField() # 供货商的owner_id
+	mall_product_id = models.IntegerField() # 供货商商品
+	weizoom_product_id = models.IntegerField() # 微众系列上架供货商的商品
+	is_updated = models.BooleanField(default=False) # 是否需要更新
+	is_deleted = models.BooleanField(default=False) # 供货商是否下架了商品
+	sync_time = models.DateTimeField(auto_now_add=True) # 微众系列同步商品的时间
+	delete_time = models.DateTimeField(auto_now=True) # 商品的失效时间
+	created_at = models.DateTimeField(auto_now_add=True) # 添加时间
+
+	class Meta(object):
+		verbose_name = "微众系列同步其他商户商品的关系记录表"
+		verbose_name_plural = "微众系列同步其他商户商品的关系"
+		db_table = "mall_weizoom_has_mall_product_relation"

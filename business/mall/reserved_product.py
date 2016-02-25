@@ -78,7 +78,8 @@ class ReservedProduct(business_model.Model):
 		'integral_sale',
 		'active_integral_sale_rule',
 		'is_enable_bill',
-		'is_delivery' # 是否勾选配送时间,
+		'is_delivery', # 是否勾选配送时间,
+		'purchase_price'
 	)
 
 	@staticmethod
@@ -135,6 +136,7 @@ class ReservedProduct(business_model.Model):
 		self.is_use_cod_pay_interface = product.is_use_cod_pay_interface
 		self.min_limit = product.min_limit
 		self.is_enable_bill = product.is_enable_bill
+		self.purchase_price = product.purchase_price
 
 		self.model_name = product_info['model_name']
 		self.expected_promotion_id = product_info.get('expected_promotion_id', 0)

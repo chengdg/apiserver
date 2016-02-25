@@ -221,7 +221,7 @@ class Order(business_model.Model):
 
 		return products
 
-	@property
+	@cached_context_property
 	def sub_orders(self):
 		"""拆单后的子订单信息
 		"""
@@ -247,10 +247,10 @@ class Order(business_model.Model):
 					if sub_order.supplier and product.supplier == sub_order.supplier:
 						sub_order.products.append(product.to_dict())
 
-					if sub_order.supplier_user_id and product.supplier_user_id == sub_order.supplier_user_id:
+					elif sub_order.supplier_user_id and product.supplier_user_id == sub_order.supplier_user_id:
 						sub_order.products.append(product.to_dict())
-				if sub_order.products:
-					sub_orders.append(business_model.Model.to_dict(sub_order, 'products', 'latest_express_detail'))
+
+				sub_orders.append(business_model.Model.to_dict(sub_order, 'products', 'latest_express_detail'))
 
 		return sub_orders
 
@@ -701,46 +701,47 @@ class Order(business_model.Model):
 			if self.context['webapp_owner'].user_profile.webapp_type:
 				if not supplier_user_id2products.get(product.supplier_user_id):
 					supplier_user_id2products[product.supplier_user_id] = []
+					supplier_user_id2products[product.supplier_user_id].append(product)
 				else:
 					supplier_user_id2products[product.supplier_user_id].append(product)
 
 		if len(supplier_ids) > 1:
 			# 进行拆单，生成子订单
 			for supplier in supplier_ids:
-				new_order = copy.deepcopy(self.db_model)
-				new_order.id = None
-				new_order.order_id = '%s^%ss' % (self.order_id, supplier)
-				new_order.origin_order_id = self.id
-				new_order.supplier = supplier
-				new_order.save()
+				if supplier != 0:
+					new_order = copy.deepcopy(self.db_model)
+					new_order.id = None
+					new_order.order_id = '%s^%ss' % (self.order_id, supplier)
+					new_order.origin_order_id = self.id
+					new_order.supplier = supplier
+					new_order.save()
 
 		if len(supplier_user_ids) > 1:
 			# 进行拆单，生成子订单
 			for supplier_user_id in supplier_user_ids:
-				new_order = copy.deepcopy(self.db_model)
-				new_order.id = None
-				new_order.order_id = '%s^%su' % (self.order_id, supplier_user_id)
-				new_order.origin_order_id = self.id
-				new_order.supplier_user_id = supplier_user_id
-				new_order.save()
+				if supplier_user_id != 0:
+					new_order = copy.deepcopy(self.db_model)
+					new_order.id = None
+					new_order.order_id = '%s^%su' % (self.order_id, supplier_user_id)
+					new_order.origin_order_id = self.id
+					new_order.supplier_user_id = supplier_user_id
+					new_order.save()
 
 
-				for product in supplier_user_id2products[supplier_user_id]:
-					mall_models.OrderHasProduct.create(
-						order = new_order,
-						product = product.id,
-						product_name = product.name,
-						product_model_name = product.model_name,
-						number = product.purchase_count,
-						total_price = product.purchase_price * product.purchase_count,
-						price = product.purchase_price,
-						promotion_id = product.used_promotion_id,
-						promotion_money = product.promotion_saved_money,
-						grade_discounted_money=product.discount_money,
-						integral_sale_id = product.integral_sale.id if product.integral_sale else 0
-					)
-
-
+					for product in supplier_user_id2products[supplier_user_id]:
+						mall_models.OrderHasProduct.create(
+							order = new_order,
+							product = product.id,
+							product_name = product.name,
+							product_model_name = product.model_name,
+							number = product.purchase_count,
+							total_price = product.purchase_price * product.purchase_count,
+							price = product.purchase_price,
+							promotion_id = product.used_promotion_id,
+							promotion_money = product.promotion_saved_money,
+							grade_discounted_money=product.discount_money,
+							integral_sale_id = product.integral_sale.id if product.integral_sale else 0
+						)
 
 		product_groups = self.product_groups
 		#建立<order, promotion>的关系

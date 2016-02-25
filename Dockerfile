@@ -2,10 +2,9 @@
 FROM reg.weizzz.com:5000/wz/python27:1.0
 MAINTAINER victor "gaoliqi@weizoom.com"
 
-#RUN pip install -U \
-#  falcon \
-#  "peewee<2.7" \
-#  && rm -rf ~/.pip
+RUN pip install -U \
+  uwsgi \
+  && rm -rf ~/.pip
 
 COPY . /apiserver/
 

@@ -741,9 +741,9 @@ class Product(business_model.Model):
 			if self.supplier:
 				return Supplier.get_supplier_name(self.supplier)
 			# 同步的供货商
-			releation = mall_models.WeizoomHasMallProductRelation.select().dj_where(weizoom_product_id=self.id).first()
-			if releation:
-				supplier_name = account_model.UserProfile.select().dj_where(user_id=releation.mall_id).first().store_name
+			relation = mall_models.WeizoomHasMallProductRelation.select().dj_where(weizoom_product_id=self.id).first()
+			if relation:
+				supplier_name = account_model.UserProfile.select().dj_where(user_id=relation.mall_id).first().store_name
 			else:
 				supplier_name = ''
 
@@ -751,3 +751,11 @@ class Product(business_model.Model):
 		except:
 			watchdog_alert(unicode_full_stack())
 			return ''
+
+	@cached_context_property
+	def supplier_user_id(self):
+		try:
+			relation = mall_models.WeizoomHasMallProductRelation.select().dj_where(weizoom_product_id=self.id).first()
+			return relation.mall_id
+		except BaseException as e:
+			return 0

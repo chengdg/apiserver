@@ -116,7 +116,8 @@ class Order(business_model.Model):
 
 		'weizoom_card_money',
 		'delivery_time', # 配送时间字符串
-		'is_first_order'
+		'is_first_order',
+		'supplier_user_id'
 	)
 
 	@staticmethod
@@ -243,9 +244,13 @@ class Order(business_model.Model):
 						product.supplier = _product.supplier
 
 					#只要属于该子订单的商品
-					if product.supplier == sub_order.supplier:
+					if sub_order.supplier and product.supplier == sub_order.supplier:
 						sub_order.products.append(product.to_dict())
-				sub_orders.append(business_model.Model.to_dict(sub_order, 'products', 'latest_express_detail'))
+
+					if sub_order.supplier_user_id and product.supplier_user_id == sub_order.supplier_user_id:
+						sub_order.products.append(product.to_dict())
+				if sub_order.products:
+					sub_orders.append(business_model.Model.to_dict(sub_order, 'products', 'latest_express_detail'))
 
 		return sub_orders
 
@@ -655,13 +660,22 @@ class Order(business_model.Model):
 			if supplier not in supplier_ids:
 				supplier_ids.append(supplier)
 
-		if len(supplier_ids) > 1:
+		supplier_user_ids = []
+		for product in products:
+			supplier = product.supplier_user_id
+			if supplier not in supplier_user_ids:
+				supplier_user_ids.append(supplier)
+
+		if len(supplier_ids) > 1 or len(supplier_user_ids) > 1:
 			# 标记有子订单
 			db_model.origin_order_id = -1
 			self.origin_order_id = -1
-		elif supplier_ids[0] != 0:
+		elif len(supplier_ids) == 1 and supplier_ids[0] != 0:
 			self.supplier = supplier_ids[0]
 			db_model.supplier = supplier_ids[0]
+		elif len(supplier_user_ids) == 1 and supplier_user_ids[0] != 0:
+			self.supplier_user_id = supplier_user_ids[0]
+			db_model.supplier_user_id = supplier_user_ids[0]
 
 		db_model.save()
 		self.id = db_model.id
@@ -688,9 +702,19 @@ class Order(business_model.Model):
 			for supplier in supplier_ids:
 				new_order = copy.deepcopy(self.db_model)
 				new_order.id = None
-				new_order.order_id = '%s^%s' % (self.order_id, supplier)
+				new_order.order_id = '%s^%ss' % (self.order_id, supplier)
 				new_order.origin_order_id = self.id
 				new_order.supplier = supplier
+				new_order.save()
+
+		if len(supplier_user_ids) > 1:
+			# 进行拆单，生成子订单
+			for supplier_user_id in supplier_user_ids:
+				new_order = copy.deepcopy(self.db_model)
+				new_order.id = None
+				new_order.order_id = '%s^%su' % (self.order_id, supplier_user_id)
+				new_order.origin_order_id = self.id
+				new_order.supplier_user_id = supplier_user_id
 				new_order.save()
 
 		product_groups = self.product_groups

@@ -302,6 +302,13 @@ class ReservedProduct(business_model.Model):
 		"""
 		return self.context['product'].supplier
 
+	@property
+	def supplier_user_id(self):
+		"""
+		[property] 订单商品的同步供应商id
+		"""
+		return self.context['product'].supplier_user_id
+
 	def has_expected_promotion(self):
 		"""
 		判断已预订商品是否拥有预期的促销

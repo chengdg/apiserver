@@ -681,6 +681,7 @@ class Order(business_model.Model):
 		self.id = db_model.id
 		# 建立订单相关数据
 
+		supplier_user_id2products = {}
 		#建立<order, product>的关系
 		for product in products:
 			mall_models.OrderHasProduct.create(
@@ -696,6 +697,12 @@ class Order(business_model.Model):
 				grade_discounted_money=product.discount_money,
 				integral_sale_id = product.integral_sale.id if product.integral_sale else 0
 			)
+
+			if self.context['webapp_owner'].user_profile.webapp_type:
+				if not supplier_user_id2products.get(product.supplier_user_id):
+					supplier_user_id2products[product.supplier_user_id] = []
+				else:
+					supplier_user_id2products[product.supplier_user_id].append(product)
 
 		if len(supplier_ids) > 1:
 			# 进行拆单，生成子订单
@@ -716,6 +723,24 @@ class Order(business_model.Model):
 				new_order.origin_order_id = self.id
 				new_order.supplier_user_id = supplier_user_id
 				new_order.save()
+
+
+				for product in supplier_user_id2products[supplier_user_id]:
+					mall_models.OrderHasProduct.create(
+						order = new_order,
+						product = product.id,
+						product_name = product.name,
+						product_model_name = product.model_name,
+						number = product.purchase_count,
+						total_price = product.purchase_price * product.purchase_count,
+						price = product.purchase_price,
+						promotion_id = product.used_promotion_id,
+						promotion_money = product.promotion_saved_money,
+						grade_discounted_money=product.discount_money,
+						integral_sale_id = product.integral_sale.id if product.integral_sale else 0
+					)
+
+
 
 		product_groups = self.product_groups
 		#建立<order, promotion>的关系

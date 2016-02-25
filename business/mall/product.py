@@ -200,6 +200,7 @@ class Product(business_model.Model):
 		'is_deleted',
 		'is_delivery', # 是否勾选配送时间
 		# 'supplier_name' # 供货商名称
+		'purchase_price',
 	)
 
 	@staticmethod
@@ -704,6 +705,7 @@ class Product(business_model.Model):
 			'postage_type': self.postage_type, 
 			'unified_postage_money': self.unified_postage_money,
 			'is_delivery': self.is_delivery,
+			'purchase_price': self.purchase_price
 		}
 
 		if 'extras' in kwargs:
@@ -755,6 +757,8 @@ class Product(business_model.Model):
 	@cached_context_property
 	def supplier_user_id(self):
 		try:
+			if not self.context['webapp_owner'].user_profile.webapp_type:
+				return 0
 			relation = mall_models.WeizoomHasMallProductRelation.select().dj_where(weizoom_product_id=self.id).first()
 			return relation.mall_id
 		except BaseException as e:

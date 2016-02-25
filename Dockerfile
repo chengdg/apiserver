@@ -7,11 +7,11 @@ MAINTAINER victor "gaoliqi@weizoom.com"
 #  "peewee<2.7" \
 #  && rm -rf ~/.pip
 
-COPY . /weapp/api/
+COPY . /apiserver/
 
-VOLUME ["/weapp/api"]
+VOLUME ["/apiserver"]
 
-WORKDIR /weapp/api
+WORKDIR /apiserver
 
 #CMD ["/bin/bash", "/weapp/api/start.sh"]
 ENTRYPOINT ["/usr/local/bin/dumb-init", "/bin/bash", "start.sh"]

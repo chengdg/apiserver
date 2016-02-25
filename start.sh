@@ -1,5 +1,7 @@
 #!/bin/bash
 
+sleep 10
+
 uwsgi --ini apiserver.ini
 
 # loop forever

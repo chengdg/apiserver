@@ -309,6 +309,13 @@ class ReservedProduct(business_model.Model):
 		"""
 		return self.context['product'].supplier_user_id
 
+	@property
+	def supplier_name(self):
+		"""
+		[property] 订单商品的同步供应商名称
+		"""
+		return self.context['product'].supplier_name
+
 	def has_expected_promotion(self):
 		"""
 		判断已预订商品是否拥有预期的促销
@@ -341,6 +348,8 @@ class ReservedProduct(business_model.Model):
 		data['model'] = self.model.to_dict() if self.model else None
 		data['promotion'] = self.promotion.to_dict() if self.promotion else None
 		data['integral_sale'] = self.integral_sale.to_dict() if self.integral_sale else None
+		data['supplier_user_id'] = self.supplier_user_id
+		data['supplier_name'] = self.supplier_name
 		return data
 
 

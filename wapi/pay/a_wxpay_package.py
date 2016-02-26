@@ -12,7 +12,7 @@ class AWXPayPackage(api_resource.ApiResource):
 	app = 'pay'
 	resource = 'wxpay_package'
 
-	@param_required(['order_id'])
+	@param_required(['order_id', 'config'])
 	def get(args):
 		"""
 		获取订单微信支付的package参数信息
@@ -26,6 +26,6 @@ class AWXPayPackage(api_resource.ApiResource):
 			'order_id': args['order_id'].split('-')[0]
 		})
 
-		package_info = order.wx_package_for_pay_module()
+		package_info = order.wx_package_for_pay_module(config=args['config'])
 
 		return package_info

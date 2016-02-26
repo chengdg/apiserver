@@ -60,22 +60,22 @@ class AShoppingCart(api_resource.ApiResource):
 		product_groups.extend(other_promotions)
 		product_groups.extend(others)
 
-		if webapp_owner.user_profile.webapp_type:
-			#如果是自营账号，需要按添加到购物车的先后顺序排列商品，相同店铺的商品集中排列
-			temp_groups = []
-			supplier_user_id2product_datas = {}
-			supplier_user_id2max_shopping_cart_id = {}  #每个供应商最后加进购物车的id，用户排序
+		# if webapp_owner.user_profile.webapp_type:
+		# 	#如果是自营账号，需要按添加到购物车的先后顺序排列商品，相同店铺的商品集中排列
+		# 	temp_groups = []
+		# 	supplier_user_id2product_datas = {}
+		# 	supplier_user_id2max_shopping_cart_id = {}  #每个供应商最后加进购物车的id，用户排序
 
-			group_for_weizoom(supplier_user_id2product_datas, supplier_user_id2max_shopping_cart_id, flash_sales, 'flash_sales')
-			group_for_weizoom(supplier_user_id2product_datas, supplier_user_id2max_shopping_cart_id, premium_sales, 'premium_sales')
-			group_for_weizoom(supplier_user_id2product_datas, supplier_user_id2max_shopping_cart_id, other_promotions, 'other_promotions')
-			group_for_weizoom(supplier_user_id2product_datas, supplier_user_id2max_shopping_cart_id, others, '')
+		# 	group_for_weizoom(supplier_user_id2product_datas, supplier_user_id2max_shopping_cart_id, flash_sales, 'flash_sales')
+		# 	group_for_weizoom(supplier_user_id2product_datas, supplier_user_id2max_shopping_cart_id, premium_sales, 'premium_sales')
+		# 	group_for_weizoom(supplier_user_id2product_datas, supplier_user_id2max_shopping_cart_id, other_promotions, 'other_promotions')
+		# 	group_for_weizoom(supplier_user_id2product_datas, supplier_user_id2max_shopping_cart_id, others, '')
 
-			#按supplier_user_id2max_shopping_cart_id从大到小排序
-			sorted_items = sorted(supplier_user_id2max_shopping_cart_id.iteritems(), key=lambda d:d[1], reverse=True)
-			product_groups = []
-			for item in sorted_items:
-				product_groups.append(supplier_user_id2product_datas[item[0]])
+		# 	#按supplier_user_id2max_shopping_cart_id从大到小排序
+		# 	sorted_items = sorted(supplier_user_id2max_shopping_cart_id.iteritems(), key=lambda d:d[1], reverse=True)
+		# 	product_groups = []
+		# 	for item in sorted_items:
+		# 		product_groups.append(supplier_user_id2product_datas[item[0]])
 
 		#获取会员信息
 		member = webapp_user.member

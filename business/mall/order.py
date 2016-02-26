@@ -250,6 +250,10 @@ class Order(business_model.Model):
 					elif sub_order.supplier_user_id and product.supplier_user_id == sub_order.supplier_user_id:
 						sub_order.products.append(product.to_dict())
 
+					# 兼容可能的脏数据
+					elif sub_order.supplier_user_id == sub_order.supplier == product.supplier_user_id == product.supplier == 0:
+						sub_order.products.append(product.to_dict())
+
 				sub_orders.append(business_model.Model.to_dict(sub_order, 'products', 'latest_express_detail'))
 
 		return sub_orders
@@ -657,16 +661,16 @@ class Order(business_model.Model):
 		supplier_ids = []
 		for product in products:
 			supplier = product.supplier
-			if supplier not in supplier_ids:
+			if supplier and supplier not in supplier_ids:
 				supplier_ids.append(supplier)
 
 		supplier_user_ids = []
 		for product in products:
-			supplier = product.supplier_user_id
-			if supplier not in supplier_user_ids:
-				supplier_user_ids.append(supplier)
+			supplier_user_id = product.supplier_user_id
+			if supplier_user_id and supplier_user_id not in supplier_user_ids:
+				supplier_user_ids.append(supplier_user_id)
 
-		if len(supplier_ids) > 1 or len(supplier_user_ids) > 1:
+		if len(supplier_ids) + len(supplier_user_ids) > 1:
 			# 标记有子订单
 			db_model.origin_order_id = -1
 			self.origin_order_id = -1
@@ -695,7 +699,8 @@ class Order(business_model.Model):
 				promotion_id = product.used_promotion_id,
 				promotion_money = product.promotion_saved_money,
 				grade_discounted_money=product.discount_money,
-				integral_sale_id = product.integral_sale.id if product.integral_sale else 0
+				integral_sale_id = product.integral_sale.id if product.integral_sale else 0,
+				origin_order_id = 0
 			)
 
 			if self.context['webapp_owner'].user_profile.webapp_type:
@@ -705,7 +710,7 @@ class Order(business_model.Model):
 				else:
 					supplier_user_id2products[product.supplier_user_id].append(product)
 
-		if len(supplier_ids) > 1:
+		if self.origin_order_id and supplier_ids:
 			# 进行拆单，生成子订单
 			for supplier in supplier_ids:
 				if supplier != 0:
@@ -716,7 +721,7 @@ class Order(business_model.Model):
 					new_order.supplier = supplier
 					new_order.save()
 
-		if len(supplier_user_ids) > 1:
+		if self.origin_order_id and supplier_user_ids:
 			# 进行拆单，生成子订单
 			for supplier_user_id in supplier_user_ids:
 				if supplier_user_id != 0:
@@ -740,7 +745,8 @@ class Order(business_model.Model):
 							promotion_id = product.used_promotion_id,
 							promotion_money = product.promotion_saved_money,
 							grade_discounted_money=product.discount_money,
-							integral_sale_id = product.integral_sale.id if product.integral_sale else 0
+							integral_sale_id = product.integral_sale.id if product.integral_sale else 0,
+							origin_order_id = self.id # 原始(母)订单id，用于微众精选拆单
 						)
 
 		product_groups = self.product_groups

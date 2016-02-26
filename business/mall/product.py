@@ -173,6 +173,7 @@ class Product(business_model.Model):
 		'properties',
 		'created_at',
 		'supplier',
+		'supplier_user_id',
 
 		#商品规格信息
 		'is_use_custom_model',
@@ -705,9 +706,9 @@ class Product(business_model.Model):
 			'postage_type': self.postage_type, 
 			'unified_postage_money': self.unified_postage_money,
 			'is_delivery': self.is_delivery,
-			'purchase_price': self.purchase_price
+			'purchase_price': self.purchase_price,
+			'supplier_user_id': self.supplier_user_id
 		}
-
 		if 'extras' in kwargs:
 			for extra in kwargs['extras']:
 				result[extra] = getattr(self, extra, None)
@@ -754,12 +755,12 @@ class Product(business_model.Model):
 			watchdog_alert(unicode_full_stack())
 			return ''
 
-	@cached_context_property
-	def supplier_user_id(self):
-		try:
-			if not self.context['webapp_owner'].user_profile.webapp_type:
-				return 0
-			relation = mall_models.WeizoomHasMallProductRelation.select().dj_where(weizoom_product_id=self.id).first()
-			return relation.mall_id
-		except BaseException as e:
-			return 0
+	# @cached_context_property
+	# def supplier_user_id(self):
+	# 	try:
+	# 		if not self.context['webapp_owner'].user_profile.webapp_type:
+	# 			return 0
+	# 		relation = mall_models.WeizoomHasMallProductRelation.select().dj_where(weizoom_product_id=self.id).first()
+	# 		return relation.mall_id
+	# 	except BaseException as e:
+	# 		return 0

@@ -231,6 +231,7 @@ class Product(models.Model):
 	weshop_status = models.IntegerField(default=0)  # 0待售 1上架 2回收站
 	is_member_product = models.BooleanField(default=False)  # 是否参加会员折扣
 	supplier = models.IntegerField(default=0) # 供货商
+	supplier_user_id = models.IntegerField(default=0) # 供货商(非8千)
 	purchase_price = models.FloatField(default=0.0) # 进货价格
 	is_enable_bill = models.BooleanField(default=False)  # 商品是否开具发票
 	is_delivery = models.BooleanField(default=False) # 是否勾选配送时间
@@ -1702,6 +1703,7 @@ class OrderHasProduct(models.Model):
 	promotion_money = models.FloatField(default=0.0)  # 促销抵扣金额
 	grade_discounted_money = models.FloatField(default=0.0)  # 折扣金额
 	integral_sale_id = models.IntegerField(default=0) #使用的积分应用的id
+	origin_order_id = models.IntegerField(default=0) # 原始(母)订单id，用于微众精选拆单
 
 	class Meta(object):
 		db_table = 'mall_order_has_product'

@@ -378,7 +378,10 @@ class Order(business_model.Model):
 			pay_info['woid'] = self.context['webapp_owner'].id
 			return pay_info
 		else:
-			return {'is_status_not': False}
+			return {
+				'is_status_not': False,
+				'woid': self.context['webapp_owner'].id
+			}
 
 
 	def wx_package_for_pay_module(self):

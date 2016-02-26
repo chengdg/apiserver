@@ -25,7 +25,7 @@ class AWXPayPackage(api_resource.ApiResource):
 			'webapp_user': args['webapp_user'],
 			'order_id': args['order_id'].split('-')[0]
 		})
-
-		package_info = order.wx_package_for_pay_module(config=args['config'])
+		config = int(args['config'])
+		package_info = order.wx_package_for_pay_module(config=config)
 
 		return package_info

@@ -187,21 +187,13 @@ class PayInterface(business_model.Model):
 			}
 		elif mall_models.PAY_INTERFACE_ALIPAY == interface_type:
 			pay_config = self.pay_config
-			user_profile = accout_models.UserProfile.select().dj_where(user_id=self.context['webapp_owner'].id).first()
-			if user_profile.host_name and len(user_profile.host_name.strip()) > 0:
-				user_profile_host = user_profile.host_name
-			else:
-				# 临时处理，需要切换到apiserver
-				user_profile_host = settings.WEAPP_DOMAIN
-
 			return {
 				'pay_r_id': pay_config['id'],
 				'partner': pay_config['partner'],
 				'key': pay_config['key'],
 				'input_charset': pay_config['input_charset'],
 				'sign_type': pay_config['sign_type'],
-				'seller_email': pay_config['seller_email'],
-				'user_profile_host': user_profile_host
+				'seller_email': pay_config['seller_email']
 			}
 		else:
 			return {}
@@ -222,13 +214,16 @@ class PayInterface(business_model.Model):
 				'partner_key': pay_config['partner_key'],
 				'paysign_key': pay_config['paysign_key'],
 				'app_id': pay_config['app_id'],
+				'app_secret': pay_config['app_secret'],
+				'pay_version': pay_config['pay_version']
 			}
 		elif pay_version == mall_models.V3:
 			package_info = {
 				'pay_r_id': pay_config['id'],
 				'app_id': pay_config['app_id'],
 				'mch_id': pay_config['partner_id'],
-				'partner_key': pay_config['partner_key']
+				'partner_key': pay_config['partner_key'],
+				'pay_version': pay_config['pay_version']
 			}
 		else:
 			package_info = {}

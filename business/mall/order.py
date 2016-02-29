@@ -663,6 +663,7 @@ class Order(business_model.Model):
 			if supplier_user_id and supplier_user_id not in supplier_user_ids:
 				supplier_user_ids.append(supplier_user_id)
 
+		self.supplier_user_id = 0
 		if len(supplier_ids) + len(supplier_user_ids) > 1:
 			# 标记有子订单
 			db_model.origin_order_id = -1

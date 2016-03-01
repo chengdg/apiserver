@@ -117,7 +117,8 @@ class Order(business_model.Model):
 		'weizoom_card_money',
 		'delivery_time', # 配送时间字符串
 		'is_first_order',
-		'supplier_user_id'
+		'supplier_user_id',
+		'total_purchase_price'
 	)
 
 	@staticmethod
@@ -658,10 +659,14 @@ class Order(business_model.Model):
 				supplier_ids.append(supplier)
 
 		supplier_user_ids = []
+		db_model.total_purchase_price = 0
+
 		for product in products:
 			supplier_user_id = product.supplier_user_id
 			if supplier_user_id and supplier_user_id not in supplier_user_ids:
 				supplier_user_ids.append(supplier_user_id)
+
+			db_model.total_purchase_price += product.purchase_count * product.pruchase_price
 
 		self.supplier_user_id = 0
 		if len(supplier_ids) + len(supplier_user_ids) > 1:
@@ -694,7 +699,8 @@ class Order(business_model.Model):
 				promotion_money = product.promotion_saved_money,
 				grade_discounted_money=product.discount_money,
 				integral_sale_id = product.integral_sale.id if product.integral_sale else 0,
-				origin_order_id = 0
+				origin_order_id = 0,
+				purchase_price = product.purchase_price
 			)
 
 			if self.context['webapp_owner'].user_profile.webapp_type:
@@ -724,6 +730,7 @@ class Order(business_model.Model):
 					new_order.order_id = '%s^%su' % (self.order_id, supplier_user_id)
 					new_order.origin_order_id = self.id
 					new_order.supplier_user_id = supplier_user_id
+					new_order.total_purchase_price = sum(map(lambda product:product.purchase_price * product.purchase_count, supplier_user_id2products[supplier_user_id]))
 					new_order.save()
 
 
@@ -740,7 +747,8 @@ class Order(business_model.Model):
 							promotion_money = product.promotion_saved_money,
 							grade_discounted_money=product.discount_money,
 							integral_sale_id = product.integral_sale.id if product.integral_sale else 0,
-							origin_order_id = self.id # 原始(母)订单id，用于微众精选拆单
+							origin_order_id = self.id, # 原始(母)订单id，用于微众精选拆单
+							purchase_price = product.purchase_price
 						)
 
 		product_groups = self.product_groups

@@ -1396,6 +1396,7 @@ class Order(models.Model):
 	bill_type = models.IntegerField(default=ORDER_BILL_TYPE_NONE)  # 发票类型 2016-01-20重新启用by Eugene
 	bill = models.CharField(max_length=100, default='')  # 发票信息 2016-01-20重新启用by Eugene
 	remark = models.TextField(default='')  # 备注
+	supplier_remark = models.TextField(default='')  # 供应商备注
 	product_price = models.FloatField(default=0.0)  # 商品金额（应用促销后的商品总价）
 	coupon_id = models.IntegerField(default=0)  # 优惠券id，用于支持返还优惠券
 	coupon_money = models.FloatField(default=0.0)  # 优惠券金额

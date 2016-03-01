@@ -740,6 +740,7 @@ class Order(business_model.Model):
 					new_order.origin_order_id = self.id
 					new_order.supplier_user_id = supplier_user_id
 					new_order.total_purchase_price = sum(map(lambda product:product.purchase_price * product.purchase_count, supplier_user_id2products[supplier_user_id]))
+					new_order.pay_interface_type = mall_models.PAY_INTERFACE_WEIXIN_PAY
 					new_order.save()
 
 

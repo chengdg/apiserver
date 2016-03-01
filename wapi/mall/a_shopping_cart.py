@@ -99,14 +99,14 @@ def group_for_weizoom(supplier_user_id2product_datas, supplier_user_id2max_shopp
 	for product_group in groups:
 		products = product_group['products']
 		for product in products:
-			supplier_user_id = product['supplier_user_id']
+			group_by = '%d-%d' % (product['supplier'], product['supplier_user_id'])
 			product_data = {
 				'promotion': key,
 				'product': product
 			}
-			product_datas = supplier_user_id2product_datas.get(supplier_user_id, [])
+			product_datas = supplier_user_id2product_datas.get(group_by, [])
 			product_datas.append(product_data)
-			supplier_user_id2product_datas[supplier_user_id] = product_datas
-			shopping_cart_id = supplier_user_id2max_shopping_cart_id.get(supplier_user_id, 0)
+			supplier_user_id2product_datas[group_by] = product_datas
+			shopping_cart_id = supplier_user_id2max_shopping_cart_id.get(group_by, 0)
 			if product['shopping_cart_id'] > shopping_cart_id:
-				supplier_user_id2max_shopping_cart_id[supplier_user_id] = product['shopping_cart_id']
+				supplier_user_id2max_shopping_cart_id[group_by] = product['shopping_cart_id']

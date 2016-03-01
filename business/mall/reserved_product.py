@@ -351,6 +351,7 @@ class ReservedProduct(business_model.Model):
 		data['promotion'] = self.promotion.to_dict() if self.promotion else None
 		data['integral_sale'] = self.integral_sale.to_dict() if self.integral_sale else None
 		data['supplier_user_id'] = self.supplier_user_id
+		data['supplier'] = self.supplier
 		data['supplier_name'] = self.supplier_name
 		return data
 

@@ -666,7 +666,7 @@ class Order(business_model.Model):
 			if supplier_user_id and supplier_user_id not in supplier_user_ids:
 				supplier_user_ids.append(supplier_user_id)
 
-			db_model.total_purchase_price += product.purchase_count * product.pruchase_price
+			db_model.total_purchase_price += product.purchase_count * product.purchase_price
 
 		self.supplier_user_id = 0
 		if len(supplier_ids) + len(supplier_user_ids) > 1:

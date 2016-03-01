@@ -685,6 +685,7 @@ class Order(business_model.Model):
 		# 建立订单相关数据
 
 		supplier_user_id2products = {}
+		supplier2products = {}
 		#建立<order, product>的关系
 		for product in products:
 			mall_models.OrderHasProduct.create(
@@ -710,6 +711,13 @@ class Order(business_model.Model):
 				else:
 					supplier_user_id2products[product.supplier_user_id].append(product)
 
+				if not supplier2products.get(product.supplier):
+					supplier2products[product.supplier] = []
+					supplier2products[product.supplier].append(product)
+				else:
+					supplier2products[product.supplier].append(product)	
+					
+
 		if self.origin_order_id and supplier_ids:
 			# 进行拆单，生成子订单
 			for supplier in supplier_ids:
@@ -719,6 +727,7 @@ class Order(business_model.Model):
 					new_order.order_id = '%s^%ss' % (self.order_id, supplier)
 					new_order.origin_order_id = self.id
 					new_order.supplier = supplier
+					new_order.total_purchase_price = sum(map(lambda product:product.purchase_price * product.purchase_count, supplier2products[supplier]))
 					new_order.save()
 
 		if self.origin_order_id and supplier_user_ids:

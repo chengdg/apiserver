@@ -59,6 +59,8 @@ class OrderProduct(business_model.Model):
 		'integral_sale_model',
 		'discount_money',
 		'supplier',
+		'supplier_name',
+		'supplier_user_id',
 		'is_use_integral_sale',
 
 		#review add by bert
@@ -134,6 +136,8 @@ class OrderProduct(business_model.Model):
 		self.pic_url = product.pic_url
 		self.shelve_type = product.shelve_type
 		self.supplier = product.supplier
+		self.supplier_name = product.supplier_name
+		self.supplier_user_id = product.supplier_user_id
 
 		model = product.get_specific_model(product_info['model_name'])
 		self.original_price = model.price

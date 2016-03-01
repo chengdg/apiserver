@@ -115,7 +115,7 @@ class OrderProducts(business_model.Model):
 		id2promotion = dict([(r.promotion_id, r) for r in mall_models.OrderHasPromotion.select().dj_where(order=order.id)])
 
 		order_product_infos = []	
-		for r in mall_models.OrderHasProduct.select().dj_where(order=order.id):
+		for r in mall_models.OrderHasProduct.select().dj_where(order=order.id, origin_order_id=0):
 			promotion = id2promotion.get(r.promotion_id, None)
 			if promotion:
 				promotion_result = json.loads(promotion.promotion_result_json)

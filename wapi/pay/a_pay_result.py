@@ -64,20 +64,18 @@ class APayResult(api_resource.ApiResource):
 
 		webapp_user = args['webapp_user']
 		webapp_owner = args['webapp_owner']
-		msg = ''
 
 		order_id = args['order_id'].split('-')[0]
 		pay_interface_type = int(args['pay_interface_type'])
+		order = Order.from_id({
+			'webapp_owner': webapp_owner,
+			'webapp_user': webapp_user,
+			'order_id': order_id
+		})
+
+		msg = ''
 		try:
-			order = Order.from_id({
-				'webapp_owner': webapp_owner,
-				'webapp_user': webapp_user,
-				'order_id': order_id
-			})
-			if not order.is_valid():
-				is_success = False
-				msg = u'error order_id'
-			elif order.status > mall_models.ORDER_STATUS_CANCEL:
+			if order.status > mall_models.ORDER_STATUS_CANCEL:
 				is_success = True
 				msg = '%s has been paid.' % order.order_id
 			elif order.pay(pay_interface_type=pay_interface_type):

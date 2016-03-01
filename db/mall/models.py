@@ -231,6 +231,7 @@ class Product(models.Model):
 	weshop_status = models.IntegerField(default=0)  # 0待售 1上架 2回收站
 	is_member_product = models.BooleanField(default=False)  # 是否参加会员折扣
 	supplier = models.IntegerField(default=0) # 供货商
+	supplier_user_id = models.IntegerField(default=0) # 供货商(非8千)
 	purchase_price = models.FloatField(default=0.0) # 进货价格
 	is_enable_bill = models.BooleanField(default=False)  # 商品是否开具发票
 	is_delivery = models.BooleanField(default=False) # 是否勾选配送时间
@@ -1395,6 +1396,7 @@ class Order(models.Model):
 	bill_type = models.IntegerField(default=ORDER_BILL_TYPE_NONE)  # 发票类型 2016-01-20重新启用by Eugene
 	bill = models.CharField(max_length=100, default='')  # 发票信息 2016-01-20重新启用by Eugene
 	remark = models.TextField(default='')  # 备注
+	supplier_remark = models.TextField(default='')  # 供应商备注
 	product_price = models.FloatField(default=0.0)  # 商品金额（应用促销后的商品总价）
 	coupon_id = models.IntegerField(default=0)  # 优惠券id，用于支持返还优惠券
 	coupon_money = models.FloatField(default=0.0)  # 优惠券金额
@@ -1426,6 +1428,8 @@ class Order(models.Model):
 	is_100 = models.BooleanField(default=True) # 是否是快递100能够查询的快递
 	delivery_time = models.CharField(max_length=50, default='')  # 配送时间字符串
 	is_first_order = models.BooleanField(default=False) # 是否是用户的首单
+	supplier_user_id = models.IntegerField(default=0) # 订单供货商user的id，用于系列拆单
+	total_purchase_price = models.FloatField(default=0)  # 总订单采购价格
 
 	class Meta(object):
 		db_table = 'mall_order'
@@ -1701,6 +1705,8 @@ class OrderHasProduct(models.Model):
 	promotion_money = models.FloatField(default=0.0)  # 促销抵扣金额
 	grade_discounted_money = models.FloatField(default=0.0)  # 折扣金额
 	integral_sale_id = models.IntegerField(default=0) #使用的积分应用的id
+	origin_order_id = models.IntegerField(default=0) # 原始(母)订单id，用于微众精选拆单
+	purchase_price = models.FloatField(default=0)  # 采购单价
 
 	class Meta(object):
 		db_table = 'mall_order_has_product'
@@ -2051,3 +2057,20 @@ class MallOrderFromSharedRecord(models.Model):
 
 	class Meta(object):
 		db_table = "mall_order_from_shared_record"
+
+
+class WeizoomHasMallProductRelation(models.Model):
+	owner = models.ForeignKey(User) # 微众系列的商户
+	mall_id = models.IntegerField() # 供货商的owner_id
+	mall_product_id = models.IntegerField() # 供货商商品
+	weizoom_product_id = models.IntegerField() # 微众系列上架供货商的商品
+	is_updated = models.BooleanField(default=False) # 是否需要更新
+	is_deleted = models.BooleanField(default=False) # 供货商是否下架了商品
+	sync_time = models.DateTimeField(auto_now_add=True) # 微众系列同步商品的时间
+	delete_time = models.DateTimeField(auto_now=True) # 商品的失效时间
+	created_at = models.DateTimeField(auto_now_add=True) # 添加时间
+
+	class Meta(object):
+		verbose_name = "微众系列同步其他商户商品的关系记录表"
+		verbose_name_plural = "微众系列同步其他商户商品的关系"
+		db_table = "mall_weizoom_has_mall_product_relation"

@@ -63,6 +63,7 @@ class AOrderList(api_resource.ApiResource):
 				'created_at': order.created_at.strftime('%Y.%m.%d %H:%M'),
 				'final_price': order.final_price,
 				'has_sub_order': order.has_sub_order,
+				'has_multi_sub_order': order.has_multi_sub_order,
 				'express_number': order.express_number,
 				'review_is_finished': review_is_finished,
 				'red_envelope': order.red_envelope,

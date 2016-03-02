@@ -653,60 +653,66 @@ class Order(business_model.Model):
 		logging.info("Order db_model: {}".format(db_model))
 
 		# 处理拆带相关字段
+		db_model.total_purchase_price = 0
 		products = self.products
+
 		supplier_ids = []
+		supplier_user_ids = []
+
 		for product in products:
 			supplier = product.supplier
 			if supplier and supplier not in supplier_ids:
 				supplier_ids.append(supplier)
 
-		supplier_user_ids = []
-		db_model.total_purchase_price = 0
-
-		for product in products:
 			supplier_user_id = product.supplier_user_id
 			if supplier_user_id and supplier_user_id not in supplier_user_ids:
 				supplier_user_ids.append(supplier_user_id)
 
+			# 订单总采购价
 			db_model.total_purchase_price += product.purchase_count * product.purchase_price
+			self.total_purchase_price = db_model.total_purchase_price
 
-		self.supplier_user_id = 0
-		if len(supplier_ids) + len(supplier_user_ids) > 1:
-			# 标记有子订单
+		# webapp_type为1时为需要拆单的自营帐号
+		webapp_type = self.context['webapp_owner'].user_profile.webapp_type
+
+		if webapp_type:
+			# 拆单代码，标记有子订单
 			db_model.origin_order_id = -1
 			self.origin_order_id = -1
-		elif len(supplier_ids) == 1 and supplier_ids[0] != 0:
-			self.supplier = supplier_ids[0]
-			db_model.supplier = supplier_ids[0]
-		elif len(supplier_user_ids) == 1 and supplier_user_ids[0] != 0:
-			self.supplier_user_id = supplier_user_ids[0]
-			db_model.supplier_user_id = supplier_user_ids[0]
+		else:
+			db_model.origin_order_id = 0
+			self.origin_order_id = 0
+
+		# 母订单供货商都为0
+		self.supplier_user_id = 0
+		self.supplier = 0
 
 		db_model.save()
 		self.id = db_model.id
-		# 建立订单相关数据
 
+		# 建立订单相关表数据
 		supplier_user_id2products = {}
 		supplier2products = {}
-		#建立<order, product>的关系
+
+		# 建立<order, product>的关系
 		for product in products:
 			mall_models.OrderHasProduct.create(
-				order = self.db_model,
-				product = product.id,
-				product_name = product.name,
-				product_model_name = product.model_name,
-				number = product.purchase_count,
-				total_price = product.total_price,
-				price = product.price,
-				promotion_id = product.used_promotion_id,
-				promotion_money = product.promotion_saved_money,
+				order=self.db_model,
+				product=product.id,
+				product_name=product.name,
+				product_model_name=product.model_name,
+				number=product.purchase_count,
+				total_price=product.total_price,
+				price=product.price,
+				promotion_id=product.used_promotion_id,
+				promotion_money=product.promotion_saved_money,
 				grade_discounted_money=product.discount_money,
-				integral_sale_id = product.integral_sale.id if product.integral_sale else 0,
-				origin_order_id = 0,
-				purchase_price = product.purchase_price
+				integral_sale_id=product.integral_sale.id if product.integral_sale else 0,
+				origin_order_id=0,
+				purchase_price=product.purchase_price
 			)
 
-			if self.context['webapp_owner'].user_profile.webapp_type:
+			if webapp_type:
 				if not supplier_user_id2products.get(product.supplier_user_id):
 					supplier_user_id2products[product.supplier_user_id] = []
 					supplier_user_id2products[product.supplier_user_id].append(product)
@@ -718,50 +724,45 @@ class Order(business_model.Model):
 					supplier2products[product.supplier].append(product)
 				else:
 					supplier2products[product.supplier].append(product)	
-					
 
-		if self.origin_order_id and supplier_ids:
+		if webapp_type:
 			# 进行拆单，生成子订单
 			for supplier in supplier_ids:
-				if supplier != 0:
-					new_order = copy.deepcopy(self.db_model)
-					new_order.id = None
-					new_order.order_id = '%s^%ss' % (self.order_id, supplier)
-					new_order.origin_order_id = self.id
-					new_order.supplier = supplier
-					new_order.total_purchase_price = sum(map(lambda product:product.purchase_price * product.purchase_count, supplier2products[supplier]))
-					new_order.save()
+				new_order = copy.deepcopy(self.db_model)
+				new_order.id = None
+				new_order.order_id = '%s^%ss' % (self.order_id, supplier)
+				new_order.origin_order_id = self.id
+				new_order.supplier = supplier
+				new_order.total_purchase_price = sum(map(lambda product:product.purchase_price * product.purchase_count, supplier2products[supplier]))
+				new_order.save()
 
-		if self.origin_order_id and supplier_user_ids:
-			# 进行拆单，生成子订单
 			for supplier_user_id in supplier_user_ids:
-				if supplier_user_id != 0:
-					new_order = copy.deepcopy(self.db_model)
-					new_order.id = None
-					new_order.order_id = '%s^%su' % (self.order_id, supplier_user_id)
-					new_order.origin_order_id = self.id
-					new_order.supplier_user_id = supplier_user_id
-					new_order.total_purchase_price = sum(map(lambda product:product.purchase_price * product.purchase_count, supplier_user_id2products[supplier_user_id]))
-					new_order.pay_interface_type = mall_models.PAY_INTERFACE_WEIXIN_PAY
-					new_order.save()
+				new_order = copy.deepcopy(self.db_model)
+				new_order.id = None
+				new_order.order_id = '%s^%su' % (self.order_id, supplier_user_id)
+				new_order.origin_order_id = self.id
+				new_order.supplier_user_id = supplier_user_id
+				new_order.total_purchase_price = sum(map(lambda product:product.purchase_price * product.purchase_count, supplier_user_id2products[supplier_user_id]))
+				new_order.pay_interface_type = mall_models.PAY_INTERFACE_WEIXIN_PAY
+				new_order.save()
 
-
-					for product in supplier_user_id2products[supplier_user_id]:
-						mall_models.OrderHasProduct.create(
-							order = new_order,
-							product = product.id,
-							product_name = product.name,
-							product_model_name = product.model_name,
-							number = product.purchase_count,
-							total_price = product.purchase_price * product.purchase_count,
-							price = product.purchase_price,
-							promotion_id = product.used_promotion_id,
-							promotion_money = product.promotion_saved_money,
-							grade_discounted_money=product.discount_money,
-							integral_sale_id = product.integral_sale.id if product.integral_sale else 0,
-							origin_order_id = self.id, # 原始(母)订单id，用于微众精选拆单
-							purchase_price = product.purchase_price
-						)
+				# 为同步供货商的子订单复制对应OrderHasProduct
+				for product in supplier_user_id2products[supplier_user_id]:
+					mall_models.OrderHasProduct.create(
+						order=new_order,
+						product=product.id,
+						product_name=product.name,
+						product_model_name=product.model_name,
+						number=product.purchase_count,
+						total_price=product.purchase_price * product.purchase_count,
+						price=product.purchase_price,
+						promotion_id=product.used_promotion_id,
+						promotion_money=product.promotion_saved_money,
+						grade_discounted_money=product.discount_money,
+						integral_sale_id=product.integral_sale.id if product.integral_sale else 0,
+						origin_order_id=self.id,  # 原始(母)订单id，用于微众精选拆单
+						purchase_price=product.purchase_price
+					)
 
 		product_groups = self.product_groups
 		#建立<order, promotion>的关系

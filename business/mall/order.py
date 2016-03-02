@@ -229,7 +229,7 @@ class Order(business_model.Model):
 		"""拆单后的子订单信息
 		"""
 		sub_orders = []
-		if self.has_sub_order:
+		if self.has_multi_sub_order:
 			sub_order_ids = self.get_sub_order_ids()
 			for sub_order_id in sub_order_ids:
 				sub_order = Order.from_id({
@@ -312,6 +312,14 @@ class Order(business_model.Model):
 		[property] 该订单是否有子订单
 		"""
 		return self.origin_order_id == -1 and self.status > mall_models.ORDER_STATUS_NOT #未支付的订单按未拆单显示
+
+	@cached_context_property
+	def has_multi_sub_order(self):
+		"""
+		[property] 该订单是否有超过一个子订单
+		"""
+		return self.has_sub_order and len(self.get_sub_order_ids()) > 1
+
 
 	@property
 	def is_sub_order(self):
@@ -569,12 +577,12 @@ class Order(business_model.Model):
 
 
 	def to_dict(self, *extras):
-		properties = ['has_sub_order', 'sub_orders', 'pay_interface_name', 'status_text', 'red_envelope', 'red_envelope_created', 'pay_info']
+		properties = ['has_sub_order', 'sub_orders', 'pay_interface_name', 'status_text', 'red_envelope', 'red_envelope_created', 'pay_info', 'has_multi_sub_order']
 		if extras:
 			properties.extend(extras)
 
 		order_status_info = self.status
-		if self.has_sub_order:
+		if self.has_multi_sub_order:
 			for sub_order in self.sub_orders:
 				#整单的订单状态显示，如果被拆单，则显示订单里最滞后的子订单状态
 				if sub_order['status'] < order_status_info:
@@ -823,7 +831,7 @@ class Order(business_model.Model):
 			pay_result = True
 
 			now = datetime.now()
-			if self.origin_order_id < 0:
+			if self.has_sub_order:
 				mall_models.Order.update(status=mall_models.ORDER_STATUS_PAYED_NOT_SHIP, pay_interface_type=pay_interface_type, payment_time=now).dj_where(origin_order_id=self.id).execute()
 
 			mall_models.Order.update(status=mall_models.ORDER_STATUS_PAYED_NOT_SHIP, pay_interface_type=pay_interface_type, payment_time=now).dj_where(order_id=self.order_id).execute()
@@ -927,7 +935,7 @@ class Order(business_model.Model):
 		self.raw_status = self.status
 		self.status = mall_models.ORDER_STATUS_SUCCESSED
 		# 更新子订单状态
-		if self.origin_order_id == -1:
+		if self.has_sub_order:
 			mall_models.Order.update(status=mall_models.ORDER_STATUS_SUCCESSED).dj_where(origin_order_id=self.id).execute()
 
 		# 订单完成后会员积分处理

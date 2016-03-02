@@ -98,7 +98,6 @@ class AOrder(api_resource.ApiResource):
 			pass
 
 
-
 		return data
 
 	@param_required(['order_id', 'action'])

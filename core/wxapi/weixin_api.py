@@ -274,7 +274,7 @@ class WeixinApi(object):
 				handler_module, handler_classname = handler_path.rsplit('.', 1)
 			except ValueError:
 				raise exceptions.ImproperlyConfigured('%s isn\'t a message handler module' % handler_path)
-			from django.utils.importlib import import_module
+			from importlib import import_module
 			try:
 				module = import_module(handler_module)
 			except ImportError, e:

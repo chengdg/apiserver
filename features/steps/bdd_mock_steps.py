@@ -42,7 +42,7 @@ def step_impl(context):
 def step_impl(context):
     expected = json.loads(context.text)
     order_id = expected['order_id']
-    url = '/wapi/pay/wxpay_package/?order_id=%s' % (order_id)
+    url = '/wapi/pay/wxpay_package/?order_id=%s&config=0' % (order_id)
     actual = context.client.get(bdd_util.nginx(url), follow=True).data
     actual['order_id'] = order_id
     bdd_util.assert_dict(expected, actual)

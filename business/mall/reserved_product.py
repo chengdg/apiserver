@@ -78,7 +78,8 @@ class ReservedProduct(business_model.Model):
 		'integral_sale',
 		'active_integral_sale_rule',
 		'is_enable_bill',
-		'is_delivery' # 是否勾选配送时间,
+		'is_delivery', # 是否勾选配送时间,
+		'purchase_price'
 	)
 
 	@staticmethod
@@ -135,6 +136,7 @@ class ReservedProduct(business_model.Model):
 		self.is_use_cod_pay_interface = product.is_use_cod_pay_interface
 		self.min_limit = product.min_limit
 		self.is_enable_bill = product.is_enable_bill
+		self.purchase_price = product.purchase_price
 
 		self.model_name = product_info['model_name']
 		self.expected_promotion_id = product_info.get('expected_promotion_id', 0)
@@ -302,6 +304,20 @@ class ReservedProduct(business_model.Model):
 		"""
 		return self.context['product'].supplier
 
+	@property
+	def supplier_user_id(self):
+		"""
+		[property] 订单商品的同步供应商id
+		"""
+		return self.context['product'].supplier_user_id
+
+	@property
+	def supplier_name(self):
+		"""
+		[property] 订单商品的同步供应商名称
+		"""
+		return self.context['product'].supplier_name
+
 	def has_expected_promotion(self):
 		"""
 		判断已预订商品是否拥有预期的促销
@@ -334,6 +350,9 @@ class ReservedProduct(business_model.Model):
 		data['model'] = self.model.to_dict() if self.model else None
 		data['promotion'] = self.promotion.to_dict() if self.promotion else None
 		data['integral_sale'] = self.integral_sale.to_dict() if self.integral_sale else None
+		data['supplier_user_id'] = self.supplier_user_id
+		data['supplier'] = self.supplier
+		data['supplier_name'] = self.supplier_name
 		return data
 
 

@@ -136,6 +136,16 @@ class WebAppOwner(business_model.Model):
 			return filter(lambda x: x['type'] != mall_models.PAY_INTERFACE_WEIZOOM_COIN, self.__webapp_owner_info.pay_interfaces)
 
 	@property
+	def all_pay_interfaces(self):
+		"""
+		[property] 所有支付方式配置，订单需要能看到已禁用的支付方式
+		"""
+		if self.has_wzcard_permission:
+			return self.__webapp_owner_info.all_pay_interfaces
+		else:
+			return filter(lambda x: x['type'] != mall_models.PAY_INTERFACE_WEIZOOM_COIN, self.__webapp_owner_info.all_pay_interfaces)
+
+	@property
 	@deprecated
 	def is_weizoom_card_permission(self):
 		"""

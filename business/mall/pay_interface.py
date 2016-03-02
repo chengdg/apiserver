@@ -12,6 +12,7 @@ import uuid
 import time
 import random
 
+from core.exceptionutil import unicode_full_stack
 from wapi.decorators import param_required
 #from wapi import wapi_utils
 from core.cache import utils as cache_util
@@ -66,9 +67,9 @@ class PayInterface(business_model.Model):
 		#print '>>>>>>>>>>>pay_interface_type:',pay_interface_type,'>>>>>>>>>>>webapp_owner.pay_interfaces>>>>', webapp_owner.pay_interfaces
 		try:
 			if pay_interface_type != None:
-				self.context['interface'] = next(interface for interface in webapp_owner.pay_interfaces if interface['type'] == pay_interface_type)
+				self.context['interface'] = next(interface for interface in webapp_owner.all_pay_interfaces if interface['type'] == pay_interface_type)
 			elif interface_id:
-				self.context['interface'] = next(interface for interface in webapp_owner.pay_interfaces if interface['id'] == interface_id)
+				self.context['interface'] = next(interface for interface in webapp_owner.all_pay_interfaces if interface['id'] == interface_id)
 
 			interface = self.context['interface']
 			self.type = interface['type']
@@ -104,7 +105,8 @@ class PayInterface(business_model.Model):
 				'woid': webapp_owner_id,
 				'order_id': order.order_id,
 				'pay_interface_type': mall_models.PAY_INTERFACE_ALIPAY,
-				'pay_url':  '/mall/alipay/?woid={}&order_id={}&related_config_id={}'.format(webapp_owner_id, order.order_id, interface['related_config_id'])
+				'pay_url':  '/mall/alipay/?woid={}&order_id={}&related_config_id={}'.format(webapp_owner_id, order.order_id, interface['related_config_id']),
+				'is_active': interface['is_active']
 			}
 
 		elif mall_models.PAY_INTERFACE_TENPAY == interface_type:
@@ -133,7 +135,8 @@ class PayInterface(business_model.Model):
 				'type': 'cod',
 				'woid': webapp_owner_id,
 				'order_id': order.order_id,
-				'pay_interface_type': mall_models.PAY_INTERFACE_COD
+				'pay_interface_type': mall_models.PAY_INTERFACE_COD,
+				'is_active': interface['is_active']
 			}
 			# return '/wapi/mall/pay_result/?woid={}&pay_interface_type={}&order_id={}'.format(
 			# 	webapp_owner_id,
@@ -145,7 +148,8 @@ class PayInterface(business_model.Model):
 				'woid': webapp_owner_id,
 				'order_id': order.order_id,
 				'pay_id': interface['id'],
-				'showwxpaytitle': 1
+				'showwxpaytitle': 1,
+				'is_active': interface['is_active']
 			}
 			# return '/wapi/mall/wxpay/?woid={}&order_id={}&pay_id={}&showwxpaytitle=1'.format(
 			# 	webapp_owner_id,
@@ -183,21 +187,13 @@ class PayInterface(business_model.Model):
 			}
 		elif mall_models.PAY_INTERFACE_ALIPAY == interface_type:
 			pay_config = self.pay_config
-			user_profile = accout_models.UserProfile.select().dj_where(user_id=self.context['webapp_owner'].id).first()
-			if user_profile.host_name and len(user_profile.host_name.strip()) > 0:
-				user_profile_host = user_profile.host_name
-			else:
-				# 临时处理，需要切换到apiserver
-				user_profile_host = settings.WEAPP_DOMAIN
-
 			return {
 				'pay_r_id': pay_config['id'],
 				'partner': pay_config['partner'],
 				'key': pay_config['key'],
 				'input_charset': pay_config['input_charset'],
 				'sign_type': pay_config['sign_type'],
-				'seller_email': pay_config['seller_email'],
-				'user_profile_host': user_profile_host
+				'seller_email': pay_config['seller_email']
 			}
 		else:
 			return {}
@@ -218,13 +214,16 @@ class PayInterface(business_model.Model):
 				'partner_key': pay_config['partner_key'],
 				'paysign_key': pay_config['paysign_key'],
 				'app_id': pay_config['app_id'],
+				'app_secret': pay_config['app_secret'],
+				'pay_version': pay_config['pay_version']
 			}
 		elif pay_version == mall_models.V3:
 			package_info = {
 				'pay_r_id': pay_config['id'],
 				'app_id': pay_config['app_id'],
 				'mch_id': pay_config['partner_id'],
-				'partner_key': pay_config['partner_key']
+				'partner_key': pay_config['partner_key'],
+				'pay_version': pay_config['pay_version']
 			}
 		else:
 			package_info = {}

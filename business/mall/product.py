@@ -11,6 +11,7 @@ from bs4 import BeautifulSoup
 import math
 from datetime import datetime
 
+from business.mall.supplier import Supplier
 from core.exceptionutil import unicode_full_stack
 from wapi.decorators import param_required
 #from wapi import wapi_utils
@@ -19,6 +20,7 @@ from db.mall import models as mall_models
 from db.mall import promotion_models
 from core.watchdog.utils import watchdog_alert
 from business import model as business_model
+import db.account.models as account_model
 import settings
 from business.mall.forbidden_coupon_product_ids import ForbiddenCouponProductIds
 from business.mall.product_model_generator import ProductModelGenerator
@@ -171,6 +173,7 @@ class Product(business_model.Model):
 		'properties',
 		'created_at',
 		'supplier',
+		'supplier_user_id',
 
 		#商品规格信息
 		'is_use_custom_model',
@@ -197,6 +200,8 @@ class Product(business_model.Model):
 		'product_review',
 		'is_deleted',
 		'is_delivery', # 是否勾选配送时间
+		# 'supplier_name' # 供货商名称
+		'purchase_price',
 	)
 
 	@staticmethod
@@ -688,6 +693,7 @@ class Product(business_model.Model):
 			'is_enable_bill': self.is_enable_bill,
 			'created_at': self.created_at if type(self.created_at) == str else datetime.strftime(self.created_at, '%Y-%m-%d %H:%M'),
 			'supplier': self.supplier,
+			'supplier_name': self.supplier_name,
 			'display_index': self.display_index,
 			'is_member_product': self.is_member_product,
 			'swipe_images': getattr(self, 'swipe_images', []),
@@ -700,8 +706,9 @@ class Product(business_model.Model):
 			'postage_type': self.postage_type, 
 			'unified_postage_money': self.unified_postage_money,
 			'is_delivery': self.is_delivery,
+			'purchase_price': self.purchase_price,
+			'supplier_user_id': self.supplier_user_id
 		}
-
 		if 'extras' in kwargs:
 			for extra in kwargs['extras']:
 				result[extra] = getattr(self, extra, None)
@@ -726,3 +733,34 @@ class Product(business_model.Model):
 
 			if not self.integral_sale.is_active():
 				self.integral_sale = None
+
+	@cached_context_property
+	def supplier_name(self):
+		try:
+			# 非微众系列商家
+			if not self.context['webapp_owner'].user_profile.webapp_type:
+				return ''
+			# 手动添加的供货商
+			if self.supplier:
+				return Supplier.get_supplier_name(self.supplier)
+			# 同步的供货商
+			relation = mall_models.WeizoomHasMallProductRelation.select().dj_where(weizoom_product_id=self.id).first()
+			if relation:
+				supplier_name = account_model.UserProfile.select().dj_where(user_id=relation.mall_id).first().store_name
+			else:
+				supplier_name = ''
+
+			return supplier_name
+		except:
+			watchdog_alert(unicode_full_stack())
+			return ''
+
+	# @cached_context_property
+	# def supplier_user_id(self):
+	# 	try:
+	# 		if not self.context['webapp_owner'].user_profile.webapp_type:
+	# 			return 0
+	# 		relation = mall_models.WeizoomHasMallProductRelation.select().dj_where(weizoom_product_id=self.id).first()
+	# 		return relation.mall_id
+	# 	except BaseException as e:
+	# 		return 0

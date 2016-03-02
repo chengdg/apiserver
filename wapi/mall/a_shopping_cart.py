@@ -60,6 +60,23 @@ class AShoppingCart(api_resource.ApiResource):
 		product_groups.extend(other_promotions)
 		product_groups.extend(others)
 
+		# if webapp_owner.user_profile.webapp_type:
+		# 	#如果是自营账号，需要按添加到购物车的先后顺序排列商品，相同店铺的商品集中排列
+		# 	temp_groups = []
+		# 	supplier_user_id2product_datas = {}
+		# 	supplier_user_id2max_shopping_cart_id = {}  #每个供应商最后加进购物车的id，用户排序
+
+		# 	group_for_weizoom(supplier_user_id2product_datas, supplier_user_id2max_shopping_cart_id, flash_sales, 'flash_sales')
+		# 	group_for_weizoom(supplier_user_id2product_datas, supplier_user_id2max_shopping_cart_id, premium_sales, 'premium_sales')
+		# 	group_for_weizoom(supplier_user_id2product_datas, supplier_user_id2max_shopping_cart_id, other_promotions, 'other_promotions')
+		# 	group_for_weizoom(supplier_user_id2product_datas, supplier_user_id2max_shopping_cart_id, others, '')
+
+		# 	#按supplier_user_id2max_shopping_cart_id从大到小排序
+		# 	sorted_items = sorted(supplier_user_id2max_shopping_cart_id.iteritems(), key=lambda d:d[1], reverse=True)
+		# 	product_groups = []
+		# 	for item in sorted_items:
+		# 		product_groups.append(supplier_user_id2product_datas[item[0]])
+
 		#获取会员信息
 		member = webapp_user.member
 		_, member_discount = member.discount
@@ -71,7 +88,25 @@ class AShoppingCart(api_resource.ApiResource):
 		data = {
 			'member': member_data,
 			'product_groups': product_groups,
-			'invalid_products': [product.to_dict() for product in invalid_products]
+			'invalid_products': [product.to_dict() for product in invalid_products],
+			'is_weizoom': webapp_owner.user_profile.webapp_type
 		}
 
 		return data
+
+
+def group_for_weizoom(supplier_user_id2product_datas, supplier_user_id2max_shopping_cart_id, groups, key):
+	for product_group in groups:
+		products = product_group['products']
+		for product in products:
+			group_by = '%d-%d' % (product['supplier'], product['supplier_user_id'])
+			product_data = {
+				'promotion': key,
+				'product': product
+			}
+			product_datas = supplier_user_id2product_datas.get(group_by, [])
+			product_datas.append(product_data)
+			supplier_user_id2product_datas[group_by] = product_datas
+			shopping_cart_id = supplier_user_id2max_shopping_cart_id.get(group_by, 0)
+			if product['shopping_cart_id'] > shopping_cart_id:
+				supplier_user_id2max_shopping_cart_id[group_by] = product['shopping_cart_id']

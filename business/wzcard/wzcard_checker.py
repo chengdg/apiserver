@@ -66,15 +66,16 @@ class WZCardChecker(object):
 
 		self.checked_wzcard[wzcard_id] = wzcard
 
-
 		member = webapp_user.member
 		owner_id =webapp_owner.id
+		msg = ''
 
 		if wzcard:
 			weizoom_card_rule = wzcard_models.WeizoomCardRule.select().dj_where(id=wzcard.weizoom_card_rule_id).first()
 			rule_id = weizoom_card_rule.id
-
-		msg = ''
+		else:
+			weizoom_card_rule =None
+			rule_id = None
 
 		if not wzcard:
 			# 无此微众卡
@@ -119,10 +120,11 @@ class WZCardChecker(object):
 		elif weizoom_card_rule.card_attr:
 			#专属卡
 			#是否为新会员专属卡
+			#多专属商家id
+			shop_limit_list = str(weizoom_card_rule.shop_limit_list).split(',')
+			#多黑名单商家id
+			shop_black_list = str(weizoom_card_rule.shop_black_list).split(',')
 
-			authed_appid = weixin_models.ComponentAuthedAppidInfo.select().dj_where(auth_appid__user_id=weizoom_card_rule.belong_to_owner).first()
-
-			mpuser_name = authed_appid.nick_name if authed_appid and authed_appid.nick_name else 0
 			if weizoom_card_rule.is_new_member_special:
 				if member and member.is_subscribed:
 					# 防止循环引用
@@ -136,19 +138,29 @@ class WZCardChecker(object):
 						has_use_card = wzcard_models.WeizoomCardHasOrder.select().dj_where(card_id=wzcard.id, order_id__in=order_ids).count()>0
 						if not has_use_card:
 							msg = u'该卡为新会员专属卡'
-					if owner_id != weizoom_card_rule.belong_to_owner:
-						msg = u'该卡为'+mpuser_name+'商家专属卡'
+
+					if str(owner_id) in shop_limit_list:
+						if str(owner_id) in shop_black_list:
+							msg = u'该卡不能在此商家使用'
+
+					else:
+						msg = u'该专属卡不能在此商家使用'
 				else:
-					msg = u'该卡为新会员专属卡'
+					if str(owner_id) in shop_black_list:
+						msg = u'该卡不能在此商家使用'
+					else:
+						msg = u'该卡为新会员专属卡'
+
 			else:
-				if owner_id != weizoom_card_rule.belong_to_owner:
-					msg = u'该卡为'+mpuser_name+'商家专属卡'
+				if str(owner_id) in shop_limit_list:
+					if str(owner_id) in shop_black_list:
+						msg = u'该卡不能在此商家使用'
+				else:
+					msg = u'该专属卡不能在此商家使用'
 		elif owner_id and rule_id in [23, 36] and owner_id != 157:
-			# wzcard_models.WeizoomCardRule.objects.get(id=rule_id)
 			if '吉祥大药房' in wzcard.weizoom_card_rule.name:
 				msg = u'抱歉，该卡仅可在吉祥大药房微站使用！'
 		elif owner_id and rule_id in [99,] and owner_id != 474:
-			# wzcard_models.WeizoomCardRule.objects.get(id=rule_id)
 			if '爱伲' in wzcard.weizoom_card_rule.name:
 				msg = u'抱歉，该卡仅可在爱伲咖啡微站使用！'
 

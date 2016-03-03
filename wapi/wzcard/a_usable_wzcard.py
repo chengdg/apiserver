@@ -38,6 +38,8 @@ class AUsableWZCard(api_resource.ApiResource):
 		#webapp_owner = args['webapp_owner']
 		wzcard_id = args['wzcard_id']
 		wzcard_password = args['password']
+		webapp_owner = args['webapp_owner']
+		webapp_user = args['webapp_user']
 
 		# 获取微众卡信息
 		wzcard = WZCard.from_wzcard_id({
@@ -46,14 +48,10 @@ class AUsableWZCard(api_resource.ApiResource):
 			})
 
 		checker = WZCardChecker()
-		is_success, reason = checker.check(wzcard_id, wzcard_password, wzcard)
+		is_success, reason = checker.check(wzcard_id, wzcard_password, wzcard, webapp_owner, webapp_user)
 
-		# TODO: 是不是这些信息放在Web端比较好呢？
 		if not is_success:
-			if 'wzcard:nosuch' == reason['type']:
-				msg = u'卡号或密码错误'
-			else:
-				msg = reason['msg']
+			msg = reason['msg']
 			return {
 				'code': 400,
 				'type': reason['type'],

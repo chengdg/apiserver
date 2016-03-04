@@ -22,7 +22,7 @@
       "description": "详细描述文档",
       "url": "http://swagger.io"
     }
-  }, ],
+  }],
   "schemes": [
     "http"
   ],
@@ -57,7 +57,7 @@
           "405": {
             "description": "Invalid input"
           }
-        },
+        }
       }
     }
   },
@@ -75,9 +75,9 @@
         },
         "name": {
           "type": "string"
-        },
+        }
       }
-    },
+    }
   },
   "externalDocs": {
     "description": "Python-base API描述文档",

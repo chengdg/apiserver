@@ -209,6 +209,8 @@ class Order(business_model.Model):
 		else:
 			# 用于创建空的Order model
 			self.context['order'] = mall_models.Order()
+			# 初始化数据应该为db model默认值，不应为none
+			self._init_slot_from_model(self.context['order'])
 
 
 	@cached_context_property

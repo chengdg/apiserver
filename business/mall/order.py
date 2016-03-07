@@ -209,6 +209,8 @@ class Order(business_model.Model):
 		else:
 			# 用于创建空的Order model
 			self.context['order'] = mall_models.Order()
+			# 初始化数据应该为db model默认值，不应为none
+			self._init_slot_from_model(self.context['order'])
 
 
 	@cached_context_property
@@ -260,7 +262,7 @@ class Order(business_model.Model):
 		return sub_orders
 
 	def get_sub_order_ids(self):
-		if self.has_sub_order:
+		if self.real_has_sub_order:
 			orders = mall_models.Order.select().dj_where(origin_order_id=self.id)
 			sub_order_ids = [order.order_id for order in orders]
 			return sub_order_ids
@@ -310,6 +312,23 @@ class Order(business_model.Model):
 		[property] 该订单是否有子订单
 		"""
 		return self.origin_order_id == -1 and self.status > mall_models.ORDER_STATUS_NOT #未支付的订单按未拆单显示
+
+	@cached_context_property
+	def has_multi_sub_order(self):
+		"""
+		[property] 该订单是否有超过一个子订单
+		"""
+		return self.has_sub_order and len(self.get_sub_order_ids()) > 1
+
+
+	@property
+	def real_has_sub_order(self):
+		"""
+		[property] 真正的该订单是否有子订单
+		"""
+		return self.origin_order_id == -1
+
+
 
 	@cached_context_property
 	def has_multi_sub_order(self):
@@ -988,10 +1007,13 @@ class Order(business_model.Model):
 		self.context['webapp_user'].cleanup_order_info_cache()
 
 		# 记录日志
-
 		LogOperator.record_operation_log(self, u'客户', mall_models.ACTION2MSG[action])
-		if self.raw_status:
+		if self.raw_status is not None:
 			record_order_status_log.delay(self.order_id, u'客户', self.raw_status, self.status)
+			if self.origin_order_id == -1:
+				for order_id in self.get_sub_order_ids():
+					record_order_status_log.delay(order_id, u'客户', self.raw_status, self.status)
+
 		self.__send_notify_mail()
 
 

@@ -31,6 +31,16 @@ class LogOperator(business_model.Model):
 			action = action,
 			operator = operator
 		)
+
+		# 记录子订单日志
+		if order.origin_order_id == -1:
+			for order_id in order.get_sub_order_ids():
+				order_operation_log = mall_models.OrderOperationLog.create(
+					order_id=order_id,
+					action=action,
+					operator=operator
+				)
+
 		return order_operation_log
 
 

@@ -34,6 +34,7 @@ class AllocateOrderResourceService(AllocateResourceServiceBase):
 		self.register_allocator(OrderProductsResourceAllocator(webapp_owner, webapp_user))
 		self.register_allocator(OrderIntegralResourceAllocator(webapp_owner, webapp_user))
 		self.register_allocator(OrderCouponResourceAllocator(webapp_owner, webapp_user))
+		self.register_allocator(OrderGroupBuyAllocator(webapp_owner, webapp_user))
 
 
 '''

@@ -104,9 +104,7 @@ class APurchasing(api_resource.ApiResource):
 		webapp_owner = args['webapp_owner']
 		member = args.get('member', None)
 
-		group_id = args.get('group_id', 11)
-		print('-------------y',group_id)
-
+		group_id = args.get('group_id', '')
 
 		purchase_info = PurchaseInfo.parse({
 			'request_args': args

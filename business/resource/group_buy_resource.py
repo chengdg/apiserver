@@ -24,11 +24,9 @@ class GroupBuyResource(business_model.Resource):
 
 		@return CouponResource对象
 		"""
-		pass
+		return GroupBuyResource(args['type'])
 
-		# a = GroupBuyResource(args['type'])
-		#
-		# return coupon_resource
+
 
 	def __init__(self, type):
 		business_model.Resource.__init__(self)

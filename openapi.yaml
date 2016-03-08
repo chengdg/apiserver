@@ -8,6 +8,8 @@ info:
   version: "0.0.1"
   title: apiserver接口文档
 
+host: 127.0.0.1:8001
+
 # Describe your paths here
 paths:
   # This is a path endpoint. Change it.
@@ -20,13 +22,10 @@ paths:
       # This is array of GET operation parameters:
       parameters:
         # An example parameter that is in query and is required
-        -
-          name: group_id
-          in: query
-          description: 团购活动id
-          required: false
-          type: number
-          format: int32
+        - $ref: '#/definitions/group_id'
+        - name: product_ids
+        - name: product_counts
+        - name: product_model_names
       # Expected responses for this operation:
       responses:
         # Response code
@@ -51,5 +50,8 @@ paths:
       responses:
         200:
           description: Successful response
-
-
+definitions:
+  group_id:
+    name: group_id
+    description: 团购活动id，来字团购活动页点击参团跳转到编辑订单页提供
+    type: string

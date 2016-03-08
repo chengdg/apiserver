@@ -11,6 +11,7 @@ from allocate_resource_service_base import AllocateResourceServiceBase
 from business.mall.allocator.order_integral_resource_allocator import OrderIntegralResourceAllocator
 from business.mall.allocator.order_products_resource_allocator import OrderProductsResourceAllocator
 from business.mall.allocator.order_coupon_resource_allocator import OrderCouponResourceAllocator
+from business.mall.allocator.order_group_buy_resource_allocator import OrderGroupBuyAllocator
 
 #import logging
 

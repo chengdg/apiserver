@@ -118,7 +118,8 @@ class Order(business_model.Model):
 		'delivery_time', # 配送时间字符串
 		'is_first_order',
 		'supplier_user_id',
-		'total_purchase_price'
+		'total_purchase_price',
+		'group_id'  # 团购活动id
 	)
 
 	@staticmethod

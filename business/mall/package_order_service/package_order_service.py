@@ -44,8 +44,8 @@ class PackageOrderService(business_model.Service):
 		group_buy_resource = self.type2resource.get('group_buy')
 		if group_buy_resource:
 			for product in order.products:
-				if product == group_buy_resource['pid']:
-					product.price = group_buy_resource['group_buy_price']
+				if product == group_buy_resource.pid:
+					product.price = group_buy_resource.group_buy_price
 
 		order.product_price = sum([product.price * product.purchase_count for product in order.products])
 		return order.product_price

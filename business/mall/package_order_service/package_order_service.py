@@ -111,12 +111,14 @@ class PackageOrderService(business_model.Service):
 
 		@return final_price 调整后的订单价格
 		"""
-		postage_config = self.context['webapp_owner'].system_postage_config
-		calculator = postage_calculator.PostageCalculator(postage_config)
-		postage = calculator.get_postage(order.products, purchase_info)
-		#order.db_model.postage = postage
-		order.postage = postage
-		final_price += postage
+		if order.group_id:
+			# 团购订单不计运费
+			order.postage = 0
+		else:
+			postage_config = self.context['webapp_owner'].system_postage_config
+			calculator = postage_calculator.PostageCalculator(postage_config)
+			order.postage = calculator.get_postage(order.products, purchase_info)
+		final_price += order.postage
 		logging.info("`final_price` in __process_postage(): {}".format(final_price))
 		return final_price
 

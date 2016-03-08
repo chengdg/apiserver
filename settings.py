@@ -177,6 +177,10 @@ if MODE == 'test':
     OAUTHSERVER_HOST = 'http://api.mall3.weizzz.com/'
     H5_DOMAIN = 'h5.mall3.weizzz.com'
     WEAPP_DOMAIN = 'docker.test.weizzz.com'
+elif MODE == 'develop':
+    OAUTHSERVER_HOST = 'http://api.weizoom.com/'
+    H5_DOMAIN = 'mall.weizoom.com'
+    WEAPP_DOMAIN = 'dev.weapp.com'
 else:
     OAUTHSERVER_HOST = 'http://api.weizoom.com/'
     H5_DOMAIN = 'mall.weizoom.com'

@@ -13,13 +13,8 @@ class GroupBuyResource(business_model.Resource):
 	"""
 	__slots__ = (
 		'type',
-		'coupon',
-		'price',
-
-		'raw_status', # 原来属性？
-		'raw_member_id',
-
-		'red_envelope2member',
+		'pid',
+		'group_buy_price'
 	)
 
 	@staticmethod
@@ -38,6 +33,8 @@ class GroupBuyResource(business_model.Resource):
 	def __init__(self, type):
 		business_model.Resource.__init__(self)
 		self.type = type
+		self.pid = 0
+		self.group_buy_price = 0
 
 	def get_type(self):
 		return self.type

@@ -40,8 +40,9 @@ paths:
             properties:
               group_id:
                 type: string
-              is_group_buy:
-                type: boolean
+              group_buy_price:
+                description: 团购价
+                type: double
   /wapi/mall/order/:
     put:
       description: 创建订单接口
@@ -49,6 +50,6 @@ paths:
         - name: group_id
       responses:
         200:
-          description: Successful response1111
+          description: Successful response
 
 

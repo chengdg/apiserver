@@ -21,23 +21,50 @@ class OrderGroupBuyAllocator(business_model.Service):
 		self.context['webapp_user'] = webapp_user
 
 	def allocate_resource(self, order, purchase_info):
+
+		if not order.group_id:
+			self.__return_empty_resource()
+
 		# 检测purchase_info互斥
 		pass
 
+		group_buy_product_id = order.products[0].id
+
+		# 检测活动可行性
+
 		# 申请资源
 		params_data = {'pid',order.products[0].id}
-		group_buy_product_info = requests.get('sadasd', params=params_data)
+		# group_buy_product_info = requests.get('sadasd', params=params_data)
+
+		mock_group_buy_product_info = {
+			'is_success': True,
+			'group_buy_price': 123,
+			'reason': 'asdasdasdasda',
+		}
 
 
 
+		group_buy_product_info = mock_group_buy_product_info
+
+		if not group_buy_product_info['is_success']:
+			# 申请资源失败
+			reason_dict = {
+				"is_success": False,
+				"msg": group_buy_product_info['reason'],
+				"type": "group_buy"
+			}
+			return False, [reason_dict], None
 
 
-		empty_coupon_resource = GroupBuyResource.get({
+
+		group_buy_resource = GroupBuyResource.get({
 			'type': self.resource_type,
 		})
 
+		group_buy_resource.pid = group_buy_product_id
+		group_buy_resource.group_buy_price = group_buy_product_info['group_buy_price']
 
-		return True, '', empty_coupon_resource
+		return True, '', group_buy_resource
 
 
 
@@ -50,3 +77,9 @@ class OrderGroupBuyAllocator(business_model.Service):
 	@property
 	def resource_type(self):
 		return business_model.RESOURCE_TYPE_GROUP_BUY
+
+	def __return_empty_resource(self):
+		empty_coupon_resource = GroupBuyResource.get({
+			'type': self.resource_type,
+		})
+		return True, '',empty_coupon_resource

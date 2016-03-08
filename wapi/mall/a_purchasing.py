@@ -104,8 +104,10 @@ class APurchasing(api_resource.ApiResource):
 		member = args.get('member', None)
 
 		group_id = args.get('group_id', None)
-		is_from_group = True if group_id else False
-
+		if group_id:
+			group_buy_price = 123
+		else:
+			group_buy_price = 0
 		purchase_info = PurchaseInfo.parse({
 			'request_args': args
 		})
@@ -150,6 +152,6 @@ class APurchasing(api_resource.ApiResource):
 			'use_ceiling': use_ceiling,
 			'postage_factor': postage_factor,
 			'group_id': group_id,
-			'is_from_group': is_from_group
+			'group_buy_price': group_buy_price
 		}
 

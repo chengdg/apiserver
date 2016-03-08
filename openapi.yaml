@@ -42,7 +42,6 @@ paths:
                 type: string
               is_group_buy:
                 type: boolean
-
   /wapi/mall/order/:
     put:
 

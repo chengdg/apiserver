@@ -44,12 +44,10 @@ paths:
                 type: boolean
   /wapi/mall/order/:
     put:
-
       description: 创建订单接口
       parameters:
         - name: group_id
       response:
-
         200:
           description: Successful response
 

@@ -38,7 +38,7 @@ class OrderGroupBuyAllocator(business_model.Service):
 
 		mock_group_buy_product_info = {
 			'is_success': True,
-			'group_buy_price': 123,
+			'group_buy_price': 200,
 			'reason': 'asdasdasdasda',
 		}
 

@@ -647,6 +647,7 @@ class Order(business_model.Model):
 		db_model.promotion_saved_money = self.promotion_saved_money
 		db_model.product_price = self.product_price
 		db_model.final_price = self.final_price
+		db_model.group_id = self.group_id
 
 		# 微众卡抵扣金额
 		db_model.weizoom_card_money = self.weizoom_card_money

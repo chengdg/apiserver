@@ -1430,7 +1430,7 @@ class Order(models.Model):
 	is_first_order = models.BooleanField(default=False) # 是否是用户的首单
 	supplier_user_id = models.IntegerField(default=0) # 订单供货商user的id，用于系列拆单
 	total_purchase_price = models.FloatField(default=0)  # 总订单采购价格
-	group_id = models.CharField(max_length=100)
+	group_id = models.CharField(max_length=100, default='')
 
 	class Meta(object):
 		db_table = 'mall_order'

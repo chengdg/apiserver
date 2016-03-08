@@ -225,6 +225,7 @@ class OrderFactory(business_model.Model):
 		order.status = mall_models.ORDER_STATUS_NOT
 		order.delivery_time = purchase_info.delivery_time # 配送时间字符串
 		order.order_id = self.__create_order_id()
+		order.group_id = purchase_info.group_id
 		return order
 
 

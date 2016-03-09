@@ -119,7 +119,6 @@ class Order(business_model.Model):
 		'is_first_order',
 		'supplier_user_id',
 		'total_purchase_price',
-		'group_id'  # 团购活动id
 	)
 
 	@staticmethod
@@ -603,7 +602,7 @@ class Order(business_model.Model):
 		return self.context['order']
 
 
-	def save(self):
+	def save(self, purchase_info):
 		"""
 		业务模型序列化
 		"""
@@ -647,7 +646,6 @@ class Order(business_model.Model):
 		db_model.promotion_saved_money = self.promotion_saved_money
 		db_model.product_price = self.product_price
 		db_model.final_price = self.final_price
-		db_model.group_id = self.group_id
 
 		# 微众卡抵扣金额
 		db_model.weizoom_card_money = self.weizoom_card_money
@@ -799,6 +797,15 @@ class Order(business_model.Model):
 						integral_money=product_group.integral_result['integral_money'],
 						integral_count=product_group.integral_result['use_integral'],
 				)
+
+		# 团购订单处理
+		mall_models.OrderHasGroup.create(
+			order_id=self.order_id,
+			group_id=purchase_info.group_id,
+			activity_id=purchase_info.activity_id,
+			group_status=mall_models.GROUP_STATUS_ON
+		)
+
 		self.__after_update_status('buy')
 
 
@@ -1117,4 +1124,8 @@ class Order(business_model.Model):
 
 	@cached_context_property
 	def is_group_buy(self):
-		return self.group_id
+		return bool(self.order_group_info)
+
+	@cached_context_property
+	def order_group_info(self):
+		return mall_models.OrderHasGroup.select().dj_where(order_id=self.order_id).first()

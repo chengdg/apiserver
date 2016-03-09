@@ -22,7 +22,7 @@ class OrderGroupBuyAllocator(business_model.Service):
 
 	def allocate_resource(self, order, purchase_info):
 
-		if not order.group_id:
+		if not purchase_info.group_id:
 			self.__return_empty_resource()
 
 		# 检测purchase_info互斥

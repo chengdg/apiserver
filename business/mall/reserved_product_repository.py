@@ -108,11 +108,21 @@ class ReservedProductRepository(business_model.Model):
 				"count": product_count,
 				"expected_promotion_id": expected_promotion_id
 			}
-			products.append(ReservedProduct.get({
+
+			reversed_product = ReservedProduct.get({
 				"webapp_owner": webapp_owner,
 				"webapp_user": webapp_user,
 				"product_info": product_info
-			}))
+			})
+
+			# todo requests团购请求
+			if purchase_info.group_id:
+				group_buy_info = {'group_buy_price': 10086}
+				group_buy_price = group_buy_info['group_buy_price']
+				reversed_product.price = group_buy_price
+
+			products.append(reversed_product)
+
 		
 		#TODO2：目前对商品是否可使用优惠券的设置放在了reserved_product_repository中
 		#主要是出于目前批量处理的考虑，后续应该将判断逻辑放入到reserved_product中

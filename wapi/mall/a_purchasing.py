@@ -132,14 +132,6 @@ class APurchasing(api_resource.ApiResource):
 		mall_config = webapp_owner.mall_config
 		use_ceiling = webapp_owner.integral_strategy_settings.use_ceiling
 
-
-		if group_id:
-			# 获取
-			group_buy_price = 123
-			for product in order.promotion_product_groups[0].products:
-				product.price = group_buy_price
-
-
 		product_group_datas = [group.to_dict(with_price_factor=True, with_coupon_info=True) for group in order.promotion_product_groups]
 
 		order_info = {

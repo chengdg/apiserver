@@ -45,7 +45,8 @@ class PurchaseInfo(business_model.Model):
         'coupon_id',
         'wzcard_info', # 微众卡信息
         'delivery_time',
-        'group_id'
+        'group_id',
+        'activity_id'
     )
 
     @staticmethod
@@ -250,3 +251,4 @@ class PurchaseInfo(business_model.Model):
 
     def __parse_group_buy_info(self, request_args):
         self.group_id = request_args.get('group_id', '')
+        self.activity_id = request_args.get('activity_id', '')

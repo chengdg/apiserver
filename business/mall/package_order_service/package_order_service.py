@@ -111,7 +111,7 @@ class PackageOrderService(business_model.Service):
 
 		@return final_price 调整后的订单价格
 		"""
-		if order.group_id:
+		if purchase_info.group_id:
 			# 团购订单不计运费
 			order.postage = 0
 		else:

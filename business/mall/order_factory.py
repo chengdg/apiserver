@@ -225,19 +225,18 @@ class OrderFactory(business_model.Model):
 		order.status = mall_models.ORDER_STATUS_NOT
 		order.delivery_time = purchase_info.delivery_time # 配送时间字符串
 		order.order_id = self.__create_order_id()
-		order.group_id = purchase_info.group_id
 		return order
 
 
 
-	def __save_order(self, order):
+	def __save_order(self, order, purchase_info):
 		"""
 		保存订单
 
 		@param[in] order Order对象(业务模型)
 		"""
 		logging.debug("order.db_model={}".format(order.db_model))
-		order.save()
+		order.save(purchase_info)
 		if order.final_price == 0:
 			# 优惠券或积分金额直接可支付完成，直接调用pay_order，完成支付
 			order.pay(mall_models.PAY_INTERFACE_PREFERENCE)
@@ -291,7 +290,7 @@ class OrderFactory(business_model.Model):
 						product_group.disable_integral_sale()
 
 				# 保存订单
-				order = self.__save_order(order)
+				order = self.__save_order(order, purchase_info)
 				# 如果需要（比如订单保存失败），释放资源
 				if order and order.is_saved:
 					#删除购物车

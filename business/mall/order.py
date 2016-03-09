@@ -649,7 +649,7 @@ class Order(business_model.Model):
 		db_model.area = self.ship_area
 		db_model.bill_type = self.bill_type
 		db_model.bill = self.bill
-		
+
 		# 过滤MySQL utf-8不能存储的字符
 		customer_message = filter_invalid_str(self.customer_message)
 		db_model.customer_message = customer_message
@@ -748,7 +748,7 @@ class Order(business_model.Model):
 					supplier2products[product.supplier] = []
 					supplier2products[product.supplier].append(product)
 				else:
-					supplier2products[product.supplier].append(product)	
+					supplier2products[product.supplier].append(product)
 
 		if webapp_type:
 			# 进行拆单，生成子订单
@@ -757,6 +757,9 @@ class Order(business_model.Model):
 				new_order.id = None
 				new_order.order_id = '%s^%ss' % (self.order_id, supplier)
 				new_order.origin_order_id = self.id
+				new_order.coupon_money = 0
+				new_order.integral_money = 0
+				new_order.weizoom_card_money = 0
 				new_order.supplier = supplier
 				new_order.total_purchase_price = sum(map(lambda product:product.purchase_price * product.purchase_count, supplier2products[supplier]))
 				new_order.save()
@@ -766,6 +769,9 @@ class Order(business_model.Model):
 				new_order.id = None
 				new_order.order_id = '%s^%su' % (self.order_id, supplier_user_id)
 				new_order.origin_order_id = self.id
+				new_order.coupon_money = 0
+				new_order.integral_money = 0
+				new_order.weizoom_card_money = 0
 				new_order.supplier_user_id = supplier_user_id
 				new_order.total_purchase_price = sum(map(lambda product:product.purchase_price * product.purchase_count, supplier_user_id2products[supplier_user_id]))
 				new_order.pay_interface_type = mall_models.PAY_INTERFACE_WEIXIN_PAY

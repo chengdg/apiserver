@@ -1,5 +1,12 @@
 # apiserver: 微商城后端API Server #
 
+
+## 文档 ##
+
+ * [源码文档](http://doc.a01.weizom.com:81/apiserver_doc/)（由[weapp_apiserver_docs](http://jenkins.a03.weizom.com:8080/view/Docs/job/weapp_apiserver_docs/)用Doxygen构建）
+ * [API文档](http://doc.a01.weizom.com:81/apiserver_api/) （由[weapp_apiserver_apidoc](http://jenkins.a03.weizom.com:8080/view/Docs/job/weapp_apiserver_apidoc/)用bootprint-swagger构建）
+
+
 ## 重构指南 ##
 
 请细读[开发指南](http://git.weizzz.com:8082/weapp/apiserver/wikis/home)！
@@ -8,9 +15,6 @@
  * 重构任务按照feature场景划分，即一个feature对应一个[看板](http://newproject.weizoom.com:8088/project/maintaince/?project_id=37)“需求”。
  * 增加资源及时在钉钉群“商城重构沟通”中通知所有人。
 
-
-## 源码文档 ##
-用Doxygen生成文档：`doxygen Doxygen`。也可以直接访问[在线文档](http://s01.gaoliqi.com:82/doc/apiserver)（由[weapp_apiserver_doc](http://s01.gaoliqi.com:8081/jenkins/view/doc/job/doc_weapp_apiserver/)自动构建）。
 
 ## 启动 API server ##
 
@@ -116,5 +120,3 @@ server {
 ```
 （3）python core/handlers/test.py
 ```
-
-

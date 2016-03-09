@@ -1,0 +1,254 @@
+---
+swagger: "2.0"
+info:
+  description: "微商城API描述文档"
+  version: "1.0.0"
+  title: "微商城API描述文档"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "gaoliqi@weizoom.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "api.weizoom.com"
+basePath: "/"
+tags:
+- name: "mall"
+  description: "微商城相关"
+  externalDocs:
+    description: "详细描述文档"
+    url: "http://git.weizzz.com:8082/weapp/apiserver"
+schemes:
+- "http"
+paths:
+  /wapi/mall/coupon/:
+    get:
+      tags:
+      - "mall"
+      summary: "优惠券接口"
+      description: "下订单时填写优惠码"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "woid"
+        in: "query"
+        description: "Weapp Owner ID"
+        required: true
+        type: "string"
+      - name: "coupon_id"
+        in: "query"
+        description: "Coupon ID"
+        required: true
+        type: "string"
+      - name: "order_price"
+        in: "query"
+        description: "订单价格"
+        required: true
+        type: "number"
+        format: "float"
+      - name: "product2info"
+        in: "query"
+        description: "商品信息(JSON)"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "如果可以使用优惠券"
+          schema:
+            $ref: "#/definitions/CouponInfo"
+          examples:
+            application/json: {
+              "is_success": true,
+              "id": 1,
+              "money": 100.00,
+              "productid": 101
+            }
+        401:
+          description: "invalid coupon"
+          schema:
+            $ref: "#/definitions/InvalidCouponInfo"
+          examples:
+            application/json: {
+              "is_success": false,
+              "msg": "失败原因"
+            }
+
+  /wapi/mall/coupons/:
+    get:
+      tags:
+      - "mall"
+      summary: "编辑订单页显示优惠券列表"
+      description: "编辑订单页显示优惠券列表"
+      operationId: "/mall/coupons/"
+      consumes:
+      - "application/x-www-form-urlencoded"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "woid"
+        in: "query"
+        description: "Weapp Owner ID"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "data response"
+          schema:
+            #$ref: "#/definitions/Coupons"
+            title: coupon response
+            type: "object"
+            properties:
+              unused_coupons:
+                type: "number"
+              used_coupons:
+                type: "number"
+              expired_coupons:
+                type: "number"            
+          examples:
+            application/json: {
+              "unused_coupons": 99,
+              "used_coupons": 1,
+              "expired_coupons": 1
+            }
+  
+  /wapi/mall/express_details/:
+    get:
+      tags:
+      - "mall"
+      summary: "物流详情"
+      description: "物流详情"
+      operationId: "/mall/express_details/"
+      consumes:
+      - "application/x-www-form-urlencoded"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "woid"
+        in: "query"
+        description: "Weapp Owner ID"
+        required: true
+        type: "string"
+      - name: "order_id"
+        in: "query"
+        description: "订单ID"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "data response"
+          schema:
+            $ref: "#/definitions/ExpressDetails"
+          examples:
+            application/json:  {
+                "code": 200,
+                "data": {
+                  "express_details": [
+                    {
+                      "status": "2",
+                      "express_id": 13241234,
+                      "created_at": "2015-12-22 17:04:54",
+                      "display_index": 2,
+                      "ftime": "2015-12-22",
+                      "context": "哈哈1",
+                      "time": "2015-12-22 17:04:39",
+                      "id": 2
+                    },
+                    {
+                      "status": "1",
+                      "express_id": 147258368,
+                      "created_at": "2015-12-22 16:22:39",
+                      "display_index": 1,
+                      "ftime": "2015-12-22",
+                      "context": "嘻嘻2",
+                      "time": "2015-12-22 16:22:15",
+                      "id": 1
+                    }
+                  ]
+                },
+                "errMsg": "",
+                "innerErrMsg": ""
+              }
+        default:
+          description: "unexpected error"
+          schema:
+            $ref: "#/definitions/Error"
+
+definitions:
+
+  CouponInfo:
+    type: "object"
+    properties:
+      is_success:
+        type: "boolean"
+        format: "boolean"
+      id:
+        type: "number"
+        format: "int64"
+        description: "优惠券ID"
+      money:
+        type: "number"
+        format: "float"
+        description: "优惠券金额"
+      productid:
+        type: "number"
+        format: "int64"
+        description: "受限的Product ID"
+
+  InvalidCouponInfo:
+    type: "object"
+    properties:
+      is_success:
+        type: "boolean"
+      msg:
+        type: "string"
+
+  ExpressDetails:
+    type: "object"
+    properties:
+      order_id:
+        type: "string"
+      status:
+        type: "string"
+      express_company_name:
+        type: "string"
+      express_number:
+        type: "string"
+      express_details:
+        type: "array"
+        items:
+          $ref: "#/definitions/ExpressDetail"
+
+  ExpressDetail:
+    properties:
+      ftime:
+        type: "string"
+        format: "date"
+      express_id:
+        type: "number"
+      display_index:
+        type: "number"
+      context:
+        type: "string"
+      created_at:
+        type: "string"
+        format: "dateTime"
+      time:
+        type: "string"
+        format: "dateTime"
+      id:
+        type: "number"
+        format: "int32"
+      status:
+        type: "string"
+
+  Error:
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      message:
+        type: "string"
+
+externalDocs:
+  description: "Python-base API描述文档"
+  url: "http://git.weizzz.com:8082/weapp/apiserver"

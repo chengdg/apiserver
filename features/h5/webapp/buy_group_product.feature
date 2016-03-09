@@ -171,9 +171,17 @@ Scenario: 1 会员访问团购活动首页能进行开团
 		"""
 	#bill开“团购1-5人团”，团购活动只能使用微信支付，有配送时间，运费0元
 	#支付完成后跳转到活动详情页-显示邀请好友参团
-	When bill开团购活动'团购1'5人团
+	When bill购买jobs的商品
 		"""
 		{
+			"group_name": "团购1",
+			"group_leader": "bill",
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":20.00
+				}],
 			"ship_name": "bill",
 			"ship_tel": "13811223344",
 			"ship_area": "北京市 北京市 海淀区",
@@ -255,6 +263,7 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 	Then tom'能参加'团购活动
 		"""
 		[{
+			"group_leader": "bill",
 			"group_name": "团购2"
 			"group_dict":
 				[{
@@ -326,6 +335,7 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 	Then nokia'能参加'团购活动
 		"""
 		[{
+			"group_leader": "bill",
 			"group_name": "团购2"
 			"group_dict":
 				[{
@@ -340,7 +350,7 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 		}]
 		"""
 	#非会员支付完成后跳转二维码引导关注
-	#非会员不能开团
+	#非会员不能开团,点击“我要开团”弹出二维码
 	When nokia参加团过活动'团购1'5人团
 		"""
 		{
@@ -364,6 +374,10 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 			}]
 		}
 		"""
+	Then nokia'不能开'团购活动
+
+
+
 
 
 

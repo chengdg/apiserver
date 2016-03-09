@@ -6,7 +6,9 @@ Feature: 手机端购买团购活动
 	手机端访问团购活动，进行购买
 		1.团购商品在商品列表页显示商品的原价
 		2.会员访问团购活动，能进行开团购买
-		3.
+		3.会员可开团也可参团，非会员可以参团，不能开团
+		4.开团后，人数达到上限，团购成功，获得成功页面，参与团购会员手机端会收到模板消息
+		5.开团后，人数没有达到标准期限到了，团购失败，支付的订单自动退款
 
 	"""
 
@@ -141,21 +143,9 @@ Scenario: 1 会员访问团购活动首页能进行开团
 		}]
 		"""
 	#bill是已关注的会员可以直接开团
-	Then bill'能开'团购活动
+	Then bill能获得开团活动列表
 		"""
-		[{
-			"group_name": "团购1"
-			"group_dict":
-				[{
-					"group_type":5,
-					"group_days":1,
-					"group_price":20.00
-				},{
-					"group_type":10,
-					"group_days":2,
-					"group_price":10.00
-				}]
-		}, {
+		{
 			"group_name": "团购2"
 			"group_dict":
 				[{
@@ -166,6 +156,18 @@ Scenario: 1 会员访问团购活动首页能进行开团
 					"group_type":10,
 					"group_days":2,
 					"group_price":11.00
+				}]
+		}, {
+			"group_name": "团购1"
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":20.00
+				},{
+					"group_type":10,
+					"group_days":2,
+					"group_price":10.00
 				}]
 		}]
 		"""
@@ -197,6 +199,7 @@ Scenario: 1 会员访问团购活动首页能进行开团
 	Then bill成功创建订单
 		"""
 		{
+			"is_group_buying": "true",
 			"status": "待发货",
 			"final_price": 20.00,
 			"postage": 0.00,
@@ -208,7 +211,7 @@ Scenario: 1 会员访问团购活动首页能进行开团
 		}
 		"""
 	#bill开团后，就不能重复开一个团购活动
-	Then bill'能开'团购活动
+	Then bill能获得开团活动列表
 		"""
 		[{
 			"group_name": "团购2"
@@ -228,7 +231,7 @@ Scenario: 1 会员访问团购活动首页能进行开团
 
 Scenario: 2 会员可以通过分享链接直接参加团购活动
 	bill开团后分享团购活动链接
-	1.会员tom可以同过bill分享的链接直接参团
+	1.会员tom可以直接参加团购活动，参加后就不能重复参加，可以开团
 	2.非会员nokia通过分享链接能直接参团，不能开团购买
 
 	When bill访问jobs的webapp
@@ -253,6 +256,7 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 	Then bill成功创建订单
 		"""
 		{
+			"is_group_buying": "true",
 			"status": "待发货",
 			"final_price": 21.00,
 			"postage": 0.00,
@@ -265,10 +269,8 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 		"""
 	When bill把jobs的团购活动"团购2"的链接分享到朋友圈
 	#会员打开链接显示-我要参团，看看还有什么团
-	When 清空浏览器:weapp
-	When tom点击bill分享链接
 	When tom访问jobs的webapp
-	Then tom'能参加'团购活动
+	Then tom能获得参团活动列表
 		"""
 		[{
 			"group_name": "团购2",
@@ -307,6 +309,7 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 	Then tom成功创建订单
 		"""
 		{
+			"is_group_buying": "true",
 			"status": "待发货",
 			"final_price": 21.00,
 			"postage": 0.00,
@@ -317,21 +320,9 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 			}]
 		}
 		"""
-	Then tom'能开'团购活动
+	Then tom能获得开团活动列表
 		"""
 		[{
-			"group_name": "团购1"
-			"group_dict":
-				[{
-					"group_type":5,
-					"group_days":1,
-					"group_price":20.00
-				},{
-					"group_type":10,
-					"group_days":2,
-					"group_price":10.00
-				}]
-		}, {
 			"group_name": "团购2"
 			"group_dict":
 				[{
@@ -343,12 +334,28 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 					"group_days":2,
 					"group_price":11.00
 				}]
+		}, {
+			"group_name": "团购1"
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":20.00
+				},{
+					"group_type":10,
+					"group_days":2,
+					"group_price":10.00
+				}]
 		}]
+		"""
+	Then tom能获得参团活动列表
+		"""
+		[]
 		"""
 	When 清空浏览器:weapp
 	When nokia点击bill分享链接
 	When nokia访问jobs的webapp
-	Then nokia'能参加'团购活动
+	Then nokia能获得参团活动列表
 		"""
 		[{
 			"group_name": "团购2",
@@ -366,7 +373,6 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 		}]
 		"""
 	#非会员支付完成后跳转二维码引导关注
-	#非会员不能开团,点击“我要开团”弹出二维码
 	When nokia参加jobs的团购活动
 		"""
 		{
@@ -388,6 +394,7 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 	Then nokia成功创建订单
 		"""
 		{
+			"is_group_buying": "true",
 			"status": "待发货",
 			"final_price": 21.00,
 			"postage": 0.00,
@@ -398,15 +405,637 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 			}]
 		}
 		"""
-	Then nokia'不能开'团购活动
+	#非会员不能开团,点击“我要开团”弹出二维码
+	Then nokia能获得开团活动列表
+		"""
+		[]
+		"""
 
 
-Scenario: 3 会员开团后，团购成功
+Scenario: 3 会员开团后团购活动成功
+	会员开团后
+	1.在活动期内团购人数达到开团人数，团购成功
+	2.团购人数达到开团人数，不能再参加此团购
+
+	Given tom1关注jobs的公众号
+	And tom2关注jobs的公众号
+	And tom3关注jobs的公众号
+	And tom4关注jobs的公众号
+	When bill访问jobs的webapp
+	When bill参加jobs的团购活动
+		"""
+		{
+			"group_name": "团购2",
+			"group_leader": "bill",
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":21.00
+				}],
+			"pay_type":"微信支付",
+			"products": [{
+				"name": "商品2"
+			}]
+		}
+		"""
+	When bill使用支付方式'微信支付'进行支付
+	When tom访问jobs的webapp
+	Then tom能获得参团活动列表
+		"""
+		[{
+			"group_name": "团购2",
+			"group_leader": "bill",
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":21.00,
+					"offered":[{
+						"number":1,
+						"member":["bill"]
+						}]
+				}]
+		}]
+		"""
+	When tom参加jobs的团购活动
+		"""
+		{
+			"group_name": "团购2",
+			"group_leader": "bill",
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":21.00
+				}],
+			"pay_type":"微信支付",
+			"products": [{
+				"name": "商品2"
+			}]
+		}
+		"""
+	When tom使用支付方式'微信支付'进行支付
+
+	When tom1访问jobs的webapp
+	Then tom1能获得参团活动列表
+		"""
+		[{
+			"group_name": "团购2",
+			"group_leader": "bill",
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":21.00,
+					"offered":[{
+						"number":2,
+						"member":["bill", "tom"]
+						}]
+				}]
+		}]
+		"""
+	When tom1参加jobs的团购活动
+		"""
+		{
+			"group_name": "团购2",
+			"group_leader": "bill",
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":21.00
+				}],
+			"pay_type":"微信支付",
+			"products": [{
+				"name": "商品2"
+			}]
+		}
+		"""
+	When tom1使用支付方式'微信支付'进行支付
+
+	When tom2访问jobs的webapp
+	Then tom2能获得参团活动列表
+		"""
+		[{
+			"group_name": "团购2",
+			"group_leader": "bill",
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":21.00,
+					"offered":[{
+						"number":3,
+						"member":["bill", "tom", "tom1"]
+						}]
+				}]
+		}]
+		"""
+	When tom2参加jobs的团购活动
+		"""
+		{
+			"group_name": "团购2",
+			"group_leader": "bill",
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":21.00
+				}],
+			"pay_type":"微信支付",
+			"products": [{
+				"name": "商品2"
+			}]
+		}
+		"""
+	When tom2使用支付方式'微信支付'进行支付
+
+	When tom3访问jobs的webapp
+	Then tom3能获得参团活动列表
+		"""
+		[{
+			"group_name": "团购2",
+			"group_leader": "bill",
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":21.00,
+					"offered":[{
+						"number":4,
+						"member":["bill", "tom", "tom1", "tom2"]
+						}]
+				}]
+		}]
+		"""
+	When tom3参加jobs的团购活动
+		"""
+		{
+			"group_name": "团购2",
+			"group_leader": "bill",
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":21.00
+				}],
+			"pay_type":"微信支付",
+			"products": [{
+				"name": "商品2"
+			}]
+		}
+		"""
+	When tom3使用支付方式'微信支付'进行支付
+	Then tom3获得提示信息'恭喜您团购成功 商家将在该商品团购结束20天内进行发货'
+
+	#团购活动达到上限，团购成功，下一个人就不能参加这个活动了
+	When tom3访问jobs的webapp
+	Then tom3能获得参团活动列表
+		"""
+		[]
+		"""
 
 
+Scenario: 4 会员开团后团购活动失败
+	会员开团后
+	1.没有在期限内达到人数，团购活动失败
+	2.结束活动，团购活动失败
+	3.团购失败后，用微众卡支付的订单直接返还微众卡
+
+	When bill访问jobs的webapp
+	When bill参加jobs的团购活动
+		"""
+		{
+			"group_name": "团购2",
+			"group_leader": "bill",
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":21.00
+				}],
+			"order_id":"001",
+			"pay_type":"微信支付",
+			"products": [{
+				"name": "商品2"
+			}],
+			"weizoom_card":[{
+				"card_name":"0000001",
+				"card_pass":"1234567"
+			}]
+		}
+		"""
+	Given jobs登录系统
+	Then jobs能获取微众卡'0000001':weapp
+		"""
+		{
+			"status":"已使用",
+			"price":79.00
+		}
+		"""
+	When jobs'结束'团购活动'团购2'
+	Then jobs能获取微众卡'0000001':weapp
+		"""
+		{
+			"status":"已使用",
+			"price":100.00
+		}
+		"""
+	When bill访问jobs的webapp
+	Then bill手机端获取订单'001'
+		"""
+		{
+			"order_no": "001",
+			"status": "退款完成"
+		}
+		"""
 
 
+Scenario: 5 会员开团不进行支付，开团不成功
+	会员开团不进行支付，开团不成功
+	1.其他会员获取不到参团列表
 
+	When bill访问jobs的webapp
+	When bill参加jobs的团购活动
+		"""
+		{
+			"group_name": "团购2",
+			"group_leader": "bill",
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":21.00
+				}],
+			"order_id":"001",
+			"pay_type":"微信支付",
+			"products": [{
+				"name": "商品2"
+			}]
+		}
+		"""
+	Then bill成功创建订单
+		"""
+		{
+			"is_group_buying": "true",
+			"status": "待支付",
+			"final_price": 21.00,
+			"postage": 0.00,
+			"products": [{
+				"name": "商品2",
+				"price": 21.00,
+				"count": 1
+			}]
+		}
+		"""
+	When tom3访问jobs的webapp
+	Then tom3能获得参团活动列表
+		"""
+		[]
+		"""
+
+
+Scenario: 6 一个会员可以参加多个会员开启的团购活动
+	1.一个会员既能开团又能参团，可以参加多个团购活动
+
+	Given tom1关注jobs的公众号
+	And tom2关注jobs的公众号
+	And tom3关注jobs的公众号
+	When bill访问jobs的webapp
+	When bill参加jobs的团购活动
+		"""
+		{
+			"group_name": "团购2",
+			"group_leader": "bill",
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":21.00
+				}],
+			"pay_type":"微信支付",
+			"products": [{
+				"name": "商品2"
+			}]
+		}
+		"""
+	When bill使用支付方式'微信支付'进行支付
+
+	When tom访问jobs的webapp
+	When tom参加jobs的团购活动
+		"""
+		{
+			"group_name": "团购2",
+			"group_leader": "tom",
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":21.00
+				}],
+			"pay_type":"微信支付",
+			"products": [{
+				"name": "商品2"
+			}]
+		}
+		"""
+	When tom使用支付方式'微信支付'进行支付
+
+	When tom1访问jobs的webapp
+	#参团列表参团人数一样的话以开团时间倒序显示
+	Then tom1能获得参团活动列表
+		"""
+		[{
+			"group_name": "团购2",
+			"group_leader": "tom",
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":21.00,
+					"offered":[{
+						"number":1,
+						"member":["tom"]
+						}]
+				}]
+		}, {
+			"group_name": "团购2",
+			"group_leader": "bill",
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":21.00,
+					"offered":[{
+						"number":1,
+						"member":["bill"]
+						}]
+				}]
+		}]
+		"""
+	When tom1参加jobs的团购活动
+		"""
+		{
+			"group_name": "团购2",
+			"group_leader": "bill",
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":21.00
+				}],
+			"pay_type":"微信支付",
+			"products": [{
+				"name": "商品2"
+			}]
+		}
+		"""
+	When tom1使用支付方式'微信支付'进行支付
+	When tom1参加jobs的团购活动
+		"""
+		{
+			"group_name": "团购2",
+			"group_leader": "tom",
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":21.00
+				}],
+			"pay_type":"微信支付",
+			"products": [{
+				"name": "商品2"
+			}]
+		}
+		"""
+	When tom1使用支付方式'微信支付'进行支付
+	When tom访问jobs的webapp
+	Then tom能获得参团活动列表
+		"""
+		[{
+			"group_name": "团购1",
+			"group_leader": "bill",
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":21.00,
+					"offered":[{
+						"number":1,
+						"member":["bill", "tom1"]
+						}]
+				}]
+		}]
+		"""
+	When tom参加jobs的团购活动
+		"""
+		{
+			"group_name": "团购1",
+			"group_leader": "bill",
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":21.00
+				}],
+			"pay_type":"微信支付",
+			"products": [{
+				"name": "商品2"
+			}]
+		}
+		"""
+	When tom使用支付方式'微信支付'进行支付
+	When tom3参加jobs的团购活动
+		"""
+		{
+			"group_name": "团购1",
+			"group_leader": "bill",
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":21.00
+				}],
+			"pay_type":"微信支付",
+			"products": [{
+				"name": "商品2"
+			}]
+		}
+		"""
+	When tom3使用支付方式'微信支付'进行支付
+	When tom2访问jobs的webapp
+	#参团列表优先显示拼团人数差一人的团购活动
+	Then tom2能获得参团活动列表
+		"""
+		[{
+			"group_name": "团购2",
+			"group_leader": "bill",
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":21.00,
+					"offered":[{
+						"number":1,
+						"member":["bill", "tom1", "tom", "tom3"]
+						}]
+				}]
+		}, {
+			"group_name": "团购2",
+			"group_leader": "tom",
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":21.00,
+					"offered":[{
+						"number":1,
+						"member":["tom"]
+						}]
+				}]
+		}]
+		"""
+
+
+Scenario: 7 会员把商品添加购物车后，后台把这个商品创建成团购活动
+	会员把商品3添加到购物车，后台把商品创建成团购活动
+	1.商品3在购物车为失效状态
+	2.结束活动后，商品恢复到正常状态
+
+	When bill访问jobs的webapp
+	And bill加入jobs的商品到购物车
+		"""
+		[{
+			"name": "商品3",
+			"count": 1
+		}]
+		"""
+	Then bill能获得购物车
+		"""
+		{
+			"product_groups": [{
+				"products": [{
+					"name": "商品3",
+					"price": 100,
+					"count": 1
+				}]
+			}],
+			"invalid_products": []
+		}
+		"""
+	Given jobs登录系统
+	When jobs创建团购活动:weapp
+		"""
+		[{
+			"group_name":"团购3",
+			"start_time":"今天",
+			"end_time":"2天后",
+			"product_name":"商品3",
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":20.00
+				},{
+					"group_type":10,
+					"group_days":2,
+					"group_price":10.00
+				}],
+				"ship_date":20,
+				"product_counts":100,
+				"material_image":"1.jpg",
+				"share_description":"团购分享描述"
+		}]
+		"""
+	When bill访问jobs的webapp
+	Then bill能获得购物车
+		"""
+		{
+			"product_groups": [],
+			"invalid_products": [{
+				"name": "商品3",
+				"price": 100,
+				"count": 1
+			}]
+		}
+		"""
+	Given jobs登录系统
+	When jobs'结束'团购活动'团购3'
+	When bill访问jobs的webapp
+	Then bill能获得购物车
+		"""
+		{
+			"product_groups": [{
+				"products": [{
+					"name": "商品3",
+					"price": 100,
+					"count": 1
+				}]
+			}],
+			"invalid_products": []
+		}
+		"""
+
+
+Scenario: 8 团购库存不足时，不能再进行开团操作
+	团购库存不足时
+	1.会员不能再开启团购
+
+	Given jobs登录系统
+	When jobs创建团购活动:weapp
+		"""
+		[{
+			"group_name":"团购3",
+			"start_time":"今天",
+			"end_time":"2天后",
+			"product_name":"商品3",
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":20.00
+				},{
+					"group_type":10,
+					"group_days":2,
+					"group_price":10.00
+				}],
+				"ship_date":20,
+				"product_counts":9,
+				"material_image":"1.jpg",
+				"share_description":"团购分享描述"
+		}]
+		"""
+	When bill访问jobs的webapp
+	#团购库存小于团购人数的时候，不能再开团购活动，活动列表获取不到团购信息
+	Then bill能获得开团活动列表
+		"""
+		[{
+			"group_name": "团购2"
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":21.00
+				},{
+					"group_type":10,
+					"group_days":2,
+					"group_price":11.00
+				}]
+		},{
+			"group_name": "团购1"
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":20.00
+				},{
+					"group_type":10,
+					"group_days":2,
+					"group_price":10.00
+				}]
+		}]
+		"""
 
 
 

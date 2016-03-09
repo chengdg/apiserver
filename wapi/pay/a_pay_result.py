@@ -49,10 +49,10 @@ class APayResult(api_resource.ApiResource):
 			red_envelope_rule_id = red_envelope['id']
 
 		qrcode_img = ''
-		group_buy_url = ''
+		activity_url = ''
 		if order.is_group_buy:
 			qrcode_img = webapp_owner.qrcode_img
-			group_buy_url = 'http://www.qq.com'
+			activity_url = 'http://www.qq.com'
 
 		return {
 			'is_trade_success': True,
@@ -60,7 +60,7 @@ class APayResult(api_resource.ApiResource):
 			'is_show_red_envelope': is_show_red_envelope,
 			'red_envelope_rule_id': red_envelope_rule_id,
 			'qrcode_img': qrcode_img,
-			'group_buy_url': group_buy_url
+			'activity_url': activity_url
 		}
 
 	@param_required(['order_id', 'pay_interface_type'])

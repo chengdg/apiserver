@@ -18,11 +18,12 @@ paths:
     get:
       # Describe this verb here. Note: you can use markdown
       description: |
-        获取编辑订单页
+        获取编辑订单页接口
       # This is array of GET operation parameters:
       parameters:
         # An example parameter that is in query and is required
         - $ref: '#/definitions/group_id'
+        - $ref: '#/definitions/activity_id'
         - name: product_ids
         - name: product_counts
         - name: product_model_names
@@ -39,19 +40,38 @@ paths:
             properties:
               group_id:
                 type: string
-              group_buy_price:
-                description: 团购价
-                type: double
   /wapi/mall/order/:
     put:
       description: 创建订单接口
       parameters:
-        - name: group_id
+        - $ref: '#/definitions/group_id'
+        - $ref: '#/definitions/activity_id'
       responses:
         200:
           description: Successful response
+  /wapi/pay/pay_result:
+    get:
+      description: 支付结果页接口
+      parameters:
+        - name: qrcode_img
+          description: 二维码图片url
+        - name: activity_url
+          description: 团购活动链接
+        - name: order
+          type: object
+          properties:
+            is_group_buy:
+              type: bool
+              required: true
 definitions:
   group_id:
     name: group_id
-    description: 团购活动id，来字团购活动页点击参团跳转到编辑订单页提供
+    description: 团id，来字团购活动页点击参团跳转到编辑订单页提供
+    type: string
+  activity_id:
+    name: activity_id
+    description: 团购活动id
+  activity_url:
+    name: activity_url
+    description: 团购活动url
     type: string

@@ -171,7 +171,7 @@ Scenario: 1 会员访问团购活动首页能进行开团
 		"""
 	#bill开“团购1-5人团”，团购活动只能使用微信支付，有配送时间，运费0元
 	#支付完成后跳转到活动详情页-显示邀请好友参团
-	When bill购买jobs的商品
+	When bill参加jobs的团购活动
 		"""
 		{
 			"group_name": "团购1",
@@ -232,7 +232,7 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 	2.非会员nokia通过分享链接能直接参团，不能开团购买
 
 	When bill访问jobs的webapp
-	When bill购买jobs的商品
+	When bill参加jobs的团购活动
 		"""
 		{
 			"group_name": "团购2",
@@ -286,7 +286,7 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 		}]
 		"""
 	#支付完成后跳转到活动详情页显示-邀请好友参团,我要开团
-	When tom购买jobs的商品
+	When tom参加jobs的团购活动
 		"""
 		{
 			"group_name": "团购2",
@@ -367,7 +367,7 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 		"""
 	#非会员支付完成后跳转二维码引导关注
 	#非会员不能开团,点击“我要开团”弹出二维码
-	When nokia购买jobs的商品
+	When nokia参加jobs的团购活动
 		"""
 		{
 			"group_name": "团购2",
@@ -401,7 +401,7 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 	Then nokia'不能开'团购活动
 
 
-Scenario: 3 会员可以通过分享链接直接参加团购活动
+Scenario: 3 会员开团后，团购成功
 
 
 

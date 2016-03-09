@@ -232,9 +232,17 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 	2.非会员nokia通过分享链接能直接参团，不能开团购买
 
 	When bill访问jobs的webapp
-	When bill开团购活动'团购2'5人团
+	When bill购买jobs的商品
 		"""
 		{
+			"group_name": "团购2",
+			"group_leader": "bill",
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":21.00
+				}],
 			"pay_type":"微信支付",
 			"products": [{
 				"name": "商品2"
@@ -263,8 +271,8 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 	Then tom'能参加'团购活动
 		"""
 		[{
+			"group_name": "团购2",
 			"group_leader": "bill",
-			"group_name": "团购2"
 			"group_dict":
 				[{
 					"group_type":5,
@@ -278,9 +286,17 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 		}]
 		"""
 	#支付完成后跳转到活动详情页显示-邀请好友参团,我要开团
-	When tom参加团过活动'团购1'5人团
+	When tom购买jobs的商品
 		"""
 		{
+			"group_name": "团购2",
+			"group_leader": "bill",
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":21.00
+				}],
 			"pay_type":"微信支付",
 			"products": [{
 				"name": "商品2"
@@ -335,8 +351,8 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 	Then nokia'能参加'团购活动
 		"""
 		[{
+			"group_name": "团购2",
 			"group_leader": "bill",
-			"group_name": "团购2"
 			"group_dict":
 				[{
 					"group_type":5,
@@ -351,9 +367,17 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 		"""
 	#非会员支付完成后跳转二维码引导关注
 	#非会员不能开团,点击“我要开团”弹出二维码
-	When nokia参加团过活动'团购1'5人团
+	When nokia购买jobs的商品
 		"""
 		{
+			"group_name": "团购2",
+			"group_leader": "bill",
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_days":1,
+					"group_price":21.00
+				}],
 			"pay_type":"微信支付",
 			"products": [{
 				"name": "商品2"
@@ -375,6 +399,9 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 		}
 		"""
 	Then nokia'不能开'团购活动
+
+
+Scenario: 3 会员可以通过分享链接直接参加团购活动
 
 
 

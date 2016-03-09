@@ -1114,3 +1114,7 @@ class Order(business_model.Model):
 			return True, ''
 		else:
 			return False, 'error_status'
+
+	@cached_context_property
+	def is_group_buy(self):
+		return self.group_id

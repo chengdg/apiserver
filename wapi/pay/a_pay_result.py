@@ -52,7 +52,9 @@ class APayResult(api_resource.ApiResource):
 			'is_trade_success': True,
 			'order': order.to_dict(),
 			'is_show_red_envelope': is_show_red_envelope,
-			'red_envelope_rule_id': red_envelope_rule_id
+			'red_envelope_rule_id': red_envelope_rule_id,
+			'qrcode_img': webapp_owner.qrcode_img,
+			'group_buy_url':'http://www.qq.com'
 		}
 
 	@param_required(['order_id', 'pay_interface_type'])

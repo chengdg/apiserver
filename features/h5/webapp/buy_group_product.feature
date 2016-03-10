@@ -9,7 +9,11 @@ Feature: 手机端购买团购活动
 		3.会员可开团也可参团，非会员可以参团，不能开团
 		4.开团后，人数达到上限，团购成功，获得成功页面，参与团购会员手机端会收到模板消息
 		5.开团后，人数没有达到标准期限到了，团购失败，支付的订单自动退款
-
+		6.下单成功，库存减少，团购失败，库存恢复
+		7.开团时下单不进行支付，不能成功开团
+		8.一个会员可以参加多个团，对一个团购活动只能开一次团，不能重复参加，也不能重复开团
+		9.参团列表参团人数一样的话以开团时间倒序显示，优先显示团购差一人的团
+		10.商品加入购物车后，后台对此商品创建团购活动，此商品在购物车为失效状态，结束活动后，购物车的商品恢复正常
 	"""
 
 Background:
@@ -60,21 +64,23 @@ Background:
 			"name": "商品1",
 			"price": 100.00,
 			"weight": 1,
-			"stock_type": "有限",
-			"stocks": 100,
 			"postage": "顺丰",
 			"distribution_time":"on"
 		}, {
 			"name": "商品2",
 			"price": 100.00,
 			"weight": 1,
+			"stock_type": "有限",
+			"stocks": 100,
 			"postage": 10.00
 		}, {
 			"name": "商品3",
-			"price": 100.00
+			"price": 100.00,
+			"stock_type": "有限",
+			"stocks": 9
 		}]
 		"""
-	And jobs创建团购活动:weapp
+	And jobs新建团购活动:weapp
 		"""
 		[{
 			"group_name":"团购1",
@@ -602,6 +608,7 @@ Scenario: 4 会员开团后团购活动失败
 	1.没有在期限内达到人数，团购活动失败
 	2.结束活动，团购活动失败
 	3.团购失败后，用微众卡支付的订单直接返还微众卡
+	4.库存恢复
 
 	When bill访问jobs的webapp
 	When bill参加jobs的团购活动
@@ -634,12 +641,36 @@ Scenario: 4 会员开团后团购活动失败
 			"price":79.00
 		}
 		"""
+	#下单成功，库存减少
+	Then jobs能获取商品'商品2':weapp
+		"""
+		{
+			"name": "商品2",
+			"price": 100.00,
+			"weight": 1,
+			"stock_type": "有限",
+			"stocks": 99,
+			"postage": 10.00
+		}
+		"""
 	When jobs'结束'团购活动'团购2'
 	Then jobs能获取微众卡'0000001':weapp
 		"""
 		{
 			"status":"已使用",
 			"price":100.00
+		}
+		"""
+	#团购失败，库存恢复
+	Then jobs能获取商品'商品2':weapp
+		"""
+		{
+			"name": "商品2",
+			"price": 100.00,
+			"weight": 1,
+			"stock_type": "有限",
+			"stocks": 100,
+			"postage": 10.00
 		}
 		"""
 	When bill访问jobs的webapp
@@ -925,7 +956,7 @@ Scenario: 7 会员把商品添加购物车后，后台把这个商品创建成�
 		}
 		"""
 	Given jobs登录系统
-	When jobs创建团购活动:weapp
+	When jobs新建团购活动:weapp
 		"""
 		[{
 			"group_name":"团购3",
@@ -978,64 +1009,6 @@ Scenario: 7 会员把商品添加购物车后，后台把这个商品创建成�
 		"""
 
 
-Scenario: 8 团购库存不足时，不能再进行开团操作
-	团购库存不足时
-	1.会员不能再开启团购
-
-	Given jobs登录系统
-	When jobs创建团购活动:weapp
-		"""
-		[{
-			"group_name":"团购3",
-			"start_time":"今天",
-			"end_time":"2天后",
-			"product_name":"商品3",
-			"group_dict":
-				[{
-					"group_type":5,
-					"group_days":1,
-					"group_price":20.00
-				},{
-					"group_type":10,
-					"group_days":2,
-					"group_price":10.00
-				}],
-				"ship_date":20,
-				"product_counts":9,
-				"material_image":"1.jpg",
-				"share_description":"团购分享描述"
-		}]
-		"""
-	When bill访问jobs的webapp
-	#团购库存小于团购人数的时候，不能再开团购活动，活动列表获取不到团购信息
-	Then bill能获得开团活动列表
-		"""
-		[{
-			"group_name": "团购2"
-			"group_dict":
-				[{
-					"group_type":5,
-					"group_days":1,
-					"group_price":21.00
-				},{
-					"group_type":10,
-					"group_days":2,
-					"group_price":11.00
-				}]
-		},{
-			"group_name": "团购1"
-			"group_dict":
-				[{
-					"group_type":5,
-					"group_days":1,
-					"group_price":20.00
-				},{
-					"group_type":10,
-					"group_days":2,
-					"group_price":10.00
-				}]
-		}]
-		"""
 
 
 

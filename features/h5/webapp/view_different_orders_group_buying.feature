@@ -665,11 +665,11 @@ Scenario:2 订单列表只有团购订单-团购进行中被自动取消订单
 		When 取消'tom'团购订单'0002'
 		Then tom查看个人中心'全部'订单列表
 			"""
-			[{}]
+			[]
 			"""
 		Then tom查看个人中心'待发货'订单列表
 			"""
-			[{}]
+			[]
 			"""
 
 Scenario:3 订单列表只有团购订单-团购未成团
@@ -1110,7 +1110,7 @@ Scenario:5 订单列表团购进行中订单+普通订单
 				"created_at": "2015-08-05 00:00",
 				"products": [{
 					"name": "商品3",
-					"model": "M",
+					"model": "M"
 				}],
 				"counts": 1,
 				"final_price": 30.00
@@ -1190,7 +1190,7 @@ Scenario:5 订单列表团购进行中订单+普通订单
 				"created_at": "2015-08-05 00:00",
 				"products": [{
 					"name": "商品3",
-					"model": "M",
+					"model": "M"
 				}],
 				"counts": 1,
 				"final_price": 30.00
@@ -1229,7 +1229,7 @@ Scenario:5 订单列表团购进行中订单+普通订单
 				"created_at": "2015-08-05 00:00",
 				"products": [{
 					"name": "商品3",
-					"model": "M",
+					"model": "M"
 				}],
 				"counts": 1,
 				"final_price": 30.00

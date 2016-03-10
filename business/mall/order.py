@@ -854,7 +854,7 @@ class Order(business_model.Model):
 			pay_result = True
 
 			now = datetime.now()
-			if self.has_sub_order:
+			if self.real_has_sub_order:
 				mall_models.Order.update(status=mall_models.ORDER_STATUS_PAYED_NOT_SHIP, pay_interface_type=pay_interface_type, payment_time=now).dj_where(origin_order_id=self.id).execute()
 
 			mall_models.Order.update(status=mall_models.ORDER_STATUS_PAYED_NOT_SHIP, pay_interface_type=pay_interface_type, payment_time=now).dj_where(order_id=self.order_id).execute()

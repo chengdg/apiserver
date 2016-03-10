@@ -127,8 +127,8 @@ Background:
 	And bill3关注jobs的公众号
 
 	#订单数据
-	When bill访问jobs的webapp
 	#00101-待发货（团购中,bill开团'团购活动1'）
+		When bill访问jobs的webapp
 		When bill参加jobs的团购活动
 			"""
 			{
@@ -154,6 +154,7 @@ Background:
 			"""
 		When bill使用支付方式'微信支付'进行支付
 	#00102-待支付（tom参团'团购活动1'）
+		When tom访问jobs的webapp
 		When tom参加jobs的团购活动
 			"""
 			{
@@ -178,6 +179,7 @@ Background:
 			}
 			"""
 	#00103-待发货（团购中，有微众卡支付，bill1参团'团购活动1'）
+		When bill1访问jobs的webapp
 		When bill1参加jobs的团购活动
 			"""
 			{
@@ -208,6 +210,7 @@ Background:
 		When bill1使用支付方式'微信支付'进行支付
 
 	#00201-待发货（团购成功,tom开团'团购活动2'）
+		When tom访问jobs的webapp
 		When tom参加jobs的团购活动
 			"""
 			{
@@ -232,6 +235,7 @@ Background:
 			"""
 		When tom使用支付方式'微信支付'进行支付
 	#00202-待发货（团购成功,bill参团'团购活动2'）
+		When bill访问jobs的webapp
 		When bill参加jobs的团购活动
 			"""
 			{
@@ -256,6 +260,7 @@ Background:
 			"""
 		When bill使用支付方式'微信支付'进行支付
 	#00203-待发货（团购成功,bill1参团'团购活动2'）
+		When bill1访问jobs的webapp
 		When bill1参加jobs的团购活动
 			"""
 			{
@@ -280,6 +285,7 @@ Background:
 			"""
 		When bill1使用支付方式'微信支付'进行支付
 	#00204-待发货（团购成功,bill2参团'团购活动2'）
+		When bill2访问jobs的webapp
 		When bill2参加jobs的团购活动
 			"""
 			{
@@ -304,6 +310,7 @@ Background:
 			"""
 		When bill2使用支付方式'微信支付'进行支付
 	#00205-待发货（团购成功,bill3参团'团购活动2'）
+		When bill3访问jobs的webapp
 		When bill3参加jobs的团购活动
 			"""
 			{

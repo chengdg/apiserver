@@ -799,12 +799,14 @@ class Order(business_model.Model):
 				)
 
 		# 团购订单处理
-		mall_models.OrderHasGroup.create(
-			order_id=self.order_id,
-			group_id=purchase_info.group_id,
-			activity_id=purchase_info.activity_id,
-			group_status=mall_models.GROUP_STATUS_ON
-		)
+		if purchase_info.group_id:
+			self.is_group_buy = True
+			mall_models.OrderHasGroup.create(
+				order_id=self.order_id,
+				group_id=purchase_info.group_id,
+				activity_id=purchase_info.activity_id,
+				group_status=mall_models.GROUP_STATUS_ON
+			)
 
 		self.__after_update_status('buy')
 
@@ -867,6 +869,17 @@ class Order(business_model.Model):
 			self.__send_template_message()
 
 			# 通知团购订单支付完成
+			if self.is_group_buy:
+				import requests
+				url = 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/order_action'
+				data = {
+					'order_id': self.order_id,
+					'member_id': webapp_user.member.id,
+					'action': 'pay',
+					'woid': self.context['webapp_owner'].id,
+					'group_id': self.order_group_info['group_id']
+				}
+				requests.post(url, data)
 
 
 		return pay_result
@@ -1126,10 +1139,16 @@ class Order(business_model.Model):
 		else:
 			return False, 'error_status'
 
-	@cached_context_property
+	@property
 	def is_group_buy(self):
-		print('--bool',self.order_group_info)
-		return bool(self.order_group_info)
+		if not self.context.get('_is_group_buy'):
+			self.context['_is_group_buy'] = bool(self.order_group_info)
+
+		return self.context['_is_group_buy']
+
+	@is_group_buy.setter
+	def is_group_buy(self, value):
+		self.context['_is_group_buy'] = value
 
 	@cached_context_property
 	def order_group_info(self):

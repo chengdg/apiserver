@@ -155,20 +155,6 @@ Scenario:1 订单列表只有团购订单-团购进行中
 			}
 			"""
 		When bill使用支付方式'微信支付'进行支付
-		Then bill成功创建订单
-			"""
-			{
-				"order_no":"0001",
-				"is_group_buying": "true",
-				"status": "待发货",
-				"final_price": 80.00,
-				"products": [{
-					"name": "商品1",
-					"price": 80.00,
-					"count": 1
-				}]
-			}
-			"""
 		When bill访问个人中心
 		Then bill查看个人中心'全部'订单列表
 			"""
@@ -1159,7 +1145,35 @@ Scenario:5 订单列表团购进行中订单+普通订单
 				}]
 			}
 			"""
+		Then bill成功创建订单
+			"""
+			{
+				"order_no":"0001",
+				"is_group_buying": "true",
+				"status": "待支付",
+				"final_price": 20.00,
+				"products": [{
+					"name": "商品4",
+					"price": 20.00,
+					"count": 1
+				}]
+			}
+			"""
 		When bill使用支付方式'微信支付'进行支付
+		Then bill成功创建订单
+			"""
+			{
+				"order_no":"0001",
+				"is_group_buying": "true",
+				"status": "待发货",
+				"final_price": 20.00,
+				"products": [{
+					"name": "商品4",
+					"price": 20.00,
+					"count": 1
+				}]
+			}
+			"""
 		When bill访问个人中心
 		Then bill查看个人中心'全部'订单列表
 			"""

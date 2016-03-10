@@ -8,6 +8,7 @@ Feature:订单管理-团购
 		3、'财务审核'里增加'团购退款'选项卡，显示所有退款中的订单，但是没有退款成功的操作按钮；当退款金额打到用户账户里自动标记退款完成
 		4、团购的退款订单只显示在'财务审核-团购退款'中，其他选项卡中不显示
 		5、团购成功的订单，订单列表中单价显示商品的原价，优惠金额=原价-团购价
+		6、查询条件'订单类型'下拉框中增加'团购订单'
 	"""
 
 Background:
@@ -58,6 +59,18 @@ Background:
 					"standard": {
 						"price": 200.00,
 						"user_code":"0102",
+						"weight":1.0,
+						"stock_type": "无限"
+					}
+				}
+			}
+		},{
+			"name":"商品3",
+			"model": {
+				"models": {
+					"standard": {
+						"price": 300.00,
+						"user_code":"0103",
 						"weight":1.0,
 						"stock_type": "无限"
 					}
@@ -208,7 +221,18 @@ Background:
 			}
 			"""
 		When bill1使用支付方式'微信支付'进行支付
-
+	#00104-待支付（非团购订单，bill购买'商品3'）
+		When bill访问jobs的webapp
+		When bill购买jobs的商品
+			"""
+			{
+				"order_id": "00104",
+				"pay_type":"微信支付",
+				"products": [{
+					"name": "商品3"
+				}]
+			}
+			"""
 	#00201-待发货（团购成功,tom开团'团购活动2'）
 		When tom访问jobs的webapp
 		When tom参加jobs的团购活动
@@ -332,8 +356,8 @@ Background:
 					"name": "商品2"
 				}],
 				"weizoom_card":[{
-					"card_name":"0000001",
-					"card_pass":"1234567"
+					"card_name":"0000002",
+					"card_pass":"2234567"
 						}]
 			}
 			"""
@@ -427,49 +451,300 @@ Scenario:1 所有订单-查看团购订单
 					"price":200.00,
 					"count":1
 				}]
+		},{
+			"order_no":"00104",
+			"sources": "本店",
+			"is_group_buying":"false",
+			"status": "待支付",
+			"buyer":"bill",
+			"final_price":300.00,
+			"save_money":0.00,
+			"methods_of_payment": "微信支付",
+			"actions": ["支付","修改价格","取消订单"],
+			"products":
+				[{
+					"name":"商品3",
+					"price":300.00,
+					"count":1
+				}]
 		}]
 		"""
-	#优惠抵扣方式-订单详情页也不能进行'取消订单'操作
-	And jobs能获得订单'00205':weapp
-		"""
-		{
-			"order_no":"00205",
-			"sources": "本店",
-			"status": "待发货",
-			"final_price":190.00,
-			"methods_of_payment": "优惠抵扣",
-			"actions": ["发货"],
-			"products":
-				[{
-					"name":"商品2",
-					"price":200.00,
-					"count":1
-				}]
-		}
-		"""
-	#微信支付方式-订单详情页也不能进行'申请退款'操作
-	And jobs能获得订单'00204':weapp
-		"""
-		{
-			"order_no":"00204",
-			"sources": "本店",
-			"status": "待发货",
-			"final_price":190.00,
-			"methods_of_payment": "微信支付",
-			"actions": ["发货"],
-			"products":
-				[{
-					"name":"商品2",
-					"price":200.00,
-					"count":1
-				}]
-		}
-		"""
+
+	#查看团购订单的订单详情页
+		#优惠抵扣方式-订单详情页也不能进行'取消订单'操作
+		And jobs能获得订单'00205':weapp
+			"""
+			{
+				"order_no":"00205",
+				"sources": "本店",
+				"status": "待发货",
+				"final_price":190.00,
+				"methods_of_payment": "优惠抵扣",
+				"actions": ["发货"],
+				"products":
+					[{
+						"name":"商品2",
+						"price":200.00,
+						"count":1
+					}]
+			}
+			"""
+		#微信支付方式-订单详情页也不能进行'申请退款'操作
+		And jobs能获得订单'00204':weapp
+			"""
+			{
+				"order_no":"00204",
+				"sources": "本店",
+				"status": "待发货",
+				"final_price":190.00,
+				"methods_of_payment": "微信支付",
+				"actions": ["发货"],
+				"products":
+					[{
+						"name":"商品2",
+						"price":200.00,
+						"count":1
+					}]
+			}
+			"""
+
+	#对团购成功的订单进行【发货】、】标记完成】操作
+		#进行【发货】
+		When jobs对订单进行发货:weapp
+			"""
+			{
+				"order_no":"00205",
+				"logistics":"顺丰速运",
+				"number":"123456789",
+				"shipper":"jobs"
+			}
+			"""
+		When jobs对订单进行发货:weapp
+			"""
+			{
+				"order_no": "00204",
+				"logistics": "off",
+				"shipper": ""
+			}
+			"""
+		Then jobs可以看到订单列表:weapp
+			"""
+			[{
+				"order_no":"00205",
+				"sources": "本店",
+				"is_group_buying":"true",
+				"status": "已发货",
+				"buyer":"bill3",
+				"final_price":190.00,
+				"save_money":10.0,
+				"methods_of_payment": "优惠抵扣",
+				"logistics": "顺丰速运",
+				"number": "123456789",
+				"shipper": "jobs",
+				"actions": ["标记完成","修改物流"],
+				"products":
+					[{
+						"name":"商品2",
+						"price":200.00,
+						"count":1
+					}]
+			},{
+				"order_no":"00204",
+				"sources": "本店",
+				"is_group_buying":"true",
+				"status": "已发货",
+				"buyer":"bill2",
+				"final_price":190.00,
+				"save_money":10.0,
+				"methods_of_payment": "微信支付",
+				"actions": ["标记完成"],
+				"products":
+					[{
+						"name":"商品2",
+						"price":200.00,
+						"count":1
+					}]
+			},{
+				"order_no":"00203",
+				"sources": "本店",
+				"is_group_buying":"true",
+				"status": "待发货",
+				"buyer":"bill1",
+				"final_price":190.00,
+				"save_money":10.0,
+				"methods_of_payment": "微信支付",
+				"actions": ["发货"],
+				"products":
+					[{
+						"name":"商品2",
+						"price":200.00,
+						"count":1
+					}]
+			},{
+				"order_no":"00202",
+				"sources": "本店",
+				"is_group_buying":"true",
+				"status": "待发货",
+				"buyer":"bill",
+				"final_price":190.00,
+				"save_money":10.0,
+				"methods_of_payment": "微信支付",
+				"actions": ["发货"],
+				"products":
+					[{
+						"name":"商品2",
+						"price":200.00,
+						"count":1
+					}]
+			},{
+				"order_no":"00201",
+				"sources": "本店",
+				"is_group_buying":"true",
+				"status": "待发货",
+				"buyer":"tom",
+				"final_price":190.00,
+				"save_money":10.0,
+				"methods_of_payment": "微信支付",
+				"actions": ["发货"],
+				"products":
+					[{
+						"name":"商品2",
+						"price":200.00,
+						"count":1
+					}]
+			},{
+				"order_no":"00104",
+				"sources": "本店",
+				"is_group_buying":"false",
+				"status": "待支付",
+				"buyer":"bill",
+				"final_price":300.00,
+				"save_money":0.00,
+				"methods_of_payment": "微信支付",
+				"actions": ["支付","修改价格","取消订单"],
+				"products":
+					[{
+						"name":"商品3",
+						"price":300.00,
+						"count":1
+					}]
+			}]
+			"""
+		#进行【标记完成】
+		When jobs'完成'订单'00205':weapp
+		When jobs'完成'订单'00204':weapp
+		Then jobs可以看到订单列表:weapp
+			"""
+			[{
+				"order_no":"00205",
+				"sources": "本店",
+				"is_group_buying":"true",
+				"status": "已完成",
+				"buyer":"bill3",
+				"final_price":190.00,
+				"save_money":10.0,
+				"methods_of_payment": "优惠抵扣",
+				"logistics": "顺丰速运",
+				"number": "123456789",
+				"shipper": "jobs",
+				"actions": [],
+				"products":
+					[{
+						"name":"商品2",
+						"price":200.00,
+						"count":1
+					}]
+			},{
+				"order_no":"00204",
+				"sources": "本店",
+				"is_group_buying":"true",
+				"status": "已完成",
+				"buyer":"bill2",
+				"final_price":190.00,
+				"save_money":10.0,
+				"methods_of_payment": "微信支付",
+				"actions": [],
+				"products":
+					[{
+						"name":"商品2",
+						"price":200.00,
+						"count":1
+					}]
+			},{
+				"order_no":"00203",
+				"sources": "本店",
+				"is_group_buying":"true",
+				"status": "待发货",
+				"buyer":"bill1",
+				"final_price":190.00,
+				"save_money":10.0,
+				"methods_of_payment": "微信支付",
+				"actions": ["发货"],
+				"products":
+					[{
+						"name":"商品2",
+						"price":200.00,
+						"count":1
+					}]
+			},{
+				"order_no":"00202",
+				"sources": "本店",
+				"is_group_buying":"true",
+				"status": "待发货",
+				"buyer":"bill",
+				"final_price":190.00,
+				"save_money":10.0,
+				"methods_of_payment": "微信支付",
+				"actions": ["发货"],
+				"products":
+					[{
+						"name":"商品2",
+						"price":200.00,
+						"count":1
+					}]
+			},{
+				"order_no":"00201",
+				"sources": "本店",
+				"is_group_buying":"true",
+				"status": "待发货",
+				"buyer":"tom",
+				"final_price":190.00,
+				"save_money":10.0,
+				"methods_of_payment": "微信支付",
+				"actions": ["发货"],
+				"products":
+					[{
+						"name":"商品2",
+						"price":200.00,
+						"count":1
+					}]
+			},{
+				"order_no":"00104",
+				"sources": "本店",
+				"is_group_buying":"false",
+				"status": "待支付",
+				"buyer":"bill",
+				"final_price":300.00,
+				"save_money":0.00,
+				"methods_of_payment": "微信支付",
+				"actions": ["支付","修改价格","取消订单"],
+				"products":
+					[{
+						"name":"商品3",
+						"price":300.00,
+						"count":1
+					}]
+			}]
+			"""
 
 @order
-Scenario:2 财务审核-查看'团购退款'订单
-	Given jobs登录系统:weapp
-	When jobs'结束'团购活动'团购活动1':weapp
+Scenario:2 所有订单-团购订单查询
+	When jobs根据给定条件查询订单:weapp
+		"""
+		{
+			"order_type": "团购订单"
+		}
+		"""
 	Then jobs可以看到订单列表:weapp
 		"""
 		[{
@@ -554,39 +829,219 @@ Scenario:2 财务审核-查看'团购退款'订单
 				}]
 		}]
 		"""
-	And jobs获得财务审核'团购退款'订单列表:weapp
-		"""
-		[{
-			"order_no":"00103",
-			"sources": "本店",
-			"is_group_buying":"true",
-			"status": "退款中",
-			"buyer":"bill1",
-			"final_price":90.00,
-			"save_money":10.0,
-			"methods_of_payment": "微信支付",
-			"actions": [],
-			"products":
-				[{
-					"name":"商品1",
-					"price":100.00,
-					"count":1
-				}]
-		},{
-			"order_no":"00101",
-			"sources": "本店",
-			"is_group_buying":"true",
-			"status": "退款中",
-			"buyer":"bill",
-			"final_price":90.00,
-			"save_money":10.0,
-			"methods_of_payment": "微信支付",
-			"actions": [],
-			"products":
-				[{
-					"name":"商品1",
-					"price":100.00,
-					"count":1
-				}]
-		}]
-		"""
+
+@order
+Scenario:3 财务审核-查看'团购退款'订单
+	#退款前,查看微众卡余额
+		When bill1访问jobs的webapp
+		When bill1进行微众卡余额查询
+			"""
+			{
+				"id":"0000001",
+				"password":"1234567"
+			}
+			"""
+		Then bill1获得微众卡余额查询结果
+			"""
+			{
+				"card_remaining":0.00
+			}
+			"""
+
+	#查看团购失败订单-退款中
+		Given jobs登录系统:weapp
+		When jobs'结束'团购活动'团购活动1':weapp
+		Then jobs可以看到订单列表:weapp
+			"""
+			[{
+				"order_no":"00205",
+				"sources": "本店",
+				"is_group_buying":"true",
+				"status": "待发货",
+				"buyer":"bill3",
+				"final_price":190.00,
+				"save_money":10.0,
+				"methods_of_payment": "优惠抵扣",
+				"actions": ["发货"],
+				"products":
+					[{
+						"name":"商品2",
+						"price":200.00,
+						"count":1
+					}]
+			},{
+				"order_no":"00204",
+				"sources": "本店",
+				"is_group_buying":"true",
+				"status": "待发货",
+				"buyer":"bill2",
+				"final_price":190.00,
+				"save_money":10.0,
+				"methods_of_payment": "微信支付",
+				"actions": ["发货"],
+				"products":
+					[{
+						"name":"商品2",
+						"price":200.00,
+						"count":1
+					}]
+			},{
+				"order_no":"00203",
+				"sources": "本店",
+				"is_group_buying":"true",
+				"status": "待发货",
+				"buyer":"bill1",
+				"final_price":190.00,
+				"save_money":10.0,
+				"methods_of_payment": "微信支付",
+				"actions": ["发货"],
+				"products":
+					[{
+						"name":"商品2",
+						"price":200.00,
+						"count":1
+					}]
+			},{
+				"order_no":"00202",
+				"sources": "本店",
+				"is_group_buying":"true",
+				"status": "待发货",
+				"buyer":"bill",
+				"final_price":190.00,
+				"save_money":10.0,
+				"methods_of_payment": "微信支付",
+				"actions": ["发货"],
+				"products":
+					[{
+						"name":"商品2",
+						"price":200.00,
+						"count":1
+					}]
+			},{
+				"order_no":"00201",
+				"sources": "本店",
+				"is_group_buying":"true",
+				"status": "待发货",
+				"buyer":"tom",
+				"final_price":190.00,
+				"save_money":10.0,
+				"methods_of_payment": "微信支付",
+				"actions": ["发货"],
+				"products":
+					[{
+						"name":"商品2",
+						"price":200.00,
+						"count":1
+					}]
+			},{
+				"order_no":"00104",
+				"sources": "本店",
+				"is_group_buying":"false",
+				"status": "待支付",
+				"buyer":"bill",
+				"final_price":300.00,
+				"save_money":0.00,
+				"methods_of_payment": "微信支付",
+				"actions": ["支付","修改价格","取消订单"],
+				"products":
+					[{
+						"name":"商品3",
+						"price":300.00,
+						"count":1
+					}]
+			}]
+			"""
+		And jobs获得财务审核'团购退款'订单列表:weapp
+			"""
+			[{
+				"order_no":"00103",
+				"sources": "本店",
+				"is_group_buying":"true",
+				"status": "退款中",
+				"buyer":"bill1",
+				"final_price":90.00,
+				"save_money":10.0,
+				"methods_of_payment": "微信支付",
+				"actions": [],
+				"products":
+					[{
+						"name":"商品1",
+						"price":100.00,
+						"count":1
+					}]
+			},{
+				"order_no":"00101",
+				"sources": "本店",
+				"is_group_buying":"true",
+				"status": "退款中",
+				"buyer":"bill",
+				"final_price":90.00,
+				"save_money":10.0,
+				"methods_of_payment": "微信支付",
+				"actions": [],
+				"products":
+					[{
+						"name":"商品1",
+						"price":100.00,
+						"count":1
+					}]
+			}]
+			"""
+
+	#退款后，查看微众卡余额
+		When bill1访问jobs的webapp
+		When bill1进行微众卡余额查询
+			"""
+			{
+				"id":"0000001",
+				"password":"1234567"
+			}
+			"""
+		Then bill1获得微众卡余额查询结果
+			"""
+			{
+				"card_remaining":50.00
+			}
+			"""
+
+	#微信自动退款,订单状态自动标记为'退款成功'
+		When 微信'退款成功'订单'00103':weapp
+		When 微信'退款成功'订单'00101':weapp
+		Given jobs登录系统:weapp
+		Then jobs获得财务审核'团购退款'订单列表:weapp
+			"""
+			[{
+				"order_no":"00103",
+				"sources": "本店",
+				"is_group_buying":"true",
+				"status": "退款完成",
+				"buyer":"bill1",
+				"final_price":90.00,
+				"save_money":10.0,
+				"methods_of_payment": "微信支付",
+				"actions": [],
+				"products":
+					[{
+						"name":"商品1",
+						"price":100.00,
+						"count":1
+					}]
+			},{
+				"order_no":"00101",
+				"sources": "本店",
+				"is_group_buying":"true",
+				"status": "退款完成",
+				"buyer":"bill",
+				"final_price":90.00,
+				"save_money":10.0,
+				"methods_of_payment": "微信支付",
+				"actions": [],
+				"products":
+					[{
+						"name":"商品1",
+						"price":100.00,
+						"count":1
+					}]
+			}]
+			"""
+

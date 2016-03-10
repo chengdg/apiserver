@@ -11,8 +11,9 @@ Feature:订单管理-团购
 	"""
 
 Background:
-	Given jobs登录系统
-	And jobs已添加支付方式
+	Given 重置weapp的bdd环境
+	Given jobs登录系统:weapp
+	And jobs已添加支付方式:weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -25,15 +26,15 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	When jobs开通使用微众卡权限
-	When jobs添加支付方式
+	When jobs开通使用微众卡权限:weapp
+	When jobs添加支付方式:weapp
 		"""
 		[{
 			"type": "微众卡支付",
 			"is_active": "启用"
 		}]
 		"""
-	Given jobs已添加商品
+	Given jobs已添加商品:weapp
 		"""
 		[{
 			"name":"商品1",
@@ -64,7 +65,7 @@ Background:
 			}
 		}]
 		"""
-	Given jobs已创建微众卡
+	Given jobs已创建微众卡:weapp
 		"""
 		[{
 			"cards": [{
@@ -80,7 +81,7 @@ Background:
 				"price": 200
 		}]
 		"""
-	When jobs创建团购活动
+	When jobs新建团购活动:weapp
 		"""
 		[{
 			"group_name":"团购活动1",
@@ -126,8 +127,8 @@ Background:
 	And bill3关注jobs的公众号
 
 	#订单数据
-	When bill访问jobs的webapp
 	#00101-待发货（团购中,bill开团'团购活动1'）
+		When bill访问jobs的webapp
 		When bill参加jobs的团购活动
 			"""
 			{
@@ -153,6 +154,7 @@ Background:
 			"""
 		When bill使用支付方式'微信支付'进行支付
 	#00102-待支付（tom参团'团购活动1'）
+		When tom访问jobs的webapp
 		When tom参加jobs的团购活动
 			"""
 			{
@@ -169,7 +171,7 @@ Background:
 				"ship_area": "北京市 北京市 海淀区",
 				"ship_address": "泰兴大厦",
 				"distribution_time":"5天后 10:00-12:30",
-				"order_id":"00201",
+				"order_id":"00102",
 				"pay_type":"微信支付",
 				"products": [{
 					"name": "商品1"
@@ -177,6 +179,7 @@ Background:
 			}
 			"""
 	#00103-待发货（团购中，有微众卡支付，bill1参团'团购活动1'）
+		When bill1访问jobs的webapp
 		When bill1参加jobs的团购活动
 			"""
 			{
@@ -207,6 +210,7 @@ Background:
 		When bill1使用支付方式'微信支付'进行支付
 
 	#00201-待发货（团购成功,tom开团'团购活动2'）
+		When tom访问jobs的webapp
 		When tom参加jobs的团购活动
 			"""
 			{
@@ -231,6 +235,7 @@ Background:
 			"""
 		When tom使用支付方式'微信支付'进行支付
 	#00202-待发货（团购成功,bill参团'团购活动2'）
+		When bill访问jobs的webapp
 		When bill参加jobs的团购活动
 			"""
 			{
@@ -255,6 +260,7 @@ Background:
 			"""
 		When bill使用支付方式'微信支付'进行支付
 	#00203-待发货（团购成功,bill1参团'团购活动2'）
+		When bill1访问jobs的webapp
 		When bill1参加jobs的团购活动
 			"""
 			{
@@ -279,6 +285,7 @@ Background:
 			"""
 		When bill1使用支付方式'微信支付'进行支付
 	#00204-待发货（团购成功,bill2参团'团购活动2'）
+		When bill2访问jobs的webapp
 		When bill2参加jobs的团购活动
 			"""
 			{
@@ -303,6 +310,7 @@ Background:
 			"""
 		When bill2使用支付方式'微信支付'进行支付
 	#00205-待发货（团购成功,bill3参团'团购活动2'）
+		When bill3访问jobs的webapp
 		When bill3参加jobs的团购活动
 			"""
 			{
@@ -330,13 +338,14 @@ Background:
 			}
 			"""
 
+@order
 Scenario:1 所有订单-查看团购订单
 	#待支付和团购中的'待发货'订单在订单列表中不显示
 	#团购成功的订单,订单列表页不能进行【申请退款】和【取消订单】操作
 	#团购成功的订单,订单详情页页不能进行【申请退款】和【取消订单】操作
 
-	Given jobs登录系统
-	Then jobs可以看到订单列表
+	Given jobs登录系统:weapp
+	Then jobs可以看到订单列表:weapp
 		"""
 		[{
 			"order_no":"00205",
@@ -421,7 +430,7 @@ Scenario:1 所有订单-查看团购订单
 		}]
 		"""
 	#优惠抵扣方式-订单详情页也不能进行'取消订单'操作
-	And jobs能获得订单'00205'
+	And jobs能获得订单'00205':weapp
 		"""
 		{
 			"order_no":"00205",
@@ -439,7 +448,7 @@ Scenario:1 所有订单-查看团购订单
 		}
 		"""
 	#微信支付方式-订单详情页也不能进行'申请退款'操作
-	And jobs能获得订单'00204'
+	And jobs能获得订单'00204':weapp
 		"""
 		{
 			"order_no":"00204",
@@ -457,11 +466,11 @@ Scenario:1 所有订单-查看团购订单
 		}
 		"""
 
+@order
 Scenario:2 财务审核-查看'团购退款'订单
-
-	Given jobs登录系统
-	When jobs'结束'团购活动'团购活动1'
-	Then jobs可以看到订单列表
+	Given jobs登录系统:weapp
+	When jobs'结束'团购活动'团购活动1':weapp
+	Then jobs可以看到订单列表:weapp
 		"""
 		[{
 			"order_no":"00205",
@@ -545,7 +554,7 @@ Scenario:2 财务审核-查看'团购退款'订单
 				}]
 		}]
 		"""
-	And jobs获得财务审核'团购退款'订单列表
+	And jobs获得财务审核'团购退款'订单列表:weapp
 		"""
 		[{
 			"order_no":"00103",

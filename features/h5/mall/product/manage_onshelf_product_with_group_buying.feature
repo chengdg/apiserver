@@ -10,23 +10,13 @@ Feature:在售商品列表-团购活动
 Background:
 	Given 重置weapp的bdd环境
 	Given jobs登录系统:weapp
+	When jobs开通使用微众卡权限:weapp
 	And jobs已添加支付方式:weapp
 		"""
 		[{
 			"type": "微信支付",
 			"is_active": "启用"
-		}, {
-			"type": "支付宝",
-			"is_active": "启用"
-		}, {
-			"type": "货到付款",
-			"is_active": "启用"
-		}]
-		"""
-	When jobs开通使用微众卡权限:weapp
-	When jobs添加支付方式:weapp
-		"""
-		[{
+		},{
 			"type": "微众卡支付",
 			"is_active": "启用"
 		}]
@@ -127,6 +117,7 @@ Scenario:1 对团购活动中的商品进行下架或删除操作
 			"name": "商品1"
 		}]
 		"""
+
 	#团购活动中的商品,不能进行下架和删除操作
 	When jobs'下架'商品'商品2':weapp
 	Then jobs获得提示信息'该商品正在进行团购活动':weapp
@@ -167,6 +158,7 @@ Scenario:2 团购成功的订单,订单完成后计算商品'销量'
 	And bill1关注jobs的公众号
 	And bill2关注jobs的公众号
 	And bill3关注jobs的公众号
+
 	Given jobs登录系统:weapp
 	Then jobs能获取商品'商品2':weapp
 		"""
@@ -314,6 +306,7 @@ Scenario:2 团购成功的订单,订单完成后计算商品'销量'
 							}]
 				}
 				"""
+
 	Given jobs登录系统:weapp
 	Then jobs能获取商品'商品2':weapp
 		"""

@@ -169,7 +169,7 @@ Background:
 				"ship_area": "北京市 北京市 海淀区",
 				"ship_address": "泰兴大厦",
 				"distribution_time":"5天后 10:00-12:30",
-				"order_id":"00201",
+				"order_id":"00102",
 				"pay_type":"微信支付",
 				"products": [{
 					"name": "商品1"

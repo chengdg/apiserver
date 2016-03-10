@@ -11,8 +11,9 @@ Feature:订单管理-团购
 	"""
 
 Background:
-	Given jobs登录系统
-	And jobs已添加支付方式
+	Given 重置weapp的bdd环境
+	Given jobs登录系统:weapp
+	And jobs已添加支付方式:weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -25,15 +26,15 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	When jobs开通使用微众卡权限
-	When jobs添加支付方式
+	When jobs开通使用微众卡权限:weapp
+	When jobs添加支付方式:weapp
 		"""
 		[{
 			"type": "微众卡支付",
 			"is_active": "启用"
 		}]
 		"""
-	Given jobs已添加商品
+	Given jobs已添加商品:weapp
 		"""
 		[{
 			"name":"商品1",
@@ -64,7 +65,7 @@ Background:
 			}
 		}]
 		"""
-	Given jobs已创建微众卡
+	Given jobs已创建微众卡:weapp
 		"""
 		[{
 			"cards": [{
@@ -80,7 +81,7 @@ Background:
 				"price": 200
 		}]
 		"""
-	When jobs创建团购活动
+	When jobs新建团购活动:weapp
 		"""
 		[{
 			"group_name":"团购活动1",
@@ -330,13 +331,14 @@ Background:
 			}
 			"""
 
+@order
 Scenario:1 所有订单-查看团购订单
 	#待支付和团购中的'待发货'订单在订单列表中不显示
 	#团购成功的订单,订单列表页不能进行【申请退款】和【取消订单】操作
 	#团购成功的订单,订单详情页页不能进行【申请退款】和【取消订单】操作
 
-	Given jobs登录系统
-	Then jobs可以看到订单列表
+	Given jobs登录系统:weapp
+	Then jobs可以看到订单列表:weapp
 		"""
 		[{
 			"order_no":"00205",
@@ -421,7 +423,7 @@ Scenario:1 所有订单-查看团购订单
 		}]
 		"""
 	#优惠抵扣方式-订单详情页也不能进行'取消订单'操作
-	And jobs能获得订单'00205'
+	And jobs能获得订单'00205':weapp
 		"""
 		{
 			"order_no":"00205",
@@ -439,7 +441,7 @@ Scenario:1 所有订单-查看团购订单
 		}
 		"""
 	#微信支付方式-订单详情页也不能进行'申请退款'操作
-	And jobs能获得订单'00204'
+	And jobs能获得订单'00204':weapp
 		"""
 		{
 			"order_no":"00204",
@@ -457,11 +459,11 @@ Scenario:1 所有订单-查看团购订单
 		}
 		"""
 
+@order
 Scenario:2 财务审核-查看'团购退款'订单
-
-	Given jobs登录系统
-	When jobs'结束'团购活动'团购活动1'
-	Then jobs可以看到订单列表
+	Given jobs登录系统:weapp
+	When jobs'结束'团购活动'团购活动1':weapp
+	Then jobs可以看到订单列表:weapp
 		"""
 		[{
 			"order_no":"00205",
@@ -545,7 +547,7 @@ Scenario:2 财务审核-查看'团购退款'订单
 				}]
 		}]
 		"""
-	And jobs获得财务审核'团购退款'订单列表
+	And jobs获得财务审核'团购退款'订单列表:weapp
 		"""
 		[{
 			"order_no":"00103",

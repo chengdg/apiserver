@@ -865,6 +865,10 @@ class Order(business_model.Model):
 
 			self.__after_update_status('pay')
 			self.__send_template_message()
+
+			# 通知团购订单支付完成
+
+
 		return pay_result
 
 

@@ -42,7 +42,7 @@ class AOrderList(api_resource.ApiResource):
 		})
 
 		# 过滤已取消的团购订单
-		orders = filter(lambda order:order.is_group_buy and order.status == mall_models.ORDER_STATUS_CANCEL)
+		orders = filter(lambda order: not(order.is_group_buy and order.status == mall_models.ORDER_STATUS_CANCEL),orders)
 
 		order_datas = []
 		for order in orders:

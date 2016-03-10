@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+import json
 
+import settings
 from business import model as business_model
 from business.mall.allocator.coupon_resource_allocator import CouponResourceAllocator
 from business.mall.coupon.coupon import Coupon
@@ -21,12 +23,11 @@ class OrderGroupBuyAllocator(business_model.Service):
 		self.context['webapp_user'] = webapp_user
 
 	def allocate_resource(self, order, purchase_info):
-
 		if not purchase_info.group_id:
-			self.__return_empty_resource()
+			return self.__return_empty_resource()
 
 		# 检测purchase_info互斥
-		pass
+
 
 		group_buy_product_id = order.products[0].id
 
@@ -36,15 +37,33 @@ class OrderGroupBuyAllocator(business_model.Service):
 		params_data = {'pid',order.products[0].id}
 		# group_buy_product_info = requests.get('sadasd', params=params_data)
 
+		# import requests
+		# url = 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/check_group_buy'
+		# param_data = {
+		# 	'member_id': self.context['webapp_user'].member.id,
+		# 	'group_id': purchase_info.group_id,
+		# 	'pid': group_buy_product_id,
+		# 	'woid': self.context['webapp_owner'].id
+		# }
+		# r = requests.get(url=url,params=param_data)
+		# print '*******************************************************'
+		# # print(r.text)
+		# print '*******************************************************'
+		# group_buy_product_info = json.loads(r.text)['data']
+
+
 		mock_group_buy_product_info = {
 			'is_success': True,
 			'group_buy_price': 200,
 			'reason': 'asdasdasdasda',
 		}
 
-
+		# group_buy_price = group_buy_info['group_buy_price']
+		# reversed_product.price = group_buy_price
 
 		group_buy_product_info = mock_group_buy_product_info
+
+
 
 		if not group_buy_product_info['is_success']:
 			# 申请资源失败
@@ -79,6 +98,7 @@ class OrderGroupBuyAllocator(business_model.Service):
 		return business_model.RESOURCE_TYPE_GROUP_BUY
 
 	def __return_empty_resource(self):
+		print('-----x')
 		empty_coupon_resource = GroupBuyResource.get({
 			'type': self.resource_type,
 		})

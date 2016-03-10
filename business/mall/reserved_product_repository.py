@@ -121,10 +121,7 @@ class ReservedProductRepository(business_model.Model):
 				group_buy_info_url = 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/group_buy_info'
 				param_data = {'group_id':purchase_info.group_id, 'woid': self.context['webapp_owner'].id}
 				r = requests.get(url=group_buy_info_url,params=param_data)
-				# print('-----r',r.text)
-				# group_buy_info = {'group_buy_price': 10086}
 				group_buy_info = json.loads(r.text)['data']
-				# print('-------type',type(r.text))
 				group_buy_price = group_buy_info['group_buy_price']
 				reversed_product.price = group_buy_price
 

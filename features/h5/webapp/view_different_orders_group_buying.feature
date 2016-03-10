@@ -39,7 +39,7 @@ Background:
 				"id":"0000002",
 				"password":"1234567",
 				"status":"未使用",
-				"price":100.00
+				"price":20.00
 			}]
 		}
 		"""
@@ -73,6 +73,9 @@ Background:
 				"models": {
 					"M": {
 						"price": 30.0
+					},
+					"S": {
+						"price": 30.0
 					}
 				}
 			}
@@ -84,7 +87,7 @@ Background:
 		}]
 		"""
 
-	When jobs创建团购活动
+	When jobs新建团购活动
 		"""
 		[{
 			"group_name": "团购活动1",
@@ -320,7 +323,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 			}]
 			"""
 
-	#bill参团"tom作为团长"购买
+	#bill参团"tom作为团长"购买：微众卡支付的订单，实付金额为0
 		When bill访问jobs的webapp
 		When bill参加jobs的团购活动
 			"""
@@ -338,10 +341,13 @@ Scenario:1 订单列表只有团购订单-团购进行中
 				"pay_type":"微信支付",
 				"products": [{
 					"name": "商品1"
+				}],
+				"weizoom_card":[{
+					"card_name":"0000001",
+					"card_pass":"1234567"
 				}]
 			}
 			"""
-		When bill使用支付方式'微信支付'进行支付
 		When bill访问个人中心
 		Then bill查看个人中心'全部'订单列表
 			"""
@@ -354,7 +360,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 					"name": "商品1"
 				}],
 				"counts": 1,
-				"final_price": 80.00
+				"final_price": 0.00
 			},{
 				"order_no": "0001",
 				"is_group_buying": "true",
@@ -378,7 +384,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 					"name": "商品1"
 				}],
 				"counts": 1,
-				"final_price": 80.00
+				"final_price": 0.00
 			},{
 				"order_no": "0001",
 				"is_group_buying": "true",
@@ -436,7 +442,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 					"name": "商品1"
 				}],
 				"counts": 1,
-				"final_price": 80.00
+				"final_price": 0.00
 			},{
 				"order_no": "0001",
 				"is_group_buying": "true",
@@ -470,7 +476,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 					"name": "商品1"
 				}],
 				"counts": 1,
-				"final_price": 80.00
+				"final_price": 0.00
 			},{
 				"order_no": "0001",
 				"is_group_buying": "true",
@@ -484,7 +490,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 			}]
 			"""
 
-	#tom参团"bill作为团长"购买
+	#tom参团"bill作为团长"购买：微众卡支付部分订单金额
 		When tom访问jobs的webapp
 		When tom参加jobs的团购活动
 			"""
@@ -502,6 +508,10 @@ Scenario:1 订单列表只有团购订单-团购进行中
 				"pay_type":"微信支付",
 				"products": [{
 					"name": "商品2"
+				}],
+				"weizoom_card":[{
+					"card_name":"0000002",
+					"card_pass":"1234567"
 				}]
 			}
 			"""
@@ -518,7 +528,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 					"name": "商品2"
 				}],
 				"counts": 1,
-				"final_price": 40.00
+				"final_price": 20.00
 			},{
 				"order_no": "0003",
 				"is_group_buying": "true",
@@ -552,7 +562,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 					"name": "商品2"
 				}],
 				"counts": 1,
-				"final_price": 40.00
+				"final_price": 20.00
 			},{
 				"order_no": "0003",
 				"is_group_buying": "true",
@@ -664,7 +674,7 @@ Scenario:2 订单列表只有团购订单-团购进行中被自动取消订单
 
 Scenario:3 订单列表只有团购订单-团购未成团
 	#1 由于团购活动时间过期、组团时间过期、手动结束团购活动造成未组团成功
-	#团购支付的所有订单自动进入"退款中"状态，后天进行退款
+	#团购支付的所有订单自动进入"退款中"状态，自动退款
 
 	#bill作为团长开团参与团购活动"团购活动1"
 		When bill访问jobs的webapp
@@ -712,7 +722,7 @@ Scenario:3 订单列表只有团购订单-团购未成团
 			"""
 		When tom使用支付方式'微信支付'进行支付
 
-	#手动结束团购活动，为成功的团订单进入退款
+	#手动结束团购活动，未成功的团订单进入退款
 		Given jobs登录系统:weapp
 		When jobs'结束'团购活动"团购活动1":weapp
 
@@ -750,10 +760,10 @@ Scenario:3 订单列表只有团购订单-团购未成团
 			}]
 			"""
 
-		#jobs后天退款
+		#微信自动退款
 		Given jobs登录系统:weapp
-		When jobs通过财务审核'退款成功'订单'0001':weapp
-		When jobs通过财务审核'退款成功'订单'0002':weapp
+		When 微信'退款成功'订单'0001':weapp
+		When 微信'退款成功'订单'0002':weapp
 
 		When bill访问jobs的webapp
 		When bill访问个人中心
@@ -1109,7 +1119,7 @@ Scenario:5 订单列表团购进行中订单+普通订单
 
 	#创建商品4的团购活动
 
-		When jobs创建团购活动
+		When jobs新建团购活动
 			"""
 			[{
 				"group_name": "团购活动4",

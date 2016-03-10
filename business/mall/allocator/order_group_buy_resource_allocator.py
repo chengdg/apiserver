@@ -34,34 +34,32 @@ class OrderGroupBuyAllocator(business_model.Service):
 		# 检测活动可行性
 
 		# 申请资源
-		params_data = {'pid',order.products[0].id}
-		# group_buy_product_info = requests.get('sadasd', params=params_data)
 
-		# import requests
-		# url = 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/check_group_buy'
-		# param_data = {
-		# 	'member_id': self.context['webapp_user'].member.id,
-		# 	'group_id': purchase_info.group_id,
-		# 	'pid': group_buy_product_id,
-		# 	'woid': self.context['webapp_owner'].id
-		# }
-		# r = requests.get(url=url,params=param_data)
-		# print '*******************************************************'
-		# # print(r.text)
-		# print '*******************************************************'
-		# group_buy_product_info = json.loads(r.text)['data']
-
-
-		mock_group_buy_product_info = {
-			'is_success': True,
-			'group_buy_price': 200,
-			'reason': 'asdasdasdasda',
+		import requests
+		url = 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/check_group_buy'
+		param_data = {
+			'member_id': self.context['webapp_user'].member.id,
+			'group_id': purchase_info.group_id,
+			'pid': group_buy_product_id,
+			'woid': self.context['webapp_owner'].id
 		}
+		r = requests.get(url=url,params=param_data)
+		print '*******************************************************'
+		print(r.text)
+		print '*******************************************************'
+		group_buy_product_info = json.loads(r.text)['data']
+
+
+		# mock_group_buy_product_info = {
+		# 	'is_success': True,
+		# 	'group_buy_price': 200,
+		# 	'reason': 'asdasdasdasda',
+		# }
 
 		# group_buy_price = group_buy_info['group_buy_price']
 		# reversed_product.price = group_buy_price
 
-		group_buy_product_info = mock_group_buy_product_info
+		# group_buy_product_info = mock_group_buy_product_info
 
 
 

@@ -52,7 +52,7 @@ class APayResult(api_resource.ApiResource):
 		activity_url = ''
 		if order.is_group_buy:
 			qrcode_img = webapp_owner.qrcode_img
-			activity_url = 'http://www.qq.com'
+			activity_url = order.order_group_info['activity_url']
 
 		return {
 			'is_trade_success': True,

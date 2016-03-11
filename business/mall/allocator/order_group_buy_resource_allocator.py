@@ -14,6 +14,7 @@ from business.resource.group_buy_resource import GroupBuyResource
 
 
 GroupBuyOPENAPI = {
+	'group_buy_product': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/group_buy_product',
 	'group_buy_products': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/group_buy_products',
 	'order_action': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/order_action',
 	'check_group_buy': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/check_group_buy'

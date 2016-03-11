@@ -50,16 +50,14 @@ class OrderGroupBuyAllocator(business_model.Service):
 		group_buy_product_info = json.loads(r.text)['data']
 
 
-		# mock_group_buy_product_info = {
-		# 	'is_success': True,
-		# 	'group_buy_price': 200,
-		# 	'reason': 'asdasdasdasda',
-		# }
+		mock_group_buy_product_info = {
+			'is_success': True,
+			'group_buy_price': 200,
+			'reason': 'asdasdasdasda',
+		}
 
-		# group_buy_price = group_buy_info['group_buy_price']
-		# reversed_product.price = group_buy_price
 
-		# group_buy_product_info = mock_group_buy_product_info
+		group_buy_product_info = mock_group_buy_product_info
 
 
 

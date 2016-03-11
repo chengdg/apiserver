@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 import math
 from datetime import datetime
 
+from business.mall.allocator.order_group_buy_resource_allocator import GroupBuyOPENAPI
 from wapi.decorators import param_required
 #from wapi import wapi_utils
 from core.cache import utils as cache_util
@@ -102,9 +103,25 @@ class ShoppingCart(business_model.Model):
 
 		valid_products = []
 		invalid_products = []
+
+		product_ids = '_'.join([str(product.id) for product in products])
+		import requests
+		url = GroupBuyOPENAPI['group_buy_products']
+
+		data = {
+			'pids': product_ids,
+			'woid': self.context['webapp_owner'].id,
+		}
+		r = requests.get(url, data)
+		res = json.loads(r.text)['data']
+
+		# 团购商品放入禁用商品列表
+		group_buy_product_ids = [p['pid'] for p in filter(lambda x: x['pid'] if x['is_in_group_buy'] else False, res['pid2is_in_group_buy'])]
+
 		for product in products:
-			import logging
-			if product.shelve_type == mall_models.PRODUCT_SHELVE_TYPE_OFF or \
+			if product.id in group_buy_product_ids:
+				invalid_products.append(product)
+			elif product.shelve_type == mall_models.PRODUCT_SHELVE_TYPE_OFF or \
 				product.shelve_type == mall_models.PRODUCT_SHELVE_TYPE_RECYCLED or\
 				product.is_deleted or \
 				(product.stock_type == mall_models.PRODUCT_STOCK_TYPE_LIMIT and product.stocks == 0) or\

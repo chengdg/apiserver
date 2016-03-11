@@ -806,7 +806,8 @@ class Order(business_model.Model):
 				group_id=purchase_info.group_id,
 				activity_id=purchase_info.activity_id,
 				group_status=mall_models.GROUP_STATUS_ON,
-				webapp_user_id=self.webapp_user_id
+				webapp_user_id=self.webapp_user_id,
+				webapp_id=self.context['webapp_owner'].webapp_id
 			)
 
 		self.__after_update_status('buy')

@@ -1778,6 +1778,7 @@ class OrderHasGroup(models.Model):
 	group_status = models.IntegerField(default=GROUP_STATUS_ON)
 	webapp_user_id = models.IntegerField(default=0)
 	created_at = models.DateTimeField(auto_now_add=True) #创建时间
+	webapp_id = models.CharField(max_length=20, verbose_name='店铺ID')  # webapp,订单成交的店铺id
 
 	class Meta(object):
 		db_table = 'mall_order_has_group'

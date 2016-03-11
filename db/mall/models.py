@@ -1772,10 +1772,12 @@ class OrderHasGroup(models.Model):
 	"""
 	<order, group>关联
 	"""
-	order_id = models.CharField(max_length=100)  # 订单号(order中的order_id
+	order_id = models.CharField(max_length=100)  # 订单号(order中的order_id)
 	group_id = models.CharField(max_length=100)
 	activity_id = models.CharField(max_length=100)
 	group_status = models.IntegerField(default=GROUP_STATUS_ON)
+	webapp_user_id = models.IntegerField(default=0)
+	created_at = models.DateTimeField(auto_now_add=True) #创建时间
 
 	class Meta(object):
 		db_table = 'mall_order_has_group'

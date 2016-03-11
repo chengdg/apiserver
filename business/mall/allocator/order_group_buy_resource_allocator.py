@@ -3,6 +3,7 @@ import json
 
 import settings
 from business import model as business_model
+from db.mall import models as mall_models
 from business.mall.allocator.coupon_resource_allocator import CouponResourceAllocator
 from business.mall.coupon.coupon import Coupon
 from business.resource.coupon_resource import CouponResource
@@ -14,7 +15,8 @@ from business.resource.group_buy_resource import GroupBuyResource
 
 GroupBuyOPENAPI = {
 	'group_buy_products': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/group_buy_products',
-	'order_action': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/order_action'
+	'order_action': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/order_action',
+	'check_group_buy': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/check_group_buy'
 }
 
 
@@ -31,7 +33,7 @@ class OrderGroupBuyAllocator(business_model.Service):
 		self.context['webapp_user'] = webapp_user
 
 	def allocate_resource(self, order, purchase_info):
-
+		webapp_user = self.context['webapp_user']
 		# 检测是否团购订单
 		if not purchase_info.group_id:
 			return self.__return_empty_resource()
@@ -40,6 +42,11 @@ class OrderGroupBuyAllocator(business_model.Service):
 		is_success, reason = self.__check_purchase_info(purchase_info)
 
 		# todo 检测是否重复下单
+		is_first_order = mall_models.OrderHasGroup.select().dj_where(group_id=purchase_info.group_id, webapp_user_id=webapp_user.id).count() < 1
+		if not is_first_order:
+			is_success = False
+			reason = u'不可在一个团购中重复下单'
+
 
 		pid = order.products[0].id
 

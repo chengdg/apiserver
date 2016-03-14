@@ -201,24 +201,24 @@ Scenario: 1 会员访问团购活动首页能进行开团
 		"""
 
 
-  		When bill团购购买jobs的商品
-			"""
-			{
-				"order_id":"0000001",
-				"group_name": "团购1"
-				"ship_name": "bill",
-				"ship_tel": "13811223344",
-				"ship_area": "北京市 北京市 海淀区",
-				"ship_address": "泰兴大厦",
-				"pay_type": "微信支付",
-				"products": [{
-					"name": "商品1",
-					"count": 1,
-					"integral": 100,
-					"integral_money":50.00
-				}]
-			}
-			"""
+    When bill团购购买jobs的商品
+        """
+        {
+            "order_id":"0000001",
+            "group_name": "团购1"
+            "ship_name": "bill",
+            "ship_tel": "13811223344",
+            "ship_area": "北京市 北京市 海淀区",
+            "ship_address": "泰兴大厦",
+            "pay_type": "微信支付",
+            "products": [{
+                "name": "商品1",
+                "count": 1,
+                "integral": 100,
+                "integral_money":50.00
+            }]
+        }
+        """
 
 	When bill使用支付方式'微信支付'进行支付
 	Then bill成功创建订单

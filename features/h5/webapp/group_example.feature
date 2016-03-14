@@ -213,9 +213,7 @@ Scenario: 1 会员访问团购活动首页能进行开团
             "pay_type": "微信支付",
             "products": [{
                 "name": "商品1",
-                "count": 1,
-                "integral": 100,
-                "integral_money":50.00
+                "count": 1
             }]
         }
         """

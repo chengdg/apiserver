@@ -15,35 +15,42 @@ import settings
 from db.mall.models import *
 
 
-def _run_weapp_step(step, context):
+def _run_weapp_step(step, context_text,context=None):
 	url = 'http://%s:%s' % (settings.WEAPP_BDD_SERVER_HOST, settings.WEAPP_BDD_SERVER_PORT)
 	data = {
 		'step': step,
-		'context': context
+		'context': context_text
 	}
 	response = requests.post(url, data={'data':json.dumps(data)})
 
 	response_text = base64.b64decode(response.text.encode('utf-8')).decode('utf-8')
-	if response_text != 'success':
+	if response_text.startswith('***'):
 		buf = []
 		buf.append('\n*************** START WEAPP STEP EXCEPTION ***************')
 		buf.append(response_text.strip())
 		buf.append('*************** FINISH WEAPP STEP EXCEPTION ***************\n')
 		print '\n'.join(buf)
 		assert False, 'weapp_step_response.text != "success", Weapp step has EXCEPTION!!!'
+	else:
+		try:
+			context_kvs = json.loads(response_text)
+			for k,v in context_kvs.items():
+				setattr(context,k,v)
+		except BaseException as e:
+			pass
 
 @When(u"{command}:weapp")
 def step_impl(context, command):
-	_run_weapp_step(u'When %s' % command, context.text)
+	_run_weapp_step(u'When %s' % command, context.text, context)
 
 @Given(u"{command}:weapp")
 def step_impl(context, command):
-	_run_weapp_step(u'Given %s' % command, context.text)
+	_run_weapp_step(u'Given %s' % command, context.text, context)
 
 
 @Then(u"{command}:weapp")
 def step_impl(context, command):
-	_run_weapp_step(u'Then %s' % command, context.text)
+	_run_weapp_step(u'Then %s' % command, context.text, context)
 
 # @Then(u"{ignore}:weapp")
 # def step_impl(context, ignore):

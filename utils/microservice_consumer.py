@@ -20,7 +20,6 @@ def microservice_consume(url='', data='', method='get', timeout=None):
 		if method == 'get':
 			resp = requests.get(url, data, timeout=_timeout)
 		elif method == 'post':
-			print('---------------------------3')
 			resp = requests.post(url, data, timeout=_timeout)
 		else:
 			# 兼容架构中的put、delete方法
@@ -36,9 +35,6 @@ def microservice_consume(url='', data='', method='get', timeout=None):
 	except:
 		traceback = unicode_full_stack()
 		watchdog_alert(u'外部接口调用错误-异常.url:%s,msg:%s', url, traceback)
-		print('----------------------------------------------------------------begin')
-		print(traceback)
-		print('----------------------------------------------------------------end')
 		return False, None
 
 

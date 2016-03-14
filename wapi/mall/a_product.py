@@ -9,7 +9,7 @@ from utils import dateutil as utils_dateutil
 #import resource
 from business.mall.product import Product
 from business.mall.review.product_reviews import ProductReviews
-
+from utils.microservice_consumer import microservice_consume
 
 class AProduct(api_resource.ApiResource):
 	"""
@@ -34,17 +34,16 @@ class AProduct(api_resource.ApiResource):
 		webapp_owner = args['webapp_owner']
 		webapp_user = args['webapp_user']
 
-
-		import requests
 		url = GroupBuyOPENAPI['group_buy_product']
 		param_data = {'pid': product_id, 'woid': webapp_owner.id}
-		r = requests.get(url=url,params=param_data)
-		group_buy_product = json.loads(r.text)['data']
-		if group_buy_product['is_in_group_buy']:
-			return {
-				'is_in_group_buy': True,
-				'activity_url': 'http://' + settings.WEAPP_DOMAIN + group_buy_product['activity_url']
-			}
+		is_success, group_buy_product = microservice_consume(url=url, data=param_data)
+
+		if is_success:
+			if group_buy_product['is_in_group_buy']:
+				return {
+					'is_in_group_buy': True,
+					'activity_url': 'http://' + settings.WEAPP_DOMAIN + group_buy_product['activity_url']
+				}
 
 
 

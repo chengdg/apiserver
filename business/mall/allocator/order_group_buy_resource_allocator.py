@@ -3,21 +3,18 @@ import json
 
 import settings
 from business import model as business_model
-from db.mall import models as mall_models
-from business.mall.allocator.coupon_resource_allocator import CouponResourceAllocator
-from business.mall.coupon.coupon import Coupon
-from business.resource.coupon_resource import CouponResource
-
-import requests
-
 from business.resource.group_buy_resource import GroupBuyResource
+from db.mall import models as mall_models
 
+# 团购服务api接口
+from utils.microservice_consumer import microservice_consume
 
 GroupBuyOPENAPI = {
 	'group_buy_product': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/group_buy_product',
 	'group_buy_products': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/group_buy_products',
 	'order_action': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/order_action',
-	'check_group_buy': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/check_group_buy'
+	'check_group_buy': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/check_group_buy',
+	'group_buy_info': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/group_buy_info',
 }
 
 
@@ -42,7 +39,7 @@ class OrderGroupBuyAllocator(business_model.Service):
 		# 检测purchase_info互斥
 		is_success, reason = self.__check_purchase_info(purchase_info)
 
-		# todo 检测是否重复下单
+		# 检测是否重复下单
 		is_first_order = mall_models.OrderHasGroup.select().dj_where(group_id=purchase_info.group_id, webapp_user_id=webapp_user.id).count() < 1
 		if not is_first_order:
 			is_success = False
@@ -53,32 +50,19 @@ class OrderGroupBuyAllocator(business_model.Service):
 
 		if is_success:
 			# 申请资源
-			import requests
-			url = 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/check_group_buy'
+			url = GroupBuyOPENAPI['check_group_buy']
 			param_data = {
 				'member_id': self.context['webapp_user'].member.id,
 				'group_id': purchase_info.group_id,
 				'pid': pid,
 				'woid': self.context['webapp_owner'].id
 			}
-			r = requests.get(url=url,params=param_data)
-			print '*******************************************************'
-			print(r.text)
-			print '*******************************************************'
-			group_buy_product_info = json.loads(r.text)['data']
-			is_success = group_buy_product_info['is_success']
-			reason = group_buy_product_info['reason']
-
-
-		# mock_group_buy_product_info = {
-		# 	'is_success': True,
-		# 	'group_buy_price': 200,
-		# 	'reason': 'asdasdasdasda',
-		# }
-
-		#
-		# group_buy_product_info = mock_group_buy_product_info
-
+			is_success, group_buy_product_info = microservice_consume(url=url, data=param_data)
+			if is_success:
+				is_success = group_buy_product_info['is_success']
+				reason = group_buy_product_info['reason']
+			else:
+				reason = '团购下单失败'
 		if is_success:
 			group_buy_resource = GroupBuyResource.get({
 				'type': self.resource_type,

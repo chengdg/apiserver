@@ -15,12 +15,14 @@ from datetime import datetime
 import copy
 
 import settings
+from business.mall.allocator.order_group_buy_resource_allocator import GroupBuyOPENAPI
 from core.exceptionutil import unicode_full_stack
 from core.sendmail import sendmail
 from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
 import db.account.models as accout_models
 from core.wxapi import get_weixin_api
 from features.util.bdd_util import set_bdd_mock
+from services.notify_group_buy_after_pay_service.task import notify_group_buy_after_pay
 from services.record_order_status_log_service.task import record_order_status_log
 from services.send_template_message_service.task import send_template_message
 from services.update_product_sale_service.task import update_product_sale
@@ -872,8 +874,7 @@ class Order(business_model.Model):
 
 			# 通知团购订单支付完成
 			if self.is_group_buy:
-				import requests
-				url = 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/order_action'
+				url = GroupBuyOPENAPI['order_action']
 				data = {
 					'order_id': self.order_id,
 					'member_id': webapp_user.member.id,
@@ -881,8 +882,7 @@ class Order(business_model.Model):
 					'woid': self.context['webapp_owner'].id,
 					'group_id': self.order_group_info['group_id']
 				}
-				requests.post(url, data)
-
+				notify_group_buy_after_pay.delay(url, data)
 
 		return pay_result
 

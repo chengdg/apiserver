@@ -10,6 +10,7 @@ import math
 from datetime import datetime
 
 from business.mall.allocator.order_group_buy_resource_allocator import GroupBuyOPENAPI
+from utils.microservice_consumer import microservice_consume
 from wapi.decorators import param_required
 #from wapi import wapi_utils
 from core.cache import utils as cache_util
@@ -105,18 +106,20 @@ class ShoppingCart(business_model.Model):
 		invalid_products = []
 
 		product_ids = '_'.join([str(product.id) for product in products])
-		import requests
 		url = GroupBuyOPENAPI['group_buy_products']
 
 		data = {
 			'pids': product_ids,
 			'woid': self.context['webapp_owner'].id,
 		}
-		r = requests.get(url, data)
-		res = json.loads(r.text)['data']
+
+		is_success, res = microservice_consume(url=url, data=data)
 
 		# 团购商品放入禁用商品列表
-		group_buy_product_ids = [p['pid'] for p in filter(lambda x: x['pid'] if x['is_in_group_buy'] else False, res['pid2is_in_group_buy'])]
+		if is_success:
+			group_buy_product_ids = [p['pid'] for p in filter(lambda x: x['pid'] if x['is_in_group_buy'] else False, res['pid2is_in_group_buy'])]
+		else:
+			group_buy_product_ids = []
 
 		for product in products:
 			if product.id in group_buy_product_ids:

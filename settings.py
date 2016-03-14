@@ -133,6 +133,7 @@ INSTALLED_TASKS = [
     'services.record_order_status_log_service.task.record_order_status_log',
     'services.update_product_sale_service.task.update_product_sale',
     'services.send_template_message_service.task.send_template_message',
+    'services.order_notify_mail_service.task.notify_group_buy_after_pay',
     ]
 
 #redis celery相关

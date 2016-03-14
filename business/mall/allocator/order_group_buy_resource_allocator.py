@@ -6,6 +6,7 @@ from business import model as business_model
 from business.resource.group_buy_resource import GroupBuyResource
 from db.mall import models as mall_models
 
+
 # 团购服务api接口
 from utils.microservice_consumer import microservice_consume
 
@@ -40,7 +41,19 @@ class OrderGroupBuyAllocator(business_model.Service):
 		is_success, reason = self.__check_purchase_info(purchase_info)
 
 		# 检测是否重复下单
-		is_first_order = mall_models.OrderHasGroup.select().dj_where(group_id=purchase_info.group_id, webapp_user_id=webapp_user.id).count() < 1
+		# todo 寻觅peewe join的正确打开方式
+
+		import business.mall.order as bussines_models
+		orders = bussines_models.Order.get_orders_for_webapp_user({
+			'webapp_owner': self.context['webapp_owner'],
+			'webapp_user': webapp_user
+		})
+
+		# 过滤已取消的团购订单
+		order_ids = [order.order_id for order in filter(lambda x: not(x.is_group_buy and x.status == mall_models.ORDER_STATUS_CANCEL), orders)]
+		order_has_group_order_ids = [osg.order_id for osg in mall_models.OrderHasGroup.select().dj_where(group_id=purchase_info.group_id, webapp_user_id=webapp_user.id)]
+		is_first_order = len(set(order_ids).intersection(order_has_group_order_ids)) == 0
+
 		if not is_first_order:
 			is_success = False
 			reason = u'不可在一个团购中重复下单'

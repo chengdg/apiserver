@@ -59,7 +59,7 @@ class OrderGroupBuyAllocator(business_model.Service):
 			reason = u'不可在一个团购中重复下单'
 
 
-		pid = order.products[0].id
+		pid = purchase_info.product_ids[0]
 
 		if is_success:
 			# 申请资源

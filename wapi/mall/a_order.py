@@ -10,6 +10,7 @@ from datetime import datetime
 from core import api_resource
 from core.exceptionutil import unicode_full_stack
 import settings
+from utils.lock import get_wapi_lock
 from wapi.decorators import param_required
 from db.mall import models as mall_models
 from db.mall import promotion_models
@@ -42,6 +43,16 @@ class AOrder(api_resource.ApiResource):
 		webapp_user = args['webapp_user']
 		webapp_owner = args['webapp_owner']
 		refueling_order = args.get('refueling_order', '')
+
+		if not get_wapi_lock(lockname='order_put_' + str(webapp_user.id), lock_timeout=1):
+			watchdog_alert('wapi接口被刷,wapi:%s,webapp_user_id:%s' % ('mall.order_put', str(webapp_user.id)))
+			reason_dict = {
+				"is_success": False,
+				"msg":  u'请勿短时间连续下单',
+				"type": "coupon"    # 兼容性type
+			}
+			return 500, {'detail': [reason_dict]}
+
 
 		#解析购买参数
 		purchase_info = PurchaseInfo.parse({

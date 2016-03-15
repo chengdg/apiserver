@@ -872,18 +872,6 @@ class Order(business_model.Model):
 			self.__after_update_status('pay')
 			self.__send_template_message()
 
-			# 通知团购订单支付完成
-			if self.is_group_buy:
-				url = GroupBuyOPENAPI['order_action']
-				data = {
-					'order_id': self.order_id,
-					'member_id': webapp_user.member.id,
-					'action': 'pay',
-					'woid': self.context['webapp_owner'].id,
-					'group_id': self.order_group_info['group_id']
-				}
-				notify_group_buy_after_pay.delay(url, data)
-
 		return pay_result
 
 
@@ -1014,6 +1002,19 @@ class Order(business_model.Model):
 		if self.raw_status:
 			record_order_status_log.delay(self.order_id, u'客户', self.raw_status, self.status)
 		self.__send_notify_mail()
+
+		# 通知团购订单支付完成
+		if self.is_group_buy and action in ['buy', 'pay']:
+			url = GroupBuyOPENAPI['order_action']
+			data = {
+				'order_id': self.order_id,
+				'member_id': self.context['webapp_user'].member.id,
+				'action': action,
+				'woid': self.context['webapp_owner'].id,
+				'group_id': self.order_group_info['group_id']
+			}
+			notify_group_buy_after_pay.delay(url, data)
+
 
 
 

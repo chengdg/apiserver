@@ -149,14 +149,24 @@ class ReservedProduct(business_model.Model):
 		self.is_delivery = product.is_delivery
 		#获取商品规格信息
 		model = product.get_specific_model(product_info['model_name'])
-		self.is_model_deleted = model.is_deleted
-		self.price = model.price
-		self.original_price = model.price
-		self.weight = model.weight
-		self.stock_type = model.stock_type
-		self.stocks = model.stocks
-		self.model = model
-		self.total_price = self.original_price * int(self.purchase_count)
+		if model:
+			self.is_model_deleted = model.is_deleted
+			self.price = model.price
+			self.original_price = model.price
+			self.weight = model.weight
+			self.stock_type = model.stock_type
+			self.stocks = model.stocks
+			self.model = model
+			self.total_price = self.original_price * int(self.purchase_count)
+		else:
+			self.is_model_deleted = model.is_deleted
+			self.price = 0
+			self.original_price = 0
+			self.weight = 0
+			self.stock_type = 0
+			self.stocks =0
+			self.model = ''
+			self.total_price = 0
 
 		#获取商品当前的promotion
 		product_promotion = product.promotion

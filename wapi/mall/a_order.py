@@ -43,6 +43,8 @@ class AOrder(api_resource.ApiResource):
 		webapp_owner = args['webapp_owner']
 		refueling_order = args.get('refueling_order', '')
 
+		print('-----------args',args)
+
 		#解析购买参数
 		purchase_info = PurchaseInfo.parse({
 			'request_args': args

@@ -159,7 +159,7 @@ class ReservedProduct(business_model.Model):
 			self.model = model
 			self.total_price = self.original_price * int(self.purchase_count)
 		else:
-			self.is_model_deleted = model.is_deleted
+			self.is_model_deleted = True
 			self.price = 0
 			self.original_price = 0
 			self.weight = 0

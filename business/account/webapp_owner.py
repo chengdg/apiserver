@@ -135,6 +135,10 @@ class WebAppOwner(business_model.Model):
 		else:
 			return filter(lambda x: x['type'] != mall_models.PAY_INTERFACE_WEIZOOM_COIN, self.__webapp_owner_info.pay_interfaces)
 
+	@cached_context_property
+	def pay_interface_types(self):
+		return [x['type'] for x in self.pay_interfaces]
+
 	@property
 	def all_pay_interfaces(self):
 		"""

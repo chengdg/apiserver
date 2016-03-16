@@ -103,7 +103,7 @@ Background:
 		"""
 	And bill关注jobs的公众号
 
-@mall3 @mall.webapp @zy_bp01 @ztq2
+@mall3 @mall.webapp @zy_bp01
 Scenario:1 购买单个商品
 	jobs添加商品后
 	1. bill能在webapp中购买jobs添加的商品

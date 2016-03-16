@@ -26,7 +26,8 @@ def _run_weapp_step(step, context_text,context=None):
 	response = requests.post(url, data={'data':json.dumps(data)})
 
 	response_text = base64.b64decode(response.text.encode('utf-8')).decode('utf-8')
-	if response_text.startswith('***'):
+	# 可以有更好的判断条件。。。
+	if response_text.startswith('Traceback'):
 		buf = []
 		buf.append('\n*************** START WEAPP STEP EXCEPTION ***************')
 		buf.append(response_text.strip())

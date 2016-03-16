@@ -23,19 +23,19 @@ Background:
 		"""
 	Given jobs已创建微众卡:weapp
 		"""
-		[{
+		{
 			"cards": [{
 				"id": "0000001",
 				"password": "1234567",
 				"status": "未使用",
 				"price": 50
 			},{
-			"cards": [{
 				"id": "0000002",
 				"password": "2234567",
 				"status": "未使用",
 				"price": 200
-		}]
+			}]
+		}
 		"""
 	Given jobs已添加商品:weapp
 		"""

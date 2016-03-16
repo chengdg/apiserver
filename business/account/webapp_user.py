@@ -566,10 +566,21 @@ class WebAppUser(business_model.Model):
 		# return member_models.MemberInfo.select().dj_where(member__webapp_id=webapp_id, phone_number=phone_number, is_binded=True).count() == 0
 		return member_models.MemberInfo.select().join(member_models.Member).where(member_models.Member.webapp_id==webapp_id, member_models.MemberInfo.phone_number==phone_number, member_models.MemberInfo.is_binded==True).count() == 0
 
-	def update_phone_captcha(self, phone_number, captcha, sessionid):
+	def update_phone_captcha(self, phone_number, captcha, sessionid, webapp_id):
 		if phone_number and captcha:
-			member_models.MemberInfo.update(session_id=sessionid, phone_number=phone_number, captcha=captcha, binding_time=datetime.now()).dj_where(member_id=self.member.id).execute()
+			member_infos = member_models.MemberInfo.select().dj_where(phone_number=phone_number, is_binded=True)
+			if member_infos.count() > 0:
+				member_ids =  [member_info.member_id for member_info in member_infos]
+				members_count = member_models.Member.select().dj_where(webapp_id=webapp_id,id__in=member_ids).count()
+				if members_count > 0:
+					return False
+				else:
+					member_models.MemberInfo.update(session_id=sessionid, phone_number=phone_number, captcha=captcha, binding_time=datetime.now()).dj_where(member_id=self.member.id).execute()
+					return True
 
+			else:
+				member_models.MemberInfo.update(session_id=sessionid, phone_number=phone_number, captcha=captcha, binding_time=datetime.now()).dj_where(member_id=self.member.id).execute()
+				return True
 	@cached_context_property
 	def captcha(self):
 		"""

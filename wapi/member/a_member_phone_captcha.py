@@ -32,8 +32,11 @@ class AMemberPhoneCaptcha(api_resource.ApiResource):
 				company_name = webapp_owner.mpuser_preview_info.name
 				result,captcha = send_phone_msg.send_captcha(phone_number,company_name)
 				if result and captcha:
-					webapp_user.update_phone_captcha(phone_number, captcha, sessionid)
-					return {"captcha": captcha}
+					sucess = webapp_user.update_phone_captcha(phone_number, captcha, sessionid, webapp_owner.webapp_id)
+					if sucess:
+						return {"captcha": captcha}
+					else:
+						return 503, u'手机已经被绑定过'
 				else:
 					return 502, u'获取手机验证码失败'
 			else:

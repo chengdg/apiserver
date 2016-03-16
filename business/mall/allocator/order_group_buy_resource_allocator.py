@@ -16,6 +16,7 @@ GroupBuyOPENAPI = {
 	'order_action': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/order_action',
 	'check_group_buy': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/check_group_buy',
 	'group_buy_info': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/group_buy_info',
+	'get_group_url': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/get_group_url',
 }
 
 

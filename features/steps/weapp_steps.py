@@ -1,25 +1,27 @@
 # -*- coding: utf-8 -*-
-import json
-import time
-import shutil
-import os
-from datetime import datetime, timedelta
-import subprocess
 import base64
+import os
+import subprocess
 
-from behave import *
 import requests
+from behave import *
+
 # from django.contrib.auth.models import User
 
-import settings
 from db.mall.models import *
+from features.util.behave_utils import get_context_attrs
 
 
 def _run_weapp_step(step, context_text,context=None):
 	url = 'http://%s:%s' % (settings.WEAPP_BDD_SERVER_HOST, settings.WEAPP_BDD_SERVER_PORT)
+	if context:
+		context_kvs = get_context_attrs(context)
+	else:
+		context_kvs = {}
 	data = {
 		'step': step,
-		'context': context_text
+		'context_text': context_text,
+		'context_kvs': json.dumps(context_kvs)
 	}
 	response = requests.post(url, data={'data':json.dumps(data)})
 

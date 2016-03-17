@@ -79,7 +79,7 @@ class WebAppUser(business_model.Model):
 		model = member_models.WebAppUser.get(id=id)
 		webapp_user = WebAppUser(webapp_owner, model)
 		return webapp_user
-		
+
 
 	@staticmethod
 	@param_required(['webapp_owner', 'model'])
@@ -95,7 +95,7 @@ class WebAppUser(business_model.Model):
 		webapp_owner = args['webapp_owner']
 		model = args['model']
 		webapp_user = WebAppUser(webapp_owner, model)
-		
+
 		return webapp_user
 
 	def __init__(self, webapp_owner, model):
@@ -318,7 +318,7 @@ class WebAppUser(business_model.Model):
 		[property] webapp user待发货订单数
 		"""
 		return self.__order_info.not_ship_order_count
-	
+
 	@property
 	def shiped_order_count(self):
 		"""
@@ -363,7 +363,7 @@ class WebAppUser(business_model.Model):
 				product_id = product_id,
 			).execute()
 		else:
-			
+
 			mall_models.MemberProductWishlist.create(
 				owner = webapp_owner.id,
 				member_id = self.member.id,
@@ -380,19 +380,19 @@ class WebAppUser(business_model.Model):
 			member_id = self.member.id,
 			product_id = product_id,
 			).execute()
-		
+
 	@cached_context_property
 	def collected_products(self):
 		"""
 		[property] 会员收藏商品的集合
 		"""
 		webapp_owner = self.context['webapp_owner']
-		
+
 		ids = [memner_product_wish.product_id for memner_product_wish in mall_models.MemberProductWishlist.select().dj_where(
 			owner_id = webapp_owner.id,
 			member_id = self.member.id,
 			is_collect=True
-			).order_by(-mall_models.MemberProductWishlist.add_time)] 
+			).order_by(-mall_models.MemberProductWishlist.add_time)]
 
 		products = Product.from_ids({
 			'webapp_owner': webapp_owner,
@@ -568,19 +568,17 @@ class WebAppUser(business_model.Model):
 
 	def update_phone_captcha(self, phone_number, captcha, sessionid, webapp_id):
 		if phone_number and captcha:
-			member_infos = member_models.MemberInfo.select().dj_where(phone_number=phone_number, is_binded=True)
-			if member_infos.count() > 0:
-				member_ids =  [member_info.member_id for member_info in member_infos]
-				members_count = member_models.Member.select().dj_where(webapp_id=webapp_id,id__in=member_ids).count()
-				if members_count > 0:
-					return False
-				else:
-					member_models.MemberInfo.update(session_id=sessionid, phone_number=phone_number, captcha=captcha, binding_time=datetime.now()).dj_where(member_id=self.member.id).execute()
-					return True
-
+			if member_models.MemberInfo.select().join(member_models.Member).where(
+				member_models.Member.webapp_id==webapp_id,
+				member_models.MemberInfo.phone_number==phone_number,
+				member_models.MemberInfo.is_binded==True).count() > 0:
+				return False
 			else:
 				member_models.MemberInfo.update(session_id=sessionid, phone_number=phone_number, captcha=captcha, binding_time=datetime.now()).dj_where(member_id=self.member.id).execute()
 				return True
+		else:
+			return False
+
 	@cached_context_property
 	def captcha(self):
 		"""
@@ -598,7 +596,7 @@ class WebAppUser(business_model.Model):
 	@cached_context_property
 	def binded(self):
 		member_models.MemberInfo.update(binding_time=datetime.now(), is_binded=True).dj_where(member_id=self.member.id).execute()
-	
+
 	def set_force_purchase(self):
 		"""
 		设置强制购买模式

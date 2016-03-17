@@ -847,10 +847,19 @@ class Order(business_model.Model):
 
 		@param[in] pay_interface_type: 支付所使用的支付接口的type
 		"""
+		webapp_owner = self.context['webapp_owner']
 		pay_result = False
 		if self.status == mall_models.ORDER_STATUS_NOT:
 			#改变订单的支付状态
 			pay_result = True
+
+			# 检测优惠抵扣
+			if pay_interface_type == mall_models.PAY_INTERFACE_PREFERENCE:
+				if self.final_price != 0:
+					return False
+			else:
+				if pay_interface_type not in webapp_owner.pay_interface_types:
+					return False
 
 			now = datetime.now()
 			if self.real_has_sub_order:

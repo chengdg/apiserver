@@ -62,6 +62,7 @@ class AOrder(api_resource.ApiResource):
 			# 实际上detail是reason列表
 			return 500, {'detail': e.value}
 		except:
+			watchdog_alert(unicode_full_stack())
 			return 500, {'detail': ''}
 
 		pay_url_info = None

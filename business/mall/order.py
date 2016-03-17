@@ -1146,7 +1146,7 @@ class Order(business_model.Model):
 	@property
 	def is_group_buy(self):
 		if not self.context.get('_is_group_buy'):
-			self.context['_is_group_buy'] = bool(self.order_group_info)
+			self.context['_is_group_buy'] = bool(mall_models.OrderHasGroup.select().dj_where(order_id=self.order_id).first())
 
 		return self.context['_is_group_buy']
 
@@ -1170,7 +1170,7 @@ class Order(business_model.Model):
 				}
 				is_success, group_url_info = microservice_consume(url=url,data=data)
 				if is_success:
-					activity_url = group_url_info['group_url']
+					activity_url = 'http://' + settings.WEAPP_DOMAIN + group_url_info['group_url']
 			order_group_info['activity_url'] = activity_url
 			return order_group_info
 		else:

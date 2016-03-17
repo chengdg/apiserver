@@ -1157,6 +1157,7 @@ class Order(business_model.Model):
 	@cached_context_property
 	def order_group_info(self):
 		order_has_group = mall_models.OrderHasGroup.select().dj_where(order_id=self.order_id).first()
+		activity_url = ''
 		if order_has_group:
 			order_group_info = order_has_group.to_dict()
 			if self.status == mall_models.ORDER_STATUS_NOT:

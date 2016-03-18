@@ -54,10 +54,12 @@ def microservice_consume(url='', data={}, method='get', timeout=None):
 			return True, resp_data
 		else:
 			watchdog_alert(u'外部接口调用错误-错误状态码.code:%s,url:%s，data:%s' % (resp.status_code, url, str(data)))
+			print(u'外部接口调用错误-错误状态码.code:%s,url:%s，data:%s' % (resp.status_code, url, str(data)))
 			raise ResponseCodeException
 	except BaseException as e:
 		traceback = unicode_full_stack()
 		watchdog_alert(u'外部接口调用错误-异常.url:%s,msg:%s,url:%s ,data:%s' %  (url, traceback, url, str(data)))
+		print(u'外部接口调用错误-异常.url:%s,msg:%s,url:%s ,data:%s' %  (url, traceback, url, str(data)))
 		raise Exception(e)
 
 # 测试代码

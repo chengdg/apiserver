@@ -157,14 +157,14 @@ Background:
 				"group_name": "团购活动1",
 				"group_leader": "bill",
 				"group_dict":
-					[{
+					{
 						"group_type":5,
 						"group_days":1,
 						"group_price":90.00
-					}],
-				"products": [{
+					},
+				"products": {
 					"name": "商品1"
-				}]
+				}
 			}
 			"""
 		When bill提交团购订单
@@ -188,14 +188,14 @@ Background:
 				"group_name": "团购活动1",
 				"group_leader": "bill",
 				"group_dict":
-					[{
+					{
 						"group_type":5,
 						"group_days":1,
 						"group_price":90.00
-					}],
-				"products": [{
+					},
+				"products": {
 					"name": "商品1"
-				}]
+				}
 			}
 			"""
 		When tom提交团购订单
@@ -218,14 +218,14 @@ Background:
 				"group_name": "团购活动1",
 				"group_leader": "bill",
 				"group_dict":
-					[{
+					{
 						"group_type":5,
 						"group_days":1,
 						"group_price":90.00
-					}],
-				"products": [{
+					},
+				"products": {
 					"name": "商品1"
-				}]
+				}
 			}
 			"""
 		When bill1提交团购订单
@@ -253,14 +253,14 @@ Background:
 				"group_name": "团购活动1",
 				"group_leader": "bill",
 				"group_dict":
-					[{
+					{
 						"group_type":5,
 						"group_days":1,
 						"group_price":90.00
-					}],
-				"products": [{
+					},
+				"products": {
 					"name": "商品1"
-				}]
+				}
 			}
 			"""
 		When bill2提交团购订单
@@ -287,9 +287,9 @@ Background:
 			{
 				"order_id": "00105",
 				"pay_type":"微信支付",
-				"products": [{
+				"products": {
 					"name": "商品3"
-				}]
+				}
 			}
 			"""
 
@@ -301,14 +301,14 @@ Background:
 				"group_name": "团购活动2",
 				"group_leader": "tom",
 				"group_dict":
-					[{
+					{
 						"group_type":5,
 						"group_days":1,
 						"group_price":190.00
-					}],
-				"products": [{
+					},
+				"products": {
 					"name": "商品2"
-				}]
+				}
 			}
 			"""
 		When tom提交团购订单
@@ -331,14 +331,14 @@ Background:
 				"group_name": "团购活动2",
 				"group_leader": "tom",
 				"group_dict":
-					[{
+					{
 						"group_type":5,
 						"group_days":1,
 						"group_price":190.00
-					}],
-				"products": [{
+					},
+				"products": {
 					"name": "商品2"
-				}]
+				}
 			}
 			"""
 		When bill提交团购订单
@@ -361,14 +361,14 @@ Background:
 				"group_name": "团购活动2",
 				"group_leader": "tom",
 				"group_dict":
-					[{
+					{
 						"group_type":5,
 						"group_days":1,
 						"group_price":190.00
-					}],
-				"products": [{
+					},
+				"products": {
 					"name": "商品2"
-				}]
+				}
 			}
 			"""
 		When bill1提交团购订单
@@ -391,14 +391,14 @@ Background:
 				"group_name": "团购活动2",
 				"group_leader": "tom",
 				"group_dict":
-					[{
+					{
 						"group_type":5,
 						"group_days":1,
 						"group_price":190.00
-					}],
-				"products": [{
+					},
+				"products": {
 					"name": "商品2"
-				}]
+				}
 			}
 			"""
 		When bill2提交团购订单
@@ -421,14 +421,14 @@ Background:
 				"group_name": "团购活动2",
 				"group_leader": "tom",
 				"group_dict":
-					[{
+					{
 						"group_type":5,
 						"group_days":1,
 						"group_price":190.00
-					}],
-				"products": [{
+					},
+				"products": {
 					"name": "商品2"
-				}]
+				}
 			}
 			"""
 		When bill3提交团购订单

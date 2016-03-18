@@ -848,6 +848,8 @@ class Order(business_model.Model):
 		@param[in] pay_interface_type: 支付所使用的支付接口的type
 		"""
 		pay_result = False
+		if self.final_price == 0:
+			pay_interface_type = mall_models.PAY_INTERFACE_PREFERENCE
 		if self.status == mall_models.ORDER_STATUS_NOT:
 			#改变订单的支付状态
 			pay_result = True

@@ -87,6 +87,7 @@ class PayInterface(business_model.Model):
 
 		@return 支付链接
 		"""
+
 		interface = self.context['interface']
 		interface_type = interface['type']
 		webapp_owner_id = self.context['webapp_owner'].id
@@ -96,9 +97,10 @@ class PayInterface(business_model.Model):
 				'type': order.pay_interface_type,
 				'woid': webapp_owner_id,
 				'order_id': order.order_id,
-				'pay_interface_type': order.pay_interface_type
+				'pay_interface_type': order.pay_interface_type,
+				'is_active': True
 			}
-			
+
 		if mall_models.PAY_INTERFACE_ALIPAY == interface_type:
 			return {
 				'type': 'alipay',

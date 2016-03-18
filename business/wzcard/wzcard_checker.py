@@ -26,11 +26,11 @@ class WZCardChecker(object):
 
 		# SELECT count(*) FROM weapp.market_tool_weizoom_card as card join market_tool_weizoom_card_rule as rule on (card.weizoom_card_rule_id=rule.id) where card.weizoom_card_id in ('0000001','0000002','0000021') and rule.valid_restrictions >0;
 		wzcard_id_ids = [wzcard_info['card_name'] for wzcard_info in wzcard_info_list]
-		only_one_valid_restrictions_card = wzcard_models.WeizoomCard.select().join(wzcard_models.WeizoomCardRule).where(wzcard_models.WeizoomCard.weizoom_card_id in wzcard_id_ids,wzcard_models.WeizoomCardRule.valid_restrictions >0).count() == 0
+		only_one_valid_restrictions_card = wzcard_models.WeizoomCard.select().join(wzcard_models.WeizoomCardRule).where(wzcard_models.WeizoomCard.weizoom_card_id.in_(wzcard_id_ids),wzcard_models.WeizoomCardRule.valid_restrictions >0).count() == 1
 		if not only_one_valid_restrictions_card:
 			return False, {
 					"is_success": False,
-					"type": 'wzcard:duplicated',
+					"type": 'coupon',
 					"msg": '一次一个',
 					"short_msg": u'已添加'
 				}
@@ -50,7 +50,7 @@ class WZCardChecker(object):
 			id_set.add(wzcard_id)
 		return True, {}
 
-	def check(self, wzcard_id, password, wzcard, webapp_owner, webapp_user,wzcard_check_money):
+	def check(self, wzcard_id, password, wzcard, webapp_owner, webapp_user,wzcard_check_money=0):
 		"""
 		检查微众卡是否可用
 
@@ -128,9 +128,9 @@ class WZCardChecker(object):
 				"msg": reason,
 				"short_msg": u'卡未激活'
 			}
-		elif weizoom_card_rule.valid_restrictions >0:
+		elif weizoom_card_rule.valid_restrictions > 0 and wzcard_check_money:
 			if wzcard_check_money < weizoom_card_rule.valid_restrictions:
-				msg = '1213'
+				msg = u'不满足满额限制'
 		elif weizoom_card_rule.card_attr:
 			#专属卡
 			#是否为新会员专属卡

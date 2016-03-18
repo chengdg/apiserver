@@ -23,6 +23,18 @@ class WZCardChecker(object):
 		"""
 		检查微众卡号是否重复
 		"""
+
+		# SELECT count(*) FROM weapp.market_tool_weizoom_card as card join market_tool_weizoom_card_rule as rule on (card.weizoom_card_rule_id=rule.id) where card.weizoom_card_id in ('0000001','0000002','0000021') and rule.valid_restrictions >0;
+		wzcard_id_ids = [wzcard_info['card_name'] for wzcard_info in wzcard_info_list]
+		only_one_valid_restrictions_card = wzcard_models.WeizoomCard.select().join(wzcard_models.WeizoomCardRule).where(wzcard_models.WeizoomCard.weizoom_card_id in wzcard_id_ids,wzcard_models.WeizoomCardRule.valid_restrictions >0).count() == 0
+		if not only_one_valid_restrictions_card:
+			return False, {
+					"is_success": False,
+					"type": 'wzcard:duplicated',
+					"msg": '一次一个',
+					"short_msg": u'已添加'
+				}
+
 		id_set = set()
 		for wzcard_info in wzcard_info_list:
 			wzcard_id = wzcard_info['card_name']

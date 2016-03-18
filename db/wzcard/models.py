@@ -40,6 +40,7 @@ class WeizoomCardRule(models.Model):
 	shop_limit_list = models.CharField(max_length=2048, default='-1') #专属商家
 	shop_black_list = models.CharField(max_length=2048, default='-1') #不能使用微众卡的商家
 	is_new_member_special = models.BooleanField(default=False) #是否为新会员专属卡
+	valid_restrictions = models.DecimalField(max_digits=65, decimal_places=2) #订单满多少可以使用规则
 
 	class Meta(object):
 		db_table = 'market_tool_weizoom_card_rule'

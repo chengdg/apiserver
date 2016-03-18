@@ -92,8 +92,10 @@ class WZCardResourceAllocator(business_model.Service):
 				"wzcard_id": wzcard_id,
 				})
 			logging.info("wzcard_id: {}, wzcard: {}".format(wzcard_id, wzcard))
+
+			wzcard_check_money = order.postage + sum([product.original_price * product.purchase_count for product in order.products])
 			
-			is_success, reason = checker.check(wzcard_id, wzcard_password, wzcard, self.__webapp_owner, self.__webapp_user)
+			is_success, reason = checker.check(wzcard_id, wzcard_password, wzcard, self.__webapp_owner, self.__webapp_user,wzcard_check_money)
 			logging.info(u"wzcard_id:{}, status: {}, price: {}, check_result:{}, reason:{}".format(wzcard.wzcard_id, wzcard.readable_status, wzcard.money, is_success, reason))
 			# 试验发watchdog消息
 			watchdog_info(u"wzcard_id:{}, status: {}, price: {}, check_result:{}, reason:{}".format(wzcard.wzcard_id, wzcard.readable_status, wzcard.money, is_success, reason))

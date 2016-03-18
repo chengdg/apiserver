@@ -38,7 +38,7 @@ class WZCardChecker(object):
 			id_set.add(wzcard_id)
 		return True, {}
 
-	def check(self, wzcard_id, password, wzcard, webapp_owner, webapp_user):
+	def check(self, wzcard_id, password, wzcard, webapp_owner, webapp_user,wzcard_check_money):
 		"""
 		检查微众卡是否可用
 
@@ -116,7 +116,9 @@ class WZCardChecker(object):
 				"msg": reason,
 				"short_msg": u'卡未激活'
 			}
-
+		elif weizoom_card_rule.valid_restrictions >0:
+			if wzcard_check_money < weizoom_card_rule.valid_restrictions:
+				msg = '1213'
 		elif weizoom_card_rule.card_attr:
 			#专属卡
 			#是否为新会员专属卡

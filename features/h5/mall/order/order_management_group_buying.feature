@@ -182,7 +182,7 @@ Background:
 		When bill使用支付方式'微信支付'进行支付
 	#00102-待支付（tom参团'团购活动1'）
 		When tom访问jobs的webapp
-		When tom参加jobs的团购活动"团购活动1"进行参团:weapp
+		When tom参加bill的团购活动"团购活动1":weapp
 			"""
 			{
 				"group_name": "团购活动1",
@@ -212,7 +212,7 @@ Background:
 			"""
 	#00103-待发货（团购中，现金+微众卡支付，bill1参团'团购活动1'）
 		When bill1访问jobs的webapp
-		When bill1参加jobs的团购活动"团购活动1"进行参团:weapp
+		When bill1参加bill的团购活动"团购活动1":weapp
 			"""
 			{
 				"group_name": "团购活动1",
@@ -247,7 +247,7 @@ Background:
 		When bill1使用支付方式'微信支付'进行支付
 	#00104-待发货（团购中，全额微众卡支付，bill2参团'团购活动1'）
 		When bill2访问jobs的webapp
-		When bill2参加jobs的团购活动"团购活动1"进行参团:weapp
+		When bill2参加bill的团购活动"团购活动1":weapp
 			"""
 			{
 				"group_name": "团购活动1",
@@ -325,7 +325,7 @@ Background:
 		When tom使用支付方式'微信支付'进行支付
 	#00202-待发货（团购成功,bill参团'团购活动2'）
 		When bill访问jobs的webapp
-		When bill参加jobs的团购活动"团购活动2"进行参团:weapp
+		When bill参加tom的团购活动"团购活动2":weapp
 			"""
 			{
 				"group_name": "团购活动2",
@@ -355,7 +355,7 @@ Background:
 		When bill使用支付方式'微信支付'进行支付
 	#00203-待发货（团购成功,bill1参团'团购活动2'）
 		When bill1访问jobs的webapp
-		When bill1参加jobs的团购活动"团购活动2"进行参团:weapp
+		When bill1参加tom的团购活动"团购活动2":weapp
 			"""
 			{
 				"group_name": "团购活动2",
@@ -385,7 +385,7 @@ Background:
 		When bill1使用支付方式'微信支付'进行支付
 	#00204-待发货（团购成功,bill2参团'团购活动2'）
 		When bill2访问jobs的webapp
-		When bill2参加jobs的团购活动"团购活动2"进行参团:weapp
+		When bill2参加tom的团购活动"团购活动2":weapp
 			"""
 			{
 				"group_name": "团购活动2",
@@ -415,7 +415,7 @@ Background:
 		When bill2使用支付方式'微信支付'进行支付
 	#00205-待发货（团购成功,bill3参团'团购活动2'）
 		When bill3访问jobs的webapp
-		When bill3参加jobs的团购活动"团购活动2"进行参团:weapp
+		When bill3参加tom的团购活动"团购活动2":weapp
 			"""
 			{
 				"group_name": "团购活动2",

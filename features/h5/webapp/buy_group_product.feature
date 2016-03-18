@@ -88,43 +88,48 @@ Background:
 			"start_date":"今天",
 			"end_date":"2天后",
 			"product_name":"商品1",
-			"group_dict":
-				[{
-					"group_type":5,
-					"group_days":1,
-					"group_price":20.00
-				},{
-					"group_type":10,
-					"group_days":2,
+			"group_dict":{
+				"0":{
+					"group_type":"5",
+					"group_days":"1",
+					"group_price":"20.00"
+					},
+				"1":{
+					"group_type":"10",
+					"group_days":"2",
 					"group_price":10.00
-				}],
-				"ship_date":20,
-				"product_counts":100,
-				"material_image":"1.jpg",
-				"share_description":"团购分享描述"
+				}
+			},
+			"ship_date":"20",
+			"product_counts":"100",
+			"material_image":"1.jpg",
+			"share_description":"团购分享描述"
 		}, {
 			"group_name":"团购2",
 			"start_date":"今天",
-			"end_date":"2天后",
+			"end_date":"3天后",
 			"product_name":"商品2",
-			"group_dict":
-				[{
-					"group_type":5,
-					"group_days":2,
-					"group_price":21.00
-				},{
-					"group_type":10,
-					"group_days":2,
+			"group_dict":{
+				"0":{
+					"group_type":"5",
+					"group_days":"2",
+					"group_price":"21.00"
+					},
+				"1":{
+					"group_type":"10",
+					"group_days":"2",
 					"group_price":11.00
-				}],
-				"ship_date":20,
-				"product_counts":100,
-				"material_image":"1.jpg",
-				"share_description":"团购分享描述"
+				}
+			},
+			"ship_date":"20",
+			"product_counts":"100",
+			"material_image":"1.jpg",
+			"share_description":"团购分享描述"
 		}]
 		"""
 	When jobs开启团购活动'团购1':weapp
 	When jobs开启团购活动'团购2':weapp
+
 	Given bill关注jobs的公众号
 	And tom关注jobs的公众号
 
@@ -155,29 +160,25 @@ Scenario: 1 会员访问团购活动首页能进行开团
 	#获得的是所有jobs开启的团购活动列表
 	Then bill能获得jobs的团购活动列表:weapp
 		"""
-		{
-			"group_name": "团购2"
+		[{
+			"group_name": "团购2",
 			"group_dict":
 				[{
-					"group_type":5,
-					"group_days":1,
-					"group_price":21.00
+					"group_type":"10",
+					"group_price":"11.00"
 				},{
-					"group_type":10,
-					"group_days":2,
-					"group_price":11.00
+					"group_type":"5",
+					"group_price":"21.00"
 				}]
-		}, {
-			"group_name": "团购1"
+		},{
+			"group_name": "团购1",
 			"group_dict":
 				[{
-					"group_type":5,
-					"group_days":1,
-					"group_price":20.00
+					"group_type":"10",
+					"group_price":"10.00"
 				},{
-					"group_type":10,
-					"group_days":2,
-					"group_price":10.00
+					"group_type":"5",
+					"group_price":"20.00"
 				}]
 		}]
 		"""
@@ -228,22 +229,24 @@ Scenario: 1 会员访问团购活动首页能进行开团
 		"""
 
 	#bill开团后，就不能重复开一个团购活动
-	Then bill能获得jobs的团购活动列表:weapp
+	When bill参加jobs的团购活动"团购1"进行开团:weapp
 		"""
-		[{
-			"group_name": "团购2"
+		{
+			"group_name": "团购1",
+			"group_leader": "bill",
 			"group_dict":
-				[{
+				{
 					"group_type":5,
 					"group_days":1,
-					"group_price":21.00
-				},{
-					"group_type":10,
-					"group_days":2,
-					"group_price":11.00
-				}]
-		}]
+					"group_price":20.00
+				},
+			"products": {
+				"name": "商品1"
+			}
+		}
 		"""
+	Then bill得到团购活动提示"只能开团一次":weapp
+
 
 Scenario: 2 会员可以通过分享链接直接参加团购活动
 	bill开团后分享团购活动链接
@@ -302,16 +305,8 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 		[{
 			"group_name": "团购2",
 			"group_leader": "bill",
-			"group_dict":
-				[{
-					"group_type":5,
-					"group_days":1,
-					"group_price":21.00,
-					"offered":[{
-						"number":1,
-						"member":["bill"]
-						}]
-				}]
+			"product_name": "商品2",
+			"participant_count": "1/5"
 		}]
 		"""
 
@@ -357,60 +352,47 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 			}]
 		}
 		"""
-	Then tom能获得jobs的团购活动列表:weapp
-		"""
-		[{
-			"group_name": "团购2"
-			"group_dict":
-				[{
-					"group_type":5,
-					"group_days":1,
-					"group_price":21.00
-				},{
-					"group_type":10,
-					"group_days":2,
-					"group_price":11.00
-				}]
-		}, {
-			"group_name": "团购1"
-			"group_dict":
-				[{
-					"group_type":5,
-					"group_days":1,
-					"group_price":20.00
-				},{
-					"group_type":10,
-					"group_days":2,
-					"group_price":10.00
-				}]
-		}]
-		"""
+
 	Then tom能获得"团购1"的已开团活动列表:weapp
 		"""
 		[]
 		"""
 	Then tom能获得"团购2"的已开团活动列表:weapp
 		"""
-		[]
+		[{
+			"group_name": "团购2",
+			"group_leader": "bill",
+			"product_name": "商品2",
+			"participant_count": "2/5"
+		}]
 		"""
 
 	When 清空浏览器:weapp
 	When nokia点击bill分享链接:weapp
+	When nokia关注jobs的公众号
+	When nokia取消关注jobs的公众号
 	When nokia访问jobs的webapp
 	Then nokia能获得jobs的团购活动列表:weapp
 		"""
 		[{
 			"group_name": "团购2",
-			"group_leader": "bill",
 			"group_dict":
 				[{
-					"group_type":5,
-					"group_days":1,
-					"group_price":21.00,
-					"offered":[{
-						"number":2,
-						"member":["bill", "tom"]
-						}]
+					"group_type":"10",
+					"group_price":"11.00"
+				},{
+					"group_type":"5",
+					"group_price":"21.00"
+				}]
+		}, {
+			"group_name": "团购1",
+			"group_dict":
+				[{
+					"group_type":"10",
+					"group_price":"10.00"
+				},{
+					"group_type":"5",
+					"group_price":"20.00"
 				}]
 		}]
 		"""
@@ -466,7 +448,12 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 		"""
 	Then nokia能获得"团购2"的已开团活动列表:weapp
 		"""
-		[]
+		[{
+			"group_name": "团购2",
+			"group_leader": "bill",
+			"product_name": "商品2",
+			"participant_count": "3/5"
+		}]
 		"""
 
 Scenario: 3 会员开团后团购活动成功

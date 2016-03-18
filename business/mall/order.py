@@ -426,8 +426,16 @@ class Order(business_model.Model):
 		wx_package_info['woid'] = self.context['webapp_owner'].id
 
 		if not config:
-			product_ids = [r.product_id for r in mall_models.OrderHasProduct.select().dj_where(order_id=self.id)]
-			product_names = ','.join([product.name for product in mall_models.Product.select().dj_where(id__in=product_ids)])
+			# warning!! 兼容代码，勿改product_names逻辑
+			# 原始代码：
+			# product_ids = [r.product_id for r in mall_models.OrderHasProduct.select().dj_where(order_id=self.id)]
+			# product_names = ','.join([product.name for product in mall_models.Product.select().dj_where(id__in=product_ids)])
+			order_has_products = mall_models.OrderHasProduct.select().dj_where(order_id=self.id)
+			product_ids = [r.product_id for r in order_has_products]
+			product_ids_for_sort = [product.id for product in mall_models.Product.select().dj_where(id__in=product_ids)]
+			product_id2name = dict([(o.product_id, o.product_name) for o in order_has_products])
+			product_names = ','.join([product_id2name[pid] for pid in product_ids_for_sort])
+
 			if len(product_names) > 45:
 				product_names = product_names[:45]
 			else:

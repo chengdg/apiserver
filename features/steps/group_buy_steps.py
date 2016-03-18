@@ -70,7 +70,10 @@ def step_impl(context, webapp_user_name):
 			mall_models.Order.update(payment_time=bdd_util.get_datetime_str(args['date'])).dj_where(
 				order_id=context.created_order_id).execute()
 	else:
-		context.created_order_id = -1
+		print('**********************团购下单失败*****************')
+		print(response.data)
+		print('**********************团购下单失败*****************')
+		assert False
 
 	if context.created_order_id != -1:
 		if 'date' in args:

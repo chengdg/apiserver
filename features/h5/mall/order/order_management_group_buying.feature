@@ -950,7 +950,7 @@ Scenario:3 财务审核-查看'团购退款'订单
 
 	#查看团购失败的订单
 		Given jobs登录系统:weapp
-		When jobs'结束'团购活动'团购活动1':weapp
+		When jobs关闭团购活动'团购活动1':weapp
 		#团购失败后，微众卡全额支付的'优惠抵扣'方式的订单变为'已取消'，显示在所有订单中
 		Then jobs可以看到订单列表:weapp
 			"""

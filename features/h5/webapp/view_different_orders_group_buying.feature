@@ -204,14 +204,14 @@ Scenario:1 订单列表只有团购订单-团购进行中
 				"group_name": "团购活动1",
 				"group_leader": "bill",
 				"group_dict":
-					[{
+					{
 						"group_type":5,
 						"group_days":1,
 						"group_price":80.00
-					}],
-				"products": [{
+					},
+				"products": {
 					"name": "商品1"
-				}]
+				}
 			}
 			"""
 		When tom提交团购订单
@@ -265,14 +265,14 @@ Scenario:1 订单列表只有团购订单-团购进行中
 				"group_name": "团购活动1",
 				"group_leader": "tom",
 				"group_dict":
-					[{
+					{
 						"group_type":5,
 						"group_days":1,
 						"group_price":80.00
-					}],
-				"products": [{
+					},
+				"products": {
 					"name": "商品1"
-				}]
+				}
 			}
 			"""
 		When tom提交团购订单
@@ -346,14 +346,14 @@ Scenario:1 订单列表只有团购订单-团购进行中
 				"group_name": "团购活动1",
 				"group_leader": "tom",
 				"group_dict":
-					[{
+					{
 						"group_type":5,
 						"group_days":1,
 						"group_price":80.00
-					}],
-				"products": [{
+					},
+				"products": {
 					"name": "商品1"
-				}]
+				}
 			}
 			"""
 		When bill提交团购订单
@@ -430,14 +430,14 @@ Scenario:1 订单列表只有团购订单-团购进行中
 				"group_name": "团购活动2",
 				"group_leader": "bill",
 				"group_dict":
-					[{
+					{
 						"group_type":5,
 						"group_days":1,
 						"group_price":40.00
-					}],
-				"products": [{
+					},
+				"products": {
 					"name": "商品2"
-				}]
+				}
 			}
 			"""
 		When bill提交团购订单
@@ -531,14 +531,14 @@ Scenario:1 订单列表只有团购订单-团购进行中
 				"group_name": "团购活动2",
 				"group_leader": "bill",
 				"group_dict":
-					[{
+					{
 						"group_type":5,
 						"group_days":1,
 						"group_price":80.00
-					}],
-				"products": [{
+					},
+				"products": {
 					"name": "商品2"
-				}]
+				}
 			}
 			"""
 		When tom提交团购订单
@@ -639,14 +639,14 @@ Scenario:2 订单列表只有团购订单-团购进行中被自动取消订单
 				"group_name": "团购活动1",
 				"group_leader": "bill",
 				"group_dict":
-					[{
+					{
 						"group_type":5,
 						"group_days":1,
 						"group_price":80.00
-					}],
-				"products": [{
+					},
+				"products": {
 					"name": "商品1"
-				}]
+				}
 			}
 			"""
 		When bill提交团购订单
@@ -671,14 +671,14 @@ Scenario:2 订单列表只有团购订单-团购进行中被自动取消订单
 				"group_name": "团购活动1",
 				"group_leader": "bill",
 				"group_dict":
-					[{
+					{
 						"group_type":5,
 						"group_days":1,
 						"group_price":80.00
-					}],
-				"products": [{
+					},
+				"products": {
 					"name": "商品1"
-				}]
+				}
 			}
 			"""
 		When tom提交团购订单
@@ -744,14 +744,14 @@ Scenario:3 订单列表只有团购订单-团购未成团
 				"group_name": "团购活动1",
 				"group_leader": "bill",
 				"group_dict":
-					[{
+					{
 						"group_type":5,
 						"group_days":1,
 						"group_price":80.00
-					}],
-				"products": [{
+					},
+				"products": {
 					"name": "商品1"
-				}]
+				}
 			}
 			"""
 		When bill提交团购订单
@@ -776,14 +776,14 @@ Scenario:3 订单列表只有团购订单-团购未成团
 				"group_name": "团购活动1",
 				"group_leader": "bill",
 				"group_dict":
-					[{
+					{
 						"group_type":5,
 						"group_days":1,
 						"group_price":80.00
-					}],
-				"products": [{
+					},
+				"products": {
 					"name": "商品1"
-				}]
+				}
 			}
 			"""
 		When tom提交团购订单
@@ -888,14 +888,14 @@ Scenario:4 订单列表只有团购订单-团购成团订单发货、完成订�
 				"group_name": "团购活动1",
 				"group_leader": "bill",
 				"group_dict":
-					[{
+					{
 						"group_type":5,
 						"group_days":1,
 						"group_price":80.00
-					}],
-				"products": [{
+					},
+				"products": {
 					"name": "商品1"
-				}]
+				}
 			}
 			"""
 		When bill提交团购订单
@@ -920,14 +920,14 @@ Scenario:4 订单列表只有团购订单-团购成团订单发货、完成订�
 				"group_name": "团购活动1",
 				"group_leader": "bill",
 				"group_dict":
-					[{
+					{
 						"group_type":5,
 						"group_days":1,
 						"group_price":80.00
-					}],
-				"products": [{
+					},
+				"products": {
 					"name": "商品1"
-				}]
+				}
 			}
 			"""
 		When tom提交团购订单
@@ -952,14 +952,14 @@ Scenario:4 订单列表只有团购订单-团购成团订单发货、完成订�
 				"group_name": "团购活动1",
 				"group_leader": "bill",
 				"group_dict":
-					[{
+					{
 						"group_type":5,
 						"group_days":1,
 						"group_price":80.00
-					}],
-				"products": [{
+					},
+				"products": {
 					"name": "商品1"
-				}]
+				}
 			}
 			"""
 		When tom1提交团购订单
@@ -984,14 +984,14 @@ Scenario:4 订单列表只有团购订单-团购成团订单发货、完成订�
 				"group_name": "团购活动1",
 				"group_leader": "bill",
 				"group_dict":
-					[{
+					{
 						"group_type":5,
 						"group_days":1,
 						"group_price":80.00
-					}],
-				"products": [{
+					},
+				"products": {
 					"name": "商品1"
-				}]
+				}
 			}
 			"""
 		When tom2提交团购订单
@@ -1017,14 +1017,14 @@ Scenario:4 订单列表只有团购订单-团购成团订单发货、完成订�
 				"group_name": "团购活动1",
 				"group_leader": "bill",
 				"group_dict":
-					[{
+					{
 						"group_type":5,
 						"group_days":1,
 						"group_price":80.00
-					}],
-				"products": [{
+					},
+				"products": {
 					"name": "商品1"
-				}]
+				}
 			}
 			"""
 		When tom3提交团购订单
@@ -1271,14 +1271,14 @@ Scenario:5 订单列表团购进行中订单+普通订单
 				"group_name": "团购活动4",
 				"group_leader": "bill",
 				"group_dict":
-					[{
+					{
 						"group_type":5,
 						"group_days":1,
 						"group_price":20.00
-					}],
-				"products": [{
+					},
+				"products": {
 					"name": "商品4"
-				}]
+				}
 			}
 			"""
 		When bill提交团购订单

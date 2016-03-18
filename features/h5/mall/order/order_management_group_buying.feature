@@ -5,8 +5,10 @@ Feature:订单管理-团购
 	"""
 		1、订单编号后面增加团购订单标识-'团'，与普通订单区分开来
 		2、在'所有订单'中，待支付和团购中的待发货订单都隐藏，团购成功的待发货订单显示出来
-		3、'财务审核'里增加'团购退款'选项卡，显示所有退款中的订单，但是没有退款成功的操作按钮；当退款金额打到用户账户里自动标记退款完成
-		4、团购的退款订单只显示在'财务审核-团购退款'中，其他选项卡中不显示
+		3、'财务审核'里增加'团购退款'选项卡:
+			显示所有团购的'退款中'和'退款完成'状态的订单;
+			'退款中'的订单没有【退款成功】的操作按钮,当退款金额打到用户账户里自动标记为'退款完成'
+			团购退款的订单只显示在'团购退款'这个选项卡中,全部、退款中和退款完成这3个选项卡中不显示团购退款的订单
 		5、团购成功的订单，订单列表中单价显示商品的原价，优惠金额=原价-团购价
 		6、查询条件'订单类型'下拉框中增加'团购订单'
 	"""
@@ -90,6 +92,11 @@ Background:
 				"id": "0000002",
 				"password": "2234567",
 				"status": "未使用",
+				"price": 100
+			},{
+				"id": "0000003",
+				"password": "3234567",
+				"status": "未使用",
 				"price": 200
 			}]
 		}
@@ -132,6 +139,8 @@ Background:
 				"share_description":"团购活动2分享描述"
 		}]
 		"""
+	When jobs开启团购活动'团购活动1':weapp
+	When jobs开启团购活动'团购活动2':weapp
 
 	Given bill关注jobs的公众号
 	And tom关注jobs的公众号
@@ -142,7 +151,7 @@ Background:
 	#订单数据
 	#00101-待发货（团购中,bill开团'团购活动1'）
 		When bill访问jobs的webapp
-		When bill参加jobs的团购活动
+		When bill参加jobs的团购活动"团购活动1"进行开团:weapp
 			"""
 			{
 				"group_name": "团购活动1",
@@ -153,22 +162,27 @@ Background:
 						"group_days":1,
 						"group_price":90.00
 					}],
+				"products": [{
+					"name": "商品1"
+				}]
+			}
+			"""
+		When bill提交团购订单
+			"""
+			{
 				"ship_name": "bill",
 				"ship_tel": "13811223344",
 				"ship_area": "北京市 北京市 海淀区",
 				"ship_address": "泰兴大厦",
 				"distribution_time":"5天后 10:00-12:30",
 				"order_id":"00101",
-				"pay_type":"微信支付",
-				"products": [{
-					"name": "商品1"
-				}]
+				"pay_type":"微信支付"
 			}
 			"""
 		When bill使用支付方式'微信支付'进行支付
 	#00102-待支付（tom参团'团购活动1'）
 		When tom访问jobs的webapp
-		When tom参加jobs的团购活动
+		When tom参加jobs的团购活动"团购活动1"进行参团:weapp
 			"""
 			{
 				"group_name": "团购活动1",
@@ -179,21 +193,26 @@ Background:
 						"group_days":1,
 						"group_price":90.00
 					}],
+				"products": [{
+					"name": "商品1"
+				}]
+			}
+			"""
+		When tom提交团购订单
+			"""
+			{
 				"ship_name": "tom",
 				"ship_tel": "13811223344",
 				"ship_area": "北京市 北京市 海淀区",
 				"ship_address": "泰兴大厦",
 				"distribution_time":"5天后 10:00-12:30",
 				"order_id":"00102",
-				"pay_type":"微信支付",
-				"products": [{
-					"name": "商品1"
-				}]
+				"pay_type":"微信支付"
 			}
 			"""
-	#00103-待发货（团购中，有微众卡支付，bill1参团'团购活动1'）
+	#00103-待发货（团购中，现金+微众卡支付，bill1参团'团购活动1'）
 		When bill1访问jobs的webapp
-		When bill1参加jobs的团购活动
+		When bill1参加jobs的团购活动"团购活动1"进行参团:weapp
 			"""
 			{
 				"group_name": "团购活动1",
@@ -204,6 +223,14 @@ Background:
 						"group_days":1,
 						"group_price":90.00
 					}],
+				"products": [{
+					"name": "商品1"
+				}]
+			}
+			"""
+		When bill1提交团购订单
+			"""
+			{
 				"ship_name": "bill1",
 				"ship_tel": "13811223344",
 				"ship_area": "北京市 北京市 海淀区",
@@ -211,9 +238,6 @@ Background:
 				"distribution_time":"5天后 10:00-12:30",
 				"order_id":"00103",
 				"pay_type":"微信支付",
-				"products": [{
-					"name": "商品1"
-				}],
 				"weizoom_card":[{
 					"card_name":"0000001",
 					"card_pass":"1234567"
@@ -221,21 +245,57 @@ Background:
 			}
 			"""
 		When bill1使用支付方式'微信支付'进行支付
-	#00104-待支付（非团购订单，bill购买'商品3'）
+	#00104-待发货（团购中，全额微众卡支付，bill2参团'团购活动1'）
+		When bill2访问jobs的webapp
+		When bill2参加jobs的团购活动"团购活动1"进行参团:weapp
+			"""
+			{
+				"group_name": "团购活动1",
+				"group_leader": "bill",
+				"group_dict":
+					[{
+						"group_type":5,
+						"group_days":1,
+						"group_price":90.00
+					}],
+				"products": [{
+					"name": "商品1"
+				}]
+			}
+			"""
+		When bill2提交团购订单
+			"""
+			{
+				"ship_name": "bill2",
+				"ship_tel": "13811223344",
+				"ship_area": "北京市 北京市 海淀区",
+				"ship_address": "泰兴大厦",
+				"distribution_time":"5天后 10:00-12:30",
+				"order_id":"00104",
+				"pay_type":"微信支付",
+				"weizoom_card":[{
+					"card_name":"0000002",
+					"card_pass":"2234567"
+						}]
+			}
+			"""
+
+	#00105-待支付（非团购订单，bill购买'商品3'）
 		When bill访问jobs的webapp
 		When bill购买jobs的商品
 			"""
 			{
-				"order_id": "00104",
+				"order_id": "00105",
 				"pay_type":"微信支付",
 				"products": [{
 					"name": "商品3"
 				}]
 			}
 			"""
+
 	#00201-待发货（团购成功,tom开团'团购活动2'）
 		When tom访问jobs的webapp
-		When tom参加jobs的团购活动
+		When tom参加jobs的团购活动"团购活动2"进行开团:weapp
 			"""
 			{
 				"group_name": "团购活动2",
@@ -246,21 +306,26 @@ Background:
 						"group_days":1,
 						"group_price":190.00
 					}],
+				"products": [{
+					"name": "商品2"
+				}]
+			}
+			"""
+		When tom提交团购订单
+			"""
+			{
 				"ship_name": "tom",
 				"ship_tel": "13811223344",
 				"ship_area": "北京市 北京市 海淀区",
 				"ship_address": "泰兴大厦",
 				"order_id":"00201",
-				"pay_type":"微信支付",
-				"products": [{
-					"name": "商品2"
-				}]
+				"pay_type":"微信支付"
 			}
 			"""
 		When tom使用支付方式'微信支付'进行支付
 	#00202-待发货（团购成功,bill参团'团购活动2'）
 		When bill访问jobs的webapp
-		When bill参加jobs的团购活动
+		When bill参加jobs的团购活动"团购活动2"进行参团:weapp
 			"""
 			{
 				"group_name": "团购活动2",
@@ -271,21 +336,26 @@ Background:
 						"group_days":1,
 						"group_price":190.00
 					}],
+				"products": [{
+					"name": "商品2"
+				}]
+			}
+			"""
+		When bill提交团购订单
+			"""
+			{
 				"ship_name": "bill",
 				"ship_tel": "13811223344",
 				"ship_area": "北京市 北京市 海淀区",
 				"ship_address": "泰兴大厦",
 				"order_id":"00202",
-				"pay_type":"微信支付",
-				"products": [{
-					"name": "商品2"
-				}]
+				"pay_type":"微信支付"
 			}
 			"""
 		When bill使用支付方式'微信支付'进行支付
 	#00203-待发货（团购成功,bill1参团'团购活动2'）
 		When bill1访问jobs的webapp
-		When bill1参加jobs的团购活动
+		When bill1参加jobs的团购活动"团购活动2"进行参团:weapp
 			"""
 			{
 				"group_name": "团购活动2",
@@ -296,21 +366,26 @@ Background:
 						"group_days":1,
 						"group_price":190.00
 					}],
+				"products": [{
+					"name": "商品2"
+				}]
+			}
+			"""
+		When bill1提交团购订单
+			"""
+			{
 				"ship_name": "bill1",
 				"ship_tel": "13811223344",
 				"ship_area": "北京市 北京市 海淀区",
 				"ship_address": "泰兴大厦",
 				"order_id":"00203",
-				"pay_type":"微信支付",
-				"products": [{
-					"name": "商品2"
-				}]
+				"pay_type":"微信支付"
 			}
 			"""
 		When bill1使用支付方式'微信支付'进行支付
 	#00204-待发货（团购成功,bill2参团'团购活动2'）
 		When bill2访问jobs的webapp
-		When bill2参加jobs的团购活动
+		When bill2参加jobs的团购活动"团购活动2"进行参团:weapp
 			"""
 			{
 				"group_name": "团购活动2",
@@ -321,21 +396,26 @@ Background:
 						"group_days":1,
 						"group_price":190.00
 					}],
-				"ship_name": "bill2",
-				"ship_tel": "13811223344",
-				"ship_area": "北京市 北京市 海淀区",
-				"ship_address": "泰兴大厦",
-				"order_id":"00204",
-				"pay_type":"微信支付",
 				"products": [{
 					"name": "商品2"
 				}]
 			}
 			"""
+		When bill2提交团购订单
+			"""
+			{
+				"ship_name": "bill2",
+				"ship_tel": "13811223344",
+				"ship_area": "北京市 北京市 海淀区",
+				"ship_address": "泰兴大厦",
+				"order_id":"00204",
+				"pay_type":"微信支付"
+			}
+			"""
 		When bill2使用支付方式'微信支付'进行支付
 	#00205-待发货（团购成功,bill3参团'团购活动2'）
 		When bill3访问jobs的webapp
-		When bill3参加jobs的团购活动
+		When bill3参加jobs的团购活动"团购活动2"进行参团:weapp
 			"""
 			{
 				"group_name": "团购活动2",
@@ -346,18 +426,23 @@ Background:
 						"group_days":1,
 						"group_price":190.00
 					}],
-				"ship_name": "bill3",
+				"products": [{
+					"name": "商品2"
+				}]
+			}
+			"""
+		When bill3提交团购订单
+			"""
+			{
+				"ship_name": "bill2",
 				"ship_tel": "13811223344",
 				"ship_area": "北京市 北京市 海淀区",
 				"ship_address": "泰兴大厦",
 				"order_id":"00205",
 				"pay_type":"微信支付",
-				"products": [{
-					"name": "商品2"
-				}],
 				"weizoom_card":[{
-					"card_name":"0000002",
-					"card_pass":"2234567"
+					"card_name":"0000003",
+					"card_pass":"3234567"
 						}]
 			}
 			"""
@@ -848,9 +933,25 @@ Scenario:3 财务审核-查看'团购退款'订单
 			}
 			"""
 
-	#查看团购失败订单-退款中
+		When bill2访问jobs的webapp
+		When bill2进行微众卡余额查询
+			"""
+			{
+				"id":"0000002",
+				"password":"2234567"
+			}
+			"""
+		Then bill2获得微众卡余额查询结果
+			"""
+			{
+				"card_remaining":0.00
+			}
+			"""
+
+	#查看团购失败的订单
 		Given jobs登录系统:weapp
 		When jobs'结束'团购活动'团购活动1':weapp
+		#团购失败后，微众卡全额支付的'优惠抵扣'方式的订单变为'已取消'，显示在所有订单中
 		Then jobs可以看到订单列表:weapp
 			"""
 			[{
@@ -934,7 +1035,7 @@ Scenario:3 财务审核-查看'团购退款'订单
 						"count":1
 					}]
 			},{
-				"order_no":"00104",
+				"order_no":"00105",
 				"sources": "本店",
 				"is_group_buying":"false",
 				"status": "待支付",
@@ -949,8 +1050,25 @@ Scenario:3 财务审核-查看'团购退款'订单
 						"price":300.00,
 						"count":1
 					}]
+			},{
+				"order_no":"00104",
+				"sources": "本店",
+				"is_group_buying":"ture",
+				"status": "已取消",
+				"buyer":"bill2",
+				"final_price":90.00,
+				"save_money":10.00,
+				"methods_of_payment": "优惠抵扣",
+				"actions": [],
+				"products":
+					[{
+						"name":"商品1",
+						"price":100.00,
+						"count":1
+					}]
 			}]
 			"""
+		#团购失败后,有现金支付的'待发货'状态的订单变为'退款中',显示在'财务审核'的团购退款选项卡中
 		And jobs获得财务审核'团购退款'订单列表:weapp
 			"""
 			[{
@@ -1001,6 +1119,20 @@ Scenario:3 财务审核-查看'团购退款'订单
 			"""
 			{
 				"card_remaining":50.00
+			}
+			"""
+		When bill2访问jobs的webapp
+		When bill2进行微众卡余额查询
+			"""
+			{
+				"id":"0000002",
+				"password":"2234567"
+			}
+			"""
+		Then bill2获得微众卡余额查询结果
+			"""
+			{
+				"card_remaining":100.00
 			}
 			"""
 

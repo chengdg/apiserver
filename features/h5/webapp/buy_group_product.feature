@@ -503,16 +503,8 @@ Scenario: 3 会员开团后团购活动成功
 		[{
 			"group_name": "团购2",
 			"group_leader": "bill",
-			"group_dict":
-				[{
-					"group_type":5,
-					"group_days":1,
-					"group_price":21.00,
-					"offered":[{
-						"number":1,
-						"member":["bill"]
-						}]
-				}]
+			"product_name": "商品2",
+			"participant_count": "1/5"
 		}]
 		"""
 	When tom参加bill的团购活动"团购2":weapp
@@ -550,16 +542,8 @@ Scenario: 3 会员开团后团购活动成功
 		[{
 			"group_name": "团购2",
 			"group_leader": "bill",
-			"group_dict":
-				[{
-					"group_type":5,
-					"group_days":1,
-					"group_price":21.00,
-					"offered":[{
-						"number":2,
-						"member":["bill", "tom"]
-						}]
-				}]
+			"product_name": "商品2",
+			"participant_count": "2/5"
 		}]
 		"""
 	When tom1参加bill的团购活动"团购2":weapp
@@ -597,16 +581,8 @@ Scenario: 3 会员开团后团购活动成功
 		[{
 			"group_name": "团购2",
 			"group_leader": "bill",
-			"group_dict":
-				[{
-					"group_type":5,
-					"group_days":1,
-					"group_price":21.00,
-					"offered":[{
-						"number":3,
-						"member":["bill", "tom", "tom1"]
-						}]
-				}]
+			"product_name": "商品2",
+			"participant_count": "3/5"
 		}]
 		"""
 	When tom2参加bill的团购活动"团购2":weapp
@@ -644,16 +620,8 @@ Scenario: 3 会员开团后团购活动成功
 		[{
 			"group_name": "团购2",
 			"group_leader": "bill",
-			"group_dict":
-				[{
-					"group_type":5,
-					"group_days":1,
-					"group_price":21.00,
-					"offered":[{
-						"number":4,
-						"member":["bill", "tom", "tom1", "tom2"]
-						}]
-				}]
+			"product_name": "商品2",
+			"participant_count": "4/5"
 		}]
 		"""
 	When tom3参加bill的团购活动"团购2":weapp
@@ -683,8 +651,7 @@ Scenario: 3 会员开团后团购活动成功
 		}
 		"""
 	When tom3使用支付方式'微信支付'进行支付
-	Then tom3获得提示信息'恭喜您团购成功 商家将在该商品团购结束20天内进行发货'
-
+	#Then tom3获得提示信息'恭喜您团购成功 商家将在该商品团购结束20天内进行发货'
 
 	#团购活动达到上限，团购成功，下一个人就不能参加这个活动了
 	When tom4访问jobs的webapp

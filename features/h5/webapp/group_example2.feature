@@ -157,7 +157,7 @@ Scenario: 1 会员访问团购活动首页能进行开团
 		"""
 
 	#bill是已关注的会员可以直接开团
-	#获得的是所有jobs开启的团购活动列表
+	#Then tom能获得jobs的团购活动列表:指的是看看还有什么团>我要开团的列表
 	Then bill能获得jobs的团购活动列表:weapp
 		"""
 		[{
@@ -280,6 +280,7 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 
 	#会员打开链接显示-我要参团，看看还有什么团
 	When tom访问jobs的webapp
+	#Then tom能获得"团购2"的已开团活动列表：指的是看看还有什么团>直接参团>进入找团的列表
 	Then tom能获得"团购2"的已开团活动列表:weapp
 		"""
 		[{
@@ -332,6 +333,7 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 			}]
 		}
 		"""
+
 	Then tom能获得jobs的团购活动列表:weapp
 		"""
 		[{
@@ -362,26 +364,40 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 		"""
 	Then tom能获得"团购2"的已开团活动列表:weapp
 		"""
-		[]
-		"""
-
-	When 清空浏览器:weapp
-	When nokia点击bill分享链接:weapp
-	When nokia访问jobs的webapp:weapp
-	Then nokia能获得参团活动列表:weapp
-		"""
 		[{
 			"group_name": "团购2",
 			"group_leader": "bill",
+			"product_name": "商品2",
+			"participant_count": "2/5"
+		}]
+		"""
+
+	When 清空浏览器:weapp
+	When nokia关注jobs的公众号
+	When nokia取消关注jobs的公众号
+	When nokia点击bill分享链接:weapp
+	When nokia访问jobs的webapp:weapp
+	Then nokia能获得jobs的团购活动列表:weapp
+		"""
+		[{
+			"group_name": "团购2",
 			"group_dict":
 				[{
-					"group_type":5,
-					"group_days":1,
-					"group_price":21.00,
-					"offered":[{
-						"number":2,
-						"member":["bill", "tom"]
-						}]
+					"group_type":"10",
+					"group_price":"11.00"
+				},{
+					"group_type":"5",
+					"group_price":"21.00"
+				}]
+		}, {
+			"group_name": "团购1",
+			"group_dict":
+				[{
+					"group_type":"10",
+					"group_price":"10.00"
+				},{
+					"group_type":"5",
+					"group_price":"20.00"
 				}]
 		}]
 		"""
@@ -435,11 +451,16 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 		"""
 
 	#非会员不能开团,点击“我要开团”弹出二维码
-	Then nokia能获得开团活动列表:weapp
+	Then nokia能获得"团购1"的已开团活动列表:weapp
 		"""
 		[]
 		"""
-
-
-
-
+	Then nokia能获得"团购2"的已开团活动列表:weapp
+		"""
+		[{
+			"group_name": "团购2",
+			"group_leader": "bill",
+			"product_name": "商品2",
+			"participant_count": "3/5"
+		}]
+		"""

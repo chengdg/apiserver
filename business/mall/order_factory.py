@@ -90,7 +90,7 @@ class OrderFactory(business_model.Model):
 	# 	return order_checker.check()
 
 
-	def __create_order_id(self):
+	def __create_order_id(self, purchase_info):
 		"""创建订单id
 
 		order_id格式：order_id = '%s%03d' % (now, random.randint(1, 999))
@@ -100,6 +100,10 @@ class OrderFactory(business_model.Model):
 
 		@todo 和产品确认支持一秒内产生超过999个订单
 		"""
+
+		if settings.IS_UNDER_BDD and purchase_info.bdd_order_id:
+			return purchase_info.bdd_order_id
+
 		now = time.strftime("%Y%m%d%H%M%S", time.localtime())
 		key_name = 'order_ids:' + now
 
@@ -225,7 +229,7 @@ class OrderFactory(business_model.Model):
 		order.pay_interface_type = purchase_info.used_pay_interface_type
 		order.status = mall_models.ORDER_STATUS_NOT
 		order.delivery_time = purchase_info.delivery_time # 配送时间字符串
-		order.order_id = self.__create_order_id()
+		order.order_id = self.__create_order_id(purchase_info)
 		return order
 
 

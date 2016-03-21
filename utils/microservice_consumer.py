@@ -4,7 +4,7 @@ import json
 import requests
 
 from core.exceptionutil import unicode_full_stack
-from core.watchdog.utils import watchdog_alert
+from core.watchdog.utils import watchdog_alert, watchdog_info
 
 DEFAULT_TIMEOUT = 5  # 默认超时时间单位：秒
 DEFAULT_RETRY_COUNT = 3  # 重试次数
@@ -51,6 +51,8 @@ def microservice_consume(url='', data={}, method='get', timeout=None):
 			resp = requests.post(url, data, timeout=_timeout)
 		if resp.status_code == 200:
 			resp_data = json.loads(resp.text)['data']
+			watchdog_info(U'外部接口调用日志.code:%s,url:%s，data:%s' % (resp.status_code, url, str(data)))
+			print(U'外部接口调用日志.code:%s,url:%s，data:%s' % (resp.status_code, url, str(data)))
 			return True, resp_data
 		else:
 			watchdog_alert(u'外部接口调用错误-错误状态码.code:%s,url:%s，data:%s' % (resp.status_code, url, str(data)))

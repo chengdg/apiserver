@@ -392,7 +392,27 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 	When nokia访问jobs的webapp
 	Then nokia能获得jobs的团购活动列表:weapp
 		"""
-		[]
+		[{
+			"group_name": "团购2",
+			"group_dict":
+				[{
+					"group_type":"10",
+					"group_price":"11.00"
+				},{
+					"group_type":"5",
+					"group_price":"21.00"
+				}]
+		},{
+			"group_name": "团购1",
+			"group_dict":
+				[{
+					"group_type":"10",
+					"group_price":"10.00"
+				},{
+					"group_type":"5",
+					"group_price":"20.00"
+				}]
+		}]
 		"""
 
 	#非会员支付完成后跳转二维码引导关注
@@ -442,7 +462,27 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 	#非会员不能开团,点击“我要开团”弹出二维码
 	Then nokia能获得jobs的团购活动列表:weapp
 		"""
-		[]
+		[{
+			"group_name": "团购2",
+			"group_dict":
+				[{
+					"group_type":"10",
+					"group_price":"11.00"
+				},{
+					"group_type":"5",
+					"group_price":"21.00"
+				}]
+		},{
+			"group_name": "团购1",
+			"group_dict":
+				[{
+					"group_type":"10",
+					"group_price":"10.00"
+				},{
+					"group_type":"5",
+					"group_price":"20.00"
+				}]
+		}]
 		"""
 	Then nokia能获得"团购1"的已开团活动列表:weapp
 		"""

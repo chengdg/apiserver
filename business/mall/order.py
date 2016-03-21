@@ -1015,6 +1015,7 @@ class Order(business_model.Model):
 				'group_id': self.order_group_info['group_id']
 			}
 			notify_group_buy_after_pay.delay(url, data)
+			# notify_group_buy_after_pay.delay(url, data)
 
 
 

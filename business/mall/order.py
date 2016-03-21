@@ -739,7 +739,8 @@ class Order(business_model.Model):
 				price=product.price,
 				promotion_id=product.used_promotion_id,
 				promotion_money=product.promotion_saved_money,
-				grade_discounted_money=product.discount_money,
+				grade_discounted_money=0 if product.discount_money_coupon_exist else product.discount_money,
+				# grade_discounted_money= product.discount_money,
 				integral_sale_id=product.integral_sale.id if product.integral_sale else 0,
 				origin_order_id=0,
 				purchase_price=product.purchase_price
@@ -797,7 +798,8 @@ class Order(business_model.Model):
 						price=product.purchase_price,
 						promotion_id=product.used_promotion_id,
 						promotion_money=product.promotion_saved_money,
-						grade_discounted_money=product.discount_money,
+						grade_discounted_money=0 if product.discount_money_coupon_exist else product.discount_money,
+						# grade_discounted_money=product.discount_money,
 						integral_sale_id=product.integral_sale.id if product.integral_sale else 0,
 						origin_order_id=self.id,  # 原始(母)订单id，用于微众精选拆单
 						purchase_price=product.purchase_price

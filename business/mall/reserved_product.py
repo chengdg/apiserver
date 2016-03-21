@@ -79,7 +79,8 @@ class ReservedProduct(business_model.Model):
 		'active_integral_sale_rule',
 		'is_enable_bill',
 		'is_delivery', # 是否勾选配送时间,
-		'purchase_price'
+		'purchase_price',
+		'discount_money_coupon_exist' #判断会员价商品使用单品劵的情况
 	)
 
 	@staticmethod

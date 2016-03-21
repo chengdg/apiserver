@@ -31,7 +31,7 @@ class WZCardChecker(object):
 			return False, {
 					"is_success": False,
 					"type": 'coupon',
-					"msg": '一次一个',
+					"msg": '只可使用一张满额使用卡',
 					"short_msg": u'已添加'
 				}
 
@@ -50,7 +50,7 @@ class WZCardChecker(object):
 			id_set.add(wzcard_id)
 		return True, {}
 
-	def check(self, wzcard_id, password, wzcard, webapp_owner, webapp_user,wzcard_check_money=0):
+	def check(self, wzcard_id, password, wzcard, webapp_owner, webapp_user,wzcard_check_money):
 		"""
 		检查微众卡是否可用
 
@@ -128,9 +128,9 @@ class WZCardChecker(object):
 				"msg": reason,
 				"short_msg": u'卡未激活'
 			}
-		elif weizoom_card_rule.valid_restrictions > 0 and wzcard_check_money:
+		elif weizoom_card_rule.valid_restrictions > 0:
 			if wzcard_check_money < weizoom_card_rule.valid_restrictions:
-				msg = u'不满足满额限制'
+				msg = u'订单未满足该卡使用条件'
 		elif weizoom_card_rule.card_attr:
 			#专属卡
 			#是否为新会员专属卡

@@ -48,10 +48,9 @@ class APayResult(api_resource.ApiResource):
 			is_show_red_envelope = True
 			red_envelope_rule_id = red_envelope['id']
 
-		qrcode_img = ''
+		qrcode_img = webapp_owner.qrcode_img
 		activity_url = ''
 		if order.is_group_buy:
-			qrcode_img = webapp_owner.qrcode_img
 			activity_url = order.order_group_info['activity_url'] + '&from=pay_result'
 
 		return {

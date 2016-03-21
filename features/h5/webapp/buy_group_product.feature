@@ -247,7 +247,7 @@ Scenario: 1 会员访问团购活动首页能进行开团
 		"""
 	Then bill得到团购活动提示"只能开团一次":weapp
 
-
+@kuki
 Scenario: 2 会员可以通过分享链接直接参加团购活动
 	bill开团后分享团购活动链接
 	1.会员tom可以直接参加团购活动，参加后就不能重复参加，可以开团
@@ -300,6 +300,22 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 
 	#会员打开链接显示-我要参团，看看还有什么团
 	When tom访问jobs的webapp
+	Then tom能获得bill在"团购2"下的团购活动页面:weapp
+		"""
+		[{
+			"group_name": "团购2",
+			"group_leader": "bill",
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_price":21.00,
+					"offered":[{
+						"number":1,
+						"member":["bill"]
+						}]
+				}]
+		}]
+		"""
 	Then tom能获得"团购2"的已开团活动列表:weapp
 		"""
 		[{

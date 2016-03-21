@@ -280,6 +280,22 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 
 	#会员打开链接显示-我要参团，看看还有什么团
 	When tom访问jobs的webapp
+	Then tom能获得bill在"团购2"下的团购活动页面:weapp
+		"""
+		[{
+			"group_name": "团购2",
+			"group_leader": "bill",
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_price":21.00,
+					"offered":[{
+						"number":1,
+						"member":["bill"]
+						}]
+				}]
+		}]
+		"""
 	#Then tom能获得"团购2"的已开团活动列表：指的是看看还有什么团>直接参团>进入找团的列表
 	Then tom能获得"团购2"的已开团活动列表:weapp
 		"""
@@ -448,6 +464,22 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 				"count": 1
 			}]
 		}
+		"""
+	Then nokia能获得bill在"团购2"下的团购活动页面:weapp
+		"""
+		[{
+			"group_name": "团购2",
+			"group_leader": "bill",
+			"group_dict":
+				[{
+					"group_type":5,
+					"group_price":21.00,
+					"offered":[{
+						"number":3,
+						"member":["bill","tom","nokia"]
+						}]
+				}]
+		}]
 		"""
 
 	#非会员不能开团,点击“我要开团”弹出二维码

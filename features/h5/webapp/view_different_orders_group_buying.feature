@@ -404,7 +404,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 				"order_no": "0004",
 				"is_group_buying": "true",
 				"status": "待发货",
-				"created_at": "2015-08-09 01:00",
+				"created_at": "2015.08.09 01:00",
 				"products": [{
 					"name": "商品1"
 				}],
@@ -414,7 +414,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 				"order_no": "0001",
 				"is_group_buying": "true",
 				"status": "待发货",
-				"created_at": "2015-08-08 00:00",
+				"created_at": "2015.08.08 00:00",
 				"products": [{
 					"name": "商品1"
 				}],
@@ -461,7 +461,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 				"order_no": "0005",
 				"is_group_buying": "true",
 				"status": "待发货",
-				"created_at": "2015-08-10 00:00",
+				"created_at": "2015.08.10 00:00",
 				"products": [{
 					"name": "商品2"
 				}],
@@ -471,7 +471,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 				"order_no": "0004",
 				"is_group_buying": "true",
 				"status": "待发货",
-				"created_at": "2015-08-09 01:00",
+				"created_at": "2015.08.09 01:00",
 				"products": [{
 					"name": "商品1"
 				}],
@@ -481,7 +481,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 				"order_no": "0001",
 				"is_group_buying": "true",
 				"status": "待发货",
-				"created_at": "2015-08-08 00:00",
+				"created_at": "2015.08.08 00:00",
 				"products": [{
 					"name": "商品1"
 				}],
@@ -495,7 +495,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 				"order_no": "0005",
 				"is_group_buying": "true",
 				"status": "待发货",
-				"created_at": "2015-08-10 00:00",
+				"created_at": "2015.08.10 00:00",
 				"products": [{
 					"name": "商品2"
 				}],
@@ -505,7 +505,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 				"order_no": "0004",
 				"is_group_buying": "true",
 				"status": "待发货",
-				"created_at": "2015-08-09 01:00",
+				"created_at": "2015.08.09 01:00",
 				"products": [{
 					"name": "商品1"
 				}],
@@ -515,7 +515,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 				"order_no": "0001",
 				"is_group_buying": "true",
 				"status": "待发货",
-				"created_at": "2015-08-08 00:00",
+				"created_at": "2015.08.08 00:00",
 				"products": [{
 					"name": "商品1"
 				}],
@@ -566,7 +566,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 				"order_no": "0006",
 				"is_group_buying": "true",
 				"status": "待发货",
-				"created_at": "2015-08-10 01:00",
+				"created_at": "2015.08.10 01:00",
 				"products": [{
 					"name": "商品2"
 				}],
@@ -576,7 +576,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 				"order_no": "0003",
 				"is_group_buying": "true",
 				"status": "待发货",
-				"created_at": "2015-08-09 00:00",
+				"created_at": "2015.08.09 00:00",
 				"products": [{
 					"name": "商品1"
 				}],
@@ -586,7 +586,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 				"order_no": "0002",
 				"is_group_buying": "true",
 				"status": "待发货",
-				"created_at": "2015-08-08 01:00",
+				"created_at": "2015.08.08 01:00",
 				"products": [{
 					"name": "商品1"
 				}],
@@ -600,7 +600,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 				"order_no": "0006",
 				"is_group_buying": "true",
 				"status": "待发货",
-				"created_at": "2015-08-10 01:00",
+				"created_at": "2015.08.10 01:00",
 				"products": [{
 					"name": "商品2"
 				}],
@@ -610,7 +610,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 				"order_no": "0003",
 				"is_group_buying": "true",
 				"status": "待发货",
-				"created_at": "2015-08-09 00:00",
+				"created_at": "2015.08.09 00:00",
 				"products": [{
 					"name": "商品1"
 				}],
@@ -620,7 +620,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 				"order_no": "0002",
 				"is_group_buying": "true",
 				"status": "待发货",
-				"created_at": "2015-08-08 01:00",
+				"created_at": "2015.08.08 01:00",
 				"products": [{
 					"name": "商品1"
 				}],

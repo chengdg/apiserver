@@ -56,7 +56,7 @@ class WZCardResourceAllocator(business_model.Service):
 
 		logging.info("type of `order`: {}".format(type(order)))
 
-		wzcard_info_list = purchase_info.wzcard_info
+		wzcard_info_list = purchase_info.wzcard_info if order.final_price > 0 else []
 		logging.info("wzcard_info: {}".format(wzcard_info_list))
 
 		#webapp_owner = self.__webapp_owner

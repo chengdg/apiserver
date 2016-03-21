@@ -45,7 +45,8 @@ def step_impl(context, webapp_user_name):
 		"xa-choseInterfaces": 2,
 		'order_type': 'undefined',
 		'group_id': put_order_info['group_id'],
-		'activity_id': put_order_info['activity_id']
+		'activity_id': put_order_info['activity_id'],
+		'bdd_order_id': args.get('order_id')
 	}
 
 
@@ -79,26 +80,26 @@ def step_impl(context, webapp_user_name):
 		if 'date' in args:
 			mall_models.Order.update(created_at=bdd_util.get_datetime_str(args['date'])).dj_where(
 				order_id=context.created_order_id).execute()
-		if 'order_id' in args:
-
-			order_has_group = mall_models.OrderHasGroup.select().dj_where(order_id=context.created_order_id).first()
-			order_has_group.order_id = args['order_id']
-			order_has_group.save()
-
-			context.response.data['order_id'] = args['order_id']
-			db_order = mall_models.Order.get(order_id=context.created_order_id)
-			if db_order.weizoom_card_money > 0:
-				wzcard_has_orders = wzcard_models.WeizoomCardHasOrder.select().dj_where(order_id=db_order.order_id)
-				for wzcard_has_order in wzcard_has_orders:
-					wzcard_has_order.order_id = args['order_id']
-					wzcard_has_order.save()
-			db_order.order_id = args['order_id']
-			db_order.save()
-			if db_order.origin_order_id < 0:
-				for order in mall_models.Order.select().dj_where(origin_order_id=db_order.id):
-					order.order_id = '%s^%s' % (args['order_id'], order.supplier)
-					order.save()
-			context.created_order_id = args['order_id']
+		# if 'order_id' in args:
+		#
+		# 	order_has_group = mall_models.OrderHasGroup.select().dj_where(order_id=context.created_order_id).first()
+		# 	order_has_group.order_id = args['order_id']
+		# 	order_has_group.save()
+		#
+		# 	context.response.data['order_id'] = args['order_id']
+		# 	db_order = mall_models.Order.get(order_id=context.created_order_id)
+		# 	if db_order.weizoom_card_money > 0:
+		# 		wzcard_has_orders = wzcard_models.WeizoomCardHasOrder.select().dj_where(order_id=db_order.order_id)
+		# 		for wzcard_has_order in wzcard_has_orders:
+		# 			wzcard_has_order.order_id = args['order_id']
+		# 			wzcard_has_order.save()
+		# 	db_order.order_id = args['order_id']
+		# 	db_order.save()
+		# 	if db_order.origin_order_id < 0:
+		# 		for order in mall_models.Order.select().dj_where(origin_order_id=db_order.id):
+		# 			order.order_id = '%s^%s' % (args['order_id'], order.supplier)
+		# 			order.save()
+		# 	context.created_order_id = args['order_id']
 
 
 	context.product_ids = data['product_ids']

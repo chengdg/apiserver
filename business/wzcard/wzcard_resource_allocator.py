@@ -56,7 +56,7 @@ class WZCardResourceAllocator(business_model.Service):
 
 		logging.info("type of `order`: {}".format(type(order)))
 
-		wzcard_info_list = purchase_info.wzcard_info
+		wzcard_info_list = purchase_info.wzcard_info if order.final_price > 0 else []
 		logging.info("wzcard_info: {}".format(wzcard_info_list))
 
 		#webapp_owner = self.__webapp_owner
@@ -104,13 +104,15 @@ class WZCardResourceAllocator(business_model.Service):
 				used_amount = wzcard.pay(final_price)
 				logging.info("Use WZCard {}, used_amount={}, final_price={}, last_status={}".format(wzcard.wzcard_id, used_amount, final_price, last_status))
 
-				# 保存微众卡使用的信息，完成扣除微众卡金额动作
-				wzcard.save()
-				total_used_amount += used_amount
-				final_price -= used_amount
+				# 使用的微众卡才产生记录
+				if used_amount > 0:
+					# 保存微众卡使用的信息，完成扣除微众卡金额动作
+					wzcard.save()
+					total_used_amount += used_amount
+					final_price -= used_amount
 
-				# 保存微众卡号、使用金额、上一次状态
-				used_wzcards.append( (wzcard, used_amount, last_status) )
+					# 保存微众卡号、使用金额、上一次状态
+					used_wzcards.append( (wzcard, used_amount, last_status) )
 			else:
 				break
 

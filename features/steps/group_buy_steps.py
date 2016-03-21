@@ -80,6 +80,11 @@ def step_impl(context, webapp_user_name):
 			mall_models.Order.update(created_at=bdd_util.get_datetime_str(args['date'])).dj_where(
 				order_id=context.created_order_id).execute()
 		if 'order_id' in args:
+
+			order_has_group = mall_models.OrderHasGroup.select().dj_where(order_id=context.created_order_id).first()
+			order_has_group.order_id = args['order_id']
+			order_has_group.save()
+
 			context.response.data['order_id'] = args['order_id']
 			db_order = mall_models.Order.get(order_id=context.created_order_id)
 			if db_order.weizoom_card_money > 0:

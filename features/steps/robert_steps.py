@@ -921,6 +921,10 @@ def step_visit_personal_orders(context, webapp_user_name, order_type):
 		order['pay_interface'] = mall_models.PAYTYPE2NAME[actual_order['pay_interface_type']]
 		order['created_at'] = actual_order['created_at']
 		order['pay_info'] = actual_order['pay_info']
+		order['order_no'] = actual_order['order_id']
+		order['order_id'] = actual_order['order_id']
+		order['is_group_buying'] = 'true' if  actual_order['is_group_buy'] else 'false'
+
 		# BBD中购买的时间再未指定购买时间的情况下只能为今天
 		created_at = datetime.datetime.strptime(actual_order['created_at'], '%Y.%m.%d %H:%M')
 		if created_at.date() == datetime.date.today():

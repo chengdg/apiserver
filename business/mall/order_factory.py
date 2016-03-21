@@ -31,6 +31,7 @@ from business.mall.allocator.allocate_price_related_resource_service import Allo
 from business.mall.order import Order
 
 #from business.mall.package_order_service.package_order_service import CalculatePriceService
+from utils.microservice_consumer import ResponseCodeException
 from wapi.decorators import param_required
 #from wapi import wapi_utils
 from core.cache import utils as cache_util
@@ -308,6 +309,8 @@ class OrderFactory(business_model.Model):
 				raise OrderResourcesException(reasons)
 		except OrderResourcesException as e:
 			raise e
+		except ResponseCodeException:
+			pass
 		except:
 			msg = unicode_full_stack()
 			watchdog_alert(msg)

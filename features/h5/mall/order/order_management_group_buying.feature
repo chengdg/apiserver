@@ -294,9 +294,10 @@ Background:
 			{
 				"order_id": "00105",
 				"pay_type":"微信支付",
-				"products": {
-					"name": "商品3"
-				}
+				"products": [{
+					"name": "商品3",
+					"count": 1
+				}]
 			}
 			"""
 
@@ -454,7 +455,7 @@ Background:
 			}
 			"""
 
-@order
+@order @eugene
 Scenario:1 所有订单-查看团购订单
 	#待支付和团购中的'待发货'订单在订单列表中不显示
 	#团购成功的订单,订单列表页不能进行【申请退款】和【取消订单】操作
@@ -544,7 +545,7 @@ Scenario:1 所有订单-查看团购订单
 					"count":1
 				}]
 		},{
-			"order_no":"00104",
+			"order_no":"00105",
 			"sources": "本店",
 			"is_group_buying":"false",
 			"status": "待支付",
@@ -570,7 +571,7 @@ Scenario:1 所有订单-查看团购订单
 				"order_no":"00205",
 				"sources": "本店",
 				"status": "待发货",
-				"final_price":190.00,
+				"final_price":0.00,
 				"methods_of_payment": "优惠抵扣",
 				"actions": ["发货"],
 				"products":
@@ -705,7 +706,7 @@ Scenario:1 所有订单-查看团购订单
 						"count":1
 					}]
 			},{
-				"order_no":"00104",
+				"order_no":"00105",
 				"sources": "本店",
 				"is_group_buying":"false",
 				"status": "待支付",
@@ -811,7 +812,7 @@ Scenario:1 所有订单-查看团购订单
 						"count":1
 					}]
 			},{
-				"order_no":"00104",
+				"order_no":"00105",
 				"sources": "本店",
 				"is_group_buying":"false",
 				"status": "待支付",
@@ -829,7 +830,7 @@ Scenario:1 所有订单-查看团购订单
 			}]
 			"""
 
-@order
+@order @eugene
 Scenario:2 所有订单-团购订单查询
 	When jobs根据给定条件查询订单:weapp
 		"""
@@ -922,7 +923,7 @@ Scenario:2 所有订单-团购订单查询
 		}]
 		"""
 
-@order
+@order @eugeneXXX
 Scenario:3 查看团购失败的订单
 	#所有订单-显示团购失败的'退款中'（退款成功）和优惠抵扣方式的'已取消'订单
 	#财务审核-团购失败的'退款中'（退款成功）的订单只显示在"团购退款"选项卡中
@@ -954,7 +955,7 @@ Scenario:3 查看团购失败的订单
 		Then bill2获得微众卡余额查询结果
 			"""
 			{
-				"card_remaining":0.00
+				"card_remaining":10.00
 			}
 			"""
 

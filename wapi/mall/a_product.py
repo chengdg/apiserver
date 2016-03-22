@@ -35,7 +35,7 @@ class AProduct(api_resource.ApiResource):
 		webapp_user = args['webapp_user']
 
 		url = GroupBuyOPENAPI['group_buy_product']
-		param_data = {'pid': product_id, 'woid': webapp_owner.id}
+		param_data = {'pid': product_id, 'woid': webapp_owner.id, 'member_id': webapp_user.member.id}
 		is_success, group_buy_product = microservice_consume(url=url, data=param_data)
 
 		if is_success:

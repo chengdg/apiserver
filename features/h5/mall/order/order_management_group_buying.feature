@@ -108,12 +108,13 @@ Background:
 			"start_date":"今天",
 			"end_date":"2天后",
 			"product_name":"商品1",
-			"group_dict":
-				[{
-					"group_type":5,
-					"group_days":1,
-					"group_price":90.00
-				}],
+			"group_dict":{
+				"0":{
+					"group_type":"5",
+					"group_days":"1",
+					"group_price":"90.00"
+					}
+				},
 				"ship_date":20,
 				"product_counts":100,
 				"material_image":"1.jpg",
@@ -123,16 +124,18 @@ Background:
 			"start_date":"今天",
 			"end_date":"2天后",
 			"product_name":"商品2",
-			"group_dict":
-				[{
-					"group_type":5,
-					"group_days":1,
-					"group_price":190.00
-				},{
-					"group_type":10,
-					"group_days":2,
-					"group_price":188.00
-				}],
+			"group_dict":{
+				"0":{
+					"group_type":"5",
+					"group_days":"1",
+					"group_price":"190.00"
+					},
+				"1":{
+					"group_type":"10",
+					"group_days":"2",
+					"group_price":"188.00"
+					}
+				},
 				"ship_date":20,
 				"product_counts":100,
 				"material_image":"1.jpg",

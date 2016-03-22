@@ -51,12 +51,20 @@ def microservice_consume(url='', data={}, method='get', timeout=None):
 			resp = requests.post(url, data, timeout=_timeout)
 		if resp.status_code == 200:
 			resp_data = json.loads(resp.text)['data']
-			watchdog_info(U'外部接口调用日志.code:%s,url:%s，data:%s,resp:%s' % (resp.status_code, url, str(data),resp.text))
-			print(U'外部接口调用日志.code:%s,url:%s，data:%s,resp:%s' % (resp.status_code, url, str(data),resp.text))
-			return True, resp_data
+			try:
+				weizoom_code = json.loads(resp.text)['code']
+			except:
+				weizoom_code = 10086  # 无法得到正确weizoom_code时的默认值
+			if weizoom_code == 200:
+				watchdog_info(u'microservice_consume_log,外部接口成功调用日志.code:%s,weizoom_code:%s,url:%s，request_data:%s,resp:%s' % (resp.status_code, weizoom_code,url, str(data),resp.text))
+				print(u'外部接口成功调用日志.code:%s,weizoom_code:%s,url:%s，data:%s,resp:%s' % (resp.status_code, weizoom_code,url, str(data),resp.text))
+				return True, resp_data
+			else:
+				watchdog_alert(u'microservice_consume_alert,外部接口调用错误-错误状态码.code:%s,weizoom_code:%s,url:%s，request_data:%s,resp:%s' % (resp.status_code, weizoom_code,url, str(data),resp))
+				raise ResponseCodeException
 		else:
-			watchdog_alert(u'外部接口调用错误-错误状态码.code:%s,url:%s，data:%s' % (resp.status_code, url, str(data)))
-			print(u'外部接口调用错误-错误状态码.code:%s,url:%s，data:%s' % (resp.status_code, url, str(data)))
+			watchdog_alert(u'microservice_consume_alert,外部接口调用错误-调用异常.code:%s,url:%s，data:%s' % (resp.status_code, url, str(data)))
+			print(u'microservice_consume_alert,外部接口调用错误-调用异常.code:%s,url:%s，data:%s' % (resp.status_code, url, str(data)))
 			raise ResponseCodeException
 	except BaseException as e:
 		traceback = unicode_full_stack()
@@ -65,8 +73,9 @@ def microservice_consume(url='', data={}, method='get', timeout=None):
 		raise Exception(e)
 
 # 测试代码
-# url = 'http://dev.weapp.com/m/apps/group/api/group_buy_product?pid=48&woid=63'
-# param_data = {'pid': '48', 'woid': '63'}
-# is_success, group_buy_product = microservice_consume(url=url, data=param_data)
+# url = 'http://red.weapp.weizzz.com/m/apps/group/api/group_buy_product'
+# # url = 'http://weapp.weizoom.com/m/apps/group/api/group_buy_products'
+# param_data = {'pid': '48', 'woid': '9'}
+# is_success, resp_data = microservice_consume(url=url, data=param_data)
 # print('--------is_success',is_success)
-# print('group_buy_product',group_buy_product)
+# print('resp',resp_data)

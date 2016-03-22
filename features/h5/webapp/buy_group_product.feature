@@ -97,7 +97,7 @@ Background:
 				"1":{
 					"group_type":"10",
 					"group_days":"2",
-					"group_price":10.00
+					"group_price":"10.00"
 				}
 			},
 			"ship_date":"20",
@@ -118,7 +118,7 @@ Background:
 				"1":{
 					"group_type":"10",
 					"group_days":"2",
-					"group_price":11.00
+					"group_price":"11.00"
 				}
 			},
 			"ship_date":"20",
@@ -512,9 +512,9 @@ Scenario: 3 会员开团后团购活动成功
 			"group_leader": "bill",
 			"group_dict":
 				{
-					"group_type":5,
-					"group_days":1,
-					"group_price":21.00
+					"group_type":"5",
+					"group_days":"1",
+					"group_price":"21.00"
 				},
 			"products": {
 				"name": "商品2"
@@ -911,34 +911,18 @@ Scenario: 6 一个会员可以参加多个会员开启的团购活动
 
 	When tom1访问jobs的webapp
 	#参团列表参团人数一样的话以开团时间倒序显示
-	Then tom1能获得"团购2"的已开团活动列表
+	Then tom1能获得"团购2"的已开团活动列表:weapp
 		"""
 		[{
 			"group_name": "团购2",
-			"group_leader": "tom",
-			"group_dict":
-				[{
-					"group_type":5,
-					"group_days":1,
-					"group_price":21.00,
-					"offered":[{
-						"number":1,
-						"member":["tom"]
-						}]
-				}]
-		}, {
-			"group_name": "团购2",
 			"group_leader": "bill",
-			"group_dict":
-				[{
-					"group_type":5,
-					"group_days":1,
-					"group_price":21.00,
-					"offered":[{
-						"number":1,
-						"member":["bill"]
-						}]
-				}]
+			"product_name": "商品2",
+			"participant_count": "1/5"
+		},{
+			"group_name": "团购2",
+			"group_leader": "tom",
+			"product_name": "商品2",
+			"participant_count": "1/5"
 		}]
 		"""
 	When tom1参加bill的团购活动"团购2":weapp
@@ -999,21 +983,13 @@ Scenario: 6 一个会员可以参加多个会员开启的团购活动
 	When tom1使用支付方式'微信支付'进行支付
 
 	When tom访问jobs的webapp
-	Then tom能获得"团购2"的已开团活动列表
+	Then tom能获得"团购2"的已开团活动列表:weapp
 		"""
 		[{
 			"group_name": "团购2",
 			"group_leader": "bill",
-			"group_dict":
-				[{
-					"group_type":5,
-					"group_days":1,
-					"group_price":21.00,
-					"offered":[{
-						"number":2,
-						"member":["bill", "tom1"]
-						}]
-				}]
+			"product_name": "商品2",
+			"participant_count": "1/5"
 		}]
 		"""
 	When tom参加bill的团购活动"团购2":weapp
@@ -1077,34 +1053,18 @@ Scenario: 6 一个会员可以参加多个会员开启的团购活动
 
 	When tom2访问jobs的webapp
 	#参团列表优先显示拼团人数差一人的团购活动
-	Then tom2能获得"团购2"的已开团活动列表
+	Then tom2能获得"团购2"的已开团活动列表:weapp
 		"""
 		[{
 			"group_name": "团购2",
 			"group_leader": "bill",
-			"group_dict":
-				[{
-					"group_type":5,
-					"group_days":1,
-					"group_price":21.00,
-					"offered":[{
-						"number":4,
-						"member":["bill", "tom1", "tom", "tom3"]
-						}]
-				}]
-		}, {
+			"product_name": "商品2",
+			"participant_count": "4/5"
+		},{
 			"group_name": "团购2",
 			"group_leader": "tom",
-			"group_dict":
-				[{
-					"group_type":5,
-					"group_days":1,
-					"group_price":21.00,
-					"offered":[{
-						"number":1,
-						"member":["tom"]
-						}]
-				}]
+			"product_name": "商品2",
+			"participant_count": "1/5"
 		}]
 		"""
 
@@ -1134,7 +1094,8 @@ Scenario: 7 会员把商品添加购物车后，后台把这个商品创建成�
 			"invalid_products": []
 		}
 		"""
-	Given jobs登录系统
+
+	Given jobs登录系统:weapp
 	When jobs新建团购活动:weapp
 		"""
 		[{
@@ -1158,6 +1119,7 @@ Scenario: 7 会员把商品添加购物车后，后台把这个商品创建成�
 				"share_description":"团购分享描述"
 		}]
 		"""
+	When jobs开启团购活动'团购3':weapp
 
 	When bill访问jobs的webapp
 	Then bill能获得购物车
@@ -1173,7 +1135,7 @@ Scenario: 7 会员把商品添加购物车后，后台把这个商品创建成�
 		"""
 
 	Given jobs登录系统:weapp
-	When jobs'结束'团购活动'团购3':weapp
+	When jobs关闭团购活动'团购3':weapp
 
 	When bill访问jobs的webapp
 	Then bill能获得购物车

@@ -50,6 +50,11 @@ def step_impl(context, webapp_user_name):
 	}
 
 
+	if u'weizoom_card' in args:
+		for card in args[u'weizoom_card']:
+			data['card_name'] += card[u'card_name'] + ','
+			data['card_pass'] += card[u'card_pass'] + ','
+
 	if args.has_key("distribution_time"):
 		time_str = args.get("distribution_time")
 		time_strs = time_str.split(" ")

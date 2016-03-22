@@ -4,11 +4,15 @@
 Feature:订单管理-团购
 	"""
 		1、订单编号后面增加团购订单标识-'团'，与普通订单区分开来
-		2、在'所有订单'中，待支付和团购中的待发货订单都隐藏，团购成功的待发货订单显示出来
-		3、'财务审核'里增加'团购退款'选项卡:
-			显示所有团购的'退款中'和'退款完成'状态的订单;
-			'退款中'的订单没有【退款成功】的操作按钮,当退款金额打到用户账户里自动标记为'退款完成'
-			团购退款的订单只显示在'团购退款'这个选项卡中,全部、退款中和退款完成这3个选项卡中不显示团购退款的订单
+		2、在"所有订单"中团购相关订单显示规则:
+			a.待支付和团购中的待发货订单都隐藏
+			b.团购成功的'待发货'订单显示出来,如果团购失败'待发货'订单变为'退款中'订单显示出来
+			c.优惠抵扣方式的订单,团购失败后该订单状态为'已取消',显示在"所有订单中"
+			d.15分钟未支付的'已取消'订单,在"所有订单"中不显示
+		3、"财务审核"里增加'团购退款'选项卡:
+			a.显示所有团购的'退款中'和'退款完成'状态的订单;
+			b.'退款中'的订单没有【退款成功】的操作按钮,当退款金额打到用户账户里自动标记为'退款完成'
+			c.团购退款的订单只显示在'团购退款'这个选项卡中,全部、退款中和退款完成这3个选项卡中不显示团购退款的订单
 		5、团购成功的订单，订单列表中单价显示商品的原价，优惠金额=原价-团购价
 		6、查询条件'订单类型'下拉框中增加'团购订单'
 	"""
@@ -919,7 +923,10 @@ Scenario:2 所有订单-团购订单查询
 		"""
 
 @order
-Scenario:3 财务审核-查看'团购退款'订单
+Scenario:3 查看团购失败的订单
+	#所有订单-显示团购失败的'退款中'（退款成功）和优惠抵扣方式的'已取消'订单
+	#财务审核-团购失败的'退款中'（退款成功）的订单只显示在"团购退款"选项卡中
+
 	#退款前,查看微众卡余额
 		When bill1访问jobs的webapp
 		When bill1进行微众卡余额查询
@@ -954,7 +961,6 @@ Scenario:3 财务审核-查看'团购退款'订单
 	#查看团购失败的订单
 		Given jobs登录系统:weapp
 		When jobs关闭团购活动'团购活动1':weapp
-		#团购失败后，微众卡全额支付的'优惠抵扣'方式的订单变为'已取消'，显示在所有订单中
 		Then jobs可以看到订单列表:weapp
 			"""
 			[{
@@ -1069,9 +1075,40 @@ Scenario:3 财务审核-查看'团购退款'订单
 						"price":100.00,
 						"count":1
 					}]
+			},{
+				"order_no":"00103",
+				"sources": "本店",
+				"is_group_buying":"true",
+				"status": "退款中",
+				"buyer":"bill1",
+				"final_price":90.00,
+				"save_money":10.0,
+				"methods_of_payment": "微信支付",
+				"actions": [],
+				"products":
+					[{
+						"name":"商品1",
+						"price":100.00,
+						"count":1
+					}]
+			},{
+				"order_no":"00101",
+				"sources": "本店",
+				"is_group_buying":"true",
+				"status": "退款中",
+				"buyer":"bill",
+				"final_price":90.00,
+				"save_money":10.0,
+				"methods_of_payment": "微信支付",
+				"actions": [],
+				"products":
+					[{
+						"name":"商品1",
+						"price":100.00,
+						"count":1
+					}]
 			}]
 			"""
-		#团购失败后,有现金支付的'待发货'状态的订单变为'退款中',显示在'财务审核'的团购退款选项卡中
 		And jobs获得财务审核'团购退款'订单列表:weapp
 			"""
 			[{
@@ -1143,7 +1180,155 @@ Scenario:3 财务审核-查看'团购退款'订单
 		When 微信'退款成功'订单'00103':weapp
 		When 微信'退款成功'订单'00101':weapp
 		Given jobs登录系统:weapp
-		Then jobs获得财务审核'团购退款'订单列表:weapp
+		Then jobs可以看到订单列表:weapp
+			"""
+			[{
+				"order_no":"00205",
+				"sources": "本店",
+				"is_group_buying":"true",
+				"status": "待发货",
+				"buyer":"bill3",
+				"final_price":190.00,
+				"save_money":10.0,
+				"methods_of_payment": "优惠抵扣",
+				"actions": ["发货"],
+				"products":
+					[{
+						"name":"商品2",
+						"price":200.00,
+						"count":1
+					}]
+			},{
+				"order_no":"00204",
+				"sources": "本店",
+				"is_group_buying":"true",
+				"status": "待发货",
+				"buyer":"bill2",
+				"final_price":190.00,
+				"save_money":10.0,
+				"methods_of_payment": "微信支付",
+				"actions": ["发货"],
+				"products":
+					[{
+						"name":"商品2",
+						"price":200.00,
+						"count":1
+					}]
+			},{
+				"order_no":"00203",
+				"sources": "本店",
+				"is_group_buying":"true",
+				"status": "待发货",
+				"buyer":"bill1",
+				"final_price":190.00,
+				"save_money":10.0,
+				"methods_of_payment": "微信支付",
+				"actions": ["发货"],
+				"products":
+					[{
+						"name":"商品2",
+						"price":200.00,
+						"count":1
+					}]
+			},{
+				"order_no":"00202",
+				"sources": "本店",
+				"is_group_buying":"true",
+				"status": "待发货",
+				"buyer":"bill",
+				"final_price":190.00,
+				"save_money":10.0,
+				"methods_of_payment": "微信支付",
+				"actions": ["发货"],
+				"products":
+					[{
+						"name":"商品2",
+						"price":200.00,
+						"count":1
+					}]
+			},{
+				"order_no":"00201",
+				"sources": "本店",
+				"is_group_buying":"true",
+				"status": "待发货",
+				"buyer":"tom",
+				"final_price":190.00,
+				"save_money":10.0,
+				"methods_of_payment": "微信支付",
+				"actions": ["发货"],
+				"products":
+					[{
+						"name":"商品2",
+						"price":200.00,
+						"count":1
+					}]
+			},{
+				"order_no":"00105",
+				"sources": "本店",
+				"is_group_buying":"false",
+				"status": "待支付",
+				"buyer":"bill",
+				"final_price":300.00,
+				"save_money":0.00,
+				"methods_of_payment": "微信支付",
+				"actions": ["支付","修改价格","取消订单"],
+				"products":
+					[{
+						"name":"商品3",
+						"price":300.00,
+						"count":1
+					}]
+			},{
+				"order_no":"00104",
+				"sources": "本店",
+				"is_group_buying":"ture",
+				"status": "已取消",
+				"buyer":"bill2",
+				"final_price":90.00,
+				"save_money":10.00,
+				"methods_of_payment": "优惠抵扣",
+				"actions": [],
+				"products":
+					[{
+						"name":"商品1",
+						"price":100.00,
+						"count":1
+					}]
+			},{
+				"order_no":"00103",
+				"sources": "本店",
+				"is_group_buying":"true",
+				"status": "退款成功",
+				"buyer":"bill1",
+				"final_price":90.00,
+				"save_money":10.0,
+				"methods_of_payment": "微信支付",
+				"actions": [],
+				"products":
+					[{
+						"name":"商品1",
+						"price":100.00,
+						"count":1
+					}]
+			},{
+				"order_no":"00101",
+				"sources": "本店",
+				"is_group_buying":"true",
+				"status": "退款成功",
+				"buyer":"bill",
+				"final_price":90.00,
+				"save_money":10.0,
+				"methods_of_payment": "微信支付",
+				"actions": [],
+				"products":
+					[{
+						"name":"商品1",
+						"price":100.00,
+						"count":1
+					}]
+			}]
+			"""
+		And jobs获得财务审核'团购退款'订单列表:weapp
 			"""
 			[{
 				"order_no":"00103",

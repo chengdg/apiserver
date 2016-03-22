@@ -5,6 +5,8 @@
 判断微众卡是否能用、是否有效、是否激活等各种情况。
 """
 import logging
+from decimal import Decimal
+
 import db.wzcard.models as wzcard_models
 import db.account.weixin_models as weixin_models
 
@@ -27,7 +29,6 @@ class WZCardChecker(object):
 		# SELECT count(*) FROM weapp.market_tool_weizoom_card as card join market_tool_weizoom_card_rule as rule on (card.weizoom_card_rule_id=rule.id) where card.weizoom_card_id in ('0000001','0000002','0000021') and rule.valid_restrictions >0;
 		wzcard_id_ids = [wzcard_info['card_name'] for wzcard_info in wzcard_info_list]
 		valid_restrictions_card_count = wzcard_models.WeizoomCard.select().join(wzcard_models.WeizoomCardRule).where(wzcard_models.WeizoomCard.weizoom_card_id.in_(wzcard_id_ids),wzcard_models.WeizoomCardRule.valid_restrictions >0).count()
-		print('-valid_restrictions_card_count',valid_restrictions_card_count)
 		if valid_restrictions_card_count > 1:
 			return False, {
 					"is_success": False,
@@ -130,7 +131,7 @@ class WZCardChecker(object):
 				"short_msg": u'卡未激活'
 			}
 		elif weizoom_card_rule.valid_restrictions > 0:
-			if wzcard_check_money < weizoom_card_rule.valid_restrictions:
+			if Decimal(wzcard_check_money) < weizoom_card_rule.valid_restrictions:
 				msg = u'订单未满足该卡使用条件'
 		elif weizoom_card_rule.card_attr:
 			#专属卡

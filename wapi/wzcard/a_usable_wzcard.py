@@ -41,7 +41,14 @@ class AUsableWZCard(api_resource.ApiResource):
 		wzcard_password = args['password']
 		webapp_owner = args['webapp_owner']
 		webapp_user = args['webapp_user']
-		used_cards = args.get('used_cards', [])
+		used_cards = args.get('used_cards', '')
+		used_cards = used_cards.split(',') if used_cards else []
+
+		# 临时兼容
+		# used_cards = list(set(used_cards))
+
+		print('----used_cards',used_cards,type(used_cards))
+
 		wzcard_check_money = args['wzcard_check_money']
 
 		# 获取微众卡信息
@@ -56,7 +63,7 @@ class AUsableWZCard(api_resource.ApiResource):
 		wzcard_info_list = [{'card_name': card} for card in used_cards]
 		wzcard_info_list.append({'card_name': wzcard_id})
 
-		print('-------x',wzcard_info_list)
+		print('-------wzcard_info_list',wzcard_info_list)
 
 		is_success, reason = WZCardChecker.check_not_duplicated(wzcard_info_list)
 

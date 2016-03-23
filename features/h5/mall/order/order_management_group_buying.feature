@@ -1204,208 +1204,208 @@ Scenario:3 查看团购失败的订单
 				}
 				"""
 
-	#微信自动退款,订单状态自动标记为'退款成功',
-		When 微信'退款成功'订单'00103':weapp
-		When 微信'退款成功'订单'00101':weapp
-		#现金+微众卡支付的订单，订单"退款成功"后，微众卡的钱退回
-			When bill1访问jobs的webapp
-			When bill1进行微众卡余额查询
-				"""
-				{
-					"id":"0000001",
-					"password":"1234567"
-				}
-				"""
-			Then bill1获得微众卡余额查询结果
-				"""
-				{
-					"card_remaining":50.00
-				}
-				"""
+	#微信自动退款,订单状态自动标记为'退款成功'(因无法实现steps，所以注释掉)
+		# When 微信'退款成功'订单'00103':weapp
+		# When 微信'退款成功'订单'00101':weapp
+		# #现金+微众卡支付的订单，订单"退款成功"后，微众卡的钱退回
+		# 	When bill1访问jobs的webapp
+		# 	When bill1进行微众卡余额查询
+		# 		"""
+		# 		{
+		# 			"id":"0000001",
+		# 			"password":"1234567"
+		# 		}
+		# 		"""
+		# 	Then bill1获得微众卡余额查询结果
+		# 		"""
+		# 		{
+		# 			"card_remaining":50.00
+		# 		}
+		# 		"""
 
-		Given jobs登录系统:weapp
-		Then jobs可以看到订单列表:weapp
-			"""
-			[{
-				"order_no":"00205",
-				"sources": "本店",
-				"is_group_buying":"true",
-				"status": "待发货",
-				"buyer":"bill3",
-				"final_price":190.00,
-				"save_money":10.0,
-				"methods_of_payment": "优惠抵扣",
-				"actions": ["发货"],
-				"products":
-					[{
-						"name":"商品2",
-						"price":200.00,
-						"count":1
-					}]
-			},{
-				"order_no":"00204",
-				"sources": "本店",
-				"is_group_buying":"true",
-				"status": "待发货",
-				"buyer":"bill2",
-				"final_price":190.00,
-				"save_money":10.0,
-				"methods_of_payment": "微信支付",
-				"actions": ["发货"],
-				"products":
-					[{
-						"name":"商品2",
-						"price":200.00,
-						"count":1
-					}]
-			},{
-				"order_no":"00203",
-				"sources": "本店",
-				"is_group_buying":"true",
-				"status": "待发货",
-				"buyer":"bill1",
-				"final_price":190.00,
-				"save_money":10.0,
-				"methods_of_payment": "微信支付",
-				"actions": ["发货"],
-				"products":
-					[{
-						"name":"商品2",
-						"price":200.00,
-						"count":1
-					}]
-			},{
-				"order_no":"00202",
-				"sources": "本店",
-				"is_group_buying":"true",
-				"status": "待发货",
-				"buyer":"bill",
-				"final_price":190.00,
-				"save_money":10.0,
-				"methods_of_payment": "微信支付",
-				"actions": ["发货"],
-				"products":
-					[{
-						"name":"商品2",
-						"price":200.00,
-						"count":1
-					}]
-			},{
-				"order_no":"00201",
-				"sources": "本店",
-				"is_group_buying":"true",
-				"status": "待发货",
-				"buyer":"tom",
-				"final_price":190.00,
-				"save_money":10.0,
-				"methods_of_payment": "微信支付",
-				"actions": ["发货"],
-				"products":
-					[{
-						"name":"商品2",
-						"price":200.00,
-						"count":1
-					}]
-			},{
-				"order_no":"00105",
-				"sources": "本店",
-				"is_group_buying":"false",
-				"status": "待支付",
-				"buyer":"bill",
-				"final_price":300.00,
-				"save_money":0.00,
-				"methods_of_payment": "微信支付",
-				"actions": ["支付","修改价格","取消订单"],
-				"products":
-					[{
-						"name":"商品3",
-						"price":300.00,
-						"count":1
-					}]
-			},{
-				"order_no":"00104",
-				"sources": "本店",
-				"is_group_buying":"ture",
-				"status": "已取消",
-				"buyer":"bill2",
-				"final_price":90.00,
-				"save_money":10.00,
-				"methods_of_payment": "优惠抵扣",
-				"actions": [],
-				"products":
-					[{
-						"name":"商品1",
-						"price":100.00,
-						"count":1
-					}]
-			},{
-				"order_no":"00103",
-				"sources": "本店",
-				"is_group_buying":"true",
-				"status": "退款成功",
-				"buyer":"bill1",
-				"final_price":90.00,
-				"save_money":10.0,
-				"methods_of_payment": "微信支付",
-				"actions": [],
-				"products":
-					[{
-						"name":"商品1",
-						"price":100.00,
-						"count":1
-					}]
-			},{
-				"order_no":"00101",
-				"sources": "本店",
-				"is_group_buying":"true",
-				"status": "退款成功",
-				"buyer":"bill",
-				"final_price":90.00,
-				"save_money":10.0,
-				"methods_of_payment": "微信支付",
-				"actions": [],
-				"products":
-					[{
-						"name":"商品1",
-						"price":100.00,
-						"count":1
-					}]
-			}]
-			"""
-		And jobs获得财务审核'团购退款'订单列表:weapp
-			"""
-			[{
-				"order_no":"00103",
-				"sources": "本店",
-				"is_group_buying":"true",
-				"status": "退款完成",
-				"buyer":"bill1",
-				"final_price":90.00,
-				"save_money":10.0,
-				"methods_of_payment": "微信支付",
-				"actions": [],
-				"products":
-					[{
-						"name":"商品1",
-						"price":100.00,
-						"count":1
-					}]
-			},{
-				"order_no":"00101",
-				"sources": "本店",
-				"is_group_buying":"true",
-				"status": "退款完成",
-				"buyer":"bill",
-				"final_price":90.00,
-				"save_money":10.0,
-				"methods_of_payment": "微信支付",
-				"actions": [],
-				"products":
-					[{
-						"name":"商品1",
-						"price":100.00,
-						"count":1
-					}]
-			}]
-			"""
+		# Given jobs登录系统:weapp
+		# Then jobs可以看到订单列表:weapp
+		# 	"""
+		# 	[{
+		# 		"order_no":"00205",
+		# 		"sources": "本店",
+		# 		"is_group_buying":"true",
+		# 		"status": "待发货",
+		# 		"buyer":"bill3",
+		# 		"final_price":190.00,
+		# 		"save_money":10.0,
+		# 		"methods_of_payment": "优惠抵扣",
+		# 		"actions": ["发货"],
+		# 		"products":
+		# 			[{
+		# 				"name":"商品2",
+		# 				"price":200.00,
+		# 				"count":1
+		# 			}]
+		# 	},{
+		# 		"order_no":"00204",
+		# 		"sources": "本店",
+		# 		"is_group_buying":"true",
+		# 		"status": "待发货",
+		# 		"buyer":"bill2",
+		# 		"final_price":190.00,
+		# 		"save_money":10.0,
+		# 		"methods_of_payment": "微信支付",
+		# 		"actions": ["发货"],
+		# 		"products":
+		# 			[{
+		# 				"name":"商品2",
+		# 				"price":200.00,
+		# 				"count":1
+		# 			}]
+		# 	},{
+		# 		"order_no":"00203",
+		# 		"sources": "本店",
+		# 		"is_group_buying":"true",
+		# 		"status": "待发货",
+		# 		"buyer":"bill1",
+		# 		"final_price":190.00,
+		# 		"save_money":10.0,
+		# 		"methods_of_payment": "微信支付",
+		# 		"actions": ["发货"],
+		# 		"products":
+		# 			[{
+		# 				"name":"商品2",
+		# 				"price":200.00,
+		# 				"count":1
+		# 			}]
+		# 	},{
+		# 		"order_no":"00202",
+		# 		"sources": "本店",
+		# 		"is_group_buying":"true",
+		# 		"status": "待发货",
+		# 		"buyer":"bill",
+		# 		"final_price":190.00,
+		# 		"save_money":10.0,
+		# 		"methods_of_payment": "微信支付",
+		# 		"actions": ["发货"],
+		# 		"products":
+		# 			[{
+		# 				"name":"商品2",
+		# 				"price":200.00,
+		# 				"count":1
+		# 			}]
+		# 	},{
+		# 		"order_no":"00201",
+		# 		"sources": "本店",
+		# 		"is_group_buying":"true",
+		# 		"status": "待发货",
+		# 		"buyer":"tom",
+		# 		"final_price":190.00,
+		# 		"save_money":10.0,
+		# 		"methods_of_payment": "微信支付",
+		# 		"actions": ["发货"],
+		# 		"products":
+		# 			[{
+		# 				"name":"商品2",
+		# 				"price":200.00,
+		# 				"count":1
+		# 			}]
+		# 	},{
+		# 		"order_no":"00105",
+		# 		"sources": "本店",
+		# 		"is_group_buying":"false",
+		# 		"status": "待支付",
+		# 		"buyer":"bill",
+		# 		"final_price":300.00,
+		# 		"save_money":0.00,
+		# 		"methods_of_payment": "微信支付",
+		# 		"actions": ["支付","修改价格","取消订单"],
+		# 		"products":
+		# 			[{
+		# 				"name":"商品3",
+		# 				"price":300.00,
+		# 				"count":1
+		# 			}]
+		# 	},{
+		# 		"order_no":"00104",
+		# 		"sources": "本店",
+		# 		"is_group_buying":"ture",
+		# 		"status": "已取消",
+		# 		"buyer":"bill2",
+		# 		"final_price":90.00,
+		# 		"save_money":10.00,
+		# 		"methods_of_payment": "优惠抵扣",
+		# 		"actions": [],
+		# 		"products":
+		# 			[{
+		# 				"name":"商品1",
+		# 				"price":100.00,
+		# 				"count":1
+		# 			}]
+		# 	},{
+		# 		"order_no":"00103",
+		# 		"sources": "本店",
+		# 		"is_group_buying":"true",
+		# 		"status": "退款成功",
+		# 		"buyer":"bill1",
+		# 		"final_price":90.00,
+		# 		"save_money":10.0,
+		# 		"methods_of_payment": "微信支付",
+		# 		"actions": [],
+		# 		"products":
+		# 			[{
+		# 				"name":"商品1",
+		# 				"price":100.00,
+		# 				"count":1
+		# 			}]
+		# 	},{
+		# 		"order_no":"00101",
+		# 		"sources": "本店",
+		# 		"is_group_buying":"true",
+		# 		"status": "退款成功",
+		# 		"buyer":"bill",
+		# 		"final_price":90.00,
+		# 		"save_money":10.0,
+		# 		"methods_of_payment": "微信支付",
+		# 		"actions": [],
+		# 		"products":
+		# 			[{
+		# 				"name":"商品1",
+		# 				"price":100.00,
+		# 				"count":1
+		# 			}]
+		# 	}]
+		# 	"""
+		# And jobs获得财务审核'团购退款'订单列表:weapp
+		# 	"""
+		# 	[{
+		# 		"order_no":"00103",
+		# 		"sources": "本店",
+		# 		"is_group_buying":"true",
+		# 		"status": "退款完成",
+		# 		"buyer":"bill1",
+		# 		"final_price":90.00,
+		# 		"save_money":10.0,
+		# 		"methods_of_payment": "微信支付",
+		# 		"actions": [],
+		# 		"products":
+		# 			[{
+		# 				"name":"商品1",
+		# 				"price":100.00,
+		# 				"count":1
+		# 			}]
+		# 	},{
+		# 		"order_no":"00101",
+		# 		"sources": "本店",
+		# 		"is_group_buying":"true",
+		# 		"status": "退款完成",
+		# 		"buyer":"bill",
+		# 		"final_price":90.00,
+		# 		"save_money":10.0,
+		# 		"methods_of_payment": "微信支付",
+		# 		"actions": [],
+		# 		"products":
+		# 			[{
+		# 				"name":"商品1",
+		# 				"price":100.00,
+		# 				"count":1
+		# 			}]
+		# 	}]
+		# 	"""
 

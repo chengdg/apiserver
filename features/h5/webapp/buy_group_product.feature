@@ -20,7 +20,8 @@ Feature: 手机端购买团购活动
 Background:
 	Given 重置weapp的bdd环境
 	Given jobs登录系统:weapp
-	And jobs已有微众卡支付权限:weapp
+	When jobs添加微信证书:weapp
+	Given jobs已有微众卡支付权限:weapp
 	And jobs已添加支付方式:weapp
 		"""
 		[{

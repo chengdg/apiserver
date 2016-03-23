@@ -20,7 +20,8 @@ Feature: 手机端购买团购活动
 Background:
 	Given 重置weapp的bdd环境
 	Given jobs登录系统:weapp
-	And jobs已有微众卡支付权限:weapp
+	When jobs添加微信证书:weapp
+	Given jobs已有微众卡支付权限:weapp
 	And jobs已添加支付方式:weapp
 		"""
 		[{
@@ -847,6 +848,7 @@ Scenario: 5 会员开团不进行支付，开团不成功
 		[]
 		"""
 
+@mall3
 Scenario: 6 一个会员可以参加多个会员开启的团购活动
 	1.一个会员既能开团又能参团，可以参加多个团购活动
 
@@ -994,7 +996,7 @@ Scenario: 6 一个会员可以参加多个会员开启的团购活动
 			"group_name": "团购2",
 			"group_leader": "bill",
 			"product_name": "商品2",
-			"participant_count": "1/5"
+			"participant_count": "2/5"
 		}]
 		"""
 	When tom参加bill的团购活动"团购2":weapp
@@ -1069,7 +1071,7 @@ Scenario: 6 一个会员可以参加多个会员开启的团购活动
 			"group_name": "团购2",
 			"group_leader": "tom",
 			"product_name": "商品2",
-			"participant_count": "1/5"
+			"participant_count": "2/5"
 		}]
 		"""
 

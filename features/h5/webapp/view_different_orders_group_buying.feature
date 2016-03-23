@@ -17,8 +17,9 @@ Feature:从个人中心浏览不同状态的订单列表中的团购订单
 Background:
 	Given 重置weapp的bdd环境
 	Given jobs登录系统:weapp
+	When jobs添加微信证书:weapp
 
-	And jobs已有微众卡支付权限:weapp
+	Given jobs已有微众卡支付权限:weapp
 	And jobs已添加支付方式:weapp
 		"""
 		[{

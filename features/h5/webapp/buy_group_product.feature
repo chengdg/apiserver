@@ -994,7 +994,7 @@ Scenario: 6 一个会员可以参加多个会员开启的团购活动
 			"group_name": "团购2",
 			"group_leader": "bill",
 			"product_name": "商品2",
-			"participant_count": "1/5"
+			"participant_count": "2/5"
 		}]
 		"""
 	When tom参加bill的团购活动"团购2":weapp
@@ -1069,7 +1069,7 @@ Scenario: 6 一个会员可以参加多个会员开启的团购活动
 			"group_name": "团购2",
 			"group_leader": "tom",
 			"product_name": "商品2",
-			"participant_count": "1/5"
+			"participant_count": "2/5"
 		}]
 		"""
 

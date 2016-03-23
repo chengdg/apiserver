@@ -40,6 +40,7 @@ class PackageOrderService(business_model.Service):
 			for product in order.products:
 				if product.id == limit_product_id:
 					product.price = product.original_price
+					product.discount_money_coupon_exist = True
 		order.product_price = sum([product.price * product.purchase_count for product in order.products])
 		return order.product_price
 

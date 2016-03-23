@@ -1063,7 +1063,7 @@ Scenario:3 查看团购失败的订单
 			},{
 				"order_no":"00104",
 				"sources": "本店",
-				"is_group_buying":"ture",
+				"is_group_buying":"true",
 				"status": "已取消",
 				"buyer":"bill2",
 				"final_price":90.00,
@@ -1282,7 +1282,7 @@ Scenario:3 查看团购失败的订单
 			},{
 				"order_no":"00104",
 				"sources": "本店",
-				"is_group_buying":"ture",
+				"is_group_buying":"true",
 				"status": "已取消",
 				"buyer":"bill2",
 				"final_price":90.00,

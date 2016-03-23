@@ -20,7 +20,8 @@ Feature:订单管理-团购
 Background:
 	Given 重置weapp的bdd环境
 	Given jobs登录系统:weapp
-	And jobs已添加支付方式:weapp
+	When jobs添加微信证书:weapp
+	Given jobs已添加支付方式:weapp
 		"""
 		[{
 			"type": "微信支付",

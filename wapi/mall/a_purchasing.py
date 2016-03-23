@@ -99,9 +99,12 @@ class APurchasing(api_resource.ApiResource):
 			'postage_factor': postage_factor
 		}
 		"""
+
 		webapp_user = args['webapp_user']
 		webapp_owner = args['webapp_owner']
 		member = args.get('member', None)
+
+		group_id = args.get('group_id', '')
 
 		purchase_info = PurchaseInfo.parse({
 			'request_args': args
@@ -112,6 +115,8 @@ class APurchasing(api_resource.ApiResource):
 			"webapp_user": webapp_user,
 			"purchase_info": purchase_info,
 		})
+
+
 
 		#获得运费配置，支持前端修改数量、优惠券等后实时计算运费
 		postage_factor = webapp_owner.system_postage_config['factor']
@@ -145,6 +150,7 @@ class APurchasing(api_resource.ApiResource):
 			'coupons': coupons,
 			'limit_coupons': limit_coupons,
 			'use_ceiling': use_ceiling,
-			'postage_factor': postage_factor
+			'postage_factor': postage_factor,
+			'group_id': group_id
 		}
 

@@ -1,3 +1,4 @@
+
 ---
 swagger: "2.0"
 info:
@@ -252,3 +253,82 @@ definitions:
 externalDocs:
   description: "Python-base API描述文档"
   url: "http://git.weizzz.com:8082/weapp/apiserver"
+
+## Example YAML to get you started quickly.
+## Be aware that YAML has indentation based scoping.
+## Code completion support is available so start typing for available options.
+#swagger: '2.0'
+#
+## This is your document metadata
+#info:
+#  version: "0.0.1"
+#  title: apiserver接口文档
+#
+#host: 127.0.0.1:8001
+#
+## Describe your paths here
+#paths:
+#  # This is a path endpoint. Change it.
+#  /wapi/mall/purchasing/:
+#    # This is a HTTP operation
+#    get:
+#      # Describe this verb here. Note: you can use markdown
+#      description: |
+#        获取编辑订单页接口
+#      # This is array of GET operation parameters:
+#      parameters:
+#        # An example parameter that is in query and is required
+#        - $ref: '#/definitions/group_id'
+#        - $ref: '#/definitions/activity_id'
+#        - name: product_ids
+#        - name: product_counts
+#        - name: product_model_names
+#      # Expected responses for this operation:
+#      responses:
+#        # Response code
+#        200:
+#          description: Successful response
+#          # A schema describing your response object.
+#          # Use JSON Schema format
+#          schema:
+#            title: purchasing response
+#            type: object
+#            properties:
+#              group_id:
+#                type: string
+#  /wapi/mall/order/:
+#    put:
+#      description: 创建订单接口
+#      parameters:
+#        - $ref: '#/definitions/group_id'
+#        - $ref: '#/definitions/activity_id'
+#      responses:
+#        200:
+#          description: Successful response
+#  /wapi/pay/pay_result:
+#    get:
+#      description: 支付结果页接口
+#      parameters:
+#        - name: qrcode_img
+#          description: 二维码图片url
+#        - name: activity_url
+#          description: 团购活动链接
+#        - name: order
+#          type: object
+#          properties:
+#            is_group_buy:
+#              type: bool
+#              required: true
+#definitions:
+#  group_id:
+#    name: group_id
+#    description: 团id，来字团购活动页点击参团跳转到编辑订单页提供
+#    type: string
+#  activity_id:
+#    name: activity_id
+#    description: 团购活动id
+#  activity_url:
+#    name: activity_url
+#    description: 团购活动url
+#    type: string
+

@@ -1,49 +1,59 @@
 # -*- coding: utf-8 -*-
-import json
-import time
-import shutil
-import os
-from datetime import datetime, timedelta
-import subprocess
 import base64
+import os
+import subprocess
 
-from behave import *
 import requests
+from behave import *
+
 # from django.contrib.auth.models import User
 
-import settings
 from db.mall.models import *
+from features.util.behave_utils import get_context_attrs
 
 
-def _run_weapp_step(step, context):
+def _run_weapp_step(step, context_text,context=None):
 	url = 'http://%s:%s' % (settings.WEAPP_BDD_SERVER_HOST, settings.WEAPP_BDD_SERVER_PORT)
+	if context:
+		context_kvs = get_context_attrs(context)
+	else:
+		context_kvs = {}
 	data = {
 		'step': step,
-		'context': context
+		'context_text': context_text,
+		'context_kvs': json.dumps(context_kvs)
 	}
 	response = requests.post(url, data={'data':json.dumps(data)})
 
 	response_text = base64.b64decode(response.text.encode('utf-8')).decode('utf-8')
-	if response_text != 'success':
+	# 可以有更好的判断条件。。。
+	if response_text.startswith('Traceback'):
 		buf = []
 		buf.append('\n*************** START WEAPP STEP EXCEPTION ***************')
 		buf.append(response_text.strip())
 		buf.append('*************** FINISH WEAPP STEP EXCEPTION ***************\n')
 		print '\n'.join(buf)
 		assert False, 'weapp_step_response.text != "success", Weapp step has EXCEPTION!!!'
+	else:
+		try:
+			context_kvs = json.loads(response_text)
+			for k,v in context_kvs.items():
+				setattr(context,k,v)
+		except BaseException as e:
+			pass
 
 @When(u"{command}:weapp")
 def step_impl(context, command):
-	_run_weapp_step(u'When %s' % command, context.text)
+	_run_weapp_step(u'When %s' % command, context.text, context)
 
 @Given(u"{command}:weapp")
 def step_impl(context, command):
-	_run_weapp_step(u'Given %s' % command, context.text)
+	_run_weapp_step(u'Given %s' % command, context.text, context)
 
 
 @Then(u"{command}:weapp")
 def step_impl(context, command):
-	_run_weapp_step(u'Then %s' % command, context.text)
+	_run_weapp_step(u'Then %s' % command, context.text, context)
 
 # @Then(u"{ignore}:weapp")
 # def step_impl(context, ignore):

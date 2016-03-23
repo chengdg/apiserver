@@ -15,15 +15,18 @@ from datetime import datetime
 import copy
 
 import settings
+from business.mall.allocator.order_group_buy_resource_allocator import GroupBuyOPENAPI
 from core.exceptionutil import unicode_full_stack
 from core.sendmail import sendmail
 from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
 import db.account.models as accout_models
 from core.wxapi import get_weixin_api
 from features.util.bdd_util import set_bdd_mock
+from services.notify_group_buy_after_pay_service.task import notify_group_buy_after_pay
 from services.record_order_status_log_service.task import record_order_status_log
 from services.send_template_message_service.task import send_template_message
 from services.update_product_sale_service.task import update_product_sale
+from utils.microservice_consumer import microservice_consume
 from utils.mysql_str_util import filter_invalid_str
 from utils.regional_util import get_str_value_by_string_ids
 
@@ -118,7 +121,7 @@ class Order(business_model.Model):
 		'delivery_time', # 配送时间字符串
 		'is_first_order',
 		'supplier_user_id',
-		'total_purchase_price'
+		'total_purchase_price',
 	)
 
 	@staticmethod
@@ -635,7 +638,7 @@ class Order(business_model.Model):
 		return self.context['order']
 
 
-	def save(self):
+	def save(self, purchase_info):
 		"""
 		业务模型序列化
 		"""
@@ -839,6 +842,19 @@ class Order(business_model.Model):
 						integral_money=product_group.integral_result['integral_money'],
 						integral_count=product_group.integral_result['use_integral'],
 				)
+
+		# 团购订单处理
+		if purchase_info.group_id:
+			self.is_group_buy = True
+			mall_models.OrderHasGroup.create(
+				order_id=self.order_id,
+				group_id=purchase_info.group_id,
+				activity_id=purchase_info.activity_id,
+				group_status=mall_models.GROUP_STATUS_ON,
+				webapp_user_id=self.webapp_user_id,
+				webapp_id=self.context['webapp_owner'].webapp_id
+			)
+
 		self.__after_update_status('buy')
 
 
@@ -899,6 +915,7 @@ class Order(business_model.Model):
 
 			self.__after_update_status('pay')
 			self.__send_template_message()
+
 		return pay_result
 
 
@@ -1033,6 +1050,20 @@ class Order(business_model.Model):
 
 		self.__send_notify_mail()
 
+		# 通知团购订单支付完成
+		if self.is_group_buy and action in ['buy', 'pay']:
+			url = GroupBuyOPENAPI['order_action']
+			data = {
+				'order_id': self.order_id,
+				'member_id': self.context['webapp_user'].member.id,
+				'action': action,
+				'woid': self.context['webapp_owner'].id,
+				'group_id': self.order_group_info['group_id']
+			}
+			notify_group_buy_after_pay(url, data)
+			# notify_group_buy_after_pay.delay(url, data)
+
+
 
 
 	def __send_template_message(self):
@@ -1158,3 +1189,36 @@ class Order(business_model.Model):
 			return True, ''
 		else:
 			return False, 'error_status'
+
+	@property
+	def is_group_buy(self):
+		if not self.context.get('_is_group_buy'):
+			self.context['_is_group_buy'] = bool(mall_models.OrderHasGroup.select().dj_where(order_id=self.order_id).first())
+
+		return self.context['_is_group_buy']
+
+	@is_group_buy.setter
+	def is_group_buy(self, value):
+		self.context['_is_group_buy'] = value
+
+	@cached_context_property
+	def order_group_info(self):
+		order_has_group = mall_models.OrderHasGroup.select().dj_where(order_id=self.order_id).first()
+		activity_url = ''
+		if order_has_group:
+			order_group_info = order_has_group.to_dict()
+			if self.status == mall_models.ORDER_STATUS_NOT:
+				activity_url = 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/m_group/?webapp_owner_id=' + str(self.context['webapp_owner'].id) + '&id=' + order_group_info['activity_id']
+			else:
+				url = GroupBuyOPENAPI['get_group_url']
+				data = {
+					'woid': self.context['webapp_owner'].id,
+					'group_id': order_group_info['group_id']
+				}
+				is_success, group_url_info = microservice_consume(url=url,data=data)
+				if is_success:
+					activity_url = 'http://' + settings.WEAPP_DOMAIN + group_url_info['group_url']
+			order_group_info['activity_url'] = activity_url
+			return order_group_info
+		else:
+			return {}

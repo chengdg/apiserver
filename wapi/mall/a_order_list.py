@@ -41,6 +41,9 @@ class AOrderList(api_resource.ApiResource):
 			'webapp_user': webapp_user
 		})
 
+		# 过滤已取消的团购订单
+		orders = filter(lambda order: not(order.is_group_buy and order.status == mall_models.ORDER_STATUS_CANCEL),orders)
+
 		order_datas = []
 		for order in orders:
 			#子订单不显示在订单列表中
@@ -68,7 +71,9 @@ class AOrderList(api_resource.ApiResource):
 				'review_is_finished': review_is_finished,
 				'red_envelope': order.red_envelope,
 				'red_envelope_created': order.red_envelope_created,
-				'products': []
+				'products': [],
+				'is_group_buy': order.is_group_buy,
+				'order_group_info': order.order_group_info
 			}
 
 			order_products = OrderProducts.get_for_order({

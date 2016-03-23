@@ -11,6 +11,7 @@ from bs4 import BeautifulSoup
 import math
 import itertools
 
+from business.mall.allocator.order_group_buy_resource_allocator import GroupBuyOPENAPI
 from wapi.decorators import param_required
 #from wapi import wapi_utils
 from core.cache import utils as cache_util
@@ -21,6 +22,7 @@ from business import model as business_model
 from business.mall.reserved_product import ReservedProduct 
 from business.mall.forbidden_coupon_product_ids import ForbiddenCouponProductIds
 import settings
+from utils.microservice_consumer import microservice_consume
 
 
 class ReservedProductRepository(business_model.Model):
@@ -108,11 +110,24 @@ class ReservedProductRepository(business_model.Model):
 				"count": product_count,
 				"expected_promotion_id": expected_promotion_id
 			}
-			products.append(ReservedProduct.get({
+
+			reversed_product = ReservedProduct.get({
 				"webapp_owner": webapp_owner,
 				"webapp_user": webapp_user,
 				"product_info": product_info
-			}))
+			})
+
+			# todo requests团购请求
+			if purchase_info.group_id:
+				url = GroupBuyOPENAPI['group_buy_info']
+				param_data = {'group_id': purchase_info.group_id, 'woid': self.context['webapp_owner'].id}
+				is_success, group_buy_info = microservice_consume(url=url, data=param_data)
+				if is_success:
+					group_buy_price = group_buy_info['group_buy_price']
+					reversed_product.price = group_buy_price
+
+			products.append(reversed_product)
+
 		
 		#TODO2：目前对商品是否可使用优惠券的设置放在了reserved_product_repository中
 		#主要是出于目前批量处理的考虑，后续应该将判断逻辑放入到reserved_product中

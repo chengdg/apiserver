@@ -81,6 +81,7 @@ RESOURCE_TYPE_INTEGRAL = 'integral'
 RESOURCE_TYPE_COUPON = 'coupon'
 RESOURCE_TYPE_PRODUCT = 'product'
 RESOURCE_TYPE_PRODUCTS = 'products'
+RESOURCE_TYPE_GROUP_BUY = 'group_buy'
 class Resource(object):
 	"""
 	领域服务的基类

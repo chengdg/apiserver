@@ -45,6 +45,9 @@ class PurchaseInfo(business_model.Model):
         'coupon_id',
         'wzcard_info', # 微众卡信息
         'delivery_time',
+        'group_id',
+        'activity_id',
+        'bdd_order_id',  # bdd时候用的order_id
     )
 
     @staticmethod
@@ -93,6 +96,11 @@ class PurchaseInfo(business_model.Model):
 
         self.__parse_integral_info(request_args)
         self.delivery_time = request_args.get('delivery_time', '')
+
+        # 解析团购信息
+        self.__parse_group_buy_info(request_args)
+
+        self.__parse_bdd_order_id(request_args)
 
     def __parse_ship_info(self, request_args):
         """
@@ -243,3 +251,11 @@ class PurchaseInfo(business_model.Model):
             self.group2integralinfo = json.loads(group2integralinfo)
         else:
             self.group2integralinfo = None
+
+    def __parse_group_buy_info(self, request_args):
+        self.group_id = request_args.get('group_id', '')
+        self.activity_id = request_args.get('activity_id', '')
+
+    def __parse_bdd_order_id(self, request_args):
+        self.bdd_order_id = request_args.get('bdd_order_id', '') if settings.IS_UNDER_BDD else ''
+

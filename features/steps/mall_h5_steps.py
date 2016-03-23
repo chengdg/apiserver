@@ -29,4 +29,6 @@ def step_impl(context, webapp_user_name):
 	else:
 		expected = json.loads(context.text)
 	actual = context.response.data['products']
+	for product in actual:
+		product['price'] = float('%.2f' % float(product['display_price']))
 	bdd_util.assert_list(expected, actual)

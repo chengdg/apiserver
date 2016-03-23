@@ -31,6 +31,7 @@ from business.mall.allocator.allocate_price_related_resource_service import Allo
 from business.mall.order import Order
 
 #from business.mall.package_order_service.package_order_service import CalculatePriceService
+from utils.microservice_consumer import ResponseCodeException
 from wapi.decorators import param_required
 #from wapi import wapi_utils
 from core.cache import utils as cache_util
@@ -89,7 +90,7 @@ class OrderFactory(business_model.Model):
 	# 	return order_checker.check()
 
 
-	def __create_order_id(self):
+	def __create_order_id(self, purchase_info):
 		"""创建订单id
 
 		order_id格式：order_id = '%s%03d' % (now, random.randint(1, 999))
@@ -99,6 +100,10 @@ class OrderFactory(business_model.Model):
 
 		@todo 和产品确认支持一秒内产生超过999个订单
 		"""
+
+		if settings.IS_UNDER_BDD and purchase_info.bdd_order_id:
+			return purchase_info.bdd_order_id
+
 		now = time.strftime("%Y%m%d%H%M%S", time.localtime())
 		key_name = 'order_ids:' + now
 
@@ -224,19 +229,19 @@ class OrderFactory(business_model.Model):
 		order.pay_interface_type = purchase_info.used_pay_interface_type
 		order.status = mall_models.ORDER_STATUS_NOT
 		order.delivery_time = purchase_info.delivery_time # 配送时间字符串
-		order.order_id = self.__create_order_id()
+		order.order_id = self.__create_order_id(purchase_info)
 		return order
 
 
 
-	def __save_order(self, order):
+	def __save_order(self, order, purchase_info):
 		"""
 		保存订单
 
 		@param[in] order Order对象(业务模型)
 		"""
 		logging.debug("order.db_model={}".format(order.db_model))
-		order.save()
+		order.save(purchase_info)
 		if order.final_price == 0:
 			# 优惠券或积分金额直接可支付完成，直接调用pay_order，完成支付
 			order.pay(mall_models.PAY_INTERFACE_PREFERENCE)
@@ -290,7 +295,7 @@ class OrderFactory(business_model.Model):
 						product_group.disable_integral_sale()
 
 				# 保存订单
-				order = self.__save_order(order)
+				order = self.__save_order(order, purchase_info)
 				# 如果需要（比如订单保存失败），释放资源
 				if order and order.is_saved:
 					#删除购物车
@@ -308,6 +313,8 @@ class OrderFactory(business_model.Model):
 				raise OrderResourcesException(reasons)
 		except OrderResourcesException as e:
 			raise e
+		except ResponseCodeException:
+			pass
 		except:
 			msg = unicode_full_stack()
 			watchdog_alert(msg)

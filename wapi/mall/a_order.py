@@ -44,6 +44,7 @@ class AOrder(api_resource.ApiResource):
 		webapp_owner = args['webapp_owner']
 		refueling_order = args.get('refueling_order', '')
 
+
 		if not get_wapi_lock(lockname='order_put_' + str(webapp_user.id), lock_timeout=1):
 			watchdog_alert('wapi接口被刷,wapi:%s,webapp_user_id:%s' % ('mall.order_put', str(webapp_user.id)))
 			reason_dict = {
@@ -71,6 +72,7 @@ class AOrder(api_resource.ApiResource):
 			# 实际上detail是reason列表
 			return 500, {'detail': e.value}
 		except:
+			watchdog_alert(unicode_full_stack())
 			return 500, {'detail': ''}
 
 		pay_url_info = None
@@ -169,7 +171,7 @@ class AOrder(api_resource.ApiResource):
 
 	@staticmethod
 	def to_dict(order):
-		order_dict = order.to_dict('latest_express_detail', 'products')
+		order_dict = order.to_dict('latest_express_detail', 'products', 'is_group_buy', 'order_group_info')
 		api_keys = [
 			"buyer_name",
 			"coupon_money",
@@ -213,7 +215,9 @@ class AOrder(api_resource.ApiResource):
 			"pay_info",
 			"bill_type",
 			"bill",
-			"delivery_time"
+			"delivery_time",
+			"is_group_buy",
+			"order_group_info",
 		]
 
 		data = {}

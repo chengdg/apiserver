@@ -914,7 +914,9 @@ class Order(business_model.Model):
 			webapp_user.update_pay_info(float(self.final_price) + float(self.weizoom_card_money), self.payment_time)
 
 			self.__after_update_status('pay')
-			self.__send_template_message()
+			if not self.is_group_buy:
+				# 团购订单不发送模板消息
+				self.__send_template_message()
 
 		return pay_result
 

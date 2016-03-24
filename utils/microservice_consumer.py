@@ -76,7 +76,7 @@ def microservice_consume(url='', data={}, method='get', timeout=None):
 # 测试代码
 # url = 'http://red.weapp.weizzz.com/m/apps/group/api/group_buy_product'
 # # url = 'http://weapp.weizoom.com/m/apps/group/api/group_buy_products'
-# param_data = {'pid': '48', 'woid': '999'}
+# param_data = {'pid': '48', 'woid': '9'}
 # is_success, resp_data = microservice_consume(url=url, data=param_data)
 # print('--------is_success',is_success)
 # print('resp',resp_data)

@@ -6,7 +6,7 @@ import requests
 from core.exceptionutil import unicode_full_stack
 from core.watchdog.utils import watchdog_alert, watchdog_info
 
-DEFAULT_TIMEOUT = 5  # 默认超时时间单位：秒
+DEFAULT_TIMEOUT = 10  # 默认超时时间单位：秒
 DEFAULT_RETRY_COUNT = 3  # 重试次数
 
 

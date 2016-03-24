@@ -41,8 +41,8 @@ class AOrderList(api_resource.ApiResource):
 			'webapp_user': webapp_user
 		})
 
-		# 过滤已取消的团购订单
-		orders = filter(lambda order: not(order.is_group_buy and order.status == mall_models.ORDER_STATUS_CANCEL),orders)
+		# 过滤已取消的团购订单,但优惠抵扣的显示
+		orders = filter(lambda order: not(order.is_group_buy and order.status == mall_models.ORDER_STATUS_CANCEL) or order.pay_interface_type ==  mall_models.PAY_INTERFACE_PREFERENCE ,orders)
 
 		order_datas = []
 		for order in orders:

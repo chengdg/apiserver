@@ -1060,7 +1060,7 @@ class Order(business_model.Model):
 				'woid': self.context['webapp_owner'].id,
 				'group_id': self.order_group_info['group_id']
 			}
-			notify_group_buy_after_pay(url, data)
+			notify_group_buy_after_pay.delay(url, data)
 			# notify_group_buy_after_pay.delay(url, data)
 
 

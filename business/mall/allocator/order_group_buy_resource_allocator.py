@@ -11,12 +11,18 @@ from db.mall import models as mall_models
 from utils.microservice_consumer import microservice_consume
 
 GroupBuyOPENAPI = {
-	'group_buy_product': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/group_buy_product',
-	'group_buy_products': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/group_buy_products',
-	'order_action': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/order_action',
-	'check_group_buy': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/check_group_buy',
-	'group_buy_info': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/group_buy_info',
-	'get_group_url': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/get_group_url',
+	# 'group_buy_product': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/group_buy_product',
+	# 'group_buy_products': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/group_buy_products',
+	# 'order_action': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/order_action',
+	# 'check_group_buy': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/check_group_buy',
+	# 'group_buy_info': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/group_buy_info',
+	# 'get_group_url': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/get_group_url',
+	'group_buy_product': 'http://' + settings.WEAPP_DOMAIN + '/apps/group/api/group_buy_product',
+	'group_buy_products': 'http://' + settings.WEAPP_DOMAIN + '/apps/group/api/group_buy_products',
+	'order_action': 'http://' + settings.WEAPP_DOMAIN + '/apps/group/api/order_action',
+	'check_group_buy': 'http://' + settings.WEAPP_DOMAIN + '/apps/group/api/check_group_buy',
+	'group_buy_info': 'http://' + settings.WEAPP_DOMAIN + '/apps/group/api/group_buy_info',
+	'get_group_url': 'http://' + settings.WEAPP_DOMAIN + '/apps/group/api/get_group_url',
 }
 
 

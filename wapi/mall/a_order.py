@@ -231,7 +231,7 @@ class AOrder(api_resource.ApiResource):
 	def get(args):
 
 		# 兼容修改价格后订单从支付模块返回的跳转（支付模块会添加edit_money）
-		order_id = args['order_id'].split('-')[0]
+		order_id = args['order_id'].split('-')[0].split('^')[0]
 
 		order = Order.from_id({
 			'webapp_owner': args['webapp_owner'],

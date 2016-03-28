@@ -77,7 +77,6 @@ class OrderGroupBuyAllocator(business_model.Service):
 				'pid': pid,
 				'woid': self.context['webapp_owner'].id
 			}
-			print('---------------param_data',param_data)
 			is_success, group_buy_product_info = microservice_consume(url=url, data=param_data)
 			if is_success:
 				is_success = group_buy_product_info['is_success']

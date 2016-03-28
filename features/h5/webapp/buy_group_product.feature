@@ -167,21 +167,21 @@ Scenario: 1 会员访问团购活动首页能进行开团
 			"group_name": "团购2",
 			"group_dict":
 				[{
-					"group_type":"10",
-					"group_price":"11.00"
-				},{
 					"group_type":"5",
 					"group_price":"21.00"
+				},{
+					"group_type":"10",
+					"group_price":"11.00"
 				}]
 		},{
 			"group_name": "团购1",
 			"group_dict":
 				[{
-					"group_type":"10",
-					"group_price":"10.00"
-				},{
 					"group_type":"5",
 					"group_price":"20.00"
+				},{
+					"group_type":"10",
+					"group_price":"10.00"
 				}]
 		}]
 		"""
@@ -400,21 +400,21 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 			"group_name": "团购2",
 			"group_dict":
 				[{
-					"group_type":"10",
-					"group_price":"11.00"
-				},{
 					"group_type":"5",
 					"group_price":"21.00"
+				},{
+					"group_type":"10",
+					"group_price":"11.00"
 				}]
 		},{
 			"group_name": "团购1",
 			"group_dict":
 				[{
-					"group_type":"10",
-					"group_price":"10.00"
-				},{
 					"group_type":"5",
 					"group_price":"20.00"
+				},{
+					"group_type":"10",
+					"group_price":"10.00"
 				}]
 		}]
 		"""
@@ -470,21 +470,21 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 			"group_name": "团购2",
 			"group_dict":
 				[{
-					"group_type":"10",
-					"group_price":"11.00"
-				},{
 					"group_type":"5",
 					"group_price":"21.00"
+				},{
+					"group_type":"10",
+					"group_price":"11.00"
 				}]
 		},{
 			"group_name": "团购1",
 			"group_dict":
 				[{
-					"group_type":"10",
-					"group_price":"10.00"
-				},{
 					"group_type":"5",
 					"group_price":"20.00"
+				},{
+					"group_type":"10",
+					"group_price":"10.00"
 				}]
 		}]
 		"""

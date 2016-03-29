@@ -1257,3 +1257,154 @@ Scenario:4 订单列表团购进行中订单+普通订单
 				"final_price": 30.00
 			}]
 			"""
+
+@mall3
+Scenario:5 订单列表团购订单-手机端开团未支付订单
+		When bill访问jobs的webapp
+		When bill参加jobs的团购活动"团购活动1"进行开团:weapp
+			"""
+			{
+				"group_name": "团购活动1",
+				"group_leader": "bill",
+				"group_dict":
+					{
+						"group_type":5,
+						"group_days":1,
+						"group_price":80.00
+					},
+				"products": {
+					"name": "商品1"
+				}
+			}
+			"""
+		When bill提交团购订单
+			"""
+			{
+				"order_id": "0001",
+				"date": "2015-08-08 00:00:00",
+				"ship_name": "bill",
+				"ship_tel": "13811223344",
+				"ship_area": "北京市 北京市 海淀区",
+				"ship_address": "泰兴大厦",
+				"pay_type":"微信支付"
+			}
+			"""
+
+		When bill访问个人中心
+		Then bill查看个人中心'全部'订单列表
+			"""
+			[{
+				"order_no": "0001",
+				"is_group_buying": "true",
+				"status": "待支付",
+				"created_at": "2015.08.08 00:00",
+				"products": [{
+					"name": "商品1"
+				}],
+				"counts": 1,
+				"final_price": 80.00
+			}]
+			"""
+
+		#活动结束，开团未支付订单自动取消
+		Given jobs登录系统:weapp
+		When jobs关闭团购活动'团购活动1':weapp
+
+		When bill访问jobs的webapp
+		When bill访问个人中心
+		Then bill查看个人中心'全部'订单列表
+			"""
+			[]
+			"""
+			
+@mall3
+Scenario:6 订单列表团购订单-手机端参团未支付订单
+	#bill作为团长开团参与团购活动"团购活动1"
+		When bill访问jobs的webapp
+		When bill参加jobs的团购活动"团购活动1"进行开团:weapp
+			"""
+			{
+				"group_name": "团购活动1",
+				"group_leader": "bill",
+				"group_dict":
+					{
+						"group_type":5,
+						"group_days":1,
+						"group_price":80.00
+					},
+				"products": {
+					"name": "商品1"
+				}
+			}
+			"""
+		When bill提交团购订单
+			"""
+			{
+				"order_id": "0001",
+				"date": "2015-08-08 00:00:00",
+				"ship_name": "bill",
+				"ship_tel": "13811223344",
+				"ship_area": "北京市 北京市 海淀区",
+				"ship_address": "泰兴大厦",
+				"pay_type":"微信支付"
+			}
+			"""
+		When bill使用支付方式'微信支付'进行支付
+
+	#tom参团"bill作为团长"购买
+		When tom访问jobs的webapp
+		When tom参加bill的团购活动"团购活动1":weapp
+			"""
+			{
+				"group_name": "团购活动1",
+				"group_leader": "bill",
+				"group_dict":
+					{
+						"group_type":5,
+						"group_days":1,
+						"group_price":80.00
+					},
+				"products": {
+					"name": "商品1"
+				}
+			}
+			"""
+		When tom提交团购订单
+			"""
+			{
+				"order_id": "0002",
+				"date": "2015-08-08 00:00:00",
+				"ship_name": "tom",
+				"ship_tel": "13811223344",
+				"ship_area": "北京市 北京市 海淀区",
+				"ship_address": "泰兴大厦",
+				"pay_type":"微信支付"
+			}
+			"""
+
+		When tom访问个人中心
+		Then tom查看个人中心'全部'订单列表
+			"""
+			[{
+				"order_no": "0002",
+				"is_group_buying": "true",
+				"status": "待支付",
+				"created_at": "2015.08.08 00:00",
+				"products": [{
+					"name": "商品1"
+				}],
+				"counts": 1,
+				"final_price": 80.00
+			}]
+			"""
+
+	#手动结束团购活动，未成功的团订单进入退款
+		Given jobs登录系统:weapp
+		When jobs关闭团购活动'团购活动1':weapp
+
+		When tom访问jobs的webapp
+		When tom访问个人中心
+		Then tom查看个人中心'全部'订单列表
+			"""
+			[]
+			"""

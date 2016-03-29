@@ -1258,7 +1258,7 @@ Scenario:4 订单列表团购进行中订单+普通订单
 			}]
 			"""
 
-@mall3
+
 Scenario:5 订单列表团购订单-手机端开团未支付订单
 		When bill访问jobs的webapp
 		When bill参加jobs的团购活动"团购活动1"进行开团:weapp
@@ -1316,7 +1316,7 @@ Scenario:5 订单列表团购订单-手机端开团未支付订单
 			"""
 			[]
 			"""
-			
+
 @mall3
 Scenario:6 订单列表团购订单-手机端参团未支付订单
 	#bill作为团长开团参与团购活动"团购活动1"

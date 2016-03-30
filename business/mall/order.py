@@ -439,10 +439,24 @@ class Order(business_model.Model):
 			product_id2name = dict([(o.product_id, o.product_name) for o in order_has_products])
 			product_names = ','.join([product_id2name[pid] for pid in product_ids_for_sort])
 
-			if len(product_names) > 45:
-				product_names = product_names[:45]
-			else:
-				product_names = product_names
+			# if len(product_names) > 45:
+			# 	product_names = product_names[:45]
+			# else:
+			# 	product_names = product_names
+
+			try:
+				if len(product_names.encode("utf-8")) > 128:
+					product_names = product_names[:127]
+				else:
+					product_names = product_names
+			except:
+				if len(product_names) > 45:
+					product_names = product_names[:44]
+				else:
+					product_names = product_names
+
+
+
 			wx_package_info['product_names'] = product_names
 			wx_package_info['total_fee'] = int(Decimal(str(self.final_price)) * 100)
 

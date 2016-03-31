@@ -80,7 +80,12 @@ class Command(BaseCommand):
             from wsgiref import simple_server
             import apps
             wsgi_application = apps.create_app()
-            httpd = simple_server.make_server(self.addr, int(self.port), wsgi_application)
+
+            from SocketServer import ThreadingMixIn
+            class ThreadingWSGIServer(ThreadingMixIn, simple_server.WSGIServer):
+                pass
+            httpd = simple_server.make_server(self.addr, int(self.port), wsgi_application, ThreadingWSGIServer)
+            # httpd = simple_server.make_server(self.addr, int(self.port), wsgi_application)
             httpd.serve_forever()
         except socket.error as e:
             # Use helpful error messages instead of ugly tracebacks.

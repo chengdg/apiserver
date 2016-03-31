@@ -266,6 +266,7 @@ class OrderFactory(business_model.Model):
 		try:
 			create_order_lock_is_success = self.__acquire_create_order_lock_by_purchase_info(purchase_info)
 			if not create_order_lock_is_success:
+				print('------------create_order_lock_failed')
 				watchdog_alert(u'下单异常并发')
 				raise OrderResourcesLockException([{
 					"is_success": False,

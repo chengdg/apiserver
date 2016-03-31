@@ -188,4 +188,4 @@ else:
     WEAPP_DOMAIN = 'weapp.weizoom.com'
 
 
-
+DEV_SERVER_MULTITHREADING = False

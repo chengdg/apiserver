@@ -52,7 +52,8 @@ from business.mall.package_order_service.package_order_service import PackageOrd
 
 from business.mall.reserved_product_repository import ReservedProductRepository
 from business.mall.group_reserved_product_service import GroupReservedProductService
-from business.mall.order_exception import OrderResourcesException, OrderFailureException
+from business.mall.order_exception import OrderResourcesException, OrderFailureException, OrderResourcesLockException
+from utils.lock import RedisLock, REGISTERED_LOCK_NAMES
 
 
 class OrderFactory(business_model.Model):
@@ -263,6 +264,15 @@ class OrderFactory(business_model.Model):
 		price_free_resources = None
 		price_related_resources = None
 		try:
+			create_order_lock_is_success = self.__acquire_create_order_lock_by_purchase_info(purchase_info)
+			if not create_order_lock_is_success:
+				watchdog_alert(u'下单异常并发')
+				raise OrderResourcesLockException([{
+					"is_success": False,
+					"msg": u'请勿短时间连续下单',
+					"type": "coupon"  # 兼容性type
+				}])
+
 			webapp_owner = self.context['webapp_owner']
 			webapp_user = self.context['webapp_user']
 
@@ -321,6 +331,10 @@ class OrderFactory(business_model.Model):
 			self.__release_order(order, price_free_resources, price_related_resources)
 			raise OrderFailureException
 
+		finally:
+			self.__release_create_order_lock()
+
+
 	def __release_order(self, order, price_free_resources, price_related_resources):
 		"""
 		当订单失败时，释放资源、清除数据库订单记录
@@ -351,4 +365,64 @@ class OrderFactory(business_model.Model):
 	def __release_price_related_resources(self, resources):
 		service = AllocatePriceRelatedResourceService(self.context['webapp_owner'], self.context['webapp_user'])
 		service.release(resources)
+
+	# def __acquire_create_order_lock_by_purchase_info(self, purchase_info):
+	# 	"""
+	# 	使用redis锁避免并发时错误处理
+	# 	@param locks:
+	# 	@param purchase_info:
+	# 	@return:
+	# 	"""
+	# 	locked_resource = []
+	# 	webapp_user_id = self.context['webapp_user'].id
+	# 	redis_lock = RedisLock()
+	# 	if purchase_info.coupon_id:
+	# 		# 优惠券锁
+	# 		locked_resource.append({'name': REGISTERED_LOCK_NAMES['coupon_lock'], 'resource': purchase_info.coupon_id})
+	# 	if purchase_info.order_integral_info or purchase_info.group2integralinfo:
+	# 		locked_resource.append({'name': REGISTERED_LOCK_NAMES['integral_lock'], 'resource': webapp_user_id})
+	# 	if purchase_info.wzcard_info:
+	# 		for wzcard in purchase_info.wzcard_info:
+	# 			locked_resource.append({'name': REGISTERED_LOCK_NAMES['wz_card_lock'], 'resource': wzcard['card_name']})
+	#
+	# 	return redis_lock.mlock(locked_resource), redis_lock
+	#
+	#
+	# def __release_create_order_lock(self):
+	# 	self.context['create_order_lock'].munlock()
+
+
+
+	def __acquire_create_order_lock_by_purchase_info(self, purchase_info):
+		"""
+		使用redis锁避免并发时错误处理
+		@param locks:
+		@param purchase_info:
+		@return:
+		"""
+
+		locked_resources = []
+		self.context['create_order_lock'] = []
+		webapp_user_id = self.context['webapp_user'].id
+		if purchase_info.coupon_id:
+			# 优惠券锁
+			locked_resources.append({'name': REGISTERED_LOCK_NAMES['coupon_lock'], 'resource': purchase_info.coupon_id})
+		if purchase_info.order_integral_info or purchase_info.group2integralinfo:
+			locked_resources.append({'name': REGISTERED_LOCK_NAMES['integral_lock'], 'resource': webapp_user_id})
+		if purchase_info.wzcard_info:
+			for wzcard in purchase_info.wzcard_info:
+				locked_resources.append({'name': REGISTERED_LOCK_NAMES['wz_card_lock'], 'resource': wzcard['card_name']})
+
+		for locked_resource in locked_resources:
+			redis_lock = RedisLock()
+			if redis_lock.lock(locked_resource):
+				self.context['create_order_lock'].append(redis_lock)
+			else:
+				return False
+
+		return True
+
+	def __release_create_order_lock(self):
+		for redis_lock in self.context['create_order_lock']:
+			redis_lock.unlock()
 

@@ -11,3 +11,7 @@ class OrderResourcesException(Exception):
 
 class OrderFailureException(Exception):
 	pass
+
+
+class OrderResourcesLockException(OrderResourcesException):
+	pass

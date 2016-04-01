@@ -12,6 +12,7 @@ Feature: 购买商品
 Background:
 	Given 重置weapp的bdd环境
 	And jobs登录系统:weapp
+	And jobs成为自营帐号:weapp
 	And jobs已添加供货商:weapp
 		"""
 		[{
@@ -331,6 +332,30 @@ Scenario: 3 购买多个供货商的多个商品,使用微信支付
 		}
 		"""
 	Given jobs登录系统:weapp
+#	Then jobs可以获得最新订单详情:weapp
+#		"""
+#		{
+#			"order_no": "001",
+#			"status": "待支付",
+#			"ship_area": "北京市 北京市 海淀区",
+#			"ship_address": "泰兴大厦",
+#			"final_price": 299.00,
+#			"actions": ["支付", "修改价格", "取消订单"],
+#			"products": [{
+#				"name": "商品1",
+#				"price": 100.00,
+#				"count": 1
+#			}, {
+#				"name": "商品3",
+#				"price": 100.00,
+#				"count": 1
+#			}, {
+#				"name": "商品2",
+#				"price": 99.00,
+#				"count": 1
+#			}]
+#		}
+#		"""
 	Then jobs可以获得最新订单详情:weapp
 		"""
 		{
@@ -345,12 +370,12 @@ Scenario: 3 购买多个供货商的多个商品,使用微信支付
 				"price": 100.00,
 				"count": 1
 			}, {
-				"name": "商品3",
-				"price": 100.00,
-				"count": 1
-			}, {
 				"name": "商品2",
 				"price": 99.00,
+				"count": 1
+			}, {
+				"name": "商品3",
+				"price": 100.00,
 				"count": 1
 			}]
 		}
@@ -528,12 +553,12 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 				"price": 100.00,
 				"count": 1
 			}, {
-				"name": "商品3",
-				"price": 100.00,
-				"count": 1
-			}, {
 				"name": "商品2",
 				"price": 99.00,
+				"count": 1
+			}, {
+				"name": "商品3",
+				"price": 100.00,
 				"count": 1
 			}]
 		}

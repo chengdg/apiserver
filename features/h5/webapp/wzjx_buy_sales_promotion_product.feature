@@ -14,6 +14,7 @@ Feature: 购买促销商品
 Background:
 	Given 重置weapp的bdd环境
 	Given jobs登录系统:weapp
+	And jobs成为自营帐号:weapp
 	And jobs已添加供货商:weapp
 		"""
 		[{

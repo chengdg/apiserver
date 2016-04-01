@@ -78,6 +78,12 @@
 		"id": "00016",
 		"name": "如风达",
 		"value": "rufengda"
+	},
+	{
+		"id": "00017",
+		"name": "邮政包裹/平邮",
+		"value": "youzhengguonei",
+		"kdniao_value": "YZPY"
 	}
 ]
 

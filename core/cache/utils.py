@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from core.watchdog.utils import watchdog_alert
 
 __author__ = 'bert'
 
@@ -235,7 +236,7 @@ def get_from_cache(key, on_miss):
 			if settings.DEBUG:
 				raise
 			else:
-				print unicode_full_stack()
+				watchdog_alert(unicode_full_stack())
 				return None
 
 

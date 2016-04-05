@@ -106,18 +106,22 @@ class ShoppingCart(business_model.Model):
 		invalid_products = []
 
 		product_ids = '_'.join([str(product.id) for product in products])
-		url = GroupBuyOPENAPI['group_buy_products']
 
-		data = {
-			'pids': product_ids,
-			'woid': self.context['webapp_owner'].id,
-		}
+		if product_ids:
+			url = GroupBuyOPENAPI['group_buy_products']
 
-		is_success, res = microservice_consume(url=url, data=data)
+			data = {
+				'pids': product_ids,
+				'woid': self.context['webapp_owner'].id,
+			}
 
-		# 团购商品放入禁用商品列表
-		if is_success:
-			group_buy_product_ids = [p['pid'] for p in filter(lambda x: x['pid'] if x['is_in_group_buy'] else False, res['pid2is_in_group_buy'])]
+			is_success, res = microservice_consume(url=url, data=data)
+
+			# 团购商品放入禁用商品列表
+			if is_success:
+				group_buy_product_ids = [p['pid'] for p in filter(lambda x: x['pid'] if x['is_in_group_buy'] else False, res['pid2is_in_group_buy'])]
+			else:
+				group_buy_product_ids = []
 		else:
 			group_buy_product_ids = []
 

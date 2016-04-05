@@ -112,7 +112,7 @@ Scenario:1 购买活动期间内有购买次数限制的促销商品
 			"count_per_purchase":"",
 			"promotion_price": 80.00,
 			"limit_period":"",
-			"buy_counts":1
+			"count_per_period":1
 		}]
 		"""
 
@@ -178,7 +178,7 @@ Scenario:2 购买限购周期内有购买次数限制的促销商品
 			"count_per_purchase":2,
 			"promotion_price": 80.00,
 			"limit_period":1,
-			"buy_counts":2
+			"count_per_period":2
 		}]
 		"""
 

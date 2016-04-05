@@ -655,6 +655,22 @@ def step_impl(context, webapp_user_name):
 		bdd_util.assert_api_call_success(response)
 
 
+
+
+@when(u"{webapp_user_name}设置{webapp_owner_name}的webapp的默认收货地址")
+def step_impl(context, webapp_user_name,webapp_owner_name):
+	data = {
+		'area': '1_1_8',
+		'ship_address': '泰兴大厦',
+		'ship_name': webapp_user_name,
+		'ship_tel': '13811223344'
+	}
+
+	url = '/wapi/mall/ship_info/?_method=put'
+	response = context.client.post(url, data)
+	context.ship_address = data
+
+
 @when(u"{webapp_user_name}从购物车发起购买操作")
 def step_impl(context, webapp_user_name):
 	"""
@@ -671,7 +687,7 @@ def step_impl(context, webapp_user_name):
 	"""
 	# 设置默认收货地址
 	if member_models.ShipInfo.select().count() == 0:
-		context.execute_steps(u"When %s设置%s的webapp的默认收货地址:weapp" % (webapp_user_name, 'jobs'))
+		context.execute_steps(u"When %s设置%s的webapp的默认收货地址" % (webapp_user_name, 'jobs'))
 	__i = json.loads(context.text)
 	if __i.get("action") == u"pay":
 		argument = __i.get('context')

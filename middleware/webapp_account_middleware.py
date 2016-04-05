@@ -41,6 +41,7 @@ class WebAppAccountMiddleware(object):
 				raise ValueError("error woid")
 
 		if 'access_token' in req.params:
+			logging.info( 'WebAppOAuthMiddleware:access_token:>>>>>>>>>>>>>%s' % req.params['access_token'])
 			access_token = req.params.get('access_token', None)	
 			account_info = AccessToken.get_sys_account({
 				'access_token':access_token

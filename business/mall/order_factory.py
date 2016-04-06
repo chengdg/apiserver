@@ -406,12 +406,12 @@ class OrderFactory(business_model.Model):
 		webapp_user_id = self.context['webapp_user'].id
 		if purchase_info.coupon_id:
 			# 优惠券锁
-			locked_resources.append({'name': REGISTERED_LOCK_NAMES['coupon_lock'], 'resource': purchase_info.coupon_id})
+			locked_resources.append({'name': REGISTERED_LOCK_NAMES['coupon_lock'], 'resource': str(purchase_info.coupon_id)})
 		if purchase_info.order_integral_info or purchase_info.group2integralinfo:
-			locked_resources.append({'name': REGISTERED_LOCK_NAMES['integral_lock'], 'resource': webapp_user_id})
+			locked_resources.append({'name': REGISTERED_LOCK_NAMES['integral_lock'], 'resource': str(webapp_user_id)})
 		if purchase_info.wzcard_info:
 			for wzcard in purchase_info.wzcard_info:
-				locked_resources.append({'name': REGISTERED_LOCK_NAMES['wz_card_lock'], 'resource': wzcard['card_name']})
+				locked_resources.append({'name': REGISTERED_LOCK_NAMES['wz_card_lock'], 'resource': str(wzcard['card_name'])})
 
 		for locked_resource in locked_resources:
 			redis_lock = RedisLock()

@@ -1454,3 +1454,167 @@ Scenario: 14 单品积分活动小数抵扣数据错误
 		}
 		"""
 	Then bill在jobs的webapp中拥有40会员积分
+
+
+#根据新需求补充.雪静 2016.4.6
+Scenario: 15 购买积分抵扣为小数的商品
+	单品积分活动使用积分抵扣带有小数的金额
+	1.抵扣率百分比保留小数点后两位
+
+
+	Given jobs登录系统:weapp
+	And jobs已添加商品:weapp
+		"""
+		[{
+			"name": "商品13",
+			"price": 39.99
+		}]
+		"""
+	#百分比保留两位小数
+	When jobs创建积分应用活动:weapp
+		"""
+		[{
+			"name": "商品13积分应用",
+			"start_date": "今天",
+			"end_date": "1天后",
+			"product_name": "商品13",
+			"is_permanant_active": false,
+			"rules": [{
+				"member_grade": "全部",
+				"discount": 24.98,
+				"discount_money": 9.99
+			}]
+		}]
+		"""
+
+	When bill访问jobs的webapp
+	When bill获得jobs的50会员积分
+	Then bill在jobs的webapp中拥有50会员积分
+	When bill购买jobs的商品
+		"""
+		{
+			"pay_type": "微信支付",
+			"products": [{
+				"name": "商品13",
+				"count": 1,
+				"integral_money":9.99,
+				"integral":20
+			}]
+		}
+		"""
+	Then bill成功创建订单
+		"""
+		{
+			"status": "待支付",
+			"final_price": 30.00,
+			"product_price": 39.99,
+			"integral_money": 9.99,
+			"integral": 20,
+			"products": [{
+				"name": "商品13",
+				"count": 1
+			}]
+		}
+		"""
+	Then bill在jobs的webapp中拥有30会员积分
+
+
+Scenario: 16 购买积分抵扣多规格商品
+
+
+	Given jobs登录系统:weapp
+	And jobs已添加商品:weapp
+		"""
+		[{
+			"name": "商品14",
+			"is_enable_model": "启用规格",
+			"model": {
+				"models":{
+					"M": {
+						"price": 20.00,
+						"stock_type": "无限"
+					},
+					"S": {
+						"price": 40.00,
+						"stock_type": "无限"
+					}
+				}
+			}
+		}]
+		"""
+	When jobs创建积分应用活动:weapp
+		"""
+		[{
+			"name": "商品14积分应用",
+			"start_date": "今天",
+			"end_date": "2天后",
+			"product_name": "商品14",
+			"is_permanant_active": true,
+			"rules": [{
+				"member_grade": "全部",
+				"discount": 75,
+				"discount_money": 15
+			}]
+		}]
+		"""
+	When bill访问jobs的webapp
+	When bill获得jobs的50会员积分
+	Then bill在jobs的webapp中拥有50会员积分
+	When bill购买jobs的商品
+		"""
+		{
+			"pay_type": "微信支付",
+			"products": [{
+				"name": "商品14",
+				"model": "M",
+				"count": 1,
+				"integral_money":15,
+				"integral":30
+			}]
+		}
+		"""
+	Then bill成功创建订单
+		"""
+		{
+			"status": "待支付",
+			"final_price": 5.00,
+			"product_price": 20.00,
+			"integral_money": 15.00,
+			"integral": 30,
+			"products": [{
+				"name": "商品14",
+				"model": "M",
+				"count": 1
+			}]
+		}
+		"""
+	Then bill在jobs的webapp中拥有20会员积分
+	#bill剩余20积分，最多使用20积分
+	When bill购买jobs的商品
+		"""
+		{
+			"pay_type": "微信支付",
+			"products": [{
+				"name": "商品14",
+				"model": "S",
+				"count": 1,
+				"integral_money":10,
+				"integral":20
+			}]
+		}
+		"""
+	Then bill成功创建订单
+		"""
+		{
+			"status": "待支付",
+			"final_price": 30.00,
+			"product_price": 40.00,
+			"integral_money": 10.00,
+			"integral": 20,
+			"products": [{
+				"name": "商品14",
+				"model": "S",
+				"count": 1
+			}]
+		}
+		"""

@@ -119,9 +119,10 @@ class OrderIntegralResourceAllocator(business_model.Service):
 		"""
 		count_per_yuan = webapp_owner.integral_strategy_settings.integral_each_yuan
 
-		group2integralinfo =  purchase_info.group2integralinfo
+		group2integralinfo = purchase_info.group2integralinfo
 		uid2group = dict((group.uid, group) for group in order.product_groups)
-		group_uid2max_integral_price = {}
+
+		use_integral_info = {}
 		for group_uid, integral_info in group2integralinfo.items():
 			if not group_uid in uid2group:
 				#当积分应用的促销状态从"进行中"变到"已过期"后，商品会从独立group转移到和普通商品在一个group
@@ -150,7 +151,6 @@ class OrderIntegralResourceAllocator(business_model.Service):
 
 			promotion_product_group = uid2group[group_uid]
 
-			print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>',promotion_product_group.active_integral_sale_rule
 			if not promotion_product_group.active_integral_sale_rule:
 
 				#当purchase_info提交的信息中存在group的积分信息
@@ -171,8 +171,19 @@ class OrderIntegralResourceAllocator(business_model.Service):
 			# 根据用户会员与否返回对应的商品价格
 			product_price = sum([product.price * product.purchase_count for product in promotion_product_group.products])
 			integral_sale_rule = promotion_product_group.active_integral_sale_rule
-			max_integral_price = round(product_price * integral_sale_rule['discount'] / 100, 2)
-			group_uid2max_integral_price[group_uid] = max_integral_price
+
+			if integral_money > product_price:
+				integral_money = product_price
+				use_integral -= math.floor((product_price - integral_money) * count_per_yuan)
+				watchdog_alert(u'异常积分应用下单信息。order_id:{},integral_info in purchase_info:'.format(order.order_id),str(integral_info))
+
+			max_integral_price = round(integral_sale_rule['discount_money'], 2)
+
+			use_integral_info[group_uid] = {
+				'integral_money': integral_money,
+				'use_integral': use_integral,
+				'max_integral_price': max_integral_price
+			}
 			if max_integral_price < (integral_money - 0.01) \
 				or (integral_money * count_per_yuan) > (use_integral + 1):
 				reason = {
@@ -183,7 +194,7 @@ class OrderIntegralResourceAllocator(business_model.Service):
 				self.__supply_product_info_into_fail_reason(promotion_product_group.products[0], reason)
 				return False, reason, None
 
-		return True, None, group_uid2max_integral_price
+		return True, None, use_integral_info
 
 	def allocate_resource(self, order, purchase_info):
 		"""
@@ -214,33 +225,16 @@ class OrderIntegralResourceAllocator(business_model.Service):
 			#else:
 			#	return False, [reason], None
 		elif purchase_info.group2integralinfo:
-			#使用积分应用
-			is_success, reason, group_uid2max_integral_price = self.__allocate_integral_sale(webapp_owner, order, purchase_info)
+			# 使用积分应用
+			is_success, reason, use_integral_info = self.__allocate_integral_sale(webapp_owner, order, purchase_info)
 			if not is_success:
 				return False, [reason], None
-
-			resources = []
 			total_money = 0.0
 			for group_uid, integral_info in purchase_info.group2integralinfo.items():
 				
-				max_integral_price = group_uid2max_integral_price[group_uid]
+				max_integral_price = use_integral_info[group_uid]['max_integral_price']
 				total_money += max_integral_price
-				total_integral += int(integral_info['integral'])
-				
-				#integral_resource_allocator = IntegralResourceAllocator(webapp_owner, webapp_user)
-				#is_success, reason, resource = integral_resource_allocator.allocate_resource(int(integral_info['integral']))
-
-				#if is_success:
-					#self.context['resource2allocator'][resource] = integral_resource_allocator
-				#	if resource.money > max_integral_price:
-				#		resource.money = max_integral_price
-
-				#	resources.append(resource)
-					#return True, [{}], resource
-				#else:
-				#	return False, [reason], None
-
-			# return True, [{}], resources
+				total_integral += int(use_integral_info[group_uid]['use_integral'])
 
 		integral_resource_allocator = IntegralResourceAllocator(webapp_owner, webapp_user)
 		is_success, reason, resource = integral_resource_allocator.allocate_resource(total_integral)
@@ -251,10 +245,9 @@ class OrderIntegralResourceAllocator(business_model.Service):
 			if total_money and resource.money > total_money:
 				resource.money = total_money
 
-
 		return True, [{}], resource
 
-		
+
 
 
 	@property

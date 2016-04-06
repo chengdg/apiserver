@@ -192,6 +192,7 @@ class Product(business_model.Model):
 		'is_use_cod_pay_interface',
 		'product_promotion_title', #商品的促销标题
 		'is_enable_bill',
+		'buy_in_supplier',
 
 		#促销信息
 		'promotion',
@@ -691,6 +692,7 @@ class Product(business_model.Model):
 			'total_stocks': self.total_stocks,
 			'is_sellout': self.is_sellout,
 			'is_enable_bill': self.is_enable_bill,
+			'buy_in_supplier': self.buy_in_supplier,
 			'created_at': self.created_at if type(self.created_at) == str else datetime.strftime(self.created_at, '%Y-%m-%d %H:%M'),
 			'supplier': self.supplier,
 			'supplier_name': self.supplier_name,
@@ -703,7 +705,7 @@ class Product(business_model.Model):
 			'integral_sale': self.integral_sale.to_dict() if self.integral_sale else None,
 			'product_review': getattr(self, 'product_review', None),
 			'price_info': getattr(self, 'price_info', None),
-			'postage_type': self.postage_type, 
+			'postage_type': self.postage_type,
 			'unified_postage_money': self.unified_postage_money,
 			'is_delivery': self.is_delivery,
 			'purchase_price': self.purchase_price,

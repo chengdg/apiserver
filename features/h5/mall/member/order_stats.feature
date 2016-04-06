@@ -217,9 +217,9 @@ Scenario:2 统计单个会员有订单的：消费金额、订单数、客单价
 	Then jobs获得'bill'的购买信息:weapp
 		"""
 		{
-			"purchase_amount":400.00,
-			"purchase_number":3,
-			"customer_price":133.33
+			"purchase_amount":100.00,
+			"purchase_number":1,
+			"customer_price":100.00
 		}
 		"""
 

@@ -235,6 +235,7 @@ class Product(models.Model):
 	purchase_price = models.FloatField(default=0.0) # 进货价格
 	is_enable_bill = models.BooleanField(default=False)  # 商品是否开具发票
 	is_delivery = models.BooleanField(default=False) # 是否勾选配送时间
+	buy_in_supplier = models.BooleanField(default=False) # 记录下单位置是商城还是供货商，0是商城1是供货商
 
 	class Meta(object):
 		db_table = 'mall_product'

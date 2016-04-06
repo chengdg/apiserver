@@ -29,7 +29,8 @@ class FlashSale(promotion.Promotion):
 	__slots__ = (
 		'limit_period',
 		'promotion_price',
-		'count_per_purchase'
+		'count_per_purchase',
+		'count_per_period'
 	)
 
 	def __init__(self, promotion_model=None):
@@ -43,7 +44,8 @@ class FlashSale(promotion.Promotion):
 		return {
 			'limit_period': self.limit_period,
 			'promotion_price': self.promotion_price,
-			'count_per_purchase': self.count_per_purchase
+			'count_per_purchase': self.count_per_purchase,
+			'count_per_period': self.count_per_period
 		}
 
 	def allocate(self, webapp_user, product):
@@ -58,19 +60,43 @@ class FlashSale(promotion.Promotion):
 				'short_msg': u'限购%d件' % self.count_per_purchase,
 			})]
 
+		# #检查是否超过了限购周期的限制
+		# if self.limit_period == 0 or self.limit_period == -1:
+		# 	pass
+		# else:
+		# 	delta = datetime.today() - timedelta(days=self.limit_period)
+		# 	purchase_record_count = mall_models.OrderHasPromotion.select().join(mall_models.Order).filter(
+		# 		mall_models.OrderHasPromotion.webapp_user_id==webapp_user.id,
+		# 		mall_models.OrderHasPromotion.promotion_id==self.id,
+		# 		mall_models.OrderHasPromotion.created_at>=delta,
+		# 		mall_models.Order.status!=mall_models.ORDER_STATUS_CANCEL
+		# 	).count()
+		#
 		#检查是否超过了限购周期的限制
-		if self.limit_period == 0 or self.limit_period == -1:
-			pass
+
+		# 限购周期，如果没有设置限购周期则表示整个活动周期
+		delta = datetime.today() - timedelta(days=self.limit_period) if self.limit_period > 0 else 0
+		# 限购周期内的限购次数
+		if not(self.limit_period == 0 or self.limit_period == -1) and self.count_per_period == 0:
+			# 仅设置限购周期
+			limit_count_in_period = 1
 		else:
-			delta = datetime.today() - timedelta(days=self.limit_period)
-			purchase_record_count = mall_models.OrderHasPromotion.select().join(mall_models.Order).filter(
-				mall_models.OrderHasPromotion.webapp_user_id==webapp_user.id, 
-				mall_models.OrderHasPromotion.promotion_id==self.id, 
-				mall_models.OrderHasPromotion.created_at>=delta,
+			limit_count_in_period = self.count_per_period
+
+		if limit_count_in_period or delta:
+
+			purchase_record_count_query = mall_models.OrderHasPromotion.select().join(mall_models.Order).filter(
+				mall_models.OrderHasPromotion.webapp_user_id==webapp_user.id,
+				mall_models.OrderHasPromotion.promotion_id==self.id,
 				mall_models.Order.status!=mall_models.ORDER_STATUS_CANCEL
-			).count()
-			# 限购周期内已购买过商品
-			if purchase_record_count > 0:
+			)
+			if delta:
+				purchase_record_count_query = purchase_record_count_query.filter(mall_models.OrderHasPromotion.created_at>=delta)
+
+			purchase_record_count = purchase_record_count_query.count()
+
+			# 限购周期内超过购买限制次数
+			if purchase_record_count >= limit_count_in_period:
 				return [PromotionFailure({
 					'type': 'promotion:flash_sale:limit_period',
 					'msg': u'在限购周期内不能多次购买',
@@ -89,7 +115,8 @@ class FlashSale(promotion.Promotion):
 			'limit_period': self.limit_period,
 			'promotion_price': self.promotion_price,
 			'promotioned_product_price': self.promotion_price,  #为了兼容weapp后端系统，此字段在apiserver中无用
-			'count_per_purchase': self.count_per_purchase
+			'count_per_purchase': self.count_per_purchase,
+			'count_per_period': self.count_per_period
 		}
 		saved_money = product.original_price - self.promotion_price
 		subtotal = product.purchase_count * product.price

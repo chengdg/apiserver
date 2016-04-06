@@ -96,7 +96,7 @@ class RedisLock(object):
 		else:
 			exception_type = 'other'
 		watchdog_alert(
-			'redis_lock_error:type:{}.\nunicode_full_stack:'.format(exception_type, unicode_full_stack()))
+			'redis_lock_error:type:{}.\nunicode_full_stack:{}'.format(exception_type, unicode_full_stack()))
 		self.__redis_error = True
 		return True
 
@@ -182,7 +182,7 @@ class MRedisLock(object):
 		else:
 			exception_type = 'other'
 		watchdog_alert(
-			'redis_lock_error:type:{}.\nunicode_full_stack:'.format(exception_type, unicode_full_stack()))
+			'redis_lock_error:type:{}.\nunicode_full_stack:{}'.format(exception_type, unicode_full_stack()))
 		self.__redis_error = True
 		return True
 

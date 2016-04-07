@@ -1698,77 +1698,23 @@ Scenario: 17 购买同时参加积分抵扣和限时抢购的商品
 	When bill获得jobs的50会员积分
 	Then bill在jobs的webapp中拥有50会员积分
 	When bill购买jobs的商品
-	"""
-	{
-		"pay_type": "微信支付",
-		"products": [{
-			"name": "商品15",
-			"count": 1,
-			"integral_money":,
-			"integral":
-		},{
-			"name": "商品16",
-			"count": 1,
-			"model","S",
-			"integral_money":,
-			"integral":
-		}]
-	}
-	"""
-
-
-
-#	When bill加入jobs的商品到购物车
-#		"""
-#		[{
-#			"name": "商品15",
-#			"count": 1
-#		}, {
-#			"name": "商品16",
-#			"model": {
-#				"models":{
-#					"S": {
-#						"count": 1
-#					}
-#				}
-#			}
-#		}]
-#		"""
-#	When bill从购物车发起购买操作
-#		"""
-#		{
-#			"action": "click",
-#			"context": [{
-#				"name": "商品15"
-#			}, {
-#				"name": "商品16",
-#				"model": "S"
-#			}]
-#		}
-#		"""
-#	Then bill获得待编辑订单
-#		"""
-#		{
-#			"products": [{
-#				"name": "商品15",
-#				"count": 1
-#			}, {
-#				"name": "商品16",
-#				"count": 1
-#			}]
-#		}
-#		"""
-#	When bill在购物车订单编辑中点击提交订单
-#		"""
-#		{
-#			"ship_name": "bill",
-#			"ship_tel": "13811223344",
-#			"ship_area": "北京市 北京市 海淀区",
-#			"ship_address": "泰兴大厦",
-#			"pay_type": "微信支付"
-#		}
-#		"""
-
+		"""
+		{
+			"pay_type": "微信支付",
+			"products": [{
+				"name": "商品15",
+				"count": 1,
+				"integral_money": 5.99,
+				"integral": 12
+			},{
+				"name": "商品16",
+				"count": 1,
+				"model":"S",
+				"integral_money": 9.99,
+				"integral": 20
+			}]
+		}
+		"""
 	Then bill成功创建订单
 		"""
 		{
@@ -1934,67 +1880,23 @@ Scenario: 19 购买积分抵扣多规格商品修改价格后
 	When bill访问jobs的webapp
 	When bill获得jobs的50会员积分
 	Then bill在jobs的webapp中拥有50会员积分
-	When bill加入jobs的商品到购物车
-		"""
-		[{
-			"name": "商品18",
-			"model": {
-				"models":{
-					"M": {
-						"count": 1
-					}
-				}
-			}
-		}, {
-			"name": "商品16",
-			"model": {
-				"models":{
-					"S": {
-						"count": 1
-					}
-				}
-			}
-		}]
-		"""
-	When bill从购物车发起购买操作
+	When bill购买jobs的商品
 		"""
 		{
-			"action": "click",
-			"context": [{
-				"name": "商品18",
-				"model": "M"
-			}, {
-				"name": "商品18",
-				"model": "S"
-			}]
-		}
-		"""
-	Then bill获得待编辑订单
-		"""
-		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品18",
 				"count": 1,
-				"model": "M",
-				"integral_money":1.51,
-				"integral":4
-			}, {
+				"model":"M",
+				"integral_money": 1.51,
+				"integral": 4
+			},{
 				"name": "商品18",
 				"count": 1,
-				"model": "S",
-				"integral_money":15,
-				"integral":30
+				"model":"S",
+				"integral_money": 15,
+				"integral": 30
 			}]
-		}
-		"""
-	When bill在购物车订单编辑中点击提交订单
-		"""
-		{
-			"ship_name": "bill",
-			"ship_tel": "13811223344",
-			"ship_area": "北京市 北京市 海淀区",
-			"ship_address": "泰兴大厦",
-			"pay_type": "微信支付"
 		}
 		"""
 	Then bill成功创建订单
@@ -2067,67 +1969,23 @@ Scenario: 20 购买积分抵扣多规格商品多个数量
 	When bill访问jobs的webapp
 	When bill获得jobs的50会员积分
 	Then bill在jobs的webapp中拥有50会员积分
-	When bill加入jobs的商品到购物车
-		"""
-		[{
-			"name": "商品19",
-			"model": {
-				"models":{
-					"M": {
-						"count": 2
-					}
-				}
-			}
-		}, {
-			"name": "商品19",
-			"model": {
-				"models":{
-					"S": {
-						"count": 2
-					}
-				}
-			}
-		}]
-		"""
-	When bill从购物车发起购买操作
+	When bill购买jobs的商品
 		"""
 		{
-			"action": "click",
-			"context": [{
-				"name": "商品19",
-				"model": "M"
-			}, {
-				"name": "商品19",
-				"model": "S"
-			}]
-		}
-		"""
-	Then bill获得待编辑订单
-		"""
-		{
+			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品19",
 				"count": 2,
-				"model": "M",
-				"integral_money":16,
-				"integral":32
-			}, {
+				"model":"M",
+				"integral_money": 16,
+				"integral": 32
+			},{
 				"name": "商品19",
 				"count": 2,
-				"model": "S",
-				"integral_money":9,
-				"integral":18
+				"model":"S",
+				"integral_money": 9,
+				"integral": 18
 			}]
-		}
-		"""
-	When bill在购物车订单编辑中点击提交订单
-		"""
-		{
-			"ship_name": "bill",
-			"ship_tel": "13811223344",
-			"ship_area": "北京市 北京市 海淀区",
-			"ship_address": "泰兴大厦",
-			"pay_type": "微信支付"
 		}
 		"""
 	Then bill成功创建订单

@@ -1704,8 +1704,13 @@ Scenario: 17 购买同时参加积分抵扣和限时抢购的商品
 			"count": 1
 		}, {
 			"name": "商品16",
-			"count": 1,
-			"model": "S"
+			"model": {
+				"models":{
+					"S": {
+						"count": 1
+					}
+				}
+			}
 		}]
 		"""
 	When bill从购物车发起购买操作
@@ -1915,12 +1920,22 @@ Scenario: 19 购买积分抵扣多规格商品修改价格后
 		"""
 		[{
 			"name": "商品18",
-			"count": 1,
-			"model": "M"
+			"model": {
+				"models":{
+					"M": {
+						"count": 1
+					}
+				}
+			}
 		}, {
-			"name": "商品18",
-			"count": 1,
-			"model": "S"
+			"name": "商品16",
+			"model": {
+				"models":{
+					"S": {
+						"count": 1
+					}
+				}
+			}
 		}]
 		"""
 	When bill从购物车发起购买操作

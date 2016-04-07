@@ -1,7 +1,7 @@
 # watcher: benchi@weizoom.com, wangxinrui@weizoom.com
 # __edit__ : "benchi"
 #editor: 新新 2015.10.16
-
+@ztqb
 Feature: 在webapp中购买参与积分应用活动的商品
 """
 	用户能在webapp中购买"参与积分应用活动的商品"
@@ -1619,7 +1619,7 @@ Scenario: 16 购买积分抵扣多规格商品
 		}
 		"""
 
-
+@ztqb1
 Scenario: 17 购买同时参加积分抵扣和限时抢购的商品
 	一个商品同时参加积分活动和限时抢购
 	1.设置积分抵扣的值超过限时抢购的最终价格
@@ -1697,61 +1697,78 @@ Scenario: 17 购买同时参加积分抵扣和限时抢购的商品
 	When bill访问jobs的webapp
 	When bill获得jobs的50会员积分
 	Then bill在jobs的webapp中拥有50会员积分
-	When bill加入jobs的商品到购物车
-		"""
-		[{
+	When bill购买jobs的商品
+	"""
+	{
+		"pay_type": "微信支付",
+		"products": [{
 			"name": "商品15",
-			"count": 1
-		}, {
+			"count": 1,
+			"integral_money":,
+			"integral":
+		},{
 			"name": "商品16",
-			"model": {
-				"models":{
-					"S": {
-						"count": 1
-					}
-				}
-			}
+			"count": 1,
+			"model","S",
+			"integral_money":,
+			"integral":
 		}]
-		"""
-	When bill从购物车发起购买操作
-		"""
-		{
-			"action": "click",
-			"context": [{
-				"name": "商品15"
-			}, {
-				"name": "商品16",
-				"model": "S"
-			}]
-		}
-		"""
-	Then bill获得待编辑订单
-		"""
-		{
-			"products": [{
-				"name": "商品15",
-				"count": 1,
-				"integral_money":5.99,
-				"integral":12
-			}, {
-				"name": "商品16",
-				"count": 1,
-				"model": "S",
-				"integral_money":9.99,
-				"integral":20
-			}]
-		}
-		"""
-	When bill在购物车订单编辑中点击提交订单
-		"""
-		{
-			"ship_name": "bill",
-			"ship_tel": "13811223344",
-			"ship_area": "北京市 北京市 海淀区",
-			"ship_address": "泰兴大厦",
-			"pay_type": "微信支付"
-		}
-		"""
+	}
+	"""
+
+
+
+#	When bill加入jobs的商品到购物车
+#		"""
+#		[{
+#			"name": "商品15",
+#			"count": 1
+#		}, {
+#			"name": "商品16",
+#			"model": {
+#				"models":{
+#					"S": {
+#						"count": 1
+#					}
+#				}
+#			}
+#		}]
+#		"""
+#	When bill从购物车发起购买操作
+#		"""
+#		{
+#			"action": "click",
+#			"context": [{
+#				"name": "商品15"
+#			}, {
+#				"name": "商品16",
+#				"model": "S"
+#			}]
+#		}
+#		"""
+#	Then bill获得待编辑订单
+#		"""
+#		{
+#			"products": [{
+#				"name": "商品15",
+#				"count": 1
+#			}, {
+#				"name": "商品16",
+#				"count": 1
+#			}]
+#		}
+#		"""
+#	When bill在购物车订单编辑中点击提交订单
+#		"""
+#		{
+#			"ship_name": "bill",
+#			"ship_tel": "13811223344",
+#			"ship_area": "北京市 北京市 海淀区",
+#			"ship_address": "泰兴大厦",
+#			"pay_type": "微信支付"
+#		}
+#		"""
+
 	Then bill成功创建订单
 		"""
 		{
@@ -1786,6 +1803,7 @@ Scenario: 17 购买同时参加积分抵扣和限时抢购的商品
 		"""
 	Then bill在jobs的webapp中拥有18会员积分
 
+@mall3 @promotion @mall.promotion @mall.webapp.promotion @mall.promotion.integral @ztq
 Scenario: 18 购买积分抵扣商品修改价格后
 	设置完积分活动
 	1.修改商品的价格小于积分抵扣的价格
@@ -1839,10 +1857,10 @@ Scenario: 18 购买积分抵扣商品修改价格后
 	Then bill成功创建订单
 		"""
 		{
-			"status": "待支付",
+			"status": "待发货",
 			"final_price": 0.00,
 			"product_price": 3.01,
-			"integral_money": 3.01
+			"integral_money": 3.01,
 			"integral": 7,
 			"products": [{
 				"name": "商品17",
@@ -1852,7 +1870,7 @@ Scenario: 18 购买积分抵扣商品修改价格后
 		"""
 	Then bill在jobs的webapp中拥有43会员积分
 
-
+@ztqb3
 Scenario: 19 购买积分抵扣多规格商品修改价格后
 	设置完积分活动
 	1.修改商品的规格价格一个规格小于积分抵扣的价格，一个大于积分抵扣价格

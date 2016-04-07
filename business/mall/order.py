@@ -445,16 +445,11 @@ class Order(business_model.Model):
 			# 	product_names = product_names
 
 			try:
-				print ("zl-------------------------1111{}".format(len(product_names.encode("utf-8"))))
 				if len(product_names.encode("utf-8")) > 128:
-					print ("zl-------------------------1111{}".format(len(product_names.encode("utf-8")[:127])))
-					product_names = product_names.encode("utf-8")[0:127]
-					print ("zl-------------------------1111----222---111{}".format(product_names))
+					product_names = product_names.encode("utf-8")[0:127].decode("utf-8",'ignore')
 				else:
-					print ("zl-------------------------1111----333")
 					product_names = product_names
 			except:
-				print ("zl--------------------------2222")
 				if len(product_names) > 45:
 					product_names = product_names[:44]
 				else:

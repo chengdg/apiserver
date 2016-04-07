@@ -1,7 +1,6 @@
 # watcher: benchi@weizoom.com, wangxinrui@weizoom.com
 # __edit__ : "benchi"
 #editor: 新新 2015.10.16
-@ztqb
 Feature: 在webapp中购买参与积分应用活动的商品
 """
 	用户能在webapp中购买"参与积分应用活动的商品"
@@ -1457,6 +1456,7 @@ Scenario: 14 单品积分活动小数抵扣数据错误
 
 
 #根据新需求补充.雪静 2016.4.6
+@mall3  @ztq
 Scenario: 15 购买积分抵扣为小数的商品
 	单品积分活动使用积分抵扣带有小数的金额
 	1.抵扣率百分比保留小数点后两位
@@ -1518,7 +1518,7 @@ Scenario: 15 购买积分抵扣为小数的商品
 		"""
 	Then bill在jobs的webapp中拥有30会员积分
 
-
+@mall3  @ztq
 Scenario: 16 购买积分抵扣多规格商品
 
 
@@ -1619,7 +1619,7 @@ Scenario: 16 购买积分抵扣多规格商品
 		}
 		"""
 
-@ztqb1
+@mall3 @ztq
 Scenario: 17 购买同时参加积分抵扣和限时抢购的商品
 	一个商品同时参加积分活动和限时抢购
 	1.设置积分抵扣的值超过限时抢购的最终价格
@@ -1719,10 +1719,6 @@ Scenario: 17 购买同时参加积分抵扣和限时抢购的商品
 		"""
 		{
 			"status": "待发货",
-			"ship_name": "bill",
-			"ship_tel": "13811223344",
-			"ship_area": "北京市 北京市 海淀区",
-			"ship_address": "泰兴大厦",
 			"final_price": 0.00,
 			"product_price": 15.98,
 			"integral_money":15.98,
@@ -1816,7 +1812,7 @@ Scenario: 18 购买积分抵扣商品修改价格后
 		"""
 	Then bill在jobs的webapp中拥有43会员积分
 
-@ztqb3
+@mall3 @ztq
 Scenario: 19 购买积分抵扣多规格商品修改价格后
 	设置完积分活动
 	1.修改商品的规格价格一个规格小于积分抵扣的价格，一个大于积分抵扣价格
@@ -1903,10 +1899,6 @@ Scenario: 19 购买积分抵扣多规格商品修改价格后
 		"""
 		{
 			"status": "待支付",
-			"ship_name": "bill",
-			"ship_tel": "13811223344",
-			"ship_area": "北京市 北京市 海淀区",
-			"ship_address": "泰兴大厦",
 			"final_price": 4.01,
 			"product_price": 20.52,
 			"integral_money":16.51,
@@ -1926,7 +1918,7 @@ Scenario: 19 购买积分抵扣多规格商品修改价格后
 		"""
 	Then bill在jobs的webapp中拥有16会员积分
 
-
+@mall3 @ztq
 Scenario: 20 购买积分抵扣多规格商品多个数量
 	设置完积分活动
 	1.购买多规格商品多个数量
@@ -1992,10 +1984,6 @@ Scenario: 20 购买积分抵扣多规格商品多个数量
 		"""
 		{
 			"status": "待支付",
-			"ship_name": "bill",
-			"ship_tel": "13811223344",
-			"ship_area": "北京市 北京市 海淀区",
-			"ship_address": "泰兴大厦",
 			"final_price": 95.00,
 			"product_price": 120.00,
 			"integral_money":25,
@@ -2015,7 +2003,7 @@ Scenario: 20 购买积分抵扣多规格商品多个数量
 		"""
 	Then bill在jobs的webapp中拥有0会员积分
 
-
+@mall3 @ztq
 Scenario: 21 购买积分抵扣商品修改价格后多个商品
 	设置完积分活动
 	1.修改商品的价格小于积分抵扣的价格
@@ -2070,10 +2058,10 @@ Scenario: 21 购买积分抵扣商品修改价格后多个商品
 	Then bill成功创建订单
 		"""
 		{
-			"status": "待支付",
+			"status": "待发货",
 			"final_price": 0.00,
 			"product_price": 10.1,
-			"integral_money": 10.1
+			"integral_money": 10.1,
 			"integral": 21,
 			"products": [{
 				"name": "商品20",

@@ -170,19 +170,23 @@ class OrderIntegralResourceAllocator(business_model.Service):
 			# 校验前台输入：积分金额不能大于使用上限、积分值不能小于积分金额对应积分值
 			# 根据用户会员与否返回对应的商品价格
 			product_price = sum([product.price * product.purchase_count for product in promotion_product_group.products])
+			purchase_count = sum([product.purchase_count for product in promotion_product_group.products])
+
 			integral_sale_rule = promotion_product_group.active_integral_sale_rule
 
 			if integral_money > product_price:
+
 				integral_money = product_price
 				use_integral -= math.floor((product_price - integral_money) * count_per_yuan)
 				watchdog_alert(u'异常积分应用下单信息。order_id:{},integral_info in purchase_info:'.format(order.order_id),str(integral_info))
-
-			max_integral_price = round(integral_sale_rule['discount_money'], 2)
+			# 最大可抵扣额度为规则额和product的最小值
+			# 最大可抵扣额度随购买数量现行增加
+			max_integral_price = min(round(integral_sale_rule['discount_money'], 2) * purchase_count, round(product_price, 2))
 
 			use_integral_info[group_uid] = {
 				'integral_money': integral_money,
 				'use_integral': use_integral,
-				'max_integral_price': max_integral_price
+				'max_integral_price': max_integral_price,
 			}
 			if max_integral_price < (integral_money - 0.01) \
 				or (integral_money * count_per_yuan) > (use_integral + 1):

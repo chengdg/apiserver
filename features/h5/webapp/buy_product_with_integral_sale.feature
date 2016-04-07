@@ -2005,3 +2005,204 @@ Scenario: 19 购买积分抵扣多规格商品修改价格后
 		}
 		"""
 	Then bill在jobs的webapp中拥有16会员积分
+
+
+Scenario: 20 购买积分抵扣多规格商品多个数量
+	设置完积分活动
+	1.购买多规格商品多个数量
+
+	Given jobs登录系统:weapp
+	And jobs已添加商品:weapp
+		"""
+		[{
+			"name": "商品19",
+			"is_enable_model": "启用规格",
+			"model": {
+				"models":{
+					"M": {
+						"price": 20.00,
+						"stock_type": "无限"
+					},
+					"S": {
+						"price": 40.00,
+						"stock_type": "无限"
+					}
+				}
+			}
+		}]
+		"""
+	When jobs创建积分应用活动:weapp
+		"""
+		[{
+			"name": "商品19积分应用",
+			"start_date": "今天",
+			"end_date": "1天后",
+			"product_name": "商品19",
+			"is_permanant_active": false,
+			"rules": [{
+				"member_grade": "全部",
+				"discount": 40,
+				"discount_money": 8
+			}]
+		}]
+		"""
+	When bill访问jobs的webapp
+	When bill获得jobs的50会员积分
+	Then bill在jobs的webapp中拥有50会员积分
+	When bill加入jobs的商品到购物车
+		"""
+		[{
+			"name": "商品19",
+			"model": {
+				"models":{
+					"M": {
+						"count": 2
+					}
+				}
+			}
+		}, {
+			"name": "商品19",
+			"model": {
+				"models":{
+					"S": {
+						"count": 2
+					}
+				}
+			}
+		}]
+		"""
+	When bill从购物车发起购买操作
+		"""
+		{
+			"action": "click",
+			"context": [{
+				"name": "商品19",
+				"model": "M"
+			}, {
+				"name": "商品19",
+				"model": "S"
+			}]
+		}
+		"""
+	Then bill获得待编辑订单
+		"""
+		{
+			"products": [{
+				"name": "商品19",
+				"count": 2,
+				"model": "M",
+				"integral_money":16,
+				"integral":32
+			}, {
+				"name": "商品19",
+				"count": 2,
+				"model": "S",
+				"integral_money":9,
+				"integral":18
+			}]
+		}
+		"""
+	When bill在购物车订单编辑中点击提交订单
+		"""
+		{
+			"ship_name": "bill",
+			"ship_tel": "13811223344",
+			"ship_area": "北京市 北京市 海淀区",
+			"ship_address": "泰兴大厦",
+			"pay_type": "微信支付"
+		}
+		"""
+	Then bill成功创建订单
+		"""
+		{
+			"status": "待支付",
+			"ship_name": "bill",
+			"ship_tel": "13811223344",
+			"ship_area": "北京市 北京市 海淀区",
+			"ship_address": "泰兴大厦",
+			"final_price": 95.00,
+			"product_price": 120.00,
+			"integral_money":25,
+			"integral": 50,
+			"products": [{
+				"name": "商品19",
+				"price": 20.00,
+				"count": 2,
+				"model": "M"
+			},{
+				"name": "商品19",
+				"price": 40.00,
+				"count": 2,
+				"model": "S"
+			}]
+		}
+		"""
+	Then bill在jobs的webapp中拥有0会员积分
+
+
+Scenario: 21 购买积分抵扣商品修改价格后多个商品
+	设置完积分活动
+	1.修改商品的价格小于积分抵扣的价格
+	2.购买商品使用积分时，抵扣的金额是修改后的商品金额
+	3.购买多个商品
+
+	Given jobs登录系统:weapp
+	And jobs已添加商品:weapp
+		"""
+		[{
+			"name": "商品20",
+			"price": 10
+		}]
+		"""
+	When jobs创建积分应用活动:weapp
+		"""
+		[{
+			"name": "商品20积分应用",
+			"start_date": "今天",
+			"end_date": "1天后",
+			"product_name": "商品20",
+			"is_permanant_active": false,
+			"rules": [{
+				"member_grade": "全部",
+				"discount": 50,
+				"discount_money": 5
+			}]
+		}]
+		"""
+	When jobs更新商品'商品20':weapp
+		"""
+		{
+			"name": "商品20",
+			"price": 1.01
+		}
+		"""
+	When bill访问jobs的webapp
+	When bill获得jobs的50会员积分
+	Then bill在jobs的webapp中拥有50会员积分
+	When bill购买jobs的商品
+		"""
+		{
+			"pay_type": "微信支付",
+			"products": [{
+				"name": "商品20",
+				"count": 10,
+				"integral_money":10.1,
+				"integral":21
+			}]
+		}
+		"""
+	Then bill成功创建订单
+		"""
+		{
+			"status": "待支付",
+			"final_price": 0.00,
+			"product_price": 10.1,
+			"integral_money": 10.1
+			"integral": 21,
+			"products": [{
+				"name": "商品20",
+				"count": 10
+			}]
+		}
+		"""
+	Then bill在jobs的webapp中拥有29会员积分

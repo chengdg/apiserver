@@ -111,6 +111,19 @@ class AOrder(api_resource.ApiResource):
 		"""
 
 		# 兼容修改价格后订单从支付模块返回的跳转（支付模块会添加edit_money）
+
+		if not get_wapi_lock(lockname='order_post_' + str(args['webapp_user'].id), lock_timeout=2):
+			watchdog_alert('wapi接口被刷,wapi:%s,webapp_user_id:%s' % ('mall.order_post', str(args['webapp_user'].id)))
+			reason_dict = {
+				"is_success": False,
+				"msg":  u'请勿短时间连续下单',
+				"type": "coupon"    # 兼容性type
+			}
+			return 500, {'detail': [reason_dict]}
+
+
+
+
 		order_id = args['order_id'].split('-')[0]
 
 		try:

@@ -438,14 +438,15 @@ class Order(business_model.Model):
 			product_ids_for_sort = [product.id for product in mall_models.Product.select().dj_where(id__in=product_ids)]
 			product_id2name = dict([(o.product_id, o.product_name) for o in order_has_products])
 			product_names = u','.join([product_id2name[pid] for pid in product_ids_for_sort])
+
 			# if len(product_names) > 45:
 			# 	product_names = product_names[:45]
 			# else:
 			# 	product_names = product_names
 
 			try:
-				if len(product_names.encode("utf-8")) > 120:
-					product_names = product_names.encode("utf-8")[0:120].decode("utf-8",'ignore')
+				if len(product_names.encode("utf-8")) > 128:
+					product_names = product_names.encode("utf-8")[0:127].decode("utf-8",'ignore')
 				else:
 					product_names = product_names
 			except:

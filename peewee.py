@@ -3418,11 +3418,13 @@ class Database(object):
                         sql = sql % tuple(params)
 
                         from core.exceptionutil import unicode_full_stack
-                        QUERIES.append({
-                            'sql': sql,
-                            'time': "%.3f" % duration,
-                            'stack': unicode_full_stack().replace('\n', '<br>')
-                        })
+                        # 只在开发模式加
+                        if settings.MODE == 'develop':
+                            QUERIES.append({
+                                'sql': sql,
+                                'time': "%.3f" % duration,
+                                'stack': unicode_full_stack().replace('\n', '<br>')
+                            })
                         logger.debug((sql, params))
                     except Exception as e:
                         print '========== sql record exception =========='

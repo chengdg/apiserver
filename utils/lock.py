@@ -3,6 +3,7 @@
 使用redis构建的锁
 
 """
+import functools
 import math
 import time
 import uuid
@@ -23,7 +24,8 @@ REGISTERED_LOCK_NAMES = {
 	'__prefix': 'lk:',
 	'coupon_lock': 'co:',
 	'integral_lock': 'in:',
-	'wz_card_lock': 'wc:'
+	'wz_card_lock': 'wc:',
+	'wapi_lock': 'wapi:',
 }
 
 UNLOCK_SCRIPT = """
@@ -99,6 +101,34 @@ class RedisLock(object):
 			'redis_lock_error:type:{}.\nunicode_full_stack:{}'.format(exception_type, unicode_full_stack()))
 		self.__redis_error = True
 		return True
+
+
+def wapi_lock():
+	def decorator_func(func):
+		redis_lock = RedisLock()
+
+		def wrapper_func(*args, **kwargs):
+			# 申请锁
+			if not redis_lock.lock({
+				'name': REGISTERED_LOCK_NAMES['wapi_lock'],
+				'resource': args[0]['wapi_id'] + str(args[0]['webapp_user'].id)
+			}, lock_timeout=3):
+				reason_dict = {
+					"is_success": False,
+					"msg": u'请勿连续点击',
+					"type": "coupon"  # 兼容性type
+				}
+				return 500, {'detail': [reason_dict]}
+
+			retval = func(*args, **kwargs)
+			# 释放锁
+			redis_lock.unlock()
+
+			return retval
+
+		return wrapper_func
+
+	return decorator_func
 
 
 class MRedisLock(object):
@@ -186,103 +216,132 @@ class MRedisLock(object):
 		self.__redis_error = True
 		return True
 
-# def lock(self, acquire_time=0, lock_timeout=5):
-# 	"""
-# 	申请锁
-# 	@param acquire_time: 请求建锁的最长时间
-# 	@param lock_timeout:
-# 	@return:
-# 	"""
-# 	try:
-# 		identifier = str(uuid.uuid4())
-# 		lock_timeout = int(math.ceil(lock_timeout))
-# 		conn = self.__conn
-# 		end = time.time() + acquire_time
-# 		while time.time() < end:
-# 			if conn.set(name=self.__lock_key, value=identifier, nx=True, ex=lock_timeout):
-# 				return identifier
-# 			elif not conn.ttl(self.__lock_key, lock_timeout):
-# 				conn.expire(self.__lock_key, lock_timeout)
-# 			time.sleep(DEFAULT_ACQUIRE_DELAY)
-# 		return False
-# 	except BaseException as e:
-# 		if isinstance(e, redis.exceptions.RedisError):
-# 			exception_type = 'redis_error'
-# 		else:
-# 			exception_type = 'other'
-# 		watchdog_alert(
-# 			'redis_lock_error:type:{}.\nunicode_full_stack:'.format(exception_type, unicode_full_stack()))
-# 		self.__redis_error = True
-# 		return True
+		# def lock(self, acquire_time=0, lock_timeout=5):
+		# 	"""
+		# 	申请锁
+		# 	@param acquire_time: 请求建锁的最长时间
+		# 	@param lock_timeout:
+		# 	@return:
+		# 	"""
+		# 	try:
+		# 		identifier = str(uuid.uuid4())
+		# 		lock_timeout = int(math.ceil(lock_timeout))
+		# 		conn = self.__conn
+		# 		end = time.time() + acquire_time
+		# 		while time.time() < end:
+		# 			if conn.set(name=self.__lock_key, value=identifier, nx=True, ex=lock_timeout):
+		# 				return identifier
+		# 			elif not conn.ttl(self.__lock_key, lock_timeout):
+		# 				conn.expire(self.__lock_key, lock_timeout)
+		# 			time.sleep(DEFAULT_ACQUIRE_DELAY)
+		# 		return False
+		# 	except BaseException as e:
+		# 		if isinstance(e, redis.exceptions.RedisError):
+		# 			exception_type = 'redis_error'
+		# 		else:
+		# 			exception_type = 'other'
+		# 		watchdog_alert(
+		# 			'redis_lock_error:type:{}.\nunicode_full_stack:'.format(exception_type, unicode_full_stack()))
+		# 		self.__redis_error = True
+		# 		return True
 
-# def release(self):
-# 	"""
-# 	释放锁。基本语句：pipe.delete(self.__lock_name)
-# 	使用事务的情景示例:创建锁k,但是pipe.get()到delete之间恰巧key过期，设置了新的锁，事务保证了不会误删新的锁。
-# 	@return:
-# 	"""
-# 	try:
-# 		if self.__redis_error:
-# 			return True
-# 		else:
-# 			conn = self.__conn
-# 			pipe = conn.pipeline(transaction=True)
-#
-# 			while True:
-# 				try:
-# 					pipe.watch(self.__lock_key)
-# 					if pipe.get(self.__lock_key) == self.identifier:
-# 						pipe.multi()
-# 						pipe.delete(self.__lock_key)
-# 						pipe.execute()
-# 						return True
-# 					pipe.unwatch()
-# 					break
-# 				except redis.exceptions.WatchError:
-# 					pass
-# 			return False
-# 	except BaseException as e:
-# 		if isinstance(e, redis.exceptions.RedisError):
-# 			exception_type = 'redis_error'
-# 		else:
-# 			exception_type = 'other'
-# 		watchdog_alert(
-# 			'redis_lock_error:type:{}.\n unicode_full_stack:'.format(exception_type, unicode_full_stack()))
-# 		self.__redis_error = True
-# 		return True
-# def lock2(self):
-# 	"""
-# 	申请锁，lua脚本版
-# 	"""
-# 	pass
-#
-#
-# def release2(self):
-# 	"""
-# 	释放锁，lua脚本版
-# 	@return:
-# 	"""
-# 	conn = self.__conn
-# 	try:
-# 		conn.eval(RELEASE_SCRIPT, 1, self.__lock_key, self.identifier)
-# 		return True
-# 	except:
-# 		return False
-#
-#
-# def __unlock(self, key):
-# 	"""
-# 	释放锁，lua脚本版
-# 	@return:
-# 	"""
-# 	conn = self.__conn
-# 	try:
-# 		conn.eval(RELEASE_SCRIPT, 1, self.__lock_key, self.identifier)
-# 		return True
-# 	except:
-# 		return False
-#
-#
-# @property
-# def real_lock_name(self):
-# 	return self.__lock_key
+		# def release(self):
+		# 	"""
+		# 	释放锁。基本语句：pipe.delete(self.__lock_name)
+		# 	使用事务的情景示例:创建锁k,但是pipe.get()到delete之间恰巧key过期，设置了新的锁，事务保证了不会误删新的锁。
+		# 	@return:
+		# 	"""
+		# 	try:
+		# 		if self.__redis_error:
+		# 			return True
+		# 		else:
+		# 			conn = self.__conn
+		# 			pipe = conn.pipeline(transaction=True)
+		#
+		# 			while True:
+		# 				try:
+		# 					pipe.watch(self.__lock_key)
+		# 					if pipe.get(self.__lock_key) == self.identifier:
+		# 						pipe.multi()
+		# 						pipe.delete(self.__lock_key)
+		# 						pipe.execute()
+		# 						return True
+		# 					pipe.unwatch()
+		# 					break
+		# 				except redis.exceptions.WatchError:
+		# 					pass
+		# 			return False
+		# 	except BaseException as e:
+		# 		if isinstance(e, redis.exceptions.RedisError):
+		# 			exception_type = 'redis_error'
+		# 		else:
+		# 			exception_type = 'other'
+		# 		watchdog_alert(
+		# 			'redis_lock_error:type:{}.\n unicode_full_stack:'.format(exception_type, unicode_full_stack()))
+		# 		self.__redis_error = True
+		# 		return True
+		# def lock2(self):
+		# 	"""
+		# 	申请锁，lua脚本版
+		# 	"""
+		# 	pass
+		#
+		#
+		# def release2(self):
+		# 	"""
+		# 	释放锁，lua脚本版
+		# 	@return:
+		# 	"""
+		# 	conn = self.__conn
+		# 	try:
+		# 		conn.eval(RELEASE_SCRIPT, 1, self.__lock_key, self.identifier)
+		# 		return True
+		# 	except:
+		# 		return False
+		#
+		#
+		# def __unlock(self, key):
+		# 	"""
+		# 	释放锁，lua脚本版
+		# 	@return:
+		# 	"""
+		# 	conn = self.__conn
+		# 	try:
+		# 		conn.eval(RELEASE_SCRIPT, 1, self.__lock_key, self.identifier)
+		# 		return True
+		# 	except:
+		# 		return False
+		#
+		#
+		# @property
+		# def real_lock_name(self):
+		# 	return self.__lock_key
+
+		# def wapi_lock4(function_to_decorate):
+		# 	def wrapper(*args, **kw):
+		# 		# Calling your function
+		# 		output = function_to_decorate(*args, **kw)
+		# 		# Below this line you can do post processing
+		# 		print "In Post Processing...."
+		#
+		# 	return wrapper
+		#
+		#
+		# def wapi_lock2(args):
+		# 	def decorator(func):
+		# 		@functools.wraps(func)
+		# 		def wrapper(*args,**kw):
+		# 			print('------in decorator',args,kw)
+		# 			return func(*args,**kw)
+		# 		return wrapper
+		# 	return decorator()
+		#
+		#
+		# def wapi_lock1(func):
+		# 	# @functools.wraps(func)
+		# 	def wrapper(*args, **kw):
+		# 		print('call %s():', func.__name__)
+		# 		print('------in decorator', args, kw)
+		# 		return func(*args, **kw)
+		# 	print('111122222222222222222')
+		# 	return wrapper

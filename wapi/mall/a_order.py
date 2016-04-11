@@ -10,7 +10,7 @@ from datetime import datetime
 from core import api_resource
 from core.exceptionutil import unicode_full_stack
 import settings
-from utils.lock import get_wapi_lock
+from utils.lock import get_wapi_lock, wapi_lock
 from wapi.decorators import param_required
 from db.mall import models as mall_models
 from db.mall import promotion_models
@@ -34,6 +34,7 @@ class AOrder(api_resource.ApiResource):
 	resource = 'order'
 
 	@param_required(['ship_name', 'ship_address', 'ship_tel', 'order_type', 'xa-choseInterfaces'])
+	@wapi_lock()
 	def put(args):
 		"""
 		下单接口

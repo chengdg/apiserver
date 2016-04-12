@@ -157,7 +157,7 @@ class IntegralSaleRule(models.Model):
 	owner = models.ForeignKey(User)
 	integral_sale = models.ForeignKey(IntegralSale)
 	member_grade_id = models.IntegerField(default=0) #会员等级
-	discount = models.IntegerField(default=0) #折扣上限
+	discount = models.FloatField(default=0) #折扣上限
 	discount_money = models.FloatField(default=0.0) #折扣金额
 
 	class Meta(object):

@@ -84,7 +84,7 @@ class OrderIntegralResourceAllocator(business_model.Service):
 				'msg': u'积分抵扣尚未开启',
 				'short_msg': u'积分抵扣尚未开启'
 			}
-			return False, reason
+			return False, reason, 0
 
 		count_per_yuan = webapp_owner.integral_strategy_settings.integral_each_yuan
 		total_integral = purchase_info.order_integral_info['integral']
@@ -98,9 +98,9 @@ class OrderIntegralResourceAllocator(business_model.Service):
 				'msg': u'积分使用超限',
 				'short_msg': u'积分使用超限'
 			}
-			return False, reason
+			return False, reason, 0
 
-		return True, None
+		return True, None, integral_money
 
 	def __supply_product_info_into_fail_reason(self, product, result):
 		result['id'] = product.id
@@ -212,9 +212,10 @@ class OrderIntegralResourceAllocator(business_model.Service):
 		count_per_yuan = webapp_owner.integral_strategy_settings.integral_each_yuan
 		total_integral = 0
 		integral_money = 0
+		total_money = 0.0
 		if purchase_info.order_integral_info:
 			#使用积分抵扣
-			is_success, reason = self.__allocate_order_integral_setting(webapp_owner, order, purchase_info)
+			is_success, reason, total_money = self.__allocate_order_integral_setting(webapp_owner, order, purchase_info)
 			if not is_success:
 				return False, [reason], None
 
@@ -245,10 +246,8 @@ class OrderIntegralResourceAllocator(business_model.Service):
 		if not is_success:
 			return False, [reason], None
 		self.context['resource2allocator'][resource] = integral_resource_allocator
-		if purchase_info.group2integralinfo:
-			if total_money and resource.money > total_money:
-				resource.money = total_money
-
+		if total_money and resource.money > total_money:
+			resource.money = total_money
 		return True, [{}], resource
 
 

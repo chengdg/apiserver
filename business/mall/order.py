@@ -886,9 +886,20 @@ class Order(business_model.Model):
 
 		@param[in] pay_interface_type: 支付所使用的支付接口的type
 		"""
+
+		webapp_owner = self.context['webapp_owner']
+		webapp_user = self.context['webapp_user']
+
+		# 该订单可用的支付方式，不含优惠抵扣
+		available_pay_interfaces = PayInterface.get_order_pay_interfaces(webapp_owner, webapp_user, self.id)
 		pay_result = False
 		if self.final_price == 0:
 			pay_interface_type = mall_models.PAY_INTERFACE_PREFERENCE
+		elif pay_interface_type == mall_models.PAY_INTERFACE_PREFERENCE:
+			if self.final_price != 0:
+				return False
+		elif pay_interface_type not in [x['type'] for x in available_pay_interfaces]:
+			return False
 		if self.status == mall_models.ORDER_STATUS_NOT:
 			#改变订单的支付状态
 			pay_result = True

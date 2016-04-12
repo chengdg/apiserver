@@ -247,7 +247,7 @@ class OrderFactory(business_model.Model):
 			# 优惠券或积分金额直接可支付完成，直接调用pay_order，完成支付
 			order.pay(mall_models.PAY_INTERFACE_PREFERENCE)
 
-		elif int(order.pay_interface_type) == mall_models.PAY_INTERFACE_COD:
+		elif int(order.pay_interface_type) == mall_models.PAY_INTERFACE_COD and order.final_price == 0:
 			# 执行货到付款的支付操作
 			order.pay(mall_models.PAY_INTERFACE_COD)
 		return order

@@ -933,9 +933,6 @@ class Order(business_model.Model):
 			# 异步更新商品销量
 			update_product_sale.delay(product_sale_infos)
 
-			#支付后，更新会员支付数据
-			webapp_user = self.context['webapp_user']
-			webapp_user.update_pay_info(float(self.final_price) + float(self.weizoom_card_money), self.payment_time)
 
 			self.__after_update_status('pay')
 			if not self.is_group_buy:
@@ -1032,6 +1029,10 @@ class Order(business_model.Model):
 			'order_id': self.id,
 			'webapp_user': self.context['webapp_user']
 			})
+
+		# 支付后，更新会员支付数据
+		webapp_user = self.context['webapp_user']
+		webapp_user.update_pay_info(float(self.final_price) + float(self.weizoom_card_money), self.payment_time)
 		# except:
 		# 	error_msg = u"MemberSpread.process_order_from_spread失败, cause:\n{}"\
 		# 				.format(unicode_full_stack())

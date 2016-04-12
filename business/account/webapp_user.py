@@ -609,6 +609,7 @@ class WebAppUser(business_model.Model):
 			member.pay_money = member.pay_money + money
 			member.pay_times = member.pay_times + 1
 			member.last_pay_time = order_payment_time
+			# member.purchase_frequency += 1
 			try:
 				member.unit_price = member.pay_money/member.pay_times
 			except:

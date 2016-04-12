@@ -243,17 +243,14 @@ class OrderFactory(business_model.Model):
 		"""
 		logging.debug("order.db_model={}".format(order.db_model))
 		order.save(purchase_info)
-		is_pay_success = True
 		if order.final_price == 0:
 			# 优惠券或积分金额直接可支付完成，直接调用pay_order，完成支付
-			is_pay_success = order.pay(mall_models.PAY_INTERFACE_PREFERENCE)
+			order.pay(mall_models.PAY_INTERFACE_PREFERENCE)
 
 		elif int(order.pay_interface_type) == mall_models.PAY_INTERFACE_COD and order.final_price == 0:
 			# 执行货到付款的支付操作
-			is_pay_success = order.pay(mall_models.PAY_INTERFACE_COD)
-		if not is_pay_success:
-			watchdog_alert('u支付方式错误,order.id:{},order_id:{},pay_interface_type:{},webapp_user_id:{}'.format(order.id,order.order_id,order.pay_interface_type,self.context['webapp_user'].id))
-		return order, is_pay_success
+			order.pay(mall_models.PAY_INTERFACE_COD)
+		return order
 
 
 
@@ -308,7 +305,7 @@ class OrderFactory(business_model.Model):
 						product_group.disable_integral_sale()
 
 				# 保存订单
-				order, is_success = self.__save_order(order, purchase_info)
+				order = self.__save_order(order, purchase_info)
 				# 如果需要（比如订单保存失败），释放资源
 				if order and order.is_saved:
 					#删除购物车
@@ -318,7 +315,7 @@ class OrderFactory(business_model.Model):
 						for product in order.products:
 							webapp_user.shopping_cart.remove_product(product)
 				return order
-			if not is_success:
+			else:
 				# 创建订单失败
 				logging.error("Failed to create Order object or save the order! Release all resources. order={}".format(order))
 				self.__release_price_related_resources(price_free_resources)

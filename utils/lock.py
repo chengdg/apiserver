@@ -86,6 +86,7 @@ class RedisLock(object):
 						return True
 					time.sleep(DEFAULT_ACQUIRE_DELAY)
 			else:
+				print('------------in lock',self._redis_lock_key)
 				return conn.set(name=self._redis_lock_key, value=self.__identifier, nx=True, ex=lock_timeout)
 		except BaseException as e:
 			self.__log_exception(e)
@@ -95,6 +96,7 @@ class RedisLock(object):
 	def unlock(self):
 		conn = self.__conn
 		try:
+			print('------in unlock',self._redis_lock_key)
 			conn.eval(UNLOCK_SCRIPT, 1, self._redis_lock_key, self.__identifier)
 			return True
 		except BaseException as e:

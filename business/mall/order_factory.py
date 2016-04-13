@@ -404,7 +404,7 @@ class OrderFactory(business_model.Model):
 		locked_resources = []
 		self.context['create_order_lock'] = []
 		webapp_user_id = self.context['webapp_user'].id
-		if purchase_info.coupon_id:
+		if purchase_info.coupon_id and purchase_info.coupon_id != '0':
 			# 优惠券锁
 			locked_resources.append({'name': REGISTERED_LOCK_NAMES['coupon_lock'], 'resource': str(purchase_info.coupon_id)})
 		if purchase_info.order_integral_info or purchase_info.group2integralinfo:

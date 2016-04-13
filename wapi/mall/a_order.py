@@ -34,7 +34,7 @@ class AOrder(api_resource.ApiResource):
 	resource = 'order'
 
 	@param_required(['ship_name', 'ship_address', 'ship_tel', 'order_type', 'xa-choseInterfaces'])
-	@wapi_lock()
+	# @wapi_lock()
 	def put(args):
 		"""
 		下单接口

@@ -14,10 +14,10 @@ from core.cache.utils import r
 from core.exceptionutil import unicode_full_stack
 from core.watchdog.utils import watchdog_alert
 
-DEFAULT_CONN = r
-DEFAULT_ACQUIRE_DELAY = 0.001
-DEFAULT_TIMEOUT = 3  # 单位秒
-DEFAULT_ACQUIRE_TIME = 0
+DEFAULT_CONN = r    # 默认连接
+DEFAULT_ACQUIRE_DELAY = 0.001   # 默认申请锁尝试时间时的延迟，单位秒
+DEFAULT_TIMEOUT = 3  # 默认锁超时时间，单位秒
+DEFAULT_ACQUIRE_TIME = 0    # 默认申请锁尝试时间，单位秒
 
 # redis锁，前缀lk
 REGISTERED_LOCK_NAMES = {
@@ -28,6 +28,7 @@ REGISTERED_LOCK_NAMES = {
 	'wapi_lock': 'wapi:',
 }
 
+# Todo EVALSHA命令节省带宽
 UNLOCK_SCRIPT = """
 if redis.call("get",KEYS[1]) == ARGV[1] then
     return redis.call("del",KEYS[1])
@@ -52,6 +53,14 @@ def get_wapi_lock(lockname, lock_timeout=1):
 
 
 class RedisLock(object):
+	"""
+	redis锁
+	Examples:
+		redis_lock = RedisLock()
+		redis_lock.lock({'name': REGISTERED_LOCK_NAMES['coupon_lock'], 'resource': str(purchase_info.coupon_id)})
+		redis.unlock()
+	"""
+
 	def __init__(self):
 		self.__conn = DEFAULT_CONN
 		self.__identifier = None
@@ -104,6 +113,18 @@ class RedisLock(object):
 
 
 def wapi_lock():
+	"""
+	wapi接口锁装饰器，锁定一个用户同时只能访问一个接口一次
+	Examples:
+		class AOrder(api_resource.ApiResource):
+			app = 'mall'
+			resource = 'order'
+
+			@param_required(['ship_name', 'ship_address', 'ship_tel', 'order_type', 'xa-choseInterfaces'])
+			@wapi_lock()
+			def put(args):
+				...
+	"""
 	def decorator_func(func):
 		redis_lock = RedisLock()
 
@@ -134,7 +155,8 @@ def wapi_lock():
 class MRedisLock(object):
 	"""
 	@warning 别用
-	example:
+	一次建立多个锁并解多个锁
+	Examples:
 	def __acquire_create_order_lock_by_purchase_info(self, purchase_info):
 		locked_resource = []
 		webapp_user_id = self.context['webapp_user'].id

@@ -269,7 +269,7 @@ class OrderFactory(business_model.Model):
 				watchdog_alert(u'下单异常并发')
 				raise OrderResourcesLockException([{
 					"is_success": False,
-					"msg": u'请勿短时间连续下单',
+					"msg": u'请勿短时间连续下单,error when get lock',
 					"type": "coupon"  # 兼容性type
 				}])
 

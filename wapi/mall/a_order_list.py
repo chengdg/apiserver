@@ -41,6 +41,9 @@ class AOrderList(api_resource.ApiResource):
 			'webapp_user': webapp_user
 		})
 
+		# 过滤已取消的团购订单,但优惠抵扣的显示
+		orders = filter(lambda order: not(order.is_group_buy and order.status == mall_models.ORDER_STATUS_CANCEL) or order.pay_interface_type ==  mall_models.PAY_INTERFACE_PREFERENCE ,orders)
+
 		order_datas = []
 		for order in orders:
 			#子订单不显示在订单列表中
@@ -63,11 +66,14 @@ class AOrderList(api_resource.ApiResource):
 				'created_at': order.created_at.strftime('%Y.%m.%d %H:%M'),
 				'final_price': order.final_price,
 				'has_sub_order': order.has_sub_order,
+				'has_multi_sub_order': order.has_multi_sub_order,
 				'express_number': order.express_number,
 				'review_is_finished': review_is_finished,
 				'red_envelope': order.red_envelope,
 				'red_envelope_created': order.red_envelope_created,
-				'products': []
+				'products': [],
+				'is_group_buy': order.is_group_buy,
+				'order_group_info': order.order_group_info
 			}
 
 			order_products = OrderProducts.get_for_order({

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
-
+import settings
+from business.mall.allocator.order_group_buy_resource_allocator import GroupBuyOPENAPI
 from core import api_resource
 from wapi.decorators import param_required
 from db.mall import models as mall_models
@@ -8,7 +9,7 @@ from utils import dateutil as utils_dateutil
 #import resource
 from business.mall.product import Product
 from business.mall.review.product_reviews import ProductReviews
-
+from utils.microservice_consumer import microservice_consume
 
 class AProduct(api_resource.ApiResource):
 	"""
@@ -32,6 +33,19 @@ class AProduct(api_resource.ApiResource):
 		product_id = args['product_id']
 		webapp_owner = args['webapp_owner']
 		webapp_user = args['webapp_user']
+
+		url = GroupBuyOPENAPI['group_buy_product']
+		param_data = {'pid': product_id, 'woid': webapp_owner.id, 'member_id': webapp_user.member.id}
+		is_success, group_buy_product = microservice_consume(url=url, data=param_data)
+
+		if is_success:
+			if group_buy_product['is_in_group_buy']:
+				return {
+					'is_in_group_buy': True,
+					'activity_url': 'http://' + settings.WEAPP_DOMAIN + group_buy_product['activity_url']
+				}
+
+
 
 		product = Product.from_id({
 			'webapp_owner': webapp_owner,
@@ -65,5 +79,6 @@ class AProduct(api_resource.ApiResource):
 				'integarl_per_yuan': webapp_owner.integral_strategy_settings.integral_each_yuan
 			}
 			result['product_reviews'] = reviews
-
+		result['is_in_group_buy'] = False
+		result['activity_url'] = ''
 		return result

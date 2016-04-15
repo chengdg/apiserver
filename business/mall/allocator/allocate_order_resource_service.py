@@ -11,6 +11,7 @@ from allocate_resource_service_base import AllocateResourceServiceBase
 from business.mall.allocator.order_integral_resource_allocator import OrderIntegralResourceAllocator
 from business.mall.allocator.order_products_resource_allocator import OrderProductsResourceAllocator
 from business.mall.allocator.order_coupon_resource_allocator import OrderCouponResourceAllocator
+from business.mall.allocator.order_group_buy_resource_allocator import OrderGroupBuyAllocator
 
 #import logging
 
@@ -34,6 +35,7 @@ class AllocateOrderResourceService(AllocateResourceServiceBase):
 		self.register_allocator(OrderProductsResourceAllocator(webapp_owner, webapp_user))
 		self.register_allocator(OrderIntegralResourceAllocator(webapp_owner, webapp_user))
 		self.register_allocator(OrderCouponResourceAllocator(webapp_owner, webapp_user))
+		self.register_allocator(OrderGroupBuyAllocator(webapp_owner, webapp_user))
 
 
 '''

@@ -72,6 +72,7 @@ class FalconResource:
 		args = {}
 		args.update(req.params)
 		args.update(req.context)
+		args['wapi_id'] = req.path + '_' + req.method
 
 		try:
 			raw_response = wapi_resource.wapi_call(method, app, resource, args, req)

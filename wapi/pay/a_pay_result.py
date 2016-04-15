@@ -48,11 +48,18 @@ class APayResult(api_resource.ApiResource):
 			is_show_red_envelope = True
 			red_envelope_rule_id = red_envelope['id']
 
+		qrcode_img = webapp_owner.qrcode_img
+		activity_url = ''
+		if order.is_group_buy:
+			activity_url = order.order_group_info['activity_url'] + '&from=pay_result'
+
 		return {
 			'is_trade_success': True,
-			'order': order.to_dict(),
+			'order': order.to_dict('is_group_buy'),
 			'is_show_red_envelope': is_show_red_envelope,
-			'red_envelope_rule_id': red_envelope_rule_id
+			'red_envelope_rule_id': red_envelope_rule_id,
+			'qrcode_img': qrcode_img,
+			'activity_url': activity_url
 		}
 
 	@param_required(['order_id', 'pay_interface_type'])

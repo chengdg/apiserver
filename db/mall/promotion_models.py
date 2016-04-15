@@ -108,6 +108,7 @@ class FlashSale(models.Model):
 	limit_period = models.IntegerField(default=0) #限购周期
 	promotion_price = models.FloatField(default=0.0) #限购价格
 	count_per_purchase = models.IntegerField(default=1) #单人限购数量每次
+	count_per_period = models.IntegerField(default=0)
 
 	class Meta(object):
 		db_table = 'mallpromotion_flash_sale'
@@ -156,7 +157,7 @@ class IntegralSaleRule(models.Model):
 	owner = models.ForeignKey(User)
 	integral_sale = models.ForeignKey(IntegralSale)
 	member_grade_id = models.IntegerField(default=0) #会员等级
-	discount = models.IntegerField(default=0) #折扣上限
+	discount = models.FloatField(default=0) #折扣上限
 	discount_money = models.FloatField(default=0.0) #折扣金额
 
 	class Meta(object):

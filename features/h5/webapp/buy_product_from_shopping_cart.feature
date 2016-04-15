@@ -66,17 +66,11 @@ Background:
 			"name": "商品4",
 			"price": 2.0,
 			"weight":1,
-			"pay_interfaces":[{
-				"type": "在线支付"
-			}],
 			"postage": "顺丰"
 		}, {
 			"name": "商品5",
 			"price": 3.0,
 			"weight":1,
-			"pay_interfaces":[{
-				"type": "在线支付"
-			}],
 			"postage": "顺丰"
 		}, {
 			"name": "商品6",

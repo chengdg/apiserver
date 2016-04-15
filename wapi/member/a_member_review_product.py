@@ -182,8 +182,8 @@ class AMemberReviewProduct(api_resource.ApiResource):
 		# }).to_dict()
 		
 		order = Order.from_id({
-			'webapp_owner': webapp_user,
-			'webapp_user': webapp_owner,
+			'webapp_owner': webapp_owner,
+			'webapp_user': webapp_user,
 			'order_id': order_id
 		})
 

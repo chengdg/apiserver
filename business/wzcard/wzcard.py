@@ -270,14 +270,15 @@ class WZCard(business_model.Model):
 			return Decimal(0)
 
 		use_price = min(price_to_pay, self.balance)
-		self.balance = self.balance - use_price
-		if self.balance < 1e-3:
-			self.balance = Decimal(0)
-			self.status = wzcard_models.WEIZOOM_CARD_STATUS_EMPTY
-		else:
-			self.status = wzcard_models.WEIZOOM_CARD_STATUS_USED 
-		# 更新数据库
-		self.save()
+		if use_price > 0:
+			self.balance = self.balance - use_price
+			if self.balance < 1e-3:
+				self.balance = Decimal(0)
+				self.status = wzcard_models.WEIZOOM_CARD_STATUS_EMPTY
+			else:
+				self.status = wzcard_models.WEIZOOM_CARD_STATUS_USED
+			# 更新数据库
+			self.save()
 	
 		return use_price
 

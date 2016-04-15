@@ -10,6 +10,7 @@ from datetime import datetime
 from core import api_resource
 from core.exceptionutil import unicode_full_stack
 import settings
+from utils.lock import get_wapi_lock, wapi_lock
 from wapi.decorators import param_required
 from db.mall import models as mall_models
 from db.mall import promotion_models
@@ -33,6 +34,7 @@ class AOrder(api_resource.ApiResource):
 	resource = 'order'
 
 	@param_required(['ship_name', 'ship_address', 'ship_tel', 'order_type', 'xa-choseInterfaces'])
+	@wapi_lock()
 	def put(args):
 		"""
 		下单接口
@@ -42,6 +44,16 @@ class AOrder(api_resource.ApiResource):
 		webapp_user = args['webapp_user']
 		webapp_owner = args['webapp_owner']
 		refueling_order = args.get('refueling_order', '')
+
+		# print('---------webapp_user_id:',webapp_user.id)
+		# if not get_wapi_lock(lockname='order_put_' + str(webapp_user.id), lock_timeout=1):
+		# 	watchdog_alert('wapi接口被刷,wapi:%s,webapp_user_id:%s' % ('mall.order_put', str(webapp_user.id)))
+		# 	reason_dict = {
+		# 		"is_success": False,
+		# 		"msg":  u'请勿短时间连续下单',
+		# 		"type": "coupon"    # 兼容性type
+		# 	}
+		# 	return 500, {'detail': [reason_dict]}
 
 		#解析购买参数
 		purchase_info = PurchaseInfo.parse({
@@ -60,6 +72,7 @@ class AOrder(api_resource.ApiResource):
 			# 实际上detail是reason列表
 			return 500, {'detail': e.value}
 		except:
+			watchdog_alert(unicode_full_stack())
 			return 500, {'detail': ''}
 
 		pay_url_info = None
@@ -101,11 +114,20 @@ class AOrder(api_resource.ApiResource):
 		return data
 
 	@param_required(['order_id', 'action'])
+	@wapi_lock()
 	def post(args):
 		"""
 		更改订单状态
 		@todo 目前取消订单和确认收货都是通过此接口，需要分离
 		"""
+		# if not get_wapi_lock(lockname='order_post_' + str(args['webapp_user'].id), lock_timeout=2):
+		# 	watchdog_alert('wapi接口被刷,wapi:%s,webapp_user_id:%s' % ('mall.order_post', str(args['webapp_user'].id)))
+		# 	reason_dict = {
+		# 		"is_success": False,
+		# 		"msg":  u'请勿短时间连续下单',
+		# 		"type": "coupon"    # 兼容性type
+		# 	}
+		# 	return 500, {'detail': [reason_dict]}
 
 		# 兼容修改价格后订单从支付模块返回的跳转（支付模块会添加edit_money）
 		order_id = args['order_id'].split('-')[0]
@@ -158,7 +180,7 @@ class AOrder(api_resource.ApiResource):
 
 	@staticmethod
 	def to_dict(order):
-		order_dict = order.to_dict('latest_express_detail', 'products')
+		order_dict = order.to_dict('latest_express_detail', 'products', 'is_group_buy', 'order_group_info')
 		api_keys = [
 			"buyer_name",
 			"coupon_money",
@@ -170,6 +192,7 @@ class AOrder(api_resource.ApiResource):
 			"pay_interface_name",
 			"ship_name",
 			"has_sub_order",
+			"has_multi_sub_order",
 			"sub_orders",
 			"product_price",
 			"member_grade_discount",
@@ -201,7 +224,9 @@ class AOrder(api_resource.ApiResource):
 			"pay_info",
 			"bill_type",
 			"bill",
-			"delivery_time"
+			"delivery_time",
+			"is_group_buy",
+			"order_group_info",
 		]
 
 		data = {}
@@ -215,7 +240,7 @@ class AOrder(api_resource.ApiResource):
 	def get(args):
 
 		# 兼容修改价格后订单从支付模块返回的跳转（支付模块会添加edit_money）
-		order_id = args['order_id'].split('-')[0]
+		order_id = args['order_id'].split('-')[0].split('^')[0]
 
 		order = Order.from_id({
 			'webapp_owner': args['webapp_owner'],

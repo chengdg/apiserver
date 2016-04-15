@@ -15,15 +15,18 @@ from datetime import datetime
 import copy
 
 import settings
+from business.mall.allocator.order_group_buy_resource_allocator import GroupBuyOPENAPI
 from core.exceptionutil import unicode_full_stack
 from core.sendmail import sendmail
 from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
 import db.account.models as accout_models
 from core.wxapi import get_weixin_api
 from features.util.bdd_util import set_bdd_mock
+from services.notify_group_buy_after_pay_service.task import notify_group_buy_after_pay
 from services.record_order_status_log_service.task import record_order_status_log
 from services.send_template_message_service.task import send_template_message
 from services.update_product_sale_service.task import update_product_sale
+from utils.microservice_consumer import microservice_consume
 from utils.mysql_str_util import filter_invalid_str
 from utils.regional_util import get_str_value_by_string_ids
 
@@ -118,7 +121,7 @@ class Order(business_model.Model):
 		'delivery_time', # 配送时间字符串
 		'is_first_order',
 		'supplier_user_id',
-		'total_purchase_price'
+		'total_purchase_price',
 	)
 
 	@staticmethod
@@ -209,6 +212,8 @@ class Order(business_model.Model):
 		else:
 			# 用于创建空的Order model
 			self.context['order'] = mall_models.Order()
+			# 初始化数据应该为db model默认值，不应为none
+			self._init_slot_from_model(self.context['order'])
 
 
 	@cached_context_property
@@ -227,7 +232,7 @@ class Order(business_model.Model):
 		"""拆单后的子订单信息
 		"""
 		sub_orders = []
-		if self.has_sub_order:
+		if self.has_multi_sub_order:
 			sub_order_ids = self.get_sub_order_ids()
 			for sub_order_id in sub_order_ids:
 				sub_order = Order.from_id({
@@ -260,7 +265,7 @@ class Order(business_model.Model):
 		return sub_orders
 
 	def get_sub_order_ids(self):
-		if self.has_sub_order:
+		if self.real_has_sub_order:
 			orders = mall_models.Order.select().dj_where(origin_order_id=self.id)
 			sub_order_ids = [order.order_id for order in orders]
 			return sub_order_ids
@@ -310,6 +315,31 @@ class Order(business_model.Model):
 		[property] 该订单是否有子订单
 		"""
 		return self.origin_order_id == -1 and self.status > mall_models.ORDER_STATUS_NOT #未支付的订单按未拆单显示
+
+	@cached_context_property
+	def has_multi_sub_order(self):
+		"""
+		[property] 该订单是否有超过一个子订单
+		"""
+		return self.has_sub_order and len(self.get_sub_order_ids()) > 1
+
+
+	@property
+	def real_has_sub_order(self):
+		"""
+		[property] 真正的该订单是否有子订单
+		"""
+		return self.origin_order_id == -1
+
+
+
+	@cached_context_property
+	def has_multi_sub_order(self):
+		"""
+		[property] 该订单是否有超过一个子订单
+		"""
+		return self.has_sub_order and len(self.get_sub_order_ids()) > 1
+
 
 	@property
 	def is_sub_order(self):
@@ -399,12 +429,33 @@ class Order(business_model.Model):
 		wx_package_info['woid'] = self.context['webapp_owner'].id
 
 		if not config:
-			product_ids = [r.product_id for r in mall_models.OrderHasProduct.select().dj_where(order_id=self.id)]
-			product_names = ','.join([product.name for product in mall_models.Product.select().dj_where(id__in=product_ids)])
-			if len(product_names) > 45:
-				product_names = product_names[:45]
-			else:
-				product_names = product_names
+			# warning!! 兼容代码，勿改product_names逻辑
+			# 原始代码：
+			# product_ids = [r.product_id for r in mall_models.OrderHasProduct.select().dj_where(order_id=self.id)]
+			# product_names = ','.join([product.name for product in mall_models.Product.select().dj_where(id__in=product_ids)])
+			order_has_products = mall_models.OrderHasProduct.select().dj_where(order_id=self.id)
+			product_ids = [r.product_id for r in order_has_products]
+			product_ids_for_sort = [product.id for product in mall_models.Product.select().dj_where(id__in=product_ids)]
+			product_id2name = dict([(o.product_id, o.product_name) for o in order_has_products])
+			product_names = u','.join([product_id2name[pid] for pid in product_ids_for_sort])
+			# if len(product_names) > 45:
+			# 	product_names = product_names[:45]
+			# else:
+			# 	product_names = product_names
+
+			try:
+				if len(product_names.encode("utf-8")) > 120:
+					product_names = product_names.encode("utf-8")[0:120].decode("utf-8",'ignore')
+				else:
+					product_names = product_names
+			except:
+				if len(product_names) > 45:
+					product_names = product_names[:44]
+				else:
+					product_names = product_names
+
+
+
 			wx_package_info['product_names'] = product_names
 			wx_package_info['total_fee'] = int(Decimal(str(self.final_price)) * 100)
 
@@ -567,12 +618,12 @@ class Order(business_model.Model):
 
 
 	def to_dict(self, *extras):
-		properties = ['has_sub_order', 'sub_orders', 'pay_interface_name', 'status_text', 'red_envelope', 'red_envelope_created', 'pay_info']
+		properties = ['has_sub_order', 'sub_orders', 'pay_interface_name', 'status_text', 'red_envelope', 'red_envelope_created', 'pay_info', 'has_multi_sub_order']
 		if extras:
 			properties.extend(extras)
 
 		order_status_info = self.status
-		if self.has_sub_order:
+		if self.has_multi_sub_order:
 			for sub_order in self.sub_orders:
 				#整单的订单状态显示，如果被拆单，则显示订单里最滞后的子订单状态
 				if sub_order['status'] < order_status_info:
@@ -600,7 +651,7 @@ class Order(business_model.Model):
 		return self.context['order']
 
 
-	def save(self):
+	def save(self, purchase_info):
 		"""
 		业务模型序列化
 		"""
@@ -622,7 +673,7 @@ class Order(business_model.Model):
 		db_model.area = self.ship_area
 		db_model.bill_type = self.bill_type
 		db_model.bill = self.bill
-		
+
 		# 过滤MySQL utf-8不能存储的字符
 		customer_message = filter_invalid_str(self.customer_message)
 		db_model.customer_message = customer_message
@@ -651,60 +702,67 @@ class Order(business_model.Model):
 		logging.info("Order db_model: {}".format(db_model))
 
 		# 处理拆带相关字段
+		db_model.total_purchase_price = 0
 		products = self.products
+
 		supplier_ids = []
+		supplier_user_ids = []
+
 		for product in products:
 			supplier = product.supplier
 			if supplier and supplier not in supplier_ids:
 				supplier_ids.append(supplier)
 
-		supplier_user_ids = []
-		db_model.total_purchase_price = 0
-
-		for product in products:
 			supplier_user_id = product.supplier_user_id
 			if supplier_user_id and supplier_user_id not in supplier_user_ids:
 				supplier_user_ids.append(supplier_user_id)
 
+			# 订单总采购价
 			db_model.total_purchase_price += product.purchase_count * product.purchase_price
+			self.total_purchase_price = db_model.total_purchase_price
 
-		self.supplier_user_id = 0
-		if len(supplier_ids) + len(supplier_user_ids) > 1:
-			# 标记有子订单
+		# webapp_type为1时为需要拆单的自营帐号
+		webapp_type = self.context['webapp_owner'].user_profile.webapp_type
+
+		if webapp_type:
+			# 拆单代码，标记有子订单
 			db_model.origin_order_id = -1
 			self.origin_order_id = -1
-		elif len(supplier_ids) == 1 and supplier_ids[0] != 0:
-			self.supplier = supplier_ids[0]
-			db_model.supplier = supplier_ids[0]
-		elif len(supplier_user_ids) == 1 and supplier_user_ids[0] != 0:
-			self.supplier_user_id = supplier_user_ids[0]
-			db_model.supplier_user_id = supplier_user_ids[0]
+		else:
+			db_model.origin_order_id = 0
+			self.origin_order_id = 0
+
+		# 母订单供货商都为0
+		self.supplier_user_id = 0
+		self.supplier = 0
 
 		db_model.save()
 		self.id = db_model.id
-		# 建立订单相关数据
 
+		# 建立订单相关表数据
 		supplier_user_id2products = {}
 		supplier2products = {}
-		#建立<order, product>的关系
+
+		# 建立<order, product>的关系
 		for product in products:
 			mall_models.OrderHasProduct.create(
-				order = self.db_model,
-				product = product.id,
-				product_name = product.name,
-				product_model_name = product.model_name,
-				number = product.purchase_count,
-				total_price = product.total_price,
-				price = product.price,
-				promotion_id = product.used_promotion_id,
-				promotion_money = product.promotion_saved_money,
-				grade_discounted_money=product.discount_money,
-				integral_sale_id = product.integral_sale.id if product.integral_sale else 0,
-				origin_order_id = 0,
-				purchase_price = product.purchase_price
+				order=self.db_model,
+				product=product.id,
+				product_name=product.name,
+				product_model_name=product.model_name,
+				number=product.purchase_count,
+				total_price=product.total_price,
+				price=product.price,
+				promotion_id=product.used_promotion_id,
+				promotion_money=product.promotion_saved_money,
+				grade_discounted_money=0 if product.discount_money_coupon_exist else product.discount_money,
+				# grade_discounted_money= product.discount_money,
+				integral_sale_id=product.integral_sale.id if product.integral_sale else 0,
+				origin_order_id=0,
+				purchase_price=product.purchase_price
 			)
 
-			if self.context['webapp_owner'].user_profile.webapp_type:
+			if webapp_type:
 				if not supplier_user_id2products.get(product.supplier_user_id):
 					supplier_user_id2products[product.supplier_user_id] = []
 					supplier_user_id2products[product.supplier_user_id].append(product)
@@ -715,51 +773,72 @@ class Order(business_model.Model):
 					supplier2products[product.supplier] = []
 					supplier2products[product.supplier].append(product)
 				else:
-					supplier2products[product.supplier].append(product)	
-					
+					supplier2products[product.supplier].append(product)
 
-		if self.origin_order_id and supplier_ids:
+		if webapp_type:
 			# 进行拆单，生成子订单
 			for supplier in supplier_ids:
-				if supplier != 0:
-					new_order = copy.deepcopy(self.db_model)
-					new_order.id = None
-					new_order.order_id = '%s^%ss' % (self.order_id, supplier)
-					new_order.origin_order_id = self.id
-					new_order.supplier = supplier
-					new_order.total_purchase_price = sum(map(lambda product:product.purchase_price * product.purchase_count, supplier2products[supplier]))
-					new_order.save()
+				new_order = copy.deepcopy(self.db_model)
+				new_order.id = None
+				new_order.order_id = '%s^%ss' % (self.order_id, supplier)
+				new_order.origin_order_id = self.id
+				new_order.coupon_money = 0
+				new_order.integral_money = 0
+				new_order.weizoom_card_money = 0
+				new_order.supplier = supplier
+				new_order.total_purchase_price = sum(map(lambda product:product.purchase_price * product.purchase_count, supplier2products[supplier]))
+				new_order.save()
 
-		if self.origin_order_id and supplier_user_ids:
-			# 进行拆单，生成子订单
+				# 为同步供货商的子订单复制对应OrderHasProduct (by Eugene 为南京财务系统填充数据 2016-04-07)
+				for product in supplier2products[supplier]:
+					mall_models.OrderHasProduct.create(
+						order=new_order,
+						product=product.id,
+						product_name=product.name,
+						product_model_name=product.model_name,
+						number=product.purchase_count,
+						total_price=product.purchase_price * product.purchase_count,
+						price=product.purchase_price,
+						promotion_id=product.used_promotion_id,
+						promotion_money=product.promotion_saved_money,
+						grade_discounted_money=0 if product.discount_money_coupon_exist else product.discount_money,
+						# grade_discounted_money=product.discount_money,
+						integral_sale_id=product.integral_sale.id if product.integral_sale else 0,
+						origin_order_id=self.id,  # 原始(母)订单id，用于微众精选拆单
+						purchase_price=product.purchase_price
+					)
+
 			for supplier_user_id in supplier_user_ids:
-				if supplier_user_id != 0:
-					new_order = copy.deepcopy(self.db_model)
-					new_order.id = None
-					new_order.order_id = '%s^%su' % (self.order_id, supplier_user_id)
-					new_order.origin_order_id = self.id
-					new_order.supplier_user_id = supplier_user_id
-					new_order.total_purchase_price = sum(map(lambda product:product.purchase_price * product.purchase_count, supplier_user_id2products[supplier_user_id]))
-					new_order.pay_interface_type = mall_models.PAY_INTERFACE_WEIXIN_PAY
-					new_order.save()
+				new_order = copy.deepcopy(self.db_model)
+				new_order.id = None
+				new_order.order_id = '%s^%su' % (self.order_id, supplier_user_id)
+				new_order.origin_order_id = self.id
+				new_order.coupon_money = 0
+				new_order.integral_money = 0
+				new_order.weizoom_card_money = 0
+				new_order.supplier_user_id = supplier_user_id
+				new_order.total_purchase_price = sum(map(lambda product:product.purchase_price * product.purchase_count, supplier_user_id2products[supplier_user_id]))
+				new_order.pay_interface_type = mall_models.PAY_INTERFACE_WEIXIN_PAY
+				new_order.save()
 
-
-					for product in supplier_user_id2products[supplier_user_id]:
-						mall_models.OrderHasProduct.create(
-							order = new_order,
-							product = product.id,
-							product_name = product.name,
-							product_model_name = product.model_name,
-							number = product.purchase_count,
-							total_price = product.purchase_price * product.purchase_count,
-							price = product.purchase_price,
-							promotion_id = product.used_promotion_id,
-							promotion_money = product.promotion_saved_money,
-							grade_discounted_money=product.discount_money,
-							integral_sale_id = product.integral_sale.id if product.integral_sale else 0,
-							origin_order_id = self.id, # 原始(母)订单id，用于微众精选拆单
-							purchase_price = product.purchase_price
-						)
+				# 为同步供货商的子订单复制对应OrderHasProduct
+				for product in supplier_user_id2products[supplier_user_id]:
+					mall_models.OrderHasProduct.create(
+						order=new_order,
+						product=product.id,
+						product_name=product.name,
+						product_model_name=product.model_name,
+						number=product.purchase_count,
+						total_price=product.purchase_price * product.purchase_count,
+						price=product.purchase_price,
+						promotion_id=product.used_promotion_id,
+						promotion_money=product.promotion_saved_money,
+						grade_discounted_money=0 if product.discount_money_coupon_exist else product.discount_money,
+						# grade_discounted_money=product.discount_money,
+						integral_sale_id=product.integral_sale.id if product.integral_sale else 0,
+						origin_order_id=self.id,  # 原始(母)订单id，用于微众精选拆单
+						purchase_price=product.purchase_price
+					)
 
 		product_groups = self.product_groups
 		#建立<order, promotion>的关系
@@ -795,6 +874,19 @@ class Order(business_model.Model):
 						integral_money=product_group.integral_result['integral_money'],
 						integral_count=product_group.integral_result['use_integral'],
 				)
+
+		# 团购订单处理
+		if purchase_info.group_id:
+			self.is_group_buy = True
+			mall_models.OrderHasGroup.create(
+				order_id=self.order_id,
+				group_id=purchase_info.group_id,
+				activity_id=purchase_info.activity_id,
+				group_status=mall_models.GROUP_STATUS_ON,
+				webapp_user_id=self.webapp_user_id,
+				webapp_id=self.context['webapp_owner'].webapp_id
+			)
+
 		self.__after_update_status('buy')
 
 
@@ -813,15 +905,27 @@ class Order(business_model.Model):
 
 		@param[in] pay_interface_type: 支付所使用的支付接口的type
 		"""
-		pay_result = False
 
+		webapp_owner = self.context['webapp_owner']
+		webapp_user = self.context['webapp_user']
+
+		# 该订单可用的支付方式，不含优惠抵扣
+		available_pay_interfaces = PayInterface.get_order_pay_interfaces(webapp_owner, webapp_user, self.id)
+		pay_result = False
+		if self.final_price == 0:
+			pay_interface_type = mall_models.PAY_INTERFACE_PREFERENCE
+		elif pay_interface_type == mall_models.PAY_INTERFACE_PREFERENCE:
+			if self.final_price != 0:
+				return False
+		elif pay_interface_type not in [x['type'] for x in available_pay_interfaces]:
+			return False
 		if self.status == mall_models.ORDER_STATUS_NOT:
 			#改变订单的支付状态
 			pay_result = True
 
 			now = datetime.now()
-			if self.origin_order_id < 0:
-				mall_models.Order.update(status=mall_models.ORDER_STATUS_PAYED_NOT_SHIP, pay_interface_type=pay_interface_type, payment_time=now).dj_where(origin_order_id=self.id).execute()
+			if self.real_has_sub_order:
+				mall_models.Order.update(status=mall_models.ORDER_STATUS_PAYED_NOT_SHIP, payment_time=now).dj_where(origin_order_id=self.id).execute()
 
 			mall_models.Order.update(status=mall_models.ORDER_STATUS_PAYED_NOT_SHIP, pay_interface_type=pay_interface_type, payment_time=now).dj_where(order_id=self.order_id).execute()
 			self.payment_time = now
@@ -848,12 +952,12 @@ class Order(business_model.Model):
 			# 异步更新商品销量
 			update_product_sale.delay(product_sale_infos)
 
-			#支付后，更新会员支付数据
-			webapp_user = self.context['webapp_user']
-			webapp_user.update_pay_info(float(self.final_price) + float(self.weizoom_card_money), self.payment_time)
 
 			self.__after_update_status('pay')
-			self.__send_template_message()
+			if not self.is_group_buy:
+				# 团购订单不发送模板消息
+				self.__send_template_message()
+
 		return pay_result
 
 
@@ -924,7 +1028,7 @@ class Order(business_model.Model):
 		self.raw_status = self.status
 		self.status = mall_models.ORDER_STATUS_SUCCESSED
 		# 更新子订单状态
-		if self.origin_order_id == -1:
+		if self.has_sub_order:
 			mall_models.Order.update(status=mall_models.ORDER_STATUS_SUCCESSED).dj_where(origin_order_id=self.id).execute()
 
 		# 订单完成后会员积分处理
@@ -944,6 +1048,10 @@ class Order(business_model.Model):
 			'order_id': self.id,
 			'webapp_user': self.context['webapp_user']
 			})
+
+		# 支付后，更新会员支付数据
+		webapp_user = self.context['webapp_user']
+		webapp_user.update_pay_info(float(self.final_price) + float(self.weizoom_card_money), self.payment_time)
 		# except:
 		# 	error_msg = u"MemberSpread.process_order_from_spread失败, cause:\n{}"\
 		# 				.format(unicode_full_stack())
@@ -979,11 +1087,28 @@ class Order(business_model.Model):
 		self.context['webapp_user'].cleanup_order_info_cache()
 
 		# 记录日志
-
 		LogOperator.record_operation_log(self, u'客户', mall_models.ACTION2MSG[action])
-		if self.raw_status:
+		if self.raw_status is not None:
 			record_order_status_log.delay(self.order_id, u'客户', self.raw_status, self.status)
+			if self.origin_order_id == -1:
+				for order_id in self.get_sub_order_ids():
+					record_order_status_log.delay(order_id, u'客户', self.raw_status, self.status)
+
 		self.__send_notify_mail()
+
+		# 通知团购订单支付完成
+		if self.is_group_buy and action in ['buy', 'pay']:
+			url = GroupBuyOPENAPI['order_action']
+			data = {
+				'order_id': self.order_id,
+				'member_id': self.context['webapp_user'].member.id,
+				'action': action,
+				'woid': self.context['webapp_owner'].id,
+				'group_id': self.order_group_info['group_id']
+			}
+			notify_group_buy_after_pay(url, data)
+			# notify_group_buy_after_pay.delay(url, data)
+
 
 
 
@@ -1110,3 +1235,36 @@ class Order(business_model.Model):
 			return True, ''
 		else:
 			return False, 'error_status'
+
+	@property
+	def is_group_buy(self):
+		if not self.context.get('_is_group_buy'):
+			self.context['_is_group_buy'] = bool(mall_models.OrderHasGroup.select().dj_where(order_id=self.order_id).first())
+
+		return self.context['_is_group_buy']
+
+	@is_group_buy.setter
+	def is_group_buy(self, value):
+		self.context['_is_group_buy'] = value
+
+	@cached_context_property
+	def order_group_info(self):
+		order_has_group = mall_models.OrderHasGroup.select().dj_where(order_id=self.order_id).first()
+		activity_url = ''
+		if order_has_group:
+			order_group_info = order_has_group.to_dict()
+			if self.status == mall_models.ORDER_STATUS_NOT:
+				activity_url = 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/m_group/?webapp_owner_id=' + str(self.context['webapp_owner'].id) + '&id=' + order_group_info['activity_id']
+			else:
+				url = GroupBuyOPENAPI['get_group_url']
+				data = {
+					'woid': self.context['webapp_owner'].id,
+					'group_id': order_group_info['group_id']
+				}
+				is_success, group_url_info = microservice_consume(url=url,data=data)
+				if is_success:
+					activity_url = 'http://' + settings.WEAPP_DOMAIN + group_url_info['group_url']
+			order_group_info['activity_url'] = activity_url
+			return order_group_info
+		else:
+			return {}

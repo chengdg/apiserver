@@ -364,6 +364,8 @@ def __check_order(context, webapp_user_name):
 	actual_order['order_no'] = actual_order['order_id']
 	actual_order['status'] = actual_order['status_text']
 	actual_order['methods_of_payment'] = actual_order['pay_interface_name']
+
+	actual_order['is_group_buying'] = 'true' if actual_order['is_group_buy'] else 'false'
 	# 获取coupon规则名
 	if (actual_order['coupon_id'] != 0) and (actual_order['coupon_id'] != -1):
 		# coupon = Coupon.objects.get(id=actual_order.coupon_id)
@@ -653,6 +655,22 @@ def step_impl(context, webapp_user_name):
 		bdd_util.assert_api_call_success(response)
 
 
+
+
+@when(u"{webapp_user_name}设置{webapp_owner_name}的webapp的默认收货地址")
+def step_impl(context, webapp_user_name,webapp_owner_name):
+	data = {
+		'area': '1_1_8',
+		'ship_address': '泰兴大厦',
+		'ship_name': webapp_user_name,
+		'ship_tel': '13811223344'
+	}
+
+	url = '/wapi/mall/ship_info/?_method=put'
+	response = context.client.post(url, data)
+	context.ship_address = data
+
+
 @when(u"{webapp_user_name}从购物车发起购买操作")
 def step_impl(context, webapp_user_name):
 	"""
@@ -669,7 +687,7 @@ def step_impl(context, webapp_user_name):
 	"""
 	# 设置默认收货地址
 	if member_models.ShipInfo.select().count() == 0:
-		context.execute_steps(u"When %s设置%s的webapp的默认收货地址:weapp" % (webapp_user_name, 'jobs'))
+		context.execute_steps(u"When %s设置%s的webapp的默认收货地址" % (webapp_user_name, 'jobs'))
 	__i = json.loads(context.text)
 	if __i.get("action") == u"pay":
 		argument = __i.get('context')
@@ -919,6 +937,10 @@ def step_visit_personal_orders(context, webapp_user_name, order_type):
 		order['pay_interface'] = mall_models.PAYTYPE2NAME[actual_order['pay_interface_type']]
 		order['created_at'] = actual_order['created_at']
 		order['pay_info'] = actual_order['pay_info']
+		order['order_no'] = actual_order['order_id']
+		order['order_id'] = actual_order['order_id']
+		order['is_group_buying'] = 'true' if  actual_order['is_group_buy'] else 'false'
+
 		# BBD中购买的时间再未指定购买时间的情况下只能为今天
 		created_at = datetime.datetime.strptime(actual_order['created_at'], '%Y.%m.%d %H:%M')
 		if created_at.date() == datetime.date.today():

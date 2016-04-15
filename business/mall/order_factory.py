@@ -31,6 +31,7 @@ from business.mall.allocator.allocate_price_related_resource_service import Allo
 from business.mall.order import Order
 
 #from business.mall.package_order_service.package_order_service import CalculatePriceService
+from utils.microservice_consumer import ResponseCodeException
 from wapi.decorators import param_required
 #from wapi import wapi_utils
 from core.cache import utils as cache_util
@@ -51,7 +52,8 @@ from business.mall.package_order_service.package_order_service import PackageOrd
 
 from business.mall.reserved_product_repository import ReservedProductRepository
 from business.mall.group_reserved_product_service import GroupReservedProductService
-from business.mall.order_exception import OrderResourcesException, OrderFailureException
+from business.mall.order_exception import OrderResourcesException, OrderFailureException, OrderResourcesLockException
+from utils.lock import RedisLock, REGISTERED_LOCK_NAMES
 
 
 class OrderFactory(business_model.Model):
@@ -89,7 +91,7 @@ class OrderFactory(business_model.Model):
 	# 	return order_checker.check()
 
 
-	def __create_order_id(self):
+	def __create_order_id(self, purchase_info):
 		"""创建订单id
 
 		order_id格式：order_id = '%s%03d' % (now, random.randint(1, 999))
@@ -99,6 +101,10 @@ class OrderFactory(business_model.Model):
 
 		@todo 和产品确认支持一秒内产生超过999个订单
 		"""
+
+		if settings.IS_UNDER_BDD and purchase_info.bdd_order_id:
+			return purchase_info.bdd_order_id
+
 		now = time.strftime("%Y%m%d%H%M%S", time.localtime())
 		key_name = 'order_ids:' + now
 
@@ -224,19 +230,19 @@ class OrderFactory(business_model.Model):
 		order.pay_interface_type = purchase_info.used_pay_interface_type
 		order.status = mall_models.ORDER_STATUS_NOT
 		order.delivery_time = purchase_info.delivery_time # 配送时间字符串
-		order.order_id = self.__create_order_id()
+		order.order_id = self.__create_order_id(purchase_info)
 		return order
 
 
 
-	def __save_order(self, order):
+	def __save_order(self, order, purchase_info):
 		"""
 		保存订单
 
 		@param[in] order Order对象(业务模型)
 		"""
 		logging.debug("order.db_model={}".format(order.db_model))
-		order.save()
+		order.save(purchase_info)
 		if order.final_price == 0:
 			# 优惠券或积分金额直接可支付完成，直接调用pay_order，完成支付
 			order.pay(mall_models.PAY_INTERFACE_PREFERENCE)
@@ -258,6 +264,15 @@ class OrderFactory(business_model.Model):
 		price_free_resources = None
 		price_related_resources = None
 		try:
+			create_order_lock_is_success = self.__acquire_create_order_lock_by_purchase_info(purchase_info)
+			if not create_order_lock_is_success:
+				watchdog_alert(u'下单异常并发')
+				raise OrderResourcesLockException([{
+					"is_success": False,
+					"msg": u'请勿短时间连续下单,error when get lock',
+					"type": "coupon"  # 兼容性type
+				}])
+
 			webapp_owner = self.context['webapp_owner']
 			webapp_user = self.context['webapp_user']
 
@@ -290,7 +305,7 @@ class OrderFactory(business_model.Model):
 						product_group.disable_integral_sale()
 
 				# 保存订单
-				order = self.__save_order(order)
+				order = self.__save_order(order, purchase_info)
 				# 如果需要（比如订单保存失败），释放资源
 				if order and order.is_saved:
 					#删除购物车
@@ -308,11 +323,17 @@ class OrderFactory(business_model.Model):
 				raise OrderResourcesException(reasons)
 		except OrderResourcesException as e:
 			raise e
+		except ResponseCodeException:
+			pass
 		except:
 			msg = unicode_full_stack()
 			watchdog_alert(msg)
 			self.__release_order(order, price_free_resources, price_related_resources)
 			raise OrderFailureException
+
+		finally:
+			self.__release_create_order_lock()
+
 
 	def __release_order(self, order, price_free_resources, price_related_resources):
 		"""
@@ -344,4 +365,64 @@ class OrderFactory(business_model.Model):
 	def __release_price_related_resources(self, resources):
 		service = AllocatePriceRelatedResourceService(self.context['webapp_owner'], self.context['webapp_user'])
 		service.release(resources)
+
+	# def __acquire_create_order_lock_by_purchase_info(self, purchase_info):
+	# 	"""
+	# 	使用redis锁避免并发时错误处理
+	# 	@param locks:
+	# 	@param purchase_info:
+	# 	@return:
+	# 	"""
+	# 	locked_resource = []
+	# 	webapp_user_id = self.context['webapp_user'].id
+	# 	redis_lock = RedisLock()
+	# 	if purchase_info.coupon_id:
+	# 		# 优惠券锁
+	# 		locked_resource.append({'name': REGISTERED_LOCK_NAMES['coupon_lock'], 'resource': purchase_info.coupon_id})
+	# 	if purchase_info.order_integral_info or purchase_info.group2integralinfo:
+	# 		locked_resource.append({'name': REGISTERED_LOCK_NAMES['integral_lock'], 'resource': webapp_user_id})
+	# 	if purchase_info.wzcard_info:
+	# 		for wzcard in purchase_info.wzcard_info:
+	# 			locked_resource.append({'name': REGISTERED_LOCK_NAMES['wz_card_lock'], 'resource': wzcard['card_name']})
+	#
+	# 	return redis_lock.mlock(locked_resource), redis_lock
+	#
+	#
+	# def __release_create_order_lock(self):
+	# 	self.context['create_order_lock'].munlock()
+
+
+
+	def __acquire_create_order_lock_by_purchase_info(self, purchase_info):
+		"""
+		使用redis锁避免并发时错误处理
+		@param locks:
+		@param purchase_info:
+		@return:
+		"""
+
+		locked_resources = []
+		self.context['create_order_lock'] = []
+		webapp_user_id = self.context['webapp_user'].id
+		if purchase_info.coupon_id and purchase_info.coupon_id != '0':
+			# 优惠券锁
+			locked_resources.append({'name': REGISTERED_LOCK_NAMES['coupon_lock'], 'resource': str(purchase_info.coupon_id)})
+		if purchase_info.order_integral_info or purchase_info.group2integralinfo:
+			locked_resources.append({'name': REGISTERED_LOCK_NAMES['integral_lock'], 'resource': str(webapp_user_id)})
+		if purchase_info.wzcard_info:
+			for wzcard in purchase_info.wzcard_info:
+				locked_resources.append({'name': REGISTERED_LOCK_NAMES['wz_card_lock'], 'resource': str(wzcard['card_name'])})
+
+		for locked_resource in locked_resources:
+			redis_lock = RedisLock()
+			if redis_lock.lock(locked_resource):
+				self.context['create_order_lock'].append(redis_lock)
+			else:
+				return False
+
+		return True
+
+	def __release_create_order_lock(self):
+		for redis_lock in self.context['create_order_lock']:
+			redis_lock.unlock()
 

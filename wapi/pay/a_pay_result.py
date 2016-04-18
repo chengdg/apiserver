@@ -49,8 +49,7 @@ class APayResult(api_resource.ApiResource):
 			is_show_red_envelope = True
 			red_envelope_rule_id = red_envelope['id']
 
-		order_config = OrderConfig.get_order_config(webapp_owner)
-
+		order_config = OrderConfig.get_order_config({'webapp_owner': webapp_owner})
 
 		qrcode_img = webapp_owner.qrcode_img
 		activity_url = ''

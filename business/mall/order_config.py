@@ -16,23 +16,23 @@ class OrderConfig(business_model.Model):
     __slots__ = (
         'id',
         'owner_id',
+        'is_share_page',
         'background_image',
         'share_image',
         'share_describe',
-        'news_id'
+        'material_id'
     )
 
-    def __init(self, model):
+    def __init__(self, model):
         business_model.Model.__init__(self)
 
         if model:
             self._init_slot_from_model(model)
 
     @staticmethod
-    @param_required(['webapp_owner'])
+    @param_required([])
     def get_order_config(args):
         webapp_owner = args['webapp_owner']
-
         model = mall_models.MallShareOrderPageConfig.select().dj_where(owner_id = webapp_owner.id).first()
-        order_config = OrderConfig(model)
+        order_config = OrderConfig(model).to_dict()
         return order_config

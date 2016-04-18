@@ -33,7 +33,7 @@ class MallConfig(models.Model):
 		db_table = 'mall_config'
 
 #########################################################################
-# 订单完成分享挣积分相关Model
+# 订单完成分享挣积分信息配置相关Model
 #########################################################################
 class MallShareOrderPageConfig(models.Model):
 	"""
@@ -44,7 +44,7 @@ class MallShareOrderPageConfig(models.Model):
 	background_image = models.CharField(max_length=1024, default='')
 	share_image = models.CharField(max_length=1024, default='')
 	share_describe = models.TextField(default='')
-	news_id = models.IntegerField(default=0) #图文领取记录图文id
+	material_id = models.IntegerField(default=0) #图文领取记录图文id
 	created_at = models.DateTimeField(auto_now_add=True)
 
 	class Meta(object):

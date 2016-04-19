@@ -44,7 +44,7 @@ class Coupon(business_model.Model):
 		if model:
 			self._init_slot_from_model(model)
 			self.__check_coupon_status()
-			self.limit_product_id = map(lambda x: int(x), self.limit_product_id.split(','))
+
 
 	@staticmethod
 	@param_required(['id'])
@@ -116,7 +116,7 @@ class Coupon(business_model.Model):
 			coupon_rule = id2coupon_rule[coupon_db_model.coupon_rule_id]
 			coupon.coupon_rule = coupon_rule
 			coupon.valid_restrictions = coupon_rule.valid_restrictions
-			coupon.limit_product_id = coupon_rule.limit_product_id
+			coupon.limit_product_id = map(lambda x: int(x), coupon_rule.limit_product_id.split(','))
 			coupon.name = coupon_rule.name
 
 			#填充优惠券倒计时信息
@@ -256,7 +256,7 @@ class Coupon(business_model.Model):
 		reserved_products = order.products
 		return self.is_can_use_for_products(webapp_user, reserved_products)
 
-	def to_dict(self,extra):
+	def to_dict(self, *extra):
 		result = super(Coupon, self).to_dict()
 		del result['coupon_rule']
 		result['start_time'] = result['start_time'].strftime('%Y/%m/%d %H:%M:%S')

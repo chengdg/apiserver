@@ -220,12 +220,12 @@ class Coupon(business_model.Model):
 
 		# 处理单品券
 		if self.is_specific_product_coupon():
-			if self.limit_product_id not in [product.id for product in reserved_products]:
+			if not bool(set(self.limit_product_id) & set([product.id for product in reserved_products])):
 				msg = u'该优惠券不能购买订单中的商品'
 			else:
 				price = 0
 				for product in reserved_products:
-					if product.id in (self.limit_product_id).split(','):
+					if product.id in self.limit_product_id:
 						price += product.original_price * product.purchase_count
 
 				if self.valid_restrictions > price:
@@ -256,7 +256,7 @@ class Coupon(business_model.Model):
 		reserved_products = order.products
 		return self.is_can_use_for_products(webapp_user, reserved_products)
 
-	def to_dict(self):
+	def to_dict(self,extra):
 		result = super(Coupon, self).to_dict()
 		del result['coupon_rule']
 		result['start_time'] = result['start_time'].strftime('%Y/%m/%d %H:%M:%S')

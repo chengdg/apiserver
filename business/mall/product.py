@@ -13,12 +13,12 @@ from datetime import datetime
 
 from business.mall.supplier import Supplier
 from core.exceptionutil import unicode_full_stack
-from wapi.decorators import param_required
+from eaglet.decorator import param_required
 #from wapi import wapi_utils
-from core.cache import utils as cache_util
+from eaglet.core.cache import utils as cache_util
 from db.mall import models as mall_models
 from db.mall import promotion_models
-from core.watchdog.utils import watchdog_alert
+from eaglet.core import watchdog
 from business import model as business_model
 import db.account.models as account_model
 import settings
@@ -136,7 +136,7 @@ class CachedProduct(object):
 			else:
 				#记录日志
 				alert_message = u"获取商品记录失败,商品id: {} cause:\n{}".format(product_id, unicode_full_stack())
-				watchdog_alert(alert_message, type='WEB')
+				watchdog.alert(alert_message, type='WEB')
 				#返回"被删除"商品
 				product = Product()
 				product.is_deleted = True
@@ -754,7 +754,7 @@ class Product(business_model.Model):
 
 			return supplier_name
 		except:
-			watchdog_alert(unicode_full_stack())
+			watchdog.alert(unicode_full_stack())
 			return ''
 
 	# @cached_context_property

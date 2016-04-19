@@ -14,7 +14,7 @@ from pymongo import Connection
 
 import settings
 from features.util import bdd_util
-from core.cache import utils as cache_utils
+from eaglet.core.cache import utils as cache_utils
 from core.service import celeryconfig
 
 ######################################################################################

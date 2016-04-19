@@ -2,7 +2,7 @@
 from celery import task
 
 from core.exceptionutil import unicode_full_stack
-from core.watchdog.utils import watchdog_error
+from eaglet.core import watchdog
 from db.member import models as member_model
 
 from business.account.webapp_owner import WebAppOwner

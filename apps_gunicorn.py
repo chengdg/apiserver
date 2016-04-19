@@ -8,12 +8,12 @@ from wsgiref import simple_server
 import falcon
 #import requests
 
-from core import api_resource
+from eaglet.core import api_resource
 from core.exceptionutil import unicode_full_stack
 
 import wapi.urls
 import wapi as wapi_resource
-from apps import FalconResource, ThingsResource
+from api.ps import FalconResource, ThingsResource
 
 falcon_app = falcon.API()
 

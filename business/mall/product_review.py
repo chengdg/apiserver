@@ -9,19 +9,19 @@
 from business import model as business_model
 from db.mall import models as mall_models
 
-from core.watchdog.utils import watchdog_info
+from eaglet.core import watchdog
 import logging
 #import json
 #from bs4 import BeautifulSoup
 #import math
 #from datetime import datetime
 
-from wapi.decorators import param_required
-#from core.cache import utils as cache_util
+from eaglet.decorator import param_required
+#from eaglet.core.cache import utils as cache_util
 #from db.mall import models as mall_models
 #from db.mall import promotion_models
 #import resource
-#from core.watchdog.utils import watchdog_alert
+#from eaglet.core import watchdog
 
 #import settings
 
@@ -89,9 +89,9 @@ class ProductReview(business_model.Model):
 					order_has_product=relation,
 					att_url=picture
 				).save()
-				watchdog_info(u"create_product_review after save img  %s" % (picture), \
+				watchdog.info(u"create_product_review after save img  %s" % (picture), \
 					type="mall", user_id=owner_id)
-			watchdog_info(u"create_product_review end, order_has_product_id is %s" % \
+			watchdog.info(u"create_product_review end, order_has_product_id is %s" % \
 				(args['order_has_product_id']), type="mall", user_id=owner_id)
 		return product_review
 

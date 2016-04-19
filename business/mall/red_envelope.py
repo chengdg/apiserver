@@ -8,9 +8,9 @@
 
 #from core import inner_resource
 #from core import auth
-#from core.cache import utils as cache_util
+#from eaglet.core.cache import utils as cache_util
 #import cache
-from wapi.decorators import param_required
+from eaglet.decorator import param_required
 from db.mall import models as mall_models
 from datetime import datetime
 from business import model as business_model

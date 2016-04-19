@@ -31,13 +31,13 @@ from business.mall.allocator.allocate_price_related_resource_service import Allo
 from business.mall.order import Order
 
 #from business.mall.package_order_service.package_order_service import CalculatePriceService
-from utils.microservice_consumer import ResponseCodeException
-from wapi.decorators import param_required
+from util.microservice_consumer import ResponseCodeException
+from eaglet.decorator import param_required
 #from wapi import wapi_utils
-from core.cache import utils as cache_util
+from eaglet.core.cache import utils as cache_util
 from db.mall import models as mall_models
 #import resource
-from core.watchdog.utils import watchdog_alert,watchdog_error
+from eaglet.core import watchdog
 from core.exceptionutil import unicode_full_stack
 from business import model as business_model
 from business.mall.product import Product
@@ -53,7 +53,7 @@ from business.mall.package_order_service.package_order_service import PackageOrd
 from business.mall.reserved_product_repository import ReservedProductRepository
 from business.mall.group_reserved_product_service import GroupReservedProductService
 from business.mall.order_exception import OrderResourcesException, OrderFailureException, OrderResourcesLockException
-from utils.lock import RedisLock, REGISTERED_LOCK_NAMES
+from util.lock import RedisLock, REGISTERED_LOCK_NAMES
 
 
 class OrderFactory(business_model.Model):
@@ -266,7 +266,7 @@ class OrderFactory(business_model.Model):
 		try:
 			create_order_lock_is_success = self.__acquire_create_order_lock_by_purchase_info(purchase_info)
 			if not create_order_lock_is_success:
-				watchdog_alert(u'下单异常并发')
+				watchdog.alert(u'下单异常并发')
 				raise OrderResourcesLockException([{
 					"is_success": False,
 					"msg": u'请勿短时间连续下单,error when get lock',
@@ -327,7 +327,7 @@ class OrderFactory(business_model.Model):
 			pass
 		except:
 			msg = unicode_full_stack()
-			watchdog_alert(msg)
+			watchdog.alert(msg)
 			self.__release_order(order, price_free_resources, price_related_resources)
 			raise OrderFailureException
 

@@ -2,7 +2,7 @@
 from celery import task
 
 from core.exceptionutil import unicode_full_stack
-from core.watchdog.utils import watchdog_error
+from eaglet.core import watchdog
 from db.member import models as member_model
 
 
@@ -19,5 +19,5 @@ def record_member_pv(self, member_id, url, page_title=''):
         )
     except:
         notify_message = u"record_member_pv,member_id:{} cause:\n{}".format(member_id, unicode_full_stack())
-        watchdog_error(notify_message)
+        watchdog.error(notify_message)
         raise self.retry()

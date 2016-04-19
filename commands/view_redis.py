@@ -5,9 +5,9 @@ __author__ = 'robert'
 import datetime
 import array
 
-from utils.command import BaseCommand
+from util.command import BaseCommand
 
-from core.cache import utils as cache_util
+from eaglet.core.cache import utils as cache_util
 from bson import json_util
 import json
 

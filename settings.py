@@ -3,6 +3,8 @@
 import os
 import logging
 
+SERVICE_NAME = "H5"
+
 DEBUG = True
 PROJECT_HOME = os.path.dirname(os.path.abspath(__file__))
 
@@ -44,8 +46,8 @@ MIDDLEWARES = [
     'middleware.OAuth_middleware.OAuthMiddleware',
     'middleware.core_middleware.ApiAuthMiddleware',
     
-    'middleware.debug_middleware.SqlMonitorMiddleware',
-    'middleware.debug_middleware.RedisMiddleware',
+    # 'middleware.debug_middleware.SqlMonitorMiddleware',
+    # 'middleware.debug_middleware.RedisMiddleware',
 
     #账号信息中间件
     'middleware.webapp_account_middleware.WebAppAccountMiddleware',
@@ -124,7 +126,7 @@ TASKQUEUE_ENABLED = True
 INSTALLED_TASKS = [
     #'resource.member.tasks',
     'core.watchdog.tasks.send_watchdog',
-    'wapi.tasks',
+    'apitasks',
     
     'services.example_service.tasks.example_log_service',
     'services.order_notify_mail_service.task.notify_order_mail',
@@ -189,3 +191,5 @@ else:
 
 
 DEV_SERVER_MULTITHREADING = False
+
+REDIS_CACHE_KEY = ':1:api'

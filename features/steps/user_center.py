@@ -13,7 +13,7 @@ from db.member import models as member_models
 from business.account.webapp_user import WebAppUser
 from business.account.webapp_owner import WebAppOwner
 
-from core.cache import utils as cache_util
+from eaglet.core.cache import utils as cache_util
 import logging
 
 @then(u"{webapp_user_name}在{webapp_owner_name}的webapp中拥有{integral_count}会员积分")

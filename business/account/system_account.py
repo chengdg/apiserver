@@ -9,9 +9,9 @@ from bs4 import BeautifulSoup
 import math
 from datetime import datetime
 
-from wapi.decorators import param_required
+from eaglet.decorator import param_required
 #from wapi import wapi_utils
-from core.cache import utils as cache_util
+from eaglet.core.cache import utils as cache_util
 from db.mall import models as mall_models
 from db.mall import promotion_models
 from db.account import models as account_models
@@ -23,7 +23,7 @@ from db.account import weixin_models as weixin_user_models
 from db.account import webapp_models as webapp_models
 from db.member import models as member_models
 import settings
-from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
+from eaglet.core import watchdog
 from core.exceptionutil import unicode_full_stack
 from business import model as business_model
 from business.account.social_account import SocialAccount

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 import json
 import urllib
 import urllib2
@@ -13,14 +12,21 @@ from business.account.webapp_owner import WebAppOwner
 from business.account.system_account import SystemAccount
 from business.spread.member_spread import MemberSpread
 from core import redirects
-from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
+from eaglet.core import watchdog
 from core.exceptionutil import unicode_full_stack
-from utils import msg_crypt, auth_util, error_codes
+from util import msg_crypt, auth_util, error_codes
 import settings
 #import resource
 
-# from wapi.member import a_member_account
-from wapi.user.access_token import AccessToken
+import sys
+print '<><><><><<',sys.path , "<<>>>><<<>><<>"
+
+from api.member import a_member_account
+try:
+	from api.user.access_token import AccessToken
+except Exception, e:
+	pass
+
 
 class OAuthMiddleware(object):
 	"""
@@ -184,7 +190,7 @@ class OAuthMiddleware(object):
 			except:
 				notify_message = u"oauth2 access_token: cause:\n{}".format(unicode_full_stack())
 				print notify_message
-				watchdog_error(notify_message)
+				watchdog.error(notify_message)
 		print '>>>>>>>>>>>>>>>>>>>>>response_data:',response_data
 		if response_data.has_key('openid'):
 			return response_data['openid']

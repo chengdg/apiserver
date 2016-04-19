@@ -8,7 +8,7 @@ from db.mall import models as mall_models
 
 
 # 团购服务api接口
-from utils.microservice_consumer import microservice_consume
+from util.microservice_consumer import microservice_consume
 
 GroupBuyOPENAPI = {
 	# 'group_buy_product': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/group_buy_product',

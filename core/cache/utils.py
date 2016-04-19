@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from core.watchdog.utils import watchdog_alert
+from eaglet.core import watchdog
 
 __author__ = 'bert'
 
@@ -236,7 +236,7 @@ def get_from_cache(key, on_miss):
 			if settings.DEBUG:
 				raise
 			else:
-				watchdog_alert(unicode_full_stack())
+				watchdog.alert(unicode_full_stack())
 				return None
 
 

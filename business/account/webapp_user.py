@@ -9,22 +9,22 @@ from bs4 import BeautifulSoup
 import math
 from datetime import datetime
 
-from wapi.decorators import param_required
+from eaglet.decorator import param_required
 #from wapi import wapi_utils
-from core.cache import utils as cache_util
+from eaglet.core.cache import utils as cache_util
 from core.exceptionutil import unicode_full_stack
 from db.mall import models as mall_models
 from db.mall import promotion_models
 from db.member import models as member_models
 #import resource
-from core.watchdog.utils import watchdog_alert
+from eaglet.core import watchdog
 from business import model as business_model
 from business.account.member import Member
 from business.mall.shopping_cart import ShoppingCart
 from business.mall.product import Product
 import settings
 from business.decorator import cached_context_property
-from utils import regional_util
+from util import regional_util
 from business.account.member_order_info import MemberOrderInfo
 from business.account.social_account import SocialAccount
 
@@ -204,7 +204,7 @@ class WebAppUser(business_model.Model):
 			return True
 		except:
 			msg = unicode_full_stack()
-			watchdog_alert(msg, type='WAPI')
+			watchdog.alert(msg, type='WAPI')
 			return False
 
 
@@ -247,7 +247,7 @@ class WebAppUser(business_model.Model):
 			return True
 		except:
 				msg = unicode_full_stack()
-				watchdog_alert(msg, type='WAPI')
+				watchdog.alert(msg, type='WAPI')
 				return False
 
 	def create_ship_info(self, ship_info):
@@ -267,7 +267,7 @@ class WebAppUser(business_model.Model):
 			return True, ship_info_id
 		except:
 				msg = unicode_full_stack()
-				watchdog_alert(msg, type='WAPI')
+				watchdog.alert(msg, type='WAPI')
 				return False, 0
 
 	@cached_context_property

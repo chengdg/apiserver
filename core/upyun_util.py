@@ -3,7 +3,7 @@
 import upyun
 import settings
 from core.exceptionutil import unicode_full_stack
-from core.watchdog.utils import watchdog_alert,watchdog_error,watchdog_debug
+from eaglet.core import watchdog
 import urllib2
 # ------------------ CONFIG ---------------------
 
@@ -33,7 +33,7 @@ def upload_image_to_upyun(file_path, upyun_path):
 			return image_path % (BUCKETNAME, upyun_path)
 	except:
 		notify_message = u"upload_image_to_upyun error {}".format(unicode_full_stack())
-		watchdog_error(notify_message)
+		watchdog.error(notify_message)
 		return '/static%s' % upyun_path
 	return None
 
@@ -81,7 +81,7 @@ def upload_qrcode_url_to_upyun(http_image_url, file_name):
 			return http_image_url
 	except:
 		notify_message = u"upload_qrcode_url_to_upyun error {}".format(unicode_full_stack())
-		watchdog_error(notify_message)
+		watchdog.error(notify_message)
 		return http_image_url
 	return None
 
@@ -103,7 +103,7 @@ def upload_weixin_url_to_upyun(http_image_url, file_name):
 			return http_image_url
 	except:
 		notify_message = u"upload_weixn_url_to_upyun error {}".format(unicode_full_stack())
-		watchdog_error(notify_message)
+		watchdog.error(notify_message)
 		return http_image_url
 	return None
 

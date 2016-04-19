@@ -3,10 +3,10 @@ import copy
 from datetime import datetime
 import json
 
-from core.db import models
+from eaglet.core.db import models
 from db.account.models import User
 from db.mall import models as mall_models
-from core.watchdog.utils import watchdog_fatal
+from eaglet.core import watchdog
 import settings
 from db.mall import models as mall_models
 from db.member.models import Member

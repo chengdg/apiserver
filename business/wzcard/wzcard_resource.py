@@ -5,7 +5,7 @@
 """
 
 from business import model as business_model
-#from wapi.decorators import param_required
+#from eaglet.decorator import param_required
 
 class WZCardResource(business_model.Resource):
 	"""

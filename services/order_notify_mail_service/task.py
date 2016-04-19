@@ -8,7 +8,7 @@ from celery import task
 import settings
 from core.exceptionutil import unicode_full_stack
 from core.sendmail import sendmail
-from core.watchdog.utils import watchdog_warning
+from eaglet.core import watchdog
 from features.util.bdd_util import set_bdd_mock
 
 
@@ -116,4 +116,4 @@ def __send_email(user_id, emails, content_described, content):
 				sendmail(email, content_described, content)
 	except:
 		notify_message = u"发送邮件失败user_id（{}）, cause:\n{}".format(user_id,unicode_full_stack())
-		watchdog_warning(notify_message)
+		watchdog.warning(notify_message)

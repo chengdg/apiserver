@@ -13,7 +13,7 @@ from db.member import models as member_models
 from business.account.webapp_user import WebAppUser
 from business.account.webapp_owner import WebAppOwner
 
-from core.cache import utils as cache_util
+from eaglet.core.cache import utils as cache_util
 import logging
 
 @when(u"{webapp_user_name}获取手机绑定验证码'{phone_number}'")

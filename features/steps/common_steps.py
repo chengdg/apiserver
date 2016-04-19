@@ -64,7 +64,7 @@ def step_impl(context, user, mp_user_name):
 def step_impl(context, user, mp_user_name):
 	weapp_steps._run_weapp_step(u'When %s访问%s的webapp' % (user, mp_user_name), None)
 
-	# from core.db import models as db_models
+	# from eaglet.core.db import models as db_models
 	# db_models.db.close()
 	#db_models.db.connect()
 

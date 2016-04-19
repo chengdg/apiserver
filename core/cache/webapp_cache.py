@@ -7,7 +7,7 @@ from django.db.models import signals
 
 import cache
 from account.models import UserProfile
-from utils import cache_util
+from util import cache_util
 from mall.models import WeizoomMall
 from mall import module_api as mall_api
 from mall import models as mall_models

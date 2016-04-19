@@ -12,14 +12,14 @@ import time
 import random
 import string
 
-from wapi.decorators import param_required
+from eaglet.decorator import param_required
 from db.member import models as member_models
 from db.mall import models as mall_models
 
 from business import model as business_model
 import settings
 from business.decorator import cached_context_property
-from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
+from eaglet.core import watchdog
 from core.exceptionutil import unicode_full_stack
 
 from business.account.webapp_user import WebAppUser
@@ -138,7 +138,7 @@ class Integral(business_model.Model):
 			return True, integral_log.id
 		except:
 			notify_message = u"update_member_integral member_id:{}, cause:\n{}".format(member.id, unicode_full_stack())
-			watchdog_error(notify_message)
+			watchdog.error(notify_message)
 			return False, None
 
 
@@ -311,4 +311,4 @@ class Integral(business_model.Model):
 									})
 							except:
 								notify_message = u"increase_father_member_integral_by_child_member_buyed cause:\n{}".format(unicode_full_stack())
-								watchdog_error(notify_message)
+								watchdog.error(notify_message)

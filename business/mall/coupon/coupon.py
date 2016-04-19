@@ -44,6 +44,7 @@ class Coupon(business_model.Model):
 		if model:
 			self._init_slot_from_model(model)
 			self.__check_coupon_status()
+			self.limit_product_id = map(lambda x: int(x), self.limit_product_id.split(','))
 
 	@staticmethod
 	@param_required(['id'])
@@ -224,7 +225,7 @@ class Coupon(business_model.Model):
 			else:
 				price = 0
 				for product in reserved_products:
-					if product.id == self.limit_product_id:
+					if product.id in (self.limit_product_id).split(','):
 						price += product.original_price * product.purchase_count
 
 				if self.valid_restrictions > price:

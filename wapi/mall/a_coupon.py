@@ -51,7 +51,8 @@ class ACoupon(api_resource.ApiResource):
 		webapp_owner = args['webapp_owner']
 
 		coupon = Coupon.from_coupon_id({
-			'coupon_id': args['coupon_id']
+			'coupon_id': args['coupon_id'],
+			'webapp_owner_id': webapp_owner.id
 		})
 		if coupon:
 			forbidden_coupon_product_ids = ForbiddenCouponProductIds.get_for_webapp_owner({

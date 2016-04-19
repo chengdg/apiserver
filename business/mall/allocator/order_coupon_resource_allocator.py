@@ -33,7 +33,7 @@ class OrderCouponResourceAllocator(business_model.Model):
 			# 未使用优惠券
 			self.__return_empty_coupon()
 		else:
-			coupon = Coupon.from_coupon_id({'coupon_id': purchase_info.coupon_id})
+			coupon = Coupon.from_coupon_id({'coupon_id': purchase_info.coupon_id, 'webapp_owner_id':webapp_owner.id})
 			if not coupon:
 				reason = u'请输入正确的优惠券号'
 				is_success = False

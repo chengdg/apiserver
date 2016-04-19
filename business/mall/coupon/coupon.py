@@ -58,11 +58,12 @@ class Coupon(business_model.Model):
 
 
 	@staticmethod
-	@param_required(['coupon_id'])
+	@param_required(['coupon_id', 'webapp_owner_id'])
 	def from_coupon_id(args):
 		coupon_id = args['coupon_id']
+		webapp_owner_id = args['webapp_owner_id']
 		try:
-			coupon_db_model = promotion_models.Coupon.get(coupon_id=coupon_id)
+			coupon_db_model = promotion_models.Coupon.get(coupon_id=coupon_id, owner=webapp_owner_id)
 			coupons = Coupon.__create_coupons([coupon_db_model])
 			return coupons[0]
 		except:

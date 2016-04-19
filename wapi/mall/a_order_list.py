@@ -13,6 +13,7 @@ from wapi.mall.a_purchasing import APurchasing as PurchasingApiResource
 from core.cache import utils as cache_utils
 from business.mall.order import Order
 from business.mall.order_products import OrderProducts
+from business.mall.order_config import OrderConfig
 from business.mall.review.waiting_review_order import WaitingReviewOrder
 
 
@@ -57,7 +58,7 @@ class AOrderList(api_resource.ApiResource):
 				})
 
 			review_is_finished = waiting_review_order.reviewed
-			
+
 			data = {
 				'id': order.id,
 				'order_id': order.order_id,
@@ -99,9 +100,10 @@ class AOrderList(api_resource.ApiResource):
 			data['pay_info'] = order.pay_info
 			order_datas.append(data)
 
-
+		order_config = OrderConfig.get_order_config({'webapp_owner': webapp_owner})
 		return {
-			'orders': order_datas
+			'orders': order_datas,
+			'order_config': order_config
 		}
 
 

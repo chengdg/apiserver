@@ -3,9 +3,11 @@
 @package business.mall.order_config
 订单分享挣积分配置
 """
+from datetime import datetime
+
+import settings
 from wapi.decorators import param_required
 from db.mall import models as mall_models
-from datetime import datetime
 from business import model as business_model
 
 class OrderConfig(business_model.Model):
@@ -28,6 +30,8 @@ class OrderConfig(business_model.Model):
 
         if model:
             self._init_slot_from_model(model)
+            self.background_image = '%s%s' % ((settings.IMAGE_HOST, model.background_image) if model.background_image.find('http') == -1 else model.background_image)
+            self.share_image = '%s%s' % ((settings.IMAGE_HOST, model.share_image) if model.share_image.find('http') == -1 else model.share_image)
 
     @staticmethod
     @param_required([])

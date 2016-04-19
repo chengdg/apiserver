@@ -22,7 +22,7 @@ class Coupon(business_model.Model):
 		'status',
 		'display_status',
 		'coupon_id',
-		'limit_product_id',
+		'limit_product_id',  # 多商品券的限制商品id列表
 		'provided_time',
 		'start_time',
 		'expired_time',

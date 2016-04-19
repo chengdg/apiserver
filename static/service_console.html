@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<title>API Server Console</title>
+		<title>testpy Service Console - Python</title>
 
 		<link type="text/css" rel="stylesheet" media="all" href="/static/lib/bootstrap-3.3.4/css/bootstrap.min.css">
 		<link type="text/css" rel="stylesheet" media="all" href="/static/css/base.css">
@@ -16,7 +16,7 @@
 		<nav class="navbar navbar-default" style="margin-bottom: 5px;">
 			<div class="container-fluid">
 				<div class="navbar-header">
-					<a class="navbar-brand" href="#">API Server Console</a>
+					<a class="navbar-brand" href="#">testpy Service Console - Python</a>
 				</div>
 			</div><!-- /.container-fluid -->
 		</nav>
@@ -45,8 +45,9 @@
 			<div id="queries" class="fl ml10" style="width:48%;">
 				<table class="table table-bordered">
 					<thead>
+						<th width="40px">源</th>
 						<th width="85%">SQL查询<span class="xa-sqlCount"></span></th>
-						<th>执行时间</th>
+						<th>时间</th>
 					</thead>
 					<tbody class="xa-table">
 					</tbody>
@@ -97,11 +98,12 @@
 			queries.forEach(function(query) {
 				index += 1;
 				buf.push('<tr style="cursor:pointer;" class="xa-span" data-target="'+index+'">');
-				buf.push('<td>'+query.sql+'</td>');
+				buf.push('<td>'+query.source+'</td>');
+				buf.push('<td>'+query.query+'</td>');
 				buf.push('<td>'+query.time+'</td>');
 				buf.push('</tr>');
 				buf.push('<tr style="display:none;" data-index="'+index+'">');
-				buf.push('<td colspan="2" style="background-color:white;">'+query.stack+'</td>');
+				buf.push('<td colspan="3" style="background-color:white;">'+query.stack+'</td>');
 				buf.push('</tr>');
 			});
 
@@ -133,14 +135,14 @@
 				var data = dataCodeMirror.getValue();
 				data = eval(data.replace(/'/g, '\''));
 				var resource = $('#resource').val();
-				var url = '/wapi/' + resource.replace(/\./g, '/');
+				var url = '/' + resource.replace(/\./g, '/');
 
 				resultViewer.set('fetching...');
 				__displayQueries([]);
 
 				if (action == 'get') {
 					$.get(url, data, function(data) {
-						var queries = data.queries;
+						var queries = data.queries || [];
 						delete data.queries;
 						__displayQueries(queries);
 
@@ -166,7 +168,7 @@
 						url += '?_method=' + action;
 					}
 					$.post(url, data, function(data) {
-						var queries = data.queries;
+						var queries = data.queries || [];
 						delete data.queries;
 						__displayQueries(queries);
 

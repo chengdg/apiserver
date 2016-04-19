@@ -30,8 +30,8 @@ class OrderConfig(business_model.Model):
 
         if model:
             self._init_slot_from_model(model)
-            self.background_image = '%s%s' % ((settings.IMAGE_HOST, model.background_image) if model.background_image.find('http') == -1 else model.background_image)
-            self.share_image = '%s%s' % ((settings.IMAGE_HOST, model.share_image) if model.share_image.find('http') == -1 else model.share_image)
+            self.background_image = '%s%s' % (settings.IMAGE_HOST, model.background_image) if model.background_image.find('http') == -1 else model.background_image
+            self.share_image = '%s%s' % (settings.IMAGE_HOST, model.share_image) if model.share_image.find('http') == -1 else model.share_image
 
     @staticmethod
     @param_required([])

@@ -34,7 +34,7 @@ class Coupon(business_model.Model):
 		'name',
 		'valid_days',
 		'valid_time',
-		'invalid_reason'
+		'invalid_reason',
 	)
 
 	def __init__(self, model):
@@ -257,8 +257,12 @@ class Coupon(business_model.Model):
 		reserved_products = order.products
 		return self.is_can_use_for_products(webapp_user, reserved_products)
 
-	def to_dict(self, *extra):
+	def to_dict(self,*extras):
 		result = super(Coupon, self).to_dict()
+		if extras:
+			for extra in extras:
+				if extra == 'coupon_rule_id':
+					result[extra] = result['coupon_rule'].id
 		del result['coupon_rule']
 		result['start_time'] = result['start_time'].strftime('%Y/%m/%d %H:%M:%S')
 		result['expired_time'] = result['expired_time'].strftime('%Y/%m/%d %H:%M:%S')

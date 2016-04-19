@@ -26,13 +26,10 @@ class AProducts(api_resource.ApiResource):
 		category_id = args['category_id']
 		webapp_owner = args['webapp_owner']
 		coupon_rule_id = int(args['coupon_rule_id'])
-		print "coupon_rule_id",coupon_rule_id
 		coupon_rule = CouponRule.from_id({
 			'id': coupon_rule_id
 			})
-		print "coupon_rule>>>end>>>>",coupon_rule
-		product_ids = coupon_rule.limit_product_id.split(',')
-		product_ids = [int(product_id) for product_id in product_ids] #多商品券下的商品id
+		product_ids = map(lambda x: int(x), coupon_rule.limit_product_id.split(',')) #多商品券下的商品id
 		simple_products = SimpleProducts.get({
 			"webapp_owner": webapp_owner,
 			"category_id": category_id,

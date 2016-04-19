@@ -117,7 +117,7 @@ class Coupon(business_model.Model):
 			coupon_rule = id2coupon_rule[coupon_db_model.coupon_rule_id]
 			coupon.coupon_rule = coupon_rule
 			coupon.valid_restrictions = coupon_rule.valid_restrictions
-			coupon.limit_product_id = map(lambda x: int(x), coupon_rule.limit_product_id.split(','))
+			coupon.limit_product_id = map(lambda x: int(x), coupon_rule.limit_product_id.split(',')) if coupon_rule.limit_product_id != '0' else 0
 			coupon.name = coupon_rule.name
 
 			#填充优惠券倒计时信息

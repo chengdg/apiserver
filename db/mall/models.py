@@ -32,6 +32,27 @@ class MallConfig(models.Model):
 	class Meta(object):
 		db_table = 'mall_config'
 
+#########################################################################
+# 订单完成分享挣积分信息配置相关Model
+#########################################################################
+class MallShareOrderPageConfig(models.Model):
+	"""
+	订单完成分享挣积分信息配置
+	"""
+	owner = models.ForeignKey(User)
+	is_share_page = models.BooleanField(default=False) # 是否提示分享挣积分
+	background_image = models.CharField(max_length=1024, default='')
+	share_image = models.CharField(max_length=1024, default='')
+	share_describe = models.TextField(default='')
+	material_id = models.IntegerField(default=0) #图文素材id
+	news_id = models.IntegerField(default=0) #图文id
+	created_at = models.DateTimeField(auto_now_add=True)
+
+	class Meta(object):
+		db_table = 'mall_share_order_page_config'
+		verbose_name = '订单完成分享挣积分信息配置'
+		verbose_name_plural = '订单完成分享挣积分信息配置'
+
 
 #########################################################################
 # 地域相关Model

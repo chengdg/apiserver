@@ -5,6 +5,7 @@ from core.exceptionutil import unicode_full_stack
 from wapi.decorators import param_required
 from business.mall.order import Order
 from business.mall.red_envelope import RedEnvelope
+from business.mall.order_config import OrderConfig
 from core.watchdog.utils import watchdog_alert
 import db.mall.models as mall_models
 
@@ -48,6 +49,8 @@ class APayResult(api_resource.ApiResource):
 			is_show_red_envelope = True
 			red_envelope_rule_id = red_envelope['id']
 
+		order_config = OrderConfig.get_order_config({'webapp_owner': webapp_owner})
+
 		qrcode_img = webapp_owner.qrcode_img
 		activity_url = ''
 		if order.is_group_buy:
@@ -59,7 +62,8 @@ class APayResult(api_resource.ApiResource):
 			'is_show_red_envelope': is_show_red_envelope,
 			'red_envelope_rule_id': red_envelope_rule_id,
 			'qrcode_img': qrcode_img,
-			'activity_url': activity_url
+			'activity_url': activity_url,
+			'order_config': order_config
 		}
 
 	@param_required(['order_id', 'pay_interface_type'])

@@ -73,7 +73,7 @@ def step_impl(context, user, mp_user_name):
 	client = bdd_util.login(user, None, context=context)
 	
 	#获得访问mp_user_name数据的access token
-	response = client.put('/wapi/user/access_token/', {
+	response = client.put('/user/access_token/', {
 		'woid': webapp_owner.id,
 		'openid': '%s_%s' % (user, mp_user_name)
 	})

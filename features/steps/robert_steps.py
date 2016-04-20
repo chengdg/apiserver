@@ -286,7 +286,7 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 		time_str = args.get("distribution_time")
 		time_strs = time_str.split(" ")
 		data["delivery_time"] = "{} {}".format(bdd_util.get_date_str(time_strs[0]),time_strs[1])
-	url = '/wapi/mall/order/?_method=put'
+	url = '/mall/order/?_method=put'
 	data['woid'] = context.webapp_owner_id
 	response = context.client.post(url, data)
 	# bdd_util.assert_api_call_success(response)
@@ -305,7 +305,7 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 		pay_type = pay_url_info['type']
 		del pay_url_info['type']
 		if pay_type == 'cod':
-			pay_url = '/wapi/pay/pay_result/?_method=put'
+			pay_url = '/pay/pay_result/?_method=put'
 			data = {
 				'pay_interface_type': pay_url_info['pay_interface_type'],
 				'order_id': pay_url_info['order_id']
@@ -357,7 +357,7 @@ def __check_order(context, webapp_user_name):
 		assert False, "order_id must NOT be -1"
 		return
 
-	url = '/wapi/mall/order/?woid=%s&order_id=%s' % (context.webapp_owner_id, order_id)
+	url = '/mall/order/?woid=%s&order_id=%s' % (context.webapp_owner_id, order_id)
 	response = context.client.get(bdd_util.nginx(url), follow=True)
 
 	actual_order = response.data['order']
@@ -403,7 +403,7 @@ def step_impl(context, webapp_user_name):
 @then(u"{webapp_user_name}获得订单支付结果")
 def step_impl(context, webapp_user_name):
 	expected = json.loads(context.text)
-	url = '/wapi/pay/pay_result/?order_id=%s' % expected['order_id']
+	url = '/pay/pay_result/?order_id=%s' % expected['order_id']
 	actual = context.client.get(bdd_util.nginx(url), follow=True).data
 	order_info = actual['order']
 
@@ -428,7 +428,7 @@ def step_impl(context, webapp_usr_name, order_id):
 	# 为获取完可顺利支付
 	context.created_order_id = order_id
 
-	url = '/wapi/mall/order/?woid=%s&order_id=%s' % (context.webapp_owner_id, order_id)
+	url = '/mall/order/?woid=%s&order_id=%s' % (context.webapp_owner_id, order_id)
 	response = context.client.get(bdd_util.nginx(url), follow=True)
 
 	actual = response.data['order']
@@ -504,7 +504,7 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 	webapp_owner_id = context.webapp_owner_id
 
 	products_info = json.loads(context.text)
-	url = '/wapi/mall/shopping_cart_item/?_method=put'
+	url = '/mall/shopping_cart_item/?_method=put'
 	for product_info in products_info:
 		product_name = product_info['name']
 		product_count = product_info.get('count', 1)
@@ -586,7 +586,7 @@ def step_impl(context, webapp_user_name):
 			"invalid_products": []
 		}
 	"""
-	url = '/wapi/mall/shopping_cart/?woid=%d' % context.webapp_owner_id
+	url = '/mall/shopping_cart/?woid=%d' % context.webapp_owner_id
 	response = context.client.get(bdd_util.nginx(url), follow=True)
 	bdd_util.assert_api_call_success(response)
 	product_groups = response.data['product_groups']
@@ -651,7 +651,7 @@ def step_impl(context, webapp_user_name):
 			"woid": context.webapp_owner_id
 		}
 
-		response = context.client.post('/wapi/mall/shopping_cart_item/?_method=delete', data)
+		response = context.client.post('/mall/shopping_cart_item/?_method=delete', data)
 		bdd_util.assert_api_call_success(response)
 
 
@@ -666,7 +666,7 @@ def step_impl(context, webapp_user_name,webapp_owner_name):
 		'ship_tel': '13811223344'
 	}
 
-	url = '/wapi/mall/ship_info/?_method=put'
+	url = '/mall/ship_info/?_method=put'
 	response = context.client.post(url, data)
 	context.ship_address = data
 
@@ -693,7 +693,7 @@ def step_impl(context, webapp_user_name):
 		argument = __i.get('context')
 		# 获取购物车参数
 		product_ids, product_counts, product_model_names = _get_shopping_cart_parameters(context.webapp_user.id, argument)
-		url = '/wapi/mall/purchasing/?woid=%s&product_ids=%s&product_counts=%s&product_model_names=%s' % (context.webapp_owner_id, product_ids, product_counts, product_model_names)
+		url = '/mall/purchasing/?woid=%s&product_ids=%s&product_counts=%s&product_model_names=%s' % (context.webapp_owner_id, product_ids, product_counts, product_model_names)
 		print '==========================================***************************************'
 		print url
 		print '==========================================***************************************'
@@ -708,7 +708,7 @@ def step_impl(context, webapp_user_name):
 		argument = __i.get('context')
 		# 获取购物车参数
 		product_ids, product_counts, product_model_names = _get_shopping_cart_parameters(context.webapp_user.id, argument)
-		url = '/wapi/mall/purchasing/?woid=%s&product_ids=%s&product_counts=%s&product_model_names=%s' % (context.webapp_owner_id, product_ids, product_counts, product_model_names)
+		url = '/mall/purchasing/?woid=%s&product_ids=%s&product_counts=%s&product_model_names=%s' % (context.webapp_owner_id, product_ids, product_counts, product_model_names)
 		print '==========================================***************************************'
 		print url
 		print '==========================================***************************************'
@@ -839,7 +839,7 @@ def step_click_check_out(context, webapp_user_name):
 
 	order = context.shopping_cart_order
 	product_info = _get_prodcut_info(order)
-	url = '/wapi/mall/order/?_method=put'
+	url = '/mall/order/?_method=put'
 	data = {
 		'order_type': 'normal',
 		'is_order_from_shopping_cart': 'true',
@@ -879,7 +879,7 @@ def step_click_check_out(context, webapp_user_name):
 		pay_type = pay_url_info['type']
 		del pay_url_info['type']
 		if pay_type == 'cod':
-			pay_url = '/wapi/pay/pay_result/?_method=put'
+			pay_url = '/pay/pay_result/?_method=put'
 			data = {
 				'pay_interface_type': pay_url_info['pay_interface_type'],
 				'order_id': pay_url_info['order_id']
@@ -922,7 +922,7 @@ def step_visit_personal_orders(context, webapp_user_name, order_type):
 	expected = json.loads(context.text)
 	actual = []
 
-	url = '/wapi/mall/order_list/?woid=%d&type=%d' % (context.webapp_owner_id, status)
+	url = '/mall/order_list/?woid=%d&type=%d' % (context.webapp_owner_id, status)
 	response = context.client.get(bdd_util.nginx(url), follow=True)
 	orders = response.data['orders']
 	import datetime
@@ -964,7 +964,7 @@ def step_impl(context, webapp_user_name, pay_interface_name):
 			continue
 		break
 
-	pay_url = '/wapi/pay/pay_result/?_method=put'
+	pay_url = '/pay/pay_result/?_method=put'
 	data = {
 		'pay_interface_type': pay_interface.type,
 		'order_id': context.created_order_id,

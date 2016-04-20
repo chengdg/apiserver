@@ -65,12 +65,8 @@ import sys
 #         print 'no command named: ', command
 import sys,os
 from eaglet.command import manage as command_manager
-
-print ">>>>>",sys.path
 import settings
-if __name__ == '__main__': 
-    wapi_path = os.path.join(settings.PROJECT_HOME, '..', 'wapi')
-    sys.path.insert(0, wapi_path)
+if __name__ == '__main__':
     command = sys.argv[1]
     command_manager.run_command(command)
 

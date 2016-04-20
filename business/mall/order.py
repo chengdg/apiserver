@@ -207,7 +207,7 @@ class Order(business_model.Model):
 				webapp_owner_id = webapp_owner.id
 				error_msg = u"获得order_id('{}')对应的Order model失败, cause:\n{}"\
 						.format(webapp_owner_id, unicode_full_stack())
-				watchdog.error(error_msg, user_id=webapp_owner_id, noraise=True)
+				watchdog.error(error_msg, user_id=webapp_owner_id )
 				self.context['is_valid'] = False
 		else:
 			# 用于创建空的Order model

@@ -125,8 +125,8 @@ TASKQUEUE_ENABLED = True
 # Celery for Falcon
 INSTALLED_TASKS = [
     #'resource.member.tasks',
-    'core.watchdog.tasks.send_watchdog',
-    'apitasks',
+    #'core.watchdog.tasks.send_watchdog',
+    'api.tasks',
     
     'services.example_service.tasks.example_log_service',
     'services.order_notify_mail_service.task.notify_order_mail',

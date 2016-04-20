@@ -17,7 +17,7 @@ def step_impl(context, weixin_user,user):
 	product_name = product_info['name']
 	product = mall_models.Product.get(owner=webapp_owner_id, name=product_name)
 
-	response = context.client.put('/wapi/member/collected_product/', {
+	response = context.client.put('/member/collected_product/', {
 		'product_id': product.id
 	})
 	
@@ -29,7 +29,7 @@ def step_impl(context, weixin_user,user):
 def step_impl(context, weixin_user):
 	expected = json.loads(context.text)
 	webapp_owner_id = context.webapp_owner_id
-	response = context.client.get('/wapi/member/collected_products/', {
+	response = context.client.get('/member/collected_products/', {
 	})
 	
 	expected = json.loads(context.text)
@@ -44,7 +44,7 @@ def step_impl(context, weixin_user):
 	product_name = product_info['name']
 	product = mall_models.Product.get(owner=webapp_owner_id, name=product_name)
 
-	response = context.client.delete('/wapi/member/collected_product/', {
+	response = context.client.delete('/member/collected_product/', {
 		'product_id': product.id,
 		'wished': '0'
 	})

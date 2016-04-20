@@ -132,7 +132,7 @@ Background:
 	Given tom1关注jobs的公众号
 	Given tom2关注jobs的公众号
 
-@mall3
+@mall3 @group_t 
 Scenario:1 订单列表只有团购订单-团购进行中
 	1 同一个会员参与同一个团购活动的不同团-未成团
 	2 同一个会员参与不同团购活动的团-未成团
@@ -630,7 +630,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 			}]
 			"""
 
-@mall3
+@mall3 @group_t
 Scenario:2 订单列表只有团购订单-团购未成团(退款成功，微信退款不能用feature实现)
 	#1 由于团购活动时间过期、组团时间过期、手动结束团购活动造成未组团成功
 	#团购支付的所有订单自动进入"退款中"状态，自动退款
@@ -737,7 +737,7 @@ Scenario:2 订单列表只有团购订单-团购未成团(退款成功，微信�
 			}]
 			"""
 
-@mall3
+@mall3 @group_t @gyct12
 Scenario:3 订单列表只有团购订单-团购成团订单发货、完成订单
 	#团购成功的订单进行发货和完成订单
 
@@ -994,7 +994,7 @@ Scenario:3 订单列表只有团购订单-团购成团订单发货、完成订�
 			}]
 			""" 
 			
-@mall3
+@mall3 @group_t
 Scenario:4 订单列表团购进行中订单+普通订单
 	#在开团之前，购买团购商品
 		When bill访问jobs的webapp
@@ -1317,7 +1317,7 @@ Scenario:5 订单列表团购订单-手机端开团未支付订单
 			[]
 			"""
 
-@mall3
+@mall3 @group_t
 Scenario:6 订单列表团购订单-手机端参团未支付订单
 	#bill作为团长开团参与团购活动"团购活动1"
 		When bill访问jobs的webapp

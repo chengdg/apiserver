@@ -30,6 +30,8 @@ from business.account.webapp_user_factory import WebAppUserFactory
 from business.account.webapp_user import WebAppUser
 from business.account.system_account import SystemAccount
 
+import logging
+
 class MemberSpread(business_model.Model):
 	"""
 	会员传播
@@ -55,6 +57,9 @@ class MemberSpread(business_model.Model):
 		if fmt:
 			fmt = fmt[0]
 		#创建会员
+		logging.info(">>>>>>>>!>!!>>!!>>!!>")
+		logging.info(fmt)
+		logging.info("<<<<<<<<<<<<<<")
 		member = MemberFactory.create({
 			"webapp_owner": args['webapp_owner'],
 			"openid": args['openid'],

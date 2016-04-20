@@ -17,15 +17,8 @@ from core.exceptionutil import unicode_full_stack
 from util import msg_crypt, auth_util, error_codes
 import settings
 #import resource
-
-import sys
-print '<><><><><<',sys.path , "<<>>>><<<>><<>"
-
 from api.member import a_member_account
-try:
-	from api.user.access_token import AccessToken
-except Exception, e:
-	pass
+from api.user.access_token import AccessToken
 
 
 class OAuthMiddleware(object):

@@ -19,7 +19,7 @@ import logging
 @then(u"{webapp_user_name}在{webapp_owner_name}的webapp中拥有{integral_count}会员积分")
 def step_impl(context, webapp_user_name, webapp_owner_name, integral_count):
 	#webapp_owner_id = context.webapp_owner_id
-	response = context.client.get('/wapi/user_center/user_center/', {
+	response = context.client.get('/user_center/user_center/', {
 	})
 	
 	##expected = json.loads(context.text)
@@ -64,7 +64,7 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 @when(u"{user}访问个人中心")
 def step_impl(context, user):
 	webapp_owner_id = context.webapp_owner_id
-	response = context.client.get('/wapi/user_center/user_center/', {
+	response = context.client.get('/user_center/user_center/', {
 	})
 	#response = context.client.get(bdd_util.nginx(url), follow=True)
 	
@@ -103,7 +103,7 @@ def step_impl(context, expected):
 
 @then(u"{webapp_user_name}能获得优惠券列表")
 def step_impl(context, webapp_user_name):
-	response = context.client.get('/wapi/user_center/my_coupon/')
+	response = context.client.get('/user_center/my_coupon/')
 	unused_coupons = response.body['data']['unused_coupons']
 	used_coupons = response.body['data']['used_coupons']
 	expired_coupons = response.body['data']['expired_coupons']
@@ -124,7 +124,7 @@ def __sort(dict_array):
 @then(u"{webapp_user}成功获取个人中心的'待评价'列表")
 def step_get_presonal_review_list(context, webapp_user):
 	expected = json.loads(context.text)
-	url = "/wapi/member/waiting_review_products"
+	url = "/member/waiting_review_products"
 	response = context.client.get(url, {
 	})
 	# response = context.client.get(bdd_util.nginx(url), follow=True)

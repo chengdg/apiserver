@@ -8,7 +8,7 @@ from features.util.helper import WAIT_SHORT_TIME
 
 @then(u"{user}能获取商品分类列表")
 def step_impl(context, user):
-	response = context.client.get('/wapi/mall/product_categories/', {
+	response = context.client.get('/mall/product_categories/', {
 		'at':context.client.user.token, 
 		'woid':context.client.woid
 	})

@@ -15,7 +15,7 @@ def step_impl(context, webapp_user_name, webapp_owner_name, category_name):
 		category = mall_models.ProductCategory.get(name=category_name)
 		category_id = category.id
 
-	url = '/wapi/mall/products/?woid=%s&category_id=%s' % (context.webapp_owner_id, category_id)
+	url = '/mall/products/?woid=%s&category_id=%s' % (context.webapp_owner_id, category_id)
 	response = context.client.get(bdd_util.nginx(url), follow=True)
 	context.response = response
 

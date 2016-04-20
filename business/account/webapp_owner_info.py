@@ -117,7 +117,7 @@ class WebAppOwnerInfo(business_model.Model):
 			except:
 				error_msg = u"获得user('{}')对应的webapp构建cache失败, cause:\n{}"\
 						.format(webapp_owner_id, unicode_full_stack())
-				watchdog.error(error_msg, user_id=webapp_owner_id, noraise=True)
+				watchdog.error(error_msg, user_id=webapp_owner_id )
 				webapp = webapp_models.WebApp()
 
 			#integral strategy
@@ -126,7 +126,7 @@ class WebAppOwnerInfo(business_model.Model):
 			except:
 				error_msg = u"获得user('{}')对应的IntegralStrategySttings构建cache失败, cause:\n{}"\
 						.format(webapp_owner_id, unicode_full_stack())
-				watchdog.error(error_msg, user_id=webapp_owner_id, noraise=True)
+				watchdog.error(error_msg, user_id=webapp_owner_id )
 				integral_strategy_settings = member_models.IntegralStrategySttings()
 
 			#member grade
@@ -135,7 +135,7 @@ class WebAppOwnerInfo(business_model.Model):
 			except:
 				error_msg = u"获得user('{}')对应的MemberGrade构建cache失败, cause:\n{}"\
 						.format(webapp_owner_id, unicode_full_stack())
-				watchdog.error(error_msg, user_id=webapp_owner_id, noraise=True)
+				watchdog.error(error_msg, user_id=webapp_owner_id )
 				member_grades = []
 
 			#pay interface
@@ -146,7 +146,7 @@ class WebAppOwnerInfo(business_model.Model):
 			except:
 				error_msg = u"获得user('{}')对应的PayInterface构建cache失败, cause:\n{}"\
 						.format(webapp_owner_id, unicode_full_stack())
-				watchdog.error(error_msg, user_id=webapp_owner_id, noraise=True)
+				watchdog.error(error_msg, user_id=webapp_owner_id )
 				all_pay_interfaces = []
 				pay_interfaces = []
 
@@ -164,7 +164,7 @@ class WebAppOwnerInfo(business_model.Model):
 			except:
 				error_msg = u"获得user('{}')对应的OperationSettings构建cache失败, cause:\n{}"\
 						.format(webapp_owner_id, unicode_full_stack())
-				watchdog.error(error_msg, user_id=webapp_owner_id, noraise=True)
+				watchdog.error(error_msg, user_id=webapp_owner_id )
 				operation_settings = account_models.OperationSettings()
 
 			#全局导航

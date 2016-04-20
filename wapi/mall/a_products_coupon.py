@@ -37,6 +37,7 @@ class AProducts(api_resource.ApiResource):
 		products = [product for product in simple_products.products if product['id'] in product_ids]
 		category_dict = simple_products.category.to_dict('is_deleted')
 		return {
+			'coupon_rule_name': coupon_rule.name,
 			'categories': simple_products.categories,
 			'products': products,
 			'category': category_dict

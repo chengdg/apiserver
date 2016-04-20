@@ -44,7 +44,8 @@ class MallShareOrderPageConfig(models.Model):
 	background_image = models.CharField(max_length=1024, default='')
 	share_image = models.CharField(max_length=1024, default='')
 	share_describe = models.TextField(default='')
-	material_id = models.IntegerField(default=0) #图文领取记录图文id
+	material_id = models.IntegerField(default=0) #图文素材id
+	news_id = models.IntegerField(default=0) #图文id
 	created_at = models.DateTimeField(auto_now_add=True)
 
 	class Meta(object):

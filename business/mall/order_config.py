@@ -22,7 +22,8 @@ class OrderConfig(business_model.Model):
         'background_image',
         'share_image',
         'share_describe',
-        'material_id'
+        'material_id',
+        'news_id'
     )
 
     def __init__(self, model):

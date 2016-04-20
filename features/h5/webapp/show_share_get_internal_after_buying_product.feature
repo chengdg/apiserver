@@ -91,6 +91,7 @@ Background:
 		"""
 	When bill关注jobs的公众号
 
+@mall2 @liujing
 Scenario:1 会员下单成功后提示分享赚积分
 	#后台设置分享赚积分
 	#bill成功下单后，获得分享赚积分信息

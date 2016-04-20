@@ -45,9 +45,10 @@ DATABASES = {
 MIDDLEWARES = [
     'middleware.OAuth_middleware.OAuthMiddleware',
     'middleware.core_middleware.ApiAuthMiddleware',
+
     
     # 'middleware.debug_middleware.SqlMonitorMiddleware',
-    # 'middleware.debug_middleware.RedisMiddleware',
+    'eaglet.middlewares.zipkin_middleware.ZipkinMiddleware',
 
     #账号信息中间件
     'middleware.webapp_account_middleware.WebAppAccountMiddleware',

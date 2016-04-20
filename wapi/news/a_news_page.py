@@ -44,5 +44,5 @@ class ANewsPage(api_resource.ApiResource):
         return {
             'news': news,
             'share_info': share_info,
-            'member_nick_name': member_info['username_hexstr'] if member_info else None
+            'member_nick_name': member_info.username_hexstr if member_info else None
         }

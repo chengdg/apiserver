@@ -80,7 +80,7 @@ Background:
 			"jump_url":"www.baidu.com"
 		}]
 		"""
-	When jobs设置订单提交成功后提示分享赚积分:weapp
+	When jobs设置订单提交成功后提示分享赚积分信息:weapp
 		"""
 		{
 			"logo_pic":"1.jpg",
@@ -91,7 +91,6 @@ Background:
 		"""
 	When bill关注jobs的公众号
 
-@eugeneTMP
 Scenario:1 会员下单成功后提示分享赚积分
 	#后台设置分享赚积分
 	#bill成功下单后，获得分享赚积分信息
@@ -146,7 +145,7 @@ Scenario:1 会员下单成功后提示分享赚积分
 		"""
 	#后台修改分享赚积分设置
 	Given jobs登录系统:weapp
-	When jobs设置订单提交成功后提示分享赚积分:weapp
+	When jobs设置订单提交成功后提示分享赚积分信息:weapp
 		"""
 		{
 			"logo_pic":"1.jpg",

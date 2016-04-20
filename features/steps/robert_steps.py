@@ -12,6 +12,7 @@ from db.mall import models as mall_models
 from db.mall import promotion_models
 from db.member import models as member_models
 from db.wzcard import models as wzcard_models
+from db.news import models as news_models
 from business.mall.product import Product as business_product
 from business.account.webapp_owner import WebAppOwner
 from .steps_db_util import (
@@ -406,6 +407,7 @@ def step_impl(context, webapp_user_name):
 	url = '/wapi/pay/pay_result/?order_id=%s' % expected['order_id']
 	actual = context.client.get(bdd_util.nginx(url), follow=True).data
 	order_info = actual['order']
+	context.order_config = actual['order_config']
 
 	actual = {
 		"order_id": order_info['order_id'],
@@ -421,6 +423,18 @@ def step_impl(context, webapp_user_name):
 	# 	actual = context.response.data
 	# 	print('-------------------------1',actual)
 	# 	actual['pay_type'] = mall_models.PAYTYPE2NAME[actual['pay_url_info']['pay_interface_type']]
+	bdd_util.assert_dict(expected, actual)
+
+@then(u"{webapp_user_name}获得分享赚积分图文信息")
+def step_impl(context, webapp_user_name):
+	order_config = context.order_config
+	delattr(context, 'order_config')
+	actual = {
+		"title": news_models.News.get(id=order_config['news_id']).title,
+		"content": news_models.News.get(id=order_config['news_id']).text
+	}
+
+	expected = json.loads(context.text)
 	bdd_util.assert_dict(expected, actual)
 
 @then(u"{webapp_usr_name}手机端获取订单'{order_id}'")

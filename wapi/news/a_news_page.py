@@ -30,10 +30,6 @@ class ANewsPage(api_resource.ApiResource):
                 'news_id': args['news_id']
             })
 
-        member_info = Member.from_id({
-                'webapp_owner': 'webapp_owner',
-                'member_id': webapp_user.id
-            })
         order_config = OrderConfig.get_order_config({'webapp_owner': webapp_owner})
 
         share_info = {
@@ -44,5 +40,5 @@ class ANewsPage(api_resource.ApiResource):
         return {
             'news': news,
             'share_info': share_info,
-            'member_nick_name': member_info.username_hexstr if member_info else None
+            'member_nick_name': webapp_user.username_for_html
         }

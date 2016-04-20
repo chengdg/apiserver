@@ -3,6 +3,7 @@
 @package business.news
 图文业务模型
 """
+import settings
 
 from business import model as business_model
 from db.news import models as news_models
@@ -29,7 +30,8 @@ class NewsPage(business_model.Model):
 
         if model:
             self._init_slot_from_model(model)
-            model.created_at = model.created_at.strftime('%Y-%m-%d')
+            self.created_at = model.created_at.strftime('%Y-%m-%d')
+            self.pic_url = '%s%s' % (settings.IMAGE_HOST, model.pic_url) if model.pic_url.find('http') == -1 else model.pic_url
 
     @staticmethod
     @param_required(['news_id'])

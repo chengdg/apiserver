@@ -40,5 +40,5 @@ class ANewsPage(api_resource.ApiResource):
         return {
             'news': news,
             'share_info': share_info,
-            'member_nick_name': webapp_user.username_for_html
+            'mp_nick_name': webapp_owner.mp_nick_name
         }

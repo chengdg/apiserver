@@ -36,9 +36,9 @@ class PackageOrderService(business_model.Service):
 	def __process_product_price(self, order):
 		coupon_resource = self.type2resource.get('coupon')
 		if coupon_resource:
-			limit_product_id = self.type2resource.get('coupon').coupon.coupon_rule.limit_product_id
+			limit_product_id = self.type2resource.get('coupon').coupon.limit_product_id
 			for product in order.products:
-				if product.id == limit_product_id:
+				if product.id in limit_product_id:
 					product.price = product.original_price
 					product.discount_money_coupon_exist = True
 

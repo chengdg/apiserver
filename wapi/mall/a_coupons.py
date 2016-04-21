@@ -44,11 +44,11 @@ class ACoupons(api_resource.ApiResource):
 		expired_coupons = []
 		for coupon in webapp_user.all_coupons:
 			if coupon.is_can_use_by_webapp_user(webapp_user):
-				unused_coupons.append(coupon.to_dict())
+				unused_coupons.append(coupon.to_dict('coupon_rule_id'))
 			elif coupon.is_expired():
-				expired_coupons.append(coupon.to_dict())
+				expired_coupons.append(coupon.to_dict('coupon_rule_id'))
 			else:
-				used_coupons.append(coupon.to_dict())
+				used_coupons.append(coupon.to_dict('coupon_rule_id'))
 
 		return {
 			'unused_coupons': unused_coupons,

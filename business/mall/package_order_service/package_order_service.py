@@ -64,9 +64,9 @@ class PackageOrderService(business_model.Service):
 			coupon = coupon_resource.coupon
 			order.coupon_id = coupon_resource.coupon.id
 			if coupon.is_specific_product_coupon():
-				limit_product_id = coupon.coupon_rule.limit_product_id
+				limit_product_id = coupon.limit_product_id
 				# 优惠券可以用于抵扣的金额
-				coupon_can_deduct_money = sum([product.price * product.purchase_count for product in order.products if product.id == limit_product_id])
+				coupon_can_deduct_money = sum([product.price * product.purchase_count for product in order.products if product.id in limit_product_id])
 			else:
 				coupon_can_deduct_money = sum([product.price * product.purchase_count for product in order.products if product.can_use_coupon])
 

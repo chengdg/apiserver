@@ -217,7 +217,7 @@ class CouponRule(models.Model):
 	remained_count = models.IntegerField(default=0) #剩余数量
 	limit_counts = models.IntegerField(default=0) #每人限领
 	limit_product = models.BooleanField(default=False) #限制指定商品
-	limit_product_id = models.CharField(max_length=500,default=0) #限制指定商品ID
+	limit_product_id = models.CharField(max_length=2048,default=0) #限制指定商品ID
 	remark = models.TextField(default='') #备注
 	get_person_count = models.IntegerField(default=0) #领取人数
 	get_count = models.IntegerField(default=0) #领取次数

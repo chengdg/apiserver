@@ -29,11 +29,11 @@ Scenario:1 会员详情-传播能力(分享链接引流)
 			[{
 				"name": "商品1",
 				"postage":10,
-				"price":100
+				"price":100.00
 			}, {
 				"name": "商品2",
 				"postage":15,
-				"price":100
+				"price":100.00
 			}]
 			"""
 		And jobs已添加支付方式:weapp

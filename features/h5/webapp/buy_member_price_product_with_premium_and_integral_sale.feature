@@ -82,7 +82,7 @@ Background:
 			"price":100.00
 		},{
 			"name": "赠品",
-			"price":100
+			"price":100.00
 		}]
 		"""
 
@@ -117,15 +117,15 @@ Scenario:1 购买会员价，买赠（全部会员）和积分抵扣（分级设
 			[{
 				"member_grade": "普通会员",
 				"discount": 100,
-				"discount_money": 100.0
+				"discount_money": 100.00
 			},{
 				"member_grade": "铜牌会员",
 				"discount": 90,
-				"discount_money": 90.0
+				"discount_money": 90.00
 			},{
 				"member_grade": "银牌会员",
 				"discount": 80,
-				"discount_money": 80.0
+				"discount_money": 80.00
 			}]
 		}]
 		"""
@@ -155,11 +155,11 @@ Scenario:1 购买会员价，买赠（全部会员）和积分抵扣（分级设
 			"products": [{
 				"name": "商品1",
 				"price": 100.00,
-				"grade_discounted_money": 0.0,
+				"grade_discounted_money": 0.00,
 				"count": 1
 			},{
 				"name": "赠品",
-				"price": 0.0,
+				"price": 0.00,
 				"count": 2
 			}]
 		}
@@ -196,7 +196,7 @@ Scenario:2 购买会员价，买赠（全部会员）和积分抵扣（统一设
 			"rules": [{
 				"member_grade": "全部",
 				"discount": 50,
-				"discount_money": 50.0
+				"discount_money": 50.00
 				}]
 		}]
 		"""
@@ -226,11 +226,11 @@ Scenario:2 购买会员价，买赠（全部会员）和积分抵扣（统一设
 			"products": [{
 				"name": "商品1",
 				"price": 100.00,
-				"grade_discounted_money": 0.0,
+				"grade_discounted_money": 0.00,
 				"count": 1
 			},{
 				"name": "赠品",
-				"price": 0.0,
+				"price": 0.00,
 				"count": 2
 			}]
 		}
@@ -268,15 +268,15 @@ Scenario:3 购买会员价，买赠（某一等级）和积分抵扣（分级设
 			[{
 				"member_grade": "普通会员",
 				"discount": 100,
-				"discount_money": 100.0
+				"discount_money": 100.00
 			},{
 				"member_grade": "铜牌会员",
 				"discount": 90,
-				"discount_money": 90.0
+				"discount_money": 90.00
 			},{
 				"member_grade": "银牌会员",
 				"discount": 80,
-				"discount_money": 80.0
+				"discount_money": 80.00
 			}]
 		}]
 		"""
@@ -307,11 +307,11 @@ Scenario:3 购买会员价，买赠（某一等级）和积分抵扣（分级设
 				"products": [{
 					"name": "商品1",
 					"price": 100.00,
-					"grade_discounted_money": 0.0,
+					"grade_discounted_money": 0.00,
 					"count": 1
 				},{
 					"name": "赠品",
-					"price": 0.0,
+					"price": 0.00,
 					"count": 1
 				}]
 			}
@@ -344,7 +344,7 @@ Scenario:3 购买会员价，买赠（某一等级）和积分抵扣（分级设
 				"products": [{
 					"name": "商品1",
 					"price": 80.00,
-					"grade_discounted_money": 20.0,
+					"grade_discounted_money": 20.00,
 					"count": 1
 				}]
 			}
@@ -381,7 +381,7 @@ Scenario:4 购买会员价，买赠（某一等级）和积分抵扣（统一设
 			"rules": [{
 				"member_grade": "全部",
 				"discount": 50,
-				"discount_money": 50.0
+				"discount_money": 50.00
 				}]
 		}]
 		"""
@@ -413,11 +413,11 @@ Scenario:4 购买会员价，买赠（某一等级）和积分抵扣（统一设
 			"products": [{
 				"name": "商品1",
 				"price": 100.00,
-				"grade_discounted_money": 0.0,
+				"grade_discounted_money": 0.00,
 				"count": 1
 			},{
 				"name": "赠品",
-				"price": 0.0,
+				"price": 0.00,
 				"count": 1
 			}]
 		}
@@ -451,7 +451,7 @@ Scenario:4 购买会员价，买赠（某一等级）和积分抵扣（统一设
 			"products": [{
 				"name": "商品1",
 				"price": 80.00,
-				"grade_discounted_money": 20.0,
+				"grade_discounted_money": 20.00,
 				"count": 1
 			}]
 		}

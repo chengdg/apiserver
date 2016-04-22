@@ -80,7 +80,7 @@ Scenario:1商品加入购物车后修改商品的名称
 				"can_use_promotion": false,
 				"products": [{
 					"name": "商品1111",
-					"price": 100,
+					"price": 100.00,
 					"count": 1
 				}]
 			}],

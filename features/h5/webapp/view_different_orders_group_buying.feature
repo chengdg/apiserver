@@ -60,11 +60,11 @@ Background:
 		"""
 		[{
 			"name": "商品1",
-			"price":100.0,
+			"price":100.00,
 			"postage": 10.00
 		}, {
 			"name": "商品2",
-			"price": 50.0,
+			"price": 50.00,
 			"distribution_time":"on",
 			"postage": "顺丰"
 		},{
@@ -73,16 +73,16 @@ Background:
 			"model": {
 				"models": {
 					"M": {
-						"price": 30.0
+						"price": 30.00
 					},
 					"S": {
-						"price": 30.0
+						"price": 30.00
 					}
 				}
 			}
 		},{
 			"name": "商品4",
-			"price": 40.0,
+			"price": 40.00,
 			"stock_type": "有限",
 			"stocks": 10
 		}]

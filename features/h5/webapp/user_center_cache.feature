@@ -22,7 +22,7 @@ Background:
 			"model": {
 				"models": {
 					"standard": {
-						"price": 9.9,
+						"price": 9.90,
 						"stock_type": "有限",
 						"stocks": 100
 					}
@@ -33,7 +33,7 @@ Background:
 			"model": {
 				"models": {
 					"standard": {
-						"price": 10,
+						"price": 10.00,
 						"stock_type": "有限",
 						"stocks": 100
 					}
@@ -114,7 +114,7 @@ Scenario:2 添加订单
 		"""
 		[{
 			"status": "待发货",
-			"price": 9.9,
+			"price": 9.90,
 			"customer_message": "bill购买'商品1'",
 			"products":[{
 				"product_name": "商品1",

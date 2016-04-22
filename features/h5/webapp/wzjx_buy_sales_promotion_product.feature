@@ -438,7 +438,7 @@ Scenario: 3 使用积分购买不同供货商的商品
 			"pay_type": "微信支付",
 			"order_id": "001",
 			"integral": 50,
-			"integral_money": 50
+			"integral_money": 50.00
 		}
 		"""
 	Then tom成功创建订单

@@ -83,12 +83,12 @@ Background:
 			"model": {
 				"models":{
 					"M": {
-						"price": 7,
+						"price": 7.00,
 						"stock_type": "有限",
 						"stocks": 2
 					},
 					"S": {
-						"price": 8,
+						"price": 8.00,
 						"stock_type": "无限"
 					}
 				}
@@ -297,7 +297,7 @@ Scenario: 4 购买单个买赠商品，超出库存限制
 		"""
 		{
 			"status": "待支付",
-			"final_price": 200.0
+			"final_price": 200.00
 		}
 		"""
 	When bill购买jobs的商品
@@ -488,12 +488,12 @@ Scenario: 7  创建多规格商品 非循环买赠活动，购买多个 有规�
 			"model": {
 				"models":{
 					"M": {
-						"price": 7,
+						"price": 7.00,
 						"stock_type": "有限",
 						"stocks": 2
 					},
 					"S": {
-						"price": 8,
+						"price": 8.00,
 						"stock_type": "无限"
 					}
 				}
@@ -571,12 +571,12 @@ Scenario: 8  多规格商品，买2赠1 循环买赠
 			"model": {
 				"models":{
 					"M": {
-						"price": 7,
+						"price": 7.00,
 						"stock_type": "无限"
 
 					},
 					"S": {
-						"price": 8,
+						"price": 8.00,
 						"stock_type": "无限"
 					}
 				}
@@ -894,11 +894,11 @@ Scenario: 13 不同等级的会员购买会员价，同时有会员等级买赠�
 			"model": {
 				"models":{
 					"M": {
-						"price": 300,
+						"price": 300.00,
 						"stock_type": "无限"
 					},
 					"S": {
-						"price": 300,
+						"price": 300.00,
 						"stock_type": "无限"
 					}
 				}
@@ -1027,10 +1027,10 @@ Scenario: 13 不同等级的会员购买会员价，同时有会员等级买赠�
 			"ship_tel": "12345678911",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
-			"final_price": 100.0,
+			"final_price": 100.00,
 			"products": [{
 				"name": "商品8",
-				"price": 100.0,
+				"price": 100.00,
 				"grade_discounted_money":0.00,
 				"count": 1
 			}]
@@ -1061,15 +1061,15 @@ Scenario: 13 不同等级的会员购买会员价，同时有会员等级买赠�
 			"ship_tel": "12345678912",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦2",
-			"final_price": 100.0,
+			"final_price": 100.00,
 			"products": [{
 				"name": "商品8",
-				"price": 100.0,
+				"price": 100.00,
 				"grade_discounted_money":0.00,
 				"count": 1
 			},{
 				"name": "商品赠品",
-				"price": 0.0,
+				"price": 0.00,
 				"count": 1
 			}]
 		}
@@ -1100,10 +1100,10 @@ Scenario: 13 不同等级的会员购买会员价，同时有会员等级买赠�
 			"ship_tel": "12345678912",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦2",
-			"final_price": 90.0,
+			"final_price": 90.00,
 			"products": [{
 				"name": "商品6",
-				"price": 90.0,
+				"price": 90.00,
 				"grade_discounted_money":10.00,
 				"count": 1
 			}]
@@ -1134,10 +1134,10 @@ Scenario: 13 不同等级的会员购买会员价，同时有会员等级买赠�
 			"ship_tel": "12345678914",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦4",
-			"final_price": 100.0,
+			"final_price": 100.00,
 			"products": [{
 				"name": "商品6",
-				"price": 100.0,
+				"price": 100.00,
 				"grade_discounted_money": 0.00,
 				"count": 1
 			},{
@@ -1145,7 +1145,7 @@ Scenario: 13 不同等级的会员购买会员价，同时有会员等级买赠�
 				"count": 1
 			},{
 				"name": "商品赠品",
-				"price": 0.0,
+				"price": 0.00,
 				"count": 1
 			}]
 		}
@@ -1216,20 +1216,20 @@ Scenario: 13 不同等级的会员购买会员价，同时有会员等级买赠�
 			"ship_tel": "12345678913",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦3",
-			"final_price": 600.0,
+			"final_price": 600.00,
 			"products": [{
 				"name": "商品7",
 				"model": "M",
-				"price": 300.0,
+				"price": 300.00,
 				"count": 1
 			},{
 				"name": "商品7",
 				"model": "S",
-				"price": 300.0,
+				"price": 300.00,
 				"count": 1
 			},{
 				"name": "商品赠品",
-				"price": 0.0,
+				"price": 0.00,
 				"count": 2
 			}]
 		}
@@ -1264,22 +1264,22 @@ Scenario: 13 不同等级的会员购买会员价，同时有会员等级买赠�
 			"ship_tel": "12345678914",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦4",
-			"final_price": 1800.0,
+			"final_price": 1800.00,
 			"products": [{
 				"name": "商品7",
 				"model": "M",
-				"price": 300.0,
+				"price": 300.00,
 				"grade_discounted_money":0.00,
 				"count": 3
 			},{
 				"name": "商品7",
 				"model": "S",
-				"price": 300.0,
+				"price": 300.00,
 				"grade_discounted_money":0.00,
 				"count": 3
 			},{
 				"name": "商品赠品",
-				"price": 0.0,
+				"price": 0.00,
 				"count": 6
 			}]
 		}

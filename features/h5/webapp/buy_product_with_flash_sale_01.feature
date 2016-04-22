@@ -132,7 +132,7 @@ Scenario:1 购买活动期间内有购买次数限制的促销商品
 		"""
 		{
 			"status": "待支付",
-			"final_price": 80.0
+			"final_price": 80.00
 		}
 		"""
 	When bill购买jobs的商品
@@ -200,7 +200,7 @@ Scenario:2 购买限购周期内有购买次数限制的促销商品
 		"""
 		{
 			"status": "待支付",
-			"final_price": 80.0
+			"final_price": 80.00
 		}
 		"""
 	#tom第二次购买,成功下单
@@ -224,7 +224,7 @@ Scenario:2 购买限购周期内有购买次数限制的促销商品
 		"""
 		{
 			"status": "待支付",
-			"final_price": 160.0
+			"final_price": 160.00
 		}
 		"""
 	#tom第三次购买,下单失败

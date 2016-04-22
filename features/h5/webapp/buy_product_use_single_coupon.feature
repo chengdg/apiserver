@@ -106,14 +106,14 @@ Background:
 		"""
 		[{
 			"name": "优惠券1",
-			"money": 1,
+			"money": 1.00,
 			"start_date": "今天",
 			"end_date": "1天后",
 			"coupon_id_prefix": "coupon1_id_",
 			"coupon_product": "商品1"
 		}, {
 			"name": "优惠券2",
-			"money": 10,
+			"money": 10.00,
 			"start_date": "今天",
 			"end_date": "2天后",
 			"using_limit": "满50元可以使用",
@@ -121,7 +121,7 @@ Background:
 			"coupon_product": "商品3"
 		}, {
 			"name": "优惠券5",
-			"money": 10,
+			"money": 10.00,
 			"start_date": "今天",
 			"end_date": "2天后",
 			"using_limit": "满50元可以使用",
@@ -129,7 +129,7 @@ Background:
 			"coupon_product": "商品5"
 		}, {
 			"name": "优惠券6",
-			"money": 100,
+			"money": 100.00,
 			"start_date": "今天",
 			"end_date": "2天后",
 			"coupon_id_prefix": "coupon6_id_",
@@ -172,13 +172,13 @@ Scenario:1 使用单品优惠劵进行购买，该单品券适用于商品1，�
 		"""
 		{
 			"coupon1_id_1": {
-				"money": 1.0,
+				"money": 1.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
 			},
 			"coupon1_id_2": {
-				"money": 1.0,
+				"money": 1.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
@@ -202,9 +202,9 @@ Scenario:1 使用单品优惠劵进行购买，该单品券适用于商品1，�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 199.0,
-			"product_price": 200.0,
-			"coupon_money": 1.0
+			"final_price": 199.00,
+			"product_price": 200.00,
+			"coupon_money": 1.00
 		}
 		"""
 	#第二次使用 购买商品2 购买失败
@@ -224,13 +224,13 @@ Scenario:1 使用单品优惠劵进行购买，该单品券适用于商品1，�
 		"""
 		{
 			"coupon1_id_1": {
-				"money": 1.0,
+				"money": 1.00,
 				"status": "已使用",
 				"consumer": "bill",
 				"target": "bill"
 			},
 			"coupon1_id_2": {
-				"money": 1.0,
+				"money": 1.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
@@ -248,13 +248,13 @@ Scenario:2 使用单品优惠劵进行购买，该单品券适用于商品3并�
 		"""
 		{
 			"coupon2_id_1": {
-				"money": 10.0,
+				"money": 10.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
 			},
 			"coupon2_id_2": {
-				"money": 10.0,
+				"money": 10.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
@@ -278,9 +278,9 @@ Scenario:2 使用单品优惠劵进行购买，该单品券适用于商品3并�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 50.0,
-			"product_price": 60.0,
-			"coupon_money": 10.0
+			"final_price": 50.00,
+			"product_price": 60.00,
+			"coupon_money": 10.00
 		}
 		"""
 	#第二次使用 购买商品3+商品2 订单购买失败
@@ -303,13 +303,13 @@ Scenario:2 使用单品优惠劵进行购买，该单品券适用于商品3并�
 		"""
 		{
 			"coupon2_id_1": {
-				"money": 10.0,
+				"money": 10.00,
 				"status": "已使用",
 				"consumer": "bill",
 				"target": "bill"
 			},
 			"coupon2_id_2": {
-				"money": 10.0,
+				"money": 10.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
@@ -351,9 +351,9 @@ Scenario:3 购买多规格商品，买1个商品的两个规格，总价格满�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 70.0,
-			"product_price": 80.0,
-			"coupon_money": 10.0
+			"final_price": 70.00,
+			"product_price": 80.00,
+			"coupon_money": 10.00
 		}
 		"""
 	Given jobs登录系统:weapp
@@ -377,13 +377,13 @@ Scenario:4 使用多于商品价格的单品券进行购买，该单品券只适
 		"""
 		{
 			"coupon6_id_1": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "tom"
 			},
 			"coupon6_id_2": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "tom"
@@ -409,10 +409,10 @@ Scenario:4 使用多于商品价格的单品券进行购买，该单品券只适
 		"""
 		{
 			"status": "待支付",
-			"final_price": 30.0,
-			"product_price": 40.0,
+			"final_price": 30.00,
+			"product_price": 40.00,
 			"postage": 10.00,
-			"coupon_money": 20.0
+			"coupon_money": 20.00
 		}
 		"""
 	Given jobs登录系统:weapp
@@ -494,13 +494,13 @@ Scenario:5 不同等级的会员购买有会员价同时有单品券的商品
 		"""
 		{
 			"coupon1_id_1": {
-				"money": 1.0,
+				"money": 1.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
 			},
 			"coupon1_id_2": {
-				"money": 1.0,
+				"money": 1.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
@@ -524,12 +524,12 @@ Scenario:5 不同等级的会员购买有会员价同时有单品券的商品
 		"""
 		{
 			"status": "待支付",
-			"final_price": 199.0,
-			"product_price": 200.0,
-			"coupon_money": 1.0,
+			"final_price": 199.00,
+			"product_price": 200.00,
+			"coupon_money": 1.00,
 			"products": [{
 				"name": "商品1",
-				"price": 200.0,
+				"price": 200.00,
 				"count": 1
 			}]
 		}
@@ -549,11 +549,11 @@ Scenario:5 不同等级的会员购买有会员价同时有单品券的商品
 		"""
 		{
 			"status": "待支付",
-			"final_price": 140.0,
-			"product_price": 140.0,
+			"final_price": 140.00,
+			"product_price": 140.00,
 			"products": [{
 				"name": "商品1",
-				"price": 140.0,
+				"price": 140.00,
 				"count": 1
 			}]
 		}
@@ -609,8 +609,8 @@ Scenario:5 不同等级的会员购买有会员价同时有单品券的商品
 		{
 			"status": "待支付",
 			"final_price": 339.00,
-			"product_price": 340.0,
-			"coupon_money": 1.0,
+			"product_price": 340.00,
+			"coupon_money": 1.00,
 			"products": [{
 				"name": "商品1",
 				"price": 200.00,
@@ -627,13 +627,13 @@ Scenario:5 不同等级的会员购买有会员价同时有单品券的商品
 		"""
 		{
 			"coupon1_id_1": {
-				"money": 1.0,
+				"money": 1.00,
 				"status": "已使用",
 				"consumer": "bill",
 				"target": "bill"
 			},
 			"coupon1_id_2": {
-				"money": 1.0,
+				"money": 1.00,
 				"status": "已使用",
 				"consumer": "bill",
 				"target": "bill"
@@ -649,13 +649,13 @@ Scenario: 6 购买有单品券的商品，但不使用单品券
 		"""
 		{
 			"coupon1_id_1": {
-				"money": 1.0,
+				"money": 1.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
 			},
 			"coupon1_id_2": {
-				"money": 1.0,
+				"money": 1.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
@@ -677,7 +677,7 @@ Scenario: 6 购买有单品券的商品，但不使用单品券
 		"""
 		{
 			"status": "待支付",
-			"final_price": 200.0,
-			"product_price": 200.0
+			"final_price": 200.00,
+			"product_price": 200.00
 		}
 		"""

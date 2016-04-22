@@ -23,12 +23,12 @@ Background:
 		"""
 		[{
 			"name": "商品1",
-			"postage":10,
-			"price":100
+			"postage":10.00,
+			"price":100.00
 		}, {
 			"name": "商品2",
-			"postage":15,
-			"price":100
+			"postage":15.00,
+			"price":100.00
 		}]
 		"""
 

@@ -25,19 +25,19 @@ Background:
 		"""
 		[{
 			"name": "商品1",
-			"price":100.0
+			"price":100.00
 		},{
 			"name": "商品2",
-			"price":100.0
+			"price":100.00
 		},{
 			"name": "商品3",
-			"price":100.0
+			"price":100.00
 		},{
 			"name": "商品4",
-			"price":100.0
+			"price":100.00
 		},{
 			"name": "赠品",
-			"price":10.0
+			"price":10.00
 		}]
 		"""
 
@@ -52,7 +52,7 @@ Background:
 			"rules": [{
 				"member_grade": "全部",
 				"discount": 50,
-				"discount_money": 50.0
+				"discount_money": 50.00
 			}]
 		}]
 		"""
@@ -92,7 +92,7 @@ Background:
 		"""
 		[{
 			"name": "单品券4",
-			"money": 50,
+			"money": 50.00,
 			"start_date": "今天",
 			"end_date": "2天后",
 			"coupon_id_prefix": "coupon1_id_",
@@ -152,7 +152,7 @@ Scenario:1 启用"下单时"邮件通知
 			{
 				"order_no":"0000001",
 				"status": "待支付",
-				"final_price": 50.0,
+				"final_price": 50.00,
 				"product_price": 100.00,
 				"integral": 100,
 				"integral_money":50.00,
@@ -170,7 +170,7 @@ Scenario:1 启用"下单时"邮件通知
 					"product_name":"商品1",
 					"order_status":"待支付",
 					"buy_count":"1",
-					"total_price":50.0,
+					"total_price":50.00,
 					"buyer_address":"北京市 北京市 海淀区 泰兴大厦"
 
 				},
@@ -207,7 +207,7 @@ Scenario:1 启用"下单时"邮件通知
 			{
 				"order_no":"0000002",
 				"status": "待支付",
-				"final_price": 250.0,
+				"final_price": 250.00,
 				"products": [{
 					"name": "商品2",
 					"count": 1,
@@ -227,7 +227,7 @@ Scenario:1 启用"下单时"邮件通知
 					"name": "商品4",
 					"count": 1
 				}],
-				"coupon_money": 50.0
+				"coupon_money": 50.00
 			}
 			"""
 		Then server能发送邮件
@@ -238,7 +238,7 @@ Scenario:1 启用"下单时"邮件通知
 					"product_name":"商品2,商品3,商品4",
 					"order_status":"待支付",
 					"buy_count":"1,2,1",
-					"total_price":250.0,
+					"total_price":250.00,
 					"buyer_address":"北京市 北京市 海淀区 泰兴大厦"
 
 				},
@@ -285,7 +285,7 @@ Scenario:2 启用"付款时"邮件通知
 			{
 				"order_no":"0000001",
 				"status": "待支付",
-				"final_price": 50.0,
+				"final_price": 50.00,
 				"product_price": 100.00,
 				"integral": 100,
 				"integral_money":50.00,
@@ -305,7 +305,7 @@ Scenario:2 启用"付款时"邮件通知
 					"product_name":"商品1",
 					"order_status":"待发货",
 					"buy_count":"1",
-					"total_price":50.0,
+					"total_price":50.00,
 					"integral":100,
 					"buyer_address":"北京市 北京市 海淀区 泰兴大厦"
 
@@ -343,7 +343,7 @@ Scenario:2 启用"付款时"邮件通知
 			{
 				"order_no":"0000002",
 				"status": "待支付",
-				"final_price": 250.0,
+				"final_price": 250.00,
 				"products": [{
 					"name": "商品2",
 					"count": 1,
@@ -363,7 +363,7 @@ Scenario:2 启用"付款时"邮件通知
 					"name": "商品4",
 					"count": 1
 				}],
-				"coupon_money": 50.0
+				"coupon_money": 50.00
 			}
 			"""
 		When tom使用支付方式'微信支付'进行支付
@@ -375,7 +375,7 @@ Scenario:2 启用"付款时"邮件通知
 					"product_name":"商品2,商品3,商品4",
 					"order_status":"待发货",
 					"buy_count":"1,2,1",
-					"total_price":250.0,
+					"total_price":250.00,
 					"coupon":"coupon1_id_1,￥50.0",
 					"buyer_address":"北京市 北京市 海淀区 泰兴大厦"
 
@@ -423,7 +423,7 @@ Scenario:3 启用"取消时"邮件通知
 			{
 				"order_no":"0000001",
 				"status": "待支付",
-				"final_price": 50.0,
+				"final_price": 50.00,
 				"product_price": 100.00,
 				"integral": 100,
 				"integral_money":50.00,
@@ -443,7 +443,7 @@ Scenario:3 启用"取消时"邮件通知
 					"product_name":"商品1",
 					"order_status":"已取消",
 					"buy_count":"1",
-					"total_price":50.0,
+					"total_price":50.00,
 					"integral":100,
 					"buyer_address":"北京市 北京市 海淀区 泰兴大厦"
 
@@ -480,7 +480,7 @@ Scenario:3 启用"取消时"邮件通知
 			{
 				"order_no":"0000002",
 				"status": "待支付",
-				"final_price": 250.0,
+				"final_price": 250.00,
 				"products": [{
 					"name": "商品2",
 					"count": 1,
@@ -500,7 +500,7 @@ Scenario:3 启用"取消时"邮件通知
 					"name": "商品4",
 					"count": 1
 				}],
-				"coupon_money": 50.0
+				"coupon_money": 50.00
 			}
 			"""
 		When tom取消订单'0000002'
@@ -513,7 +513,7 @@ Scenario:3 启用"取消时"邮件通知
 					"product_name":"商品2,商品3,商品4",
 					"order_status":"已取消",
 					"buy_count":"1,2,1",
-					"total_price":250.0,
+					"total_price":250.00,
 					"coupon":"coupon1_id_1,￥50.0",
 					"buyer_address":"北京市 北京市 海淀区 泰兴大厦"
 
@@ -561,7 +561,7 @@ Scenario:4 启用"完成时"邮件通知
 			{
 				"order_no":"0000001",
 				"status": "待发货",
-				"final_price": 50.0,
+				"final_price": 50.00,
 				"product_price": 100.00,
 				"integral": 100,
 				"integral_money":50.00,
@@ -591,7 +591,7 @@ Scenario:4 启用"完成时"邮件通知
 					"product_name":"商品1",
 					"order_status":"已完成",
 					"buy_count":"1",
-					"total_price":50.0,
+					"total_price":50.00,
 					"integral":100,
 					"buyer_address":"北京市 北京市 海淀区 泰兴大厦"
 
@@ -628,7 +628,7 @@ Scenario:4 启用"完成时"邮件通知
 			{
 				"order_no":"0000002",
 				"status": "待支付",
-				"final_price": 250.0,
+				"final_price": 250.00,
 				"products": [{
 					"name": "商品2",
 					"count": 1,
@@ -648,7 +648,7 @@ Scenario:4 启用"完成时"邮件通知
 					"name": "商品4",
 					"count": 1
 				}],
-				"coupon_money": 50.0
+				"coupon_money": 50.00
 			}
 			"""
 		When tom使用支付方式'微信支付'进行支付
@@ -672,7 +672,7 @@ Scenario:4 启用"完成时"邮件通知
 					"product_name":"商品2,商品3,商品4",
 					"order_status":"已完成",
 					"buy_count":"1,2,1",
-					"total_price":250.0,
+					"total_price":250.00,
 					"coupon":"coupon1_id_1,￥50.0",
 					"buyer_address":"北京市 北京市 海淀区 泰兴大厦"
 

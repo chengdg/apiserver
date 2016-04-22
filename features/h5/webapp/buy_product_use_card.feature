@@ -27,7 +27,7 @@ Background:
 		"""
 		[{
 			"name": "商品1",
-			"price": 50
+			"price": 50.00
 		}]
 		"""
 	And jobs已创建微众卡:weapp
@@ -97,7 +97,7 @@ Scenario:1 微众卡金额大于订单金额时进行支付
 			"pay_type": "货到付款",
 			"products":[{
 				"name":"商品1",
-				"price":50,
+				"price":50.00,
 				"count":1
 			}],
 			"weizoom_card":[{
@@ -110,8 +110,8 @@ Scenario:1 微众卡金额大于订单金额时进行支付
 		"""
 		{
 			"status": "待发货",
-			"final_price": 0.0,
-			"product_price": 50.0,
+			"final_price": 0.00,
+			"product_price": 50.00,
 			"weizoom_card_money":50.00,
 			"products":[{
 				"name":"商品1",
@@ -144,7 +144,7 @@ Scenario:2 微众卡金额等于订单金额时进行支付
 			"pay_type": "货到付款",
 			"products":[{
 				"name":"商品1",
-				"price":50,
+				"price":50.00,
 				"count":1
 			}],
 			"weizoom_card":[{
@@ -158,8 +158,8 @@ Scenario:2 微众卡金额等于订单金额时进行支付
 		"""
 		{
 			"status": "待发货",
-			"final_price": 0.0,
-			"product_price": 50.0,
+			"final_price": 0.00,
+			"product_price": 50.00,
 			"weizoom_card_money":50.00,
 			"products":[{
 				"name":"商品1",
@@ -191,7 +191,7 @@ Scenario:3 微众卡金额小于订单金额时进行支付
 			"pay_type": "微信支付",
 			"products":[{
 				"name":"商品1",
-				"price":50,
+				"price":50.00,
 				"count":1
 			}],
 			"weizoom_card":[{
@@ -205,8 +205,8 @@ Scenario:3 微众卡金额小于订单金额时进行支付
 		"""
 		{
 			"status": "待支付",
-			"final_price": 20.0,
-			"product_price": 50.0,
+			"final_price": 20.00,
+			"product_price": 50.00,
 			"weizoom_card_money":30.00,
 			"products":[{
 				"name":"商品1",
@@ -238,7 +238,7 @@ Scenario:4 用微众卡购买商品时，输入错误的卡号密码
 			"pay_type": "微信支付",
 			"products":[{
 				"name":"商品1",
-				"price":50,
+				"price":50.00,
 				"count":1
 			}],
 			"weizoom_card":[{
@@ -256,7 +256,7 @@ Scenario:4 用微众卡购买商品时，输入错误的卡号密码
 			"pay_type": "微信支付",
 			"products":[{
 				"name":"商品1",
-				"price":50,
+				"price":50.00,
 				"count":1
 			}]
 		}
@@ -266,8 +266,8 @@ Scenario:4 用微众卡购买商品时，输入错误的卡号密码
 		"""
 		{
 			"status": "待支付",
-			"final_price": 50.0,
-			"product_price": 50.0,
+			"final_price": 50.00,
+			"product_price": 50.00,
 			"products":[{
 				"name":"商品1",
 				"price":50.00,
@@ -298,7 +298,7 @@ Scenario:5 用已用完的微众卡购买商品时
 			"pay_type": "微信支付",
 			"products":[{
 				"name":"商品1",
-				"price":50,
+				"price":50.00,
 				"count":1
 			}],
 			"weizoom_card":[{
@@ -312,8 +312,8 @@ Scenario:5 用已用完的微众卡购买商品时
 		"""
 		{
 			"status": "待支付",
-			"final_price": 50.0,
-			"product_price": 50.0,
+			"final_price": 50.00,
+			"product_price": 50.00,
 			"products":[{
 				"name":"商品1",
 				"price":50.00,
@@ -343,7 +343,7 @@ Scenario:6 用未激活的微众卡购买商品时
 		{
 			"products":[{
 				"name":"商品1",
-				"price":50,
+				"price":50.00,
 				"count":1
 			}],
 			"weizoom_card":[{
@@ -360,7 +360,7 @@ Scenario:6 用未激活的微众卡购买商品时
 			"pay_type": "微信支付",
 			"products":[{
 				"name":"商品1",
-				"price":50,
+				"price":50.00,
 				"count":1
 			}]
 		}
@@ -369,8 +369,8 @@ Scenario:6 用未激活的微众卡购买商品时
 		"""
 		{
 			"status": "待支付",
-			"final_price": 50.0,
-			"product_price": 50.0,
+			"final_price": 50.00,
+			"product_price": 50.00,
 			"products":[{
 				"name":"商品1",
 				"price":50.00,
@@ -400,7 +400,7 @@ Scenario:7 用已过期的微众卡购买商品时
 		{
 			"products":[{
 				"name":"商品1",
-				"price":50,
+				"price":50.00,
 				"count":1
 			}],
 			"weizoom_card":[{
@@ -417,7 +417,7 @@ Scenario:7 用已过期的微众卡购买商品时
 			"pay_type": "微信支付",
 			"products":[{
 				"name":"商品1",
-				"price":50,
+				"price":50.00,
 				"count":1
 			}]
 		}
@@ -426,8 +426,8 @@ Scenario:7 用已过期的微众卡购买商品时
 		"""
 		{
 			"status": "待支付",
-			"final_price": 50.0,
-			"product_price": 50.0,
+			"final_price": 50.00,
+			"product_price": 50.00,
 			"products":[{
 				"name":"商品1",
 				"price":50.00,
@@ -457,7 +457,7 @@ Scenario:8 用已使用过的微众卡购买商品时
 			"pay_type": "微信支付",
 			"products":[{
 				"name":"商品1",
-				"price":50,
+				"price":50.00,
 				"count":1
 			}],
 			"weizoom_card":[{
@@ -471,8 +471,8 @@ Scenario:8 用已使用过的微众卡购买商品时
 		"""
 		{
 			"status": "待发货",
-			"final_price": 0.0,
-			"product_price": 50.0,
+			"final_price": 0.00,
+			"product_price": 50.00,
 			"weizoom_card_money":50.00,
 			"products":[{
 				"name":"商品1",
@@ -565,7 +565,7 @@ Scenario:9 用10张微众卡共同支付
 			"pay_type": "微信支付",
 			"products":[{
 				"name":"商品1",
-				"price":50,
+				"price":50.00,
 				"count":1
 			}],
 			"weizoom_card":[{
@@ -606,8 +606,8 @@ Scenario:9 用10张微众卡共同支付
 		"""
 		{
 			"status": "待支付",
-			"final_price": 40.0,
-			"product_price": 50.0,
+			"final_price": 40.00,
+			"product_price": 50.00,
 			"weizoom_card_money":10.00,
 			"products":[{
 				"name":"商品1",
@@ -751,7 +751,7 @@ Scenario:10 用11张微众卡共同支付
 		{
 			"products":[{
 				"name":"商品1",
-				"price":50,
+				"price":50.00,
 				"count":1
 			}],
 			"weizoom_card":[{
@@ -866,7 +866,7 @@ Scenario:11 用微众卡购买商品时，输入两张同样的卡号密码
 		{
 			"products":[{
 				"name":"商品1",
-				"price":50,
+				"price":50.00,
 				"count":1
 			}],
 			"weizoom_card":[{
@@ -904,7 +904,7 @@ Scenario:12 用两张微众卡购买，第一张卡的金额大于商品金额
 			"pay_type": "微信支付",
 			"products":[{
 				"name":"商品1",
-				"price":50,
+				"price":50.00,
 				"count":1
 			}],
 			"weizoom_card":[{
@@ -920,8 +920,8 @@ Scenario:12 用两张微众卡购买，第一张卡的金额大于商品金额
 		"""
 		{
 			"status": "待发货",
-			"final_price": 0.0,
-			"product_price": 50.0,
+			"final_price": 0.00,
+			"product_price": 50.00,
 			"weizoom_card_money":50.00,
 			"products":[{
 				"name":"商品1",
@@ -961,7 +961,7 @@ Scenario:13 用两张微众卡购买，第二张卡的金额大于商品金额
 			"pay_type": "微信支付",
 			"products":[{
 				"name":"商品1",
-				"price":50,
+				"price":50.00,
 				"count":1
 			}],
 			"weizoom_card":[{
@@ -978,8 +978,8 @@ Scenario:13 用两张微众卡购买，第二张卡的金额大于商品金额
 		{
 			"order_id":"001",
 			"status": "待发货",
-			"final_price": 0.0,
-			"product_price": 50.0,
+			"final_price": 0.00,
+			"product_price": 50.00,
 			"weizoom_card_money":50.00,
 			"products":[{
 				"name":"商品1",
@@ -1033,12 +1033,12 @@ Scenario:14 用两张微众卡购买，2张卡小于商品金额,购买待支付
 				"id":"0000008",
 				"password":"1234567",
 				"status":"已使用",
-				"price":10
+				"price":10.00
 			},{
 				"id":"0000009",
 				"password":"1234567",
 				"status":"未使用",
-				"price":30
+				"price":30.00
 			}]
 		}
 		"""
@@ -1051,7 +1051,7 @@ Scenario:14 用两张微众卡购买，2张卡小于商品金额,购买待支付
 			"pay_type": "微信支付",
 			"products":[{
 				"name":"商品1",
-				"price":50,
+				"price":50.00,
 				"count":1
 			}],
 			"weizoom_card":[{
@@ -1068,8 +1068,8 @@ Scenario:14 用两张微众卡购买，2张卡小于商品金额,购买待支付
 		{
 			"order_id":"001",
 			"status": "待支付",
-			"final_price": 10.0,
-			"product_price": 50.0,
+			"final_price": 10.00,
+			"product_price": 50.00,
 			"weizoom_card_money":40.00,
 			"products":[{
 				"name":"商品1",

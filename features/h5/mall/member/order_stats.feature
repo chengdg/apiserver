@@ -24,10 +24,10 @@ Background:
 		"""
 		[{
 			"name": "商品1",
-			"price": 100
+			"price": 100.00
 		}, {
 			"name": "商品2",
-			"price": 200
+			"price": 200.00
 		}]
 		"""
 	And bill关注jobs的公众号

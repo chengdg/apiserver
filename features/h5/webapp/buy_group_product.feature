@@ -1096,7 +1096,7 @@ Scenario: 7 会员把商品添加购物车后，后台把这个商品创建成�
 			"product_groups": [{
 				"products": [{
 					"name": "商品3",
-					"price": 100,
+					"price": 100.00,
 					"count": 1
 				}]
 			}],
@@ -1137,7 +1137,7 @@ Scenario: 7 会员把商品添加购物车后，后台把这个商品创建成�
 			"product_groups": [],
 			"invalid_products": [{
 				"name": "商品3",
-				"price": 100,
+				"price": 100.00,
 				"count": 1
 			}]
 		}
@@ -1153,7 +1153,7 @@ Scenario: 7 会员把商品添加购物车后，后台把这个商品创建成�
 			"product_groups": [{
 				"products": [{
 					"name": "商品3",
-					"price": 100,
+					"price": 100.00,
 					"count": 1
 				}]
 			}],

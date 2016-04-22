@@ -52,17 +52,17 @@ Background:
 		"""
 		[{
 			"name": "商品1",
-			"price": 9.9
+			"price": 9.90
 		}, {
 			"name": "商品2",
-			"price": 8.8
+			"price": 8.80
 		},{
 			"name": "商品3",
 			"is_enable_model": "启用规格",
 			"model": {
 				"models": {
 					"黑色 M": {
-						"price": 10.0
+						"price": 10.00
 					}
 				}
 			}
@@ -71,7 +71,7 @@ Background:
 			"model": {
 				"models": {
 					"standard": {
-						"price": 5.0,
+						"price": 5.00,
 						"stock_type": "有限",
 						"stocks": 10
 					}

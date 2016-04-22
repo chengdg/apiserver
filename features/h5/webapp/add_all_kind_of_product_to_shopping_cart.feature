@@ -23,28 +23,28 @@ Background:
 		"""
 		[{
 			"name": "商品1",
-			"price": 100
+			"price": 100.00
 		}, {
 			"name": "商品2",
-			"price": 200
+			"price": 200.00
 		}, {
 			"name": "商品3",
 			"is_enable_model": "启用规格",
 			"model": {
 				"models":{
 					"M": {
-						"price": 300,
+						"price": 300.00,
 						"stock_type": "无限"
 					},
 					"S": {
-						"price": 300,
+						"price": 300.00,
 						"stock_type": "无限"
 					}
 				}
 			}
 		}, {
 			"name": "商品4",
-			"price":400
+			"price":400.00
 		}]	
 		"""
 
@@ -56,7 +56,7 @@ Background:
 			"end_date": "1天后",
 			"product_name": "商品1",
 			"count_per_purchase": 2,
-			"promotion_price": 10
+			"promotion_price": 10.00
 		}]
 
 		"""
@@ -122,13 +122,13 @@ Scenario:1 放入多个商品（商品1,2,3）到购物车，商品1是限时抢
 				"promotion": {
 					"type": "flash_sale",
 					"result": {
-						"saved_money": 90
+						"saved_money": 90.00
 					}
 				},
 				"can_use_promotion": true,
 				"products": [{
 					"name": "商品1",
-					"price": 10,
+					"price": 10.00,
 					"count": 1
 				}]
 			}, {
@@ -144,18 +144,18 @@ Scenario:1 放入多个商品（商品1,2,3）到购物车，商品1是限时抢
 				"can_use_promotion": true,
 				"products": [{
 					"name": "商品2",
-					"price": 200,
+					"price": 200.00,
 					"count": 2
 				}]
 			}, {
 				"products": [{
 					"name": "商品3",
-					"price": 300,
+					"price": 300.00,
 					"count": 1,
 					"model": "M"
 				}, {
 					"name": "商品3",
-					"price": 300,
+					"price": 300.00,
 					"count": 1,
 					"model": "S"
 				}]
@@ -180,10 +180,10 @@ Scenario:2 买赠活动商品，加入购物车的主商品数量小于买赠活
 		"""
 		[{
 			"name": "商品5",
-			"price": 100
+			"price": 100.00
 		},{
 			"name": "商品6",
-			"price": 50,
+			"price": 50.00,
 			"stock_type": "有限",
 			"stocks": 2
 		}]
@@ -218,7 +218,7 @@ Scenario:2 买赠活动商品，加入购物车的主商品数量小于买赠活
 
 				"products": [{
 					"name": "商品5",
-					"price": 100,
+					"price": 100.00,
 					"count": 2
 				}]
 			}],

@@ -111,8 +111,8 @@ Background:
 			"end_date": "1天后",
 			"product_name": "商品2",
 			"member_grade": "全部",
-			"promotion_price": 2.1,
-			"limit_period": 1.00
+			"promotion_price": 2.10,
+			"limit_period": 1
 		}, {
 			"name": "商品3限时抢购",
 			"start_date": "2天前",

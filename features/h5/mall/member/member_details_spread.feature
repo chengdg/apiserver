@@ -28,11 +28,11 @@ Scenario:1 会员详情-传播能力(分享链接引流)
 			"""
 			[{
 				"name": "商品1",
-				"postage":10,
+				"postage":10.00,
 				"price":100.00
 			}, {
 				"name": "商品2",
-				"postage":15,
+				"postage":15.00,
 				"price":100.00
 			}]
 			"""

@@ -10,7 +10,7 @@ from datetime import datetime
 from eaglet.core import api_resource
 from core.exceptionutil import unicode_full_stack
 import settings
-from util.lock import get_wapi_lock, wapi_lock
+from eaglet.utils.lock import wapi_lock
 from eaglet.decorator import param_required
 from db.mall import models as mall_models
 from db.mall import promotion_models

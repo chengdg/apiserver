@@ -194,3 +194,12 @@ else:
 DEV_SERVER_MULTITHREADING = False
 
 REDIS_CACHE_KEY = ':1:api'
+
+# redis锁，前缀lk
+REGISTERED_LOCK_NAMES = {
+	'__prefix': 'lk:',
+	'coupon_lock': 'co:',
+	'integral_lock': 'in:',
+	'wz_card_lock': 'wc:',
+	'wapi_lock': 'wapi:',
+}

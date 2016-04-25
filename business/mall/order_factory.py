@@ -53,7 +53,8 @@ from business.mall.package_order_service.package_order_service import PackageOrd
 from business.mall.reserved_product_repository import ReservedProductRepository
 from business.mall.group_reserved_product_service import GroupReservedProductService
 from business.mall.order_exception import OrderResourcesException, OrderFailureException, OrderResourcesLockException
-from util.lock import RedisLock, REGISTERED_LOCK_NAMES
+from eaglet.utils.lock import RedisLock
+from settings import REGISTERED_LOCK_NAMES
 
 
 class OrderFactory(business_model.Model):

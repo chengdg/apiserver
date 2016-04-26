@@ -259,3 +259,6 @@ class PurchaseInfo(business_model.Model):
     def __parse_bdd_order_id(self, request_args):
         self.bdd_order_id = request_args.get('bdd_order_id', '') if settings.IS_UNDER_BDD else ''
 
+    def validate(self):
+        result = not filter(lambda x: int(x) <= 0, self.product_counts)
+        return result

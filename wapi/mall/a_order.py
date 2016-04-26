@@ -59,6 +59,12 @@ class AOrder(api_resource.ApiResource):
 		purchase_info = PurchaseInfo.parse({
 			'request_args': args
 		})
+
+		validate_success = purchase_info.validate()
+
+		if not validate_success:
+			return 500, {'detail': ''}
+
 		if purchase_info.is_force_purchase:
 			webapp_user.set_force_purchase()
 

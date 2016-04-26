@@ -61,7 +61,8 @@ class ExpressHasOrderPushStatus(models.Model):
 	# abort_receive_message 第一次接收 "status":"abort"而且message中包含“3天”关键字的数据
 	abort_receive_at = models.DateTimeField(blank=True, verbose_name="接收信息时间")
 	abort_receive_message = models.TextField(verbose_name="接收的信息")
-
+	service_type = models.IntegerField(default=0, verbose_name="快递服务类型")
+	webapp_id = models.CharField(max_length=20, default='', db_index=True, verbose_name='店铺ID')  # webapp
 	class Meta(object):
 		db_table = 'tool_express_has_order_push_status'
 		verbose_name = '订单的推送状态'

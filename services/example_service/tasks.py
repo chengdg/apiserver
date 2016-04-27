@@ -3,7 +3,7 @@
 service示例
 """
 
-from celery import task
+from eaglet.core.service.celery import task
 
 def some_other_func(request, args):
 	"""

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from celery import task
+from eaglet.core.service.celery import task
 
 from core.exceptionutil import unicode_full_stack
 from eaglet.core import watchdog

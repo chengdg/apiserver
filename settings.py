@@ -3,7 +3,7 @@
 import os
 import logging
 
-SERVICE_NAME = "H5"
+SERVICE_NAME = "apiserver"
 
 DEBUG = True
 PROJECT_HOME = os.path.dirname(os.path.abspath(__file__))

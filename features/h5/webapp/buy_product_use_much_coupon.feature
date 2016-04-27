@@ -88,14 +88,14 @@ Background:
 		"""
 		[{
 			"name": "优惠券1",
-			"money": 1,
+			"money": 1.00,
 			"start_date": "今天",
 			"end_date": "1天后",
 			"coupon_id_prefix": "coupon1_id_",
 			"coupon_product": "商品1,商品2,商品3"
 		}, {
 			"name": "优惠券2",
-			"money": 10,
+			"money": 10.00,
 			"start_date": "今天",
 			"end_date": "2天后",
 			"using_limit": "满50元可以使用",
@@ -103,7 +103,7 @@ Background:
 			"coupon_product": "商品1,商品2,商品3,商品5"
 		}, {
 			"name": "优惠券5",
-			"money": 100,
+			"money": 100.00,
 			"start_date": "今天",
 			"end_date": "2天后",
 			"using_limit": "满50元可以使用",
@@ -137,13 +137,13 @@ Scenario:1 使用多商品优惠劵进行购买
 		"""
 		{
 			"coupon1_id_1": {
-				"money": 1.0,
+				"money": 1.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
 			},
 			"coupon1_id_2": {
-				"money": 1.0,
+				"money": 1.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
@@ -166,9 +166,9 @@ Scenario:1 使用多商品优惠劵进行购买
 		"""
 		{
 			"status": "待支付",
-			"final_price": 9.0,
-			"product_price": 10.0,
-			"coupon_money": 1.0
+			"final_price": 9.00,
+			"product_price": 10.00,
+			"coupon_money": 1.00
 		}
 		"""
 	#第二次使用 购买商品2 购买失败
@@ -188,13 +188,13 @@ Scenario:1 使用多商品优惠劵进行购买
 		"""
 		{
 			"coupon1_id_1": {
-				"money": 1.0,
+				"money": 1.00,
 				"status": "已使用",
 				"consumer": "bill",
 				"target": "bill"
 			},
 			"coupon1_id_2": {
-				"money": 1.0,
+				"money": 1.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
@@ -214,13 +214,13 @@ Scenario:2 使用多商品优惠劵进行购买，该多商品券有使用限制
 		"""
 		{
 			"coupon2_id_1": {
-				"money": 10.0,
+				"money": 10.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
 			},
 			"coupon2_id_2": {
-				"money": 10.0,
+				"money": 10.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
@@ -256,9 +256,9 @@ Scenario:2 使用多商品优惠劵进行购买，该多商品券有使用限制
 		"""
 		{
 			"status": "待支付",
-			"final_price": 45.0,
-			"product_price": 55.0,
-			"coupon_money": 10.0
+			"final_price": 45.00,
+			"product_price": 55.00,
+			"coupon_money": 10.00
 		}
 		"""
 	#第二次使用 购买商品1+商品2 订单购买失败
@@ -281,13 +281,13 @@ Scenario:2 使用多商品优惠劵进行购买，该多商品券有使用限制
 		"""
 		{
 			"coupon2_id_1": {
-				"money": 10.0,
+				"money": 10.00,
 				"status": "已使用",
 				"consumer": "bill",
 				"target": "bill"
 			},
 			"coupon2_id_2": {
-				"money": 10.0,
+				"money": 10.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
@@ -306,13 +306,13 @@ Scenario:3 使用多商品优惠券进行购买，优惠券金额大于商品金
 		"""
 		{
 			"coupon5_id_1": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
 			},
 			"coupon5_id_2": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
@@ -341,9 +341,9 @@ Scenario:3 使用多商品优惠券进行购买，优惠券金额大于商品金
 		"""
 		{
 			"status": "待发货",
-			"final_price": 0.0,
-			"product_price": 50.0,
-			"coupon_money": 50.0
+			"final_price": 0.00,
+			"product_price": 50.00,
+			"coupon_money": 50.00
 		}
 		"""
 	#不满足条件，不可使用优惠券
@@ -383,10 +383,10 @@ Scenario:3 使用多商品优惠券进行购买，优惠券金额大于商品金
 		"""
 		{
 			"status": "待支付",
-			"final_price": 10.0,
-			"product_price": 50.0,
-			"coupon_money": 50.0,
-			"postage":10.0
+			"final_price": 10.00,
+			"product_price": 50.00,
+			"coupon_money": 50.00,
+			"postage":10.00
 		}
 		"""
 	Given jobs登录系统:weapp
@@ -394,13 +394,13 @@ Scenario:3 使用多商品优惠券进行购买，优惠券金额大于商品金
 		"""
 		{
 			"coupon5_id_1": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "已使用",
 				"consumer": "bill",
 				"target": "bill"
 			},
 			"coupon5_id_2": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "已使用",
 				"consumer": "bill",
 				"target": "bill"
@@ -419,13 +419,13 @@ Scenario:4 修改多商品优惠券关联的商品后，使用多商品优惠券
 		"""
 		{
 			"coupon2_id_1": {
-				"money": 10.0,
+				"money": 10.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
 			},
 			"coupon2_id_2": {
-				"money": 10.0,
+				"money": 10.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
@@ -463,9 +463,9 @@ Scenario:4 修改多商品优惠券关联的商品后，使用多商品优惠券
 		"""
 		{
 			"status": "待支付",
-			"final_price": 40.0,
-			"product_price": 50.0,
-			"coupon_money": 10.0
+			"final_price": 40.00,
+			"product_price": 50.00,
+			"coupon_money": 10.00
 		}
 		"""
 	Given jobs登录系统:weapp
@@ -494,9 +494,9 @@ Scenario:4 修改多商品优惠券关联的商品后，使用多商品优惠券
 		"""
 		{
 			"status": "待支付",
-			"final_price": 40.0,
-			"product_price": 50.0,
-			"coupon_money": 10.0
+			"final_price": 40.00,
+			"product_price": 50.00,
+			"coupon_money": 10.00
 		}
 		"""
 	Given jobs登录系统:weapp
@@ -523,9 +523,9 @@ Scenario:4 修改多商品优惠券关联的商品后，使用多商品优惠券
 		"""
 		{
 			"status": "待支付",
-			"final_price": 50.0,
-			"product_price": 60.0,
-			"coupon_money": 10.0
+			"final_price": 50.00,
+			"product_price": 60.00,
+			"coupon_money": 10.00
 		}
 		"""
 	Given jobs登录系统:weapp
@@ -533,19 +533,19 @@ Scenario:4 修改多商品优惠券关联的商品后，使用多商品优惠券
 		"""
 		{
 			"coupon2_id_1": {
-				"money": 10.0,
+				"money": 10.00,
 				"status": "已使用",
 				"consumer": "bill",
 				"target": "bill"
 			},
 			"coupon2_id_2": {
-				"money": 10.0,
+				"money": 10.00,
 				"status": "已使用",
 				"consumer": "bill",
 				"target": "bill"
 			},
 			"coupon2_id_3": {
-				"money": 10.0,
+				"money": 10.00,
 				"status": "已使用",
 				"consumer": "bill",
 				"target": ""
@@ -563,13 +563,13 @@ Scenario:5 使用多商品优惠券购买关联的一个商品和一个普通商
 		"""
 		{
 			"coupon5_id_1": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
 			},
 			"coupon5_id_2": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
@@ -597,10 +597,10 @@ Scenario:5 使用多商品优惠券购买关联的一个商品和一个普通商
 		"""
 		{
 			"status": "待支付",
-			"final_price": 40.0,
-			"product_price": 80.0,
-			"coupon_money": 60.0,
-			"postage":20.0
+			"final_price": 40.00,
+			"product_price": 80.00,
+			"coupon_money": 60.00,
+			"postage":20.00
 		}
 		"""
 	Given jobs登录系统:weapp
@@ -608,13 +608,13 @@ Scenario:5 使用多商品优惠券购买关联的一个商品和一个普通商
 		"""
 		{
 			"coupon5_id_1": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "已使用",
 				"consumer": "bill",
 				"target": "bill"
 			},
 			"coupon5_id_2": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"

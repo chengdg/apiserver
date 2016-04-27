@@ -41,7 +41,6 @@ Background:
 		"""
 		[{
 			"name": "商品1",
-			"price": 100.00,
 			"model": {
 				"models": {
 					"standard": {
@@ -105,14 +104,14 @@ Background:
 			"product_name": "商品1",
 			"member_grade": "全部",
 			"count_per_purchase": 2,
-			"promotion_price": 11.5
+			"promotion_price": 11.50
 		}, {
 			"name": "商品2限时抢购",
 			"start_date": "今天",
 			"end_date": "1天后",
 			"product_name": "商品2",
 			"member_grade": "全部",
-			"promotion_price": 2.1,
+			"promotion_price": 2.10,
 			"limit_period": 1
 		}, {
 			"name": "商品3限时抢购",
@@ -120,7 +119,7 @@ Background:
 			"end_date": "1天前",
 			"product_name": "商品3",
 			"member_grade": "全部",
-			"promotion_price": 3.1
+			"promotion_price": 3.10
 		}]
 		"""
 	#会员等级
@@ -221,7 +220,7 @@ Scenario: 1 购买单个限时抢购商品，限时抢购进行中
 				"name": "商品1",
 				"count": 2,
 				"promotion": {
-					"promotioned_product_price": 11.5,
+					"promotioned_product_price": 11.50,
 					"type": "flash_sale"
 				}
 			}]
@@ -241,7 +240,7 @@ Scenario: 1 购买单个限时抢购商品，限时抢购进行中
 		"""
 		{
 			"status": "待支付",
-			"final_price": 11.5
+			"final_price": 11.50
 		}
 		"""
 
@@ -285,7 +284,7 @@ Scenario:3 购买单个限时抢购商品，限时抢购活动没开始，按原
 			"end_date": "3天后",
 			"product_name": "商品4",
 			"count_per_purchase": 2,
-			"promotion_price": 11.5
+			"promotion_price": 11.50
 		}
 		"""
 	When bill访问jobs的webapp
@@ -303,7 +302,7 @@ Scenario:3 购买单个限时抢购商品，限时抢购活动没开始，按原
 		"""
 		{
 			"status": "待支付",
-			"final_price": 80.0
+			"final_price": 80.00
 		}
 		"""
 
@@ -331,8 +330,8 @@ Scenario:4 购买多个商品，带有限时抢购商品
 		"""
 		{
 			"status": "待支付",
-			"final_price": 65.1,
-			"product_price": 65.1,
+			"final_price": 65.10,
+			"product_price": 65.10,
 			"postage": 0.00,
 			"integral_money":0.00,
 			"coupon_money":0.00,
@@ -340,20 +339,20 @@ Scenario:4 购买多个商品，带有限时抢购商品
 				"name": "商品1",
 				"count": 2,
 				"promotion": {
-					"promotioned_product_price": 11.5,
+					"promotioned_product_price": 11.50,
 					"type": "flash_sale"
 				}
 			}, {
 				"name": "商品2",
 				"count": 1,
 				"promotion": {
-					"promotioned_product_price": 2.1,
+					"promotioned_product_price": 2.10,
 					"type": "flash_sale"
 				}
 			}, {
 				"name": "商品4",
 				"count": 1,
-				"price": 40.0,
+				"price": 40.00,
 				"promotion": null
 			}]
 		}
@@ -378,7 +377,7 @@ Scenario:5 购买单个限时抢购商品，超出库存限制
 		"""
 		{
 			"status": "待支付",
-			"final_price": 23.0
+			"final_price": 23.00
 		}
 		"""
 	When bill购买jobs的商品
@@ -413,7 +412,7 @@ Scenario:6 购买单个限时抢购商品，未超过库存限制，但超过单
 			"end_date": "1天后",
 			"product_name": "商品4",
 			"count_per_purchase": 2,
-			"promotion_price": 11.5
+			"promotion_price": 11.50
 		}
 		"""
 	When bill访问jobs的webapp
@@ -431,7 +430,7 @@ Scenario:6 购买单个限时抢购商品，未超过库存限制，但超过单
 		"""
 		{
 			"status": "待支付",
-			"final_price": 23.0
+			"final_price": 23.00
 		}
 		"""
 	When bill购买jobs的商品
@@ -464,7 +463,7 @@ Scenario:7 在限购周期内连续购买限时抢购商品
 		"""
 		{
 			"status": "待支付",
-			"final_price": 2.1
+			"final_price": 2.10
 		}
 		"""
 	When bill购买jobs的商品
@@ -498,7 +497,7 @@ Scenario:8 购买多规格限时抢购商品
 			"end_date": "1天后",
 			"product_name": "商品5",
 			"count_per_purchase": 2,
-			"promotion_price": 11.5
+			"promotion_price": 11.50
 		}
 		"""
 	When bill访问jobs的webapp
@@ -521,7 +520,7 @@ Scenario:8 购买多规格限时抢购商品
 		"""
 		{
 			"status": "待支付",
-			"final_price": 23.0
+			"final_price": 23.00
 		}
 		"""
 	When bill购买jobs的商品
@@ -561,7 +560,7 @@ Scenario:9 购买多规格限时抢购商品同时适用于积分规则
 			"end_date": "1天后",
 			"product_name": "商品5",
 			"count_per_purchase": 2,
-			"promotion_price": 10
+			"promotion_price": 10.00
 		}
 		"""
 	When bill访问jobs的webapp
@@ -572,7 +571,7 @@ Scenario:9 购买多规格限时抢购商品同时适用于积分规则
 		{
 			"pay_type": "微信支付",
 			"integral_money":10.00,
-			"integral":20.00,
+			"integral":20,
 			"products": [{
 				"name": "商品5",
 				"count": 1,
@@ -588,12 +587,12 @@ Scenario:9 购买多规格限时抢购商品同时适用于积分规则
 		"""
 		{
 			"status": "待支付",
-			"final_price": 10.0,
+			"final_price": 10.00,
 			"product_price": 20.00,
 			"promotion_saved_money":60.00,
 			"postage": 0.00,
 			"integral_money":10.00,
-			"integral":20.00,
+			"integral":20,
 			"coupon_money":0.00,
 			"products": [{
 				"name": "商品5",
@@ -620,7 +619,7 @@ Scenario:10 购买单个限时抢购商品，购买时活动进行中，提交�
 			"end_date": "1天后",
 			"product_name": "商品4",
 			"count_per_purchase": 2,
-			"promotion_price": 11.5
+			"promotion_price": 11.50
 		}
 		"""
 	And jobs'结束'促销活动'商品4限时抢购':weapp
@@ -665,7 +664,7 @@ Scenario:11 购买单个限时抢购商品，未支付然后取消订单，还�
 			"end_date": "1天后",
 			"product_name": "商品4",
 			"count_per_purchase": 2,
-			"promotion_price": 11.5,
+			"promotion_price": 11.50,
 			"limit_period": 1
 		}
 		"""
@@ -687,7 +686,7 @@ Scenario:11 购买单个限时抢购商品，未支付然后取消订单，还�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 11.5
+			"final_price": 11.50
 		}
 		"""
 	Given jobs登录系统:weapp
@@ -695,7 +694,7 @@ Scenario:11 购买单个限时抢购商品，未支付然后取消订单，还�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 11.5,
+			"final_price": 11.50,
 			"actions": ["取消订单", "支付","修改价格"]
 		}
 		"""
@@ -709,7 +708,7 @@ Scenario:11 购买单个限时抢购商品，未支付然后取消订单，还�
 		"""
 		{
 			"status": "已取消",
-			"final_price": 11.5,
+			"final_price": 11.50,
 			"actions": []
 		}
 		"""
@@ -756,7 +755,7 @@ Scenario:12 不同等级的会员购买有会员价同时有限时抢购的商�
 					"standard": {
 						"stock_type": "有限",
 						"stocks": 30,
-						"price": 100
+						"price": 100.00
 					}
 				}
 			}
@@ -785,9 +784,9 @@ Scenario:12 不同等级的会员购买有会员价同时有限时抢购的商�
 			"products": [{
 				"name": "商品1",
 				"count": 2,
-				"price": 11.5,
+				"price": 11.50,
 				"promotion": {
-					"promotioned_product_price": 11.5,
+					"promotioned_product_price": 11.50,
 					"type": "flash_sale"
 				}
 			}]
@@ -817,7 +816,7 @@ Scenario:12 不同等级的会员购买有会员价同时有限时抢购的商�
 				"name": "商品1",
 				"count": 2,
 				"promotion": {
-					"promotioned_product_price": 11.5,
+					"promotioned_product_price": 11.50,
 					"type": "flash_sale"
 				}
 			}]
@@ -835,7 +834,7 @@ Scenario:13 不同等级的会员购买有会员价同时有会员等级限时�
 					"standard": {
 						"stock_type": "有限",
 						"stocks": 30,
-						"price": 100
+						"price": 100.00
 					}
 				}
 			}
@@ -850,7 +849,7 @@ Scenario:13 不同等级的会员购买有会员价同时有会员等级限时�
 			"end_date": "1天后",
 			"product_name": "商品1",
 			"member_grade": "银牌会员",
-			"promotion_price": 50.0
+			"promotion_price": 50.00
 		}]
 	"""
 	When bill访问jobs的webapp
@@ -868,8 +867,8 @@ Scenario:13 不同等级的会员购买有会员价同时有会员等级限时�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 200.0,
-			"product_price": 200.0,
+			"final_price": 200.00,
+			"product_price": 200.00,
 			"postage": 0.00,
 			"integral_money":0.00,
 			"coupon_money":0.00,
@@ -894,14 +893,14 @@ Scenario:13 不同等级的会员购买有会员价同时有会员等级限时�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 180.0,
-			"product_price": 180.0,
+			"final_price": 180.00,
+			"product_price": 180.00,
 			"postage": 0.00,
 			"integral_money":0.00,
 			"coupon_money":0.00,
 			"products": [{
 				"name": "商品1",
-				"price": 90.0,
+				"price": 90.00,
 				"count": 2
 			}]
 		}
@@ -921,8 +920,8 @@ Scenario:13 不同等级的会员购买有会员价同时有会员等级限时�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 100.0,
-			"product_price": 100.0,
+			"final_price": 100.00,
+			"product_price": 100.00,
 			"postage": 0.00,
 			"integral_money":0.00,
 			"coupon_money":0.00,
@@ -930,7 +929,7 @@ Scenario:13 不同等级的会员购买有会员价同时有会员等级限时�
 				"name": "商品1",
 				"count": 2,
 				"promotion": {
-					"promotioned_product_price": 50.0,
+					"promotioned_product_price": 50.00,
 					"type": "flash_sale"
 				}
 			}]
@@ -963,7 +962,7 @@ Scenario:14 不同等级的会员购买原价有会员等级限时抢购的商�
 			"end_date": "1天后",
 			"product_name": "商品1",
 			"member_grade": "银牌会员",
-			"promotion_price": 50.0
+			"promotion_price": 50.00
 		}]
 		"""
 	When bill访问jobs的webapp
@@ -981,8 +980,8 @@ Scenario:14 不同等级的会员购买原价有会员等级限时抢购的商�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 200.0,
-			"product_price": 200.0,
+			"final_price": 200.00,
+			"product_price": 200.00,
 			"postage": 0.00,
 			"integral_money":0.00,
 			"coupon_money":0.00,
@@ -1007,8 +1006,8 @@ Scenario:14 不同等级的会员购买原价有会员等级限时抢购的商�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 200.0,
-			"product_price": 200.0,
+			"final_price": 200.00,
+			"product_price": 200.00,
 			"postage": 0.00,
 			"integral_money":0.00,
 			"coupon_money":0.00,
@@ -1033,8 +1032,8 @@ Scenario:14 不同等级的会员购买原价有会员等级限时抢购的商�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 100.0,
-			"product_price": 100.0,
+			"final_price": 100.00,
+			"product_price": 100.00,
 			"postage": 0.00,
 			"integral_money":0.00,
 			"coupon_money":0.00,
@@ -1042,7 +1041,7 @@ Scenario:14 不同等级的会员购买原价有会员等级限时抢购的商�
 				"name": "商品1",
 				"count": 2,
 				"promotion": {
-					"promotioned_product_price": 50.0,
+					"promotioned_product_price": 50.00,
 					"type": "flash_sale"
 				}
 			}]
@@ -1087,7 +1086,7 @@ Scenario:15 购买多规格限时抢购商品同时适用于积分规则和会�
 			"end_date": "1天后",
 			"product_name": "商品5",
 			"member_grade": "银牌会员",
-			"promotion_price": 10
+			"promotion_price": 10.00
 		}
 		"""
 	When bill访问jobs的webapp
@@ -1188,7 +1187,7 @@ Scenario:15 购买多规格限时抢购商品同时适用于积分规则和会�
 		{
 			"pay_type": "微信支付",
 			"integral_money":10.00,
-			"integral":20.00,
+			"integral":20,
 			"products": [{
 				"name": "商品5",
 				"count": 1,
@@ -1209,7 +1208,7 @@ Scenario:15 购买多规格限时抢购商品同时适用于积分规则和会�
 			"promotion_saved_money": 60.00,
 			"postage": 0.00,
 			"integral_money":10.00,
-			"integral":20.00,
+			"integral":20,
 			"coupon_money":0.00,
 			"products": [{
 				"name": "商品5",

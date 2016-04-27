@@ -36,7 +36,7 @@ Background:
 			"model": {
 				"models": {
 					"standard": {
-						"price": 10.0,
+						"price": 10.00,
 						"weight": 5.5,
 						"stock_type": "有限",
 						"stocks": 3
@@ -52,13 +52,13 @@ Background:
 			"model": {
 				"models": {
 					"黑色 S": {
-						"price": 20.0,
+						"price": 20.00,
 						"weight": 3.1,
 						"stock_type": "有限",
 						"stocks": 3
 					},
 					"白色 S": {
-						"price": 20.0,
+						"price": 20.00,
 						"weight": 1.0,
 						"stock_type": "无限"
 					}
@@ -71,7 +71,7 @@ Background:
 			"model": {
 				"models": {
 					"standard": {
-						"price": 30.0,
+						"price": 30.00,
 						"weight": 5.5,
 						"stock_type": "有限",
 						"stocks": 3
@@ -179,19 +179,19 @@ Scenario:2 购买多个有配送时间的商品,订单状态为'待发货'
 			"ship_tel": "13811223344",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
-			"final_price": 50.0,
+			"final_price": 50.00,
 			"products": [{
 				"name": "配送商品1",
-				"price": 10.0,
+				"price": 10.00,
 				"count": 1
 			},{
 				"name": "配送商品2",
-				"price": 20.0,
+				"price": 20.00,
 				"model": "黑色 S",
 				"count": 1
 			},{
 				"name": "配送商品2",
-				"price": 20.0,
+				"price": 20.00,
 				"model": "白色 S",
 				"count": 1
 			}]
@@ -240,14 +240,14 @@ Scenario:3 购买有配送时间和没有配送时间的商品,订单状态为'�
 			"ship_tel": "13811223344",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
-			"final_price": 40.0,
+			"final_price": 40.00,
 			"products": [{
 				"name": "配送商品1",
-				"price": 10.0,
+				"price": 10.00,
 				"count": 1
 			},{
 				"name": "不配送商品3",
-				"price": 30.0,
+				"price": 30.00,
 				"count": 1
 			}]
 		}

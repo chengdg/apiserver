@@ -47,7 +47,7 @@ Background:
 						"user_code": "10",
 						"stock_type": "有限",
 						"stocks": 2,
-						"price": 10.0
+						"price": 10.00
 					}
 				}
 			}
@@ -59,41 +59,41 @@ Background:
 						"user_code": "20",
 						"stock_type": "有限",
 						"stocks": 1,
-						"price": 20.0
+						"price": 20.00
 					}
 				}
 			}
 		},{
 			"name": "商品3",
-			"price": 30.0
+			"price": 30.00
 		},{
 			"name": "商品4",
-			"price": 40.0
+			"price": 40.00
 		},{
 			"name": "商品5",
-			"price": 50.0
+			"price": 50.00
 		},{
 			"name": "商品6",
-			"price": 60.0
+			"price": 60.00
 		},{
 			"name": "商品7",
 			"is_enable_model": "启用规格",
 			"model": {
 				"models": {
 					"M": {
-						"price": 70.0
+						"price": 70.00
 						},
 					"S": {
-						"price": 70.0
+						"price": 70.00
 					}
 				}
 			}
 		},{
 			"name": "赠品",
-			"price": 10.0
+			"price": 10.00
 		},{
 			"name": "商品8",
-			"price": 80.0
+			"price": 80.00
 		}]
 		"""
 
@@ -120,7 +120,7 @@ Background:
 			"end_date": "1天后",
 			"product_name": "商品6",
 			"member_grade": "全部",
-			"promotion_price": 50.0,
+			"promotion_price": 50.00,
 			"limit_period": 1
 		}, {
 			"name": "商品7限时抢购",
@@ -129,7 +129,7 @@ Background:
 			"product_name": "商品7",
 			"member_grade": "全部",
 			"count_per_purchase": 3,
-			"promotion_price": 60.0
+			"promotion_price": 60.00
 		}]
 		"""
 	Given bill关注jobs的公众号

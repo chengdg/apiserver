@@ -119,7 +119,7 @@ Background:
 			"rules": [{
 				"member_grade": "全部",
 				"discount": 70,
-				"discount_money": 70.0
+				"discount_money": 70.00
 			}]
 		}, {
 			"name": "商品3积分应用",
@@ -130,7 +130,7 @@ Background:
 			"rules": [{
 				"member_grade": "全部",
 				"discount": 50,
-				"discount_money": 25.0
+				"discount_money": 25.00
 			}]
 		}, {
 			"name": "商品5积分应用",
@@ -141,7 +141,7 @@ Background:
 			"rules": [{
 				"member_grade": "全部",
 				"discount": 50,
-				"discount_money": 20.0
+				"discount_money": 20.00
 			}]
 		}]
 		"""
@@ -168,7 +168,7 @@ Scenario: 1 购买单个积分折扣商品，积分金额小于最大折扣金�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 75.0,
+			"final_price": 75.00,
 			"product_price": 100.00,
 			"promotion_saved_money": 0.00,
 			"postage": 0.00,
@@ -203,7 +203,7 @@ Scenario: 2 购买单个积分折扣商品，积分金额等于最大折扣金�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 30.0,
+			"final_price": 30.00,
 			"product_price": 100.00,
 			"promotion_saved_money": 0.00,
 			"postage": 0.00,
@@ -262,7 +262,7 @@ Scenario: 4 购买多个积分折扣商品，总积分金额小于最大折扣�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 75.0,
+			"final_price": 75.00,
 			"product_price": 150.00,
 			"promotion_saved_money": 0.00,
 			"postage": 0.00,
@@ -295,7 +295,7 @@ Scenario: 5 购买单个积分折扣商品，积分活动还未开始
 			"rules": [{
 				"member_grade": "全部",
 				"discount": 50,
-				"discount_money": 20.0
+				"discount_money": 20.00
 			}]
 		}]
 		"""
@@ -317,7 +317,7 @@ Scenario: 5 购买单个积分折扣商品，积分活动还未开始
 		"""
 		{
 			"status": "待支付",
-			"final_price": 40.0,
+			"final_price": 40.00,
 			"product_price": 40.00,
 			"promotion_saved_money": 0.00,
 			"postage": 0.00,
@@ -347,7 +347,7 @@ Scenario: 6 购买单个积分折扣商品，积分活动已结束，积分活�
 			"rules": [{
 				"member_grade": "全部",
 				"discount": 50,
-				"discount_money": 20.0
+				"discount_money": 20.00
 			}]
 		}]
 		"""
@@ -388,7 +388,7 @@ Scenario: 6 购买单个积分折扣商品，积分活动已结束，积分活�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 40.0,
+			"final_price": 40.00,
 			"product_price": 40.00,
 			"integral_money": 0.00,
 			"products": [{
@@ -414,7 +414,7 @@ Scenario: 7 购买单个积分折扣商品，积分活动时间已结束，但�
 			"rules": [{
 				"member_grade": "全部",
 				"discount": 50,
-				"discount_money": 20.0
+				"discount_money": 20.00
 			}]
 		}]
 		"""
@@ -436,7 +436,7 @@ Scenario: 7 购买单个积分折扣商品，积分活动时间已结束，但�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 20.0,
+			"final_price": 20.00,
 			"product_price": 40.00,
 			"integral_money": 20.00,
 			"products": [{
@@ -504,7 +504,7 @@ Scenario: 9 购买单个,多规格积分折扣商品，积分活动已结束，�
 			"rules": [{
 				"member_grade": "全部",
 				"discount": 50,
-				"discount_money": 20.0
+				"discount_money": 20.00
 			}]
 		}]
 		"""
@@ -533,7 +533,7 @@ Scenario: 9 购买单个,多规格积分折扣商品，积分活动已结束，�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 40.0,
+			"final_price": 40.00,
 			"product_price": 80.00,
 			"integral_money": 40.00,
 			"products": [{
@@ -564,7 +564,7 @@ Scenario: 10 购买单个积分应用活动商品，购买时活动进行中，�
 			"rules": [{
 				"member_grade": "全部",
 				"discount": 50,
-				"discount_money": 20.0
+				"discount_money": 20.00
 			}]
 		}]
 		"""
@@ -628,7 +628,7 @@ Scenario: 11 不同等级的会员购买有会员价同时有积分统一设置�
 			"rules": [{
 				"member_grade": "全部",
 				"discount": 50,
-				"discount_money": 50.0
+				"discount_money": 50.00
 				}]
 		}]
 		"""
@@ -697,7 +697,7 @@ Scenario: 11 不同等级的会员购买有会员价同时有积分统一设置�
 			"pay_type": "微信支付",
 			"products": [{
 				"integral_money":50.00,
-				"integral":100.00,
+				"integral":100,
 				"name": "商品11",
 				"count": 1
 			}]
@@ -707,17 +707,17 @@ Scenario: 11 不同等级的会员购买有会员价同时有积分统一设置�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 50.0,
+			"final_price": 50.00,
 			"product_price": 100.00,
 			"promotion_saved_money": 0.00,
 			"postage": 0.00,
 			"coupon_money":0.00,
 			"integral_money":50.00,
-			"integral":100.00,
+			"integral":100,
 			"products": [{
 				"name": "商品11",
-				"price": 100.0,
-				"grade_discounted_money": 0.0,
+				"price": 100.00,
+				"grade_discounted_money": 0.00,
 				"count": 1
 			}]
 		}
@@ -733,7 +733,7 @@ Scenario: 11 不同等级的会员购买有会员价同时有积分统一设置�
 			"pay_type": "微信支付",
 			"products": [{
 				"integral_money":45.00,
-				"integral":90.00,
+				"integral":90,
 				"name": "商品11",
 				"count": 1
 			}]
@@ -743,17 +743,17 @@ Scenario: 11 不同等级的会员购买有会员价同时有积分统一设置�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 45.0,
+			"final_price": 45.00,
 			"product_price": 90.00,
 			"promotion_saved_money": 0.00,
 			"postage": 0.00,
 			"integral_money":45.00,
-			"integral":90.00,
+			"integral":90,
 			"coupon_money":0.00,
 			"products": [{
 				"name": "商品11",
-				"price": 90.0,
-				"grade_discounted_money": 10.0,
+				"price": 90.00,
+				"grade_discounted_money": 10.00,
 				"count": 1
 			}]
 		}
@@ -771,10 +771,10 @@ Scenario: 11 不同等级的会员购买有会员价同时有积分统一设置�
 				"name": "商品10",
 				"count": 1
 			},{
-			    "name": "商品11",
+				"name": "商品11",
 				"count": 1,
 				"integral_money":35.00,
-				"integral":70.00
+				"integral":70
 			}]
 		}
 		"""
@@ -782,22 +782,22 @@ Scenario: 11 不同等级的会员购买有会员价同时有积分统一设置�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 105.0,
+			"final_price": 105.00,
 			"product_price": 140.00,
 			"promotion_saved_money": 0.00,
 			"postage": 0.00,
 			"integral_money":35.00,
-			"integral":70.00,
+			"integral":70,
 			"coupon_money":0.00,
 			"products": [{
 				"name": "商品10",
-				"price": 70.0,
-				"grade_discounted_money": 30.0,
+				"price": 70.00,
+				"grade_discounted_money": 30.00,
 				"count": 1
 			},{
 				"name": "商品11",
-				"price": 70.0,
-				"grade_discounted_money": 30.0,
+				"price": 70.00,
+				"grade_discounted_money": 30.00,
 				"count": 1
 			}]
 		}
@@ -889,7 +889,7 @@ Scenario: 12 不同等级的会员购买有会员价同时有根据等级设置�
 			[{
 				"member_grade": "普通会员",
 				"discount": 100,
-				"discount_money": 100.0
+				"discount_money": 100.00
 			},{
 				"member_grade": "铜牌会员",
 				"discount": 90,
@@ -897,11 +897,11 @@ Scenario: 12 不同等级的会员购买有会员价同时有根据等级设置�
 			},{
 				"member_grade": "银牌会员",
 				"discount": 80,
-				"discount_money": 80.0
+				"discount_money": 80.00
 			},{
 				"member_grade": "金牌会员",
 				"discount": 70,
-				"discount_money": 70.0
+				"discount_money": 70.00
 			}]
 		}]
 		"""
@@ -915,7 +915,7 @@ Scenario: 12 不同等级的会员购买有会员价同时有根据等级设置�
 			"pay_type": "货到付款",
 			"products": [{
 				"integral_money":100.00,
-				"integral":200.00,
+				"integral":200,
 				"name": "商品12",
 				"count": 1
 			}]
@@ -931,10 +931,10 @@ Scenario: 12 不同等级的会员购买有会员价同时有根据等级设置�
 			"postage": 0.00,
 			"coupon_money":0.00,
 			"integral_money":100.00,
-			"integral":200.00,
+			"integral":200,
 			"products": [{
-				"price": 100.0,
-				"grade_discounted_money": 0.0,
+				"price": 100.00,
+				"grade_discounted_money": 0.00,
 				"name": "商品12",
 				"count": 1
 			}]
@@ -967,10 +967,10 @@ Scenario: 12 不同等级的会员购买有会员价同时有根据等级设置�
 			"postage": 0.00,
 			"coupon_money":0.00,
 			"integral_money":81.00,
-			"integral":162.00,
+			"integral":162,
 			"products": [{
-				"price": 90.0,
-				"grade_discounted_money": 10.0,
+				"price": 90.00,
+				"grade_discounted_money": 10.00,
 				"name": "商品12",
 				"count": 1
 			}]
@@ -987,7 +987,7 @@ Scenario: 12 不同等级的会员购买有会员价同时有根据等级设置�
 			"pay_type": "微信支付",
 			"products": [{
 				"integral_money":64.00,
-				"integral":128.00,
+				"integral":128,
 				"name": "商品12",
 				"count": 1
 			}]
@@ -1003,10 +1003,10 @@ Scenario: 12 不同等级的会员购买有会员价同时有根据等级设置�
 			"postage": 0.00,
 			"coupon_money":0.00,
 			"integral_money":64.00,
-			"integral":128.00,
+			"integral":128,
 			"products": [{
-				"price": 80.0,
-				"grade_discounted_money": 20.0,
+				"price": 80.00,
+				"grade_discounted_money": 20.00,
 				"name": "商品12",
 				"count": 1
 			}]
@@ -1023,7 +1023,7 @@ Scenario: 12 不同等级的会员购买有会员价同时有根据等级设置�
 			"pay_type": "微信支付",
 			"products": [{
 				"integral_money":49.00,
-				"integral":98.00,
+				"integral":98,
 				"name": "商品12",
 				"count": 1
 			}]
@@ -1039,10 +1039,10 @@ Scenario: 12 不同等级的会员购买有会员价同时有根据等级设置�
 			"postage": 0.00,
 			"coupon_money":0.00,
 			"integral_money":49.00,
-			"integral":98.00,
+			"integral":98,
 			"products": [{
-				"price": 70.0,
-				"grade_discounted_money": 30.0,
+				"price": 70.00,
+				"grade_discounted_money": 30.00,
 				"name": "商品12",
 				"count": 1
 			}]
@@ -1134,19 +1134,19 @@ Scenario: 13 不同等级的会员购买原价同时有根据等级设置积分�
 			[{
 				"member_grade": "普通会员",
 				"discount": 100,
-				"discount_money": 100.0
+				"discount_money": 100.00
 			},{
 				"member_grade": "铜牌会员",
 				"discount": 90,
-				"discount_money": 90.0
+				"discount_money": 90.00
 			},{
 				"member_grade": "银牌会员",
 				"discount": 80,
-				"discount_money": 80.0
+				"discount_money": 80.00
 			},{
 				"member_grade": "金牌会员",
 				"discount": 70,
-				"discount_money": 70.0
+				"discount_money": 70.00
 			}]
 		}]
 		"""
@@ -1160,7 +1160,7 @@ Scenario: 13 不同等级的会员购买原价同时有根据等级设置积分�
 			"pay_type": "货到付款",
 			"products": [{
 				"integral_money":100.00,
-				"integral":200.00,
+				"integral":200,
 				"name": "商品13",
 				"count": 1
 			}]
@@ -1175,11 +1175,11 @@ Scenario: 13 不同等级的会员购买原价同时有根据等级设置积分�
 			"promotion_saved_money": 0.00,
 			"postage": 0.00,
 			"integral_money":100.00,
-			"integral":200.00,
+			"integral":200,
 			"coupon_money":0.00,
 			"products": [{
-				"price": 100.0,
-				"grade_discounted_money": 0.0,
+				"price": 100.00,
+				"grade_discounted_money": 0.00,
 				"name": "商品13",
 				"count": 1
 			}]
@@ -1196,7 +1196,7 @@ Scenario: 13 不同等级的会员购买原价同时有根据等级设置积分�
 			"pay_type": "微信支付",
 			"products": [{
 				"integral_money":90.00,
-				"integral":180.00,
+				"integral":180,
 				"name": "商品13",
 				"count": 1
 			}]
@@ -1211,11 +1211,11 @@ Scenario: 13 不同等级的会员购买原价同时有根据等级设置积分�
 			"promotion_saved_money": 0.00,
 			"postage": 0.00,
 			"integral_money":90.00,
-			"integral":180.00,
+			"integral":180,
 			"coupon_money":0.00,
 			"products": [{
-				"price": 100.0,
-				"grade_discounted_money": 0.0,
+				"price": 100.00,
+				"grade_discounted_money": 0.00,
 				"name": "商品13",
 				"count": 1
 			}]
@@ -1232,7 +1232,7 @@ Scenario: 13 不同等级的会员购买原价同时有根据等级设置积分�
 			"pay_type": "微信支付",
 			"products": [{
 				"integral_money":80.00,
-				"integral":160.00,
+				"integral":160,
 				"name": "商品13",
 				"count": 1
 			}]
@@ -1247,11 +1247,11 @@ Scenario: 13 不同等级的会员购买原价同时有根据等级设置积分�
 			"promotion_saved_money": 0.00,
 			"postage": 0.00,
 			"integral_money":80.00,
-			"integral":160.00,
+			"integral":160,
 			"coupon_money":0.00,
 			"products": [{
-				"price": 100.0,
-				"grade_discounted_money": 0.0,
+				"price": 100.00,
+				"grade_discounted_money": 0.00,
 				"name": "商品13",
 				"count": 1
 			}]
@@ -1268,7 +1268,7 @@ Scenario: 13 不同等级的会员购买原价同时有根据等级设置积分�
 			"pay_type": "微信支付",
 			"products": [{
 				"integral_money":70.00,
-				"integral":140.00,
+				"integral":140,
 				"name": "商品13",
 				"count": 1
 			}]
@@ -1283,11 +1283,11 @@ Scenario: 13 不同等级的会员购买原价同时有根据等级设置积分�
 			"promotion_saved_money": 0.00,
 			"postage": 0.00,
 			"integral_money":70.00,
-			"integral":140.00,
+			"integral":140,
 			"coupon_money":0.00,
 			"products": [{
-				"price": 100.0,
-				"grade_discounted_money": 0.0,
+				"price": 100.00,
+				"grade_discounted_money": 0.00,
 				"name": "商品13",
 				"count": 1
 			}]
@@ -1553,7 +1553,7 @@ Scenario: 16 购买积分抵扣多规格商品
 			"rules": [{
 				"member_grade": "全部",
 				"discount": 75,
-				"discount_money": 15
+				"discount_money": 15.00
 			}]
 		}]
 		"""
@@ -1568,7 +1568,7 @@ Scenario: 16 购买积分抵扣多规格商品
 				"name": "商品14",
 				"model": "M",
 				"count": 1,
-				"integral_money":15,
+				"integral_money":15.00,
 				"integral":30
 			}]
 		}
@@ -1598,7 +1598,7 @@ Scenario: 16 购买积分抵扣多规格商品
 				"name": "商品14",
 				"model": "S",
 				"count": 1,
-				"integral_money":10,
+				"integral_money":10.00,
 				"integral":20
 			}]
 		}
@@ -1670,7 +1670,7 @@ Scenario: 17 购买同时参加积分抵扣和限时抢购的商品
 			"rules": [{
 				"member_grade": "全部",
 				"discount": 75,
-				"discount_money": 15
+				"discount_money": 15.00
 			}]
 		}]
 		"""
@@ -1850,7 +1850,7 @@ Scenario: 19 购买积分抵扣多规格商品修改价格后
 			"rules": [{
 				"member_grade": "全部",
 				"discount": 75,
-				"discount_money": 15
+				"discount_money": 15.00
 			}]
 		}]
 		"""
@@ -1890,7 +1890,7 @@ Scenario: 19 购买积分抵扣多规格商品修改价格后
 				"name": "商品18",
 				"count": 1,
 				"model":"S",
-				"integral_money": 15,
+				"integral_money": 15.00,
 				"integral": 30
 			}]
 		}
@@ -1954,7 +1954,7 @@ Scenario: 20 购买积分抵扣多规格商品多个数量
 			"rules": [{
 				"member_grade": "全部",
 				"discount": 40,
-				"discount_money": 8
+				"discount_money": 8.00
 			}]
 		}]
 		"""
@@ -1969,13 +1969,13 @@ Scenario: 20 购买积分抵扣多规格商品多个数量
 				"name": "商品19",
 				"count": 2,
 				"model":"M",
-				"integral_money": 16,
+				"integral_money": 16.00,
 				"integral": 32
 			},{
 				"name": "商品19",
 				"count": 2,
 				"model":"S",
-				"integral_money": 9,
+				"integral_money": 9.00,
 				"integral": 18
 			}]
 		}
@@ -1986,7 +1986,7 @@ Scenario: 20 购买积分抵扣多规格商品多个数量
 			"status": "待支付",
 			"final_price": 95.00,
 			"product_price": 120.00,
-			"integral_money":25,
+			"integral_money":25.00,
 			"integral": 50,
 			"products": [{
 				"name": "商品19",
@@ -2015,7 +2015,7 @@ Scenario: 21 购买积分抵扣商品修改价格后多个商品
 		"""
 		[{
 			"name": "商品20",
-			"price": 10
+			"price": 10.00
 		}]
 		"""
 	When jobs创建积分应用活动:weapp
@@ -2029,7 +2029,7 @@ Scenario: 21 购买积分抵扣商品修改价格后多个商品
 			"rules": [{
 				"member_grade": "全部",
 				"discount": 50,
-				"discount_money": 5
+				"discount_money": 5.00
 			}]
 		}]
 		"""
@@ -2050,7 +2050,7 @@ Scenario: 21 购买积分抵扣商品修改价格后多个商品
 			"products": [{
 				"name": "商品20",
 				"count": 10,
-				"integral_money":10.1,
+				"integral_money":10.10,
 				"integral":21
 			}]
 		}
@@ -2060,8 +2060,8 @@ Scenario: 21 购买积分抵扣商品修改价格后多个商品
 		{
 			"status": "待发货",
 			"final_price": 0.00,
-			"product_price": 10.1,
-			"integral_money": 10.1,
+			"product_price": 10.10,
+			"integral_money": 10.10,
 			"integral": 21,
 			"products": [{
 				"name": "商品20",

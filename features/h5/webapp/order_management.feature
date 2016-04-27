@@ -17,10 +17,10 @@ Background:
 			"price": 10.00
 		}, {
 			"name": "商品2",
-			"price": 20
+			"price": 20.00
 		}, {
 			"name": "商品3",
-			"price": 30
+			"price": 30.00
 		}]
 		"""
 	#支付方式

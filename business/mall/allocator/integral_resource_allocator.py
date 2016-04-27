@@ -84,7 +84,12 @@ class IntegralResourceAllocator(business_model.Service):
 			#self.context['resource'] = integral_resource
 			return True, '', integral_resource
 		else:
-			return False, reason, None
+			return False, {
+				"is_success": False,
+				"type": 'integral',
+				"msg": reason,
+				"short_msg": reason
+			}, None
 
 	@property
 	def resource_type(self):

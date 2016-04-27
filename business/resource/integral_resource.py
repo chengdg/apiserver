@@ -70,7 +70,7 @@ class IntegralResource(business_model.Resource):
 		if integral > 0 and not webapp_user.can_use_integral(integral):
 			return False, u'积分不足'
 		elif integral == 0:
-			return True, u'积分不足'
+			return True, u'00'
 		else:
 			successed, integral_log_id = webapp_user.use_integral(integral)
 			self.integral_log_id = integral_log_id

@@ -4,9 +4,9 @@
 图文页面api
 """
 
-from core import api_resource
+from eaglet.core import api_resource
 from core.exceptionutil import unicode_full_stack
-from wapi.decorators import param_required
+from eaglet.decorator import param_required
 from business.news.news_page import NewsPage
 from business.mall.order_config import OrderConfig
 from business.account.member import Member

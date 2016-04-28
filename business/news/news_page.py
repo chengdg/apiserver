@@ -7,7 +7,7 @@ import settings
 
 from business import model as business_model
 from db.news import models as news_models
-from wapi.decorators import param_required
+from eaglet.decorator import param_required
 import logging
 from core.decorator import deprecated
 

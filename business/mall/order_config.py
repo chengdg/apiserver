@@ -6,7 +6,7 @@
 from datetime import datetime
 
 import settings
-from wapi.decorators import param_required
+from eaglet.decorator import param_required
 from db.mall import models as mall_models
 from business import model as business_model
 

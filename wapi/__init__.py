@@ -7,7 +7,7 @@ import settings
 import time
 import logging
 from wapi.tasks import wapi_log, param_to_text
-from core import api_resource
+from eaglet.core import api_resource
 
 """
 wapi_path = os.path.join(settings.PROJECT_HOME, '..', 'wapi')

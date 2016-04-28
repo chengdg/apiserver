@@ -117,7 +117,7 @@ Background:
 		"""
 	Given bill关注jobs的公众号:weapp
 
-
+@mall3 @ztq
 Scenario: 1 购买单个积分折扣商品，积分金额小于最大折扣金额
 
 	When bill访问jobs的webapp
@@ -162,13 +162,13 @@ Scenario: 1 购买单个积分折扣商品，积分金额小于最大折扣金�
 				"name": "商品1",
 				"price": 100.00,
 				"count": 1,
-				"integral": 50,
+				"integral_count": 50,
 				"integral_money":25.00
 			}]
 		}
 		"""
 
-
+@mall3 @ztq
 Scenario: 2 购买单个积分折扣商品，积分金额大于最大折扣金额
 
 	When bill访问jobs的webapp
@@ -179,7 +179,7 @@ Scenario: 2 购买单个积分折扣商品，积分金额大于最大折扣金�
 			"pay_type": "微信支付",
 			"products": [{
 				"name": "商品5",
-				"model": "M"
+				"model": "M",
 				"count": 1,
 				"integral": 10,
 				"integral_money":5.00
@@ -216,12 +216,11 @@ Scenario: 2 购买单个积分折扣商品，积分金额大于最大折扣金�
 				"model": "M",
 				"price": 40.00,
 				"count": 1,
-				"integral": 10,
+				"integral_count": 10,
 				"integral_money":5.00
 			}]
 		}
 		"""
-
 
 Scenario: 3 购买多个参加积分应用活动的商品
 
@@ -303,33 +302,33 @@ Scenario: 3 购买多个参加积分应用活动的商品
 				"name": "商品1",
 				"price": 100.00,
 				"count": 1,
-				"integral": 80,
+				"integral_count": 80,
 				"integral_money": 40.00
 			}, {
 				"name": "商品2",
 				"price": 200.00,
 				"count": 1,
-				"integral": 80,
+				"integral_count": 80,
 				"integral_money":40.00
 			}, {
 				"name": "商品5",
 				"price": 10.00,
 				"count": 1,
 				"model": "S",
-				"integral": 10,
+				"integral_count": 10,
 				"integral_money":5.00
 			}, {
 				"name": "商品5",
 				"price": 40.00,
 				"count": 1,
 				"model": "M",
-				"integral": 10,
+				"integral_count": 10,
 				"integral_money":5.00
 			}, {
 				"name": "商品6",
 				"price": 200.00,
 				"count": 1,
-				"integral": 10,
+				"integral_count": 10,
 				"integral_money":5.00
 			}]
 		}
@@ -401,7 +400,7 @@ Scenario: 4 修改多商品积分活动关联的商品后，购买参加积分�
 				"name": "商品1",
 				"price": 20.00,
 				"count": 1,
-				"integral": 40,
+				"integral_count": 40,
 				"integral_money": 20.00
 			}]
 		}
@@ -456,13 +455,13 @@ Scenario: 4 修改多商品积分活动关联的商品后，购买参加积分�
 				"name": "商品1",
 				"price": 20.00,
 				"count": 1,
-				"integral": 40,
+				"integral_count": 40,
 				"integral_money": 20.00
 			}, {
 				"name": "商品3",
 				"price": 50.00,
 				"count": 1,
-				"integral": 80,
+				"integral_count": 80,
 				"integral_money": 40.00
 			}]
 		}
@@ -509,7 +508,7 @@ Scenario: 4 修改多商品积分活动关联的商品后，购买参加积分�
 				"name": "商品1",
 				"price": 20.00,
 				"count": 1,
-				"integral": 40,
+				"integral_count": 40,
 				"integral_money": 20.00
 			}]
 		}
@@ -583,7 +582,7 @@ Scenario: 5 修改多商品积分活动关联的商品后，购买参加积分�
 				"name": "商品1",
 				"price": 20.00,
 				"count": 1,
-				"integral": 40,
+				"integral_count": 40,
 				"integral_money": 20.00
 			}, {
 				"name": "商品7",

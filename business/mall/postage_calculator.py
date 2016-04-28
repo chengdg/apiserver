@@ -8,6 +8,7 @@
  1. 计算统一运费商品的运费
  2. 剩下的商品使用系统运费模板
 """
+import math
 
 from db.mall import models as mall_models
 
@@ -59,13 +60,15 @@ class PostageCalculator(object):
 		if added_weight == 0.0:
 			return price
 
-		added_count = 1
-		while True:
-			weight = weight - added_weight
-			if weight <= 0:
-				break
-			else:
-				added_count += 1
+		# added_count = 1
+		# while True:
+		# 	weight = weight - added_weight
+		# 	if weight <= 0:
+		# 		break
+		# 	else:
+		# 		added_count += 1
+
+		added_count = math.ceil(weight/added_weight)
 		added_price = added_count * factor['addedWeightPrice']
 		return price + added_price
 

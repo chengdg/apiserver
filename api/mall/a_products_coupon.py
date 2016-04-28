@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from core import api_resource
-from wapi.decorators import param_required
+from eaglet.core import api_resource
+from eaglet.decorator import param_required
 #import resource
 from business.mall.simple_products import SimpleProducts
 from business.mall.coupon.coupon_rule import CouponRule

@@ -158,12 +158,12 @@ Scenario: 1 购买单个积分折扣商品，积分金额小于最大折扣金�
 			"final_price": 75.00,
 			"product_price": 100.00,
 			"postage": 0.00,
-			"integral": 50,
-			"integral_money":25.00,
 			"products": [{
 				"name": "商品1",
 				"price": 100.00,
-				"count": 1
+				"count": 1,
+				"integral": 50,
+				"integral_money":25.00
 			}]
 		}
 		"""
@@ -211,13 +211,13 @@ Scenario: 2 购买单个积分折扣商品，积分金额大于最大折扣金�
 			"final_price": 35.00,
 			"product_price": 40.00,
 			"postage": 0.00,
-			"integral": 10,
-			"integral_money":5.00,
 			"products": [{
 				"name": "商品5",
 				"model": "M",
 				"price": 40.00,
-				"count": 1
+				"count": 1,
+				"integral": 10,
+				"integral_money":5.00
 			}]
 		}
 		"""
@@ -299,30 +299,38 @@ Scenario: 3 购买多个参加积分应用活动的商品
 			"final_price": 455.00,
 			"product_price": 550.00,
 			"postage": 0.00,
-			"integral": 190,
-			"integral_money": 95.00,
 			"products": [{
 				"name": "商品1",
 				"price": 100.00,
-				"count": 1
+				"count": 1,
+				"integral": 80,
+				"integral_money": 40.00
 			}, {
 				"name": "商品2",
 				"price": 200.00,
-				"count": 1
+				"count": 1,
+				"integral": 80,
+				"integral_money":40.00
 			}, {
 				"name": "商品5",
 				"price": 10.00,
 				"count": 1,
-				"model": "S"
+				"model": "S",
+				"integral": 10,
+				"integral_money":5.00
 			}, {
 				"name": "商品5",
 				"price": 40.00,
 				"count": 1,
-				"model": "M"
+				"model": "M",
+				"integral": 10,
+				"integral_money":5.00
 			}, {
 				"name": "商品6",
 				"price": 200.00,
-				"count": 1
+				"count": 1,
+				"integral": 10,
+				"integral_money":5.00
 			}]
 		}
 		"""
@@ -389,12 +397,12 @@ Scenario: 4 修改多商品积分活动关联的商品后，购买参加积分�
 			"final_price": 10.00,
 			"product_price": 20.00,
 			"postage": 10.00,
-			"integral": 40,
-			"integral_money": 20.00,
 			"products": [{
 				"name": "商品1",
 				"price": 20.00,
-				"count": 1
+				"count": 1,
+				"integral": 40,
+				"integral_money": 20.00
 			}]
 		}
 		"""
@@ -444,16 +452,18 @@ Scenario: 4 修改多商品积分活动关联的商品后，购买参加积分�
 			"final_price": 20.00,
 			"product_price": 70.00,
 			"postage": 10.00,
-			"integral": 120,
-			"integral_money": 60.00,
 			"products": [{
 				"name": "商品1",
 				"price": 20.00,
-				"count": 1
+				"count": 1,
+				"integral": 40,
+				"integral_money": 20.00
 			}, {
 				"name": "商品3",
 				"price": 50.00,
-				"count": 1
+				"count": 1,
+				"integral": 80,
+				"integral_money": 40.00
 			}]
 		}
 		"""
@@ -495,12 +505,12 @@ Scenario: 4 修改多商品积分活动关联的商品后，购买参加积分�
 			"final_price": 10.00,
 			"product_price": 20.00,
 			"postage": 10.00,
-			"integral": 40,
-			"integral_money": 20.00,
 			"products": [{
 				"name": "商品1",
 				"price": 20.00,
-				"count": 1
+				"count": 1,
+				"integral": 40,
+				"integral_money": 20.00
 			}]
 		}
 		"""
@@ -569,12 +579,12 @@ Scenario: 5 修改多商品积分活动关联的商品后，购买参加积分�
 			"final_price": 50.00,
 			"product_price": 70.00,
 			"postage": 0.00,
-			"integral": 40,
-			"integral_money": 20.00,
 			"products": [{
 				"name": "商品1",
 				"price": 20.00,
-				"count": 1
+				"count": 1,
+				"integral": 40,
+				"integral_money": 20.00
 			}, {
 				"name": "商品7",
 				"price": 50.00,

@@ -13,6 +13,7 @@ middleware here, or combine a Django application with an application of another
 framework.
 
 """
-from wsgiref import simple_server
-import apps
+#from wsgiref import simple_server
+from eaglet import apps
 application = apps.create_app()
+

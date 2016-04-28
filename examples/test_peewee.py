@@ -5,7 +5,7 @@ import os,sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 #os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'polaris.settings')
 
-from wapi.mall.models import *
+from api.mall.models import *
 from db.account.models import User # 对应 django.auth.models.User
 
 def dump(categories):

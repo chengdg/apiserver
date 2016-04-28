@@ -3,7 +3,7 @@
 __author__ = 'paco bert'
 
 import json
-from utils.url_helper import complete_get_request_url
+from util.url_helper import complete_get_request_url
 import api_settings
 from util import *
 from custom_message import build_custom_message_json_str, TextCustomMessage

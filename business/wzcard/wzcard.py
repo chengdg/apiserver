@@ -7,7 +7,7 @@
 
 from business import model as business_model
 from db.wzcard import models as wzcard_models
-from wapi.decorators import param_required
+from eaglet.decorator import param_required
 #from db.wzcard.models import WeizoomCardRule, WeizoomCard
 import logging
 from decimal import Decimal

@@ -18,21 +18,21 @@ import settings
 from business.mall.allocator.order_group_buy_resource_allocator import GroupBuyOPENAPI
 from core.exceptionutil import unicode_full_stack
 from core.sendmail import sendmail
-from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
+from eaglet.core import watchdog
 import db.account.models as accout_models
-from core.wxapi import get_weixin_api
+from eaglet.core.wxapi import get_weixin_api
 from features.util.bdd_util import set_bdd_mock
 from services.notify_group_buy_after_pay_service.task import notify_group_buy_after_pay
 from services.record_order_status_log_service.task import record_order_status_log
 from services.send_template_message_service.task import send_template_message
 from services.update_product_sale_service.task import update_product_sale
-from utils.microservice_consumer import microservice_consume
-from utils.mysql_str_util import filter_invalid_str
-from utils.regional_util import get_str_value_by_string_ids
+from util.microservice_consumer import microservice_consume
+from util.mysql_str_util import filter_invalid_str
+from util.regional_util import get_str_value_by_string_ids
 
 #import settings
-from wapi.decorators import param_required
-from core.cache import utils as cache_util
+from eaglet.decorator import param_required
+from eaglet.core.cache import utils as cache_util
 from db.mall import models as mall_models
 from business import model as business_model
 from business.mall.product import Product
@@ -41,7 +41,7 @@ from business.mall.log_operator import LogOperator
 from business.mall.red_envelope import RedEnvelope
 from business.spread.member_spread import MemberSpread
 from business.decorator import cached_context_property
-from utils import regional_util
+from util import regional_util
 from business.resource.order_resource_extractor import OrderResourceExtractor
 
 from core.decorator import deprecated
@@ -207,7 +207,7 @@ class Order(business_model.Model):
 				webapp_owner_id = webapp_owner.id
 				error_msg = u"获得order_id('{}')对应的Order model失败, cause:\n{}"\
 						.format(webapp_owner_id, unicode_full_stack())
-				watchdog_error(error_msg, user_id=webapp_owner_id, noraise=True)
+				watchdog.error(error_msg, user_id=webapp_owner_id )
 				self.context['is_valid'] = False
 		else:
 			# 用于创建空的Order model
@@ -525,8 +525,6 @@ class Order(business_model.Model):
 			db_details = express_models.ExpressDetail.select().dj_where(express_id=express.id).order_by(-express_models.ExpressDetail.display_index)
 			details = [ExpressDetail(detail) for detail in db_details]
 		except Exception as e:
-			#innerErrMsg = full_stack()
-			#watchdog_fatal(u'获取快递详情失败，order_id={}, case:{}'.format(order.id, innerErrMsg), EXPRESS_TYPE)
 			logging.error(u'获取快递详情失败，order_id={}, case:{}'.format(self.id, str(e)))
 			details = []
 		return details
@@ -1055,7 +1053,7 @@ class Order(business_model.Model):
 		# except:
 		# 	error_msg = u"MemberSpread.process_order_from_spread失败, cause:\n{}"\
 		# 				.format(unicode_full_stack())
-		# 	watchdog_error(error_msg)
+		# 	watchdog.error(error_msg)
 		# 	print error_msg
 
 
@@ -1153,7 +1151,7 @@ class Order(business_model.Model):
 					return True
 				except:
 					notify_message = u"发送模板消息异常, cause:\n{}".format(unicode_full_stack())
-					watchdog_warning(notify_message)
+					watchdog.warning(notify_message)
 					return False
 			else:
 				return False

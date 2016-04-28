@@ -10,12 +10,12 @@ import math
 import itertools
 from datetime import datetime
 
-from wapi.decorators import param_required
+from eaglet.decorator import param_required
 #from wapi import wapi_utils
-from core.cache import utils as cache_util
+from eaglet.core.cache import utils as cache_util
 from db.mall import models as mall_models
 #import resource
-from core.watchdog.utils import watchdog_alert
+from eaglet.core import watchdog
 from business import model as business_model 
 from business.mall.product import Product
 from business.mall.allocator.integral_resource_allocator import IntegralResourceAllocator
@@ -178,7 +178,7 @@ class OrderIntegralResourceAllocator(business_model.Service):
 
 				integral_money = product_price
 				use_integral -= math.floor((product_price - integral_money) * count_per_yuan)
-				watchdog_alert(u'异常积分应用下单信息。order_id:{},integral_info in purchase_info:'.format(order.order_id),str(integral_info))
+				watchdog.alert(u'异常积分应用下单信息。order_id:{},integral_info in purchase_info:'.format(order.order_id),str(integral_info))
 			# 最大可抵扣额度为规则额和product的最小值
 			# 最大可抵扣额度随购买数量现行增加
 			max_integral_price = min(round(integral_sale_rule['discount_money'], 2) * purchase_count, round(product_price, 2))

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from core.cache import utils as cache_utils
+from eaglet.core.cache import utils as cache_utils
 from datetime import datetime
 
 

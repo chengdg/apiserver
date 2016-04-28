@@ -6,7 +6,7 @@ from datetime import datetime,timedelta
 import settings
 from client import Client
 from db.account.models import User, UserProfile
-from utils import string_util
+from util import string_util
 from db.member import models as member_models
 from db.mall import models as mall_models
 import logging

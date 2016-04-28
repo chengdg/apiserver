@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 from db.account.models import User, UserProfile
 from db.member.models import Member, SocialAccount, MemberHasSocialAccount, WebAppUser
-from core.watchdog.utils import *
+from eaglet.core import watchdog
 user = User.get(username='jobs')
 user_id = user.id
 user_profile = UserProfile.get(user=user)
@@ -44,9 +44,9 @@ def test_local_handle():
 	}
 	result = handle(args, 'example')
 	
-	watchdog_alert('result: {}'.format(result))
-	watchdog_error('result: {}'.format(result))
-	watchdog_info('result: {}'.format(result))
+	watchdog.alert('result: {}'.format(result))
+	watchdog.error('result: {}'.format(result))
+	watchdog.info('result: {}'.format(result))
 	print('result: {}'.format(result))
 
 if __name__=="__main__":

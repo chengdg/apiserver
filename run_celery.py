@@ -18,10 +18,10 @@ from logging.handlers import TimedRotatingFileHandler
 from celery.signals import setup_logging,  after_setup_logger
 from celery.worker.job import logger
 import settings
-from core.service.celery import app as weapp_celery
-from core.service.celery import celery_logger
+from eaglet.core.service.celery import app as weapp_celery
+from eaglet.core.service.celery import celery_logger
 from celery.utils.log import ensure_process_aware_logger
-from celery import task
+from eaglet.core.service.celery import task
 from json import dumps,loads
 import logging
 

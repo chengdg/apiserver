@@ -126,7 +126,7 @@ def step_impl(context):
 def step_impl(context, webapp_user_name, webapp_owner_name, product_name_one,webapp_owner_name_other,product_name_two):
 	user_other = User.get(User.username==webapp_owner_name_other).id
 	product_two = Product.select().dj_where(owner_id=user_other,name=product_name_two).get()
-	url = '/wapi/mall/product/?woid=%s&product_id=%d' % (context.webapp_owner_id, product_two.id)
+	url = '/mall/product/?woid=%s&product_id=%d' % (context.webapp_owner_id, product_two.id)
 	context.url = url
 
 @when(u"{webapp_user_name}访问修改后的链接")

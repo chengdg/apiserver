@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from celery import task
+from eaglet.core.service.celery import task
 
 from db.mall import models as mall_models
 

@@ -8,9 +8,9 @@ encode_emojicons_for_html 处理字符串，解码出包含的表情icon并做ht
 """
 
 from core.emojicons import UTF82EMOJIICONS
-from utils.string_util import byte_to_hex, hex_to_byte
+from util.string_util import byte_to_hex, hex_to_byte
 
-from core.watchdog.utils import watchdog_warning
+from eaglet.core import watchdog
 
 #
 # 建立所有表情icon的utf编码的所有前缀集合，由于表情icon数量较少，且编码长度
@@ -72,7 +72,7 @@ def contains_emojicons(unicode_or_utf8str_with_decoded_emojicons, is_hex_str=Fal
 		return False
 
 	if len(hex_str) % 2 != 0:
-		watchdog_warning(u"hex_str长度不正确，hex_str：{}".format(hex_str))
+		watchdog.warning(u"hex_str长度不正确，hex_str：{}".format(hex_str))
 
 		return False
 
@@ -128,7 +128,7 @@ def encode_emojicons_for_html(unicode_or_utf8str_with_decoded_emojicons, is_hex_
             return utf8str_with_decoded_emojicons
 
     if len(hex_str) % 2 != 0:
-        watchdog_warning(u"hex_str长度不正确，hex_str：{}".format(hex_str))
+        watchdog.warning(u"hex_str长度不正确，hex_str：{}".format(hex_str))
 
         if is_hex_str:
             return hex_to_byte(utf8str_with_decoded_emojicons)

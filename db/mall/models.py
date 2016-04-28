@@ -3,11 +3,10 @@ import copy
 from datetime import datetime
 import json
 
-from core.db import models
+from eaglet.core.db import models
 from db.account.models import User, UserProfile
-from core.watchdog.utils import watchdog_fatal
+from eaglet.core import watchdog
 import settings
-from utils import area_util
 
 DEFAULT_DATETIME = datetime.strptime('2000-01-01', '%Y-%m-%d')
 
@@ -1557,7 +1556,7 @@ class Order(models.Model):
 
 	@property
 	def get_str_area(self):
-		from utils import regional_util
+		from util import regional_util
 		if self.area:
 			return regional_util.get_str_value_by_string_ids(self.area)
 		else:

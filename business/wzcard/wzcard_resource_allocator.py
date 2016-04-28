@@ -11,7 +11,7 @@ from business.wzcard.wzcard_resource import WZCardResource
 from business.wzcard.wzcard_checker import WZCardChecker
 from decimal import Decimal
 from business.mall.log_operator import LogOperator
-from core.watchdog.utils import watchdog_info
+from eaglet.core import watchdog
 
 # 每单用微众卡数量
 MAX_WZCARD_PER_ORDER = 10
@@ -98,7 +98,7 @@ class WZCardResourceAllocator(business_model.Service):
 			is_success, reason = checker.check(wzcard_id, wzcard_password, wzcard, self.__webapp_owner, self.__webapp_user,wzcard_check_money)
 			logging.info(u"wzcard_id:{}, status: {}, price: {}, check_result:{}, reason:{}".format(wzcard.wzcard_id, wzcard.readable_status, wzcard.money, is_success, reason))
 			# 试验发watchdog消息
-			watchdog_info(u"wzcard_id:{}, status: {}, price: {}, check_result:{}, reason:{}".format(wzcard.wzcard_id, wzcard.readable_status, wzcard.money, is_success, reason))
+			watchdog.info(u"wzcard_id:{}, status: {}, price: {}, check_result:{}, reason:{}".format(wzcard.wzcard_id, wzcard.readable_status, wzcard.money, is_success, reason))
 
 			if is_success:
 				# 验证微众卡可用

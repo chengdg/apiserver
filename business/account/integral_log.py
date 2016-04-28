@@ -12,12 +12,12 @@ import time
 import random
 import string
 
-from wapi.decorators import param_required
+from eaglet.decorator import param_required
 from db.member import models as member_models
 from business import model as business_model 
 import settings
 from business.decorator import cached_context_property
-from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
+from eaglet.core import watchdog
 from core.exceptionutil import unicode_full_stack
 from business.account.member import Member
 

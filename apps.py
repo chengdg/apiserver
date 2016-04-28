@@ -5,13 +5,13 @@ import decimal
 from datetime import datetime, date
 
 import falcon
-from core import api_resource
+from eaglet.core import api_resource
 from core.exceptionutil import unicode_full_stack
-from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
+from eaglet.core import watchdog
 import settings
 import wapi.resources
 import wapi as wapi_resource
-from core.db import models
+from eaglet.core.db import models
 
 from business.model import Model as business_model
 
@@ -95,14 +95,14 @@ class FalconResource:
 			response['errMsg'] = str(e).strip()
 			response['innerErrMsg'] = unicode_full_stack()
 			message = u"req:{}, error:{}".format(req.params, unicode_full_stack())
-			watchdog_error(message)
+			watchdog.error(message)
 			print '>>>>>>>>>>>>>error_message',message
 		except Exception as e:
 			response['code'] = 531 #不要改动这个code，531是表明apiserver内部发生异常的返回码
 			response['errMsg'] = str(e).strip()
 			response['innerErrMsg'] = unicode_full_stack()
 			message = u"req:{}, error:{}".format(req.params, unicode_full_stack())
-			watchdog_error(message)
+			watchdog.error(message)
 			print '>>>>>>>>>>>>>error_message',message
 
 		resp.body = json.dumps(response, default=_default)

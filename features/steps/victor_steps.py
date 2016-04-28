@@ -76,7 +76,7 @@ def step_impl(context, web_user):
 # 	"""
 # 	context_dict = json.loads(context.text)
 
-# 	url = '/wapi/member/review_product/?_method=put'
+# 	url = '/member/review_product/?_method=put'
 # 	#url = '/webapp/api/project_api/call/'
 # 	# 原始源码在`webapp/modules/mall/request_api_util.py`中的`create_product_review()`。
 # 	order_has_product = bdd_util.get_order_has_product(order_code, product_name)
@@ -104,7 +104,7 @@ def step_webapp_user_get_product_review(context, webapp_user, product_name):
 	@see 原Webapp的`webapp_product_review_steps.py`
 	"""
 	product = bdd_util.get_product_by(product_name)
-	url = "/wapi/mall/product/"
+	url = "/mall/product/"
 	#response = context.client.get(bdd_util.nginx(url), follow=True)
 	response = context.client.get(url, {
 			# 'woid': context.webapp_owner_id,
@@ -139,7 +139,7 @@ def step_impl(context, webapp_user, product_name):
 	product = bdd_util.get_product_by(product_name)
 	expected = json.loads(context.text)
 	#url = "/workbench/jqm/preview/?woid=%d&module=mall&model=product&rid=%d" % (context.webapp_owner_id, product.id)
-	url = "/wapi/mall/product_reviews/"
+	url = "/mall/product_reviews/"
 	#response = context.client.get(bdd_util.nginx(url), follow=True)
 	response = context.client.get(url, {
 			'woid': context.webapp_owner_id,
@@ -195,7 +195,7 @@ def step_impl(context, webapp_owner):
 	@see `weapp/features/steps/market_tools_weizoom_card_steps.py` 
 	"""
 	data = json.loads(context.text)
-	url = "/wapi/wzcard/wzcard/"
+	url = "/wzcard/wzcard/"
 	success = 0
 	for card in data['cards']:
 		# 创建1个微众卡
@@ -214,7 +214,7 @@ def step_impl(context, webapp_owner):
 def step_impl(context, webapp_owner, wzcard_id):
 	expected = json.loads(context.text)
 	expected['price'] = float(expected['price'])
-	url = "/wapi/wzcard/wzcard/"
+	url = "/wzcard/wzcard/"
 	response = context.client.get(url, {
 			'woid': context.webapp_owner_id,
 			'wzcard_id': wzcard_id
@@ -242,7 +242,7 @@ def step_impl(context, webapp_user):
 	wzcard_id = context.wzcard_info['id']
 	wzcard_password = context.wzcard_info['password']
 
-	url = "/wapi/wzcard/usable_wzcard/"
+	url = "/wzcard/usable_wzcard/"
 	response = context.client.get(url, {
 			'woid': context.webapp_owner_id,
 			'wzcard_id': wzcard_id,
@@ -270,7 +270,7 @@ def step_impl(context, webapp_user, expected_msg):
 	wzcard_id = context.wzcard_info['id']
 	wzcard_password = context.wzcard_info['password']
 
-	url = "/wapi/wzcard/usable_wzcard/"
+	url = "/wzcard/usable_wzcard/"
 	response = context.client.get(url, {
 			'woid': context.webapp_owner_id,
 			'wzcard_id': wzcard_id,

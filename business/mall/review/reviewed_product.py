@@ -8,16 +8,16 @@ from bs4 import BeautifulSoup
 import math
 from datetime import datetime
 
-from wapi.decorators import param_required
+from eaglet.decorator import param_required
 #from wapi import wapi_utils
 
 from db.mall import models as mall_models
 
 #import resource
 import settings
-from core.watchdog.utils import watchdog_alert
-from core.cache import utils as cache_util
-from utils import emojicons_util
+from eaglet.core import watchdog
+from eaglet.core.cache import utils as cache_util
+from util import emojicons_util
 
 from business import model as business_model
 from business.mall.review.reviewed_product_picture import ReviewedProductPicture

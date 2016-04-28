@@ -46,7 +46,7 @@ def wapi_call(method, app, resource, data, req=None):
 		raise ApiNotExistError('%s:%s' % (key, method))
 
 	response = func(data)
-	wapi_log(app, resource_name, method, data, (time.clock()-start_at), 0)
+	#wapi_log(app, resource_name, method, data, (time.clock()-start_at), 0)
 	return response
 
 

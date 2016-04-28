@@ -4,7 +4,8 @@ from __future__ import absolute_import
 import settings
 #from core.exceptionutil import full_stack
 
-from core.service.celery import task
+#from core.service.celery import task
+from eaglet.core.service.celery import task
 import json
 from api.logger.mongo_logger import MongoAPILogger
 import logging

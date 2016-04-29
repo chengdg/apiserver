@@ -624,6 +624,7 @@ class WebAppUser(business_model.Model):
 			member.save()
 			pay_money = member.pay_money
 		self.update_member_grade(pay_money)
+		self.cleanup_cache()
 
 	def update_member_grade(self, pay_money=None):
 		if not pay_money:

@@ -171,7 +171,8 @@ class Order(business_model.Model):
 		"""
 		orders = Order.get_orders_for_webapp_user(args)
 		# 改写自`Order.by_webapp_user_id(webapp_user_id).filter(status=5)`
-		completed = filter(lambda o: o.status==mall_models.ORDER_STATUS_SUCCESSED, orders)
+		# 过滤子订单
+		completed = filter(lambda o: o.status==mall_models.ORDER_STATUS_SUCCESSED and o.origin_order_id <= 0, orders)
 		return completed
 
 

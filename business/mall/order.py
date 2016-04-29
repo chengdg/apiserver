@@ -1036,8 +1036,7 @@ class Order(business_model.Model):
 			'webapp_owner': self.context['webapp_owner'],
 			'order_id': self.id
 		})
-		# 订单完成后更新会员等级
-		self.context['webapp_user'].update_member_grade()
+
 		self.__after_update_status('finish')
 
 		# 通过分享链接来的订单处理
@@ -1051,7 +1050,11 @@ class Order(business_model.Model):
 		# 支付后，更新会员支付数据
 		webapp_user = self.context['webapp_user']
 		webapp_user.update_pay_info(float(self.final_price) + float(self.weizoom_card_money), self.payment_time)
-		# except:
+
+		# 订单完成后更新会员等级，挪到上面的更新会员数据里
+		# self.context['webapp_user'].update_member_grade()
+
+	# except:
 		# 	error_msg = u"MemberSpread.process_order_from_spread失败, cause:\n{}"\
 		# 				.format(unicode_full_stack())
 		# 	watchdog.error(error_msg)

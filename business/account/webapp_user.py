@@ -603,7 +603,14 @@ class WebAppUser(business_model.Model):
 		return self.context.get('is_force_purchase', False)
 
 	def update_pay_info(self, money, order_payment_time):
+		"""
+		@warning 此处修改的member只修改了db_model的数据。
+		@param money:
+		@param order_payment_time:
+		@return:
+		"""
 		self.set_purchased()
+		pay_money = None
 		if money > 0:
 			member = member_models.Member.get(id=self.member.id)
 			member.pay_money = member.pay_money + money
@@ -615,9 +622,13 @@ class WebAppUser(business_model.Model):
 			except:
 				member.unit_price = 0
 			member.save()
+			pay_money = member.pay_money
+		self.update_member_grade(pay_money)
 
-	def update_member_grade(self):
-		pay_money = self.member.pay_money
+	def update_member_grade(self, pay_money=None):
+		if not pay_money:
+			pay_money = self.member.pay_money
+
 		finished_order_count = self.finished_order_count
 		webapp_owner = self.context['webapp_owner']
 		grades = sorted(filter(lambda x: x.is_auto_upgrade and x.id > self.grade.id, webapp_owner.member_grades))

@@ -915,7 +915,7 @@ def step_click_check_out(context, webapp_user_name):
 			db_order.save()
 			if db_order.origin_order_id <0:
 				for order in mall_models.Order.select().dj_where(origin_order_id=db_order.id):
-					order.order_id = '%s^%s' % (argument['order_id'], order.supplier)
+					order.order_id = '%s^%s' % (argument['order_id'], order.order_id.split('^')[1])
 					order.save()
 			context.created_order_id = argument['order_id']
 

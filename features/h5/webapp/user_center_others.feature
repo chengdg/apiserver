@@ -124,9 +124,9 @@ Scenario:1 个人中心-我的优惠券
 		"""
 		{
 			"status": "待支付",
-			"final_price": 100.0,
-			"product_price": 200.0,
-			"coupon_money": 100.0
+			"final_price": 100.00,
+			"product_price": 200.00,
+			"coupon_money": 100.00
 		}
 		"""
 	Then bill能获得优惠券列表

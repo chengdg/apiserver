@@ -175,9 +175,9 @@ Scenario:2 购买单个禁用优惠券商品,该商品有单品券
 		"""
 		{
 			"status": "待支付",
-			"final_price": 90.0,
-			"product_price": 200.0,
-			"coupon_money": 110.0
+			"final_price": 90.00,
+			"product_price": 200.00,
+			"coupon_money": 110.00
 		}
 		"""
 	Given jobs登录系统:weapp
@@ -251,9 +251,9 @@ Scenario:3 购买多个商品,包含禁用优惠券商品,非禁用商品不满�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 100.0,
-			"product_price": 200.0,
-			"coupon_money": 100.0
+			"final_price": 100.00,
+			"product_price": 200.00,
+			"coupon_money": 100.00
 		}
 		"""
 	Given jobs登录系统:weapp
@@ -304,9 +304,9 @@ Scenario:4 购买多个商品,包含禁用优惠券商品,满足全体券使用�
 			"""
 			{
 				"status": "待支付",
-				"final_price": 200.0,
-				"product_price": 400.0,
-				"coupon_money": 200.0
+				"final_price": 200.00,
+				"product_price": 400.00,
+				"coupon_money": 200.00
 			}
 			"""
 		Given jobs登录系统:weapp
@@ -354,9 +354,9 @@ Scenario:4 购买多个商品,包含禁用优惠券商品,满足全体券使用�
 			"""
 			{
 				"status": "待支付",
-				"final_price": 300.0,
-				"product_price": 400.0,
-				"coupon_money": 100.0
+				"final_price": 300.00,
+				"product_price": 400.00,
+				"coupon_money": 100.00
 			}
 			"""
 		Given jobs登录系统:weapp
@@ -425,9 +425,9 @@ Scenario:5 购买多个商品,包含禁用优惠券商品,全体券使用金额�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 100.0,
-			"product_price": 200.0,
-			"coupon_money": 100.0
+			"final_price": 100.00,
+			"product_price": 200.00,
+			"coupon_money": 100.00
 		}
 		"""
 	Given jobs登录系统:weapp
@@ -594,15 +594,15 @@ Scenario:9 购买禁用优惠券商品,该商品同时参与积分应用
 				[{
 					"member_grade": "普通会员",
 					"discount": 100,
-					"discount_money": 100.0
+					"discount_money": 100.00
 				},{
 					"member_grade": "铜牌会员",
 					"discount": 90,
-					"discount_money": 90.0
+					"discount_money": 90.00
 				},{
 					"member_grade": "银牌会员",
 					"discount": 80,
-					"discount_money": 80.0
+					"discount_money": 80.00
 				}]
 		}]
 		"""
@@ -634,9 +634,9 @@ Scenario:9 购买禁用优惠券商品,该商品同时参与积分应用
 		"""
 		{
 			"status": "待支付",
-			"final_price": 40.0,
-			"product_price": 200.0,
-			"coupon_money": 0.0,
+			"final_price": 40.00,
+			"product_price": 200.00,
+			"coupon_money": 0.00,
 			"integral_money":160.00,
 			"integral":320
 		}
@@ -755,9 +755,9 @@ Scenario:10 购买禁用优惠券多规格商品,一个商品的2个规格,总�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 90.0,
-			"product_price": 100.0,
-			"coupon_money": 10.0
+			"final_price": 90.00,
+			"product_price": 100.00,
+			"coupon_money": 10.00
 		}
 		"""
 	Given jobs登录系统:weapp

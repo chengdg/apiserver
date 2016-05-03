@@ -51,7 +51,7 @@ Background:
 			}, {
 				"to_the":"北京市",
 				"condition": "money",
-				"value": 200.0
+				"value": 200.00
 			}]
 		}]
 		"""
@@ -332,30 +332,6 @@ Scenario: 3 购买多个供货商的多个商品,使用微信支付
 		}
 		"""
 	Given jobs登录系统:weapp
-#	Then jobs可以获得最新订单详情:weapp
-#		"""
-#		{
-#			"order_no": "001",
-#			"status": "待支付",
-#			"ship_area": "北京市 北京市 海淀区",
-#			"ship_address": "泰兴大厦",
-#			"final_price": 299.00,
-#			"actions": ["支付", "修改价格", "取消订单"],
-#			"products": [{
-#				"name": "商品1",
-#				"price": 100.00,
-#				"count": 1
-#			}, {
-#				"name": "商品3",
-#				"price": 100.00,
-#				"count": 1
-#			}, {
-#				"name": "商品2",
-#				"price": 99.00,
-#				"count": 1
-#			}]
-#		}
-#		"""
 	Then jobs可以获得最新订单详情:weapp
 		"""
 		{
@@ -455,7 +431,6 @@ Scenario: 3 购买多个供货商的多个商品,使用微信支付
 		}]
 		"""
 
-	
 
 @mall2 @buy @supplier @mall3 @duhao
 Scenario: 4 购买多个供货商的多个商品,使用货到付款

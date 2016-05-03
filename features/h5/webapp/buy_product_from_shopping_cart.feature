@@ -55,33 +55,33 @@ Background:
 		"""
 		[{
 			"name": "商品1",
-			"price": 3.3
+			"price": 3.30
 		}, {
 			"name": "商品2",
-			"price": 5.3
+			"price": 5.30
 		}, {
 			"name": "商品3",
-			"price": 5.5
+			"price": 5.50
 		}, {
 			"name": "商品4",
-			"price": 2.0,
+			"price": 2.00,
 			"weight":1,
 			"postage": "顺丰"
 		}, {
 			"name": "商品5",
-			"price": 3.0,
+			"price": 3.00,
 			"weight":1,
 			"postage": "顺丰"
 		}, {
 			"name": "商品6",
-			"price": 5.0,
+			"price": 5.00,
 			"weight":1,
-			"postage": "0"
+			"postage": 0.00
 		}, {
 			"name": "商品7",
-			"price": 10.0,
+			"price": 10.00,
 			"weight":1,
-			"postage": "0"
+			"postage":0.00
 		}]
 		"""
 	Given tom关注jobs的公众号
@@ -150,10 +150,10 @@ Scenario:1 从购物车购买单个商品
 			"ship_tel": "13811223344",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
-			"final_price": 6.6,
+			"final_price": 6.60,
 			"products": [{
 				"name": "商品1",
-				"price": 3.3,
+				"price": 3.30,
 				"count": 2
 			}]
 		}
@@ -244,14 +244,14 @@ Scenario:2 从购物车购买全部商品
 			"ship_tel": "13811223344",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
-			"final_price": 11.9,
+			"final_price": 11.90,
 			"products": [{
 				"name": "商品1",
-				"price": 3.3,
+				"price": 3.30,
 				"count": 2
 			},{
 				"name": "商品2",
-				"price": 5.3,
+				"price": 5.30,
 				"count": 1
 			}]
 		}
@@ -361,14 +361,14 @@ Scenario:3 从购物车购买部分商品
 			"ship_tel": "13811223344",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
-			"final_price": 17.6,
+			"final_price": 17.60,
 			"products": [{
 				"name": "商品1",
-				"price": 3.3,
+				"price": 3.30,
 				"count": 2
 			}, {
 				"name": "商品3",
-				"price": 5.5,
+				"price": 5.50,
 				"count": 2
 			}]
 		}
@@ -515,8 +515,8 @@ Scenario:6 从购物车同时购买"有运费和无运费"的商品，并且商�
 		"""
 		{
 			"status": "待发货",
-			"final_price": 37.0,
-			"postage":25.0
+			"final_price": 37.00,
+			"postage":25.00
 		}
 		"""
 
@@ -570,8 +570,8 @@ Scenario:7 从购物车同时购买"有运费和无运费"的商品，并且商�
 		"""
 		{
 			"status": "待发货",
-			"final_price": 23.0,
-			"postage":15.0
+			"final_price": 23.00,
+			"postage":15.00
 		}
 		"""
 
@@ -636,8 +636,8 @@ Scenario:8 从购物车购买多个"有特殊运费"的商品
 			"ship_tel": "13811223344",
 			"ship_area": "河北省 秦皇岛市 山海关区",
 			"ship_address": "泰兴大厦",
-			"final_price": 47.0,
-			"postage":40.0
+			"final_price": 47.00,
+			"postage":40.00
 		}
 		"""
 

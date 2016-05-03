@@ -112,7 +112,7 @@ Scenario:1 购买单种一个商品，积分金额小于最大折扣金额
 		"""
 		{
 			"status": "待支付",
-			"final_price": 75.0,
+			"final_price": 75.00,
 			"product_price": 100.00,
 			"integral_money":25.00,
 			"integral":50.00,
@@ -145,7 +145,7 @@ Scenario:2 购买单种多个商品，积分金额等于最大折扣金额
 		"""
 		{
 			"status": "待支付",
-			"final_price": 200.0,
+			"final_price": 200.00,
 			"product_price": 400.00,
 			"integral_money":200.00,
 			"integral":400,
@@ -167,7 +167,7 @@ Scenario:3 购买多个商品，已有总积分金额大于最大折扣金额
 		{
 			"pay_type": "微信支付",
 			"integral_money":75.00,
-			"integral":150.00,
+			"integral":150,
 			"products": [{
 				"name": "商品1",
 				"count": 1
@@ -181,10 +181,10 @@ Scenario:3 购买多个商品，已有总积分金额大于最大折扣金额
 		"""
 		{
 			"status": "待支付",
-			"final_price": 75.0,
+			"final_price": 75.00,
 			"product_price": 150.00,
 			"integral_money":75.00,
-			"integral":150.00,
+			"integral":150,
 			"products": [{
 				"name": "商品1",
 				"count": 1
@@ -206,7 +206,7 @@ Scenario:4 购买单个多规格商品+一个普通商品
 		{
 			"pay_type": "微信支付",
 			"integral_money": 65.00,
-			"integral": 130.00,
+			"integral": 130,
 			"products": [{
 				"name": "商品5",
 				"count": 1,
@@ -225,10 +225,10 @@ Scenario:4 购买单个多规格商品+一个普通商品
 		"""
 		{
 			"status": "待支付",
-			"final_price": 65.0,
+			"final_price": 65.00,
 			"product_price": 130.00,
 			"integral_money": 65.00,
-			"integral": 130.00,
+			"integral": 130,
 			"products": [{
 				"name": "商品5",
 				"count": 1,
@@ -255,7 +255,7 @@ Scenario:5 购买单个限时抢购商品，同时使用积分购买
 			"start_date": "今天",
 			"end_date": "1天后",
 			"product_name": "商品1",
-			"promotion_price": 10
+			"promotion_price": 10.00
 		}
 		"""
 	When bill访问jobs的webapp
@@ -266,7 +266,7 @@ Scenario:5 购买单个限时抢购商品，同时使用积分购买
 		{
 			"pay_type": "微信支付",
 			"integral_money":5.00,
-			"integral":10.00,
+			"integral":10,
 			"products": [{
 				"name": "商品1",
 				"count": 1
@@ -277,11 +277,11 @@ Scenario:5 购买单个限时抢购商品，同时使用积分购买
 		"""
 		{
 			"status": "待支付",
-			"final_price": 5.0,
+			"final_price": 5.00,
 			"product_price": 10.00,
 			"promotion_saved_money":90.00,
 			"integral_money":5.00,
-			"integral":10.00,
+			"integral":10,
 			"products": [{
 				"name": "商品1",
 				"count": 1,
@@ -301,7 +301,7 @@ Scenario:6 购买单个限时抢购商品， 买赠商品，同时使用积分�
 			"start_date": "今天",
 			"end_date": "1天后",
 			"product_name": "商品1",
-			"promotion_price": 10
+			"promotion_price": 10.00
 		}
 		"""
 
@@ -328,7 +328,7 @@ Scenario:6 购买单个限时抢购商品， 买赠商品，同时使用积分�
 		{
 			"pay_type": "微信支付",
 			"integral_money":205.00,
-			"integral":410.00,
+			"integral":410,
 			"products": [{
 				"name": "商品1",
 				"count": 1
@@ -342,11 +342,11 @@ Scenario:6 购买单个限时抢购商品， 买赠商品，同时使用积分�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 205.0,
+			"final_price": 205.00,
 			"product_price": 410.00,
 			"promotion_saved_money":90.00,
 			"integral_money":205.00,
-			"integral":410.00,
+			"integral":410,
 			"products": [{
 				"name": "商品1",
 				"count": 1,
@@ -358,7 +358,7 @@ Scenario:6 购买单个限时抢购商品， 买赠商品，同时使用积分�
 			},{
 				"name": "商品4",
 				"count": 10,
-				"price": 0,
+				"price": 0.00,
 				"promotion": {
 					"type": "premium_sale:premium_product"
 				}
@@ -460,7 +460,7 @@ Scenario: 7 不同等级的会员购买有会员价同时有全体积分抵扣50
 		{
 			"pay_type": "微信支付",
 			"integral_money":50.00,
-			"integral":100.00,
+			"integral":100,
 			"products": [{
 				"name": "商品10",
 				"count": 1
@@ -471,10 +471,10 @@ Scenario: 7 不同等级的会员购买有会员价同时有全体积分抵扣50
 		"""
 		{
 			"status": "待支付",
-			"final_price": 50.0,
+			"final_price": 50.00,
 			"product_price": 100.00,
 			"integral_money":50.00,
-			"integral":100.00,
+			"integral":100,
 			"products": [{
 				"name": "商品10",
 				"count": 1
@@ -492,7 +492,7 @@ Scenario: 7 不同等级的会员购买有会员价同时有全体积分抵扣50
 		{
 			"pay_type": "微信支付",
 			"integral_money":45.00,
-			"integral":90.00,
+			"integral":90,
 			"products": [{
 				"name": "商品10",
 				"count": 1
@@ -503,10 +503,10 @@ Scenario: 7 不同等级的会员购买有会员价同时有全体积分抵扣50
 		"""
 		{
 			"status": "待支付",
-			"final_price": 45.0,
+			"final_price": 45.00,
 			"product_price": 90.00,
 			"integral_money":45.00,
-			"integral":90.00,
+			"integral":90,
 			"products": [{
 				"name": "商品10",
 				"count": 1
@@ -524,12 +524,12 @@ Scenario: 7 不同等级的会员购买有会员价同时有全体积分抵扣50
 		{
 			"pay_type": "微信支付",
 			"integral_money":70.00,
-			"integral":140.00,
+			"integral":140,
 			"products": [{
 				"name": "商品10",
 				"count": 1
 			},{
-			    "name": "商品11",
+				"name": "商品11",
 				"count": 1
 			}]
 		}
@@ -538,10 +538,10 @@ Scenario: 7 不同等级的会员购买有会员价同时有全体积分抵扣50
 		"""
 		{
 			"status": "待支付",
-			"final_price": 70.0,
+			"final_price": 70.00,
 			"product_price": 140.00,
 			"integral_money":70.00,
-			"integral":140.00,
+			"integral":140,
 			"products": [{
 				"name": "商品10",
 				"count": 1
@@ -563,7 +563,7 @@ Scenario: 7 不同等级的会员购买有会员价同时有全体积分抵扣50
 		{
 			"pay_type": "微信支付",
 			"integral_money":30.00,
-			"integral":60.00,
+			"integral":60,
 			"products": [{
 				"name": "商品11",
 				"count": 1
@@ -574,10 +574,10 @@ Scenario: 7 不同等级的会员购买有会员价同时有全体积分抵扣50
 		"""
 		{
 			"status": "待支付",
-			"final_price": 50.0,
+			"final_price": 50.00,
 			"product_price": 80.00,
 			"integral_money":30.00,
-			"integral":60.00,
+			"integral":60,
 			"products": [{
 				"name": "商品11",
 				"count": 1

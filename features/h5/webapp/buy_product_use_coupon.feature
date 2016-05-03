@@ -127,39 +127,39 @@ Background:
 		"""
 		[{
 			"name": "优惠券1",
-			"money": 1,
+			"money": 1.00,
 			"start_date": "今天",
 			"end_date": "1天后",
 			"coupon_id_prefix": "coupon1_id_"
 		}, {
 			"name": "优惠券2",
-			"money": 100,
+			"money": 100.00,
 			"start_date": "今天",
 			"end_date": "1天后",
 			"coupon_id_prefix": "coupon2_id_"
 		}, {
 			"name": "优惠券3",
-			"money": 1,
+			"money": 1.00,
 			"start_date": "今天",
 			"end_date": "2天后",
 			"using_limit": "满50元可以使用",
 			"coupon_id_prefix": "coupon3_id_"
 		}, {
 			"name": "优惠券4",
-			"money": 10,
+			"money": 10.00,
 			"start_date": "前天",
 			"end_date": "昨天",
 			"coupon_id_prefix": "coupon4_id_"
 		}, {
 			"name": "优惠券5",
-			"money": 10,
+			"money": 10.00,
 			"start_date": "今天",
 			"end_date": "2天后",
 			"using_limit": "满50元可以使用",
 			"coupon_id_prefix": "coupon5_id_"
 		}, {
 			"name": "未领取优惠券",
-			"money": 100,
+			"money": 100.00,
 			"start_date": "今天",
 			"end_date": "2天后",
 			"coupon_id_prefix": "coupon7_id_"
@@ -208,25 +208,25 @@ Scenario:1 使用少于商品价格的优惠券金额进行购买
 		"""
 		{
 			"coupon1_id_1": {
-				"money": 1.0,
+				"money": 1.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
 			},
 			"coupon1_id_2": {
-				"money": 1.0,
+				"money": 1.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
 			},
 			"coupon1_id_3": {
-				"money": 1.0,
+				"money": 1.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "tom"
 			},
 			"coupon1_id_4": {
-				"money": 1.0,
+				"money": 1.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "tom"
@@ -250,10 +250,10 @@ Scenario:1 使用少于商品价格的优惠券金额进行购买
 		"""
 		{
 			"status": "待支付",
-			"final_price": 199.0,
-			"product_price": 200.0,
-			"coupon_money": 1.0,
-			"promotion_saved_money": 0.0,
+			"final_price": 199.00,
+			"product_price": 200.00,
+			"coupon_money": 1.00,
+			"promotion_saved_money": 0.00,
 			"postage": 0.00,
 			"integral_money":0.00
 		}
@@ -276,13 +276,13 @@ Scenario:1 使用少于商品价格的优惠券金额进行购买
 		"""
 		{
 			"coupon1_id_1": {
-				"money": 1.0,
+				"money": 1.00,
 				"status": "已使用",
 				"consumer": "bill",
 				"target": "bill"
 			},
 			"coupon1_id_2": {
-				"money": 1.0,
+				"money": 1.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
@@ -301,13 +301,13 @@ Scenario:2 使用多于商品价格的优惠券金额进行购买
 		"""
 		{
 			"coupon2_id_1": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
 			},
 			"coupon2_id_2": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
@@ -330,9 +330,9 @@ Scenario:2 使用多于商品价格的优惠券金额进行购买
 		"""
 		{
 			"status": "待发货",
-			"final_price": 0.0,
-			"product_price": 50.0,
-			"coupon_money": 50.0
+			"final_price": 0.00,
+			"product_price": 50.00,
+			"coupon_money": 50.00
 		}
 		"""
 	Given jobs登录系统:weapp
@@ -340,13 +340,13 @@ Scenario:2 使用多于商品价格的优惠券金额进行购买
 		"""
 		{
 			"coupon2_id_1": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "已使用",
 				"consumer": "bill",
 				"target": "bill"
 			},
 			"coupon2_id_2": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
@@ -376,9 +376,9 @@ Scenario:3 使用等于商品价格的优惠券金额进行购买
 		"""
 		{
 			"status": "待发货",
-			"final_price": 0.0,
-			"product_price": 100.0,
-			"coupon_money": 100.0
+			"final_price": 0.00,
+			"product_price": 100.00,
+			"coupon_money": 100.00
 		}
 		"""
 	Given jobs登录系统:weapp
@@ -386,13 +386,13 @@ Scenario:3 使用等于商品价格的优惠券金额进行购买
 		"""
 		{
 			"coupon2_id_1": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "已使用",
 				"consumer": "bill",
 				"target": "bill"
 			},
 			"coupon2_id_2": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
@@ -474,10 +474,10 @@ Scenario:5 输入未领取的可用优惠券码进行购买，bill创建订单�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 99.0,
-			"product_price": 100.0,
-			"coupon_money": 1.0,
-			"promotion_saved_money": 0.0,
+			"final_price": 99.00,
+			"product_price": 100.00,
+			"coupon_money": 1.00,
+			"promotion_saved_money": 0.00,
 			"postage": 0.00,
 			"integral_money":0.00
 		}
@@ -516,7 +516,7 @@ Scenario:5 输入未领取的可用优惠券码进行购买，bill创建订单�
 				"status": "未使用"
 			},
 			"coupon3_id_4": {
-				"money": 1.0,
+				"money": 1.00,
 				"status": "已使用",
 				"consumer": "bill",
 				"target": ""
@@ -547,13 +547,13 @@ Scenario:6 输入已过期的优惠券码进行购买
 		"""
 		{
 			"coupon4_id_1": {
-				"money": 10.0,
+				"money": 10.00,
 				"status": "已过期",
 				"consumer": "",
 				"target": "bill"
 			},
 			"coupon4_id_2": {
-				"money": 10.0,
+				"money": 10.00,
 				"status": "已过期",
 				"consumer": "",
 				"target": "bill"
@@ -669,9 +669,9 @@ Scenario:9 使用满金额条件的优惠券，购买等于金额条件的商品
 		"""
 		{
 			"status": "待支付",
-			"final_price": 49.0,
-			"product_price": 50.0,
-			"coupon_money": 1.0
+			"final_price": 49.00,
+			"product_price": 50.00,
+			"coupon_money": 1.00
 		}
 		"""
 	Given jobs登录系统:weapp
@@ -717,9 +717,9 @@ Scenario:10 使用满金额条件的优惠券，购买大于金额条件的商�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 79.0,
-			"product_price": 80.0,
-			"coupon_money": 1.0
+			"final_price": 79.00,
+			"product_price": 80.00,
+			"coupon_money": 1.00
 		}
 		"""
 	Given jobs登录系统:weapp
@@ -769,9 +769,9 @@ Scenario:11 购买多规格商品，买1个商品的两个规格，总价格满�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 70.0,
-			"product_price": 80.0,
-			"coupon_money": 10.0
+			"final_price": 70.00,
+			"product_price": 80.00,
+			"coupon_money": 10.00
 		}
 		"""
 	Given jobs登录系统:weapp
@@ -796,13 +796,13 @@ Scenario:12 使用多于商品价格的优惠券进行购买，且不能抵扣�
 		"""
 		{
 			"coupon2_id_1": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
 			},
 			"coupon2_id_2": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
@@ -927,7 +927,7 @@ Scenario:13 不同等级的会员购买有会员价同时使用全体券的商�
 		"""
 		[{
 			"name": "全体券1",
-			"money": 20,
+			"money": 20.00,
 			"limit_counts": 10,
 			"start_date": "2天前",
 			"end_date": "2天后",
@@ -964,25 +964,25 @@ Scenario:13 不同等级的会员购买有会员价同时使用全体券的商�
 		"""
 		{
 			"coupon9_id_1": {
-				"money": 20.0,
+				"money": 20.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "tom"
 			},
 			"coupon9_id_2": {
-				"money": 20.0,
+				"money": 20.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
 			},
 			"coupon9_id_3": {
-				"money": 20.0,
+				"money": 20.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "nokia"
 			},
 			"coupon9_id_4": {
-				"money": 20.0,
+				"money": 20.00,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
@@ -1108,8 +1108,8 @@ Scenario:13 不同等级的会员购买有会员价同时使用全体券的商�
 		{
 			"status": "待支付",
 			"final_price": 120.00,
-			"product_price": 140.0,
-			"coupon_money": 20.0,
+			"product_price": 140.00,
+			"coupon_money": 20.00,
 			"postage": 0.00,
 			"integral_money":0.00,
 			"products": [{
@@ -1128,25 +1128,25 @@ Scenario:13 不同等级的会员购买有会员价同时使用全体券的商�
 		"""
 		{
 			"coupon9_id_1": {
-				"money": 20.0,
+				"money": 20.00,
 				"status": "已使用",
 				"consumer": "tom",
 				"target": "tom"
 			},
 			"coupon9_id_2": {
-				"money": 20.0,
+				"money": 20.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
 			},
 			"coupon9_id_3": {
-				"money": 20.0,
+				"money": 20.00,
 				"status": "已使用",
 				"consumer": "nokia",
 				"target": "nokia"
 			},
 			"coupon9_id_4": {
-				"money": 20.0,
+				"money": 20.00,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
@@ -1162,7 +1162,7 @@ Scenario:14 【优惠券】-未到使用日期，不能使用
 		"""
 		[{
 			"name": "优惠券-未开始",
-			"money": 1.0,
+			"money": 1.00,
 			"start_date": "1天后",
 			"end_date": "2天后",
 			"coupon_id_prefix": "coupon6_id_"
@@ -1197,25 +1197,25 @@ Scenario:14 【优惠券】-未到使用日期，不能使用
 		"""
 		{
 			"coupon6_id_1": {
-				"money": 1.0,
+				"money": 1.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
 			},
 			"coupon6_id_2": {
-				"money": 1.0,
+				"money": 1.00,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
 			"coupon6_id_3": {
-				"money": 1.0,
+				"money": 1.00,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
 			"coupon6_id_4": {
-				"money": 1.0,
+				"money": 1.00,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
@@ -1232,25 +1232,25 @@ Scenario:15 使用未被领取的优惠券购买，手机端取消订单后查�
 		"""
 		{
 			"coupon7_id_1": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
 			"coupon7_id_2": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
 			"coupon7_id_3": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
 			"coupon7_id_4": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
@@ -1276,25 +1276,25 @@ Scenario:15 使用未被领取的优惠券购买，手机端取消订单后查�
 		"""
 		{
 			"coupon7_id_1": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "已使用",
 				"consumer": "bill",
 				"target": ""
 			},
 			"coupon7_id_2": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
 			"coupon7_id_3": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
 			"coupon7_id_4": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
@@ -1308,25 +1308,25 @@ Scenario:15 使用未被领取的优惠券购买，手机端取消订单后查�
 		"""
 		{
 			"coupon7_id_1": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
 			"coupon7_id_2": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
 			"coupon7_id_3": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
 			"coupon7_id_4": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
@@ -1341,25 +1341,25 @@ Scenario:16 使用未被领取的优惠券购买，后台取消订单后查看�
 		"""
 		{
 			"coupon7_id_1": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
 			"coupon7_id_2": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
 			"coupon7_id_3": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
 			"coupon7_id_4": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
@@ -1385,25 +1385,25 @@ Scenario:16 使用未被领取的优惠券购买，后台取消订单后查看�
 		"""
 		{
 			"coupon7_id_1": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "已使用",
 				"consumer": "bill",
 				"target": ""
 			},
 			"coupon7_id_2": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
 			"coupon7_id_3": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
 			"coupon7_id_4": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
@@ -1417,25 +1417,25 @@ Scenario:16 使用未被领取的优惠券购买，后台取消订单后查看�
 		"""
 		{
 			"coupon7_id_1": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
 			"coupon7_id_2": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
 			"coupon7_id_3": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""
 			},
 			"coupon7_id_4": {
-				"money": 100.0,
+				"money": 100.00,
 				"status": "未领取",
 				"consumer": "",
 				"target": ""

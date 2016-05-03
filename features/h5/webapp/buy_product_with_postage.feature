@@ -53,7 +53,7 @@ Background:
 			}, {
 				"to_the":"北京市",
 				"condition": "money",
-				"value": 200.0
+				"value": 200.00
 			}]
 		}]
 		"""
@@ -78,17 +78,17 @@ Background:
 			"name": "商品4",
 			"price": 10.00,
 			"weight": 1,
-			"postage": 0.0
+			"postage": 0.00
 		}, {
 			"name": "商品5",
 			"price": 10.00,
 			"weight": 1,
-			"postage": 15.0
+			"postage": 15.00
 		}, {
 			"name": "商品6",
 			"price": 10.00,
 			"weight": 1,
-			"postage": 10.0
+			"postage": 10.00
 		}, {
 			"name": "商品7",
 			"postage": "系统",
@@ -109,7 +109,7 @@ Background:
 			}
 		}, {
 			"name": "商品8",
-			"postage": 10.0,
+			"postage": 10.00,
 			"is_enable_model": "启用规格",
 			"model": {
 				"models":{
@@ -856,7 +856,7 @@ Scenario: 19 设置首重大于1的运费模板，进行购买商品
 			}, {
 				"to_the":"北京市",
 				"condition": "money",
-				"value": 200.0
+				"value": 200.00
 			}]
 		}]
 		"""

@@ -12,10 +12,10 @@ Background:
 		"""
 		[{
 			"name": "商品1",
-			"price": 3
+			"price": 3.00
 		},{
 			"name": "商品2",
-			"price": 5
+			"price": 5.00
 		}]
 		"""
 	Given bill关注jobs的公众号

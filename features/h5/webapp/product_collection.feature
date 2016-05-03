@@ -68,7 +68,7 @@ Scenario:1 收藏单个无规格商品
 		[{
 			"name": "商品1",
 			"price_info": {
-				"min_price": 100.0
+				"min_price": 100.00
 			}
 		}]
 		"""
@@ -112,7 +112,7 @@ Scenario:2 收藏多个商品，包括无规格和有规格的商品
 		[{
 			"name": "商品2",
 			"price_info": {
-				"min_price": 50.0
+				"min_price": 50.00
 			}
 		}, {
 			"name": "商品1",

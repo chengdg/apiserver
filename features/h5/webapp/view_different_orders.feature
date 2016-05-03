@@ -43,17 +43,17 @@ Background:
 		"""
 		[{
 			"name": "商品1",
-			"price":10.0
+			"price":10.00
 		}, {
 			"name": "商品2",
-			"price": 20.0
+			"price": 20.00
 		},{
 			"name": "商品3",
 			"is_enable_model": "启用规格",
 			"model": {
 				"models": {
 					"黑色 M": {
-						"price": 30.0
+						"price": 30.00
 					}
 				}
 			}
@@ -62,7 +62,7 @@ Background:
 			"model": {
 				"models": {
 					"standard": {
-						"price": 40.0,
+						"price": 40.00,
 						"stock_type": "有限",
 						"stocks": 2
 					}
@@ -70,7 +70,7 @@ Background:
 			}
 		}, {
 			"name": "商品5",
-			"price": 50.0,
+			"price": 50.00,
 			"pay_interfaces":[{
 				"type": "在线支付"
 			}]

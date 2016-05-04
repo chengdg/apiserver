@@ -26,14 +26,21 @@ class AProducts(api_resource.ApiResource):
 		category_id = args['category_id']
 		webapp_owner = args['webapp_owner']
 
+		product_name = args.get('product_name',None)
+
 		simple_products = SimpleProducts.get({
 			"webapp_owner": webapp_owner,
 			"category_id": category_id,
 		})
 
+		products = simple_products.products
+
+		if product_name:
+			products = filter(lambda x: product_name in x['name'],products)
+
 		category_dict = simple_products.category.to_dict('is_deleted')
 		return {
 			'categories': simple_products.categories,
-			'products': simple_products.products,
+			'products': products,
 			'category': category_dict
 		}

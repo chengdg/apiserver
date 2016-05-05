@@ -48,3 +48,18 @@ class ProductSearch(business_model.Model):
 
 		mall_models.ProductSearchRecord.create(webapp_user_id=webapp_user_id, woid=woid, content=product_name)
 
+	@staticmethod
+	@param_required(['webapp_user_id'])
+	def get_records_by_webapp_user(args):
+		webapp_user_id = args['webapp_user_id']
+		records = mall_models.ProductSearchRecord.select().order_by(-mall_models.ProductSearchRecord.id).dj_where(
+			webapp_user_id=webapp_user_id,
+			is_deleted=False).limit(10)
+		return [str(record.content) for record in records]
+
+
+	@staticmethod
+	@param_required(['webapp_user_id'])
+	def delete_record_by_webapp_user(args):
+		webapp_user_id = args['webapp_user_id']
+		mall_models.ProductSearchRecord.update(is_deleted=True).dj_where(webapp_user_id=webapp_user_id).execute()

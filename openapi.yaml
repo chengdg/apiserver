@@ -22,7 +22,7 @@ tags:
 schemes:
 - "http"
 paths:
-  /wapi/mall/coupon/:
+  /mall/coupon/:
     get:
       tags:
       - "mall"
@@ -74,7 +74,7 @@ paths:
               "msg": "失败原因"
             }
 
-  /wapi/mall/coupons/:
+  /mall/coupons/:
     get:
       tags:
       - "mall"
@@ -112,7 +112,7 @@ paths:
               "expired_coupons": 1
             }
   
-  /wapi/mall/express_details/:
+  /mall/express_details/:
     get:
       tags:
       - "mall"
@@ -173,6 +173,46 @@ paths:
           description: "unexpected error"
           schema:
             $ref: "#/definitions/Error"
+
+  /mall/product_search_records:
+    get:
+      description: "获得最近10条查询记录"
+      parameters:
+      responses:
+        200:
+          description: "data response"
+          schema:
+            title: "object"
+            properties:
+              records:
+                type: "list"
+          examples:
+            application/json:  {
+                "code": 200,
+               "data": {
+                  "records": [
+                    "dssdg1111",
+                    "asda",
+                    "发送方式",
+                    "asda",
+                    "干"
+                  ]
+                },
+                "errMsg": "",
+                "innerErrMsg": ""
+              }
+
+    delete:
+      summary: "删除搜索记录"
+      description: "删除搜索记录"
+      responses:
+        200:
+          description: OK
+
+
+
+
+
 
 definitions:
 
@@ -250,6 +290,10 @@ definitions:
       message:
         type: "string"
 
+
+
+
+
 externalDocs:
   description: "Python-base API描述文档"
   url: "http://git.weizzz.com:8082/weapp/apiserver"
@@ -269,7 +313,7 @@ externalDocs:
 ## Describe your paths here
 #paths:
 #  # This is a path endpoint. Change it.
-#  /wapi/mall/purchasing/:
+#  /mall/purchasing/:
 #    # This is a HTTP operation
 #    get:
 #      # Describe this verb here. Note: you can use markdown
@@ -296,7 +340,7 @@ externalDocs:
 #            properties:
 #              group_id:
 #                type: string
-#  /wapi/mall/order/:
+#  /mall/order/:
 #    put:
 #      description: 创建订单接口
 #      parameters:
@@ -305,7 +349,7 @@ externalDocs:
 #      responses:
 #        200:
 #          description: Successful response
-#  /wapi/pay/pay_result:
+#  /pay/pay_result:
 #    get:
 #      description: 支付结果页接口
 #      parameters:

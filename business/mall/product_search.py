@@ -6,6 +6,9 @@ from business import model as business_model
 from eaglet.decorator import param_required
 
 import db.mall.models as mall_models
+from util.mysql_str_util import filter_invalid_str
+
+ProductSearchRecordLimit = 10
 
 
 class ProductSearch(business_model.Model):
@@ -31,7 +34,7 @@ class ProductSearch(business_model.Model):
 
 	def filter_products(self, args):
 		raw_products = args['products']
-		product_name = args['product_name']
+		product_name = filter_invalid_str(args['product_name'], '')
 
 		products = filter(lambda x: product_name in x['name'], raw_products)
 		try:
@@ -52,11 +55,11 @@ class ProductSearch(business_model.Model):
 	@param_required(['webapp_user_id'])
 	def get_records_by_webapp_user(args):
 		webapp_user_id = args['webapp_user_id']
-		records = mall_models.ProductSearchRecord.select().order_by(-mall_models.ProductSearchRecord.id).dj_where(
+		records = mall_models.ProductSearchRecord.select(mall_models.ProductSearchRecord.content).distinct().order_by(
+			-mall_models.ProductSearchRecord.id).dj_where(
 			webapp_user_id=webapp_user_id,
-			is_deleted=False).limit(10)
+			is_deleted=False).limit(ProductSearchRecordLimit)
 		return [str(record.content) for record in records]
-
 
 	@staticmethod
 	@param_required(['webapp_user_id'])

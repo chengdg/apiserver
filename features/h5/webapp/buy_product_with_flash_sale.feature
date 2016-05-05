@@ -1222,3 +1222,223 @@ Scenario:15 购买多规格限时抢购商品同时适用于积分规则和会�
 		}
 		"""
 	Then sam在jobs的webapp中拥有80会员积分
+
+
+#根据需求9241后续添加.雪静
+Scenario:16 普通商品设置限时抢购活动的价格和商品原价相等
+	普通商品设置限时抢购活动的价格和商品原价相等
+	1.bill进行购买，商品详情页优惠里不显示"限时抢购-已优惠0元"，其余保持不变
+	2.bill把商品16添加到购物车，购物车保持不变
+
+	Given jobs登录系统:weapp
+	And jobs已添加商品:weapp
+		"""
+		[{
+			"name": "商品16",
+			"price": 100.00
+		}]
+		"""
+	When jobs创建限时抢购活动:weapp
+		"""
+		[{
+			"name": "限时抢购优惠0元",
+			"start_date": "今天",
+			"end_date": "1天后",
+			"product_name": "商品16",
+			"member_grade": "全部",
+			"count_per_purchase": 2,
+			"promotion_price": 100.00
+		}]
+		"""
+	When bill访问jobs的webapp
+	When bill购买jobs的商品
+		"""
+		{
+			"pay_type": "微信支付",
+			"products": [{
+				"name": "商品16",
+				"count": 1
+			}]
+		}
+		"""
+	Then bill成功创建订单
+		"""
+		{
+			"status": "待支付",
+			"final_price": 100.00,
+			"product_price": 100.00,
+			"postage": 0.00,
+			"integral_money":0.00,
+			"coupon_money":0.00,
+			"products": [{
+				"name": "商品16",
+				"count": 1,
+				"promotion": {
+					"promotioned_product_price": 100.00,
+					"type": "flash_sale"
+				}
+			}]
+		}
+		"""
+	When bill加入jobs的商品到购物车
+		"""
+		[{
+			"name": "商品16",
+			"count": 1
+		}]
+		"""
+	Then bill能获得购物车
+		"""
+		{
+			"product_groups": [{
+				"promotion": {
+					"type": "flash_sale",
+					"result": {
+						"saved_money": 0.00
+					}
+				},
+				"can_use_promotion": true,
+				"products": [{
+					"name": "商品16",
+					"price": 100.00,
+					"count": 1
+				}]
+			}],
+			"invalid_products": []
+		}
+		"""
+
+
+Scenario:17 多规格商品设置限时抢购活动的价格和商品最小规格原价相等
+	多规格商品设置限时抢购活动的价格和商品最小规格原价相等
+	1.bill选择原价等于限时抢购价格的规格，商品详情页优惠里不显示"限时抢购-已优惠0元"，其余保持不变
+	2.bill选择原价大于限时抢购价格的规格，商品详情页保持不变
+	3.bill把多规格商品添加到购物车，购物车保持不变
+
+	Given jobs登录系统:weapp
+	And jobs已添加商品:weapp
+		"""
+		[{
+			"name": "商品17",
+			"is_enable_model": "启用规格",
+			"model": {
+				"models":{
+					"M": {
+						"price": 10.00,
+						"stock_type": "无限"
+					},
+					"S": {
+						"price": 40.00,
+						"stock_type": "无限"
+					}
+				}
+			}
+		}]
+		"""
+	When jobs创建限时抢购活动:weapp
+		"""
+		[{
+			"name": "多规格限时抢购优惠0元",
+			"start_date": "今天",
+			"end_date": "1天后",
+			"product_name": "商品17",
+			"member_grade": "全部",
+			"count_per_purchase": 2,
+			"promotion_price": 10.00
+		}]
+		"""
+	When bill访问jobs的webapp
+	When bill购买jobs的商品
+		"""
+		{
+			"pay_type": "微信支付",
+			"products": [{
+				"name": "商品17",
+				"model": "M",
+				"count": 1
+			}, {
+				"name": "商品17",
+				"model": "S",
+				"count": 1
+			}]
+		}
+		"""
+	Then bill成功创建订单
+		"""
+		{
+			"status": "待支付",
+			"final_price": 20.00,
+			"product_price": 20.00,
+			"postage": 0.00,
+			"integral_money":0.00,
+			"coupon_money":0.00,
+			"products": [{
+				"name": "商品17",
+				"model": "M",
+				"count": 1,
+				"promotion": {
+					"promotioned_product_price": 10.00,
+					"type": "flash_sale"
+				}
+			}, {
+				"name": "商品17",
+				"model": "S",
+				"count": 1,
+				"promotion": {
+					"promotioned_product_price": 10.00,
+					"type": "flash_sale"
+				}
+			}]
+		}
+		"""
+	When bill加入jobs的商品到购物车
+		"""
+		[{
+			"name": "商品17",
+			"model": "M",
+			"count": 1
+		}, {
+			"name": "商品17",
+			"model": "S",
+			"count": 1
+		}]
+		"""
+	Then bill能获得购物车
+		"""
+		{
+			"product_groups": [{
+				"promotion": {
+					"type": "flash_sale",
+					"result": {
+						"saved_money": 0.00
+					}
+				},
+				"can_use_promotion": true,
+				"products": [{
+					"name": "商品17",
+					"price": 10.00,
+					"model": "M",
+					"count": 1
+				}]
+			}, {
+				"promotion": {
+					"type": "flash_sale",
+					"result": {
+						"saved_money": 30.00
+					}
+				},
+				"can_use_promotion": true,
+				"products": [{
+					"name": "商品17",
+					"price": 10.00,
+					"model": "S",
+					"count": 1
+				}]
+			}],
+			"invalid_products": []
+		}
+		"""
+
+
+
+

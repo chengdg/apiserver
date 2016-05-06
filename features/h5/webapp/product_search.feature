@@ -127,7 +127,7 @@ Scenario:1 后台修改通用配置(开启和关闭商品搜索功能)
 	When bill访问jobs的webapp
 	Then bill'不能'获得商品搜索框
 
-
+@mall3 @ztq
 Scenario:2 首次搜索商品
 	首次搜索，进入商品搜索页，暂无搜索记录
 
@@ -135,7 +135,11 @@ Scenario:2 首次搜索商品
 	Then bill'能'获得商品搜索框
 	Then bill获得搜索记录
 		"""
-		[]
+		{
+			"record": [
+
+			]
+		}
 		"""
 	#在全部商品列表页搜索商品
 	When bill浏览jobs的webapp的'全部'商品列表页
@@ -334,7 +338,7 @@ Scenario:4 搜索商品名称不存在
 		}
 		"""
 
-
+@ztqb
 Scenario:5 搜索商品记录保留最近10条
 	1.搜索记录保留最后10条
 	2.清除记录后，从新计算
@@ -503,7 +507,11 @@ Scenario:5 搜索商品记录保留最近10条
 	When bill'清除'搜索记录
 	Then bill获得搜索记录
 		"""
-		[]
+		{
+			"record": [
+
+			]
+		}
 		"""
 	When bill搜索商品
 		"""
@@ -578,7 +586,7 @@ Scenario:5 搜索商品记录保留最近10条
 		}
 		"""
 
-
+@mall3 @ztq
 Scenario:6 搜索商品结果按后台商品排序显示顺序
 	jobs更新商品列表的商品排序
 	1.搜索出的结果根据商品列表排序进行排列
@@ -609,8 +617,8 @@ Scenario:6 搜索商品结果按后台商品排序显示顺序
 		}]
 		"""
 	Given jobs登录系统:weapp
-	When jobs更新分类'分类3'中商品'小米商品2'商品排序1
-	When jobs更新分类'分类3'中商品'商品苹果3'商品排序2
+	When jobs更新分类'分类3'中商品'小米商品2'商品排序1:weapp
+	When jobs更新分类'分类3'中商品'商品苹果3'商品排序2:weapp
 	#更新商品分组里面的排序后，搜索商品结果根据商品列表排序进行排列
 	When bill访问jobs的webapp
 	When bill浏览jobs的webapp的'分类3'商品列表页

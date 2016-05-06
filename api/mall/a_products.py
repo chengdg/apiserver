@@ -28,7 +28,7 @@ class AProducts(api_resource.ApiResource):
 		webapp_owner = args['webapp_owner']
 		webapp_user = args['webapp_user']
 
-		product_name = args.get('product_name',None)
+		product_name = args.get('product_name', None)
 
 		simple_products = SimpleProducts.get({
 			"webapp_owner": webapp_owner,

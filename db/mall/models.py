@@ -25,7 +25,7 @@ class MallConfig(models.Model):
 	max_product_count = models.IntegerField(default=MALL_CONFIG_PRODUCT_NORMAL)  # 最大商品数量
 	is_enable_bill = models.BooleanField(default=False)  # 是否启用发票功能
 	show_product_sales = models.BooleanField(default=False) # 通用设置，商品销量
-	show_product_sales_sort = models.BooleanField(default=False) # 通用设置，销量排行
+	show_product_sort = models.BooleanField(default=False) # 通用设置，商品排序
 	show_product_search = models.BooleanField(default=False) # 通用设置， 商品搜索框
 	show_shopping_cart =models.BooleanField(default=False) # 通用设置， 购物车
 	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间

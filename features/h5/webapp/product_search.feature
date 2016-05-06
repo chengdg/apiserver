@@ -157,7 +157,7 @@ Scenario:2 首次搜索商品
 		}]
 		"""
 
-
+@mall3 @ztq
 Scenario:3 多次搜索商品
 	多次搜索商品，进入商品搜索页，显示历史搜索记录
 
@@ -274,7 +274,7 @@ Scenario:3 多次搜索商品
 		}
 		"""
 
-
+@mall3 @ztq
 Scenario:4 搜索商品名称不存在
 
 	When bill访问jobs的webapp
@@ -338,7 +338,7 @@ Scenario:4 搜索商品名称不存在
 		}
 		"""
 
-@ztqb
+@mall3 @ztq
 Scenario:5 搜索商品记录保留最近10条
 	1.搜索记录保留最后10条
 	2.清除记录后，从新计算

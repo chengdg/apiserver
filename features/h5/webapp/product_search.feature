@@ -347,11 +347,25 @@ Scenario:5 搜索商品记录保留最近10条
 			"product_name": "商品1"
 		}
 		"""
+	Then bill获得webapp商品列表
+		"""
+		[{
+			"name": "商品1"
+		}]
+		"""
 	When bill搜索商品
 		"""
 		{
 			"product_name": "商品2"
 		}
+		"""
+	Then bill获得webapp商品列表
+		"""
+		[{
+			"name": "小米商品2"
+		}, {
+			"name": "商品2"
+		}]
 		"""
 	When bill搜索商品
 		"""
@@ -359,11 +373,23 @@ Scenario:5 搜索商品记录保留最近10条
 			"product_name": "商品3"
 		}
 		"""
+	Then bill获得webapp商品列表
+		"""
+		[{
+			"name": "商品3"
+		}]
+		"""
 	When bill搜索商品
 		"""
 		{
 			"product_name": "  商品1"
 		}
+		"""
+	Then bill获得webapp商品列表
+		"""
+		[{
+			"name": "商品1"
+		}]
 		"""
 	When bill搜索商品
 		"""
@@ -371,11 +397,21 @@ Scenario:5 搜索商品记录保留最近10条
 			"product_name": "  商品1  "
 		}
 		"""
+	Then bill获得webapp商品列表
+		"""
+		[{
+			"name": "商品1"
+		}]
+		"""
 	When bill搜索商品
 		"""
 		{
 			"product_name": "商品6"
 		}
+		"""
+	Then bill获得webapp商品列表
+		"""
+		[]
 		"""
 	When bill搜索商品
 		"""
@@ -383,11 +419,19 @@ Scenario:5 搜索商品记录保留最近10条
 			"product_name": "商品7"
 		}
 		"""
+	Then bill获得webapp商品列表
+		"""
+		[]
+		"""
 	When bill搜索商品
 		"""
 		{
 			"product_name": "商品8"
 		}
+		"""
+	Then bill获得webapp商品列表
+		"""
+		[]
 		"""
 	When bill搜索商品
 		"""
@@ -395,11 +439,19 @@ Scenario:5 搜索商品记录保留最近10条
 			"product_name": "商品9"
 		}
 		"""
+	Then bill获得webapp商品列表
+		"""
+		[]
+		"""
 	When bill搜索商品
 		"""
 		{
 			"product_name": "商品10"
 		}
+		"""
+	Then bill获得webapp商品列表
+		"""
+		[]
 		"""
 	When bill搜索商品
 		"""
@@ -407,17 +459,29 @@ Scenario:5 搜索商品记录保留最近10条
 			"product_name": "商品11"
 		}
 		"""
+	Then bill获得webapp商品列表
+		"""
+		[]
+		"""
 	When bill搜索商品
 		"""
 		{
 			"product_name": "商品12"
 		}
 		"""
+	Then bill获得webapp商品列表
+		"""
+		[]
+		"""
 	When bill搜索商品
 		"""
 		{
 			"product_name": "商品13"
 		}
+		"""
+	Then bill获得webapp商品列表
+		"""
+		[]
 		"""
 	Then bill获得搜索记录
 		"""
@@ -447,11 +511,25 @@ Scenario:5 搜索商品记录保留最近10条
 			"product_name": "商品1"
 		}
 		"""
+	Then bill获得webapp商品列表
+		"""
+		[{
+			"name": "商品1"
+		}]
+		"""
 	When bill搜索商品
 		"""
 		{
 			"product_name": "商品2"
 		}
+		"""
+	Then bill获得webapp商品列表
+		"""
+		[{
+			"name": "小米商品2"
+		}, {
+			"name": "商品2"
+		}]
 		"""
 	When bill搜索商品
 		"""
@@ -459,17 +537,35 @@ Scenario:5 搜索商品记录保留最近10条
 			"product_name": "商品3"
 		}
 		"""
+	Then bill获得webapp商品列表
+		"""
+		[{
+			"name": "商品3"
+		}]
+		"""
 	When bill搜索商品
 		"""
 		{
 			"product_name": "  商品1"
 		}
 		"""
+	Then bill获得webapp商品列表
+		"""
+		[{
+			"name": "商品1"
+		}]
+		"""
 	When bill搜索商品
 		"""
 		{
 			"product_name": "  商品1  "
 		}
+		"""
+	Then bill获得webapp商品列表
+		"""
+		[{
+			"name": "商品1"
+		}]
 		"""
 	Then bill获得搜索记录
 		"""

@@ -45,8 +45,7 @@ Background:
 			"type": "微信支付"
 		}]
 		"""
-		"""
-	And jobs已添加商品分类
+	And jobs已添加商品分类:weapp
 		"""
 		[{
 			"name": "分类1"
@@ -107,7 +106,7 @@ Background:
 		"""
 	And bill关注jobs的公众号
 
-
+@mall3 @ztq
 Scenario:1 后台修改通用配置(开启和关闭商品搜索功能)
 	1.jobs开启商品搜索功能，商品列表页显示搜索框
 	2.jobs关闭商品搜索功能，商品列表页不显示搜索框

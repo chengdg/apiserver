@@ -34,7 +34,7 @@ class ProductSearch(business_model.Model):
 
 	def filter_products(self, args):
 		raw_products = args['products']
-		product_name = filter_invalid_str(args['product_name'], '')
+		product_name = filter_invalid_str(args['product_name'], '').strip()
 
 		products = filter(lambda x: product_name in x['name'], raw_products)
 		try:

@@ -12,7 +12,7 @@ import logging
 def step_impl(context, user):
 	db_order = steps_db_util.get_latest_order()
 
-	response = context.client.get('/wapi/mall/order/', {
+	response = context.client.get('/mall/order/', {
 		'woid': context.client.woid,
 		'order_id': db_order.order_id
 	})
@@ -60,7 +60,7 @@ def step_impl(context, webapp_user_name):
 @when(u"{webapp_user_name}取消订单'{order_id}'")
 def step_impl(context, webapp_user_name, order_id):
 	logging.info('webapp_user_name: {}'.format(webapp_user_name))
-	response = context.client.post('/wapi/mall/order/', {
+	response = context.client.post('/mall/order/', {
 		'woid': context.client.woid,
 		'order_id': order_id,
 		'action': 'cancel'
@@ -72,7 +72,7 @@ def step_impl(context, webapp_user_name, order_id):
 @when(u"{webapp_user_name}确认收货订单'{order_id}'")
 def step_impl(context, webapp_user_name, order_id):
 	logging.info('webapp_user_name: {}'.format(webapp_user_name))
-	response = context.client.post('/wapi/mall/order/', {
+	response = context.client.post('/mall/order/', {
 		'woid': context.client.woid,
 		'order_id': order_id,
 		'action': 'finish'
@@ -83,7 +83,7 @@ def step_impl(context, webapp_user_name, order_id):
 @then(u"{webapp_user_name}'{is_can}'取消订单'{order_id}'")
 def step_impl(context, webapp_user_name, is_can, order_id):
 	logging.info('webapp_user_name: {}'.format(webapp_user_name))
-	response = context.client.get('/wapi/mall/order/', {
+	response = context.client.get('/mall/order/', {
 		'woid': context.client.woid,
 		'order_id': order_id
 	})
@@ -100,7 +100,7 @@ def step_impl(context, webapp_user_name, is_can, order_id):
 @then(u"{webapp_user_name}在webapp查看'{order_id}'的物流信息")
 def step_impl(context, webapp_user_name, order_id):
 	expected_order = json.loads(context.text)
-	response = context.client.get('/wapi/mall/express_details/', {
+	response = context.client.get('/mall/express_details/', {
 		'woid': context.client.woid,
 		'order_id': order_id
 	})
@@ -121,7 +121,7 @@ def step_impl(context, webapp_user_name, order_id):
 def step_impl(context, webapp_user_name, action, order_id):
 
 	if action == '支付':
-		pay_url = '/wapi/pay/pay_result/?_method=put'
+		pay_url = '/pay/pay_result/?_method=put'
 		data = {
 			'pay_interface_type': 2,
 			'order_id': context.created_order_id
@@ -138,7 +138,7 @@ def step_impl(context, webapp_user_name, action, order_id):
 	else:
 		a_action = ''
 	if a_action:
-		response = context.client.post('/wapi/mall/order/', {
+		response = context.client.post('/mall/order/', {
 			'woid': context.client.woid,
 			'order_id': order_id,
 			'action': a_action

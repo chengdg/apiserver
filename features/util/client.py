@@ -165,7 +165,8 @@ class FakeResponse(object):
 class ClientHandler(object):
     def __init__(self, enforce_csrf_checks=True, *args, **kwargs):
         self.enforce_csrf_checks = enforce_csrf_checks
-        from apps import create_app
+        from eaglet.apps import create_app
+        #from api.ps import create_app
         self.app = create_app()
 
     def __call__(self, environ):

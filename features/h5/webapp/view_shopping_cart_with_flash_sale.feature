@@ -27,22 +27,22 @@ Background:
 		"""
 		[{
 			"name": "商品1",
-			"price": 30
+			"price": 30.00
 		}, {
 			"name": "商品2",
-			"price": 5
+			"price": 5.00
 		}, {
 			"name": "商品3",
 			"is_enable_model": "启用规格",
 			"model": {
 				"models":{
 					"M":{
-						"price": 7,
+						"price": 7.00,
 						"stock_type": "有限",
 						"stocks": 2
 					},
 					"S":{
-						"price": 8,
+						"price": 8.00,
 						"stock_type": "无限"
 					}
 				}
@@ -53,10 +53,10 @@ Background:
 			"model":{
 				"models":{
 					"M":{
-						"price": 9,
+						"price": 9.00,
 						"stock_type": "无限"
 					}
-				}   
+				}
 			}
 		}, {
 			"name": "商品5",
@@ -64,7 +64,7 @@ Background:
 			"model":{
 				"models":{
 					"S":{
-						"price": 10,
+						"price": 10.00,
 						"stock_type": "无限"
 					}
 				}
@@ -79,25 +79,25 @@ Background:
 			"end_date": "1天后",
 			"product_name": "商品1",
 			"count_per_purchase": 2,
-			"promotion_price": 11.5
+			"promotion_price": 11.50
 		}, {
 			"name": "商品2限时抢购",
 			"start_date": "1天后",
 			"end_date": "2天后",
 			"product_name": "商品2",
-			"promotion_price": 2.1
+			"promotion_price": 2.10
 		}, {
 			"name": "商品3限时抢购",
 			"start_date": "今天",
 			"end_date": "1天后",
 			"product_name": "商品3",
-			"promotion_price": 3.1
+			"promotion_price": 3.10
 		}, {
 			"name": "商品4限时抢购",
 			"start_date": "前天",
 			"end_date": "昨天",
 			"product_name": "商品4",
-			"promotion_price": 4.1
+			"promotion_price": 4.10
 		}]
 		"""
 	And bill关注jobs的公众号
@@ -140,26 +140,26 @@ Scenario: 1 放入多个商品到购物车，商品的限时抢购活动为进�
 				"promotion": {
 					"type": "flash_sale",
 					"result": {
-						"saved_money": 18.5
+						"saved_money": 18.50
 					}
 				},
 				"can_use_promotion": true,
 				"products": [{
 					"name": "商品1",
-					"price": 11.5,
+					"price": 11.50,
 					"count": 1
 				}]
 			}, {
 				"promotion": {
 					"type": "flash_sale",
 					"result": {
-						"saved_money": 3.9
+						"saved_money": 3.90
 					}
 				},
 				"can_use_promotion": true,
 				"products": [{
 					"name": "商品3",
-					"price": 3.1,
+					"price": 3.10,
 					"count": 1,
 					"model": "M"
 				}]
@@ -167,13 +167,13 @@ Scenario: 1 放入多个商品到购物车，商品的限时抢购活动为进�
 				"promotion": {
 					"type": "flash_sale",
 					"result": {
-						"saved_money": 4.9
+						"saved_money": 4.90
 					}
 				},
 				"can_use_promotion": true,
 				"products": [{
 					"name": "商品3",
-					"price": 3.1,
+					"price": 3.10,
 					"count": 2,
 					"model": "S"
 				}]
@@ -214,13 +214,13 @@ Scenario:2 放入多个商品到购物车，商品的限时抢购活动包括未
 				"promotion": {
 					"type": "flash_sale",
 					"result": {
-						"saved_money": 18.5
+						"saved_money": 18.50
 					}
 				},
 				"can_use_promotion": true,
 				"products": [{
 					"name": "商品1",
-					"price": 11.5,
+					"price": 11.50,
 					"count": 1
 				}]
 			}, {
@@ -228,11 +228,11 @@ Scenario:2 放入多个商品到购物车，商品的限时抢购活动包括未
 				"can_use_promotion": false,
 				"products": [{
 					"name": "商品2",
-					"price": 5,
+					"price": 5.00,
 					"count": 1
 				}, {
 					"name": "商品4",
-					"price": 9,
+					"price": 9.00,
 					"count": 2
 				}]
 			}],
@@ -252,11 +252,11 @@ Scenario:3 放入多规格商品到购物车，无限购
 			"model": {
 				"models":{
 					"M": {
-						"price": 100,
+						"price": 100.00,
 						"stock_type": "无限"
 					},
 					"S": {
-						"price": 100,
+						"price": 100.00,
 						"stock_type": "无限"
 					}
 				}
@@ -270,7 +270,7 @@ Scenario:3 放入多规格商品到购物车，无限购
 			"start_date": "1天前",
 			"end_date": "3天后",
 			"product_name": "商品7",
-			"promotion_price": 10
+			"promotion_price": 10.00
 		}
 		"""
 	
@@ -304,13 +304,13 @@ Scenario:3 放入多规格商品到购物车，无限购
 				"promotion": {
 					"type": "flash_sale",
 					"result": {
-						"saved_money": 90
+						"saved_money": 90.00
 					}
 				},
 				"can_use_promotion": true,
 				"products": [{
 					"name": "商品7",
-					"price": 10,
+					"price": 10.00,
 					"count": 1,
 					"model": "M"
 				}]
@@ -318,13 +318,13 @@ Scenario:3 放入多规格商品到购物车，无限购
 				"promotion": {
 					"type": "flash_sale",
 					"result": {
-						"saved_money": 90
+						"saved_money": 90.00
 					}
 				},
 				"can_use_promotion": true,
 				"products": [{
 					"name": "商品7",
-					"price": 10,
+					"price": 10.00,
 					"count": 2,
 					"model": "S"
 				}]

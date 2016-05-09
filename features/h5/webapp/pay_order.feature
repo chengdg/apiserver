@@ -24,10 +24,10 @@ Background:
 		"""
 		[{
 			"name": "商品1",
-			"price": 9.9
+			"price": 9.90
 		}, {
 			"name": "商品2",
-			"price": 8.8
+			"price": 8.80
 		}]	
 		"""
 	And bill关注jobs的公众号
@@ -53,10 +53,10 @@ Scenario:1 使用货到付款支付
 		"""
 		{
 			"status": "待发货",
-			"final_price": 9.9,
+			"final_price": 9.90,
 			"products": [{
 				"name": "商品1",
-				"price": 9.9,
+				"price": 9.90,
 				"count": 1
 			}]
 		}
@@ -83,10 +83,10 @@ Scenario:2 使用V2版微信支付进行同步支付
 		"""
 		{
 			"status": "待支付",
-			"final_price": 9.9,
+			"final_price": 9.90,
 			"products": [{
 				"name": "商品1",
-				"price": 9.9,
+				"price": 9.90,
 				"count": 1
 			}]
 		}
@@ -101,10 +101,10 @@ Scenario:2 使用V2版微信支付进行同步支付
 		"""
 		{
 			"status": "待发货",
-			"final_price": 9.9,
+			"final_price": 9.90,
 			"products": [{
 				"name": "商品1",
-				"price": 9.9,
+				"price": 9.90,
 				"count": 1
 			}]
 		}
@@ -131,10 +131,10 @@ Scenario:3 使用V2版微信支付进行异步支付
 		"""
 		{
 			"status": "待支付",
-			"final_price": 9.9,
+			"final_price": 9.90,
 			"products": [{
 				"name": "商品1",
-				"price": 9.9,
+				"price": 9.90,
 				"count": 1
 			}]
 		}
@@ -149,10 +149,10 @@ Scenario:3 使用V2版微信支付进行异步支付
 		"""
 		{
 			"status": "待发货",
-			"final_price": 9.9,
+			"final_price": 9.90,
 			"products": [{
 				"name": "商品1",
-				"price": 9.9,
+				"price": 9.90,
 				"count": 1
 			}]
 		}
@@ -176,10 +176,10 @@ Scenario:4 使用微信支付,没有支付
 		"""
 		{
 			"status": "待支付",
-			"final_price": 9.9,
+			"final_price": 9.90,
 			"products": [{
 				"name": "商品1",
-				"price": 9.9,
+				"price": 9.90,
 				"count": 1
 			}]
 		}

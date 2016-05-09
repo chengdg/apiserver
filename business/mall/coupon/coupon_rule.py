@@ -9,7 +9,7 @@
 from datetime import datetime
 from business import model as business_model
 from db.mall import promotion_models
-from wapi.decorators import param_required
+from eaglet.decorator import param_required
 
 
 class CouponRule(business_model.Model):

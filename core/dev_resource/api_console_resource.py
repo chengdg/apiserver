@@ -3,7 +3,7 @@ import os
 import falcon
 
 import settings
-from core import api_resource
+from eaglet.core import api_resource
 
 class ApiConsoleResource:
 	"""

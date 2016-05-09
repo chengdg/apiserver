@@ -31,13 +31,13 @@ from business.mall.allocator.allocate_price_related_resource_service import Allo
 from business.mall.order import Order
 
 #from business.mall.package_order_service.package_order_service import CalculatePriceService
-from utils.microservice_consumer import ResponseCodeException
-from wapi.decorators import param_required
+from util.microservice_consumer import ResponseCodeException
+from eaglet.decorator import param_required
 #from wapi import wapi_utils
-from core.cache import utils as cache_util
+from eaglet.core.cache import utils as cache_util
 from db.mall import models as mall_models
 #import resource
-from core.watchdog.utils import watchdog_alert,watchdog_error
+from eaglet.core import watchdog
 from core.exceptionutil import unicode_full_stack
 from business import model as business_model
 from business.mall.product import Product
@@ -53,7 +53,8 @@ from business.mall.package_order_service.package_order_service import PackageOrd
 from business.mall.reserved_product_repository import ReservedProductRepository
 from business.mall.group_reserved_product_service import GroupReservedProductService
 from business.mall.order_exception import OrderResourcesException, OrderFailureException, OrderResourcesLockException
-from utils.lock import RedisLock, REGISTERED_LOCK_NAMES
+from eaglet.utils.lock import RedisLock
+from settings import REGISTERED_LOCK_NAMES
 
 
 class OrderFactory(business_model.Model):
@@ -266,7 +267,7 @@ class OrderFactory(business_model.Model):
 		try:
 			create_order_lock_is_success = self.__acquire_create_order_lock_by_purchase_info(purchase_info)
 			if not create_order_lock_is_success:
-				watchdog_alert(u'下单异常并发')
+				watchdog.alert(u'下单异常并发')
 				raise OrderResourcesLockException([{
 					"is_success": False,
 					"msg": u'请勿短时间连续下单,error when get lock',
@@ -327,7 +328,7 @@ class OrderFactory(business_model.Model):
 			pass
 		except:
 			msg = unicode_full_stack()
-			watchdog_alert(msg)
+			watchdog.alert(msg)
 			self.__release_order(order, price_free_resources, price_related_resources)
 			raise OrderFailureException
 
@@ -404,6 +405,7 @@ class OrderFactory(business_model.Model):
 		locked_resources = []
 		self.context['create_order_lock'] = []
 		webapp_user_id = self.context['webapp_user'].id
+		wzcard_list = []
 		if purchase_info.coupon_id and purchase_info.coupon_id != '0':
 			# 优惠券锁
 			locked_resources.append({'name': REGISTERED_LOCK_NAMES['coupon_lock'], 'resource': str(purchase_info.coupon_id)})
@@ -411,7 +413,10 @@ class OrderFactory(business_model.Model):
 			locked_resources.append({'name': REGISTERED_LOCK_NAMES['integral_lock'], 'resource': str(webapp_user_id)})
 		if purchase_info.wzcard_info:
 			for wzcard in purchase_info.wzcard_info:
-				locked_resources.append({'name': REGISTERED_LOCK_NAMES['wz_card_lock'], 'resource': str(wzcard['card_name'])})
+				wzcard_id = str(wzcard['card_name'])
+				if wzcard_id not in wzcard_list:
+					wzcard_list.append(wzcard_id)
+					locked_resources.append({'name': REGISTERED_LOCK_NAMES['wz_card_lock'], 'resource': str(wzcard['card_name'])})
 
 		for locked_resource in locked_resources:
 			redis_lock = RedisLock()

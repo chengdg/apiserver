@@ -12,8 +12,8 @@ import six
 
 #from django.core.management.base import BaseCommand, CommandError
 #from django.core.servers.basehttp import run, get_internal_wsgi_application
-from utils import autoreload
-from utils.command import BaseCommand
+from util import autoreload
+from util.command import BaseCommand
 import settings
 #from django.utils import six
 

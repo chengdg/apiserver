@@ -69,7 +69,7 @@ Background:
 			"model": {
 					"models": {
 						"standard": {
-							"price": 10.0,
+							"price": 10.00,
 							"weight": 1.0,
 							"stock_type": "有限",
 							"stocks": 3
@@ -83,13 +83,13 @@ Background:
 				"model": {
 					"models": {
 						"黑色 S": {
-							"price": 20.0,
+							"price": 20.00,
 							"weight": 3.1,
 							"stock_type": "有限",
 							"stocks": 3
 						},
 						"白色 S": {
-							"price": 20.0,
+							"price": 20.00,
 							"weight": 1.0,
 							"stock_type": "无限"
 						}
@@ -104,7 +104,7 @@ Background:
 			"model": {
 					"models": {
 						"standard": {
-							"price": 30.0,
+							"price": 30.00,
 							"weight": 1.0,
 							"stock_type": "有限",
 							"stocks": 3

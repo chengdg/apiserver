@@ -135,7 +135,7 @@ Background:
 	Given bill关注jobs的公众号
 	And tom关注jobs的公众号
 
-@mall3
+@mall3 @nj_group
 Scenario: 1 会员访问团购活动首页能进行开团
 	jobs创建团购，活动期内
 	1.bill获得商品列表页
@@ -250,7 +250,7 @@ Scenario: 1 会员访问团购活动首页能进行开团
 		"""
 	Then bill得到团购活动提示"只能开团一次":weapp
 
-@mall3
+@mall3 @nj_group
 Scenario: 2 会员可以通过分享链接直接参加团购活动
 	bill开团后分享团购活动链接
 	1.会员tom可以直接参加团购活动，参加后就不能重复参加，可以开团
@@ -497,7 +497,7 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 		[]
 		"""
 
-@mall3
+@mall3 @nj_group
 Scenario: 3 会员开团后团购活动成功
 	会员开团后
 	1.在活动期内团购人数达到开团人数，团购成功
@@ -702,7 +702,7 @@ Scenario: 3 会员开团后团购活动成功
 		[]
 		"""
 		
-@mall3
+@mall3 @nj_group
 Scenario: 4 会员开团后团购活动失败
 	会员开团后
 	1.没有在期限内达到人数，团购活动失败
@@ -795,7 +795,7 @@ Scenario: 4 会员开团后团购活动失败
 		}
 		"""
 
-@mall3
+@mall3 @nj_group
 Scenario: 5 会员开团不进行支付，开团不成功
 	会员开团不进行支付，开团不成功
 	1.其他会员获取不到参团列表
@@ -849,7 +849,7 @@ Scenario: 5 会员开团不进行支付，开团不成功
 		[]
 		"""
 
-@mall3
+@mall3 @nj_group
 Scenario: 6 一个会员可以参加多个会员开启的团购活动
 	1.一个会员既能开团又能参团，可以参加多个团购活动
 
@@ -1076,7 +1076,7 @@ Scenario: 6 一个会员可以参加多个会员开启的团购活动
 		}]
 		"""
 
-@mall3
+@mall3 @nj_group
 Scenario: 7 会员把商品添加购物车后，后台把这个商品创建成团购活动
 	会员把商品3添加到购物车，后台把商品创建成团购活动
 	1.商品3在购物车为失效状态
@@ -1096,7 +1096,7 @@ Scenario: 7 会员把商品添加购物车后，后台把这个商品创建成�
 			"product_groups": [{
 				"products": [{
 					"name": "商品3",
-					"price": 100,
+					"price": 100.00,
 					"count": 1
 				}]
 			}],
@@ -1137,7 +1137,7 @@ Scenario: 7 会员把商品添加购物车后，后台把这个商品创建成�
 			"product_groups": [],
 			"invalid_products": [{
 				"name": "商品3",
-				"price": 100,
+				"price": 100.00,
 				"count": 1
 			}]
 		}
@@ -1153,7 +1153,7 @@ Scenario: 7 会员把商品添加购物车后，后台把这个商品创建成�
 			"product_groups": [{
 				"products": [{
 					"name": "商品3",
-					"price": 100,
+					"price": 100.00,
 					"count": 1
 				}]
 			}],

@@ -10,12 +10,12 @@
 from datetime import datetime
 
 from business.mall.realtime_stock import RealtimeStock
-from wapi.decorators import param_required
+from eaglet.decorator import param_required
 ##from wapi import wapi_utils
-#from core.cache import utils as cache_util
+#from eaglet.core.cache import utils as cache_util
 from db.mall import models as mall_models
 from db.mall import promotion_models
-#from core.watchdog.utils import watchdog_alert
+#from eaglet.core import watchdog
 from business import model as business_model
 import settings
 from business.mall.promotion.flash_sale import FlashSale

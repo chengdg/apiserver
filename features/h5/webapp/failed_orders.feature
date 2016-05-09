@@ -42,7 +42,7 @@ Background:
 						"user_code": "10",
 						"stock_type": "有限",
 						"stocks": 1,
-						"price": 10.0
+						"price": 10.00
 					}
 				}
 			}
@@ -54,7 +54,7 @@ Background:
 						"user_code": "20",
 						"stock_type": "有限",
 						"stocks": 2,
-						"price": 20.0
+						"price": 20.00
 					}
 				}
 			}
@@ -66,7 +66,7 @@ Background:
 						"user_code": "30",
 						"stock_type": "有限",
 						"stocks": 3,
-						"price": 30.0
+						"price": 30.00
 					}
 				}
 			}
@@ -87,7 +87,7 @@ Background:
 		"""
 		[{
 			"name": "优惠券1",
-			"money": 20,
+			"money": 20.00,
 			"start_date": "今天",
 			"end_date": "1天后",
 			"coupon_id_prefix": "coupon1_id_"
@@ -173,7 +173,7 @@ Scenario:1 下单失败后，校验商品的库存变化
 					"standard": {
 						"stock_type": "有限",
 						"stocks": 1,
-						"price": 10.0
+						"price": 10.00
 					}
 				}
 			}
@@ -189,7 +189,7 @@ Scenario:1 下单失败后，校验商品的库存变化
 					"standard": {
 						"stock_type": "有限",
 						"stocks": 2,
-						"price": 20.0
+						"price": 20.00
 					}
 				}
 			}
@@ -215,7 +215,7 @@ Scenario:2 下单失败后，校验会员的积分变化
 			"rules": [{
 				"member_grade": "全部",
 				"discount": 100,
-				"discount_money": 20.0
+				"discount_money": 20.00
 			}]
 		}]
 		"""
@@ -230,7 +230,7 @@ Scenario:2 下单失败后，校验会员的积分变化
 				"name": "商品2",
 				"count": 1,
 				"integral": 40,
-				"integral_money": 20
+				"integral_money": 20.00
 			}]
 		}
 		"""
@@ -258,7 +258,7 @@ Scenario:2 下单失败后，校验会员的积分变化
 					"standard": {
 						"stock_type": "有限",
 						"stocks": 2,
-						"price": 20.0
+						"price": 20.00
 					}
 				}
 			}
@@ -274,7 +274,7 @@ Scenario:3 下单失败后，校验优惠券和微众卡的变化
 			"pay_type": "微信支付",
 			"products":[{
 				"name":"商品3",
-				"price":30.0,
+				"price":30.00,
 				"count":4
 			}],
 			"coupon": "coupon1_id_1",
@@ -305,7 +305,7 @@ Scenario:3 下单失败后，校验优惠券和微众卡的变化
 					"standard": {
 						"stock_type": "有限",
 						"stocks": 3,
-						"price": 30.0
+						"price": 30.00
 					}
 				}
 			}
@@ -315,13 +315,13 @@ Scenario:3 下单失败后，校验优惠券和微众卡的变化
 		"""
 		{
 			"coupon1_id_1": {
-				"money": 20.0,
+				"money": 20.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"
 			},
 			"coupon1_id_2": {
-				"money": 20.0,
+				"money": 20.00,
 				"status": "未使用",
 				"consumer": "",
 				"target": "bill"

@@ -48,7 +48,7 @@ def step_impl(context, shared_url, webapp_owner_name, product_name):
 
 	context.shared_url = shared_url
 
-	response = context.client.put('/wapi/member/shared_url/', {
+	response = context.client.put('/member/shared_url/', {
 		'title': product_name,
 		'shared_url': shared_url
 	})
@@ -103,7 +103,7 @@ def step_impl(context, webapp_user_name, shared_webapp_user_name):
 
 	context.fmt = shared_member.token
 	context.shared_url = shared_url
-	response = context.client.put('/wapi/member/member_spread/', {
+	response = context.client.put('/member/member_spread/', {
 		'fmt': shared_member.token,
 		'url': context.shared_url
 	})

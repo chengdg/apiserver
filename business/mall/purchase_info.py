@@ -9,12 +9,12 @@ from bs4 import BeautifulSoup
 import math
 import itertools
 
-from wapi.decorators import param_required
+from eaglet.decorator import param_required
 #from wapi import wapi_utils
-from core.cache import utils as cache_util
+from eaglet.core.cache import utils as cache_util
 from db.mall import models as mall_models
 #import resource
-from core.watchdog.utils import watchdog_alert
+from eaglet.core import watchdog
 from business import model as business_model
 import settings
 import logging
@@ -259,3 +259,6 @@ class PurchaseInfo(business_model.Model):
     def __parse_bdd_order_id(self, request_args):
         self.bdd_order_id = request_args.get('bdd_order_id', '') if settings.IS_UNDER_BDD else ''
 
+    def validate(self):
+        result = not filter(lambda x: int(x) <= 0, self.product_counts)
+        return result

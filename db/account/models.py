@@ -1,5 +1,5 @@
 #coding: utf8
-from core.db import models
+from eaglet.core.db import models
 
 import datetime
 

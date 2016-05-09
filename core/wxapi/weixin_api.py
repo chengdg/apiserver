@@ -9,10 +9,10 @@ import weixin_error_codes as errorcodes
 
 from core.jsonresponse import decode_json_str
 from core.exceptionutil import unicode_full_stack
-from utils.url_helper import complete_get_request_url
+from util.url_helper import complete_get_request_url
 #from core.weixin_media_saver import save_weixin_user_head_img
 
-from core.watchdog.utils import watchdog_error, watchdog_info
+from eaglet.core import watchdog
 
 #from weixin.user.access_token import update_access_token
 from util import ObjectAttrWrapedInDict
@@ -201,12 +201,12 @@ def call_api(weixin_api, api_instance_class):
 		"""
 
 		# try:
-		# 	#watchdog_info('call weixin api: {} , result:{}'.format(api_instance_class.__class__.__name__, result))
+		# 	#watchdog.info('call weixin api: {} , result:{}'.format(api_instance_class.__class__.__name__, result))
 
 		# 	from weixin.message.message_handler.tasks import record_call_weixin_api
 		# 	if hasattr(result, 'errcode'):
 		# 		success = False
-		# 		#watchdog_error('call weixin api: {} , result:{}'.format(api_instance_class.__class__.__name__, result))	
+		# 		#watchdog.error('call weixin api: {} , result:{}'.format(api_instance_class.__class__.__name__, result))	
 		# 	else:
 		# 		success = True
 		# 	record_call_weixin_api.delay(api_instance_class.__class__.__name__, success)
@@ -230,7 +230,7 @@ def call_api(weixin_api, api_instance_class):
 			# 		update_access_token(weixin_api.mpuser_access_token)	
 			# except:
 			# 	notify_message = u"weixin_api update_access_token error {}".format(unicode_full_stack())
-			# 	watchdog_error(notify_message)
+			# 	watchdog.error(notify_message)
 
 		if weixin_api._is_error_response(api_response):
 			# if weixin_api._is_error_dueto_access_token(api_response):
@@ -303,7 +303,7 @@ class WeixinApi(object):
 
 	def _notify_api_request_error(self, apierror, api_name='' ,user_id=0):
 		notify_msg = u"微信api调用失败，api:{}\n错误信息:{}".format(api_name, apierror.__unicode__())
-		watchdog_error(notify_msg,user_id=user_id)
+		watchdog.error(notify_msg,user_id=user_id)
 
 	def _raise_request_error(self, response, api_name='' , user_id=0):
 		error_response = WeixinErrorResponse(response)

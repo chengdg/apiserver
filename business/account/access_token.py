@@ -11,13 +11,13 @@ from datetime import datetime
 import time
 import urllib
 
-from wapi.decorators import param_required
-from core.cache import utils as cache_util
+from eaglet.decorator import param_required
+from eaglet.core.cache import utils as cache_util
 import settings
-from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
+from eaglet.core import watchdog
 from core.exceptionutil import unicode_full_stack
 from business import model as business_model
-from utils import auth_util
+from util import auth_util
 import logging
 from db.account import models as account_models
 
@@ -102,5 +102,5 @@ class AccessToken(business_model.Model):
 				except:
 					notify_message = u"AccessToken get_access_token cause:\n{}".format(unicode_full_stack())
 					logging.error(notify_message)
-					watchdog_error(notify_message)
+					watchdog.error(notify_message)
 					return None

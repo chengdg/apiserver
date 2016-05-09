@@ -3,11 +3,11 @@
 会员传播
 """
 
-from wapi.decorators import param_required
-from utils import url_helper
+from eaglet.decorator import param_required
+from util import url_helper
 import urlparse 
 
-from core.watchdog.utils import watchdog_alert, watchdog_warning, watchdog_error
+from eaglet.core import watchdog
 from core.exceptionutil import unicode_full_stack
 
 import settings
@@ -29,6 +29,8 @@ from business.account.integral import Integral
 from business.account.webapp_user_factory import WebAppUserFactory
 from business.account.webapp_user import WebAppUser
 from business.account.system_account import SystemAccount
+
+import logging
 
 class MemberSpread(business_model.Model):
 	"""
@@ -55,6 +57,9 @@ class MemberSpread(business_model.Model):
 		if fmt:
 			fmt = fmt[0]
 		#创建会员
+		logging.info(">>>>>>>>!>!!>>!!>>!!>")
+		logging.info(fmt)
+		logging.info("<<<<<<<<<<<<<<")
 		member = MemberFactory.create({
 			"webapp_owner": args['webapp_owner'],
 			"openid": args['openid'],
@@ -239,6 +244,6 @@ class MemberSpread(business_model.Model):
 					mall_order_from_shared.save()
 				except:
 					notify_message = u"process_order_from_spread cause:\n{}, fmt:{}".format(unicode_full_stack(), fmt)
-					watchdog_error(notify_message)	
+					watchdog.error(notify_message)	
 					print notify_message
 				

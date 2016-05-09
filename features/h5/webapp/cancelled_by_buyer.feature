@@ -48,11 +48,11 @@ Background:
 		"""
 		[{
 			"name": "商品1",
-			"price": 100,
+			"price": 100.00,
 			"stocks": 8
 		}, {
 			"name": "商品2",
-			"price": 100,
+			"price": 100.00,
 			"stocks": 8
 		}]
 		"""
@@ -60,13 +60,7 @@ Background:
 	When bill访问jobs的webapp
 	When bill获得jobs的150会员积分
 	Then bill在jobs的webapp中拥有150会员积分
-	#And jobs已有的会员:weapp
-	#	"""
-	#	[{
-	#		"name": "bill",
-	#		"integral": 150
-	#	}]
-	#	"""
+
 	Given jobs登录系统:weapp
 	Given jobs已添加了优惠券规则:weapp
 		"""
@@ -127,7 +121,7 @@ Background:
 				"count": 1
 			}],
 			"integral": 100,
-			"integral_money": 100
+			"integral_money": 100.00
 		}
 		"""
 	And bill购买jobs的商品
@@ -140,7 +134,7 @@ Background:
 				"count": 1
 			}],
 			"integral": 50,
-			"integral_money": 50
+			"integral_money": 50.00
 		}
 		"""
 	And bill购买jobs的商品

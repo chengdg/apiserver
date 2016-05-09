@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from core.db import models
+from eaglet.core.db import models
 from models import User
 
 

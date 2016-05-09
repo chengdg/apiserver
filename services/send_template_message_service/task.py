@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from celery import task
+from eaglet.core.service.celery import task
 
-from core.wxapi import get_weixin_api
+from eaglet.core.wxapi import get_weixin_api
 from db.account import weixin_models as weixin_user_models
 
 

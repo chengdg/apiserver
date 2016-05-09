@@ -57,7 +57,7 @@ Background:
 					}
 				}
 			},
-			"postage":10.0,
+			"postage":10.00,
 			"distribution_time":"on"
 		},{
 			"name":"商品2",
@@ -92,22 +92,22 @@ Background:
 				"id": "0000000",
 				"password": "0234567",
 				"status": "未使用",
-				"price": 50
+				"price": 50.00
 			},{
 				"id": "0000001",
 				"password": "1234567",
 				"status": "未使用",
-				"price": 50
+				"price": 50.00
 			},{
 				"id": "0000002",
 				"password": "2234567",
 				"status": "未使用",
-				"price": 100
+				"price": 100.00
 			},{
 				"id": "0000003",
 				"password": "3234567",
 				"status": "未使用",
-				"price": 200
+				"price": 200.00
 			}]
 		}
 		"""
@@ -481,7 +481,7 @@ Scenario:1 所有订单-查看团购订单
 			"status": "待发货",
 			"buyer":"bill3",
 			"final_price":190.00,
-			"save_money":10.0,
+			"save_money":10.00,
 			"methods_of_payment": "优惠抵扣",
 			"actions": ["发货"],
 			"products":
@@ -497,7 +497,7 @@ Scenario:1 所有订单-查看团购订单
 			"status": "待发货",
 			"buyer":"bill2",
 			"final_price":190.00,
-			"save_money":10.0,
+			"save_money":10.00,
 			"methods_of_payment": "微信支付",
 			"actions": ["发货"],
 			"products":
@@ -513,7 +513,7 @@ Scenario:1 所有订单-查看团购订单
 			"status": "待发货",
 			"buyer":"bill1",
 			"final_price":190.00,
-			"save_money":10.0,
+			"save_money":10.00,
 			"methods_of_payment": "微信支付",
 			"actions": ["发货"],
 			"products":
@@ -529,7 +529,7 @@ Scenario:1 所有订单-查看团购订单
 			"status": "待发货",
 			"buyer":"bill",
 			"final_price":190.00,
-			"save_money":10.0,
+			"save_money":10.00,
 			"methods_of_payment": "微信支付",
 			"actions": ["发货"],
 			"products":
@@ -545,7 +545,7 @@ Scenario:1 所有订单-查看团购订单
 			"status": "待发货",
 			"buyer":"tom",
 			"final_price":190.00,
-			"save_money":10.0,
+			"save_money":10.00,
 			"methods_of_payment": "微信支付",
 			"actions": ["发货"],
 			"products":
@@ -639,7 +639,7 @@ Scenario:1 所有订单-查看团购订单
 				"status": "已发货",
 				"buyer":"bill3",
 				"final_price":190.00,
-				"save_money":10.0,
+				"save_money":10.00,
 				"methods_of_payment": "优惠抵扣",
 				"logistics": "顺丰速运",
 				"number": "123456789",
@@ -658,7 +658,7 @@ Scenario:1 所有订单-查看团购订单
 				"status": "已发货",
 				"buyer":"bill2",
 				"final_price":190.00,
-				"save_money":10.0,
+				"save_money":10.00,
 				"methods_of_payment": "微信支付",
 				"actions": ["标记完成"],
 				"products":
@@ -674,7 +674,7 @@ Scenario:1 所有订单-查看团购订单
 				"status": "待发货",
 				"buyer":"bill1",
 				"final_price":190.00,
-				"save_money":10.0,
+				"save_money":10.00,
 				"methods_of_payment": "微信支付",
 				"actions": ["发货"],
 				"products":
@@ -690,7 +690,7 @@ Scenario:1 所有订单-查看团购订单
 				"status": "待发货",
 				"buyer":"bill",
 				"final_price":190.00,
-				"save_money":10.0,
+				"save_money":10.00,
 				"methods_of_payment": "微信支付",
 				"actions": ["发货"],
 				"products":
@@ -706,7 +706,7 @@ Scenario:1 所有订单-查看团购订单
 				"status": "待发货",
 				"buyer":"tom",
 				"final_price":190.00,
-				"save_money":10.0,
+				"save_money":10.00,
 				"methods_of_payment": "微信支付",
 				"actions": ["发货"],
 				"products":
@@ -745,7 +745,7 @@ Scenario:1 所有订单-查看团购订单
 				"status": "已完成",
 				"buyer":"bill3",
 				"final_price":190.00,
-				"save_money":10.0,
+				"save_money":10.00,
 				"methods_of_payment": "优惠抵扣",
 				"logistics": "顺丰速运",
 				"number": "123456789",
@@ -764,7 +764,7 @@ Scenario:1 所有订单-查看团购订单
 				"status": "已完成",
 				"buyer":"bill2",
 				"final_price":190.00,
-				"save_money":10.0,
+				"save_money":10.00,
 				"methods_of_payment": "微信支付",
 				"actions": [],
 				"products":
@@ -780,7 +780,7 @@ Scenario:1 所有订单-查看团购订单
 				"status": "待发货",
 				"buyer":"bill1",
 				"final_price":190.00,
-				"save_money":10.0,
+				"save_money":10.00,
 				"methods_of_payment": "微信支付",
 				"actions": ["发货"],
 				"products":
@@ -796,7 +796,7 @@ Scenario:1 所有订单-查看团购订单
 				"status": "待发货",
 				"buyer":"bill",
 				"final_price":190.00,
-				"save_money":10.0,
+				"save_money":10.00,
 				"methods_of_payment": "微信支付",
 				"actions": ["发货"],
 				"products":
@@ -812,7 +812,7 @@ Scenario:1 所有订单-查看团购订单
 				"status": "待发货",
 				"buyer":"tom",
 				"final_price":190.00,
-				"save_money":10.0,
+				"save_money":10.00,
 				"methods_of_payment": "微信支付",
 				"actions": ["发货"],
 				"products":
@@ -857,7 +857,7 @@ Scenario:2 所有订单-团购订单查询
 			"status": "待发货",
 			"buyer":"bill3",
 			"final_price":190.00,
-			"save_money":10.0,
+			"save_money":10.00,
 			"methods_of_payment": "优惠抵扣",
 			"actions": ["发货"],
 			"products":
@@ -873,7 +873,7 @@ Scenario:2 所有订单-团购订单查询
 			"status": "待发货",
 			"buyer":"bill2",
 			"final_price":190.00,
-			"save_money":10.0,
+			"save_money":10.00,
 			"methods_of_payment": "微信支付",
 			"actions": ["发货"],
 			"products":
@@ -889,7 +889,7 @@ Scenario:2 所有订单-团购订单查询
 			"status": "待发货",
 			"buyer":"bill1",
 			"final_price":190.00,
-			"save_money":10.0,
+			"save_money":10.00,
 			"methods_of_payment": "微信支付",
 			"actions": ["发货"],
 			"products":
@@ -905,7 +905,7 @@ Scenario:2 所有订单-团购订单查询
 			"status": "待发货",
 			"buyer":"bill",
 			"final_price":190.00,
-			"save_money":10.0,
+			"save_money":10.00,
 			"methods_of_payment": "微信支付",
 			"actions": ["发货"],
 			"products":
@@ -921,7 +921,7 @@ Scenario:2 所有订单-团购订单查询
 			"status": "待发货",
 			"buyer":"tom",
 			"final_price":190.00,
-			"save_money":10.0,
+			"save_money":10.00,
 			"methods_of_payment": "微信支付",
 			"actions": ["发货"],
 			"products":
@@ -933,7 +933,7 @@ Scenario:2 所有订单-团购订单查询
 		}]
 		"""
 
-@mall3 @order @eugene
+@mall3 @order @eugene @tgyc
 Scenario:3 查看团购失败的订单
 	#所有订单-显示团购失败的'退款中'（退款成功）和优惠抵扣方式的'已取消'订单
 	#财务审核-团购失败的'退款中'（退款成功）的订单只显示在"团购退款"选项卡中
@@ -996,7 +996,7 @@ Scenario:3 查看团购失败的订单
 				"status": "待发货",
 				"buyer":"bill3",
 				"final_price":190.00,
-				"save_money":10.0,
+				"save_money":10.00,
 				"methods_of_payment": "优惠抵扣",
 				"actions": ["发货"],
 				"products":
@@ -1012,7 +1012,7 @@ Scenario:3 查看团购失败的订单
 				"status": "待发货",
 				"buyer":"bill2",
 				"final_price":190.00,
-				"save_money":10.0,
+				"save_money":10.00,
 				"methods_of_payment": "微信支付",
 				"actions": ["发货"],
 				"products":
@@ -1028,7 +1028,7 @@ Scenario:3 查看团购失败的订单
 				"status": "待发货",
 				"buyer":"bill1",
 				"final_price":190.00,
-				"save_money":10.0,
+				"save_money":10.00,
 				"methods_of_payment": "微信支付",
 				"actions": ["发货"],
 				"products":
@@ -1044,7 +1044,7 @@ Scenario:3 查看团购失败的订单
 				"status": "待发货",
 				"buyer":"bill",
 				"final_price":190.00,
-				"save_money":10.0,
+				"save_money":10.00,
 				"methods_of_payment": "微信支付",
 				"actions": ["发货"],
 				"products":
@@ -1060,7 +1060,7 @@ Scenario:3 查看团购失败的订单
 				"status": "待发货",
 				"buyer":"tom",
 				"final_price":190.00,
-				"save_money":10.0,
+				"save_money":10.00,
 				"methods_of_payment": "微信支付",
 				"actions": ["发货"],
 				"products":
@@ -1108,7 +1108,7 @@ Scenario:3 查看团购失败的订单
 				"status": "退款中",
 				"buyer":"bill1",
 				"final_price":90.00,
-				"save_money":10.0,
+				"save_money":10.00,
 				"methods_of_payment": "微信支付",
 				"actions": [],
 				"products":
@@ -1124,7 +1124,7 @@ Scenario:3 查看团购失败的订单
 				"status": "退款中",
 				"buyer":"bill",
 				"final_price":90.00,
-				"save_money":10.0,
+				"save_money":10.00,
 				"methods_of_payment": "微信支付",
 				"actions": [],
 				"products":
@@ -1144,7 +1144,7 @@ Scenario:3 查看团购失败的订单
 				"status": "退款中",
 				"buyer":"bill1",
 				"final_price":90.00,
-				"save_money":10.0,
+				"save_money":10.00,
 				"methods_of_payment": "微信支付",
 				"actions": [],
 				"products":
@@ -1160,7 +1160,7 @@ Scenario:3 查看团购失败的订单
 				"status": "退款中",
 				"buyer":"bill",
 				"final_price":90.00,
-				"save_money":10.0,
+				"save_money":10.00,
 				"methods_of_payment": "微信支付",
 				"actions": [],
 				"products":
@@ -1233,7 +1233,7 @@ Scenario:3 查看团购失败的订单
 		# 		"status": "待发货",
 		# 		"buyer":"bill3",
 		# 		"final_price":190.00,
-		# 		"save_money":10.0,
+		# 		"save_money":10.00,
 		# 		"methods_of_payment": "优惠抵扣",
 		# 		"actions": ["发货"],
 		# 		"products":
@@ -1249,7 +1249,7 @@ Scenario:3 查看团购失败的订单
 		# 		"status": "待发货",
 		# 		"buyer":"bill2",
 		# 		"final_price":190.00,
-		# 		"save_money":10.0,
+		# 		"save_money":10.00,
 		# 		"methods_of_payment": "微信支付",
 		# 		"actions": ["发货"],
 		# 		"products":
@@ -1265,7 +1265,7 @@ Scenario:3 查看团购失败的订单
 		# 		"status": "待发货",
 		# 		"buyer":"bill1",
 		# 		"final_price":190.00,
-		# 		"save_money":10.0,
+		# 		"save_money":10.00,
 		# 		"methods_of_payment": "微信支付",
 		# 		"actions": ["发货"],
 		# 		"products":
@@ -1281,7 +1281,7 @@ Scenario:3 查看团购失败的订单
 		# 		"status": "待发货",
 		# 		"buyer":"bill",
 		# 		"final_price":190.00,
-		# 		"save_money":10.0,
+		# 		"save_money":10.00,
 		# 		"methods_of_payment": "微信支付",
 		# 		"actions": ["发货"],
 		# 		"products":
@@ -1297,7 +1297,7 @@ Scenario:3 查看团购失败的订单
 		# 		"status": "待发货",
 		# 		"buyer":"tom",
 		# 		"final_price":190.00,
-		# 		"save_money":10.0,
+		# 		"save_money":10.00,
 		# 		"methods_of_payment": "微信支付",
 		# 		"actions": ["发货"],
 		# 		"products":
@@ -1345,7 +1345,7 @@ Scenario:3 查看团购失败的订单
 		# 		"status": "退款成功",
 		# 		"buyer":"bill1",
 		# 		"final_price":90.00,
-		# 		"save_money":10.0,
+		# 		"save_money":10.00,
 		# 		"methods_of_payment": "微信支付",
 		# 		"actions": [],
 		# 		"products":
@@ -1361,7 +1361,7 @@ Scenario:3 查看团购失败的订单
 		# 		"status": "退款成功",
 		# 		"buyer":"bill",
 		# 		"final_price":90.00,
-		# 		"save_money":10.0,
+		# 		"save_money":10.00,
 		# 		"methods_of_payment": "微信支付",
 		# 		"actions": [],
 		# 		"products":
@@ -1381,7 +1381,7 @@ Scenario:3 查看团购失败的订单
 		# 		"status": "退款完成",
 		# 		"buyer":"bill1",
 		# 		"final_price":90.00,
-		# 		"save_money":10.0,
+		# 		"save_money":10.00,
 		# 		"methods_of_payment": "微信支付",
 		# 		"actions": [],
 		# 		"products":
@@ -1397,7 +1397,7 @@ Scenario:3 查看团购失败的订单
 		# 		"status": "退款完成",
 		# 		"buyer":"bill",
 		# 		"final_price":90.00,
-		# 		"save_money":10.0,
+		# 		"save_money":10.00,
 		# 		"methods_of_payment": "微信支付",
 		# 		"actions": [],
 		# 		"products":

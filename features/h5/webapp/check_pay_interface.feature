@@ -10,11 +10,11 @@ Background:
 		"""
 		[{
 			"name":"商品1",
-			"price":100.0
+			"price":100.00
 		},{
 			"name":"商品2",
-			"price":200.0,
-			"postage":10.0
+			"price":200.00,
+			"postage":10.00
 		}]
 		"""
 	When bill关注jobs的公众号
@@ -50,13 +50,13 @@ Scenario:1 选择使用支付方式:微信支付v2
 		"""
 		{
 			"status": "待支付",
-			"final_price": 100.0
+			"final_price": 100.00
 		}
 		"""
 	Then server能获取wxpay_interface接口信息
 		"""
 		{
-			"final_price":100.0,
+			"final_price":100.00,
 			"is_status_not":true,
 			"order_id":"001",
 			"pay_interface_type":"微信支付",
@@ -109,15 +109,15 @@ Scenario:2 选择使用支付方式:微信支付v3
 		"""
 		{
 			"status": "待支付",
-			"final_price":310.0,
-			"postage":10.0,
+			"final_price":310.00,
+			"postage":10.00,
 			"products": [{
 				"name": "商品1",
-				"price": 100.0,
+				"price": 100.00,
 				"count": 1
 			},{
 				"name": "商品2",
-				"price": 200.0,
+				"price": 200.00,
 				"count": 1
 			}]
 		}
@@ -125,7 +125,7 @@ Scenario:2 选择使用支付方式:微信支付v3
 	Then server能获取wxpay_interface接口信息
 		"""
 		{
-			"final_price":310.0,
+			"final_price":310.00,
 			"is_status_not":true,
 			"order_id":"002",
 			"pay_interface_type":"微信支付",
@@ -175,13 +175,13 @@ Scenario:3 选择使用支付方式:支付宝
 		"""
 		{
 			"status": "待支付",
-			"final_price": 100.0
+			"final_price": 100.00
 		}
 		"""
 	Then server能获取alipay_interface接口信息
 		"""
 		{
-			"final_price":100.0,
+			"final_price":100.00,
 			"is_status_not":true,
 			"order_id":"003",
 			"partner":"11",

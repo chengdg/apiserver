@@ -3,7 +3,7 @@
 微众卡存储模型
 """
 
-from core.db import models
+from eaglet.core.db import models
 from db.account.models import User
 
 #########################################################################

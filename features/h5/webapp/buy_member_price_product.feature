@@ -131,7 +131,7 @@ Background:
 		}
 		"""
 
-@mall3 @member_product @robert.wip
+@mall3 @member_product @robert.wip 
 Scenario:1 购买单个会员价商品
 	jobs添加商品后
 	1. tom能在webapp中购买jobs添加的会员价商品
@@ -356,7 +356,7 @@ Scenario:3 购买多个商品包括会员价商品
 		}
 		"""
 
-@mall3 @meberGrade @robert.wip
+@mall3 @meberGrade @robert.wip @gyc_update
 Scenario:4 订单完成后，达到自动升级的条件
 	jobs添加商品后
 	1. tom能在webapp中购买jobs的商品后，完成订单后
@@ -376,7 +376,7 @@ Scenario:4 订单完成后，达到自动升级的条件
 			"name": "铜牌会员",
 			"upgrade": "自动升级",
 			"pay_money": 500.00,
-			"pay_times": 20,
+			"pay_times": 1,
 			"discount": "9"
 		}
 		"""
@@ -400,7 +400,7 @@ Scenario:4 订单完成后，达到自动升级的条件
 			"name": "铜牌会员",
 			"upgrade": "自动升级",
 			"pay_money": 500.00,
-			"pay_times": 20,
+			"pay_times": 1,
 			"discount": "9"
 		}, {
 			"name": "银牌会员",
@@ -486,6 +486,7 @@ Scenario:4 订单完成后，达到自动升级的条件
 	When tom访问jobs的webapp
 	And tom确认收货订单'告别2015'
 	Given jobs登录系统:weapp
+	When jobs完成订单'告别2015':weapp
 	Then jobs能获得tom的积分日志:weapp
 		"""
 		[{
@@ -622,8 +623,8 @@ Scenario:5 使用积分购买商品后，取消订单，积分返回
 		}, {
 			"name": "bill",
 			"member_rank": "铜牌会员",
-			"pay_money": 88.00,
-			"pay_times": 1,
+			"pay_money": 0.00,
+			"pay_times": 0,
 			"integral": 50
 		}]
 		"""

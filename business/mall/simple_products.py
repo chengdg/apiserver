@@ -9,11 +9,11 @@ import math
 import itertools
 from operator import attrgetter
 
-from wapi.decorators import param_required
+from eaglet.decorator import param_required
 #from wapi import wapi_utils
-from core.cache import utils as cache_util
+from eaglet.core.cache import utils as cache_util
 from db.mall import models as mall_models
-from core.watchdog.utils import watchdog_alert
+from eaglet.core import watchdog
 from business import model as business_model 
 import settings
 from business.mall.product import Product
@@ -194,7 +194,7 @@ class SimpleProducts(business_model.Model):
 			category = mall_models.ProductCategory()
 			category.name = u'全部'
 		else:
-			watchdog_alert('过期的方法分支module_api.get_products_in_webapp else', type='mall')
+			watchdog.alert('过期的方法分支module_api.get_products_in_webapp else', type='mall')
 			# jz 2015-11-26
 			# try:
 			# if not is_access_weizoom_mall:

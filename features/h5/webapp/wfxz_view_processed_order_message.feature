@@ -21,7 +21,7 @@ Background:
 			"model": {
 				"models": {
 					"standard": {
-						"price": 10.0,
+						"price": 10.00,
 						"weight": 5.5,
 						"stock_type": "有限",
 						"stocks": 3

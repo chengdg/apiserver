@@ -36,11 +36,12 @@ class PackageOrderService(business_model.Service):
 	def __process_product_price(self, order):
 		coupon_resource = self.type2resource.get('coupon')
 		if coupon_resource:
-			limit_product_id = self.type2resource.get('coupon').coupon.coupon_rule.limit_product_id
-			for product in order.products:
-				if product.id == limit_product_id:
-					product.price = product.original_price
-					product.discount_money_coupon_exist = True
+			limit_product_id = self.type2resource.get('coupon').coupon.limit_product_id
+			if type(limit_product_id) == list:
+				for product in order.products:
+					if product.id in limit_product_id:
+						product.price = product.original_price
+						product.discount_money_coupon_exist = True
 
 		group_buy_resource = self.type2resource.get('group_buy')
 		if group_buy_resource:
@@ -64,9 +65,9 @@ class PackageOrderService(business_model.Service):
 			coupon = coupon_resource.coupon
 			order.coupon_id = coupon_resource.coupon.id
 			if coupon.is_specific_product_coupon():
-				limit_product_id = coupon.coupon_rule.limit_product_id
+				limit_product_id = coupon.limit_product_id
 				# 优惠券可以用于抵扣的金额
-				coupon_can_deduct_money = sum([product.price * product.purchase_count for product in order.products if product.id == limit_product_id])
+				coupon_can_deduct_money = sum([product.price * product.purchase_count for product in order.products if product.id in limit_product_id])
 			else:
 				coupon_can_deduct_money = sum([product.price * product.purchase_count for product in order.products if product.can_use_coupon])
 

@@ -9,22 +9,22 @@ from bs4 import BeautifulSoup
 import math
 from datetime import datetime
 
-from wapi.decorators import param_required
+from eaglet.decorator import param_required
 #from wapi import wapi_utils
-from core.cache import utils as cache_util
+from eaglet.core.cache import utils as cache_util
 from core.exceptionutil import unicode_full_stack
 from db.mall import models as mall_models
 from db.mall import promotion_models
 from db.member import models as member_models
 #import resource
-from core.watchdog.utils import watchdog_alert
+from eaglet.core import watchdog
 from business import model as business_model
 from business.account.member import Member
 from business.mall.shopping_cart import ShoppingCart
 from business.mall.product import Product
 import settings
 from business.decorator import cached_context_property
-from utils import regional_util
+from util import regional_util
 from business.account.member_order_info import MemberOrderInfo
 from business.account.social_account import SocialAccount
 
@@ -204,7 +204,7 @@ class WebAppUser(business_model.Model):
 			return True
 		except:
 			msg = unicode_full_stack()
-			watchdog_alert(msg, type='WAPI')
+			watchdog.alert(msg, type='WAPI')
 			return False
 
 
@@ -247,7 +247,7 @@ class WebAppUser(business_model.Model):
 			return True
 		except:
 				msg = unicode_full_stack()
-				watchdog_alert(msg, type='WAPI')
+				watchdog.alert(msg, type='WAPI')
 				return False
 
 	def create_ship_info(self, ship_info):
@@ -267,7 +267,7 @@ class WebAppUser(business_model.Model):
 			return True, ship_info_id
 		except:
 				msg = unicode_full_stack()
-				watchdog_alert(msg, type='WAPI')
+				watchdog.alert(msg, type='WAPI')
 				return False, 0
 
 	@cached_context_property
@@ -603,7 +603,14 @@ class WebAppUser(business_model.Model):
 		return self.context.get('is_force_purchase', False)
 
 	def update_pay_info(self, money, order_payment_time):
+		"""
+		@warning 此处修改的member只修改了db_model的数据。
+		@param money:
+		@param order_payment_time:
+		@return:
+		"""
 		self.set_purchased()
+		pay_money = None
 		if money > 0:
 			member = member_models.Member.get(id=self.member.id)
 			member.pay_money = member.pay_money + money
@@ -615,9 +622,14 @@ class WebAppUser(business_model.Model):
 			except:
 				member.unit_price = 0
 			member.save()
+			pay_money = member.pay_money
+		self.update_member_grade(pay_money)
+		self.cleanup_cache()
 
-	def update_member_grade(self):
-		pay_money = self.member.pay_money
+	def update_member_grade(self, pay_money=None):
+		if not pay_money:
+			pay_money = self.member.pay_money
+
 		finished_order_count = self.finished_order_count
 		webapp_owner = self.context['webapp_owner']
 		grades = sorted(filter(lambda x: x.is_auto_upgrade and x.id > self.grade.id, webapp_owner.member_grades))

@@ -116,7 +116,7 @@ Scenario:1 购买禁用优惠券商品和非禁用优惠券商品,禁用优惠�
 			"product_name":"商品1",
 			"member_grade": "全部会员",
 			"count_per_purchase": 2,
-			"promotion_price": 30
+			"promotion_price": 30.00
 		}]
 		"""
 	When bill访问jobs的webapp
@@ -141,9 +141,9 @@ Scenario:1 购买禁用优惠券商品和非禁用优惠券商品,禁用优惠�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 90.0,
-			"product_price": 140.0,
-			"coupon_money": 50.0,
+			"final_price": 90.00,
+			"product_price": 140.00,
+			"coupon_money": 50.00,
 			"products": [{
 				"name": "商品1",
 				"count": 1,
@@ -176,7 +176,7 @@ Scenario:1 购买禁用优惠券商品和非禁用优惠券商品,禁用优惠�
 			"product_name":"商品1",
 			"member_grade": "全部会员",
 			"count_per_purchase": 2,
-			"promotion_price": 70
+			"promotion_price": 70.00
 		}]
 		"""
 	When bill访问jobs的webapp
@@ -201,9 +201,9 @@ Scenario:1 购买禁用优惠券商品和非禁用优惠券商品,禁用优惠�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 200.0,
-			"product_price": 250.0,
-			"coupon_money": 50.0,
+			"final_price": 200.00,
+			"product_price": 250.00,
+			"coupon_money": 50.00,
 			"products": [{
 				"name": "商品1",
 				"count": 2,
@@ -236,7 +236,7 @@ Scenario:1 购买禁用优惠券商品和非禁用优惠券商品,禁用优惠�
 			"product_name":"商品1",
 			"member_grade": "全部会员",
 			"count_per_purchase": 2,
-			"promotion_price": 60
+			"promotion_price": 60.00
 		}]
 		"""
 	When bill访问jobs的webapp
@@ -261,14 +261,14 @@ Scenario:1 购买禁用优惠券商品和非禁用优惠券商品,禁用优惠�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 120.0,
-			"product_price": 170.0,
-			"coupon_money": 50.0,
+			"final_price": 120.00,
+			"product_price": 170.00,
+			"coupon_money": 50.00,
 			"products": [{
 				"name": "商品1",
 				"count": 1,
 				"promotion": {
-					"promotioned_product_price": 60,
+					"promotioned_product_price": 60.00,
 					"type": "flash_sale"
 					}
 				},{
@@ -302,7 +302,7 @@ Scenario:1 购买禁用优惠券商品和非禁用优惠券商品,禁用优惠�
 			"product_name":"商品1",
 			"member_grade": "全部会员",
 			"count_per_purchase": 2,
-			"promotion_price": 80
+			"promotion_price": 80.00
 		}]
 		"""
 	When bill访问jobs的webapp
@@ -327,14 +327,14 @@ Scenario:1 购买禁用优惠券商品和非禁用优惠券商品,禁用优惠�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 140.0,
-			"product_price": 190.0,
-			"coupon_money": 50.0,
+			"final_price": 140.00,
+			"product_price": 190.00,
+			"coupon_money": 50.00,
 			"products": [{
 				"name": "商品1",
 				"count": 1,
 				"promotion": {
-					"promotioned_product_price": 80,
+					"promotioned_product_price": 80.00,
 					"type": "flash_sale"
 					}
 				},{
@@ -390,14 +390,14 @@ Scenario:2 购买禁用优惠券商品和非禁用优惠券商品,禁用优惠�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 110.0,
-			"product_price": 160.0,
-			"coupon_money": 50.0,
+			"final_price": 110.00,
+			"product_price": 160.00,
+			"coupon_money": 50.00,
 			"products": [{
 				"name": "商品1",
 				"count": 1,
-				"price": 50.0,
-				"grade_discounted_money": 50.0
+				"price": 50.00,
+				"grade_discounted_money": 50.00
 			},{
 				"name": "商品2",
 				"price":50.00,
@@ -441,14 +441,14 @@ Scenario:2 购买禁用优惠券商品和非禁用优惠券商品,禁用优惠�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 200.0,
-			"product_price": 250.0,
-			"coupon_money": 50.0,
+			"final_price": 200.00,
+			"product_price": 250.00,
+			"coupon_money": 50.00,
 			"products": [{
 				"name": "商品1",
 				"count": 2,
-				"price": 70.0,
-				"grade_discounted_money": 60.0
+				"price": 70.00,
+				"grade_discounted_money": 60.00
 			},{
 				"name": "商品2",
 				"price":50.00,
@@ -492,14 +492,14 @@ Scenario:2 购买禁用优惠券商品和非禁用优惠券商品,禁用优惠�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 120.0,
-			"product_price": 170.0,
-			"coupon_money": 50.0,
+			"final_price": 120.00,
+			"product_price": 170.00,
+			"coupon_money": 50.00,
 			"products": [{
 				"name": "商品1",
 				"count": 1,
-				"price": 60.0,
-				"grade_discounted_money": 40.0
+				"price": 60.00,
+				"grade_discounted_money": 40.00
 			},{
 				"name": "商品2",
 				"price":50.00,
@@ -551,14 +551,14 @@ Scenario:2 购买禁用优惠券商品和非禁用优惠券商品,禁用优惠�
 		"""
 		{
 			"status": "待支付",
-			"final_price": 340.0,
-			"product_price": 390.0,
-			"coupon_money": 50.0,
+			"final_price": 340.00,
+			"product_price": 390.00,
+			"coupon_money": 50.00,
 			"products": [{
 				"name": "商品1",
 				"count": 2,
-				"price": 140.0,
-				"grade_discounted_money": 120.0
+				"price": 140.00,
+				"grade_discounted_money": 120.00
 			},{
 				"name": "商品2",
 				"price":50.00,

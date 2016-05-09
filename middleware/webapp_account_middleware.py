@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 
 from db.account import models as account_models
 #import resource
@@ -7,8 +8,8 @@ from business.account.webapp_owner import WebAppOwner
 #from business.account.webapp_user import WebAppUser
 from business.account.system_account import SystemAccount
 #from services.record_member_pv_service.task import record_member_pv
-from wapi.user.access_token import AccessToken
-#from utils import msg_crypt,auth_util
+from api.user.access_token import AccessToken
+#from util import msg_crypt,auth_util
 import settings
 import logging
 

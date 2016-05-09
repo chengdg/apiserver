@@ -10,8 +10,8 @@ from business import model as business_model
 from business.mall.order import Order
 from business.mall.product_review import ProductReview
 from db.mall import models as mall_models
-from core.watchdog.utils import watchdog_info
-from wapi.decorators import param_required
+from eaglet.core import watchdog
+from eaglet.decorator import param_required
 import logging
 
 #import json
@@ -19,11 +19,11 @@ import logging
 #import math
 #from datetime import datetime
 
-#from core.cache import utils as cache_util
+#from eaglet.core.cache import utils as cache_util
 #from db.mall import models as mall_models
 #from db.mall import promotion_models
 #import resource
-#from core.watchdog.utils import watchdog_alert
+#from eaglet.core import watchdog
 
 #import settings
 

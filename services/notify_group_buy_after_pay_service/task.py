@@ -3,14 +3,14 @@
 import db.account.models as accout_models
 from db.mall import models as mall_models
 from db.mall import promotion_models
-from celery import task
+from eaglet.core.service.celery import task
 
 import settings
 from core.exceptionutil import unicode_full_stack
 from core.sendmail import sendmail
-from core.watchdog.utils import watchdog_warning
+from eaglet.core import watchdog
 from features.util.bdd_util import set_bdd_mock
-from utils.microservice_consumer import microservice_consume
+from util.microservice_consumer import microservice_consume
 
 
 @task(bind=True)

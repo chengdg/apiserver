@@ -60,7 +60,7 @@ def step_impl(context, webapp_user_name):
 		time_strs = time_str.split(" ")
 		data["delivery_time"] = "{} {}".format(bdd_util.get_date_str(time_strs[0]), time_strs[1])
 
-	url = '/wapi/mall/order/?_method=put'
+	url = '/mall/order/?_method=put'
 	response = context.client.post(url, data)
 	# bdd_util.assert_api_call_success(response)
 	context.response = response

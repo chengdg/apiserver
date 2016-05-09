@@ -10,13 +10,13 @@ import math
 import itertools
 from datetime import datetime
 
-from wapi.decorators import param_required
+from eaglet.decorator import param_required
 #from wapi import wapi_utils
-from core.cache import utils as cache_util
+from eaglet.core.cache import utils as cache_util
 from db.mall import models as mall_models
 from db.mall import promotion_models
 #import resource
-from core.watchdog.utils import watchdog_alert
+from eaglet.core import watchdog
 from business import model as business_model 
 from business.mall.product import Product
 import settings
@@ -55,7 +55,11 @@ class GroupReservedProductService(business_model.Service):
 			if promotion.type == promotion_models.PROMOTION_TYPE_PRICE_CUT or promotion.type == promotion_models.PROMOTION_TYPE_PREMIUM_SALE:
 				name = promotion.id
 			else:
-				name = '%d_%s' % (promotion.id, product.model.name)
+				# 同一个积分用的商品不放到一个分组里
+				if promotion.type == promotion_models.PROMOTION_TYPE_INTEGRAL_SALE:
+					name = '%d_%d_%s' % (promotion.id, product.id, product.model.name)
+				else:
+					name = '%d_%s' % (promotion.id, product.model.name)
 		'''
 		elif hasattr(product, 'integral_sale'):
 			return '%d_%s' % (product.integral_sale['id'], product.model['name'])
@@ -167,67 +171,6 @@ class GroupReservedProductService(business_model.Service):
 				type_name = 'none'
 			else:
 				type_name = promotion.type_name
-
-			'''
-			if promotion_type == promotion_models.PROMOTION_TYPE_FLASH_SALE:
-				product = products[0]
-				promotion_price = product.promotion.detail.get('promotion_price', 0)
-				product.price = promotion_price
-				#TODO2: 会员价不和限时抢购叠加
-				#product.member_discount_money = 0
-				promotion_result = {
-					"saved_money": product.original_price - promotion_price,
-					"subtotal": product.purchase_count * product.price
-				}
-
-				can_use_promotion = (promotion.status == promotion_models.PROMOTION_STATUS_STARTED)
-			# 买赠
-			elif promotion_type == promotion_models.PROMOTION_TYPE_PREMIUM_SALE:
-				first_product = products[0]
-				promotion = first_product.promotion
-				promotion_detail = promotion.detail
-				can_use_promotion = (promotion.status == promotion_models.PROMOTION_STATUS_STARTED)
-
-				total_purchase_count = 0
-				total_product_price = 0.0
-				for product in products:
-					total_purchase_count += product.purchase_count
-					total_product_price += product.price * product.purchase_count
-
-				if total_purchase_count < promotion_detail['count']:
-					can_use_promotion = False
-				else:
-					#如果满足循环满赠，则调整赠品数量
-					for product in products:
-						product.price = product.original_price
-					if promotion_detail['is_enable_cycle_mode']:
-						premium_round_count = total_purchase_count / promotion.detail['count']
-						for premium_product in promotion_detail['premium_products']:
-							premium_product['original_premium_count'] = premium_product['premium_count']
-							premium_product['premium_count'] = premium_product['premium_count'] * premium_round_count
-				promotion_result = {
-					"subtotal": product.purchase_count * product.price
-				}
-			# 满减
-			elif promotion_type == promotion_models.PROMOTION_TYPE_PRICE_CUT:
-				promotion = products[0].promotion
-				promotion_detail = promotion.detail
-				total_price = 0.0
-				for product in products:
-					total_price += product.price * product.purchase_count
-				can_use_promotion = (total_price - promotion_detail['price_threshold']) >= 0
-				promotion_round_count = 1  # 循环满减执行的次数
-				if promotion_detail['is_enable_cycle_mode']:
-					promotion_round_count = int(total_price / promotion_detail['price_threshold'])
-				if can_use_promotion:
-					subtotal = total_price - promotion_detail['cut_money']*promotion_round_count
-				else:
-					subtotal = total_price
-				promotion_result = {
-					"subtotal": subtotal,
-					"price_threshold": promotion_round_count*promotion_detail['price_threshold']
-				}
-			'''
 
 			promotion_product_group = PromotionProductGroup({
 				"id": group_id,

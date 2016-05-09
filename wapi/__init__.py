@@ -7,7 +7,7 @@ import settings
 import time
 import logging
 from wapi.tasks import wapi_log, param_to_text
-from core import api_resource
+from eaglet.core import api_resource
 
 """
 wapi_path = os.path.join(settings.PROJECT_HOME, '..', 'wapi')
@@ -46,7 +46,7 @@ def wapi_call(method, app, resource, data, req=None):
 		raise ApiNotExistError('%s:%s' % (key, method))
 
 	response = func(data)
-	wapi_log(app, resource_name, method, data, (time.clock()-start_at), 0)
+	#wapi_log(app, resource_name, method, data, (time.clock()-start_at), 0)
 	return response
 
 

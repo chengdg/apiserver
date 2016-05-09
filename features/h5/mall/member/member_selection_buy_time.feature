@@ -235,7 +235,7 @@ Background:
 		"""
 	And tom2取消订单'010'
 
-@mall3 @member @memberList @ztq
+@mall3 @member @memberList @ztq @abcg
 Scenario:1 按照会员的"最后购买时间"进行查询
 	Given jobs登录系统:weapp
 

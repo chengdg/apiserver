@@ -3,6 +3,8 @@
 import os
 import logging
 
+SERVICE_NAME = "apiserver"
+
 DEBUG = True
 PROJECT_HOME = os.path.dirname(os.path.abspath(__file__))
 
@@ -43,9 +45,10 @@ DATABASES = {
 MIDDLEWARES = [
     'middleware.OAuth_middleware.OAuthMiddleware',
     'middleware.core_middleware.ApiAuthMiddleware',
+
     
-    'middleware.debug_middleware.SqlMonitorMiddleware',
-    'middleware.debug_middleware.RedisMiddleware',
+    # 'middleware.debug_middleware.SqlMonitorMiddleware',
+    'eaglet.middlewares.zipkin_middleware.ZipkinMiddleware',
 
     #账号信息中间件
     'middleware.webapp_account_middleware.WebAppAccountMiddleware',
@@ -123,8 +126,8 @@ TASKQUEUE_ENABLED = True
 # Celery for Falcon
 INSTALLED_TASKS = [
     #'resource.member.tasks',
-    'core.watchdog.tasks.send_watchdog',
-    'wapi.tasks',
+    #'core.watchdog.tasks.send_watchdog',
+    'api.tasks',
     
     'services.example_service.tasks.example_log_service',
     'services.order_notify_mail_service.task.notify_order_mail',
@@ -189,3 +192,14 @@ else:
 
 
 DEV_SERVER_MULTITHREADING = False
+
+REDIS_CACHE_KEY = ':1:api'
+
+# redis锁，前缀lk
+REGISTERED_LOCK_NAMES = {
+	'__prefix': 'lk:',
+	'coupon_lock': 'co:',
+	'integral_lock': 'in:',
+	'wz_card_lock': 'wc:',
+	'wapi_lock': 'wapi:',
+}

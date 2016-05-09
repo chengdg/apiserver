@@ -2,7 +2,7 @@
 
 __author__ = 'paco bert'
 
-from utils.url_helper import complete_get_request_url
+from util.url_helper import complete_get_request_url
 import api_settings
 from util import ObjectAttrWrapedInDict
 """"

@@ -15,7 +15,7 @@ def step_visit_product_review(context, webapp_user, text):
 
 @then(u"{webapp_user}成功获取'{text}'列表")
 def step_product_review_should(context, webapp_user, text):
-	response = context.client.get('/wapi/member/reviewed_products/', {
+	response = context.client.get('/member/reviewed_products/', {
 	})
 	
 	expected = json.loads(context.text)
@@ -42,7 +42,7 @@ def step_finished_a_product_review(context, webapp_user, order_code, product_nam
 	"""
 	context_dict = json.loads(context.text)
 
-	url = '/wapi/member/review_product/?_method=put'
+	url = '/member/review_product/?_method=put'
 	# 原始源码在`webapp/modules/mall/request_api_util.py`中的`create_product_review()`。
 	order_has_product = bdd_util.get_order_has_product(order_code, product_name)
 	params = {}
@@ -112,7 +112,7 @@ def step_a_waiting_review_product(context, webapp_user, order_code, product_name
 	"""
 	context_dict = json.loads(context.text)
 
-	url = '/wapi/member/review_product/?_method=get'
+	url = '/member/review_product/?_method=get'
 	# 原始源码在`webapp/modules/mall/request_api_util.py`中的`create_product_review()`。
 	order_has_product = bdd_util.get_order_has_product(order_code, product_name)
 	params = {}
@@ -140,7 +140,7 @@ def step_a_waiting_review_product_picture(context, webapp_user, order_code, prod
 	has_picture = context_dict.get('picture_list', None)
 	
 
-	url = '/wapi/member/review_product/?_method=post'
+	url = '/member/review_product/?_method=post'
 	# 原始源码在`webapp/modules/mall/request_api_util.py`中的`create_product_review()`。
 	order_has_product = bdd_util.get_order_has_product(order_code, product_name)
 	params = {}

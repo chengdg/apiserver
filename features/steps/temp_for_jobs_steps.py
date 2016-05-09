@@ -71,7 +71,7 @@ def __get_product(context, product_name):
 	"""
 	webapp_owner_id = context.webapp_owner_id
 	product_obj = mall_models.Product.get(owner=webapp_owner_id, name=product_name)
-	response = context.client.get('/wapi/mall/product/', {
+	response = context.client.get('/mall/product/', {
 		'product_id': product_obj.id
 	})
 

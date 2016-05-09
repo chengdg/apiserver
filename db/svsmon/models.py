@@ -4,7 +4,7 @@
 #import sys
 #from datetime import timedelta, datetime, date
 
-from core.db import models
+from eaglet.core.db import models
 
 __author__ = 'abael, bert'
 __all__ = [

@@ -19,7 +19,7 @@ Background:
 			"model": {
 				"models": {
 					"standard": {
-						"price": 9.9,
+						"price": 9.90,
 						"stock_type": "有限",
 						"stocks": 3
 					}
@@ -69,7 +69,7 @@ Scenario:1 取消订单后,手机端订单状态为'已取消'
 			"ship_tel": "13811223344",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
-			"final_price": 19.8,
+			"final_price": 19.80,
 			"products": [{
 				"name": "商品1",
 				"count": 2
@@ -82,7 +82,7 @@ Scenario:1 取消订单后,手机端订单状态为'已取消'
 		{
 			"status": "待支付",
 			"actions": ["取消订单", "支付", "修改价格"],
-			"final_price": 19.8,
+			"final_price": 19.80,
 			"ship_name": "bill",
 			"ship_tel": "13811223344",
 			"ship_area": "北京市 北京市 海淀区",
@@ -113,7 +113,7 @@ Scenario:1 取消订单后,手机端订单状态为'已取消'
 			"ship_tel": "13811223344",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
-			"final_price": 19.8,
+			"final_price": 19.80,
 			"products": [{
 				"name": "商品1",
 				"count": 2

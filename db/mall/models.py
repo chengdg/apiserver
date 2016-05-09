@@ -3,11 +3,10 @@ import copy
 from datetime import datetime
 import json
 
-from core.db import models
+from eaglet.core.db import models
 from db.account.models import User, UserProfile
-from core.watchdog.utils import watchdog_fatal
+from eaglet.core import watchdog
 import settings
-from utils import area_util
 
 DEFAULT_DATETIME = datetime.strptime('2000-01-01', '%Y-%m-%d')
 
@@ -31,6 +30,27 @@ class MallConfig(models.Model):
 
 	class Meta(object):
 		db_table = 'mall_config'
+
+#########################################################################
+# 订单完成分享挣积分信息配置相关Model
+#########################################################################
+class MallShareOrderPageConfig(models.Model):
+	"""
+	订单完成分享挣积分信息配置
+	"""
+	owner = models.ForeignKey(User)
+	is_share_page = models.BooleanField(default=False) # 是否提示分享挣积分
+	background_image = models.CharField(max_length=1024, default='')
+	share_image = models.CharField(max_length=1024, default='')
+	share_describe = models.TextField(default='')
+	material_id = models.IntegerField(default=0) #图文素材id
+	news_id = models.IntegerField(default=0) #图文id
+	created_at = models.DateTimeField(auto_now_add=True)
+
+	class Meta(object):
+		db_table = 'mall_share_order_page_config'
+		verbose_name = '订单完成分享挣积分信息配置'
+		verbose_name_plural = '订单完成分享挣积分信息配置'
 
 
 #########################################################################
@@ -1536,7 +1556,7 @@ class Order(models.Model):
 
 	@property
 	def get_str_area(self):
-		from utils import regional_util
+		from util import regional_util
 		if self.area:
 			return regional_util.get_str_value_by_string_ids(self.area)
 		else:

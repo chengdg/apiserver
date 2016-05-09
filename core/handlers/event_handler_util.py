@@ -15,7 +15,7 @@ import urlparse
 import settings
 from core.service import celery
 from core.service import celeryconfig
-from core.watchdog.utils import watchdog_fatal
+from eaglet.core import watchdog
 
 #if settings.MODE == 'develop' and celeryconfig.CELERY_ALWAYS_EAGER:
 if celeryconfig.CELERY_ALWAYS_EAGER:
@@ -142,7 +142,7 @@ def handle(request, event):
 							redis_cli.rpush(event, request.event_data)
 					else:
 						notify_msg = u"redis服务不能访问, %s:%s:%s" % (settings.REDIS_HOST, settings.REDIS_PORT, settings.REDIS_SERVICE_DB)
-						watchdog_fatal(notify_msg)
+						watchdog.error(notify_msg)
 						service_manager.call_service(event, request.event_data)
 	return result
 

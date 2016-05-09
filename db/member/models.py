@@ -1,10 +1,10 @@
 #coding: utf8
 from datetime import datetime
 
-from core.db import models
+from eaglet.core.db import models
 from db.account.models import User
 from core.decorator import cached_property
-from utils.string_util import hex_to_byte, byte_to_hex
+from util.string_util import hex_to_byte, byte_to_hex
 
 from hashlib import md5
 import time

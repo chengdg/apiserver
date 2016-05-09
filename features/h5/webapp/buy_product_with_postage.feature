@@ -53,7 +53,7 @@ Background:
 			}, {
 				"to_the":"北京市",
 				"condition": "money",
-				"value": 200.0
+				"value": 200.00
 			}]
 		}]
 		"""
@@ -78,17 +78,17 @@ Background:
 			"name": "商品4",
 			"price": 10.00,
 			"weight": 1,
-			"postage": 0.0
+			"postage": 0.00
 		}, {
 			"name": "商品5",
 			"price": 10.00,
 			"weight": 1,
-			"postage": 15.0
+			"postage": 15.00
 		}, {
 			"name": "商品6",
 			"price": 10.00,
 			"weight": 1,
-			"postage": 10.0
+			"postage": 10.00
 		}, {
 			"name": "商品7",
 			"postage": "系统",
@@ -109,7 +109,7 @@ Background:
 			}
 		}, {
 			"name": "商品8",
-			"postage": 10.0,
+			"postage": 10.00,
 			"is_enable_model": "启用规格",
 			"model": {
 				"models":{
@@ -856,7 +856,7 @@ Scenario: 19 设置首重大于1的运费模板，进行购买商品
 			}, {
 				"to_the":"北京市",
 				"condition": "money",
-				"value": 200.0
+				"value": 200.00
 			}]
 		}]
 		"""
@@ -927,3 +927,50 @@ Scenario: 19 设置首重大于1的运费模板，进行购买商品
 		}
 		"""
 
+
+#根据bug9190后续补充.雪静
+@mall2 @mall3 @tianqi @mall.postage
+Scenario: 20 设置首重0.1的运费模板，进行购买商品
+
+	Given jobs登录系统:weapp
+	And jobs已添加运费配置:weapp
+		"""
+		[{
+			"name":"圆通",
+			"first_weight": 0.1,
+			"first_weight_price": 1.00,
+			"added_weight": 0.1,
+			"added_weight_price": 1.00
+		}]
+		"""
+	And jobs已添加商品:weapp
+		"""
+		[{
+			"name": "商品20",
+			"price": 100.00,
+			"weight": 0.5,
+			"postage": "系统"
+		}]
+		"""
+	When jobs选择'圆通'运费配置:weapp
+	When bill访问jobs的webapp
+	When bill购买jobs的商品
+		"""
+		{
+			"pay_type": "微信支付",
+			"products": [{
+				"name": "商品20",
+				"count": 1
+			}],
+			"ship_area":"河北省",
+			"ship_address":"呱呱"
+		}
+		"""
+	Then bill成功创建订单
+		"""
+		{
+			"status": "待支付",
+			"final_price": 105.00,
+			"postage": 5.00
+		}
+		"""

@@ -35,5 +35,6 @@ class AProducts(api_resource.ApiResource):
 		return {
 			'categories': simple_products.categories,
 			'products': simple_products.products,
-			'category': category_dict
+			'category': category_dict,
+			'mall_config': webapp_owner.mall_config,
 		}

@@ -205,9 +205,6 @@ class Product(business_model.Model):
 		'purchase_price',
 	)
 
-	@staticmethod
-	def from_models(query):
-		1/0
 
 	@staticmethod
 	@param_required(['webapp_owner', 'model', 'fill_options'])
@@ -222,6 +219,32 @@ class Product(business_model.Model):
 		product.context['webapp_owner'] = webapp_owner
 
 		return product
+
+
+	@staticmethod
+	@param_required(['webapp_owner', 'models', 'fill_options'])
+	def from_models(args):
+		"""
+		商品列表
+		@param args:
+		@return:
+		"""
+
+		webapp_owner = args['webapp_owner']
+		models = args['models']
+		fill_options = args.get('fill_options', {})
+
+		products = []
+
+		print("type:", type(models[0]))
+
+		for model in models:
+			products.append(Product(model))
+
+		Product.__fill_details(webapp_owner.id, products, fill_options)
+
+		return products
+
 
 	@staticmethod
 	@param_required(['webapp_owner', 'product_id'])

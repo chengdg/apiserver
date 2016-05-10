@@ -2123,3 +2123,16 @@ class WeizoomHasMallProductRelation(models.Model):
 		verbose_name = "微众系列同步其他商户商品的关系记录表"
 		verbose_name_plural = "微众系列同步其他商户商品的关系"
 		db_table = "mall_weizoom_has_mall_product_relation"
+
+
+class ProductSearchRecord(models.Model):
+	woid = models.IntegerField()
+	webapp_user_id = models.IntegerField()
+	is_deleted = models.BooleanField(default=False)
+	content = models.TextField()
+	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间
+
+	class Meta(object):
+		verbose_name = "商品搜索记录"
+		verbose_name_plural = "商品搜索记录"
+		db_table = "mall_product_search_record"

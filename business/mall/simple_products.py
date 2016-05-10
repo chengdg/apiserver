@@ -129,17 +129,29 @@ class SimpleProducts(business_model.Model):
 				product_datas = []
 				# jz 2015-11-26
 				# member = webapp_user.member
-				for product_model in product_models:
-					product = Product.from_model({
-						'webapp_owner': webapp_owner,
-						'model': product_model,
-						'fill_options': {
-							"with_price": True,
-							"with_product_promotion": True,
-							"with_selected_category": True
-						}
-					})
 
+				products = Product.from_models({
+					'webapp_owner': webapp_owner,
+					'models': product_models,
+					'fill_options': {
+						"with_price": True,
+						"with_product_promotion": True,
+						"with_selected_category": True
+					}
+				})
+				# for product_model in product_models:
+				# 	product = Product.from_model({
+				# 		'webapp_owner': webapp_owner,
+				# 		'model': product_model,
+				# 		'fill_options': {
+				# 			"with_price": True,
+				# 			"with_product_promotion": True,
+				# 			"with_selected_category": True
+				# 		}
+				# 	})
+				#
+
+				for product in products:
 					product_datas.append({
 						"id": product.id,
 						"name": product.name,

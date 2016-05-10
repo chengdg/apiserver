@@ -49,7 +49,7 @@ MIDDLEWARES = [
     
     # 'middleware.debug_middleware.SqlMonitorMiddleware',
     'eaglet.middlewares.zipkin_middleware.ZipkinMiddleware',
-
+    'middleware.debug_middleware.RedisMiddleware',
     #账号信息中间件
     'middleware.webapp_account_middleware.WebAppAccountMiddleware',
 ]
@@ -59,6 +59,7 @@ EVENT_DISPATCHER = 'redis'
 # settings for WAPI Logger
 if MODE == 'develop':
     WAPI_LOGGER_ENABLED = True # Debug环境下不记录wapi详细数据
+    WAPI_LOGGER_SERVER_HOST = 'mongo.weapp.com'
     WAPI_LOGGER_SERVER_HOST = 'mongo.weapp.com'
     WAPI_LOGGER_SERVER_PORT = 27017
     WAPI_LOGGER_DB = 'wapi'

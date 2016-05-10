@@ -65,6 +65,7 @@ class SimpleProducts(business_model.Model):
 		key = 'webapp_products_categories_{wo:%s}' % webapp_owner.id
 		data = cache_util.get_from_cache(key, self.__get_from_db(webapp_owner))
 		products = data['products']
+
 		if category_id == 0:
 			category = mall_models.ProductCategory()
 			category.name = u'全部'

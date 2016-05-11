@@ -1270,3 +1270,43 @@ class Order(business_model.Model):
 			return order_group_info
 		else:
 			return {}
+
+	@staticmethod
+	def get_group_infos_for(orders):
+		# 此处采用order.order_id
+		"""
+
+		@type orders: bussine Order列表
+		"""
+		if not orders:
+			return {}
+		order_ids = [order.order_id for order in orders]
+		order_has_groups = mall_models.OrderHasGroup.select().dj_where(order_id__in=order_ids)
+
+		order_id2order_has_group = {order_has_groups.order_id:order_has_groups for o in order_has_groups}
+
+		group_order_order_ids = order_id2order_has_group.keys()
+
+		order_id2group_info = {}
+
+		for order in orders:
+			if order.order_id in group_order_order_ids:
+				order_has_group = order_id2order_has_group[order.order_id]
+				order_group_info = order_has_group.to_dict()
+				if order.status == mall_models.ORDER_STATUS_NOT:
+					activity_url = 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/m_group/?webapp_owner_id=' + str(
+						self.context['webapp_owner'].id) + '&id=' + order_group_info['activity_id']
+				else:
+					url = GroupBuyOPENAPI['get_group_url']
+					data = {
+						'woid': self.context['webapp_owner'].id,
+						'group_id': order_group_info['group_id']
+					}
+					is_success, group_url_info = microservice_consume(url=url, data=data)
+					if is_success:
+						activity_url = 'http://' + settings.WEAPP_DOMAIN + group_url_info['group_url']
+				order_group_info['activity_url'] = activity_url
+
+
+
+

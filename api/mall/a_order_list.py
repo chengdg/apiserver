@@ -45,6 +45,14 @@ class AOrderList(api_resource.ApiResource):
 		# 过滤已取消的团购订单,但优惠抵扣的显示
 		orders = filter(lambda order: not(order.is_group_buy and order.status == mall_models.ORDER_STATUS_CANCEL) or order.pay_interface_type ==  mall_models.PAY_INTERFACE_PREFERENCE ,orders)
 
+		group_infos = Order.get_group_infos_for(orders)
+
+		# todo 1.group_infos
+		# todo 2.review
+		# todo 3.products
+
+
+
 		order_datas = []
 		for order in orders:
 			#子订单不显示在订单列表中

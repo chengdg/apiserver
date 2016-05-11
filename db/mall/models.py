@@ -1185,6 +1185,7 @@ class UserAlipayOrderConfig(models.Model):
 	input_charset = models.CharField(max_length=8, default='utf-8', verbose_name='字符编码格式 目前支持utf-8')
 	sign_type = models.CharField(max_length=8, default='MD5', verbose_name='签名方式')
 	seller_email = models.CharField(max_length=64, blank=True)
+	pay_version = models.CharField(max_length=64)
 
 	class Meta(object):
 		db_table = 'account_alipay_order_config'

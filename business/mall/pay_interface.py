@@ -195,7 +195,8 @@ class PayInterface(business_model.Model):
 				'key': pay_config['key'],
 				'input_charset': pay_config['input_charset'],
 				'sign_type': pay_config['sign_type'],
-				'seller_email': pay_config['seller_email']
+				'seller_email': pay_config['seller_email'],
+				'pay_version': pay_config['pay_version']
 			}
 		else:
 			return {}

@@ -93,6 +93,25 @@ class Member(business_model.Model):
 
 	@staticmethod
 	@param_required(['webapp_owner', 'token'])
+	def from_tokens(args):
+		webapp_owner = args['webapp_owner']
+		token = args['token']
+		try:
+			member_db_models = member_models.Member.select().where(member_models.Member.token << token, member_models.Member.webapp_id==webapp_owner.webapp_id)
+			member_list = []
+			for member_db_model in member_db_models:
+				member = Member.from_model({
+					'webapp_owner': webapp_owner,
+					'model': member_db_model
+				})
+				member_list.append(member)
+			return member_list
+		except Exception as e:
+			print(e)
+			return None
+
+	@staticmethod
+	@param_required(['webapp_owner', 'token'])
 	def from_token(args):
 		"""
 		工厂对象，根据member id获取Member业务对象
@@ -111,7 +130,7 @@ class Member(business_model.Model):
 				'model': member_db_model
 			})
 		except:
-			return None	
+			return None
 
 	def __init__(self, webapp_owner, model):
 		business_model.Model.__init__(self)

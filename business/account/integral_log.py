@@ -86,26 +86,29 @@ class IntegralLog(business_model.Model):
 		except:
 			return None
 
-	def __init__(self, webapp_owner, webapp_user, model):
+	def __init__(self, webapp_owner, webapp_user, model, follower=None):
 		business_model.Model.__init__(self)
 		self.context['webapp_owner'] = webapp_owner
 		self.context['webapp_user'] = webapp_user
 		self.context['db_model'] = model
 
-		self._get_current_log_info()
+		self._get_current_log_info(follower=follower)
 
-
-	def _get_current_log_info(self):
+	def _get_current_log_info(self, follower=None):
 		model= self.context['db_model']
 		webapp_owner = self.context['webapp_owner']
-		if model.follower_member_token:
-			token = model.follower_member_token
-			follower_member = Member.from_token({
-					'webapp_owner': webapp_owner,
-					'token': model.follower_member_token
-				})
+
+		if not follower:
+			if model.follower_member_token:
+				token = model.follower_member_token
+				follower_member = Member.from_token({
+						'webapp_owner': webapp_owner,
+						'token': model.follower_member_token
+					})
+			else:
+				follower_member = None
 		else:
-			follower_member = None
+			follower_member = follower
 		self.id = model.id
 		self.event_type = model.event_type
 		self.created_at = model.created_at

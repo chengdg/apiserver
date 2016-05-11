@@ -96,9 +96,9 @@ class Member(business_model.Model):
 	def from_tokens(args):
 		webapp_owner = args['webapp_owner']
 		token = args['token']
+		member_list = []
 		try:
 			member_db_models = member_models.Member.select().where(member_models.Member.token << token, member_models.Member.webapp_id==webapp_owner.webapp_id)
-			member_list = []
 			for member_db_model in member_db_models:
 				member = Member.from_model({
 					'webapp_owner': webapp_owner,
@@ -107,8 +107,8 @@ class Member(business_model.Model):
 				member_list.append(member)
 			return member_list
 		except Exception as e:
-			print(e)
-			return None
+			#print(e)
+			return member_list
 
 	@staticmethod
 	@param_required(['webapp_owner', 'token'])

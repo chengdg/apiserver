@@ -76,7 +76,9 @@ class IntegralLogs(business_model.Model):
 		for integral_log in integral_logs:
 			# integral = IntegralLog(webapp_owner, webapp_user, integral_log, type='integral_log')
 			if integral_log.follower_member_token:
-				follower = followers_token2member[integral_log.follower_member_token]
+				follower = followers_token2member.get(integral_log.follower_member_token, None)
+				if not follower:
+					integral_log.follower_member_token = ''
 				integral = IntegralLog(webapp_owner, webapp_user, integral_log, follower=follower)
 			else:
 				integral = IntegralLog(webapp_owner, webapp_user, integral_log, follower=None)

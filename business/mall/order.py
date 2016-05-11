@@ -417,6 +417,7 @@ class Order(business_model.Model):
 			pay_info['order_id'] = order_id
 			pay_info['order_dot_id'] = self.id
 			pay_info['woid'] = self.context['webapp_owner'].id
+			pay_info['product_names'] = self.__get_product_names_for_pay_module()
 			return pay_info
 		else:
 			return {
@@ -424,40 +425,39 @@ class Order(business_model.Model):
 				'woid': self.context['webapp_owner'].id
 			}
 
+	def __get_product_names_for_pay_module(self):
+		# warning!! 兼容代码，勿改product_names逻辑
+		# 原始代码：
+		# product_ids = [r.product_id for r in mall_models.OrderHasProduct.select().dj_where(order_id=self.id)]
+		# product_names = ','.join([product.name for product in mall_models.Product.select().dj_where(id__in=product_ids)])
+		order_has_products = mall_models.OrderHasProduct.select().dj_where(order_id=self.id)
+		product_ids = [r.product_id for r in order_has_products]
+		product_ids_for_sort = [product.id for product in mall_models.Product.select().dj_where(id__in=product_ids)]
+		product_id2name = dict([(o.product_id, o.product_name) for o in order_has_products])
+		product_names = u','.join([product_id2name[pid] for pid in product_ids_for_sort])
+		# if len(product_names) > 45:
+		# 	product_names = product_names[:45]
+		# else:
+		# 	product_names = product_names
+
+		try:
+			if len(product_names.encode("utf-8")) > 120:
+				product_names = product_names.encode("utf-8")[0:120].decode("utf-8", 'ignore')
+			else:
+				product_names = product_names
+		except:
+			if len(product_names) > 45:
+				product_names = product_names[:44]
+			else:
+				product_names = product_names
+		return product_names
 
 	def wx_package_for_pay_module(self,config):
 		wx_package_info ={}
 		wx_package_info['woid'] = self.context['webapp_owner'].id
 
 		if not config:
-			# warning!! 兼容代码，勿改product_names逻辑
-			# 原始代码：
-			# product_ids = [r.product_id for r in mall_models.OrderHasProduct.select().dj_where(order_id=self.id)]
-			# product_names = ','.join([product.name for product in mall_models.Product.select().dj_where(id__in=product_ids)])
-			order_has_products = mall_models.OrderHasProduct.select().dj_where(order_id=self.id)
-			product_ids = [r.product_id for r in order_has_products]
-			product_ids_for_sort = [product.id for product in mall_models.Product.select().dj_where(id__in=product_ids)]
-			product_id2name = dict([(o.product_id, o.product_name) for o in order_has_products])
-			product_names = u','.join([product_id2name[pid] for pid in product_ids_for_sort])
-			# if len(product_names) > 45:
-			# 	product_names = product_names[:45]
-			# else:
-			# 	product_names = product_names
-
-			try:
-				if len(product_names.encode("utf-8")) > 120:
-					product_names = product_names.encode("utf-8")[0:120].decode("utf-8",'ignore')
-				else:
-					product_names = product_names
-			except:
-				if len(product_names) > 45:
-					product_names = product_names[:44]
-				else:
-					product_names = product_names
-
-
-
-			wx_package_info['product_names'] = product_names
+			wx_package_info['product_names'] = self.__get_product_names_for_pay_module()
 			wx_package_info['total_fee'] = int(Decimal(str(self.final_price)) * 100)
 
 		pay_interface = PayInterface.from_type({

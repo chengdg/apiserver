@@ -97,7 +97,12 @@ class Member(business_model.Model):
 		webapp_owner = args['webapp_owner']
 		token = args['token']
 		member_list = []
+
 		try:
+			# 如果token为空不执行查询 直接返回[]
+			if not token:
+				return member_list
+
 			member_db_models = member_models.Member.select().where(member_models.Member.token << token, member_models.Member.webapp_id==webapp_owner.webapp_id)
 			for member_db_model in member_db_models:
 				member = Member.from_model({
@@ -106,8 +111,7 @@ class Member(business_model.Model):
 				})
 				member_list.append(member)
 			return member_list
-		except Exception as e:
-			#print(e)
+		except:
 			return member_list
 
 	@staticmethod

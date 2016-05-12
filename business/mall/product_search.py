@@ -77,7 +77,7 @@ class ProductSearch(business_model.Model):
 		records = []
 		i = 0
 		for r in record_objects:
-			if i <= ProductSearchRecordLimit:
+			if i < ProductSearchRecordLimit:
 				if r.content not in records:
 					records.append(r.content)
 					i += 1

@@ -64,7 +64,9 @@ class ProductSearch(business_model.Model):
 		records = mall_models.ProductSearchRecord.select(Clause(SQL('distinct binary'), mall_models.ProductSearchRecord.content).alias('content')).order_by(
 			-mall_models.ProductSearchRecord.id).dj_where(
 			webapp_user_id=webapp_user_id,
-			is_deleted=False).limit(ProductSearchRecordLimit)
+			is_deleted=False)
+
+		records = records[:10]
 		return [str(record.content) for record in records]
 
 	@staticmethod

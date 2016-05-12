@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from eaglet.core import watchdog
 from eaglet.core.exceptionutil import unicode_full_stack
-
+from eaglet.peewee import Clause,SQL
 from business import model as business_model
 from eaglet.decorator import param_required
 
@@ -55,7 +55,13 @@ class ProductSearch(business_model.Model):
 	@param_required(['webapp_user_id'])
 	def get_records_by_webapp_user(args):
 		webapp_user_id = args['webapp_user_id']
-		records = mall_models.ProductSearchRecord.select(mall_models.ProductSearchRecord.content).distinct().order_by(
+		# records = mall_models.ProductSearchRecord.select(mall_models.ProductSearchRecord.content).distinct().order_by(
+		# 	-mall_models.ProductSearchRecord.id).dj_where(
+		# 	webapp_user_id=webapp_user_id,
+		# 	is_deleted=False).limit(ProductSearchRecordLimit)
+
+		# see https://github.com/coleifer/peewee/issues/928
+		records = mall_models.ProductSearchRecord.select(Clause(SQL('distinct binary'), mall_models.ProductSearchRecord.content).alias('content')).order_by(
 			-mall_models.ProductSearchRecord.id).dj_where(
 			webapp_user_id=webapp_user_id,
 			is_deleted=False).limit(ProductSearchRecordLimit)

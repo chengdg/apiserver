@@ -61,13 +61,30 @@ class ProductSearch(business_model.Model):
 		# 	is_deleted=False).limit(ProductSearchRecordLimit)
 
 		# see https://github.com/coleifer/peewee/issues/928
-		records = mall_models.ProductSearchRecord.select(Clause(SQL('distinct binary'), mall_models.ProductSearchRecord.content).alias('content')).order_by(
-			-mall_models.ProductSearchRecord.id).dj_where(
-			webapp_user_id=webapp_user_id,
-			is_deleted=False)
+		# records = mall_models.ProductSearchRecord.select(Clause(SQL('distinct binary'), mall_models.ProductSearchRecord.content).alias('content')).order_by(
+		# 	-mall_models.ProductSearchRecord.id).dj_where(
+		# 	webapp_user_id=webapp_user_id,
+		# 	is_deleted=False)
 
-		records = records[:10]
-		return [str(record.content) for record in records]
+		# records = mall_models.ProductSearchRecord.select(Clause(SQL('binary'), mall_models.ProductSearchRecord.content).alias('content')).group_by(mall_models.ProductSearchRecord.content).order_by(
+		# 	-mall_models.ProductSearchRecord.id).dj_where(
+		# 	webapp_user_id=webapp_user_id,
+		# 	is_deleted=False).limit(ProductSearchRecordLimit)
+		# return [str(record.content) for record in records]
+
+		record_objects = mall_models.ProductSearchRecord.select().dj_where(webapp_user_id=webapp_user_id, is_deleted=False).order_by(-mall_models.ProductSearchRecord.id)
+
+		records = []
+		i = 0
+		for r in record_objects:
+			if i <= ProductSearchRecordLimit:
+				if r.content not in records:
+					records.append(r.content)
+					i += 1
+			else:
+				break
+
+		return records
 
 	@staticmethod
 	@param_required(['webapp_user_id'])

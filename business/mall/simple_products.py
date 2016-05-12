@@ -103,6 +103,12 @@ class SimpleProducts(business_model.Model):
 
 			products = products_not_0 + products_is_0
 
+		product_sales = mall_models.ProductSales.select().dj_where(product__in=[p['id'] for p in products])
+		product_id2sales = {t.product_id: t.sales for t in product_sales}
+
+		for p in products:
+			p['sales'] = product_id2sales.get(p['id'], 0)   # warning,没产生销量的商品没有创建ProductSales记录
+
 		return category, products, data['categories']
 
 

@@ -204,3 +204,5 @@ REGISTERED_LOCK_NAMES = {
 	'wz_card_lock': 'wc:',
 	'wapi_lock': 'wapi:',
 }
+
+CARD_SERVER_DOMAIN = "card.weizoom.com"

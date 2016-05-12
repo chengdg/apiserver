@@ -46,41 +46,59 @@ class AUsableWZCard(api_resource.ApiResource):
 
 		wzcard_check_money = args['wzcard_check_money']
 
-		# 获取微众卡信息
-		wzcard = WZCard.from_wzcard_id({
-				#"webapp_owner": webapp_owner,
-				"wzcard_id": args['wzcard_id'],
-			})
+		# # 获取微众卡信息
+		# wzcard = WZCard.from_wzcard_id({
+		# 		#"webapp_owner": webapp_owner,
+		# 		"wzcard_id": args['wzcard_id'],
+		# 	})
+		#
+		# checker = WZCardChecker()
+		#
+		# # 检查微众卡列表
+		# wzcard_info_list = [{'card_name': card} for card in used_cards]
+		# wzcard_info_list.append({'card_name': wzcard_id})
+		#
+		# is_success, reason = WZCardChecker.check_not_duplicated(wzcard_info_list)
+		#
+		# if is_success:
+		# 	# 检查单张微众卡
+		# 	is_success, reason = checker.check(wzcard_id, wzcard_password, wzcard, webapp_owner, webapp_user,wzcard_check_money)
+		#
+		# if not is_success:
+		# 	msg = reason['msg']
+		# 	return {
+		# 		'code': 400,
+		# 		'type': reason['type'],
+		# 		'msg': msg
+		# 	}
+		#
+		# msg = None
+		# if wzcard.is_empty:
+		# 	msg = u'您的微众卡余额不足!'
+		#
+		# return {
+		# 	'id': wzcard.id,
+		# 	'code': 200,
+		# 	'readable_status': wzcard.readable_status,
+		# 	'status': wzcard.status,
+		# 	'balance': wzcard.balance,
+		# 	'msg': msg
+		# }
 
-		checker = WZCardChecker()
-
-		# 检查微众卡列表
-		wzcard_info_list = [{'card_name': card} for card in used_cards]
-		wzcard_info_list.append({'card_name': wzcard_id})
-
-		is_success, reason = WZCardChecker.check_not_duplicated(wzcard_info_list)
-
+		is_success, reason = WZCardChecker.check_from_card_service(args)
 		if is_success:
-			# 检查单张微众卡
-			is_success, reason = checker.check(wzcard_id, wzcard_password, wzcard, webapp_owner, webapp_user,wzcard_check_money)
-
-		if not is_success:
+			return {
+				'id': wzcard.id,
+				'code': 200,
+				'readable_status': wzcard.readable_status,
+				'status': wzcard.status,
+				'balance': wzcard.balance,
+				'msg': msg
+			}
+		else:
 			msg = reason['msg']
 			return {
 				'code': 400,
 				'type': reason['type'],
 				'msg': msg
 			}
-
-		msg = None
-		if wzcard.is_empty:
-			msg = u'您的微众卡余额不足!'
-
-		return {
-			'id': wzcard.id,
-			'code': 200,
-			'readable_status': wzcard.readable_status,
-			'status': wzcard.status,
-			'balance': wzcard.balance,
-			'msg': msg
-		}

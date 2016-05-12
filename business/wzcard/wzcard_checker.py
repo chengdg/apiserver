@@ -7,6 +7,8 @@
 import logging
 from decimal import Decimal
 
+import settings
+from util.microservice_consumer import microservice_consume
 import db.wzcard.models as wzcard_models
 import db.account.weixin_models as weixin_models
 
@@ -240,3 +242,16 @@ class WZCardChecker(object):
 		# 	if '爱伲' in weizoom_card.weizoom_card_rule.name:
 		# 		msg = u'抱歉，该卡仅可在爱伲咖啡微站使用！'
 		# # else:
+
+	@staticmethod
+	def check_from_card_service(args):
+		# h5请求参数
+		data = args
+
+		bussiness_args = {}
+
+		data.update(bussiness_args)
+		url = settings.CARD_SERVER_DOMAIN + ''
+		is_success, data = microservice_consume(url=url, data=data, method='get')
+		return is_success, data
+

@@ -28,7 +28,7 @@ def step_impl(context, webapp_user_name):
 			expected.append(promotion)
 	else:
 		expected = json.loads(context.text)
-	if context.searching_product_name:
+	if hasattr(context, 'searching_product_name') and context.searching_product_name:
 		searching_product_name = context.searching_product_name
 		url = '/mall/products/?woid=%s&category_id=%s&product_name=%s' % (context.webapp_owner_id, 0,searching_product_name)
 		response = context.client.get(bdd_util.nginx(url), follow=True)

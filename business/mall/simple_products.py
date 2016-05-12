@@ -65,6 +65,7 @@ class SimpleProducts(business_model.Model):
 		key = 'webapp_products_categories_{wo:%s}' % webapp_owner.id
 		data = cache_util.get_from_cache(key, self.__get_from_db(webapp_owner))
 		products = data['products']
+
 		if category_id == 0:
 			category = mall_models.ProductCategory()
 			category.name = u'全部'
@@ -101,6 +102,12 @@ class SimpleProducts(business_model.Model):
 			products_not_0 = sorted(products_not_0, key=lambda x: x['display_index'])
 
 			products = products_not_0 + products_is_0
+
+		product_sales = mall_models.ProductSales.select().dj_where(product__in=[p['id'] for p in products])
+		product_id2sales = {t.product_id: t.sales for t in product_sales}
+
+		for p in products:
+			p['sales'] = product_id2sales.get(p['id'], 0)   # warning,没产生销量的商品没有创建ProductSales记录
 
 		return category, products, data['categories']
 

@@ -1,312 +1,299 @@
-#coding: utf8
-"""@package business.card.weizoom_card
-微众卡的业务模型
+# coding: utf8
+"""@package business.wzcard.wzcard_checker
+微众卡检查器
 
-@see 原Weapp的`card_api_view.py`
+判断微众卡是否能用、是否有效、是否激活等各种情况。
 """
 
-from business import model as business_model
-from db.wzcard import models as wzcard_models
-from eaglet.decorator import param_required
-#from db.wzcard.models import WeizoomCardRule, WeizoomCard
-import logging
-from decimal import Decimal
-from core.decorator import deprecated
+import db.mall.models as mall_models
+import settings
+from util.microservice_consumer import microservice_consume2
 
-class WZCard(business_model.Model):
+
+class WZCard(object):
 	"""
-	微众卡业务模型
-
-	@see 原WEAPP的`/market_tools/tools/weizoom_card/models.py`
+	判断微众卡能否使用
 	"""
-	__slots__ = (
-		'id', # 数据库ID
-		'wzcard_id', # 微众卡卡号
-		'is_expired',
-		#'status',
 
-		'weizoom_card_rule_id',
-		'weizoom_card_id',
-		'money',
-		'password',
-		'expire_time',
-		'activated_at',
-		'created_at',
-		'remark',
-		'actived_to',
-		'department',
-		'active_card_user_id',
-	)
+	def __init__(self, webapp_user, webapp_owner):
+		self.webapp_user = webapp_user
+		self.webapp_owner = webapp_owner
 
-	def __init__(self, db_model, wzcard_owner=None):
-		business_model.Model.__init__(self)
-
-		# webapp_owner是不需要暴露的property，因此放在context中
-		# wzcard_owner表示创建微众卡的用户
-		self.context['wzcard_owner'] = wzcard_owner
-
-		self.wzcard_id = db_model.weizoom_card_id
-		self.context['db_model'] = db_model
-
-		self._init_slot_from_model(db_model)
-
-
-	@staticmethod
-	@param_required(['id'])
-	def from_id(args):
-		"""
-		获取微众卡对象的工厂方法
-
-		@return 如果不存在此卡，返回None
-		"""
-		try:	
-			db_model = wzcard_models.WeizoomCard.get(id=args['id'])
-			wzcard = WZCard(db_model)
-			return wzcard
-		except Exception as e:
-			logging.error("Exception: " + str(e))
-		return None
-
-
-	@staticmethod
-	@param_required(['wzcard_id'])
-	def from_wzcard_id(args):
-		"""
-		获取微众卡对象的工厂方法
-
-		@return 如果不存在此卡，返回None
-		"""
-		try:	
-			db_model = wzcard_models.WeizoomCard.get(weizoom_card_id=args['wzcard_id'])
-			wzcard = WZCard(db_model)
-			return wzcard
-		except Exception as e:
-			logging.error("Exception: " + str(e))
-		return None
-
-
-	@property
-	def readable_status(self):
-		"""
-		status->可读的status状态
-		"""
-		status = self.status
-		text = None
-		if status == wzcard_models.WEIZOOM_CARD_STATUS_UNUSED:
-			text = u"未使用"
-		elif status == wzcard_models.WEIZOOM_CARD_STATUS_USED:
-			text = u"已使用"
-		elif status == wzcard_models.WEIZOOM_CARD_STATUS_EMPTY:
-			text = u"已用完"
-		elif status == wzcard_models.WEIZOOM_CARD_STATUS_INACTIVE:
-			text = u"未激活"
-		return text
-
-	@property
-	def is_empty(self):
-		"""
-		[property] 是否已用完
-
-		@return True:已用完；False:未用完
-		"""
-		return self.status == wzcard_models.WEIZOOM_CARD_STATUS_EMPTY
-
-	@property
-	def balance(self):
-		"""
-		[property] 微众卡余额
-		"""
-		return self.money
-
-	@balance.setter
-	def balance(self, value):
-		"""
-		[setter] 修改微众卡余额
-		"""
-		self.money = value
-		db_model = self.context['db_model']	
-		db_model.money = value
-		return
-
-	@property
-	def status(self):
-		"""
-		[property] 微众卡状态
-
-		微众卡有几种状态：
-
-		状态  |  值  | 符号
-		:----- | :------- | :----------
-		未使用	 	| 0 | WEIZOOM_CARD_STATUS_UNUSED
-		已被使用 	| 1 | WEIZOOM_CARD_STATUS_USED
-		已用完		| 2 | WEIZOOM_CARD_STATUS_EMPTY
-		未激活		| 3 | WEIZOOM_CARD_STATUS_INACTIVE
-
-		@see `db/models.py`
-		"""
-		db_model = self.context['db_model']
-		return db_model.status
-
-	@status.setter
-	@deprecated
-	def status(self, value):
-		"""
-		[setter] 微众卡状态
-
-		@todo 改成通过操作调整status
-		"""
-		#self.status = value
-		db_model = self.context['db_model']	
-		db_model.status = value
-		return
-
-	@staticmethod
-	def _get_status(status_str):
-		"""
-		status_text -> status值
-
-		@see `weapp/features/steps/market_tools_weizoom_card_steps.py`
-		"""
-
-		is_expired = False
-		status = wzcard_models.WEIZOOM_CARD_STATUS_UNUSED
-		if status_str == u"未使用":
-			status = wzcard_models.WEIZOOM_CARD_STATUS_UNUSED
-		if status_str == u"已使用":
-			status = wzcard_models.WEIZOOM_CARD_STATUS_USED
-		if status_str == u"已用完":
-			status = wzcard_models.WEIZOOM_CARD_STATUS_EMPTY
-		if status_str == u"未激活":
-			status = wzcard_models.WEIZOOM_CARD_STATUS_INACTIVE
-
-		if status_str == u"已过期":
-			is_expired = True
-			status = wzcard_models.WEIZOOM_CARD_STATUS_INACTIVE
-		return status, is_expired
-
-
-	def __create(self, args):
-		"""
-		先将weapp操作代码迁移过来，以后再调整
-
-		@todo 待优化
-		@see `weapp/features/steps/market_tools_weizoom_card_steps.py`
-		"""
-		webapp_owner = args['webapp_owner']
-		# 创建规则
-		rule, created = wzcard_models.WeizoomCardRule.objects.get_or_create(
-			owner=webapp_owner.id,
-			name='a',
-			money=100,
-			count=10,
-			remark="",
-			expired_time="3000-12-12 00:00:00",
-			valid_time_from="2000-1-1 00:00:00",
-			valid_time_to="3000-12-12 00:00:00",
-		)
-
-		status = args['status']
-		status_code, is_expired = WZCard._get_status(status)
-		wzcard = wzcard_models.WeizoomCard.objects.create(
-			owner_id=webapp_owner.id,
-			weizoom_card_rule=rule,
-			status = status_code,
-			money = args['balance'],
-			weizoom_card_id = args['wzcard_id'],
-			password = args['password'],
-			expired_time = "3000-12-12 00:00:00",
-			is_expired = is_expired
-		)
-		return wzcard
-
-
-	@property
-	def orders(self):
-		"""
-		[property] 微众卡对应的订单
-
-		@todo 待实现
-		"""
-		return []
-
-	def check_password(self, password):
-		"""
-		检查密码是否正确
-		"""
-		return self.password == password
-
-	@property	
-	def is_activated(self):
-		"""
-		[property] 微众卡是否激活
-		"""
-		logging.info("WZCard.status: {}, id: {}".format(self.status, self.id))
-		return self.status != wzcard_models.WEIZOOM_CARD_STATUS_INACTIVE
-
-	def save(self):
-		"""
-		微众卡信息序列化(比如存到数据库)
-		"""
-		db_model = self.context['db_model']	
-		db_model.save()
-		logging.info("saved WZCard DB object, wzcard_id={}, balance={}".format(db_model.weizoom_card_id, db_model.money))
-		return
-
-	def pay(self, price_to_pay):
-		"""
-		用微众卡支付
-
-		@param price_to_pay Decimal最大待付款价格（能付多少付多少）
-
-		@return Decimal类型的支付金额
-		@see 参考原Weapp的`def use_weizoom_card()`
-
-		@todo 记录日志
-		"""
-		# 如果price_to_pay是float/str，转成Decimal
-		price_to_pay = price_to_pay if isinstance(price_to_pay, Decimal) else Decimal(price_to_pay)
-		if price_to_pay < 1e-3:
-			# 没有实际支付
-			return Decimal(0)
-
-		use_price = min(price_to_pay, self.balance)
-		if use_price > 0:
-			self.balance = self.balance - use_price
-			if self.balance < 1e-3:
-				self.balance = Decimal(0)
-				self.status = wzcard_models.WEIZOOM_CARD_STATUS_EMPTY
+	def __get_webapp_user_info(self):
+		# customer_type 使用者类型(普通会员：0、会员首单：1、非会员：2)
+		if self.webapp_user.member.is_subscribed:
+			if mall_models.Order.select().dj_where(webapp_user_id=self.webapp_user.id).count() > 0:
+				customer_type = 0
 			else:
-				self.status = wzcard_models.WEIZOOM_CARD_STATUS_USED
-			# 更新数据库
-			self.save()
-	
-		return use_price
+				customer_type = 1
+		else:
+			customer_type = 2
 
+		return {
+			'customer_type': customer_type,
+			'customer_id': self.webapp_user.meber.id,
+		}
 
-	def refund(self, amount, reason=None, last_status=None):
+	def __get_webapp_owner_info(self):
+
+		return {
+			'shop_id': self.webapp_owner.id,
+			'shop_name': self.webapp_owner.user_profile.store_name,
+		}
+
+	def check(self, args):
 		"""
-		微众卡退款（用于release）
-
-		@param amount 退款金额
-		@param reason 退款原因
-		@param last_status 退款之前的状态
-
-		@return 退款后余额
-		@note 不同于微众卡"充值"
+		检查微众卡
+		@type args: h5请求参数
 		"""
-		# 如果amount是float/str，转成Decimal
-		logging.info(u"to refund wzcard: wzcard_id: {}, amount: {}, reason: {}".format(self.wzcard_id, amount, reason))
-		amount = amount if isinstance(amount, Decimal) else Decimal(amount)
-		if amount>0:
-			self.balance += amount
-		if last_status:
-			self.status = last_status
-		# 更新数据库
-		is_success = True
-		try:
-			self.save()
-			# TODO: update log with `reason`
-		except Exception as e:
-			logging.error(str(e))
-			is_success = False
-		return is_success, self.balance
+		data = {
+			'card_number': args['wzcard_id'],
+			'card_password': args['password'],
+			'exist_cards': args['exist_cards'],
+			'valid_money': args['valid_money'],  # 商品原价+运费
+		}
+
+		data.update(self.__get_webapp_owner_info())
+		data.update(self.__get_webapp_user_info())
+
+		url = "http://" + settings.CARD_SERVER_DOMAIN + '/card/api/check'
+		is_success, data = microservice_consume2(url=url, data=data, method='post')
+
+		return is_success, data
+
+	def use(self, wzcard_info, money, valid_money, order_id):
+		data = {
+			'card_infos': wzcard_info,
+			'money': money,
+			'valid_money': valid_money,
+			'order_id': order_id
+		}
+
+		data.update(self.__get_webapp_owner_info())
+		data.update(self.__get_webapp_user_info())
+
+		url = "http://" + settings.CARD_SERVER_DOMAIN + '/card/api/use'
+		is_success, data = microservice_consume2(url=url, data=data, method='post')
+
+		return is_success, data
+
+	# @staticmethod
+	# def check_not_duplicated(wzcard_info_list):
+	# 	"""
+	# 	检查微众卡号是否重复
+	# 	"""
+	#
+	# 	if len(wzcard_info_list) == 0:
+	# 		return True, {}
+	#
+	# 	# SELECT count(*) FROM weapp.market_tool_weizoom_card as card join market_tool_weizoom_card_rule as rule on (card.weizoom_card_rule_id=rule.id) where card.weizoom_card_id in ('0000001','0000002','0000021') and rule.valid_restrictions >0;
+	# 	wzcard_id_ids = [wzcard_info['card_name'] for wzcard_info in wzcard_info_list]
+	# 	valid_restrictions_card_count = wzcard_models.WeizoomCard.select().join(wzcard_models.WeizoomCardRule).where(wzcard_models.WeizoomCard.weizoom_card_id.in_(wzcard_id_ids),wzcard_models.WeizoomCardRule.valid_restrictions >0).count()
+	# 	if valid_restrictions_card_count > 1:
+	# 		return False, {
+	# 				"is_success": False,
+	# 				"type": 'coupon',
+	# 				"msg": '只可使用一张满额使用卡',
+	# 				"short_msg": u'已添加'
+	# 			}
+	#
+	# 	id_set = set()
+	# 	for wzcard_info in wzcard_info_list:
+	# 		wzcard_id = wzcard_info['card_name']
+	# 		if wzcard_id in id_set:
+	# 			reason = u'该微众卡已经添加'
+	# 			logging.error("{}, wzcard_info: {}".format(reason, wzcard_info))
+	# 			return False, {
+	# 				"is_success": False,
+	# 				"type": 'wzcard:duplicated',
+	# 				"msg": reason,
+	# 				"short_msg": u'已添加'
+	# 			}
+	# 		id_set.add(wzcard_id)
+	# 	return True, {}
+	#
+	# def check(self, wzcard_id, password, wzcard, webapp_owner, webapp_user,wzcard_check_money):
+	# 	"""
+	# 	检查微众卡是否可用
+	#
+	# 	@return 返回二元组：是否可用(True/False), reason。
+	#
+	# 	其中reason格式：
+	# 		{
+	# 			"is_success": False,
+	# 			"type": 'wzcard:duplicated',
+	# 			"msg": reason,
+	# 			"short_msg": u'已添加'
+	# 		}
+	#
+	# 	@see `wezoom_card/module_api.py`中的`check_weizoom_card`
+	# 	"""
+	# 	if wzcard_id in self.checked_wzcard:
+	# 		reason = u'该微众卡已经添加'
+	# 		logging.error("{}, wzcard: {}".format(reason, wzcard))
+	# 		return False, {
+	# 			"is_success": False,
+	# 			"type": 'wzcard:duplicated',
+	# 			"msg": reason,
+	# 			"short_msg": u'已添加'
+	# 		}
+	#
+	# 	self.checked_wzcard[wzcard_id] = wzcard
+	#
+	# 	member = webapp_user.member
+	# 	owner_id =webapp_owner.id
+	# 	msg = ''
+	#
+	# 	if wzcard:
+	# 		weizoom_card_rule = wzcard_models.WeizoomCardRule.select().dj_where(id=wzcard.weizoom_card_rule_id).first()
+	# 		rule_id = weizoom_card_rule.id
+	# 	else:
+	# 		weizoom_card_rule =None
+	# 		rule_id = None
+	#
+	# 	if not wzcard:
+	# 		# 无此微众卡
+	# 		reason = u'卡号或密码错误'
+	# 		logging.error("{}, wzcard: {}".format(reason, wzcard))
+	# 		return False, {
+	# 			"is_success": False,
+	# 			"type": 'wzcard:nosuch',
+	# 			"msg": reason,
+	# 			"short_msg": u'无此卡'
+	# 		}
+	# 	elif not wzcard.check_password(password):
+	# 		# 密码错误
+	# 		reason = u'卡号或密码错误'
+	# 		logging.error("{}, wzcard: {}".format(reason, wzcard))
+	# 		return False, {
+	# 			"is_success": False,
+	# 			"type": 'wzcard:wrongpass',
+	# 			"msg": reason,
+	# 			"short_msg": u'密码错误'
+	# 		}
+	# 	elif wzcard.is_expired:
+	# 		# 密码错误
+	# 		reason = u'微众卡已过期'
+	# 		logging.error("{}, wzcard: {}".format(reason, wzcard))
+	# 		return False, {
+	# 			"is_success": False,
+	# 			"type": 'wzcard:expired',
+	# 			"msg": reason,
+	# 			"short_msg": u'微众卡已过期'
+	# 		}
+	# 	elif not wzcard.is_activated:
+	# 		reason = u'微众卡未激活'
+	# 		logging.error("{}, wzcard: {}".format(reason, wzcard))
+	# 		return False, {
+	# 			"is_success": False,
+	# 			"type": 'wzcard:inactive',
+	# 			"msg": reason,
+	# 			"short_msg": u'卡未激活'
+	# 		}
+	# 	elif weizoom_card_rule.valid_restrictions > 0:
+	# 		if Decimal(wzcard_check_money) < weizoom_card_rule.valid_restrictions:
+	# 			msg = u'订单未满足该卡使用条件'
+	# 	elif weizoom_card_rule.card_attr:
+	# 		#专属卡
+	# 		#是否为新会员专属卡
+	# 		#多专属商家id
+	# 		shop_limit_list = str(weizoom_card_rule.shop_limit_list).split(',')
+	# 		#多黑名单商家id
+	# 		shop_black_list = str(weizoom_card_rule.shop_black_list).split(',')
+	#
+	# 		if weizoom_card_rule.is_new_member_special:
+	# 			if member and member.is_subscribed:
+	# 				# 防止循环引用
+	# 				from business.mall.order import Order
+	# 				orders = Order.get_orders_for_webapp_user({'webapp_owner': webapp_owner, 'webapp_user': webapp_user})
+	# 				has_order = len(orders)
+	# 				#判断是否首次下单
+	# 				if has_order:
+	# 					order_ids = [order.order_id for order in orders]
+	# 					#不是首次下单，判断该卡是否用过
+	# 					has_use_card = wzcard_models.WeizoomCardHasOrder.select().dj_where(card_id=wzcard.id, order_id__in=order_ids).count()>0
+	# 					if not has_use_card:
+	# 						msg = u'该卡为新会员专属卡'
+	#
+	# 				if str(owner_id) in shop_limit_list:
+	# 					if str(owner_id) in shop_black_list:
+	# 						msg = u'该卡不能在此商家使用'
+	#
+	# 				else:
+	# 					msg = u'该专属卡不能在此商家使用'
+	# 			else:
+	# 				if str(owner_id) in shop_black_list:
+	# 					msg = u'该卡不能在此商家使用'
+	# 				else:
+	# 					msg = u'该卡为新会员专属卡'
+	#
+	# 		else:
+	# 			if str(owner_id) in shop_limit_list:
+	# 				if str(owner_id) in shop_black_list:
+	# 					msg = u'该卡不能在此商家使用'
+	# 			else:
+	# 				msg = u'该专属卡不能在此商家使用'
+	#
+	# 	elif owner_id and not weizoom_card_rule.card_attr:
+	# 		#不是专属卡，但有黑名单
+	# 		shop_black_list = str(weizoom_card_rule.shop_black_list).split(',')
+	# 		if str(owner_id) in shop_black_list:
+	# 			msg = u'该卡不能在此商家使用'
+	#
+	# 	elif owner_id and rule_id in [23, 36] and owner_id != 157:
+	# 		if '吉祥大药房' in wzcard.weizoom_card_rule.name:
+	# 			msg = u'抱歉，该卡仅可在吉祥大药房微站使用！'
+	# 	elif owner_id and rule_id in [99,] and owner_id != 474:
+	# 		if '爱伲' in wzcard.weizoom_card_rule.name:
+	# 			msg = u'抱歉，该卡仅可在爱伲咖啡微站使用！'
+	#
+	# 	if msg:
+	# 		return False, {
+	# 			"is_success": False,
+	# 			"type": 'wzcard:banned',
+	# 			"msg": msg,
+	# 			"short_msg": u'规则禁用的微众卡'
+	# 		}
+	#
+	# 	return True, {}
+
+
+
+	#
+	#
+	# elif owner_id and weizoom_card_rule.card_attr:
+	# 	#专属卡
+	# 	#是否为新会员专属卡
+	# 	mpuser_name = u''
+	# 	authed_appid = ComponentAuthedAppidInfo.objects.filter(auth_appid__user_id=weizoom_card_rule.belong_to_owner)
+	# 	if authed_appid.count()>0:
+	# 		if authed_appid[0].nick_name:
+	# 			mpuser_name = authed_appid[0].nick_name
+	# 	if weizoom_card_rule.is_new_member_special:
+	# 		if member and member.is_subscribed:
+	# 			orders = belong_to(webapp_id)
+	# 			orders = orders.filter(webapp_id=webapp_id,webapp_user_id=webapp_user.id).exclude(status=ORDER_STATUS_CANCEL)
+	# 			has_order = orders.count() >0
+	# 			#判断是否首次下单
+	# 			if has_order:
+	# 				order_ids = [order.order_id for order in orders]
+	# 				#不是首次下单，判断该卡是否用过
+	# 				has_use_card = WeizoomCardHasOrder.objects.filter(card_id=weizoom_card.id,order_id__in=order_ids).count()>0
+	# 				if not has_use_card:
+	# 					msg = u'该卡为新会员专属卡'
+	# 			if owner_id != weizoom_card_rule.belong_to_owner:
+	# 				msg = u'该卡为'+mpuser_name+'商家专属卡'
+	# 		else:
+	# 			msg = u'该卡为新会员专属卡'
+	# 	else:
+	# 		if owner_id != weizoom_card_rule.belong_to_owner:
+	# 			msg = u'该卡为'+mpuser_name+'商家专属卡'
+	# elif owner_id and rule_id in [23, 36] and owner_id != 157:
+	# 	WeizoomCardRule.objects.get(id=rule_id)
+	# 	if '吉祥大药房' in weizoom_card.weizoom_card_rule.name:
+	# 		msg = u'抱歉，该卡仅可在吉祥大药房微站使用！'
+	# elif owner_id and rule_id in [99,] and owner_id != 474:
+	# 	WeizoomCardRule.objects.get(id=rule_id)
+	# 	if '爱伲' in weizoom_card.weizoom_card_rule.name:
+	# 		msg = u'抱歉，该卡仅可在爱伲咖啡微站使用！'
+	# # else:

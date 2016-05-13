@@ -3,25 +3,14 @@
 微众卡查询\创建
 """
 
-#import copy
-#from datetime import datetime
+# import copy
+# from datetime import datetime
 
 from eaglet.core import api_resource
 from eaglet.decorator import param_required
-#from db.mall import models as mall_models
-#from db.mall import promotion_models
-#from db.wzcard import models as wzcard_models
-from business.wzcard.wzcard import WZCard
-from util import dateutil as utils_dateutil
-import logging
-#import resource
-#from api.mall.a_purchasing import APurchasing as PurchasingApiResource
-#from eaglet.core.cache import utils as cache_utils
-#from business.mall.order_factory import OrderFactory
-#from business.mall.purchase_info import PurchaseInfo
-#from business.mall.pay_interface import PayInterface
 
-from business.wzcard.wzcard_checker import WZCardChecker
+from business.wzcard.wzcard import WZCard
+
 
 class AUsableWZCard(api_resource.ApiResource):
 	"""
@@ -35,7 +24,7 @@ class AUsableWZCard(api_resource.ApiResource):
 		"""
 		校验微众卡信息
 		"""
-		#webapp_owner = args['webapp_owner']
+		# webapp_owner = args['webapp_owner']
 		wzcard_id = args['wzcard_id']
 		wzcard_password = args['password']
 		webapp_owner = args['webapp_owner']
@@ -94,15 +83,15 @@ class AUsableWZCard(api_resource.ApiResource):
 			'exist_cards': exist_cards
 		}
 
-		checker = WZCardChecker(webapp_user, webapp_owner)
+		checker = WZCard(webapp_user, webapp_owner)
 
 		is_success, resp = checker.check(request_data)
 		msg = ''
 		if is_success:
 			if resp['code'] == 200:
 				can_use = True
-				msg = resp['data']['reason']
 			else:
+				msg = resp['data']['reason']
 				can_use = False
 		else:
 			can_use = False

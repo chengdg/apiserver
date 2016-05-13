@@ -36,7 +36,6 @@ class AUsableWZCard(api_resource.ApiResource):
 		校验微众卡信息
 		"""
 		#webapp_owner = args['webapp_owner']
-		print('args',args)
 		wzcard_id = args['wzcard_id']
 		wzcard_password = args['password']
 		webapp_owner = args['webapp_owner']
@@ -85,7 +84,19 @@ class AUsableWZCard(api_resource.ApiResource):
 		# 	'msg': msg
 		# }
 
-		is_success, reason = WZCardChecker.check_from_card_service(args)
+		exist_cards = args.get('used_cards', '')
+		exist_cards = exist_cards.split(',') if exist_cards else []
+
+		request_data = {
+			'card_number': args['wzcard_id'],
+			'card_password': args['password'],
+			'valid_money': args['valid_money'],
+			'exist_cards': exist_cards
+		}
+
+		checker = WZCardChecker(webapp_user, webapp_owner)
+
+		is_success, reason = checker.check_from_card_service(request_data)
 		if is_success:
 			return {
 				'id': wzcard.id,

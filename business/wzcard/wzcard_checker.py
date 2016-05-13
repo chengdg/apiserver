@@ -8,10 +8,10 @@ import logging
 from decimal import Decimal
 
 import settings
-from util.microservice_consumer import microservice_consume
+from util.microservice_consumer import microservice_consume2
 import db.wzcard.models as wzcard_models
 import db.account.weixin_models as weixin_models
-
+import db.mall.models as mall_models
 
 
 class WZCardChecker(object):
@@ -246,8 +246,18 @@ class WZCardChecker(object):
 		# # else:
 
 	def check(self, args):
-		# h5请求参数
-		customer_type = 10086
+		"""
+
+		@type args: h5请求参数
+		"""
+		# customer_type 使用者类型(普通会员：0、会员首单：1、非会员：2)
+		if self.webapp_user.member.is_subscribed:
+			if mall_models.Order.select().dj_where(webapp_user_id=self.webapp_user.id).count() > 0:
+				customer_type = 0
+			else:
+				customer_type = 1
+		else:
+			customer_type = 2
 
 		data = {
 			'card_number': args['wzcard_id'],
@@ -261,7 +271,6 @@ class WZCardChecker(object):
 		}
 
 		url = settings.CARD_SERVER_DOMAIN + ''
-		is_success, data = microservice_consume(url=url, data=data, method='get')
-		return is_success, data
+		is_success, data = microservice_consume2(url=url, data=data, method='post')
 
-	# def use(self,args):
+		return is_success, data

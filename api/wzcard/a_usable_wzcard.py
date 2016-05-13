@@ -96,20 +96,26 @@ class AUsableWZCard(api_resource.ApiResource):
 
 		checker = WZCardChecker(webapp_user, webapp_owner)
 
-		is_success, reason = checker.check_from_card_service(request_data)
+		is_success, resp = checker.check(request_data)
+		msg = ''
 		if is_success:
+			if resp['code'] == 200:
+				can_use = True
+				msg = resp['data']['reason']
+			else:
+				can_use = False
+		else:
+			can_use = False
+			msg = u'系统繁忙'
+
+		if can_use:
 			return {
-				'id': wzcard.id,
+				'id': args['wzcard_id'],
 				'code': 200,
-				'readable_status': wzcard.readable_status,
-				'status': wzcard.status,
-				'balance': wzcard.balance,
-				'msg': msg
+				'balance': resp['data']['balance'],
 			}
 		else:
-			msg = reason['msg']
 			return {
 				'code': 400,
-				'type': reason['type'],
 				'msg': msg
 			}

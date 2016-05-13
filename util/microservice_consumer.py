@@ -37,6 +37,7 @@ def conn_try_again(function):
 	return wrapped
 
 
+# 访问weapp
 @conn_try_again
 def microservice_consume(url='', data={}, method='get', timeout=None):
 	_timeout = timeout if timeout else DEFAULT_TIMEOUT
@@ -56,17 +57,62 @@ def microservice_consume(url='', data={}, method='get', timeout=None):
 			except:
 				weizoom_code = 10086  # 无法得到正确weizoom_code时的默认值
 			if weizoom_code == 200:
-				watchdog.info(u'microservice_consume_log,外部接口成功调用日志.code:%s,weizoom_code:%s,url:%s，request_data:%s,resp:%s' % (resp.status_code, weizoom_code,url, str(data),resp.text))
+				watchdog.info(
+					u'microservice_consume_log,外部接口成功调用日志.code:%s,weizoom_code:%s,url:%s，request_data:%s,resp:%s' % (
+					resp.status_code, weizoom_code, url, str(data), resp.text))
 				return True, resp_data
 			else:
-				watchdog.alert(u'microservice_consume_alert,外部接口调用错误-wzcode错误状态码.code:%s,weizoom_code:%s,url:%s，request_data:%s,resp:%s' % (resp.status_code, weizoom_code,url, str(data),resp))
+				watchdog.alert(
+					u'microservice_consume_alert,外部接口调用错误-wzcode错误状态码.code:%s,weizoom_code:%s,url:%s，request_data:%s,resp:%s' % (
+					resp.status_code, weizoom_code, url, str(data), resp))
 				raise ResponseCodeException
 		else:
-			watchdog.alert(u'microservice_consume_alert,外部接口调用错误-http错误状态码.code:%s,url:%s，data:%s' % (resp.status_code, url, str(data)))
+			watchdog.alert(u'microservice_consume_alert,外部接口调用错误-http错误状态码.code:%s,url:%s，data:%s' % (
+			resp.status_code, url, str(data)))
 			raise ResponseCodeException
 	except BaseException as e:
 		traceback = unicode_full_stack()
-		watchdog.alert(u'外部接口调用错误-异常.url:%s,msg:%s,url:%s ,data:%s' %  (url, traceback, url, str(data)))
+		watchdog.alert(u'外部接口调用错误-异常.url:%s,msg:%s,url:%s ,data:%s' % (url, traceback, url, str(data)))
+		raise Exception(e)
+
+
+# 访问eaglet
+@conn_try_again
+def microservice_consume2(url='', data={}, method='get', timeout=None):
+	_timeout = timeout if timeout else DEFAULT_TIMEOUT
+	try:
+		if method == 'get':
+			resp = requests.get(url, data, timeout=_timeout)
+		elif method == 'post':
+			resp = requests.post(url, data, timeout=_timeout)
+		else:
+			# 兼容架构中的put、delete方法
+			url = url + '?_method=' + method if '_method' not in url else url
+			resp = requests.post(url, data, timeout=_timeout)
+		if resp.status_code == 200:
+			resp = json.loads(resp.text)
+			# resp_data = resp['data']
+			try:
+				weizoom_code = resp['code']
+			except:
+				weizoom_code = 10086  # 无法得到正确weizoom_code时的默认值
+			if weizoom_code == 200 or weizoom_code == 500:
+				watchdog.info(
+					u'microservice_consume_log,外部接口成功调用日志.code:%s,weizoom_code:%s,url:%s，request_data:%s,resp:%s' % (
+						resp.status_code, weizoom_code, url, str(data), resp.text))
+				return True, resp
+			else:
+				watchdog.alert(
+					u'microservice_consume_alert,外部接口调用错误-wzcode错误状态码.code:%s,weizoom_code:%s,url:%s，request_data:%s,resp:%s' % (
+						resp.status_code, weizoom_code, url, str(data), resp))
+				raise ResponseCodeException
+		else:
+			watchdog.alert(u'microservice_consume_alert,外部接口调用错误-http错误状态码.code:%s,url:%s，data:%s' % (
+				resp.status_code, url, str(data)))
+			raise ResponseCodeException
+	except BaseException as e:
+		traceback = unicode_full_stack()
+		watchdog.alert(u'外部接口调用错误-异常.url:%s,msg:%s,url:%s ,data:%s' % (url, traceback, url, str(data)))
 		raise Exception(e)
 
 # 测试代码

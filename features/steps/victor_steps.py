@@ -64,7 +64,7 @@ def step_impl(context, web_user):
 		''' % (buyer, web_user, order_id, json.dumps(products))
 		logging.info("Converted step:\n %s" % new_step)
 		context.execute_steps(new_step)
-	
+
 	return
 
 # @When(u"{webapp_user}完成订单'{order_code}'中'{product_name}'的评价包括'{has_picture}'")
@@ -110,7 +110,7 @@ def step_webapp_user_get_product_review(context, webapp_user, product_name):
 			# 'woid': context.webapp_owner_id,
 			'product_id': product.id
 		})
-	bdd_util.assert_api_call_success(response)	
+	bdd_util.assert_api_call_success(response)
 
 	data = response.data
 	logging.debug('response.data: {}'.format(data))
@@ -145,7 +145,7 @@ def step_impl(context, webapp_user, product_name):
 			'woid': context.webapp_owner_id,
 			'product_id': product.id
 		})
-	bdd_util.assert_api_call_success(response)	
+	bdd_util.assert_api_call_success(response)
 
 	data = response.data
 	logging.debug('response.data: {}'.format(data))
@@ -190,9 +190,9 @@ def step_impl(context, webapp_owner):
 			"status":"已过期",
 			"price":5.00
 		}]
-	}	
+	}
 	```
-	@see `weapp/features/steps/market_tools_weizoom_card_steps.py` 
+	@see `weapp/features/steps/market_tools_weizoom_card_steps.py`
 	"""
 	data = json.loads(context.text)
 	url = "/wzcard/wzcard/"
@@ -205,7 +205,7 @@ def step_impl(context, webapp_owner):
 				'status': card['status'],
 				'balance': card['price']
 			})
-		bdd_util.assert_api_call_success(response)	
+		bdd_util.assert_api_call_success(response)
 		success+=1
 	context.tc.assertEquals(len(data['cards']), success)
 
@@ -247,6 +247,7 @@ def step_impl(context, webapp_user):
 			'woid': context.webapp_owner_id,
 			'wzcard_id': wzcard_id,
 			'password': wzcard_password,
+			'wzcard_check_money': 0 #备注：查询接口错误这是临时方案by eugene
 		})
 	bdd_util.assert_api_call_success(response)
 

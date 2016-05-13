@@ -270,7 +270,7 @@ class WZCardChecker(object):
 			'valid_money': args['valid_money'],     # 商品原价+运费
 		}
 
-		url = settings.CARD_SERVER_DOMAIN + ''
+		url = "http://" + settings.CARD_SERVER_DOMAIN + '/card/api/check'
 		is_success, data = microservice_consume2(url=url, data=data, method='post')
 
 		return is_success, data

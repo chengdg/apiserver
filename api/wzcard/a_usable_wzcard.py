@@ -85,8 +85,15 @@ class AUsableWZCard(api_resource.ApiResource):
 
 		checker = WZCard(webapp_user, webapp_owner)
 
+		is_success, msg = checker.boring_check(exist_cards.append(args['wzcard_id']))
+		if not is_success:
+			return {
+				'code': 400,
+				'msg': msg
+			}
+
 		is_success, resp = checker.check(request_data)
-		msg = ''
+
 		if is_success:
 			if resp['code'] == 200:
 				can_use = True

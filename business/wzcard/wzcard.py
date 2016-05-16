@@ -12,7 +12,7 @@ from util.microservice_consumer import microservice_consume2
 
 class WZCard(object):
 	"""
-	判断微众卡能否使用
+	微众卡操作业务模型
 	"""
 
 	def __init__(self, webapp_user, webapp_owner):
@@ -20,6 +20,10 @@ class WZCard(object):
 		self.webapp_owner = webapp_owner
 
 	def __get_webapp_user_info(self):
+		"""
+		微众卡相关的用户信息
+		@return:
+		"""
 		# customer_type 使用者类型(普通会员：0、会员首单：1、非会员：2)
 		if self.webapp_user.member.is_subscribed:
 			if mall_models.Order.select().dj_where(webapp_user_id=self.webapp_user.id).count() > 0:
@@ -35,7 +39,10 @@ class WZCard(object):
 		}
 
 	def __get_webapp_owner_info(self):
-
+		"""
+		微众卡相关的商户信息
+		@return:
+		"""
 		return {
 			'shop_id': self.webapp_owner.id,
 			'shop_name': self.webapp_owner.user_profile.store_name,
@@ -43,7 +50,7 @@ class WZCard(object):
 
 	def check(self, args):
 		"""
-		检查微众卡
+		检查微众卡，编辑订单页接口使用
 		@type args: h5请求参数
 		"""
 		data = {
@@ -57,11 +64,19 @@ class WZCard(object):
 		data.update(self.__get_webapp_user_info())
 
 		url = "http://" + settings.CARD_SERVER_DOMAIN + '/card/api/check'
-		is_success, data = microservice_consume2(url=url, data=data, method='post')
+		is_success, resp = microservice_consume2(url=url, data=data, method='post')
 
-		return is_success, data
+		return is_success, resp
 
 	def use(self, wzcard_info, money, valid_money, order_id):
+		"""
+		使用微众卡，下单接口使用
+		@param wzcard_info:
+		@param money:
+		@param valid_money:
+		@param order_id:
+		@return:
+		"""
 		data = {
 			'card_infos': wzcard_info,
 			'money': money,
@@ -73,9 +88,41 @@ class WZCard(object):
 		data.update(self.__get_webapp_user_info())
 
 		url = "http://" + settings.CARD_SERVER_DOMAIN + '/card/api/use'
-		is_success, data = microservice_consume2(url=url, data=data, method='post')
+		is_success, resp = microservice_consume2(url=url, data=data, method='post')
 
-		return is_success, data
+		return is_success, resp
+
+	def boring_check(self, card_numbers):
+		"""
+		1. 检查重复使用
+		2. 一个订单只能有10张微众卡
+		@param card_numbers: 卡号列表
+		@return:
+		"""
+		if len(card_numbers) > 10:
+			return False, "微众卡只能使用十张"
+		elif len(card_numbers) > len(set(card_numbers)):
+			return False, "该微众卡已经添加"
+		else:
+			return True, ""
+
+	def refund(self, order_id, trade_id):
+		"""
+		微众卡退款，取消订单或者下单失败时使用
+		@param order_id:
+		@param trade_id:
+		@return:
+		"""
+		trade_type = 0
+		data = {
+			'trade_id': trade_id,
+			'trade_type': trade_type
+		}
+
+		url = "http://" + settings.CARD_SERVER_DOMAIN + '/card/api/refund'
+		is_success, resp = microservice_consume2(url=url, data=data, method='post')
+
+		return is_success, resp
 
 	# @staticmethod
 	# def check_not_duplicated(wzcard_info_list):

@@ -4,17 +4,14 @@
 
 """
 
-from business import model as business_model
 import logging
-from business.wzcard.wzcard import WZCard
-from business.wzcard.wzcard_resource import WZCardResource
 
-from decimal import Decimal
-from business.mall.log_operator import LogOperator
-from eaglet.core import watchdog
+from business import model as business_model
 from business.wzcard.wzcard import WZCard
 
 # 每单用微众卡数量
+from business.wzcard.wzcard_resource import WZCardResource
+
 MAX_WZCARD_PER_ORDER = 10
 
 
@@ -53,23 +50,9 @@ class WZCardResourceAllocator(business_model.Service):
 
 		@todo 应该先抽取微众卡资源，然后判断是否有效，再执行扣资源的操作
 		"""
-		is_success = True
-		reason = ''
-
 		logging.info("type of `order`: {}".format(type(order)))
 
 		should_use_card = purchase_info.wzcard_info and order.final_price > 0
-
-		# todo 微众卡重复校验
-		# if len(purchase_info.wzcard_info) != len(set()):
-		# 	reason = {
-		# 		"is_success": False,
-		# 		"type": 'wzcard:exceeded',
-		# 		"msg": u'微众卡只能使用十张',
-		# 		"short_msg": u'卡未激活'
-		# 	}
-		# 	return False, [reason], None
-
 		if not should_use_card:
 			return True, [], None
 
@@ -77,6 +60,18 @@ class WZCardResourceAllocator(business_model.Service):
 			[product.original_price * product.purchase_count for product in order.products])
 
 		wzcard = WZCard(self.__webapp_user, self.__webapp_owner)
+
+		card_numbers = [x['card_number'] for x in purchase_info.wzcard_info]
+
+		is_success, msg = wzcard.boring_check(card_numbers)
+		if not is_success:
+			reason = {
+				"is_success": False,
+				"type": 'wzcard:exceeded',
+				"msg": msg,
+				"short_msg": msg
+			}
+			return False, [reason], None
 
 		is_success, resp = wzcard.use(purchase_info.wzcard_info, order.final_price, valid_money, order.order_id)
 
@@ -94,10 +89,12 @@ class WZCardResourceAllocator(business_model.Service):
 
 		if can_use:
 			data = resp['data']
-			self.__record_trade_id(data['trade_id'])
+			self.__record_trade_id(order.order_id,data['trade_id'])
 			paid_money = float(data['paid_money'])
 			order.final_price -= paid_money
 			order.weizoom_card_money = paid_money
+			wzcard_resource = WZCardResource(self.resource_type, data['trade_id'])
+			return True, [], wzcard_resource
 		else:
 			reason = {
 				"is_success": False,
@@ -218,19 +215,12 @@ class WZCardResourceAllocator(business_model.Service):
 		@todo 退款记录
 		"""
 		logging.info("calling WZCardResourceAllocator.release() to release resources, resource: {}".format(resource))
-
-		used_wzcards = resource.used_wzcards
-		# 退回扣款记录
-		for wzcard_id, used_amount, last_status in used_wzcards:
-			# 找到对应的卡
-			wzcard = WZCard.from_wzcard_id({
-				"webapp_owner": self.__webapp_owner,
-				"wzcard_id": wzcard_id,
-			})
-			# 退款
-			is_success, balance = wzcard.refund(used_amount, u'refund', last_status)
+		order_id = resource.order_id
+		trade_id = resource.trade_id
+		wzcard = WZCard(self.__webapp_user, self.__webapp_owner)
+		is_success = wzcard.refund(order_id, trade_id)
 			# TODO: 如果退款失败怎么办？
-			logging.info("WZCard refunded: is_success: {}, balance: {}".format(is_success, balance))
+		logging.info("WZCard refunded: is_success: {}, order_id: {}".format(is_success, order_id))
 		return
 
 	@property
@@ -240,5 +230,5 @@ class WZCardResourceAllocator(business_model.Service):
 		"""
 		return "wzcard"
 
-	def __record_trade_id(self):
+	def __record_trade_id(self, order_id, trade_id):
 		pass

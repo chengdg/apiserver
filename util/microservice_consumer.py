@@ -107,8 +107,8 @@ def microservice_consume2(url='', data={}, method='get', timeout=None):
 						resp.status_code, weizoom_code, url, str(data), resp))
 				raise ResponseCodeException
 		else:
-			watchdog.alert(u'microservice_consume_alert,外部接口调用错误-http错误状态码.code:%s,url:%s，data:%s' % (
-				resp.status_code, url, str(data)))
+			watchdog.alert(u'microservice_consume_alert,外部接口调用错误-http错误状态码.code:%s,url:%s，data:%s,method:%s' % (
+				resp.status_code, url, str(data), method))
 			raise ResponseCodeException
 	except BaseException as e:
 		traceback = unicode_full_stack()

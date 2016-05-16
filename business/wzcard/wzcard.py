@@ -63,11 +63,7 @@ class WZCard(object):
 		data.update(self.__get_webapp_owner_info())
 		data.update(self.__get_webapp_user_info())
 
-		url = "http://" + settings.CARD_SERVER_DOMAIN + '/card/api/check'
-
-		print('-----data',data)
-		print('-----url',url)
-
+		url = "http://" + settings.CARD_SERVER_DOMAIN + '/card/checked_card'
 
 		is_success, resp = microservice_consume2(url=url, data=data, method='post')
 
@@ -92,7 +88,7 @@ class WZCard(object):
 		data.update(self.__get_webapp_owner_info())
 		data.update(self.__get_webapp_user_info())
 
-		url = "http://" + settings.CARD_SERVER_DOMAIN + '/card/api/use'
+		url = "http://" + settings.CARD_SERVER_DOMAIN + '/card/trade'
 		is_success, resp = microservice_consume2(url=url, data=data, method='post')
 
 		return is_success, resp
@@ -128,8 +124,8 @@ class WZCard(object):
 			'trade_type': trade_type
 		}
 
-		url = "http://" + settings.CARD_SERVER_DOMAIN + '/card/api/refund'
-		is_success, resp = microservice_consume2(url=url, data=data, method='post')
+		url = "http://" + settings.CARD_SERVER_DOMAIN + '/card/trade'
+		is_success, resp = microservice_consume2(url=url, data=data, method='delete')
 
 		return is_success, resp
 

@@ -125,6 +125,8 @@ class APurchasing(api_resource.ApiResource):
 		integral_info = webapp_user.integral_info
 		integral_info['have_integral'] = (integral_info['count'] > 0)
 
+		print()
+
 		#获取优惠券
 		coupons, limit_coupons = APurchasing.__get_coupons(webapp_user, order.products)
 

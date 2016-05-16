@@ -7,7 +7,7 @@ from datetime import datetime
 from business import model as business_model
 from db.mall import promotion_models
 from eaglet.decorator import param_required
-
+from db.mall import models as mall_models
 
 class Coupon(business_model.Model):
 	"""
@@ -215,9 +215,29 @@ class Coupon(business_model.Model):
 
 	def is_can_use_for_products(self, webapp_user, reserved_products):
 		member_id = webapp_user.member.id if webapp_user.member else 0
+		# 检查优惠券自身状态
 		msg = self.__check_coupon_status(member_id)
 		if msg:
 			return False, msg
+
+		# 检查每人限领
+		# if self.coupon_rule.limit_counts > 0:
+		# 	# 领取未使用
+		# 	has_unuse_count = promotion_models.Coupon.select().dj_where(member_id=member_id, status=promotion_models.COUPON_STATUS_UNUSED).count()
+		#
+		# 	# 已使用
+		# 	coupons = promotion_models.Coupon.select().dj_where(coupon_rule_id=self.coupon_rule.id, status=promotion_models.COUPON_STATUS_USED)
+		# 	if coupons:
+		# 		coupon_ids = [c.id for c in coupons]
+		#
+		# 		has_used_count = mall_models.Order.select().dj_where(webapp_user_id=self.webapp_user.id, coupon_id__in=coupon_ids).count()
+		# 	else:
+		# 		has_used_count = 0
+		#
+		# 	has_count = has_unuse_count + has_used_count
+		# 	if has_count + 1 > self.coupon_rule.limit_counts:
+		# 		msg = u'超过限领数量'
+		# 		return False, msg
 
 		# 处理单品券
 		if self.is_specific_product_coupon():

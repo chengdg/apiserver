@@ -205,4 +205,5 @@ REGISTERED_LOCK_NAMES = {
 	'wapi_lock': 'wapi:',
 }
 
-CARD_SERVER_DOMAIN = "api.card.com"
+# CARD_SERVER_DOMAIN = "api.card.com"
+CARD_SERVER_DOMAIN = "cardapi.weapp.weizzz.com"

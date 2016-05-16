@@ -35,7 +35,7 @@ class WZCard(object):
 
 		return {
 			'customer_type': customer_type,
-			'customer_id': self.webapp_user.meber.id,
+			'customer_id': self.webapp_user.member.id,
 		}
 
 	def __get_webapp_owner_info(self):
@@ -54,8 +54,8 @@ class WZCard(object):
 		@type args: h5请求参数
 		"""
 		data = {
-			'card_number': args['wzcard_id'],
-			'card_password': args['password'],
+			'card_number': args['card_number'],
+			'card_password': args['card_password'],
 			'exist_cards': args['exist_cards'],
 			'valid_money': args['valid_money'],  # 商品原价+运费
 		}
@@ -64,6 +64,11 @@ class WZCard(object):
 		data.update(self.__get_webapp_user_info())
 
 		url = "http://" + settings.CARD_SERVER_DOMAIN + '/card/api/check'
+
+		print('-----data',data)
+		print('-----url',url)
+
+
 		is_success, resp = microservice_consume2(url=url, data=data, method='post')
 
 		return is_success, resp
@@ -113,7 +118,11 @@ class WZCard(object):
 		@param trade_id:
 		@return:
 		"""
-		trade_type = 0
+		# 交易类型（支付失败退款：0、普通退款：1）
+		if mall_models.Order.select().dj_where(order_id=order_id).first():
+			trade_type = 1
+		else:
+			trade_type = 0
 		data = {
 			'trade_id': trade_id,
 			'trade_type': trade_type

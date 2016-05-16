@@ -79,13 +79,15 @@ class AUsableWZCard(api_resource.ApiResource):
 		request_data = {
 			'card_number': args['wzcard_id'],
 			'card_password': args['password'],
-			'valid_money': args['valid_money'],
+			'valid_money': args['wzcard_check_money'],
 			'exist_cards': exist_cards
 		}
 
 		checker = WZCard(webapp_user, webapp_owner)
 
-		is_success, msg = checker.boring_check(exist_cards.append(args['wzcard_id']))
+		card_numbers = exist_cards + [args['wzcard_id']]
+
+		is_success, msg = checker.boring_check(card_numbers)
 		if not is_success:
 			return {
 				'code': 400,

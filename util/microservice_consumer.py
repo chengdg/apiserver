@@ -90,21 +90,21 @@ def microservice_consume2(url='', data={}, method='get', timeout=None):
 			url = url + '?_method=' + method if '_method' not in url else url
 			resp = requests.post(url, data, timeout=_timeout)
 		if resp.status_code == 200:
-			resp = json.loads(resp.text)
+			resp_content = json.loads(resp.text)
 			# resp_data = resp['data']
 			try:
-				weizoom_code = resp['code']
+				weizoom_code = resp_content['code']
 			except:
 				weizoom_code = 10086  # 无法得到正确weizoom_code时的默认值
 			if weizoom_code == 200 or weizoom_code == 500:
 				watchdog.info(
 					u'microservice_consume_log,外部接口成功调用日志.code:%s,weizoom_code:%s,url:%s，request_data:%s,resp:%s' % (
-						resp.status_code, weizoom_code, url, str(data), resp.text))
-				return True, resp
+						resp.status_code, weizoom_code, url, str(data), resp_content))
+				return True, resp_content
 			else:
 				watchdog.alert(
 					u'microservice_consume_alert,外部接口调用错误-wzcode错误状态码.code:%s,weizoom_code:%s,url:%s，request_data:%s,resp:%s' % (
-						resp.status_code, weizoom_code, url, str(data), resp))
+						resp.status_code, weizoom_code, url, str(data), resp_content))
 				raise ResponseCodeException
 		else:
 			watchdog.alert(u'microservice_consume_alert,外部接口调用错误-http错误状态码.code:%s,url:%s，data:%s,method:%s' % (

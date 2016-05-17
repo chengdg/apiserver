@@ -4,6 +4,7 @@
 
 判断微众卡是否能用、是否有效、是否激活等各种情况。
 """
+import json
 
 import db.mall.models as mall_models
 import settings
@@ -56,7 +57,7 @@ class WZCard(object):
 		data = {
 			'card_number': args['card_number'],
 			'card_password': args['card_password'],
-			'exist_cards': args['exist_cards'],
+			'exist_cards': json.dumps(args['exist_cards']),
 			'valid_money': args['valid_money'],  # 商品原价+运费
 		}
 

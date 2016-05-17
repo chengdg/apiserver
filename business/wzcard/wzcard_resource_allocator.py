@@ -89,7 +89,7 @@ class WZCardResourceAllocator(business_model.Service):
 
 		if can_use:
 			data = resp['data']
-			self.__record_trade_id(order.order_id, data['trade_id'])
+			self.__record_trade_id(order.order_id, data['trade_id'], data['used_card'])
 			paid_money = float(data['paid_money'])
 			order.final_price -= paid_money
 			order.weizoom_card_money = paid_money
@@ -230,5 +230,5 @@ class WZCardResourceAllocator(business_model.Service):
 		"""
 		return "wzcard"
 
-	def __record_trade_id(self, order_id, trade_id):
-		mall_models.OrderCardInfo.create(order_id=order_id, trade_id=trade_id)
+	def __record_trade_id(self, order_id, trade_id, used_card):
+		mall_models.OrderCardInfo.create(order_id=order_id, trade_id=trade_id, used_card=used_card)

@@ -80,7 +80,7 @@ class WZCard(object):
 		@return:
 		"""
 		data = {
-			'card_infos': wzcard_info,
+			'card_infos': json.dumps(wzcard_info),
 			'money': money,
 			'valid_money': valid_money,
 			'order_id': order_id

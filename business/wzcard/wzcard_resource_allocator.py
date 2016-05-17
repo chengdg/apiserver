@@ -8,7 +8,7 @@ import logging
 
 from business import model as business_model
 from business.wzcard.wzcard import WZCard
-
+from db.mall import models as mall_models
 # 每单用微众卡数量
 from business.wzcard.wzcard_resource import WZCardResource
 
@@ -89,11 +89,11 @@ class WZCardResourceAllocator(business_model.Service):
 
 		if can_use:
 			data = resp['data']
-			self.__record_trade_id(order.order_id,data['trade_id'])
+			self.__record_trade_id(order.order_id, data['trade_id'])
 			paid_money = float(data['paid_money'])
 			order.final_price -= paid_money
 			order.weizoom_card_money = paid_money
-			wzcard_resource = WZCardResource(self.resource_type, data['trade_id'])
+			wzcard_resource = WZCardResource(self.resource_type, order.order_id, data['trade_id'])
 			return True, [], wzcard_resource
 		else:
 			reason = {
@@ -231,4 +231,4 @@ class WZCardResourceAllocator(business_model.Service):
 		return "wzcard"
 
 	def __record_trade_id(self, order_id, trade_id):
-		pass
+		mall_models.OrderCardInfo.create(order_id=order_id, trade_id=trade_id)

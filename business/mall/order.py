@@ -978,12 +978,6 @@ class Order(business_model.Model):
 		service = AllocatePriceRelatedResourceService(webapp_owner, webapp_user)
 		service.release(resources)
 
-		# 需要删除WZCard的log
-		# TODO: 待优化，应该在释放微众卡资源时删除wzcard_log
-		LogOperator.remove_wzcard_logs_by_order_id(self.order_id)
-
-		return
-
 
 	def cancel(self):
 		"""

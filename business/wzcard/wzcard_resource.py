@@ -14,15 +14,16 @@ class WZCardResource(business_model.Resource):
 	__slots__ = (
 		'type',
 		'trade_id',
+		'order_id'
 	)
 
-	def __init__(self, type, trade_id):
+	def __init__(self, type, order_id, trade_id):
 		"""
 		根据type和used_wzcards构造WZCardResource
 
 		"""
 		business_model.Resource.__init__(self)
-
+		self.order_id = order_id
 		self.trade_id = trade_id
 		self.type = type
 

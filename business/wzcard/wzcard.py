@@ -7,6 +7,7 @@
 import json
 
 import db.mall.models as mall_models
+import db.wzcard.models as wzcard_models
 import settings
 from util.microservice_consumer import microservice_consume2
 
@@ -92,7 +93,30 @@ class WZCard(object):
 		url = "http://" + settings.CARD_SERVER_DOMAIN + '/card/trade'
 		is_success, resp = microservice_consume2(url=url, data=data, method='post')
 
-		return is_success, resp
+		msg = ''
+		if is_success:
+			data = resp['data']
+			if resp['code'] == 200:
+				can_use = True
+			else:
+				msg = data['reason']
+				can_use = False
+		else:
+			can_use = False
+			msg = u'系统繁忙'
+
+		if can_use:
+			data = resp['data']
+			self.__record(order_id, data)
+			return True, [], data
+		else:
+			reason = {
+				"is_success": False,
+				"type": 'wzcard:exceeded',
+				"msg": msg,
+				"short_msg": u'系统繁忙'
+			}
+			return False, [reason], None
 
 	def boring_check(self, card_numbers):
 		"""
@@ -129,6 +153,20 @@ class WZCard(object):
 		is_success, resp = microservice_consume2(url=url, data=data, method='delete')
 
 		return is_success, resp
+
+	def __record(self, order_id, data):
+		trade_id = data['trade_id']
+		for card_id in json.loads(data['used_cards']):
+			wzcard_models.WeizoomCardHasOrder.create(
+				owner_id=-1,
+				order_id=order_id,
+				card_id=-1,
+				money=-1,
+				event_type=wzcard_models.WEIZOOM_CARD_LOG_TYPE_BUY_USE,
+				card_code=card_id,
+				trade_id=trade_id,
+			)
+
 
 	# @staticmethod
 	# def check_not_duplicated(wzcard_info_list):

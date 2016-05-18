@@ -29,6 +29,7 @@ from business.wzcard.wzcard_resource_allocator import WZCardResourceAllocator
 from business.mall.log_operator import LogOperator
 from business.wzcard.wzcard_resource import WZCardResource
 from db.mall import models as mall_models
+import db.wzcard.models as wzcard_models
 
 class OrderResourceExtractor(business_model.Model):
 	"""
@@ -149,7 +150,6 @@ class OrderResourceExtractor(business_model.Model):
 		@todo 待重构，增加WZCardResourceExtractor
 		"""
 		logging.info(u"to extract WZCardResource from order, order_id:{}".format(order.order_id))
-		resources = []
 
 		webapp_owner = self.context['webapp_owner']
 		webapp_user = self.context['webapp_user']
@@ -160,10 +160,9 @@ class OrderResourceExtractor(business_model.Model):
 		used_wzcards = LogOperator.get_used_wzcards(order.order_id)
 		logging.info("extracted wzcard resource: {}".format(used_wzcards))
 
-		info = mall_models.OrderCardInfo.select().dj_where(order_id=order.order_id).first()
+		info = wzcard_models.WeizoomCardHasOrder.select().dj_where(order_id=order.order_id).first()
 		trade_id = info.trade_id
 		resource = WZCardResource(resource_type, order.order_id, trade_id)
-		resources.append(resource)
 
 		return resource
 

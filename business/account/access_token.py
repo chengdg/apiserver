@@ -76,38 +76,39 @@ class AccessToken(business_model.Model):
 			self.access_token = db_model.access_token
 			return self.access_token
 		else:
-			access_token = auth_util.encrypt_access_token(self.woid, self.openid)
+			return None
+			# access_token = auth_util.encrypt_access_token(self.woid, self.openid)
 			
-			self.access_token = access_token
+			# self.access_token = access_token
 
-			try:
-				db_model = account_models.AccessToken(
-					woid=self.woid, 
-					openid=self.openid, 
-					times=str(int(time.time())),
-					access_token=access_token,
-					expires_in='100000000000'
-					).save()
-				return access_token
-			except:
-				try:
-					db_model = account_models.AccessToken(
-						woid=self.woid, 
-						openid=self.openid, 
-						times=str(int(time.time())),
-						access_token=access_token,
-						expires_in='1000000000000'
-						).save()
-					return access_token
-				except:
-					notify_message = u"AccessToken get_access_token cause:\n{}".format(unicode_full_stack())
-					logging.error(notify_message)
-					watchdog.error(notify_message)
-					return None
+			# try:
+			# 	db_model = account_models.AccessToken(
+			# 		woid=self.woid, 
+			# 		openid=self.openid, 
+			# 		times=str(int(time.time())),
+			# 		access_token=access_token,
+			# 		expires_in='100000000000'
+			# 		).save()
+			# 	return access_token
+			# except:
+			# 	try:
+			# 		db_model = account_models.AccessToken(
+			# 			woid=self.woid, 
+			# 			openid=self.openid, 
+			# 			times=str(int(time.time())),
+			# 			access_token=access_token,
+			# 			expires_in='1000000000000'
+			# 			).save()
+			# 		return access_token
+			# 	except:
+			# 		notify_message = u"AccessToken get_access_token cause:\n{}".format(unicode_full_stack())
+			# 		logging.error(notify_message)
+			# 		watchdog.error(notify_message)
+			# 		return None
 
 	def put_access_token(self):
 		"""
-			get_access_token
+			put_access_token
 		"""
 		if self.access_token:
 			return self.access_token

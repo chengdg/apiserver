@@ -69,7 +69,7 @@ class AccessToken(api_resource.ApiResource):
 		#access_token = BusinessAccessToken(woid, openid).get_access_token()
 
 		if not access_token:
-			access_token = BusinessAccessToken(woid, openid).get_access_token()
+			access_token = BusinessAccessToken(woid, openid).put_access_token()
 
 		if not access_token:
 			return {"errorcode": error_codes.SYSTEM_ERROR_CODE, "errmsg": error_codes.code2msg[error_codes.SYSTEM_ERROR_CODE]}
@@ -101,3 +101,14 @@ class AccessToken(api_resource.ApiResource):
 			})
 
 			return {"webapp_owner": webapp_owner, "system_account": system_account}
+
+	@param_required(['woid', 'openid'])
+	def get(args):
+		woid = args['woid']
+		openid = args['openid']
+
+		access_token = BusinessAccessToken(woid, openid).get_access_token()
+		data = {
+			"access_token": access_token
+		}
+		return data

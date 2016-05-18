@@ -65,7 +65,8 @@ class AccessToken(api_resource.ApiResource):
 			return {"errorcode": error_codes.ILLEGAL_OPENID_CODE, "errmsg": error_codes.code2msg[error_codes.ILLEGAL_OPENID_CODE]}
 		
 		#加密access_token
-		access_token = BusinessAccessToken(woid, openid).get_access_token()
+		access_token = BusinessAccessToken(woid, openid).put_access_token()
+		#access_token = BusinessAccessToken(woid, openid).get_access_token()
 
 		if not access_token:
 			access_token = BusinessAccessToken(woid, openid).get_access_token()

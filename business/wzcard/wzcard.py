@@ -142,10 +142,9 @@ class WZCard(object):
 			wzcard_models.WeizoomCardHasOrder.create(
 				owner_id=-1,
 				order_id=order_id,
-				card_id=-1,
+				card_id=card_id,
 				money=-1,
 				event_type=wzcard_models.WEIZOOM_CARD_LOG_TYPE_BUY_USE,
-				card_code=card_id,
 				trade_id=trade_id,
 			)
 

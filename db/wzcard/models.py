@@ -105,6 +105,7 @@ class WeizoomCardHasOrder(models.Model):
 	event_type = models.CharField(max_length=64, verbose_name='事件类型')
 	member_integral_log_id = models.IntegerField(default=0, verbose_name='积分日志id')
 	trade_id = models.CharField(max_length=100, default='')  # 交易号
+	card_code = models.CharField(max_length=50, default='')     # 微众卡号
 
 	class Meta(object):
 		db_table = 'market_tool_weizoom_card_has_order'

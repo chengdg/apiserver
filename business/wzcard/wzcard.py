@@ -138,14 +138,15 @@ class WZCard(object):
 
 	def __record(self, order_id, data):
 		trade_id = data['trade_id']
-		for card_id in json.loads(data['used_cards']):
+		for card_code in json.loads(data['used_cards']):
 			wzcard_models.WeizoomCardHasOrder.create(
 				owner_id=-1,
 				order_id=order_id,
-				card_id=card_id,
+				card_id=-1,
 				money=-1,
 				event_type=wzcard_models.WEIZOOM_CARD_LOG_TYPE_BUY_USE,
 				trade_id=trade_id,
+				card_code=card_code
 			)
 
 

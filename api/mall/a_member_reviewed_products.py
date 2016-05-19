@@ -18,7 +18,7 @@ class AMemberReviewedProducts(api_resource.ApiResource):
 	"""
 	获取商品的评论列表
 	"""
-	app = 'member'
+	app = 'mall'
 	resource = 'reviewed_products'
 
 	@param_required(['webapp_owner', 'webapp_user'])

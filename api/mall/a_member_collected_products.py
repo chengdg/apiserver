@@ -13,7 +13,7 @@ class AMemberCollectedProduct(api_resource.ApiResource):
 	"""
 	会员收藏商品
 	"""
-	app = 'member'
+	app = 'mall'
 	resource = 'collected_products'
 
 

@@ -13,7 +13,7 @@ class AMemberCollectedProduct(api_resource.ApiResource):
 	"""
 	会员收藏商品
 	"""
-	app = 'member'
+	app = 'mall'
 	resource = 'collected_product'
 
 	@param_required(['webapp_user', 'product_id'])

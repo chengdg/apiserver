@@ -30,7 +30,7 @@ class AMemberReviewProduct(api_resource.ApiResource):
 
 	@see 原始源码在`webapp/modules/mall/request_api_util.py`中的`create_product_review()`。
 	"""
-	app = 'member'
+	app = 'mall'
 	resource = 'review_product'
 
 

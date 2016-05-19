@@ -24,15 +24,15 @@ class AUsableWZCard(api_resource.ApiResource):
 		"""
 		校验微众卡信息
 		"""
+		# # webapp_owner = args['webapp_owner']
+		# wzcard_id = args['wzcard_id']
+		# wzcard_password = args['password']
 		# webapp_owner = args['webapp_owner']
-		wzcard_id = args['wzcard_id']
-		wzcard_password = args['password']
-		webapp_owner = args['webapp_owner']
-		webapp_user = args['webapp_user']
-		used_cards = args.get('used_cards', '')
-		used_cards = used_cards.split(',') if used_cards else []
+		# webapp_user = args['webapp_user']
+		# used_cards = args.get('used_cards', '')
+		# used_cards = used_cards.split(',') if used_cards else []
 
-		wzcard_check_money = args['wzcard_check_money']
+		# wzcard_check_money = args['wzcard_check_money']
 
 		# # 获取微众卡信息
 		# wzcard = WZCard.from_wzcard_id({
@@ -72,6 +72,8 @@ class AUsableWZCard(api_resource.ApiResource):
 		# 	'balance': wzcard.balance,
 		# 	'msg': msg
 		# }
+		webapp_owner = args['webapp_owner']
+		webapp_user = args['webapp_user']
 
 		exist_cards = args.get('used_cards', '')
 		exist_cards = exist_cards.split(',') if exist_cards else []

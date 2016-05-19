@@ -5,7 +5,7 @@
 """
 
 import logging
-
+import json
 from business import model as business_model
 from business.wzcard.wzcard import WZCard
 from db.mall import models as mall_models
@@ -73,23 +73,9 @@ class WZCardResourceAllocator(business_model.Service):
 			}
 			return False, [reason], None
 
-		is_success, resp = wzcard.use(purchase_info.wzcard_info, order.final_price, valid_money, order.order_id)
-
-		msg = ''
-		if is_success:
-			data = resp['data']
-			if resp['code'] == 200:
-				can_use = True
-			else:
-				msg = data['reason']
-				can_use = False
-		else:
-			can_use = False
-			msg = u'系统繁忙'
+		can_use, msg, data = wzcard.use(purchase_info.wzcard_info, order.final_price, valid_money, order.order_id)
 
 		if can_use:
-			data = resp['data']
-			self.__record_trade_id(order.order_id, data['trade_id'], data['used_card'])
 			paid_money = float(data['paid_money'])
 			order.final_price -= paid_money
 			order.weizoom_card_money = paid_money
@@ -98,11 +84,12 @@ class WZCardResourceAllocator(business_model.Service):
 		else:
 			reason = {
 				"is_success": False,
-				"type": 'wzcard:exceeded',
+				"type": data['type'],
 				"msg": msg,
 				"short_msg": u'系统繁忙'
 			}
 			return False, [reason], None
+
 
 		# wzcard_info_list = purchase_info.wzcard_info if order.final_price > 0 else []
 		# logging.info("wzcard_info: {}".format(wzcard_info_list))

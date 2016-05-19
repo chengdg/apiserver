@@ -122,3 +122,21 @@ def microservice_consume2(url='', data={}, method='get', timeout=None):
 # is_success, resp_data = microservice_consume(url=url, data=param_data)
 # print('--------is_success',is_success)
 # print('resp',resp_data)
+
+
+def process_resp(is_success,resp):
+	msg = ''
+	if is_success:
+		data = resp['data']
+		if resp['code'] == 200:
+			can_use = True
+		else:
+			msg = data['reason']
+			can_use = False
+	else:
+		data = {}
+		can_use = False
+		msg = u'系统繁忙'
+
+	return can_use, msg, data
+

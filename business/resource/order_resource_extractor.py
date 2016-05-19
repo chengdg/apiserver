@@ -156,9 +156,9 @@ class OrderResourceExtractor(business_model.Model):
 
 		resource_type = WZCardResourceAllocator(webapp_owner, webapp_user).resource_type
 
-		# 从微众卡日志找出信息
-		used_wzcards = LogOperator.get_used_wzcards(order.order_id)
-		logging.info("extracted wzcard resource: {}".format(used_wzcards))
+		# # 从微众卡日志找出信息
+		# used_wzcards = LogOperator.get_used_wzcards(order.order_id)
+		# logging.info("extracted wzcard resource: {}".format(used_wzcards))
 
 		info = wzcard_models.WeizoomCardHasOrder.select().dj_where(order_id=order.order_id).first()
 		trade_id = info.trade_id

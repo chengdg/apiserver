@@ -160,7 +160,8 @@ class OrderResourceExtractor(business_model.Model):
 		# used_wzcards = LogOperator.get_used_wzcards(order.order_id)
 		# logging.info("extracted wzcard resource: {}".format(used_wzcards))
 
-		info = wzcard_models.WeizoomCardHasOrder.select().dj_where(order_id=order.order_id).first()
+		# info = wzcard_models.WeizoomCardHasOrder.select().dj_where(order_id=order.order_id).first()
+		info = mall_models.OrderCardInfo.select().dj_where(order_id=order.order_id).first()
 		trade_id = info.trade_id
 		resource = WZCardResource(resource_type, order.order_id, trade_id)
 

@@ -136,18 +136,25 @@ class WZCard(object):
 
 		return is_success, resp
 
+	# def __record(self, order_id, data):
+	# 	trade_id = data['trade_id']
+	# 	for card_code in json.loads(data['used_cards']):
+	# 		wzcard_models.WeizoomCardHasOrder.create(
+	# 			owner_id=-1,
+	# 			order_id=order_id,
+	# 			card_id=-1,
+	# 			money=-1,
+	# 			event_type=wzcard_models.WEIZOOM_CARD_LOG_TYPE_BUY_USE,
+	# 			trade_id=trade_id,
+	# 			card_code=card_code
+	# 		)
+
 	def __record(self, order_id, data):
-		trade_id = data['trade_id']
-		for card_code in json.loads(data['used_cards']):
-			wzcard_models.WeizoomCardHasOrder.create(
-				owner_id=-1,
-				order_id=order_id,
-				card_id=-1,
-				money=-1,
-				event_type=wzcard_models.WEIZOOM_CARD_LOG_TYPE_BUY_USE,
-				trade_id=trade_id,
-				card_code=card_code
-			)
+		mall_models.OrderCardInfo.create(
+			order_id=order_id,
+			trade_id=data['trade_id'],
+			used_card=data['used_cards']
+		)
 
 
 		# @staticmethod

@@ -73,7 +73,7 @@ def step_impl(context, webapp_user_name, shared_webapp_user_name):
 	# logging.error('>>>>>>>bbbbbbbbbbbbbbbbbbbbbbb')
 	if hasattr(context, 'shared_url') and context.shared_url:
 		shared_url = context.shared_url
-	else:	
+	else:
 		shared_url = context.o_shared_url
 		context.shared_url = context.o_shared_url #'/mall/products/?fmt='+shared_member.token
 		context.fmt = context.o_fmt
@@ -83,7 +83,7 @@ def step_impl(context, webapp_user_name, shared_webapp_user_name):
 		webapp_owner = WebAppOwner.get({
 			'woid': webapp_owner_id
 		})
-		
+
 		member_account = MemberSpread.process_openid_for({
 			'openid': current_openid,
 			'for_oauth':'1',

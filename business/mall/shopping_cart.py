@@ -57,6 +57,11 @@ class ShoppingCart(business_model.Model):
 		@param[in] product_model_name: 商品规格名
 		@param[in] count: 商品数量
 		"""
+		if mall_models.ProductModel.select().dj_where(
+			product_id=product_id, name=product_model_name
+			).count() == 0:
+			return
+
 		try:
 			shopping_cart_item = mall_models.ShoppingCart.get(
 				mall_models.ShoppingCart.webapp_user_id == self.webapp_user.id,
@@ -158,7 +163,7 @@ class ShoppingCart(business_model.Model):
 		for promotion_product_group in promotion_product_groups:
 			promotion_product_group.apply_promotion()
 			promotion_product_group_data = promotion_product_group.to_dict(with_price_factor=True)
-			promotion_product_group_datas.append(promotion_product_group_data) 
+			promotion_product_group_datas.append(promotion_product_group_data)
 
 		promotion_product_group_datas.sort(lambda x,y: cmp(y['id'], x['id']))
 

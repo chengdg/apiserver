@@ -14,7 +14,8 @@ from eaglet.core.cache import utils as cache_util
 from db.mall import models as mall_models
 from db.member import models as member_models
 from eaglet.core import watchdog
-from business import model as business_model 
+from business import model as business_model
+from business.account.member import Member
 from business.mall.order_product import OrderProduct 
 from business.mall.forbidden_coupon_product_ids import ForbiddenCouponProductIds
 from business.account.integral_log import IntegralLog 
@@ -57,12 +58,33 @@ class IntegralLogs(business_model.Model):
 		integral_logs_list = []
 		integral_logs = member_models.MemberIntegralLog.select().dj_where(member_id=webapp_user.member.id).order_by(-member_models.MemberIntegralLog.created_at)
 
+		followers_token = set()
+		followers_token2member = {}
+
+		# 将所有涉及好友分享的log中的follower token取出
 		for integral_log in integral_logs:
-			integral_logs_list.append(IntegralLog.from_model({
-					'webapp_user': webapp_user,
-					'webapp_owner': webapp_owner,
-					'model': integral_log
-				}).to_dict())
+			if integral_log.follower_member_token:
+				# followers_token.append(integral_log.follower_member_token)
+				followers_token.add(integral_log.follower_member_token)
+
+		# 根据token列表查出所有followers
+		followers = Member.from_tokens({'webapp_owner': webapp_owner, 'token': list(followers_token)})
+
+		# 根据followers建立token2follower的dict
+		for follower in followers:
+			followers_token2member[follower.token] = follower
+
+		for integral_log in integral_logs:
+			# integral = IntegralLog(webapp_owner, webapp_user, integral_log, type='integral_log')
+			if integral_log.follower_member_token:
+				follower = followers_token2member.get(integral_log.follower_member_token, None)
+				if not follower:
+					integral_log.follower_member_token = ''
+				integral = IntegralLog(webapp_owner, webapp_user, integral_log, follower=follower)
+			else:
+				integral = IntegralLog(webapp_owner, webapp_user, integral_log, follower=None)
+			integral_logs_list.append(integral.to_dict())
+
 		self.integral_logs = self.__get_organized_integral_log_list(integral_logs_list)
 
 	def __get_organized_integral_log_list(self, log_list):

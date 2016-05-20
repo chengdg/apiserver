@@ -65,6 +65,7 @@ class SimpleProducts(business_model.Model):
 		key = 'webapp_products_categories_{wo:%s}' % webapp_owner.id
 		data = cache_util.get_from_cache(key, self.__get_from_db(webapp_owner))
 		products = data['products']
+
 		if category_id == 0:
 			category = mall_models.ProductCategory()
 			category.name = u'全部'
@@ -102,6 +103,12 @@ class SimpleProducts(business_model.Model):
 
 			products = products_not_0 + products_is_0
 
+		product_sales = mall_models.ProductSales.select().dj_where(product__in=[p['id'] for p in products])
+		product_id2sales = {t.product_id: t.sales for t in product_sales}
+
+		for p in products:
+			p['sales'] = product_id2sales.get(p['id'], 0)   # warning,没产生销量的商品没有创建ProductSales记录
+
 		return category, products, data['categories']
 
 
@@ -129,17 +136,29 @@ class SimpleProducts(business_model.Model):
 				product_datas = []
 				# jz 2015-11-26
 				# member = webapp_user.member
-				for product_model in product_models:
-					product = Product.from_model({
-						'webapp_owner': webapp_owner,
-						'model': product_model,
-						'fill_options': {
-							"with_price": True,
-							"with_product_promotion": True,
-							"with_selected_category": True
-						}
-					})
 
+				products = Product.from_models({
+					'webapp_owner': webapp_owner,
+					'models': product_models,
+					'fill_options': {
+						"with_price": True,
+						"with_product_promotion": True,
+						"with_selected_category": True
+					}
+				})
+				# for product_model in product_models:
+				# 	product = Product.from_model({
+				# 		'webapp_owner': webapp_owner,
+				# 		'model': product_model,
+				# 		'fill_options': {
+				# 			"with_price": True,
+				# 			"with_product_promotion": True,
+				# 			"with_selected_category": True
+				# 		}
+				# 	})
+				#
+
+				for product in products:
 					product_datas.append({
 						"id": product.id,
 						"name": product.name,

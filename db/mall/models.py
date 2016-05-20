@@ -994,6 +994,7 @@ class MemberProductWishlist(models.Model):
 PAY_INTERFACE_ALIPAY = 0
 PAY_INTERFACE_TENPAY = 1
 PAY_INTERFACE_WEIXIN_PAY = 2
+PAY_INTERFACE_BEST_PAY = 11
 PAY_INTERFACE_COD = 9
 PAY_INTERFACE_PREFERENCE = 10
 PAY_INTERFACE_WEIZOOM_COIN = 3
@@ -1012,7 +1013,8 @@ PAYTYPE2NAME = {
 	PAY_INTERFACE_TENPAY: u'财付通',
 	PAY_INTERFACE_WEIXIN_PAY: u'微信支付',
 	PAY_INTERFACE_COD: u'货到付款',
-	PAY_INTERFACE_WEIZOOM_COIN: u"微众卡支付"
+	PAY_INTERFACE_WEIZOOM_COIN: u"微众卡支付",
+	PAY_INTERFACE_BEST_PAY: u"翼支付"
 }
 PAYNAME2TYPE = {
 	u'优惠抵扣':PAY_INTERFACE_PREFERENCE,
@@ -1020,19 +1022,24 @@ PAYNAME2TYPE = {
 	u'财付通': PAY_INTERFACE_TENPAY,
 	u'微信支付': PAY_INTERFACE_WEIXIN_PAY,
 	u'货到付款': PAY_INTERFACE_COD,
-	u"微众卡支付": PAY_INTERFACE_WEIZOOM_COIN
+	u"微众卡支付": PAY_INTERFACE_WEIZOOM_COIN,
+	u"翼支付":PAY_INTERFACE_BEST_PAY
 }
 
 VALID_PAY_INTERFACES = [
 	PAY_INTERFACE_WEIXIN_PAY,
 	PAY_INTERFACE_COD,
 	PAY_INTERFACE_WEIZOOM_COIN,
-	PAY_INTERFACE_ALIPAY]
+	PAY_INTERFACE_ALIPAY,
+	PAY_INTERFACE_BEST_PAY
+	]
 ONLINE_PAY_INTERFACE = [
 	PAY_INTERFACE_WEIXIN_PAY,
 	PAY_INTERFACE_ALIPAY,
 	PAY_INTERFACE_WEIZOOM_COIN,
-	PAY_INTERFACE_TENPAY]
+	PAY_INTERFACE_TENPAY,
+	PAY_INTERFACE_BEST_PAY
+	]
 
 class PayInterface(models.Model):
 	"""
@@ -1193,6 +1200,20 @@ class UserAlipayOrderConfig(models.Model):
 
 	class Meta(object):
 		db_table = 'account_alipay_order_config'
+
+# ===============================================================================
+# UserBestPayOrderConfig : 翼支付配置信息
+# ===============================================================================
+class UserBestPayOrderConfig(models.Model):
+	owner = models.ForeignKey(User)
+
+	key = models.CharField(max_length=64, verbose_name='交易安全检验码')
+	merchant_tid = models.CharField(max_length=2048, blank=True, null=True, verbose_name='翼支付商户id')
+	merchant_pwd = models.CharField(max_length=2048, blank=True, null=True, verbose_name='翼支付密码')
+
+
+	class Meta(object):
+		db_table = 'account_best_pay_order_config'
 
 
 

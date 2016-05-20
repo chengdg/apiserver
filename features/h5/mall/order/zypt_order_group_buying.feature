@@ -12,8 +12,9 @@ Feature: 自营平台团购订单同步到商家
 #特殊说明：jobs表示自营平台,bill表示商家
 Background:
 	#商家bill的商品信息
-	Given 添加bill店铺名称为'bill商家':weapp
+	Given 重置weapp的bdd环境
 	Given bill登录系统:weapp
+	Given 添加bill店铺名称为'bill商家':weapp
 	When bill已添加支付方式:weapp
 		"""
 		[{
@@ -26,6 +27,11 @@ Background:
 			"type": "货到付款",
 			"is_active": "启用"
 		}]
+
+
+
+
+
 		"""
 	And bill添加邮费配置:weapp
 		"""
@@ -191,7 +197,7 @@ Background:
 	When jobs开启团购活动'团购活动1':weapp
 	When jobs开启团购活动'团购活动2':weapp
 
-
+@eugene @sync_order
 Scenario:1 自营平台团购活动未成功，订单不同步到商户平台
 	商户同步到自营平台的商户创建团购活动
 	1.团购订单支付后未成功，订单不同步到商户平台
@@ -199,7 +205,7 @@ Scenario:1 自营平台团购活动未成功，订单不同步到商户平台
 	Given tom关注jobs的公众号
 	#tom参与团购"团购活动1"开团
 	When tom访问jobs的webapp
-	When tom参加jobs的团购活动"团购活动2"进行开团
+	When tom参加jobs的团购活动"团购活动2"进行开团:weapp
 		"""
 		{
 			"group_name": "团购活动2",
@@ -227,6 +233,8 @@ Scenario:1 自营平台团购活动未成功，订单不同步到商户平台
 		}
 		"""
 	When tom使用支付方式'微信支付'进行支付
+
+	Given jobs登录系统:weapp
 	#团购活动未成功，不在后台显示订单
 	Then jobs可以看到订单列表:weapp
 		"""
@@ -239,7 +247,7 @@ Scenario:1 自营平台团购活动未成功，订单不同步到商户平台
 		[]
 		"""
 
-
+@eugene @sync_order
 Scenario:2 自营平台团购活动失败，订单不同步到商户平台
 	商户同步到自营平台的商户创建团购活动
 	1.团购订单支付后活动失败，订单不同步到商户平台
@@ -247,7 +255,7 @@ Scenario:2 自营平台团购活动失败，订单不同步到商户平台
 	Given tom关注jobs的公众号
 	#tom参与团购"团购活动1"开团
 	When tom访问jobs的webapp
-	When tom参加jobs的团购活动"团购活动1"进行开团
+	When tom参加jobs的团购活动"团购活动1"进行开团:weapp
 		"""
 		{
 			"group_name": "团购活动1",
@@ -285,7 +293,6 @@ Scenario:2 自营平台团购活动失败，订单不同步到商户平台
 		"""
 		[{
 			"order_no":"001",
-			"supplier":"bill商家",
 			"is_group_buying":"true",
 			"status": "退款中",
 			"buyer":"tom",
@@ -296,6 +303,7 @@ Scenario:2 自营平台团购活动失败，订单不同步到商户平台
 			"products":
 				[{
 					"name":"bill无规格商品1",
+					"supplier":"bill商家",
 					"price":122.12,
 					"count":1
 				}]
@@ -332,7 +340,7 @@ Scenario:2 自营平台团购活动失败，订单不同步到商户平台
 		[]
 		"""
 
-
+@eugene @sync_order
 Scenario:3 自营平台团购活动成功，订单同步到商户平台
 	商户同步到自营平台的商户创建团购活动
 	1.团购订单支付后活动成功，订单同步到商户平台
@@ -344,7 +352,7 @@ Scenario:3 自营平台团购活动成功，订单同步到商户平台
 	And tom4关注jobs的公众号
 
 	When tom访问jobs的webapp
-	When tom参加jobs的团购活动"团购活动1"进行开团
+	When tom参加jobs的团购活动"团购活动1"进行开团:weapp
 		"""
 		{
 			"group_name": "团购活动1",
@@ -539,7 +547,6 @@ Scenario:3 自营平台团购活动成功，订单同步到商户平台
 		"""
 		[{
 			"order_no":"005",
-			"supplier":"bill商家",
 			"is_group_buying":"true",
 			"status": "待发货",
 			"buyer":"tom4",
@@ -550,12 +557,12 @@ Scenario:3 自营平台团购活动成功，订单同步到商户平台
 			"products":
 				[{
 					"name":"bill无规格商品1",
+					"supplier":"bill商家",
 					"price":122.12,
 					"count":1
 				}]
 		},{
 			"order_no":"004",
-			"supplier":"bill商家",
 			"is_group_buying":"true",
 			"status": "待发货",
 			"buyer":"tom3",
@@ -566,12 +573,12 @@ Scenario:3 自营平台团购活动成功，订单同步到商户平台
 			"products":
 				[{
 					"name":"bill无规格商品1",
+					"supplier":"bill商家",
 					"price":122.12,
 					"count":1
 				}]
 		},{
 			"order_no":"003",
-			"supplier":"bill商家",
 			"is_group_buying":"true",
 			"status": "待发货",
 			"buyer":"tom2",
@@ -583,11 +590,11 @@ Scenario:3 自营平台团购活动成功，订单同步到商户平台
 				[{
 					"name":"bill无规格商品1",
 					"price":122.12,
+					"supplier":"bill商家",
 					"count":1
 				}]
 		},{
 			"order_no":"002",
-			"supplier":"bill商家",
 			"is_group_buying":"true",
 			"status": "待发货",
 			"buyer":"tom1",
@@ -598,12 +605,12 @@ Scenario:3 自营平台团购活动成功，订单同步到商户平台
 			"products":
 				[{
 					"name":"bill无规格商品1",
+					"supplier":"bill商家",
 					"price":122.12,
 					"count":1
 				}]
 		},{
 			"order_no":"001",
-			"supplier":"bill商家",
 			"is_group_buying":"true",
 			"status": "待发货",
 			"buyer":"tom",
@@ -614,6 +621,7 @@ Scenario:3 自营平台团购活动成功，订单同步到商户平台
 			"products":
 				[{
 					"name":"bill无规格商品1",
+					"supplier":"bill商家",
 					"price":122.12,
 					"count":1
 				}]
@@ -635,7 +643,7 @@ Scenario:3 自营平台团购活动成功，订单同步到商户平台
 			"products":
 				[{
 					"name":"bill无规格商品1",
-					"price":9.00,
+					"price":"",
 					"count":1
 				}]
 		},{
@@ -649,7 +657,7 @@ Scenario:3 自营平台团购活动成功，订单同步到商户平台
 			"products":
 				[{
 					"name":"bill无规格商品1",
-					"price":9.00,
+					"price":"",
 					"count":1
 				}]
 		},{
@@ -663,7 +671,7 @@ Scenario:3 自营平台团购活动成功，订单同步到商户平台
 			"products":
 				[{
 					"name":"bill无规格商品1",
-					"price":9.00,
+					"price":"",
 					"count":1
 				}]
 		},{
@@ -677,7 +685,7 @@ Scenario:3 自营平台团购活动成功，订单同步到商户平台
 			"products":
 				[{
 					"name":"bill无规格商品1",
-					"price":9.00,
+					"price":"",
 					"count":1
 				}]
 		},{
@@ -691,7 +699,7 @@ Scenario:3 自营平台团购活动成功，订单同步到商户平台
 			"products":
 				[{
 					"name":"bill无规格商品1",
-					"price":9.00,
+					"price":"",
 					"count":1
 				}]
 		}]

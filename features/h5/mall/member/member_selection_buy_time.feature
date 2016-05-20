@@ -49,7 +49,7 @@ Background:
 	And tom2关注jobs的公众号
 
 	#bill购买jobs的数据
-	#待支付订单 001 100 
+	#待支付订单 001 100
 	When bill访问jobs的webapp
 	And bill购买jobs的商品
 		"""
@@ -205,7 +205,7 @@ Background:
 	When marry访问jobs的webapp
 	And marry确认收货订单'008'
 
-	#tom1购买jobs的数据 待支付订单 009 100 
+	#tom1购买jobs的数据 待支付订单 009 100
 	When tom1访问jobs的webapp
 	And tom1购买jobs的商品
 		"""

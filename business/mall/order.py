@@ -898,10 +898,22 @@ class Order(business_model.Model):
 		"""
 		return True
 
+	def __log_pay_result(self, pay_result, reason):
+		msg = {
+			'type': 'order_pay',
+			'order_id': self.order_id,
+			'previous_pay_interface_type': self.pay_interface_type,
+			'pay_result': pay_result,
+			'reason': reason,
+			'final_price': self.final_price
+		}
+		watchdog.info(message=json.dumps(msg), log_type='pay')
 
 	def pay(self, pay_interface_type):
-		"""对订单进行支付
-
+		"""
+		对订单进行支付校验并支付
+		1. final_price不为0的订单不能用优惠抵扣
+		2. 优惠抵扣不在商家支付方式列表中
 		@param[in] pay_interface_type: 支付所使用的支付接口的type
 		"""
 
@@ -911,15 +923,20 @@ class Order(business_model.Model):
 		# 该订单可用的支付方式，不含优惠抵扣
 		available_pay_interfaces = PayInterface.get_order_pay_interfaces(webapp_owner, webapp_user, self.id)
 		pay_result = False
+		available_pay_interfaces_types = [x['type'] for x in available_pay_interfaces]
 		if self.final_price == 0:
 			pay_interface_type = mall_models.PAY_INTERFACE_PREFERENCE
 		elif pay_interface_type == mall_models.PAY_INTERFACE_PREFERENCE:
+
 			if self.final_price != 0:
-				return False
-		elif pay_interface_type not in [x['type'] for x in available_pay_interfaces]:
-			return False
+				reason = u'final_price不为0的订单不能用优惠抵扣'
+				self.__log_pay_result(False, reason)
+				return False, reason
+		elif pay_interface_type not in available_pay_interfaces_types:
+			reason = u'支付方式不可用，使用方式：{}，可用方式{}'.format(pay_interface_type, available_pay_interfaces_types)
+			return False, reason
 		if self.status == mall_models.ORDER_STATUS_NOT:
-			#改变订单的支付状态
+			# 改变订单的支付状态
 			pay_result = True
 
 			now = datetime.now()
@@ -956,8 +973,8 @@ class Order(business_model.Model):
 			if not self.is_group_buy:
 				# 团购订单不发送模板消息
 				self.__send_template_message()
-
-		return pay_result
+		self.__log_pay_result(True, '')
+		return pay_result, ''
 
 
 	def __release_order_resources(self):

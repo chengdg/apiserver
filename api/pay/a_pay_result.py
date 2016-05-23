@@ -84,15 +84,8 @@ class APayResult(api_resource.ApiResource):
 			'order_id': order_id
 		})
 
-		msg = ''
 		try:
-			if order.status > mall_models.ORDER_STATUS_CANCEL:
-				is_success = True
-				msg = '%s has been paid.' % order.order_id
-			elif order.pay(pay_interface_type=pay_interface_type):
-				is_success = True
-			else:
-				is_success = False
+			is_success, msg = order.pay(pay_interface_type=pay_interface_type)
 		except:
 			is_success = False
 			msg = unicode_full_stack()

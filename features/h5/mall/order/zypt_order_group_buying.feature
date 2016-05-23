@@ -197,7 +197,7 @@ Background:
 	When jobs开启团购活动'团购活动1':weapp
 	When jobs开启团购活动'团购活动2':weapp
 
-@eugene @sync_order
+@mall3 @eugene @sync_order
 Scenario:1 自营平台团购活动未成功，订单不同步到商户平台
 	商户同步到自营平台的商户创建团购活动
 	1.团购订单支付后未成功，订单不同步到商户平台
@@ -247,7 +247,7 @@ Scenario:1 自营平台团购活动未成功，订单不同步到商户平台
 		[]
 		"""
 
-@eugene @sync_order
+@mall3 @eugene @sync_order
 Scenario:2 自营平台团购活动失败，订单不同步到商户平台
 	商户同步到自营平台的商户创建团购活动
 	1.团购订单支付后活动失败，订单不同步到商户平台
@@ -340,7 +340,7 @@ Scenario:2 自营平台团购活动失败，订单不同步到商户平台
 		[]
 		"""
 
-@eugene @sync_order
+@mall3 @eugene @sync_order
 Scenario:3 自营平台团购活动成功，订单同步到商户平台
 	商户同步到自营平台的商户创建团购活动
 	1.团购订单支付后活动成功，订单同步到商户平台

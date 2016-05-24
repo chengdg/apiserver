@@ -85,7 +85,7 @@ def step_impl(context):
 		if ('Scenario:' in line) and (scenario_name in line):
 			prev_line = lines[-1]
 			if '@' in prev_line:
-				lines[-1] = '%s @apiserver_wip' % prev_line 
+				lines[-1] = '%s @apiserver_wip' % prev_line
 			else:
 				lines.append('@apiserver_wip')
 

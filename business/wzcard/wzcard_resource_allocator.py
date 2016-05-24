@@ -77,11 +77,16 @@ class WZCardResourceAllocator(business_model.Service):
 
 		if can_use:
 			paid_money = float(data['paid_money'])
+			# todo 优化到package_order_service
 			order.final_price -= paid_money
 			order.weizoom_card_money = paid_money
 			wzcard_resource = WZCardResource(self.resource_type, order.order_id, data['trade_id'])
 			return True, [], wzcard_resource
 		else:
+			# 处理余额为0的微众卡
+			if data.get('type', '') == 'wzcard:use_up':
+				return True, [], None
+
 			reason = {
 				"is_success": False,
 				"type": data['type'],

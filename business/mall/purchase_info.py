@@ -142,8 +142,8 @@ class PurchaseInfo(business_model.Model):
             for i in range(0, len(card_names)):
                 if len(card_names[i])>0:
                     wzcard_info.append({
-                            "card_name": card_names[i],
-                            "card_pass": card_passwords[i],
+                            "card_number": card_names[i],
+                            "card_password": card_passwords[i],
                         })
         self.wzcard_info = wzcard_info
         logging.info("ProductInfo.wzcard_info: {}".format(self.wzcard_info))

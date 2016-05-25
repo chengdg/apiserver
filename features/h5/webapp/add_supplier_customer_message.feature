@@ -305,13 +305,8 @@ Background:
 			"""
 			["bill商品1","bill商品2","tom商品1","tom商品2"]
 			"""
-	#tom1,tom2,tom3,tom4关注自营平台公众号
+	#tom1关注自营平台公众号
 		When tom1关注jobs的公众号
-		When tom2关注jobs的公众号
-		When tom3关注jobs的公众号
-		When tom4关注jobs的公众号
-		When tom5关注jobs的公众号
-
 
 Scenario:1 手机端验证
 	#购买自营平台自建商品,订单不同步到商家[供货商1、供货商2]
@@ -861,6 +856,7 @@ Scenario:2 自营平台后台验证
 				}
 				
 			}]
+			"""
 		Then jobs能获得订单'006':weapp
 			"""
 			{

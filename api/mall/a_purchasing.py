@@ -158,6 +158,7 @@ class APurchasing(api_resource.ApiResource):
 			'limit_coupons': limit_coupons,
 			'use_ceiling': use_ceiling,
 			'postage_factor': postage_factor,
-			'group_id': group_id
+			'group_id': group_id,
+			'mall_type': webapp_owner.user_profile.webapp_type
 		}
 

@@ -305,13 +305,8 @@ Background:
 			"""
 			["bill商品1","bill商品2","tom商品1","tom商品2"]
 			"""
-	#tom1,tom2,tom3,tom4关注自营平台公众号
+	#tom1关注自营平台公众号
 		When tom1关注jobs的公众号
-		When tom2关注jobs的公众号
-		When tom3关注jobs的公众号
-		When tom4关注jobs的公众号
-		When tom5关注jobs的公众号
-
 
 Scenario:1 手机端验证
 	#购买自营平台自建商品,订单不同步到商家[供货商1、供货商2]
@@ -368,25 +363,25 @@ Scenario:1 手机端验证
 				"ship_area": "北京市 北京市 海淀区",
 				"ship_address": "泰兴大厦",
 				"final_price": 50.00,
-				"供货商1":{
-					"products": [{
-						"name": "商品1a",
-						"price": 10.00,
-						"count": 1
-					}, {
-						"name": "商品1b",
-						"price": 20.00,
-						"count": 1
-					}]
-					"customer_message": "供货商1订单001备注"
-				},
-				"供货商2":{
-					"products": [{
-						"name": "商品2a",
-						"price": 20.00,
-						"count": 1
-					}]
-					"customer_message": "供货商2订单001备注"
+				"products": [{
+					"name": "商品1a",
+					"price": 10.00,
+					"count": 1,
+					"supplier": "供货商1"
+				}, {
+					"name": "商品1b",
+					"price": 20.00,
+					"count": 1,
+					"supplier": "供货商1"
+				},{
+					"name": "商品2a",
+					"price": 20.00,
+					"count": 1,
+					"supplier": "供货商2"
+				}],
+				"customer_message":{
+					"供货商1":"供货商1订单001备注",
+					"供货商2":"供货商2订单001备注"
 				}
 			}
 			"""
@@ -440,17 +435,19 @@ Scenario:1 手机端验证
 				"ship_area": "北京市 北京市 海淀区",
 				"ship_address": "泰兴大厦",
 				"final_price": 30.00,
-				"bill商家":{
-					"products": [{
-						"name": "bill商品1",
-						"price": 10.00,
-						"count": 1
-					}, {
-						"name": "bill商品2",
-						"price": 20.00,
-						"count": 1
-					}]
-					"customer_message": "bill商家订单002备注"
+				"products": [{
+					"name": "bill商品1",
+					"price": 10.00,
+					"count": 1,
+					"supplier": "bill商家"
+				}, {
+					"name": "bill商品2",
+					"price": 20.00,
+					"count": 1,
+					"supplier": "bill商家"
+				}],
+				"customer_message":{
+					"bill商家":"bill商家订单002备注"
 				}
 			}
 			"""
@@ -505,21 +502,20 @@ Scenario:1 手机端验证
 				"ship_area": "北京市 北京市 海淀区",
 				"ship_address": "泰兴大厦",
 				"final_price": 20.00,
-				"bill商家":{
-					"products": [{
-						"name": "bill商品1",
-						"price": 10.00,
-						"count": 1
-					}]
-					"customer_message": "bill商家订单003备注"
-				},
-				"tom商家":{
-					"products": [{
-						"name": "tom商品1",
-						"price": 10.00,
-						"count": 1
-					}]
-					"customer_message": "tom商家订单003备注"
+				"products": [{
+					"name": "bill商品1",
+					"price": 10.00,
+					"count": 1,
+					"supplier": "bill商家"
+				},{
+					"name": "tom商品1",
+					"price": 10.00,
+					"count": 1,
+					"supplier": "tom商家"
+				}],
+				"customer_message":{
+					"bill商家":"bill商家订单003备注",
+					"tom商家":"tom商家订单003备注"
 				}
 			}
 			"""
@@ -578,24 +574,24 @@ Scenario:1 手机端验证
 				"ship_area": "北京市 北京市 海淀区",
 				"ship_address": "泰兴大厦",
 				"final_price": 40.00,
-				"bill商家":{
-					"products": [{
-						"name": "bill商品1",
-						"price": 10.00,
-						"count": 1
-					},{
-						"name": "bill商品2",
-						"price": 20.00,
-						"count": 1
-					}]
-				},
-				"tom商家":{
-					"products": [{
-						"name": "tom商品1",
-						"price": 10.00,
-						"count": 1
-					}]
-					"customer_message": "tom商家订单004备注"
+				"products": [{
+					"name": "bill商品1",
+					"price": 10.00,
+					"count": 1,
+					"supplier": "bill商家"
+				},{
+					"name": "bill商品2",
+					"price": 20.00,
+					"count": 1,
+					"supplier": "bill商家"
+				},{
+					"name": "tom商品1",
+					"price": 10.00,
+					"count": 1,
+					"supplier": "tom商家"
+				}],
+				"customer_message":{
+					"tom商家":"tom商家订单004备注"
 				}
 			}
 			"""
@@ -660,33 +656,31 @@ Scenario:1 手机端验证
 				"ship_area": "北京市 北京市 海淀区",
 				"ship_address": "泰兴大厦",
 				"final_price": 50.00,
-				"供货商1":{
-					"products": [{
-						"name": "商品1a",
-						"price": 10.00,
-						"count": 1
-					}],
-					"customer_message":"供货商1订单005备注"
-				},
-				"bill商家":{
-					"products": [{
-						"name": "bill商品1",
-						"price": 10.00,
-						"count": 1
-					},{
-						"name": "bill商品2",
-						"price": 20.00,
-						"count": 1
-					}],
-					"customer_message":"bill商家订单005备注"
-				},
-				"tom商家":{
-					"products": [{
-						"name": "tom商品1",
-						"price": 10.00,
-						"count": 1
-					}]
-					"customer_message": "tom商家订单005备注"
+				"products": [{
+					"name": "商品1a",
+					"price": 10.00,
+					"count": 1,
+					"supplier": "供货商1"
+				},{
+					"name": "bill商品1",
+					"price": 10.00,
+					"count": 1,
+					"supplier": "bill商家"
+				},{
+					"name": "bill商品2",
+					"price": 20.00,
+					"count": 1,
+					"supplier": "bill商家"
+				},{
+					"name": "tom商品1",
+					"price": 10.00,
+					"count": 1,
+					"supplier": "tom商家"
+				}],
+				"customer_message":{
+					"供货商1":"供货商1订单005备注",
+					"bill商家":"bill商家订单005备注",
+					"tom商家":"tom商家订单005备注"
 				}
 			}
 			"""
@@ -742,15 +736,17 @@ Scenario:1 手机端验证
 				"customer_message":{
 					"供货商1":"供货商1订单007备注",
 					"bill商家":"bill商家订单007备注"
-				}
+				},
 				"products": [{
 					"name": "商品1a",
 					"price": 10.00,
-					"count": 1
+					"count": 1,
+					"supplier": "供货商1"
 				},{
 					"name": "bill商品1",
 					"price": 10.00,
-					"count": 1
+					"count": 1,
+					"supplier": "bill商家"
 				}]
 			}
 			"""
@@ -822,45 +818,41 @@ Scenario:2 自营平台后台验证
 					"bill商家":"bill商家订单006备注",
 					"tom商家":"tom商家订单006备注"
 				},
-				"供货商1":{
-					"products": [{
-						"name":"商品1a",
-						"price":10.0,
-						"count":1,
-						"is_sync_supplier": "false",
-						"status": "待发货",
-						"actions": ["发货"]
-					}]
-				},
-				"bill商家":{
-					"products": [{
-						"name":"bill商品1",
-						"price":20.0,
-						"count":1,
-						"is_sync_supplier": "true",
-						"status": "待发货",
-						"actions": ["发货"]
-					},{
-						"name":"bill商品2",
-						"price":10.0,
-						"count":1,
-						"is_sync_supplier": "true",
-						"status": "待发货",
-						"actions": ["发货"]
-					}]
-				},
-				"tom商家":{
-					"products": [{
-						"name":"tom商品1",
-						"price":10.0,
-						"count":1,
-						"is_sync_supplier": "true",
-						"status": "待发货",
-						"actions": ["发货"]
-					}]
-				}
-				
+				"products": [{
+					"name":"商品1a",
+					"price":10.0,
+					"count":1,
+					"supplier": "供货商1",
+					"is_sync_supplier": "false",
+					"status": "待发货",
+					"actions": ["发货"]
+				},{
+					"name":"bill商品1",
+					"price":20.0,
+					"count":1,
+					"supplier": "bill商家",
+					"is_sync_supplier": "true",
+					"status": "待发货",
+					"actions": ["发货"]
+				},{
+					"name":"bill商品2",
+					"price":10.0,
+					"count":1,
+					"supplier": "bill商家",
+					"is_sync_supplier": "true",
+					"status": "待发货",
+					"actions": ["发货"]
+				},{
+					"name":"tom商品1",
+					"price":10.0,
+					"count":1,
+					"supplier": "tom商家",
+					"is_sync_supplier": "true",
+					"status": "待发货",
+					"actions": ["发货"]
+				}]
 			}]
+			"""
 		Then jobs能获得订单'006':weapp
 			"""
 			{
@@ -874,34 +866,120 @@ Scenario:2 自营平台后台验证
 					"bill商家":"bill商家订单006备注",
 					"tom商家":"tom商家订单006备注"
 				},
-				"供货商1":{
-					"products": [{
-						"name":"商品1a",
-						"price":10.0,
-						"count":1,
-						"is_sync_supplier": "false"
-					}]
-				},
-				"bill商家":{
-					"products": [{
+				"products": [{
+					"name":"商品1a",
+					"price":10.0,
+					"count":1,
+					"supplier": "供货商1",
+					"is_sync_supplier": "false"
+				},{
+					"name":"bill商品1",
+					"price":10.0,
+					"count":1,
+					"supplier": "bill商家",
+					"is_sync_supplier": "true"
+				},{
+					"name":"bill商品2",
+					"price":20.0,
+					"count":1,
+					"supplier": "bill商家",
+					"is_sync_supplier": "true"
+				},{
+					"name":"tom商品1",
+					"price":10.0,
+					"count":1,
+					"supplier": "tom商家",
+					"is_sync_supplier": "true"
+				}]
+			}
+			"""
+
+	#商户平台同步留言信息-bill商家
+		Given bill登录系统:weapp
+		Then bill可以看到订单列表:weapp
+			"""
+			[{
+				"order_no":"006-bill商家",
+				"sources": "商城",
+				"buyer":"tom1",
+				"status": "待发货",
+				"final_price":28.00,
+				"save_money":"",
+				"methods_of_payment": "微信支付",
+				"actions": ["发货"],
+				"customer_message":"bill商家订单006备注",
+				"products":
+					[{
 						"name":"bill商品1",
-						"price":10.0,
-						"count":1,
-						"is_sync_supplier": "true"
+						"price":"",
+						"count":1
 					},{
 						"name":"bill商品2",
-						"price":20.0,
-						"count":1,
-						"is_sync_supplier": "true"
+						"price":"",
+						"count":1
 					}]
-				},
-				"tom商家":{
-					"products": [{
+			}]
+			"""
+		Then bill能获得订单'006-bill商家':weapp
+			"""
+			{
+				"order_no":"006-bill商家",
+				"sources": "商城",
+				"status": "待发货",
+				"final_price":28.00,
+				"methods_of_payment": "微信支付",
+				"actions": ["发货"],
+				"customer_message":"bill商家订单006备注",
+				"products":
+					[{
+						"name":"bill商品1",
+						"price":9.0,
+						"count":1
+					},{
+						"name":"bill商品2",
+						"price":19.0,
+						"count":1
+					}]
+			}
+			"""
+
+	#商户平台同步留言信息-tom商家
+		Given tom登录系统:weapp
+		Then tom可以看到订单列表:weapp
+			"""
+			[{
+				"order_no":"006-tom商家",
+				"sources": "商城",
+				"buyer":"tom1",
+				"status": "待发货",
+				"final_price":9.00,
+				"save_money":"",
+				"methods_of_payment": "微信支付",
+				"actions": ["发货"],
+				"customer_message":"tom商家订单006备注",
+				"products":
+					[{
 						"name":"tom商品1",
-						"price":10.0,
-						"count":1,
-						"is_sync_supplier": "true"
+						"price":"",
+						"count":1
 					}]
-				}
+			}]
+			"""
+		Then tom能获得订单'006-tom商家':weapp
+			"""
+			{
+				"order_no":"006-tom商家",
+				"sources": "商城",
+				"status": "待发货",
+				"final_price":9.00,
+				"methods_of_payment": "微信支付",
+				"actions": ["发货"],
+				"customer_message":"tom商家订单006备注",
+				"products":
+					[{
+						"name":"tom商品1",
+						"price":9.0,
+						"count":1
+					}]
 			}
 			"""

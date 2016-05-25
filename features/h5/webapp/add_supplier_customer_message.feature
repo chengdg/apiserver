@@ -901,3 +901,93 @@ Scenario:2 自营平台后台验证
 				}
 			}
 			"""
+
+	#商户平台同步留言信息-bill商家
+		Given bill登录系统:weapp
+		Then bill可以看到订单列表:weapp
+			"""
+			[{
+				"order_no":"006-bill商家",
+				"sources": "商城",
+				"buyer":"tom1",
+				"status": "待发货",
+				"final_price":28.00,
+				"save_money":"",
+				"methods_of_payment": "微信支付",
+				"actions": ["发货"],
+				"customer_message":"bill商家订单006备注",
+				"products":
+					[{
+						"name":"bill商品1",
+						"price":"",
+						"count":1
+					},{
+						"name":"bill商品2",
+						"price":"",
+						"count":1
+					}]
+			}]
+			"""
+		Then bill能获得订单'006-bill商家':weapp
+			"""
+			{
+				"order_no":"006-bill商家",
+				"sources": "商城",
+				"status": "待发货",
+				"final_price":28.00,
+				"methods_of_payment": "微信支付",
+				"actions": ["发货"],
+				"customer_message":"bill商家订单006备注",
+				"products":
+					[{
+						"name":"bill商品1",
+						"price":9.0,
+						"count":1
+					},{
+						"name":"bill商品2",
+						"price":19.0,
+						"count":1
+					}]
+			}
+			"""
+
+	#商户平台同步留言信息-tom商家
+		Given tom登录系统:weapp
+		Then tom可以看到订单列表:weapp
+			"""
+			[{
+				"order_no":"006-tom商家",
+				"sources": "商城",
+				"buyer":"tom1",
+				"status": "待发货",
+				"final_price":9.00,
+				"save_money":"",
+				"methods_of_payment": "微信支付",
+				"actions": ["发货"],
+				"customer_message":"tom商家订单006备注",
+				"products":
+					[{
+						"name":"tom商品1",
+						"price":"",
+						"count":1
+					}]
+			}]
+			"""
+		Then tom能获得订单'006-tom商家':weapp
+			"""
+			{
+				"order_no":"006-tom商家",
+				"sources": "商城",
+				"status": "待发货",
+				"final_price":9.00,
+				"methods_of_payment": "微信支付",
+				"actions": ["发货"],
+				"customer_message":"tom商家订单006备注",
+				"products":
+					[{
+						"name":"tom商品1",
+						"price":9.0,
+						"count":1
+					}]
+			}
+			"""

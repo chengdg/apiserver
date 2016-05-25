@@ -785,6 +785,8 @@ class Order(business_model.Model):
 				if json.loads(customer_message).get('%ss' % supplier, ""):
 					message = json.loads(customer_message)['%ss' % supplier].get('customer_message','')
 					new_order.customer_message = message
+				else:
+					new_order.customer_message = ''
 				new_order.coupon_money = 0
 				new_order.integral_money = 0
 				new_order.weizoom_card_money = 0
@@ -820,6 +822,8 @@ class Order(business_model.Model):
 				if json.loads(customer_message).get('%su' % supplier_user_id, ""):
 					message = json.loads(customer_message)['%su' % supplier_user_id].get('customer_message', '')
 					new_order.customer_message = message
+				else:
+					new_order.customer_message = ''
 				new_order.coupon_money = 0
 				new_order.integral_money = 0
 				new_order.weizoom_card_money = 0

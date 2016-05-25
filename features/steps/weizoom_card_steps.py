@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
 import base64
-import os
-import subprocess
-
+import json
 import requests
 from behave import *
+import settings
 
-# from django.contrib.auth.models import User
 
-from db.mall.models import *
 from features.util.behave_utils import get_context_attrs
 
 
@@ -56,3 +53,7 @@ def step_impl(context, command):
 @Then(u"{command}:weizoom_card")
 def step_impl(context, command):
 	_run_weizoom_card_step(u'Then %s' % command, context.text, context)
+
+@given(u"重置weapp的bdd环境")
+def step_impl(context):
+	_run_weizoom_card_step('__reset__', None)

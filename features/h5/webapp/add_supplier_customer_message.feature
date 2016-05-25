@@ -612,7 +612,7 @@ Scenario:1 手机端验证
 				"name": "bill商品2",
 				"count": 1
 			}, {
-				"name": "tom商品2",
+				"name": "tom商品1",
 				"count": 1
 			}]
 			"""
@@ -687,5 +687,4 @@ Scenario:1 手机端验证
 				}
 			}
 			"""
-
 

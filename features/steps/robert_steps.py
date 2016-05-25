@@ -13,6 +13,7 @@ from db.mall import promotion_models
 from db.member import models as member_models
 from db.wzcard import models as wzcard_models
 from db.news import models as news_models
+from db.account import models as account_models
 from business.mall.product import Product as business_product
 from business.account.webapp_owner import WebAppOwner
 from .steps_db_util import (
@@ -841,6 +842,18 @@ def step_impl(context, webapp_user_name, pay_type, pay_interface):
 	else:
 		context.tc.assertTrue(pay_interface not in pay_interface_names)
 
+def __get_customer_message_str(customer_message_data):
+	customer_message = {}
+	for supplier_name, customer_message in customer_message_data:
+		if account_models.UserProfile.select().dj_where(store_name=supplier_name).count() > 0:
+			key = "%du" % account_models.UserProfile.select().dj_where(store_name=supplier_name).first().user_id
+			customer_message[key] = customer_message
+
+		if mall_models.Supplier.select().dj_where(name=supplier_name).count() > 0:
+			key = "%ds" % mall_models.Supplier.select().dj_where(name=supplier_name).first().id
+			customer_message[key] = customer_message
+	return customer_message
+
 @when(u"{webapp_user_name}在购物车订单编辑中点击提交订单")
 def step_click_check_out(context, webapp_user_name):
 	"""
@@ -871,6 +884,12 @@ def step_click_check_out(context, webapp_user_name):
 		data['forcing_submit'] = 1
 
 	data.update(product_info)
+
+	customer_message_data = json.loads(argument.get('customer_message', '{}'))
+	if customer_message_data:
+		customer_message = __get_customer_message_str(customer_message_data)
+		data['message'] = customer_message
+
 	coupon_id = context.product_infos.get('coupon_id', None)
 	if coupon_id:
 		data['is_use_coupon'] = 'true'

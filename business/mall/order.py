@@ -782,6 +782,7 @@ class Order(business_model.Model):
 				new_order.id = None
 				new_order.order_id = '%s^%ss' % (self.order_id, supplier)
 				new_order.origin_order_id = self.id
+				new_order.customer_message = json.dumps(custom_message)['%ss' % supplier]['customer_message']
 				new_order.coupon_money = 0
 				new_order.integral_money = 0
 				new_order.weizoom_card_money = 0
@@ -814,6 +815,7 @@ class Order(business_model.Model):
 				new_order.id = None
 				new_order.order_id = '%s^%su' % (self.order_id, supplier_user_id)
 				new_order.origin_order_id = self.id
+				new_order.customer_message = json.dumps(custom_message)['%su' % supplier_user_id]['customer_message'],
 				new_order.coupon_money = 0
 				new_order.integral_money = 0
 				new_order.weizoom_card_money = 0

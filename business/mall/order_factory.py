@@ -421,9 +421,11 @@ class OrderFactory(business_model.Model):
 
 		for locked_resource in locked_resources:
 			redis_lock = RedisLock()
-			if redis_lock.lock(locked_resource):
+			acquire_result = redis_lock.lock(locked_resource)
+			if acquire_result:
 				self.context['create_order_lock'].append(redis_lock)
 			else:
+				watchdog.info('acquire lock failure,resource:{}'.format(str(locked_resource)))
 				return False
 
 		return True

@@ -21,7 +21,7 @@ Background:
 	#自营平台jobs的信息
 		Given 设置jobs为自营平台账号
 		Given jobs登录系统
-		And jobs已添加供货商
+		And jobs已添加供货商:weapp
 			"""
 			[{
 				"name": "供货商1",
@@ -37,7 +37,7 @@ Background:
 				"remark": ""
 			}]
 			"""
-		And jobs已添加支付方式
+		And jobs已添加支付方式:weapp
 			"""
 			[{
 				"type": "微信支付",
@@ -50,7 +50,7 @@ Background:
 				"is_active": "启用"
 			}]
 			"""
-		And jobs已添加商品
+		And jobs已添加商品:weapp
 			"""
 			[{
 				"supplier": "供货商1",
@@ -89,14 +89,14 @@ Background:
 	#商家bill的信息
 		Given 添加bill店铺名称为'bill商家'
 		Given bill登录系统
-		And bill已添加支付方式
+		And bill已添加支付方式:weapp
 			"""
 			[{
 				"type": "微信支付",
 				"is_active": "启用"
 			}]
 			"""
-		And bill已添加商品
+		And bill已添加商品:weapp
 			"""
 			[{
 				"name":"bill商品1",
@@ -130,14 +130,14 @@ Background:
 	#商家tom的信息
 		Given 添加tom店铺名称为'tom商家'
 		Given tom登录系统
-		And tom已添加支付方式
+		And tom已添加支付方式:weapp
 			"""
 			[{
 				"type": "微信支付",
 				"is_active": "启用"
 			}]
 			"""
-		And tom已添加商品
+		And tom已添加商品:weapp
 			"""
 			[{
 				"name":"tom商品1",
@@ -175,7 +175,7 @@ Background:
 	#jobs后台商品信息
 		Given 设置jobs为自营平台账号
 		Given jobs登录系统
-		Then jobs获得商品池商品列表
+		Then jobs获得商品池商品列表:weapp
 			"""
 			[{
 				"name": "tom商品2",
@@ -211,7 +211,7 @@ Background:
 				"actions": ["放入待售"]
 			}]
 			"""
-		When jobs将商品池商品批量放入待售于'2016-05-24 10:30'
+		When jobs将商品池商品批量放入待售于'2016-05-24 10:30':weapp
 			"""
 			[
 				"tom商品2",
@@ -222,7 +222,7 @@ Background:
 			"""
 
 		#jobs修改采购价
-		When jobs更新商品'bill商品1'
+		When jobs更新商品'bill商品1':weapp
 			"""
 			{
 				"name":"bill商品1",
@@ -241,7 +241,7 @@ Background:
 				}
 			}
 			"""
-		When jobs更新商品'bill商品2'
+		When jobs更新商品'bill商品2':weapp
 			"""
 			{
 				"name":"bill商品2",
@@ -260,7 +260,7 @@ Background:
 				}
 			}
 			"""
-		When jobs更新商品'tom商品1'
+		When jobs更新商品'tom商品1':weapp
 			"""
 			{
 				"name":"tom商品1",
@@ -279,7 +279,7 @@ Background:
 				}
 			}
 			"""
-		When jobs更新商品'tom商品2'
+		When jobs更新商品'tom商品2':weapp
 			"""
 			{
 				"name":"tom商品2",
@@ -298,7 +298,7 @@ Background:
 				}
 			}
 			"""
-		When jobs批量上架商品
+		When jobs批量上架商品:weapp
 			"""
 			["bill商品1","bill商品2","tom商品1","tom商品2"]
 			"""
@@ -687,3 +687,5 @@ Scenario:1 手机端验证
 				}
 			}
 			"""
+
+

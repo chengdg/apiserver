@@ -1,5 +1,5 @@
 # watcher: tianfengmin@weizoom.com, benchi@weizoom.com
-# __author__ : "田丰敏" 2016-05-18
+# __author__ : "田丰敏" 2016-05-25
 
 Feature: 增加对供货商的留言框
 """
@@ -11,7 +11,7 @@ Feature: 增加对供货商的留言框
 [后台]
 	1、买家信息提示弹窗（灰色叹号弹窗）中，去掉买家留言
 	2、保留黄色留言弹框，鼠标放在黄色图标，可显示供货商名称和买家留言信息
-	
+
 	自营平台:
 		1、在黄色留言弹框中显示买家留言信息，显示供货商名和留言信息，格式可参考样图
 		2、订单详情页中买家留言按照供货商显示，显示供货商名和留言信息，格式可参考样图
@@ -688,6 +688,70 @@ Scenario:1 手机端验证
 					}]
 					"customer_message": "tom商家订单005备注"
 				}
+			}
+			"""
+	#购买自营平台自建商品和商家同步的商品[供货商1、bill商家]
+	#待支付-007(商品1a,1、bill商品1,1),多个供货商,均有留言,微信支付
+		When tom1访问jobs的webapp
+		And tom1加入jobs的商品到购物车
+			"""
+			[{
+				"name": "商品1a",
+				"count": 1
+			}, {
+				"name": "bill商品1",
+				"count": 1
+			}]
+			"""
+		When tom1从购物车发起购买操作
+			"""
+			{
+				"action": "pay",
+				"context": [{
+					"name": "商品1a"
+				}, {
+					"name": "bill商品1"
+				}]
+			}
+			"""
+		And tom1在购物车订单编辑中点击提交订单
+			"""
+			{
+				"ship_name": "AAA",
+				"ship_tel": "13811223344",
+				"ship_area": "北京市 北京市 海淀区",
+				"ship_address": "泰兴大厦",
+				"pay_type": "微信支付",
+				"order_id": "007",
+				"customer_message":{
+					"供货商1":"供货商1订单007备注",
+					"bill商家":"bill商家订单007备注"
+				}
+			}
+			"""
+		Then tom1成功创建订单
+			"""
+			{
+				"order_id": "007",
+				"status": "待支付",
+				"ship_name": "AAA",
+				"ship_tel": "13811223344",
+				"ship_area": "北京市 北京市 海淀区",
+				"ship_address": "泰兴大厦",
+				"final_price": 20.00,
+				"customer_message":{
+					"供货商1":"供货商1订单007备注",
+					"bill商家":"bill商家订单007备注"
+				}
+				"products": [{
+					"name": "商品1a",
+					"price": 10.00,
+					"count": 1
+				},{
+					"name": "bill商品1",
+					"price": 10.00,
+					"count": 1
+				}]
 			}
 			"""
 

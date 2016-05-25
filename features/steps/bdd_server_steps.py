@@ -110,5 +110,5 @@ def step_impl(context):
 			return base64.b64encode(json.dumps(context_kvs))
 
 	httpd = make_server('', settings.BDD_SERVER_PORT, simple_app, handler_class=BDDRequestHandler)
-	print("[bdd server] Serving on port {}...".format())
+	print("[bdd server] Serving on port {}...".format(settings.BDD_SERVER_PORT))
 	httpd.serve_forever()

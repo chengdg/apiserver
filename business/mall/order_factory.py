@@ -345,8 +345,6 @@ class OrderFactory(business_model.Model):
 		"""
 		if price_free_resources:
 			self.__release_price_free_resources(price_free_resources)
-		if price_related_resources:
-			self.__release_price_related_resources(price_related_resources)
 
 		# 删除Order相关数据库记录
 		if order and order.id:
@@ -354,6 +352,9 @@ class OrderFactory(business_model.Model):
 			mall_models.OrderHasProduct.delete().dj_where(order_id=order.id).execute()
 			mall_models.Order.delete().dj_where(origin_order_id=order.id).execute()
 			mall_models.Order.delete().dj_where(id=order.id).execute()
+
+		if price_related_resources:
+			self.__release_price_related_resources(price_related_resources)
 
 	def __release_price_free_resources(self, resources):
 		"""
@@ -411,12 +412,12 @@ class OrderFactory(business_model.Model):
 			locked_resources.append({'name': REGISTERED_LOCK_NAMES['coupon_lock'], 'resource': str(purchase_info.coupon_id)})
 		if purchase_info.order_integral_info or purchase_info.group2integralinfo:
 			locked_resources.append({'name': REGISTERED_LOCK_NAMES['integral_lock'], 'resource': str(webapp_user_id)})
-		if purchase_info.wzcard_info:
-			for wzcard in purchase_info.wzcard_info:
-				wzcard_id = str(wzcard['card_name'])
-				if wzcard_id not in wzcard_list:
-					wzcard_list.append(wzcard_id)
-					locked_resources.append({'name': REGISTERED_LOCK_NAMES['wz_card_lock'], 'resource': str(wzcard['card_name'])})
+		# if purchase_info.wzcard_info:
+		# 	for wzcard in purchase_info.wzcard_info:
+		# 		wzcard_id = str(wzcard['card_name'])
+		# 		if wzcard_id not in wzcard_list:
+		# 			wzcard_list.append(wzcard_id)
+		# 			locked_resources.append({'name': REGISTERED_LOCK_NAMES['wz_card_lock'], 'resource': str(wzcard['card_name'])})
 
 		for locked_resource in locked_resources:
 			redis_lock = RedisLock()

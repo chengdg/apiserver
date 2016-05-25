@@ -774,6 +774,7 @@ class Order(business_model.Model):
 				else:
 					supplier2products[product.supplier].append(product)
 
+		new_order_ids = []
 		if webapp_type:
 			# 进行拆单，生成子订单
 			for supplier in supplier_ids:
@@ -787,6 +788,7 @@ class Order(business_model.Model):
 				new_order.supplier = supplier
 				new_order.total_purchase_price = sum(map(lambda product:product.purchase_price * product.purchase_count, supplier2products[supplier]))
 				new_order.save()
+				new_order_ids.append(new_order.order_id)
 
 				# 为同步供货商的子订单复制对应OrderHasProduct (by Eugene 为南京财务系统填充数据 2016-04-07)
 				for product in supplier2products[supplier]:
@@ -819,6 +821,7 @@ class Order(business_model.Model):
 				new_order.total_purchase_price = sum(map(lambda product:product.purchase_price * product.purchase_count, supplier_user_id2products[supplier_user_id]))
 				new_order.pay_interface_type = mall_models.PAY_INTERFACE_WEIXIN_PAY
 				new_order.save()
+				new_order_ids.append(new_order.order_id)
 
 				# 为同步供货商的子订单复制对应OrderHasProduct
 				for product in supplier_user_id2products[supplier_user_id]:
@@ -886,6 +889,15 @@ class Order(business_model.Model):
 				webapp_id=self.context['webapp_owner'].webapp_id
 			)
 
+			for order_id in new_order_ids:
+				mall_models.OrderHasGroup.create(
+					order_id=order_id,
+					group_id=purchase_info.group_id,
+					activity_id=purchase_info.activity_id,
+					group_status=mall_models.GROUP_STATUS_ON,
+					webapp_user_id=self.webapp_user_id,
+					webapp_id=self.context['webapp_owner'].webapp_id
+				)
 		self.__after_update_status('buy')
 
 
@@ -977,12 +989,6 @@ class Order(business_model.Model):
 		# 释放价格有关资源
 		service = AllocatePriceRelatedResourceService(webapp_owner, webapp_user)
 		service.release(resources)
-
-		# 需要删除WZCard的log
-		# TODO: 待优化，应该在释放微众卡资源时删除wzcard_log
-		LogOperator.remove_wzcard_logs_by_order_id(self.order_id)
-
-		return
 
 
 	def cancel(self):

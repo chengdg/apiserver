@@ -1794,6 +1794,20 @@ class OrderHasPromotion(models.Model):
 		return data
 
 
+class OrderCardInfo(models.Model):
+	"""
+	订单的微众卡信息
+	"""
+	order_id = models.CharField(max_length=100)  # 订单号
+	trade_id = models.CharField(max_length=100)  # 交易号
+	used_card = models.CharField(max_length=1024)   # 订单使用的微众卡
+	created_at = models.DateTimeField(auto_now_add=True)  # 创建时间
+
+	class Meta(object):
+		db_table = 'mall_order_card_info'
+		verbose_name = '订单微众卡相关信息'
+		verbose_name_plural = '订单微众卡相关信息'
+
 GROUP_STATUS_ON = 0  # 团购进行中
 GROUP_STATUS_OK = 1  # 团购成功
 GROUP_STATUS_failure = 2  # 团购失败

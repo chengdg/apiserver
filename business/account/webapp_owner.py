@@ -159,52 +159,59 @@ class WebAppOwner(business_model.Model):
 		"""
 		return self.__webapp_owner_info.is_weizoom_card_permission
 
-	@property
+	@cached_context_property
 	def has_wzcard_permission(self):
 		"""
 		[property] 是否开启了微众卡权限
 		"""
-		return self.__webapp_owner_info.is_weizoom_card_permission
-
-
-	def __set_wzcard_permission(self, is_enabled):
-		"""
-		设置微众卡的权限
-
-		@param is_enabled True表示开启；False表示禁止
-		"""
-		# 修改数据库
-		permissions = wzcard_models.AccountHasWeizoomCardPermissions.select().dj_where(owner_id=self.id)
-		if permissions.count()>0:
-			permission = permissions[0]
-			permission.is_can_use_weizoom_card = is_enabled
-			permission.save()
+		# return self.__webapp_owner_info.is_weizoom_card_permission
+		account_has_weizoom_card_permission = account_models.AccountHasWeizoomCardPermissions.select().dj_where(
+			owner_id=self.id).first()
+		if account_has_weizoom_card_permission and account_has_weizoom_card_permission.is_can_use_weizoom_card:
+			has_permission = True
 		else:
-			permission = wzcard_models.AccountHasWeizoomCardPermissions.create(
-				owner_id=self.id,
-				is_can_use_weizoom_card=is_enabled)
-		
-		# 让webapp_onwer_info清除缓存
-		(self.__webapp_owner_info).purge_cache()
-
-		return permission
-
-	def enable_wzcard_permission(self):
-		"""
-		开启微众卡权限
-
-		@retval void
-		"""
-		self.__set_wzcard_permission(True)
+			has_permission = False
+		return has_permission
 
 
-	def disable_wzcard_permission(self):
-		"""
-		关闭微众卡权限
-
-		@retval void
-		"""
-		self.__set_wzcard_permission(False)
+	# def __set_wzcard_permission(self, is_enabled):
+	# 	"""
+	# 	设置微众卡的权限
+	#
+	# 	@param is_enabled True表示开启；False表示禁止
+	# 	"""
+	# 	# 修改数据库
+	# 	permissions = wzcard_models.AccountHasWeizoomCardPermissions.select().dj_where(owner_id=self.id)
+	# 	if permissions.count()>0:
+	# 		permission = permissions[0]
+	# 		permission.is_can_use_weizoom_card = is_enabled
+	# 		permission.save()
+	# 	else:
+	# 		permission = wzcard_models.AccountHasWeizoomCardPermissions.create(
+	# 			owner_id=self.id,
+	# 			is_can_use_weizoom_card=is_enabled)
+	#
+	# 	# 让webapp_onwer_info清除缓存
+	# 	(self.__webapp_owner_info).purge_cache()
+	#
+	# 	return permission
+	#
+	# def enable_wzcard_permission(self):
+	# 	"""
+	# 	开启微众卡权限
+	#
+	# 	@retval void
+	# 	"""
+	# 	self.__set_wzcard_permission(True)
+	#
+	#
+	# def disable_wzcard_permission(self):
+	# 	"""
+	# 	关闭微众卡权限
+	#
+	# 	@retval void
+	# 	"""
+	# 	self.__set_wzcard_permission(False)
 
 
 	@property

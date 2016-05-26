@@ -24,6 +24,7 @@ Feature: 增加对供货商的留言框
 
 Background:
 	#自营平台jobs的信息
+		Given 重置weapp的bdd环境
 		Given 设置jobs为自营平台账号:weapp
 		Given jobs登录系统:weapp
 		And jobs已添加供货商:weapp
@@ -309,6 +310,10 @@ Background:
 	#tom1关注自营平台公众号
 		When tom1关注jobs的公众号
 
+@eugeneTMP
+Scenario:10
+Given jobs登录系统:weapp
+
 Scenario:1 手机端验证
 	#购买自营平台自建商品,订单不同步到商家[供货商1、供货商2]
 	#待发货-001(商品1a,1、商品1b,1、商品2a,1)微信支付
@@ -386,7 +391,7 @@ Scenario:1 手机端验证
 				}
 			}
 			"""
-			
+
 	#购买商家同步商品（单个供货商）订单同步到商家后台[bill商家]
 	#待发货-002(bill商品1,1、bill商品2,1),有留言,微信支付
 		When tom1访问jobs的webapp

@@ -74,7 +74,7 @@ Background:
 			"price": 10.00,
 			"weight": 1.0,
 			"stock_type": "有限",
-			"stocks": 100,
+			"stocks": 0,
 			"swipe_images": [{
 				"url": "/standard_static/test_resource_img/hangzhou1.jpg"
 			},{
@@ -102,7 +102,7 @@ Background:
 			"price": 20.00,
 			"weight": 1.0,
 			"stock_type": "有限",
-			"stocks": 200,
+			"stocks": 0,
 			"swipe_images": [{
 				"url": "/standard_static/test_resource_img/hangzhou1.jpg"
 			}],
@@ -128,7 +128,7 @@ Background:
 			"price": 30.00,
 			"weight": 1.0,
 			"stock_type": "有限",
-			"stocks": 2,
+			"stocks": 0,
 			"swipe_images": [{
 				"url": "/standard_static/test_resource_img/hangzhou1.jpg"
 			}],
@@ -205,19 +205,14 @@ Background:
 			"activity_name":"10元通用卡",
 			"card_start_date":"今天",
 			"card_end_date":"30天后",
-			"card_info":
-				{
-					"card_type":"微众卡",
-					"card_stocks":2,
-					"cards":
-						[{
-							"id":"0000001",
-							"password":"1234567"
-						},{
-							"id":"0000002",
-							"password":"2234567"
-						}]
-				},
+			"cards":
+				[{
+					"id":"0000001",
+					"password":"1234567"
+				},{
+					"id":"0000002",
+					"password":"2234567"
+				}],
 			"create_time":"今天"
 		},{
 			"product":
@@ -229,19 +224,14 @@ Background:
 			"activity_name":"20元通用卡",
 			"card_start_date":"今天",
 			"card_end_date":"35天后",
-			"card_info":
-				{
-					"card_type":"微众卡",
-					"card_stocks":2,
-					"cards":
-						[{
-							"id":"0000011",
-							"password":"1234567"
-						},{
-							"id":"0000012",
-							"password":"2234567"
-						}]
-				},
+			"cards":
+				[{
+					"id":"0000011",
+					"password":"1234567"
+				},{
+					"id":"0000012",
+					"password":"2234567"
+				}],
 			"create_time":"今天"
 		}]
 		"""

@@ -1,4 +1,4 @@
-# watcher: tianfengmin@weizoom.com, benchi@weizoom.com
+# watcher: tianfengmin@weizoom.com, benchi@weizoom.com#
 # __author__ : "田丰敏" 2016-05-25
 
 Feature: 增加对供货商的留言框
@@ -310,10 +310,7 @@ Background:
 	#tom1关注自营平台公众号
 		When tom1关注jobs的公众号
 
-@eugeneTMP
-Scenario:10
-Given jobs登录系统:weapp
-
+@eugene
 Scenario:1 手机端验证
 	#购买自营平台自建商品,订单不同步到商家[供货商1、供货商2]
 	#待发货-001(商品1a,1、商品1b,1、商品2a,1)微信支付
@@ -353,7 +350,7 @@ Scenario:1 手机端验证
 				"ship_address": "泰兴大厦",
 				"pay_type": "微信支付",
 				"order_id": "001",
-				"customer_message":{
+				"customer_message": {
 					"供货商1":"供货商1订单001备注",
 					"供货商2":"供货商2订单001备注"
 				}
@@ -425,7 +422,9 @@ Scenario:1 手机端验证
 				"ship_address": "泰兴大厦",
 				"pay_type": "微信支付",
 				"order_id": "002",
-				"customer_message":"bill商家订单002备注"
+				"customer_message":{
+					"bill商家": "bill商家订单002备注"
+				}
 			}
 			"""
 		When tom1使用支付方式'微信支付'进行支付订单'002'
@@ -450,7 +449,9 @@ Scenario:1 手机端验证
 					"count": 1,
 					"supplier": "bill商家"
 				}],
-				"customer_message":"bill商家订单002备注"
+				"customer_message": {
+					"bill商家":"bill商家订单002备注"
+				}
 			}
 			"""
 
@@ -464,7 +465,7 @@ Scenario:1 手机端验证
 				"name": "bill商品1",
 				"count": 1
 			}, {
-				"name": "tom商品2",
+				"name": "tom商品1",
 				"count": 1
 			}]
 			"""
@@ -535,7 +536,7 @@ Scenario:1 手机端验证
 				"name": "bill商品2",
 				"count": 1
 			}, {
-				"name": "tom商品2",
+				"name": "tom商品1",
 				"count": 1
 			}]
 			"""
@@ -659,11 +660,6 @@ Scenario:1 手机端验证
 				"ship_address": "泰兴大厦",
 				"final_price": 50.00,
 				"products": [{
-					"name": "商品1a",
-					"price": 10.00,
-					"count": 1,
-					"supplier": "供货商1"
-				},{
 					"name": "bill商品1",
 					"price": 10.00,
 					"count": 1,
@@ -678,6 +674,11 @@ Scenario:1 手机端验证
 					"price": 10.00,
 					"count": 1,
 					"supplier": "tom商家"
+				},{
+					"name": "商品1a",
+					"price": 10.00,
+					"count": 1,
+					"supplier": "供货商1"
 				}],
 				"customer_message":{
 					"供货商1":"供货商1订单005备注",
@@ -740,19 +741,19 @@ Scenario:1 手机端验证
 					"bill商家":"bill商家订单007备注"
 				},
 				"products": [{
-					"name": "商品1a",
-					"price": 10.00,
-					"count": 1,
-					"supplier": "供货商1"
-				},{
 					"name": "bill商品1",
 					"price": 10.00,
 					"count": 1,
 					"supplier": "bill商家"
+				},{
+					"name": "商品1a",
+					"price": 10.00,
+					"count": 1,
+					"supplier": "供货商1"
 				}]
 			}
 			"""
-
+@eugene
 Scenario:2 自营平台后台验证
 	#购买自营平台自建商品和商家同步的商品[供货商1、bill商家、tom商家]
 	#待发货-006(商品1a,1、bill商品1,1、bill商品2,1、tom商品1,1),多个供货商,均有留言,货到付款
@@ -769,7 +770,7 @@ Scenario:2 自营平台后台验证
 				"name": "bill商品2",
 				"count": 1
 			}, {
-				"name": "tom商品2",
+				"name": "tom商品1",
 				"count": 1
 			}]
 			"""
@@ -821,16 +822,8 @@ Scenario:2 自营平台后台验证
 					"tom商家":"tom商家订单006备注"
 				},
 				"products": [{
-					"name":"商品1a",
-					"price":10.0,
-					"count":1,
-					"supplier": "供货商1",
-					"is_sync_supplier": "false",
-					"status": "待发货",
-					"actions": ["发货"]
-				},{
 					"name":"bill商品1",
-					"price":20.0,
+					"price":10.0,
 					"count":1,
 					"supplier": "bill商家",
 					"is_sync_supplier": "true",
@@ -838,7 +831,7 @@ Scenario:2 自营平台后台验证
 					"actions": ["发货"]
 				},{
 					"name":"bill商品2",
-					"price":10.0,
+					"price":20.0,
 					"count":1,
 					"supplier": "bill商家",
 					"is_sync_supplier": "true",
@@ -850,6 +843,14 @@ Scenario:2 自营平台后台验证
 					"count":1,
 					"supplier": "tom商家",
 					"is_sync_supplier": "true",
+					"status": "待发货",
+					"actions": ["发货"]
+				},{
+					"name":"商品1a",
+					"price":10.0,
+					"count":1,
+					"supplier": "供货商1",
+					"is_sync_supplier": "false",
 					"status": "待发货",
 					"actions": ["发货"]
 				}]

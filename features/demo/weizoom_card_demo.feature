@@ -84,7 +84,7 @@ Background:
 
 	Given bill关注jobs的公众号
 
-@ztqb
+
 Scenario:1 微众卡金额大于订单金额时进行支付
 	bill用微众卡购买jobs的商品时,微众卡金额大于订单金额
 	1.自动扣除微众卡金额

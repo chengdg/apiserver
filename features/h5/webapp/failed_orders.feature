@@ -12,6 +12,7 @@ Feature:下单失败后校验库存、积分、优惠券和微众卡信息
 
 Background:
 	Given 重置weapp的bdd环境
+	Given 重置weizoom_card的bdd环境
 	Given jobs登录系统:weapp
 	Given jobs设定会员积分策略:weapp
 		"""
@@ -72,17 +73,39 @@ Background:
 			}
 		}]
 		"""
-	And jobs已创建微众卡:weapp
+
+	#创建微众卡
+	Given test登录管理系统:weizoom_card
+	When test新建通用卡:weizoom_card
 		"""
-		{
-			"cards":[{
-				"id":"0000001",
-				"password":"1234567",
-				"status":"未使用",
-				"price":100.00
+		[{
+			"name":"100元微众卡",
+			"prefix_value":"100",
+			"type":"virtual",
+			"money":"100.00",
+			"num":"1",
+			"comments":"微众卡"
+		}]
+		"""
+
+	#微众卡审批出库
+	When test下订单:weizoom_card
+			"""
+			[{
+				"card_info":[{
+					"name":"100元微众卡",
+					"order_num":"1",
+					"start_date":"2016-04-07 00:00",
+					"end_date":"2019-10-07 00:00"
+				}],
+				"order_info":{
+					"order_id":"0001"
+				}
 			}]
-		}
-		"""
+			"""
+	And test批量激活订单'0001'的卡:weizoom_card
+
+	Given jobs登录系统:weapp
 	Given jobs已添加了优惠券规则:weapp
 		"""
 		[{
@@ -265,7 +288,7 @@ Scenario:2 下单失败后，校验会员的积分变化
 		}
 		"""
 
-@mall3 @duhao @order
+@mall3 @duhao @order @wll
 Scenario:3 下单失败后，校验优惠券和微众卡的变化
 	When bill访问jobs的webapp
 	When bill购买jobs的商品
@@ -279,7 +302,7 @@ Scenario:3 下单失败后，校验优惠券和微众卡的变化
 			}],
 			"coupon": "coupon1_id_1",
 			"weizoom_card":[{
-				"card_name":"0000001",
+				"card_name":"100000001",
 				"card_pass":"1234567"
 			}]
 		}
@@ -328,10 +351,18 @@ Scenario:3 下单失败后，校验优惠券和微众卡的变化
 			}
 		}
 		"""
-	Then jobs能获取微众卡'0000001'
+
+	When bill访问jobs的webapp
+	When bill进行微众卡余额查询
 		"""
 		{
-			"status":"未使用",
-			"price":100.00
+			"id":"100000001",
+			"password":"1234567"
+		}
+		"""
+	Then bill获得微众卡余额查询结果
+		"""
+		{
+			"card_remaining":100.00
 		}
 		"""

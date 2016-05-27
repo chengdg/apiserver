@@ -796,6 +796,12 @@ class Order(business_model.Model):
 				new_order.weizoom_card_money = 0
 				new_order.supplier = supplier
 				new_order.total_purchase_price = sum(map(lambda product:product.purchase_price * product.purchase_count, supplier2products[supplier]))
+				
+				if product.type in ['virtual', 'wzcard']:
+					#如果是虚拟商品，子订单的订单类型跟商品设为一样
+					#duhao 20160527
+					new_order.type = product.type
+					
 				new_order.save()
 				new_order_ids.append(new_order.order_id)
 

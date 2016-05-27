@@ -6,6 +6,7 @@ Feature: 取消订单后，校验后台优惠券规则列表信息
 
 Background:
 	Given 重置weapp的bdd环境
+	Given 重置weizoom_card的bdd环境
 	Given jobs登录系统:weapp
 	And jobs已有微众卡支付权限:weapp
 	And jobs已添加支付方式:weapp
@@ -255,18 +256,38 @@ Scenario:3 后台取消只使用优惠券支付的'待发货'状态的订单
 
 @mall3
 Scenario:4 后台取消使用微众卡和优惠券支付的'待发货'状态的订单
-	Given jobs登录系统:weapp
-	And jobs已创建微众卡:weapp
+	#创建微众卡
+	Given test登录管理系统:weizoom_card
+	When test新建通用卡:weizoom_card
 		"""
-		{
-			"cards":[{
-				"id":"0000001",
-				"password":"1234567",
-				"status":"未使用",
-				"price":50.00
+		[{
+			"name":"50元微众卡",
+			"prefix_value":"050",
+			"type":"virtual",
+			"money":"50.00",
+			"num":"1",
+			"comments":"微众卡"
+		}]
+		"""
+
+	#微众卡审批出库
+	When test下订单:weizoom_card
+			"""
+			[{
+				"card_info":[{
+					"name":"50元微众卡",
+					"order_num":"1",
+					"start_date":"2016-04-07 00:00",
+					"end_date":"2019-10-07 00:00"
+				}],
+				"order_info":{
+					"order_id":"0001"
+				}
 			}]
-		}
-		"""
+			"""
+	And test批量激活订单'0001'的卡:weizoom_card
+
+	Given jobs登录系统:weapp
 	When jobs添加优惠券规则:weapp
 		"""
 		[{
@@ -312,7 +333,7 @@ Scenario:4 后台取消使用微众卡和优惠券支付的'待发货'状态的�
 			}],
 			"coupon":"coupon4_id_1",
 			"weizoom_card":[{
-				"card_name":"0000001",
+				"card_name":"050000001",
 				"card_pass":"1234567"
 			}]
 		}

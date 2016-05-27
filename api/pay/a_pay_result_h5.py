@@ -19,7 +19,6 @@ class APayResultH5(api_resource.ApiResource):
 	@param_required(['order_id', 'pay_interface_type'])
 	def put(args):
 		"""
-		微信支付、支付宝回调接口
 		@warning: 对外网开放的支付接口，只接受从h5支付方式列表发起的货到付款,高风险，改动需慎重
 		"""
 
@@ -32,17 +31,15 @@ class APayResultH5(api_resource.ApiResource):
 		# 此接口只可使用货到付款
 
 		if pay_interface_type !=mall_models.PAY_INTERFACE_COD:
-			watchdog.alert('活动付款接口被异常调用,woid:%s,webapp_user_id:%s', (webapp_owner.id,webapp_user.id))
+			watchdog.alert('货到付款接口被异常调用,woid:%s,webapp_user_id:%s', (webapp_owner.id,webapp_user.id))
 			return 500, {}
 		order = Order.from_id({
 			'webapp_owner': webapp_owner,
 			'webapp_user': webapp_user,
 			'order_id': order_id
 		})
-		is_success = True
 		try:
-			if not order.pay(pay_interface_type=mall_models.PAY_INTERFACE_COD):
-				is_success = False
+			is_success, msg = order.pay(pay_interface_type=mall_models.PAY_INTERFACE_COD)
 		except:
 			is_success = False
 			msg = unicode_full_stack()

@@ -325,11 +325,12 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 		if 'order_id' in args:
 			context.response.data['order_id'] = args['order_id']
 			db_order = mall_models.Order.get(order_id=context.created_order_id)
-			# if db_order.weizoom_card_money > 0:
-			# 	wzcard_has_orders = wzcard_models.WeizoomCardHasOrder.select().dj_where(order_id=db_order.order_id)
-			# 	for wzcard_has_order in wzcard_has_orders:
-			# 		wzcard_has_order.order_id = args['order_id']
-			# 		wzcard_has_order.save()
+			if db_order.weizoom_card_money > 0:
+				mall_models.OrderCardInfo.update(order_id=args['order_id']).dj_where(order_id=db_order.order_id)
+				# wzcard_has_orders = wzcard_models.WeizoomCardHasOrder.select().dj_where(order_id=db_order.order_id)
+				# for wzcard_has_order in wzcard_has_orders:
+				# 	wzcard_has_order.order_id = args['order_id']
+				# 	wzcard_has_order.save()
 			db_order.order_id=args['order_id']
 			db_order.save()
 			if db_order.origin_order_id <0:

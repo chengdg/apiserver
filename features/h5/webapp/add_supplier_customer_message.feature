@@ -310,7 +310,7 @@ Background:
 	#tom1关注自营平台公众号
 		When tom1关注jobs的公众号
 
-@eugene
+@mall3 @eugene
 Scenario:1 手机端验证
 	#购买自营平台自建商品,订单不同步到商家[供货商1、供货商2]
 	#待发货-001(商品1a,1、商品1b,1、商品2a,1)微信支付
@@ -753,7 +753,7 @@ Scenario:1 手机端验证
 				}]
 			}
 			"""
-@eugene
+@mall3 @eugene
 Scenario:2 自营平台后台验证
 	#购买自营平台自建商品和商家同步的商品[供货商1、bill商家、tom商家]
 	#待发货-006(商品1a,1、bill商品1,1、bill商品2,1、tom商品1,1),多个供货商,均有留言,货到付款

@@ -13,6 +13,7 @@ from db.mall import promotion_models
 from db.member import models as member_models
 from db.wzcard import models as wzcard_models
 from db.news import models as news_models
+from db.account import models as account_models
 from business.mall.product import Product as business_product
 from business.account.webapp_owner import WebAppOwner
 from .steps_db_util import (
@@ -367,6 +368,7 @@ def __check_order(context, webapp_user_name):
 	actual_order['methods_of_payment'] = actual_order['pay_interface_name']
 
 	actual_order['is_group_buying'] = 'true' if actual_order['is_group_buy'] else 'false'
+	actual_order['customer_message'] = json.loads(actual_order['customer_message'])
 	# 获取coupon规则名
 	if (actual_order['coupon_id'] != 0) and (actual_order['coupon_id'] != -1):
 		# coupon = Coupon.objects.get(id=actual_order.coupon_id)
@@ -385,6 +387,13 @@ def __check_order(context, webapp_user_name):
 			if model['property_values']:
 				product['model'] = ' '.join(property_value['name'] for property_value in model['property_values'])
 
+		if product['supplier_name']:
+			product['supplier'] = product['supplier_name']
+
+	if account_models.UserProfile.get(user=context.webapp_owner_id).webapp_type:
+		actual_order['products'] = sorted(actual_order['products'], key=lambda p: p['name'])
+
+
 	# 需要订单中给出微众卡支付金额
 	#actual_order['weizoom_card_money'] = 0.0
 
@@ -392,6 +401,10 @@ def __check_order(context, webapp_user_name):
 	if expected.get('actions', None):
 		# TODO 验证订单页面操作
 		del expected['actions']
+	if expected.get('customer_message', None):
+		expected['customer_message'] = __get_customer_message_str(expected['customer_message'])
+
+
 	bdd_util.assert_dict(expected, actual_order)
 	context.latest_order_id = order_id
 
@@ -706,7 +719,7 @@ def step_impl(context, webapp_user_name):
 	if __i.get("action") == u"pay":
 		argument = __i.get('context')
 		# 获取购物车参数
-		product_ids, product_counts, product_model_names = _get_shopping_cart_parameters(context.webapp_user.id, argument)
+		product_ids, product_counts, product_model_names = _get_shopping_cart_parameters(context.webapp_user.id, argument, context.webapp_owner_id)
 		url = '/mall/purchasing/?woid=%s&product_ids=%s&product_counts=%s&product_model_names=%s' % (context.webapp_owner_id, product_ids, product_counts, product_model_names)
 		print '==========================================***************************************'
 		print url
@@ -721,7 +734,7 @@ def step_impl(context, webapp_user_name):
 	elif __i.get("action") == u"click":
 		argument = __i.get('context')
 		# 获取购物车参数
-		product_ids, product_counts, product_model_names = _get_shopping_cart_parameters(context.webapp_user.id, argument)
+		product_ids, product_counts, product_model_names = _get_shopping_cart_parameters(context.webapp_user.id, argument, context.webapp_owner_id)
 		url = '/mall/purchasing/?woid=%s&product_ids=%s&product_counts=%s&product_model_names=%s' % (context.webapp_owner_id, product_ids, product_counts, product_model_names)
 		print '==========================================***************************************'
 		print url
@@ -764,7 +777,7 @@ def step_impl(context, webapp_user_name):
 
 	bdd_util.assert_list(expected_products, actual)
 
-def _get_shopping_cart_parameters(webapp_user_id, context):
+def _get_shopping_cart_parameters(webapp_user_id, context, webapp_owner_id):
 	"""
 	webapp_user_id-> int
 	context -> list
@@ -786,8 +799,7 @@ def _get_shopping_cart_parameters(webapp_user_id, context):
 			product_name = product_info['name']
 			product_model_name = product_info.get('model', 'standard')
 			product_model_name = get_product_model_keys(product_model_name)
-
-			product = mall_models.Product.get(name=product_info['name'])
+			product = mall_models.Product.get(name=product_info['name'], owner=webapp_owner_id)
 			cart = mall_models.ShoppingCart.get(webapp_user_id=webapp_user_id, product=product.id, product_model_name=product_model_name)
 			product_ids.append(str(product.id))
 			product_counts.append(str(cart.count))
@@ -808,7 +820,6 @@ def _get_prodcut_info(order):
 	product_counts = []
 	product_model_names = []
 	promotion_ids = []
-
 	for product_group in order['product_groups']:
 		for product in product_group['products']:
 			product_ids.append(str(product['id']))
@@ -823,6 +834,28 @@ def _get_prodcut_info(order):
 			'product_model_names': '$'.join(product_model_names),
 			'promotion_ids': '_'.join(promotion_ids)
 			}
+
+def _zypt_get_prodcut_info(order):
+	product_ids = []
+	product_counts = []
+	product_model_names = []
+	promotion_ids = []
+	for product_groups in order['product_groups']:
+		for product_group in product_groups:
+			for product in product_group['products']:
+				product_ids.append(str(product['id']))
+				product_counts.append(str(product['purchase_count']))
+				product_model_names.append(str(product['model_name']))
+				if product_group['can_use_promotion']:
+					promotion_ids.append(str(product_group['promotion']['id']))
+				else:
+					promotion_ids.append('0')
+	return {'product_ids': '_'.join(product_ids),
+			'product_counts': '_'.join(product_counts),
+			'product_model_names': '$'.join(product_model_names),
+			'promotion_ids': '_'.join(promotion_ids)
+			}
+
 
 @then(u"{webapp_user_name}'{pay_type}'使用支付方式'{pay_interface}'进行支付")
 def step_impl(context, webapp_user_name, pay_type, pay_interface):
@@ -841,6 +874,18 @@ def step_impl(context, webapp_user_name, pay_type, pay_interface):
 	else:
 		context.tc.assertTrue(pay_interface not in pay_interface_names)
 
+def __get_customer_message_str(customer_message_data):
+	customer_message = {}
+	for supplier_name, message in customer_message_data.items():
+		if account_models.UserProfile.select().dj_where(store_name=supplier_name).count() > 0:
+			key = "%du" % account_models.UserProfile.select().dj_where(store_name=supplier_name).first().user_id
+			customer_message[key] = {'supplier_name': 'supplier_name', 'customer_message': message}
+
+		if mall_models.Supplier.select().dj_where(name=supplier_name).count() > 0:
+			key = "%ds" % mall_models.Supplier.select().dj_where(name=supplier_name).first().id
+			customer_message[key] = {'supplier_name': 'supplier_name', 'customer_message': message}
+	return customer_message
+
 @when(u"{webapp_user_name}在购物车订单编辑中点击提交订单")
 def step_click_check_out(context, webapp_user_name):
 	"""
@@ -850,9 +895,14 @@ def step_click_check_out(context, webapp_user_name):
 	"""
 	argument = json.loads(context.text)
 	pay_type = argument['pay_type']
+	mall_type = account_models.UserProfile.get(user=context.webapp_owner_id).webapp_type
+
 
 	order = context.shopping_cart_order
-	product_info = _get_prodcut_info(order)
+	if mall_type:
+		product_info = _zypt_get_prodcut_info(order)
+	else:
+		product_info = _get_prodcut_info(order)
 	url = '/mall/order/?_method=put'
 	data = {
 		'order_type': 'normal',
@@ -871,6 +921,11 @@ def step_click_check_out(context, webapp_user_name):
 		data['forcing_submit'] = 1
 
 	data.update(product_info)
+	customer_message_data = argument.get('customer_message', {})
+	if customer_message_data:
+		customer_message = __get_customer_message_str(customer_message_data)
+		data['message'] = json.dumps(customer_message)
+
 	coupon_id = context.product_infos.get('coupon_id', None)
 	if coupon_id:
 		data['is_use_coupon'] = 'true'
@@ -903,7 +958,7 @@ def step_click_check_out(context, webapp_user_name):
 		context.created_order_id = response.data['order_id']
 	else:
 		context.created_order_id = -1
-		context.server_error_msg = response.data['detail'][0]['msg']
+		context.server_error_msg = response.data['detail']
 		print "buy_error----------------------------",context.server_error_msg
 
 	if context.created_order_id != -1:

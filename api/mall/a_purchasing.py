@@ -132,7 +132,14 @@ class APurchasing(api_resource.ApiResource):
 		mall_config = webapp_owner.mall_config
 		use_ceiling = webapp_owner.integral_strategy_settings.use_ceiling
 
-		product_group_datas = [group.to_dict(with_price_factor=True, with_coupon_info=True) for group in order.promotion_product_groups]
+		#自营平台和商家分开处理
+		if webapp_owner.user_profile.webapp_type:
+			supplier_product_groups = []
+			for key, value in order.promotion_product_groups.items():
+				supplier_product_groups.append([group.to_dict(with_price_factor=True, with_coupon_info=True) for group in order.promotion_product_groups[key]])
+			product_group_datas = supplier_product_groups
+		else:
+			product_group_datas = [group.to_dict(with_price_factor=True, with_coupon_info=True) for group in order.promotion_product_groups]
 
 		order_info = {
 			'type': order.type,
@@ -151,6 +158,7 @@ class APurchasing(api_resource.ApiResource):
 			'limit_coupons': limit_coupons,
 			'use_ceiling': use_ceiling,
 			'postage_factor': postage_factor,
-			'group_id': group_id
+			'group_id': group_id,
+			'mall_type': webapp_owner.user_profile.webapp_type
 		}
 

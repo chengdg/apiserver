@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #import copy
+import json
 from datetime import datetime
 
 from eaglet.core import api_resource
@@ -16,6 +17,9 @@ from eaglet.decorator import param_required
 #from business.mall.pay_interface import PayInterface
 from business.mall.shopping_cart import ShoppingCart
 from services.update_member_from_weixin.task import update_member_info
+from eaglet.core import watchdog
+import uuid
+
 
 class AUserCenter(api_resource.ApiResource):
 	"""
@@ -33,11 +37,9 @@ class AUserCenter(api_resource.ApiResource):
 		webapp_owner = args['webapp_owner']
 		member = webapp_user.member
 
-		today = datetime.now()
 		today_str = datetime.today().strftime('%Y-%m-%d')
 		if member.update_time.strftime("%Y-%m-%d") != today_str:
 			update_member_info.delay(webapp_user.id, webapp_owner.id)
-
 
 		shopping_cart = ShoppingCart.get_for_webapp_user({
 			'webapp_user': args['webapp_user'],

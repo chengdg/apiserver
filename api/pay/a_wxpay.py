@@ -78,16 +78,6 @@ class AWXPay(api_resource.ApiResource):
 
 		return data
 
-	@param_required(['woid', 'ship_name', 'ship_address', 'ship_tel', 'order_type', 'xa-choseInterfaces'])
-	def put(args):
-		"""
-		获取购物车项目
 
-		@param id 商品ID
-		"""
-		webapp_user = args['webapp_user']
-		webapp_owner = args['webapp_owner']
-		
-		return {}
 
 

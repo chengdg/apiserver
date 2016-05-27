@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from eaglet.core import api_resource
 from eaglet.decorator import param_required
-from business.mall.order import Order
+
 import db.mall.models as mall_models
+from business.mall.order import Order
 
 
 class AAliPayInterface(api_resource.ApiResource):

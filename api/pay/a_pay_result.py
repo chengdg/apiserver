@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from eaglet.core import api_resource
-from core.exceptionutil import unicode_full_stack
-from eaglet.decorator import param_required
-from business.mall.order import Order
-from business.mall.red_envelope import RedEnvelope
-from business.mall.order_config import OrderConfig
 from eaglet.core import watchdog
-import db.mall.models as mall_models
+from eaglet.decorator import param_required
+
+from business.mall.order import Order
+from business.mall.order_config import OrderConfig
+from business.mall.red_envelope import RedEnvelope
+from core.exceptionutil import unicode_full_stack
 
 
 class APayResult(api_resource.ApiResource):
@@ -84,15 +84,8 @@ class APayResult(api_resource.ApiResource):
 			'order_id': order_id
 		})
 
-		msg = ''
 		try:
-			if order.status > mall_models.ORDER_STATUS_CANCEL:
-				is_success = True
-				msg = '%s has been paid.' % order.order_id
-			elif order.pay(pay_interface_type=pay_interface_type):
-				is_success = True
-			else:
-				is_success = False
+			is_success, msg = order.pay(pay_interface_type=pay_interface_type)
 		except:
 			is_success = False
 			msg = unicode_full_stack()

@@ -288,7 +288,7 @@ Scenario:2 下单失败后，校验会员的积分变化
 		}
 		"""
 
-@mall3 @duhao @order @wll
+@mall3 @duhao @order
 Scenario:3 下单失败后，校验优惠券和微众卡的变化
 	When bill访问jobs的webapp
 	When bill购买jobs的商品

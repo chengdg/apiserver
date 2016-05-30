@@ -254,4 +254,6 @@ class AOrder(api_resource.ApiResource):
 			'order_id': order_id
 		})
 
-		return AOrder.to_dict(order)
+		order_data = AOrder.to_dict(order)
+		order_data.update({'mall_type': args['webapp_owner'].user_profile.webapp_type})
+		return order_data

@@ -16,6 +16,7 @@ Feature:从个人中心浏览不同状态的订单列表中的团购订单
 
 Background:
 	Given 重置weapp的bdd环境
+	Given 重置weizoom_card的bdd环境
 	Given jobs登录系统:weapp
 	When jobs添加微信证书:weapp
 
@@ -28,22 +29,50 @@ Background:
 			"type": "微信支付"
 		}]
 		"""
-	And jobs已创建微众卡:weapp
+
+	#创建微众卡
+	Given test登录管理系统:weizoom_card
+	When test新建通用卡:weizoom_card
 		"""
-		{
-			"cards":[{
-				"id":"0000001",
-				"password":"1234567",
-				"status":"未使用",
-				"price":100.00
-			},{
-				"id":"0000002",
-				"password":"1234567",
-				"status":"未使用",
-				"price":20.00
+		[{
+			"name":"100元微众卡",
+			"prefix_value":"100",
+			"type":"virtual",
+			"money":"100.00",
+			"num":"1",
+			"comments":"微众卡"
+		},{
+			"name":"20元微众卡",
+			"prefix_value":"020",
+			"type":"virtual",
+			"money":"20.00",
+			"num":"1",
+			"comments":"微众卡"
+		}]
+		"""
+
+	#微众卡审批出库
+	When test下订单:weizoom_card
+			"""
+			[{
+				"card_info":[{
+					"name":"100元微众卡",
+					"order_num":"1",
+					"start_date":"2016-04-07 00:00",
+					"end_date":"2019-10-07 00:00"
+				},{
+					"name":"20元微众卡",
+					"order_num":"1",
+					"start_date":"2016-04-07 00:00",
+					"end_date":"2019-10-07 00:00"
+				}],
+				"order_info":{
+					"order_id":"0001"
+				}
 			}]
-		}
-		"""
+			"""
+	And test批量激活订单'0001'的卡:weizoom_card
+
 	And jobs已添加商品规格:weapp
 		"""
 		[{
@@ -132,7 +161,7 @@ Background:
 	Given tom1关注jobs的公众号
 	Given tom2关注jobs的公众号
 
-@mall3 @group_t 
+@mall3 @group_t
 Scenario:1 订单列表只有团购订单-团购进行中
 	1 同一个会员参与同一个团购活动的不同团-未成团
 	2 同一个会员参与不同团购活动的团-未成团
@@ -369,7 +398,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 				"ship_address": "泰兴大厦",
 				"pay_type":"微信支付",
 				"weizoom_card":[{
-					"card_name":"0000001",
+					"card_name":"100000001",
 					"card_pass":"1234567"
 				}]
 			}
@@ -554,7 +583,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 				"ship_address": "泰兴大厦",
 				"pay_type":"微信支付",
 				"weizoom_card":[{
-					"card_name":"0000002",
+					"card_name":"020000001",
 					"card_pass":"1234567"
 				}]
 			}
@@ -1258,7 +1287,7 @@ Scenario:4 订单列表团购进行中订单+普通订单
 			}]
 			"""
 
-
+@mall3
 Scenario:5 订单列表团购订单-手机端开团未支付订单
 		When bill访问jobs的webapp
 		When bill参加jobs的团购活动"团购活动1"进行开团:weapp

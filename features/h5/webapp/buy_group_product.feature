@@ -747,7 +747,7 @@ Scenario: 4 会员开团后团购活动失败
 	When bill提交团购订单
 		"""
 		{
-			"order_id":"001",
+			"order_id":"10086",
 			"ship_name": "bill",
 			"ship_tel": "13811223344",
 			"ship_area": "北京市 北京市 海淀区",
@@ -775,6 +775,7 @@ Scenario: 4 会员开团后团购活动失败
 		"""
 
 	#下单成功，库存减少
+	Given jobs登录系统:weapp
 	Then jobs能获取商品'商品2':weapp
 		"""
 		{
@@ -804,6 +805,7 @@ Scenario: 4 会员开团后团购活动失败
 		"""
 
 	#团购失败，库存恢复
+	Given jobs登录系统:weapp
 	Then jobs能获取商品'商品2':weapp
 		"""
 		{
@@ -817,10 +819,10 @@ Scenario: 4 会员开团后团购活动失败
 		"""
 
 	When bill访问jobs的webapp
-	Then bill手机端获取订单'001'
+	Then bill手机端获取订单'10086'
 		"""
 		{
-			"order_no": "001",
+			"order_no": "10086",
 			"status": "已取消"
 		}
 		"""

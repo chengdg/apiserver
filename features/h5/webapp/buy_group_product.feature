@@ -719,7 +719,7 @@ Scenario: 3 会员开团后团购活动成功
 		[]
 		"""
 
-@mall3 @nj_group  @wll
+@mall3 @nj_group
 Scenario: 4 会员开团后团购活动失败
 	会员开团后
 	1.没有在期限内达到人数，团购活动失败

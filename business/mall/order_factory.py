@@ -425,7 +425,7 @@ class OrderFactory(business_model.Model):
 			if acquire_result:
 				self.context['create_order_lock'].append(redis_lock)
 			else:
-				watchdog.info('acquire lock failure,resource:{}'.format(str(locked_resource)))
+				watchdog.info('acquire_lock_failure,resource:{}'.format(str(locked_resource)))
 				return False
 
 		return True

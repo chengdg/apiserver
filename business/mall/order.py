@@ -417,6 +417,7 @@ class Order(business_model.Model):
 			pay_info['order_id'] = order_id
 			pay_info['order_dot_id'] = self.id
 			pay_info['woid'] = self.context['webapp_owner'].id
+			pay_info['product_price'] =self.product_price
 			pay_info['product_names'] = self.__get_product_names_for_pay_module()
 			return pay_info
 		else:
@@ -782,6 +783,15 @@ class Order(business_model.Model):
 				new_order.id = None
 				new_order.order_id = '%s^%ss' % (self.order_id, supplier)
 				new_order.origin_order_id = self.id
+				try:
+					if json.loads(customer_message).get('%ss' % supplier, ""):
+						message = json.loads(customer_message)['%ss' % supplier].get('customer_message','')
+						new_order.customer_message = message
+					else:
+						new_order.customer_message = ''
+				except:
+					# 如果是团购就会抛出异常
+					pass
 				new_order.coupon_money = 0
 				new_order.integral_money = 0
 				new_order.weizoom_card_money = 0
@@ -814,6 +824,14 @@ class Order(business_model.Model):
 				new_order.id = None
 				new_order.order_id = '%s^%su' % (self.order_id, supplier_user_id)
 				new_order.origin_order_id = self.id
+				try:
+					if json.loads(customer_message).get('%su' % supplier_user_id, ""):
+						message = json.loads(customer_message)['%su' % supplier_user_id].get('customer_message', '')
+						new_order.customer_message = message
+					else:
+						new_order.customer_message = ''
+				except:
+					pass
 				new_order.coupon_money = 0
 				new_order.integral_money = 0
 				new_order.weizoom_card_money = 0

@@ -153,6 +153,16 @@ class PayInterface(business_model.Model):
 				'showwxpaytitle': 1,
 				'is_active': interface['is_active']
 			}
+		elif mall_models.PAY_INTERFACE_BEST_PAY == interface_type:
+			return {
+				'type': 'best_pay',
+				'woid': webapp_owner_id,
+				'order_id': order.order_id,
+				'pay_id': interface['id'],
+				'showwxpaytitle': 1,
+				'is_active': interface['is_active']
+
+			}
 			# return '/wapi/mall/wxpay/?woid={}&order_id={}&pay_id={}&showwxpaytitle=1'.format(
 			# 	webapp_owner_id,
 			# 	order.order_id,
@@ -172,19 +182,20 @@ class PayInterface(business_model.Model):
 		webapp_owner_id = self.context['webapp_owner'].id
 
 		if interface_type == mall_models.PAY_INTERFACE_WEIXIN_PAY:
-			try:
-				component_authed_appid = weixin_user_models.ComponentAuthedAppid.select().dj_where(user_id=webapp_owner_id)[0]
-				component_info = component_authed_appid.component_info
-				component_appid = component_info.app_id
-
-			except:
-				component_appid = ''
+			# todo zhaolei 该参数已经不再使用了
+			# try:
+			# 	component_authed_appid = weixin_user_models.ComponentAuthedAppid.select().dj_where(user_id=webapp_owner_id)[0]
+			# 	component_info = component_authed_appid.component_info
+			# 	component_appid = component_info.app_id
+            #
+			# except:
+			# 	component_appid = ''
 
 			return {
 				'pay_interface_related_config_id': self.related_config_id,
 				'pay_interface_type': interface_type,
 				'pay_version': self.pay_config['pay_version'],
-				'component_appid': component_appid,
+				# 'component_appid': component_appid,
 				'app_id': self.pay_config['app_id']
 			}
 		elif mall_models.PAY_INTERFACE_ALIPAY == interface_type:
@@ -197,6 +208,15 @@ class PayInterface(business_model.Model):
 				'sign_type': pay_config['sign_type'],
 				'seller_email': pay_config['seller_email'],
 				'pay_version': pay_config['pay_version']
+			}
+		elif mall_models.PAY_INTERFACE_BEST_PAY== interface_type:
+			pay_config = self.pay_config
+			return {
+				'pay_r_id': pay_config['id'],
+				'merchant_tid': pay_config['merchant_tid'],
+				'merchant_pwd': pay_config['merchant_pwd'],
+				'key': pay_config['key']
+
 			}
 		else:
 			return {}
@@ -244,6 +264,9 @@ class PayInterface(business_model.Model):
 		elif interface['type'] == mall_models.PAY_INTERFACE_ALIPAY:
 			ali_pay_config = mall_models.UserAlipayOrderConfig.get(id=interface['related_config_id'])
 			return ali_pay_config.to_dict()
+		elif interface['type'] == mall_models.PAY_INTERFACE_BEST_PAY:
+			best_pay_config = mall_models.UserBestPayOrderConfig.get(id=interface['related_config_id'])
+			return best_pay_config.to_dict()
 		else:
 			return None
 

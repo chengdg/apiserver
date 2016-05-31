@@ -84,9 +84,24 @@ class PurchaseOrder(business_model.Model):
 		group_reserved_product_service = GroupReservedProductService.get(webapp_owner, webapp_user)
 		self.promotion_product_groups = group_reserved_product_service.group_product_by_promotion(self.products)
 
-		#对每一个group应用促销活动
-		for promotion_product_group in self.promotion_product_groups:
-			promotion_product_group.apply_promotion()
+		if webapp_owner.user_profile.webapp_type:
+			supplier_product_groups = {}
+			for product in self.products:
+				key = '%d-%d' % (product.supplier, product.supplier_user_id)
+				if supplier_product_groups.has_key(key):
+					supplier_product_groups[key].append(product)
+				else:
+					supplier_product_groups[key] = [product]
+			for key, value in supplier_product_groups.items():
+				supplier_product_groups[key] = group_reserved_product_service.group_product_by_promotion(value)
+				for group in supplier_product_groups[key]:
+					group.apply_promotion()
+			self.promotion_product_groups = supplier_product_groups
+
+		if not webapp_owner.user_profile.webapp_type:
+			#对每一个group应用促销活动
+			for promotion_product_group in self.promotion_product_groups:
+				promotion_product_group.apply_promotion()
 
 		#获取订单可用积分
 		integral_info = webapp_user.integral_info

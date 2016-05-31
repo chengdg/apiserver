@@ -5,6 +5,7 @@ Feature:校验手机端支付结果页面
 
 Background:
 	Given 重置weapp的bdd环境
+	Given 重置weizoom_card的bdd环境
 	Given jobs登录系统:weapp
 	And jobs已有微众卡支付权限:weapp
 	And jobs已添加支付方式:weapp
@@ -19,27 +20,50 @@ Background:
 			"type":"微众卡支付"
 		}]
 		"""
-	And jobs已创建微众卡:weapp
+
+	#创建微众卡
+	Given test登录管理系统:weizoom_card
+	When test新建通用卡:weizoom_card
 		"""
-		{
-			"cards":[{
-				"id":"0000001",
-				"password":"1234567",
-				"status":"未使用",
-				"price":100.00
-			},{
-				"id":"0000002",
-				"password":"1234567",
-				"status":"未使用",
-				"price":50.00
-			},{
-				"id":"0000003",
-				"password":"1234567",
-				"status":"未使用",
-				"price":100.00
+		[{
+			"name":"100元微众卡",
+			"prefix_value":"100",
+			"type":"virtual",
+			"money":"100.00",
+			"num":"2",
+			"comments":"微众卡"
+		},{
+			"name":"50元微众卡",
+			"prefix_value":"050",
+			"type":"virtual",
+			"money":"50.00",
+			"num":"1",
+			"comments":"微众卡"
+		}]
+		"""
+
+	#微众卡审批出库
+	When test下订单:weizoom_card
+			"""
+			[{
+				"card_info":[{
+					"name":"100元微众卡",
+					"order_num":"2",
+					"start_date":"2016-04-07 00:00",
+					"end_date":"2019-10-07 00:00"
+				},{
+					"name":"50元微众卡",
+					"order_num":"1",
+					"start_date":"2016-04-07 00:00",
+					"end_date":"2019-10-07 00:00"
+				}],
+				"order_info":{
+					"order_id":"0001"
+				}
 			}]
-		}
-		"""
+			"""
+	And test批量激活订单'0001'的卡:weizoom_card
+
 	And jobs已添加商品:weapp
 		"""
 		[{
@@ -319,7 +343,7 @@ Scenario:6 支付结果页面支付方式为'优惠抵扣'，使用微众卡支�
 				"count":1
 			}],
 			"weizoom_card":[{
-				"card_name":"0000001",
+				"card_name":"100000001",
 				"card_pass":"1234567"
 			}]
 		}
@@ -381,7 +405,7 @@ Scenario:7 支付结果页面支付方式为'优惠抵扣'，使用微众卡和�
 				"count":1
 			}],
 			"weizoom_card":[{
-				"card_name":"0000002",
+				"card_name":"050000001",
 				"card_pass":"1234567"
 			}],
 			"coupon": "coupon1_id_1"
@@ -452,7 +476,7 @@ Scenario:8 支付结果页面支付方式为'优惠抵扣'，使用微众卡和�
 				"integral_money": 50.00
 			}],
 			"weizoom_card":[{
-				"card_name":"0000003",
+				"card_name":"100000002",
 				"card_pass":"1234567"
 			}]
 		}

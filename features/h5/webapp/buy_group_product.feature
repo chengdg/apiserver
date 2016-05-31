@@ -19,6 +19,7 @@ Feature: 手机端购买团购活动
 
 Background:
 	Given 重置weapp的bdd环境
+	Given 重置weizoom_card的bdd环境
 	Given jobs登录系统:weapp
 	When jobs添加微信证书:weapp
 	Given jobs已有微众卡支付权限:weapp
@@ -34,22 +35,38 @@ Background:
 			"type": "微信支付"
 		}]
 		"""
-	And jobs已创建微众卡:weapp
+
+	#创建微众卡
+	Given test登录管理系统:weizoom_card
+	When test新建通用卡:weizoom_card
 		"""
-		{
-			"cards":[{
-				"id":"0000001",
-				"password":"1234567",
-				"status":"未使用",
-				"price":100.00
-			},{
-				"id":"0000002",
-				"password":"1234567",
-				"status":"未使用",
-				"price":100.00
+		[{
+			"name":"100元微众卡",
+			"prefix_value":"100",
+			"type":"virtual",
+			"money":"100.00",
+			"num":"1",
+			"comments":"微众卡"
+		}]
+		"""
+
+	#微众卡审批出库
+	When test下订单:weizoom_card
+			"""
+			[{
+				"card_info":[{
+					"name":"100元微众卡",
+					"order_num":"1",
+					"start_date":"2016-04-07 00:00",
+					"end_date":"2019-10-07 00:00"
+				}],
+				"order_info":{
+					"order_id":"0001"
+				}
 			}]
-		}
-		"""
+			"""
+	And test批量激活订单'0001'的卡:weizoom_card
+
 	When jobs添加邮费配置:weapp
 		"""
 		[{
@@ -730,29 +747,35 @@ Scenario: 4 会员开团后团购活动失败
 	When bill提交团购订单
 		"""
 		{
-			"order_id":"001",
+			"order_id":"10086",
 			"ship_name": "bill",
 			"ship_tel": "13811223344",
 			"ship_area": "北京市 北京市 海淀区",
 			"ship_address": "泰兴大厦",
 			"pay_type":"微信支付",
 			"weizoom_card":[{
-				"card_name":"0000001",
+				"card_name":"100000001",
 				"card_pass":"1234567"
 			}]
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	Then jobs能获取微众卡'0000001':weapp
+	When bill进行微众卡余额查询
 		"""
 		{
-			"status":"已使用",
-			"price":79.00
+			"id":"100000001",
+			"password":"1234567"
+		}
+		"""
+	Then bill获得微众卡余额查询结果
+		"""
+		{
+			"card_remaining":79.00
 		}
 		"""
 
 	#下单成功，库存减少
+	Given jobs登录系统:weapp
 	Then jobs能获取商品'商品2':weapp
 		"""
 		{
@@ -765,15 +788,24 @@ Scenario: 4 会员开团后团购活动失败
 		}
 		"""
 	When jobs关闭团购活动'团购2':weapp
-	Then jobs能获取微众卡'0000001':weapp
+
+	When bill访问jobs的webapp
+	When bill进行微众卡余额查询
 		"""
 		{
-			"status":"已使用",
-			"price":100.00
+			"id":"100000001",
+			"password":"1234567"
+		}
+		"""
+	Then bill获得微众卡余额查询结果
+		"""
+		{
+			"card_remaining":100.00
 		}
 		"""
 
 	#团购失败，库存恢复
+	Given jobs登录系统:weapp
 	Then jobs能获取商品'商品2':weapp
 		"""
 		{
@@ -787,10 +819,10 @@ Scenario: 4 会员开团后团购活动失败
 		"""
 
 	When bill访问jobs的webapp
-	Then bill手机端获取订单'001'
+	Then bill手机端获取订单'10086'
 		"""
 		{
-			"order_no": "001",
+			"order_no": "10086",
 			"status": "已取消"
 		}
 		"""

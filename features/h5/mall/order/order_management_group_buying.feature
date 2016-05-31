@@ -19,6 +19,7 @@ Feature:订单管理-团购
 
 Background:
 	Given 重置weapp的bdd环境
+	Given 重置weizoom_card的bdd环境
 	Given jobs登录系统:weapp
 	When jobs添加微信证书:weapp
 	Given jobs已添加支付方式:weapp
@@ -85,32 +86,61 @@ Background:
 			}
 		}]
 		"""
-	Given jobs已创建微众卡:weapp
+
+	#创建微众卡
+	Given test登录管理系统:weizoom_card
+	When test新建通用卡:weizoom_card
 		"""
-		{
-			"cards": [{
-				"id": "0000000",
-				"password": "0234567",
-				"status": "未使用",
-				"price": 50.00
-			},{
-				"id": "0000001",
-				"password": "1234567",
-				"status": "未使用",
-				"price": 50.00
-			},{
-				"id": "0000002",
-				"password": "2234567",
-				"status": "未使用",
-				"price": 100.00
-			},{
-				"id": "0000003",
-				"password": "3234567",
-				"status": "未使用",
-				"price": 200.00
-			}]
-		}
+		[{
+			"name":"50元微众卡",
+			"prefix_value":"100",
+			"type":"virtual",
+			"money":"50.00",
+			"num":"2",
+			"comments":"微众卡"
+		},{
+			"name":"100元微众卡",
+			"prefix_value":"200",
+			"type":"virtual",
+			"money":"100.00",
+			"num":"1",
+			"comments":"微众卡"
+		},{
+			"name":"200元微众卡",
+			"prefix_value":"300",
+			"type":"virtual",
+			"money":"200.00",
+			"num":"1",
+			"comments":"微众卡"
+		}]
 		"""
+	#微众卡审批出库
+	When test下订单:weizoom_card
+		"""
+		[{
+			"card_info":[{
+				"name":"50元微众卡",
+				"order_num":"2",
+				"start_date":"2016-04-07 00:00",
+				"end_date":"2019-10-07 00:00"
+			},{
+				"name":"100元微众卡",
+				"order_num":"1",
+				"start_date":"2016-04-07 00:00",
+				"end_date":"2019-10-07 00:00"
+			},{
+				"name":"200元微众卡",
+				"order_num":"1",
+				"start_date":"2016-04-07 00:00",
+				"end_date":"2019-10-07 00:00"
+			}],
+			"order_info":{
+				"order_id":"0001"
+				}		
+		}]
+		"""
+	And test批量激活订单'0001'的卡:weizoom_card
+
 	When jobs新建团购活动:weapp
 		"""
 		[{
@@ -222,8 +252,8 @@ Background:
 				"order_id":"00102",
 				"pay_type":"微信支付",
 				"weizoom_card":[{
-					"card_name":"0000000",
-					"card_pass":"0234567"
+					"card_name":"100000001",
+					"card_pass":"1234567"
 						}]
 			}
 			"""
@@ -256,7 +286,7 @@ Background:
 				"order_id":"00103",
 				"pay_type":"微信支付",
 				"weizoom_card":[{
-					"card_name":"0000001",
+					"card_name":"100000002",
 					"card_pass":"1234567"
 						}]
 			}
@@ -291,8 +321,8 @@ Background:
 				"order_id":"00104",
 				"pay_type":"微信支付",
 				"weizoom_card":[{
-					"card_name":"0000002",
-					"card_pass":"2234567"
+					"card_name":"200000001",
+					"card_pass":"1234567"
 						}]
 			}
 			"""
@@ -459,8 +489,8 @@ Background:
 				"order_id":"00205",
 				"pay_type":"微信支付",
 				"weizoom_card":[{
-					"card_name":"0000003",
-					"card_pass":"3234567"
+					"card_name":"300000001",
+					"card_pass":"1234567"
 						}]
 			}
 			"""
@@ -943,8 +973,8 @@ Scenario:3 查看团购失败的订单
 		When tom进行微众卡余额查询
 			"""
 			{
-				"id":"0000000",
-				"password":"0234567"
+				"id":"100000001",
+				"password":"1234567"
 			}
 			"""
 		Then tom获得微众卡余额查询结果
@@ -958,7 +988,7 @@ Scenario:3 查看团购失败的订单
 		When bill1进行微众卡余额查询
 			"""
 			{
-				"id":"0000001",
+				"id":"100000002",
 				"password":"1234567"
 			}
 			"""
@@ -973,8 +1003,8 @@ Scenario:3 查看团购失败的订单
 		When bill2进行微众卡余额查询
 			"""
 			{
-				"id":"0000002",
-				"password":"2234567"
+				"id":"200000001",
+				"password":"1234567"
 			}
 			"""
 		Then bill2获得微众卡余额查询结果
@@ -1178,8 +1208,8 @@ Scenario:3 查看团购失败的订单
 			When tom进行微众卡余额查询
 				"""
 				{
-					"id":"0000000",
-					"password":"0234567"
+					"id":"100000001",
+					"password":"1234567"
 				}
 				"""
 			Then tom获得微众卡余额查询结果
@@ -1193,8 +1223,8 @@ Scenario:3 查看团购失败的订单
 			When bill2进行微众卡余额查询
 				"""
 				{
-					"id":"0000002",
-					"password":"2234567"
+					"id":"200000001",
+					"password":"1234567"
 				}
 				"""
 			Then bill2获得微众卡余额查询结果
@@ -1212,7 +1242,7 @@ Scenario:3 查看团购失败的订单
 		# 	When bill1进行微众卡余额查询
 		# 		"""
 		# 		{
-		# 			"id":"0000001",
+		# 			"id":"100000002",
 		# 			"password":"1234567"
 		# 		}
 		# 		"""

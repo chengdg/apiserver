@@ -2,7 +2,7 @@
 #import json
 
 from behave import *
-
+from db.mall.models import *
 from features.util import bdd_util
 #from features.util.helper import WAIT_SHORT_TIME
 from db.account import models as account_models
@@ -99,3 +99,23 @@ def step_impl(context, user, mp_user_name):
 
 	context.fmt = ''
 	context.shared_url = ''
+
+
+@when(u"{webapp_user_name}把{webapp_owner_name}的'{product_name_one}'链接的商品ID修改成{webapp_owner_name_other}的'{product_name_two}'的商品ID")
+def step_impl(context, webapp_user_name, webapp_owner_name, product_name_one,webapp_owner_name_other,product_name_two):
+	user_other = User.get(User.username==webapp_owner_name_other).id
+	product_two = Product.select().dj_where(owner_id=user_other,name=product_name_two).get()
+	url = '/mall/product/?woid=%s&product_id=%d' % (context.webapp_owner_id, product_two.id)
+	context.url = url
+
+@when(u"{webapp_user_name}访问修改后的链接")
+def step_impl(context, webapp_user_name):
+	context.response = context.client.get(context.url)
+
+@then(u"{webapp_user_name}获得商品不存在提示")
+def step_impl(context,webapp_user_name):
+	product = context.response.data
+	if product['is_deleted']:
+		return True
+	else:
+		return False

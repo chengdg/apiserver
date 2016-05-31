@@ -16,6 +16,7 @@ Feature:jobs管理系统里待支付的订单，用户可以在手机端直接�
 	"""
 Background:
 	Given 重置weapp的bdd环境
+	Given 重置weizoom_card的bdd环境
 	Given jobs登录系统:weapp
 	And jobs已有微众卡支付权限:weapp
 	And jobs已添加支付方式:weapp
@@ -28,22 +29,39 @@ Background:
 			"type":"微众卡支付"
 		}]
 		"""
-	And jobs已创建微众卡:weapp
+
+	#创建微众卡
+	Given test登录管理系统:weizoom_card
+	When test新建通用卡:weizoom_card
 		"""
-		{
-			"cards":[{
-				"id":"0000001",
-				"password":"1234567",
-				"status":"未使用",
-				"price":100.00
-			}, {
-				"id":"0000002",
-				"password":"1234567",
-				"status":"未使用",
-				"price":100.00
-			}]
-		}
+		[{
+			"name":"100元微众卡",
+			"prefix_value":"100",
+			"type":"virtual",
+			"money":"100.00",
+			"num":"2",
+			"comments":"微众卡"
+		}]
 		"""
+
+	#微众卡审批出库
+	When test下订单:weizoom_card
+		"""
+		[{
+			"card_info":[{
+				"name":"100元微众卡",
+				"order_num":"2",
+				"start_date":"2016-04-07 00:00",
+				"end_date":"2019-10-07 00:00"
+			}],
+			"order_info":{
+				"order_id":"0001"
+			}
+		}]
+		"""
+	And test批量激活订单'0001'的卡:weizoom_card
+
+	Given jobs登录系统:weapp
 	And jobs已添加商品:weapp
 		"""
 		[{
@@ -171,7 +189,7 @@ Background:
 				"count": 1
 			}],
 			"weizoom_card":[{
-				"card_name":"0000001",
+				"card_name":"100000001",
 				"card_pass":"1234567"
 			}]
 		}
@@ -186,7 +204,7 @@ Background:
 				"count": 2
 			}],
 			"weizoom_card":[{
-				"card_name":"0000002",
+				"card_name":"100000002",
 				"card_pass":"1234567"
 			}]
 		}
@@ -450,14 +468,20 @@ Scenario:7 bill不能取消使用了微众卡的待发货订单
 			"stocks": 2
 		}
 		"""
-	Then jobs能获取微众卡'0000001':weapp
+
+	When bill进行微众卡余额查询
 		"""
 		{
-			"status":"已用完",
-			"price":0.00
+			"id":"100000001",
+			"password":"1234567"
 		}
 		"""
-
+	Then bill获得微众卡余额查询结果
+		"""
+		{
+			"card_remaining":0.00
+		}
+		"""
 
 @mall3 @wip.cbb @wip.cbb8
 Scenario:8 bill能取消使用了微众卡的待支付订单
@@ -492,14 +516,21 @@ Scenario:8 bill能取消使用了微众卡的待支付订单
 			"stocks": 4
 		}
 		"""
-	Then jobs能获取微众卡'0000002'
+
+	When bill访问jobs的webapp
+	When bill进行微众卡余额查询
 		"""
 		{
-			"status":"已使用",
-			"price":100.00
+			"id":"100000002",
+			"password":"1234567"
 		}
 		"""
-
+	Then bill获得微众卡余额查询结果
+		"""
+		{
+			"card_remaining":100.00
+		}
+		"""
 
 @mall3 @mall2 @order @allOrder @mall.order_cancel_status @ztq
 Scenario:9 bill能取买赠订单，主商品和赠品库存正常

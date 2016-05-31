@@ -835,14 +835,6 @@ class Order(business_model.Model):
 						purchase_price=product.purchase_price
 					)
 
-			#duhao 20160527  weshop定制功能  更新母订单的类型
-			if is_virtual:
-				db_model.type = 'virtual'
-				db_model.save()
-			if is_wzcard:
-				db_model.type = 'wzcard'
-				db_model.save()
-
 			for supplier_user_id in supplier_user_ids:
 				new_order = copy.deepcopy(self.db_model)
 				new_order.id = None
@@ -862,6 +854,20 @@ class Order(business_model.Model):
 				new_order.supplier_user_id = supplier_user_id
 				new_order.total_purchase_price = sum(map(lambda product:product.purchase_price * product.purchase_count, supplier_user_id2products[supplier_user_id]))
 				new_order.pay_interface_type = mall_models.PAY_INTERFACE_WEIXIN_PAY
+
+				if product.type == 'virtual':
+					#如果是虚拟商品，子订单的订单类型跟商品设为一样
+					#duhao 20160527  weshop定制功能
+					new_order.type = product.type
+				else:
+					is_virtual = False
+				if product.type == 'wzcard':
+					#如果是虚拟商品，子订单的订单类型跟商品设为一样
+					#duhao 20160527  weshop定制功能
+					new_order.type = product.type
+				else:
+					is_wzcard = False
+					
 				new_order.save()
 				new_order_ids.append(new_order.order_id)
 
@@ -883,6 +889,14 @@ class Order(business_model.Model):
 						origin_order_id=self.id,  # 原始(母)订单id，用于微众精选拆单
 						purchase_price=product.purchase_price
 					)
+
+			#duhao 20160527  weshop定制功能  更新母订单的类型
+			if is_virtual:
+				db_model.type = 'virtual'
+				db_model.save()
+			if is_wzcard:
+				db_model.type = 'wzcard'
+				db_model.save()
 
 		product_groups = self.product_groups
 		#建立<order, promotion>的关系

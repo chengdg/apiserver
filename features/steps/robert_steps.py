@@ -372,7 +372,10 @@ def __check_order(context, webapp_user_name):
 	actual_order['methods_of_payment'] = actual_order['pay_interface_name']
 
 	actual_order['is_group_buying'] = 'true' if actual_order['is_group_buy'] else 'false'
-	actual_order['customer_message'] = json.loads(actual_order['customer_message'])
+	try:
+		actual_order['customer_message'] = json.loads(actual_order['customer_message'])
+	except:
+		pass
 	# 获取coupon规则名
 	if (actual_order['coupon_id'] != 0) and (actual_order['coupon_id'] != -1):
 		# coupon = Coupon.objects.get(id=actual_order.coupon_id)

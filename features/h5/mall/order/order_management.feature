@@ -14,9 +14,9 @@ Feature: 订单管理
 """
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	When jobs已添加支付方式:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	When jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -29,7 +29,7 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -42,15 +42,15 @@ Background:
 		 }]
 		"""
 	And bill关注jobs的公众号
-	Given jobs登录系统:weapp
-	Given jobs已有的会员:weapp
+	Given jobs登录系统::weapp
+	Given jobs已有的会员::weapp
 		"""
 		[{
 			"name": "bill",
 			"integral":"150"
 		}]
 		"""
-	And jobs已添加了优惠券规则:weapp
+	And jobs已添加了优惠券规则::weapp
 		"""
 		[{
 			"name": "优惠券1",
@@ -64,7 +64,7 @@ Background:
 			"coupon_id_prefix": "coupon2_id_"
 		}]
 		"""
-	Given jobs设定会员积分策略:weapp
+	Given jobs设定会员积分策略::weapp
 		"""
 		{
 			"use_ceiling": 100,
@@ -73,7 +73,7 @@ Background:
 		}
 		"""
 	When bill访问jobs的webapp
-	And bill领取jobs的优惠券:weapp
+	And bill领取jobs的优惠券::weapp
 		"""
 		[{
 			"name": "优惠券1",
@@ -143,8 +143,8 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 	#非会员购买首单按照会员的规则处理
 
 	#没有支付的订单
-		Given jobs登录系统:weapp
-		Then jobs可以看到订单列表:weapp
+		Given jobs登录系统::weapp
+		Then jobs可以看到订单列表::weapp
 			"""
 			[{
 				"order_no": "004",
@@ -185,10 +185,10 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 		When bill访问jobs的webapp
 		When bill使用支付方式'货到付款'进行支付订单'002'于2015-09-01 10:00:00
 
-		Given jobs登录系统:weapp
-		When jobs'支付'订单'003'于2015-09-02 10:00:00:weapp
+		Given jobs登录系统::weapp
+		When jobs'支付'订单'003'于2015-09-02 10:00:00::weapp
 
-		Then jobs可以看到订单列表:weapp
+		Then jobs可以看到订单列表::weapp
 			"""
 			[{
 				"order_no": "004",
@@ -226,9 +226,9 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 			"""
 
 	#取消有首单标记的订单，首单标记仍然存在
-		Given jobs登录系统:weapp
-		When jobs'取消'订单'002':weapp
-		Then jobs可以看到订单列表:weapp
+		Given jobs登录系统::weapp
+		When jobs'取消'订单'002'::weapp
+		Then jobs可以看到订单列表::weapp
 			"""
 			[{
 				"order_no": "004",
@@ -294,8 +294,8 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 			}
 			"""
 
-		Given jobs登录系统:weapp
-		Then jobs可以看到订单列表:weapp
+		Given jobs登录系统::weapp
+		Then jobs可以看到订单列表::weapp
 			"""
 			[{
 				"order_no": "006",
@@ -348,7 +348,7 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 			}]
 			"""
 
-		When jobs对订单进行发货:weapp
+		When jobs对订单进行发货::weapp
 			"""
 			{
 				"order_no":"005",
@@ -358,7 +358,7 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 				"date":"今天"
 			}
 			"""
-		Then jobs可以看到订单列表:weapp
+		Then jobs可以看到订单列表::weapp
 			"""
 			[{
 				"order_no": "006",
@@ -411,8 +411,8 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 			}]
 			"""
 
-		When jobs'完成'订单'005':weapp
-		Then jobs可以看到订单列表:weapp
+		When jobs'完成'订单'005'::weapp
+		Then jobs可以看到订单列表::weapp
 			"""
 			[{
 				"order_no": "006",
@@ -465,8 +465,8 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 			}]
 			"""
 
-		When jobs'申请退款'订单'005':weapp
-		Then jobs可以看到订单列表:weapp
+		When jobs'申请退款'订单'005'::weapp
+		Then jobs可以看到订单列表::weapp
 			"""
 			[{
 				"order_no": "006",
@@ -519,8 +519,8 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 			}]
 			"""
 
-		When jobs通过财务审核'退款成功'订单'005':weapp
-		Then jobs可以看到订单列表:weapp
+		When jobs通过财务审核'退款成功'订单'005'::weapp
+		Then jobs可以看到订单列表::weapp
 			"""
 			[{
 				"order_no": "006",
@@ -575,14 +575,14 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 
 	#优惠抵扣的订单
 		Given jack关注jobs的公众号
-		When jack领取jobs的优惠券:weapp
+		When jack领取jobs的优惠券::weapp
 			"""
 			[{
 				"name": "优惠券1",
 				"coupon_ids": ["coupon1_id_2"]
 			}]
 			"""
-		Given jobs已有的会员:weapp
+		Given jobs已有的会员::weapp
 			"""
 			[{
 				"name": "jack",
@@ -619,8 +619,8 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 			}
 			"""
 
-		Given jobs登录系统:weapp
-		Then jobs可以看到订单列表:weapp
+		Given jobs登录系统::weapp
+		Then jobs可以看到订单列表::weapp
 			"""
 			[{
 				"order_no": "008",
@@ -689,7 +689,7 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 			}]
 			"""
 
-		When jobs对订单进行发货:weapp
+		When jobs对订单进行发货::weapp
 			"""
 			{
 				"order_no":"007",
@@ -699,7 +699,7 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 				"date":"今天"
 			}
 			"""
-		Then jobs可以看到订单列表:weapp
+		Then jobs可以看到订单列表::weapp
 			"""
 			[{
 				"order_no": "008",
@@ -768,8 +768,8 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 			}]
 			"""
 
-		When jobs'完成'订单'007':weapp
-		Then jobs可以看到订单列表:weapp
+		When jobs'完成'订单'007'::weapp
+		Then jobs可以看到订单列表::weapp
 			"""
 			[{
 				"order_no": "008",
@@ -838,8 +838,8 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 			}]
 			"""
 
-		When jobs'取消'订单'007':weapp
-		Then jobs可以看到订单列表:weapp
+		When jobs'取消'订单'007'::weapp
+		Then jobs可以看到订单列表::weapp
 			"""
 			[{
 				"order_no": "008",
@@ -916,7 +916,7 @@ Scenario:2 支付后的订单，添加首单标记-非会员订单
 	#通过关注账号，再取消关注。来模拟非会员
 
 	Given marry关注jobs的公众号
-	When marry取消关注jobs的公众号:weapp
+	When marry取消关注jobs的公众号::weapp
 
 	When marry访问jobs的webapp
 	And marry购买jobs的商品
@@ -945,8 +945,8 @@ Scenario:2 支付后的订单，添加首单标记-非会员订单
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	Then jobs可以看到订单列表:weapp
+	Given jobs登录系统::weapp
+	Then jobs可以看到订单列表::weapp
 		"""
 		[{
 			"order_no": "010",
@@ -1001,8 +1001,8 @@ Scenario:2 支付后的订单，添加首单标记-非会员订单
 
 	Given marry关注jobs的公众号
 	When marry访问jobs的webapp
-	Given jobs登录系统:weapp
-	Then jobs可以看到订单列表:weapp
+	Given jobs登录系统::weapp
+	Then jobs可以看到订单列表::weapp
 		"""
 		[{
 			"order_no": "010",

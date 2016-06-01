@@ -24,9 +24,9 @@ Feature: 在webapp中使用优惠券购买商品（使用多商品券购买）
 	"""
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	And jobs已添加商品规格:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs已添加商品规格::weapp
 		"""
 		[{
 			"name": "尺寸",
@@ -38,7 +38,7 @@ Background:
 			}]
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -74,7 +74,7 @@ Background:
 		}]
 		"""
 	#支付方式
-	Given jobs已添加支付方式:weapp
+	Given jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -84,7 +84,7 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	Given jobs已添加了优惠券规则:weapp
+	Given jobs已添加了优惠券规则::weapp
 		"""
 		[{
 			"name": "优惠券1",
@@ -113,7 +113,7 @@ Background:
 		"""
 	When bill关注jobs的公众号
 	When bill访问jobs的webapp
-	When bill领取jobs的优惠券:weapp
+	When bill领取jobs的优惠券::weapp
 		"""
 		[{
 			"name": "优惠券1",
@@ -132,8 +132,8 @@ Scenario:1 使用多商品优惠劵进行购买
 	1.该多商品适用于商品1，商品2，商品3
 	2.如果商品6使用，则购买失败
 
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券1'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券1'的码库::weapp
 		"""
 		{
 			"coupon1_id_1": {
@@ -183,8 +183,8 @@ Scenario:1 使用多商品优惠劵进行购买
 		}
 		"""
 	Then bill获得创建订单失败的信息'该优惠券不能购买订单中的商品'
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券1'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券1'的码库::weapp
 		"""
 		{
 			"coupon1_id_1": {
@@ -209,8 +209,8 @@ Scenario:2 使用多商品优惠劵进行购买，该多商品券有使用限制
 	3.不满足条件，不能使用优惠券
 
 
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券2'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券2'的码库::weapp
 		"""
 		{
 			"coupon2_id_1": {
@@ -276,8 +276,8 @@ Scenario:2 使用多商品优惠劵进行购买，该多商品券有使用限制
 		}
 		"""
 	Then bill获得创建订单失败的信息'该优惠券指定商品金额不满足使用条件'
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券2'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券2'的码库::weapp
 		"""
 		{
 			"coupon2_id_1": {
@@ -301,8 +301,8 @@ Scenario:3 使用多商品优惠券进行购买，优惠券金额大于商品金
 	2.优惠券金额大于商品金额，不满足条件的商品，不可使用
 	3.优惠券金额大于商品金额，不会抵扣运费
 
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券5'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券5'的码库::weapp
 		"""
 		{
 			"coupon5_id_1": {
@@ -389,8 +389,8 @@ Scenario:3 使用多商品优惠券进行购买，优惠券金额大于商品金
 			"postage":10.00
 		}
 		"""
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券5'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券5'的码库::weapp
 		"""
 		{
 			"coupon5_id_1": {
@@ -414,8 +414,8 @@ Scenario:4 修改多商品优惠券关联的商品后，使用多商品优惠券
 	2.下架部分商品后，进行购买
 	3.删除部分商品后，进行购买
 
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券2'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券2'的码库::weapp
 		"""
 		{
 			"coupon2_id_1": {
@@ -432,7 +432,7 @@ Scenario:4 修改多商品优惠券关联的商品后，使用多商品优惠券
 			}
 		}
 		"""
-	When jobs更新商品'商品1':weapp
+	When jobs更新商品'商品1'::weapp
 		"""
 		{
 			"name": "商品11",
@@ -468,8 +468,8 @@ Scenario:4 修改多商品优惠券关联的商品后，使用多商品优惠券
 			"coupon_money": 10.00
 		}
 		"""
-	Given jobs登录系统:weapp
-	When jobs'下架'商品'商品3':weapp
+	Given jobs登录系统::weapp
+	When jobs'下架'商品'商品3'::weapp
 	When bill访问jobs的webapp
 	#下架部分商品后，使用优惠券
 	When bill购买jobs的商品
@@ -499,8 +499,8 @@ Scenario:4 修改多商品优惠券关联的商品后，使用多商品优惠券
 			"coupon_money": 10.00
 		}
 		"""
-	Given jobs登录系统:weapp
-	When jobs'永久删除'商品'商品2':weapp
+	Given jobs登录系统::weapp
+	When jobs'永久删除'商品'商品2'::weapp
 	When bill访问jobs的webapp
 	#删除部分商品后，使用优惠券
 	#直接使用优惠券，没有先领取，直接输入优惠券吗
@@ -528,8 +528,8 @@ Scenario:4 修改多商品优惠券关联的商品后，使用多商品优惠券
 			"coupon_money": 10.00
 		}
 		"""
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券2'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券2'的码库::weapp
 		"""
 		{
 			"coupon2_id_1": {
@@ -558,8 +558,8 @@ Scenario:5 使用多商品优惠券购买关联的一个商品和一个普通商
 	1.优惠券金额大于关联的商品
 	2.优惠券金额不会抵扣普通商品的金额
 
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券5'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券5'的码库::weapp
 		"""
 		{
 			"coupon5_id_1": {
@@ -603,8 +603,8 @@ Scenario:5 使用多商品优惠券购买关联的一个商品和一个普通商
 			"postage":20.00
 		}
 		"""
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券5'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券5'的码库::weapp
 		"""
 		{
 			"coupon5_id_1": {

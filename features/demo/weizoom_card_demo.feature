@@ -4,11 +4,11 @@ Feature:使用新微众卡购买商品
 """
 
 Background:
-	Given 重置weapp的bdd环境
-	Given 重置weizoom_card的bdd环境
-	Given jobs登录系统:weapp
-	And jobs已有微众卡支付权限:weapp
-	And jobs已添加支付方式:weapp
+	Given 重置'weapp'的bdd环境
+	Given 重置'weizoom_card'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs已有微众卡支付权限::weapp
+	And jobs已添加支付方式::weapp
 		"""
 		[{
 			"type":"货到付款"
@@ -20,7 +20,7 @@ Background:
 			"type":"微众卡支付"
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -29,8 +29,8 @@ Background:
 		"""
 
 	#创建微众卡
-	Given test登录管理系统:weizoom_card
-	When test新建通用卡:weizoom_card
+	Given test登录管理系统::weizoom_card
+	When test新建通用卡::weizoom_card
 		"""
 		[{
 			"name":"微众卡",
@@ -43,7 +43,7 @@ Background:
 		"""
 
 	#微众卡审批出库
-		When test下订单:weizoom_card
+		When test下订单::weizoom_card
 			"""
 			[{
 				"card_info":[{
@@ -73,8 +73,8 @@ Background:
 					}		
 				}]
 				"""
-		And test批量激活订单'0001'的卡:weizoom_card
-#		Then test能获得'微众卡'订单详情列表:weizoom_card
+		And test批量激活订单'0001'的卡::weizoom_card
+#		Then test能获得'微众卡'订单详情列表::weizoom_card
 #			"""
 #			[{
 #				"card_num":"888000001",
@@ -91,8 +91,8 @@ Scenario:1 微众卡金额大于订单金额时进行支付
 	2.创建订单成功，订单状态为“等待发货”，支付方式为“微众卡支付”
 	3.微众卡金额减少,状态为“已使用”
 
-	Given jobs登录系统:weapp
-#	Then jobs能获取微众卡'888000001':weapp
+	Given jobs登录系统::weapp
+#	Then jobs能获取微众卡'888000001'::weapp
 #		"""
 #		{
 #			"status":"未使用",
@@ -147,8 +147,8 @@ Scenario:1 微众卡金额大于订单金额时进行支付
 
 
 
-#	Given jobs登录系统:weapp
-#	Then jobs能获取微众卡'888000001':weapp
+#	Given jobs登录系统::weapp
+#	Then jobs能获取微众卡'888000001'::weapp
 #		"""
 #		{
 #			"status":"已用完",

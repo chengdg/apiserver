@@ -6,9 +6,9 @@ Feature: 在webapp中支付订单
 
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	And jobs已添加支付方式:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -20,7 +20,7 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",

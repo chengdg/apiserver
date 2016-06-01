@@ -6,9 +6,9 @@
 Feature: bill在webapp中进入到待评价列表，对已到货的商品进行评价,评价完成后，商品不在该列表中显示
 
 Background:
-    Given 重置weapp的bdd环境
-    Given jobs登录系统:weapp
-    And jobs已添加商品规格:weapp
+    Given 重置'weapp'的bdd环境
+    Given jobs登录系统::weapp
+    And jobs已添加商品规格::weapp
         """
         [{
             "name": "尺寸",
@@ -21,7 +21,7 @@ Background:
         }]
         """
 
-    And jobs已添加商品:weapp
+    And jobs已添加商品::weapp
         """
         [{
             "name": "商品1",
@@ -50,7 +50,7 @@ Background:
         }]
         """
     Given bill关注jobs的公众号
-    And jobs已有的订单:weapp
+    And jobs已有的订单::weapp
         """
         [{
             "order_no":"1",
@@ -371,8 +371,8 @@ Scenario:3 同一商品，不同规格进行评价，不会互相影响
 #补充:张三香 2015.12.23
 @person @productReview @product @review @mall3 @bert
 Scenario:4 个人中心的待评价列表中不显示赠品
-    Given jobs登录系统:weapp
-    Given jobs已添加支付方式:weapp
+    Given jobs登录系统::weapp
+    Given jobs已添加支付方式::weapp
         """
         [{
             "type": "微信支付",
@@ -382,14 +382,14 @@ Scenario:4 个人中心的待评价列表中不显示赠品
             "is_active": "启用"
         }]
         """
-    And jobs已添加商品:weapp
+    And jobs已添加商品::weapp
         """
         [{
             "name": "赠品",
             "price": 10.00
         }]
         """
-    When jobs创建买赠活动:weapp
+    When jobs创建买赠活动::weapp
         """
         [{
             "name": "商品1买一赠二",
@@ -438,8 +438,8 @@ Scenario:4 个人中心的待评价列表中不显示赠品
         }
         """
 
-    Given jobs登录系统:weapp
-    When jobs对订单进行发货:weapp
+    Given jobs登录系统::weapp
+    When jobs对订单进行发货::weapp
         """
         {
             "order_no": "6",
@@ -448,7 +448,7 @@ Scenario:4 个人中心的待评价列表中不显示赠品
             "shipper": "jobs"
         }
         """
-    When jobs'完成'订单'6':weapp
+    When jobs'完成'订单'6'::weapp
     When bill访问jobs的webapp
     Then bill成功获取个人中心的'待评价'列表
         """

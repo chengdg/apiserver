@@ -11,17 +11,17 @@ Feature:下单失败后校验库存、积分、优惠券和微众卡信息
 	"""
 
 Background:
-	Given 重置weapp的bdd环境
-	Given 重置weizoom_card的bdd环境
-	Given jobs登录系统:weapp
-	Given jobs设定会员积分策略:weapp
+	Given 重置'weapp'的bdd环境
+	Given 重置'weizoom_card'的bdd环境
+	Given jobs登录系统::weapp
+	Given jobs设定会员积分策略::weapp
 		"""
 		{
 			"integral_each_yuan": 2
 		}
 		"""
-	And jobs已有微众卡支付权限:weapp
-	And jobs已添加支付方式:weapp
+	And jobs已有微众卡支付权限::weapp
+	And jobs已添加支付方式::weapp
 		"""
 		[{
 			"type":"货到付款"
@@ -33,7 +33,7 @@ Background:
 			"type":"微众卡支付"
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -75,8 +75,8 @@ Background:
 		"""
 
 	#创建微众卡
-	Given test登录管理系统:weizoom_card
-	When test新建通用卡:weizoom_card
+	Given test登录管理系统::weizoom_card
+	When test新建通用卡::weizoom_card
 		"""
 		[{
 			"name":"100元微众卡",
@@ -89,7 +89,7 @@ Background:
 		"""
 
 	#微众卡审批出库
-	When test下订单:weizoom_card
+	When test下订单::weizoom_card
 			"""
 			[{
 				"card_info":[{
@@ -103,10 +103,10 @@ Background:
 				}
 			}]
 			"""
-	And test批量激活订单'0001'的卡:weizoom_card
+	And test批量激活订单'0001'的卡::weizoom_card
 
-	Given jobs登录系统:weapp
-	Given jobs已添加了优惠券规则:weapp
+	Given jobs登录系统::weapp
+	Given jobs已添加了优惠券规则::weapp
 		"""
 		[{
 			"name": "优惠券1",
@@ -118,7 +118,7 @@ Background:
 		"""
 	Given bill关注jobs的公众号
 	When bill访问jobs的webapp
-	When bill领取jobs的优惠券:weapp
+	When bill领取jobs的优惠券::weapp
 		"""
 		[{
 			"name": "优惠券1",
@@ -157,9 +157,9 @@ Scenario:1 下单失败后，校验商品的库存变化
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	When jobs'下架'商品'商品1':weapp
-	When jobs'下架'商品'商品2':weapp
+	Given jobs登录系统::weapp
+	When jobs'下架'商品'商品1'::weapp
+	When jobs'下架'商品'商品2'::weapp
 
 	When bill在购物车订单编辑中点击提交订单
 		"""
@@ -185,7 +185,7 @@ Scenario:1 下单失败后，校验商品的库存变化
 		}
 		"""
 	#校验商品的库存
-	Given jobs登录系统:weapp
+	Given jobs登录系统::weapp
 	Then jobs能获取商品'商品1'
 		"""
 		{
@@ -226,8 +226,8 @@ Scenario:2 下单失败后，校验会员的积分变化
 	#bill提交订单，获得订单失败信息
 	#校验bill的积分
 
-	Given jobs登录系统:weapp
-	When jobs创建积分应用活动:weapp
+	Given jobs登录系统::weapp
+	When jobs创建积分应用活动::weapp
 		"""
 		[{
 			"name": "商品2积分应用",
@@ -242,7 +242,7 @@ Scenario:2 下单失败后，校验会员的积分变化
 			}]
 		}]
 		"""
-	When jobs'结束'促销活动'商品2积分应用':weapp
+	When jobs'结束'促销活动'商品2积分应用'::weapp
 
 	When bill访问jobs的webapp
 	When bill获得jobs的50会员积分
@@ -270,7 +270,7 @@ Scenario:2 下单失败后，校验会员的积分变化
 	#下单失败，校验会员的积分
 	Then bill在jobs的webapp中拥有50会员积分
 	#下单失败，校验商品的库存
-	Given jobs登录系统:weapp
+	Given jobs登录系统::weapp
 	Then jobs能获取商品'商品2'
 		"""
 		{
@@ -317,7 +317,7 @@ Scenario:3 下单失败后，校验优惠券和微众卡的变化
 			}]
 		}
 		"""
-	Given jobs登录系统:weapp
+	Given jobs登录系统::weapp
 	Then jobs能获取商品'商品3'
 		"""
 		{

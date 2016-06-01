@@ -15,9 +15,9 @@ Feature:商品销量
 """
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	And jobs已添加商品:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -43,7 +43,7 @@ Background:
 			}
 		}]
 		"""
-	And jobs已添加支付方式:weapp
+	And jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -94,8 +94,8 @@ Scenario: 1 成功支付订单后，商品销量增加
 			}]
 		}
 		"""
-	Given jobs登录系统:weapp
-	Then jobs能获取商品'商品1':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获取商品'商品1'::weapp
 		"""
 		{
 			"name": "商品1",
@@ -139,8 +139,8 @@ Scenario: 2 订单为待支付状态时，商品销量不变
 			}]
 		}
 		"""
-	Given jobs登录系统:weapp
-	Then jobs能获取商品'商品1':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获取商品'商品1'::weapp
 		"""
 		{
 			"name": "商品1",
@@ -162,9 +162,9 @@ Scenario: 3 购买买赠商品(赠品为主商品)成功支付订单后，主商
 	jobs创建买赠活动后
 	1.bill成功下单后，主商品销量增加，赠品销量不变
 
-	Given jobs登录系统:weapp
+	Given jobs登录系统::weapp
 	#购买买赠商品，主商品和赠品都使用一个商品，赠品减库存，不增加销量
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品1买一赠二",
@@ -231,8 +231,8 @@ Scenario: 3 购买买赠商品(赠品为主商品)成功支付订单后，主商
 		}
 		"""
 	#买赠活动：赠品扣库存，但是不算销量
-	Given jobs登录系统:weapp
-	Then jobs能获取商品'商品1':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获取商品'商品1'::weapp
 		"""
 		{
 			"name": "商品1",
@@ -254,9 +254,9 @@ Scenario: 4 购买买赠商品(赠品为非主商品)成功支付订单后，主
 	jobs创建买赠活动后
 	1.bill成功下单后，主商品销量增加，赠品销量不变
 
-	Given jobs登录系统:weapp
+	Given jobs登录系统::weapp
 	#购买买赠商品，主商品和赠品都使用一个商品，赠品减库存，不增加销量
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品1买一赠二",
@@ -323,8 +323,8 @@ Scenario: 4 购买买赠商品(赠品为非主商品)成功支付订单后，主
 		}
 		"""
 	#买赠活动：赠品扣库存，但是不算销量
-	Given jobs登录系统:weapp
-	Then jobs能获取商品'商品1':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获取商品'商品1'::weapp
 		"""
 		{
 			"name": "商品1",
@@ -340,7 +340,7 @@ Scenario: 4 购买买赠商品(赠品为非主商品)成功支付订单后，主
 			}
 		}
 		"""
-	Then jobs能获取商品'商品2':weapp
+	Then jobs能获取商品'商品2'::weapp
 		"""
 		{
 			"name": "商品2",
@@ -361,8 +361,8 @@ Scenario: 4 购买买赠商品(赠品为非主商品)成功支付订单后，主
 Scenario: 5 购买买赠商品(赠品为非主商品)成功支付订单后，主商品有基础销量，赠品也有基础销量,基础上购买买赠商品销量和库存问题
 	jobs创建买赠活动后
 	1.bill成功下单后，主商品库存减少,销量增加;赠品库存减少,销量不变;
-	Given jobs登录系统:weapp
-	When jobs创建买赠活动:weapp
+	Given jobs登录系统::weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品1买一赠二",
@@ -430,8 +430,8 @@ Scenario: 5 购买买赠商品(赠品为非主商品)成功支付订单后，主
 		}
 		"""
 	#买赠活动：赠品扣库存，但是不算销量
-	Given jobs登录系统:weapp
-	Then jobs能获取商品'商品1':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获取商品'商品1'::weapp
 		"""
 		{
 			"name": "商品1",
@@ -447,7 +447,7 @@ Scenario: 5 购买买赠商品(赠品为非主商品)成功支付订单后，主
 			}
 		}
 		"""
-	Then jobs能获取商品'商品2':weapp
+	Then jobs能获取商品'商品2'::weapp
 		"""
 		{
 			"name": "商品2",
@@ -516,8 +516,8 @@ Scenario: 5 购买买赠商品(赠品为非主商品)成功支付订单后，主
 		}
 		"""
 	#买赠活动：赠品扣库存，但是不算销量
-	Given jobs登录系统:weapp
-	Then jobs能获取商品'商品1':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获取商品'商品1'::weapp
 		"""
 		{
 			"name": "商品1",
@@ -533,7 +533,7 @@ Scenario: 5 购买买赠商品(赠品为非主商品)成功支付订单后，主
 			}
 		}
 		"""
-	Then jobs能获取商品'商品2':weapp
+	Then jobs能获取商品'商品2'::weapp
 		"""
 		{
 			"name": "商品2",

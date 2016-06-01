@@ -17,9 +17,9 @@ Feature:手机端购买参与限时抢购活动并设置购买次数的商品
 """
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	And jobs已添加商品规格:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs已添加商品规格::weapp
 		"""
 		[{
 			"name": "尺寸",
@@ -31,7 +31,7 @@ Background:
 			}]
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -55,7 +55,7 @@ Background:
 			}
 		}]
 		"""
-	Given jobs已添加支付方式:weapp
+	Given jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -66,7 +66,7 @@ Background:
 		}]
 		"""
 	#会员等级
-	When jobs添加会员等级:weapp
+	When jobs添加会员等级::weapp
 		"""
 		[{
 			"name": "铜牌会员",
@@ -81,8 +81,8 @@ Background:
 
 	Given bill关注jobs的公众号
 	Given tom关注jobs的公众号
-	Given jobs登录系统:weapp
-	When jobs更新'tom'的会员等级:weapp
+	Given jobs登录系统::weapp
+	When jobs更新'tom'的会员等级::weapp
 		"""
 		{
 			"name": "tom",
@@ -100,8 +100,8 @@ Scenario:1 购买活动期间内有购买次数限制的促销商品
 		#会员等级:全部会员
 	#2、bill在活动期间内只能购买1次
 
-	Given jobs登录系统:weapp
-	When jobs创建限时抢购活动:weapp
+	Given jobs登录系统::weapp
+	When jobs创建限时抢购活动::weapp
 		"""
 		[{
 			"name": "商品1限时抢购",
@@ -166,8 +166,8 @@ Scenario:2 购买限购周期内有购买次数限制的促销商品
 		#会员等级:铜牌会员
 	#2、tom在限购周期(1天)内只能购买2次
 
-	Given jobs登录系统:weapp
-	When jobs创建限时抢购活动:weapp
+	Given jobs登录系统::weapp
+	When jobs创建限时抢购活动::weapp
 		"""
 		[{
 			"name": "商品2限时抢购",

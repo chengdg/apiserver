@@ -6,9 +6,9 @@ Feature: 在webapp中从购物车中购买商品
 	bill能在webapp中从购物车中购买商品
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	When jobs已添加支付方式:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	When jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "货到付款",
@@ -16,8 +16,8 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	When jobs开通使用微众卡权限:weapp
-	When jobs添加支付方式:weapp
+	When jobs开通使用微众卡权限::weapp
+	When jobs添加支付方式::weapp
 		"""
 		[{
 			"type": "微众卡支付",
@@ -25,7 +25,7 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	When jobs添加邮费配置:weapp
+	When jobs添加邮费配置::weapp
 		"""
 		[{
 			"name":"顺丰",
@@ -50,8 +50,8 @@ Background:
 			}]
 		}]
 		"""
-	And jobs选择'顺丰'运费配置:weapp
-	And jobs已添加商品:weapp
+	And jobs选择'顺丰'运费配置::weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -446,8 +446,8 @@ Scenario:5 从购物车购买商品时有商品下架
 			}]
 		}
 		"""
-	Given jobs登录系统:weapp
-	When jobs'下架'商品'商品1':weapp
+	Given jobs登录系统::weapp
+	When jobs'下架'商品'商品1'::weapp
 	When bill访问jobs的webapp
 	When bill在购物车订单编辑中点击提交订单
 		"""
@@ -582,8 +582,8 @@ Scenario:8 从购物车购买多个"有特殊运费"的商品
 	1. bill能从购物车中下单,购买商品
 	2. bill的订单中的信息正确
 
-	Given jobs登录系统:weapp
-	When jobs选择'EMS'运费配置:weapp
+	Given jobs登录系统::weapp
+	When jobs选择'EMS'运费配置::weapp
 	When bill访问jobs的webapp
 	And bill加入jobs的商品到购物车
 		"""

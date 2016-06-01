@@ -6,9 +6,9 @@ Feature: 在webapp中购买商品
 	bill能在webapp中购买jobs添加的"商品"
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	Given jobs已添加商品分类:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	Given jobs已添加商品分类::weapp
 		"""
 		[{
 			"name": "分类1"
@@ -18,8 +18,8 @@ Background:
 			"name": "分类3"
 		}]
 		"""
-	And jobs已有微众卡支付权限:weapp
-	And jobs已添加支付方式:weapp
+	And jobs已有微众卡支付权限::weapp
+	And jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "支付宝"
@@ -31,7 +31,7 @@ Background:
 			"type": "微信支付"
 		}]
 		"""
-	And jobs已添加商品规格:weapp
+	And jobs已添加商品规格::weapp
 		"""
 		[{
 			"name": "颜色",
@@ -53,7 +53,7 @@ Background:
 			}]
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -284,8 +284,8 @@ Scenario:5 购买的商品数量等于库存数量
 			}]
 		}
 		"""
-	Given jobs登录系统:weapp
-	Then jobs能获取商品'商品5':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获取商品'商品5'::weapp
 		"""
 		{
 			"name": "商品5",
@@ -321,8 +321,8 @@ Scenario:6 购买库存不足的商品
 		}
 		"""
 	Then bill获得错误提示'有商品库存不足，请重新下单'
-	Given jobs登录系统:weapp
-	Then jobs能获取商品'商品5':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获取商品'商品5'::weapp
 		"""
 		{
 			"name": "商品5",
@@ -561,8 +561,8 @@ Scenario:11 会员购买商品后，获取订单列表
 Scenario:12 会员购买的商品同时参加多个活动，然后下架商品
 	bill购买商品时，jobs下架此商品，bill获得错误提示信息
 
-	Given jobs登录系统:weapp
-	When jobs创建限时抢购活动:weapp
+	Given jobs登录系统::weapp
+	When jobs创建限时抢购活动::weapp
 		"""
 		[{
 			"name": "商品1限时抢购",
@@ -582,8 +582,8 @@ Scenario:12 会员购买的商品同时参加多个活动，然后下架商品
 			"promotion_price": 8.00
 		}]
 		"""
-	Given jobs登录系统:weapp
-	When jobs'下架'商品'商品1':weapp
+	Given jobs登录系统::weapp
+	When jobs'下架'商品'商品1'::weapp
 	When bill访问jobs的webapp
 	When bill购买jobs的商品
 		"""
@@ -606,8 +606,8 @@ Scenario:12 会员购买的商品同时参加多个活动，然后下架商品
 		}]
 		"""
 
-	Given jobs登录系统:weapp
-	When jobs'下架'商品'商品2':weapp
+	Given jobs登录系统::weapp
+	When jobs'下架'商品'商品2'::weapp
 	When bill访问jobs的webapp
 	When bill从购物车发起购买操作
 		"""
@@ -632,8 +632,8 @@ Scenario:12 会员购买的商品同时参加多个活动，然后下架商品
 Scenario:13 会员购买的商品同时参加多个活动，然后删除商品
 	bill购买商品时，jobs删除此商品，bill获得错误提示信息
 
-	Given jobs登录系统:weapp
-	When jobs创建限时抢购活动:weapp
+	Given jobs登录系统::weapp
+	When jobs创建限时抢购活动::weapp
 		"""
 		[{
 			"name": "商品1限时抢购",
@@ -653,7 +653,7 @@ Scenario:13 会员购买的商品同时参加多个活动，然后删除商品
 			"promotion_price": 8.00
 		}]
 		"""
-	When jobs'永久删除'商品'商品1':weapp
+	When jobs'永久删除'商品'商品1'::weapp
 	When bill访问jobs的webapp
 	When bill购买jobs的商品
 		"""
@@ -677,8 +677,8 @@ Scenario:13 会员购买的商品同时参加多个活动，然后删除商品
 			"count": 1
 		}]
 		"""
-	Given jobs登录系统:weapp
-	When jobs'永久删除'商品'商品2':weapp
+	Given jobs登录系统::weapp
+	When jobs'永久删除'商品'商品2'::weapp
 	When bill访问jobs的webapp
 	When bill从购物车发起购买操作
 		"""
@@ -740,8 +740,8 @@ Scenario:14 会员购买的商品未支付，订单中选择的支付方式被�
 			}
 			"""
 
-		Given jobs登录系统:weapp
-		When jobs'停用'支付方式'微信支付':weapp
+		Given jobs登录系统::weapp
+		When jobs'停用'支付方式'微信支付'::weapp
 
 		When bill访问jobs的webapp
 		And bill访问个人中心
@@ -827,9 +827,9 @@ Scenario:14 会员购买的商品未支付，订单中选择的支付方式被�
 			}
 			"""
 
-		Given jobs登录系统:weapp
-		When jobs'启用'支付方式'微信支付':weapp
-		When jobs'停用'支付方式'支付宝':weapp
+		Given jobs登录系统::weapp
+		When jobs'启用'支付方式'微信支付'::weapp
+		When jobs'停用'支付方式'支付宝'::weapp
 
 		When bill访问jobs的webapp
 		And bill访问个人中心
@@ -897,7 +897,7 @@ Scenario:14 会员购买的商品未支付，订单中选择的支付方式被�
 			"""
 
 	#货到付款
-		When 清空浏览器:weapp
+		When 清空浏览器::weapp
 		When bill访问jobs的webapp
 		And bill购买jobs的商品
 			"""
@@ -932,9 +932,9 @@ Scenario:14 会员购买的商品未支付，订单中选择的支付方式被�
 			}
 			"""
 
-		Given jobs登录系统:weapp
-		When jobs'启用'支付方式'支付宝':weapp
-		When jobs'停用'支付方式'货到付款':weapp
+		Given jobs登录系统::weapp
+		When jobs'启用'支付方式'支付宝'::weapp
+		When jobs'停用'支付方式'货到付款'::weapp
 
 		When bill访问jobs的webapp
 		When bill访问个人中心
@@ -968,10 +968,10 @@ Scenario:14 会员购买的商品未支付，订单中选择的支付方式被�
 			"""
 
 	#停用所有支付方式
-		Given jobs登录系统:weapp
-		When jobs'停用'支付方式'支付宝':weapp
-		When jobs'停用'支付方式'微信支付':weapp
-		When jobs'停用'支付方式'货到付款':weapp
+		Given jobs登录系统::weapp
+		When jobs'停用'支付方式'支付宝'::weapp
+		When jobs'停用'支付方式'微信支付'::weapp
+		When jobs'停用'支付方式'货到付款'::weapp
 
 		When bill访问jobs的webapp
 		When bill访问个人中心

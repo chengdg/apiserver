@@ -7,9 +7,9 @@ Feature: 在webapp中购买参与积分应用活动的商品
 	jobs 设置 use_ceiling 后 用户能在webapp中能够对所有商品使用积分购买
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	And jobs已添加商品规格:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs已添加商品规格::weapp
 		"""
 		[{
 			"name": "尺寸",
@@ -21,7 +21,7 @@ Background:
 			}]
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -69,7 +69,7 @@ Background:
 			}
 		}]
 		"""
-	Given jobs设定会员积分策略:weapp
+	Given jobs设定会员积分策略::weapp
 		"""
 		{
 			"integral_each_yuan": 2,
@@ -77,7 +77,7 @@ Background:
 		}
 		"""
 	#支付方式
-	Given jobs已添加支付方式:weapp
+	Given jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -247,8 +247,8 @@ Scenario:4 购买单个多规格商品+一个普通商品
 
 @mall3 @mall2 @mall.promotion @mall.webapp.promotion @bert
 Scenario:5 购买单个限时抢购商品，同时使用积分购买
-	Given jobs登录系统:weapp
-	When jobs创建限时抢购活动:weapp
+	Given jobs登录系统::weapp
+	When jobs创建限时抢购活动::weapp
 		"""
 		{
 			"name": "商品1限时抢购",
@@ -293,8 +293,8 @@ Scenario:5 购买单个限时抢购商品，同时使用积分购买
 
 @mall3 @mall2 @mall.promotion @mall.webapp.promotion @bert
 Scenario:6 购买单个限时抢购商品， 买赠商品，同时使用积分购买
-	Given jobs登录系统:weapp
-	When jobs创建限时抢购活动:weapp
+	Given jobs登录系统::weapp
+	When jobs创建限时抢购活动::weapp
 		"""
 		{
 			"name": "商品1限时抢购",
@@ -305,7 +305,7 @@ Scenario:6 购买单个限时抢购商品， 买赠商品，同时使用积分�
 		}
 		"""
 
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		{
 			"name": "商品2买一赠一",
@@ -371,8 +371,8 @@ Scenario:6 购买单个限时抢购商品， 买赠商品，同时使用积分�
 @mall3 @mall2 @integral @meberGrade @bert
 Scenario: 7 不同等级的会员购买有会员价同时有全体积分抵扣50%的商品
 	#会员价和积分抵扣可以同时使用，会员价后再算积分抵扣的比例
-	Given jobs登录系统:weapp
-	And jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	And jobs已添加商品::weapp
 		"""
 			[{
 				"name": "商品10",
@@ -389,8 +389,8 @@ Scenario: 7 不同等级的会员购买有会员价同时有全体积分抵扣50
 	And tom3关注jobs的公众号
 	And tom2关注jobs的公众号
 	And tom1关注jobs的公众号
-	Given jobs登录系统:weapp
-	When jobs添加会员等级:weapp
+	Given jobs登录系统::weapp
+	When jobs添加会员等级::weapp
 		"""
 		[{
 			"name": "铜牌会员",
@@ -406,30 +406,30 @@ Scenario: 7 不同等级的会员购买有会员价同时有全体积分抵扣50
 			"discount": "7"
 		}]
 		"""
-	When jobs更新'tom4'的会员等级:weapp
+	When jobs更新'tom4'的会员等级::weapp
 		"""
 		{
 			"name": "tom4",
 			"member_rank": "金牌会员"
 		}
 		"""
-	And jobs更新'tom3'的会员等级:weapp
+	And jobs更新'tom3'的会员等级::weapp
 		"""
 		{
 			"name": "tom3",
 			"member_rank": "银牌会员"
 		}
 		"""
-	And jobs更新'tom2'的会员等级:weapp
+	And jobs更新'tom2'的会员等级::weapp
 		"""
 		{
 			"name": "tom2",
 			"member_rank": "铜牌会员"
 		}
 		"""
-	When jobs访问会员列表:weapp
-	Then jobs获得会员列表默认查询条件:weapp
-	Then jobs可以获得会员列表:weapp
+	When jobs访问会员列表::weapp
+	Then jobs获得会员列表默认查询条件::weapp
+	Then jobs可以获得会员列表::weapp
 		"""
 		[{
 			"name": "tom1",
@@ -593,8 +593,8 @@ Scenario: 8 使用积分能抵扣小数
 	1.抵扣金额小于1元的小数
 	2.抵扣金额大于1元的小数
 
-	Given jobs登录系统:weapp
-	And jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品10",

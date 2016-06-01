@@ -16,9 +16,9 @@ Feature: 在webapp中购买参与积分应用活动的商品（多个商品参�
 
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	And jobs已添加商品规格:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs已添加商品规格::weapp
 		"""
 		[{
 			"name": "尺寸",
@@ -30,7 +30,7 @@ Background:
 			}]
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -72,14 +72,14 @@ Background:
 			"price": 50.00
 		}]
 		"""
-	Given jobs设定会员积分策略:weapp
+	Given jobs设定会员积分策略::weapp
 		"""
 		{
 			"integral_each_yuan": 2
 		}
 		"""
 	#支付方式
-	Given jobs已添加支付方式:weapp
+	Given jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -89,7 +89,7 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	When jobs创建积分应用活动:weapp
+	When jobs创建积分应用活动::weapp
 		"""
 		[{
 			"name": "多商品积分应用1",
@@ -115,7 +115,7 @@ Background:
 			}]
 		}]
 		"""
-	Given bill关注jobs的公众号:weapp
+	Given bill关注jobs的公众号::weapp
 
 @mall3 @ztq
 Scenario: 1 购买单个积分折扣商品，积分金额小于最大折扣金额
@@ -149,8 +149,8 @@ Scenario: 1 购买单个积分折扣商品，积分金额小于最大折扣金�
 		}
 		"""
 	Then bill在jobs的webapp中拥有0会员积分
-	Given jobs登录系统:weapp
-	Then jobs可以获得最新订单详情:weapp
+	Given jobs登录系统::weapp
+	Then jobs可以获得最新订单详情::weapp
 		"""
 		{
 			"status": "待支付",
@@ -202,8 +202,8 @@ Scenario: 2 购买单个积分折扣商品，积分金额大于最大折扣金�
 		}
 		"""
 	Then bill在jobs的webapp中拥有90会员积分
-	Given jobs登录系统:weapp
-	Then jobs可以获得最新订单详情:weapp
+	Given jobs登录系统::weapp
+	Then jobs可以获得最新订单详情::weapp
 		"""
 		{
 			"status": "待支付",
@@ -289,8 +289,8 @@ Scenario: 3 购买多个参加积分应用活动的商品
 		}
 		"""
 	Then bill在jobs的webapp中拥有810会员积分
-	Given jobs登录系统:weapp
-	Then jobs可以获得最新订单详情:weapp
+	Given jobs登录系统::weapp
+	Then jobs可以获得最新订单详情::weapp
 		"""
 		{
 			"status": "待支付",
@@ -340,8 +340,8 @@ Scenario: 4 修改多商品积分活动关联的商品后，购买参加积分�
 	2.下架部分商品后，进行购买
 	3.删除部分商品后，进行购买
 
-	Given jobs登录系统:weapp
-	When jobs更新商品'商品1':weapp
+	Given jobs登录系统::weapp
+	When jobs更新商品'商品1'::weapp
 		"""
 		{
 			"name": "商品1",
@@ -387,8 +387,8 @@ Scenario: 4 修改多商品积分活动关联的商品后，购买参加积分�
 		}
 		"""
 	Then bill在jobs的webapp中拥有960会员积分
-	Given jobs登录系统:weapp
-	Then jobs可以获得最新订单详情:weapp
+	Given jobs登录系统::weapp
+	Then jobs可以获得最新订单详情::weapp
 		"""
 		{
 			"status": "待支付",
@@ -405,7 +405,7 @@ Scenario: 4 修改多商品积分活动关联的商品后，购买参加积分�
 			}]
 		}
 		"""
-	When jobs'下架'商品'商品2':weapp
+	When jobs'下架'商品'商品2'::weapp
 	When bill访问jobs的webapp
 	When bill购买jobs的商品
 		"""
@@ -442,8 +442,8 @@ Scenario: 4 修改多商品积分活动关联的商品后，购买参加积分�
 		}
 		"""
 	Then bill在jobs的webapp中拥有840会员积分
-	Given jobs登录系统:weapp
-	Then jobs可以获得最新订单详情:weapp
+	Given jobs登录系统::weapp
+	Then jobs可以获得最新订单详情::weapp
 		"""
 		{
 			"status": "待支付",
@@ -466,7 +466,7 @@ Scenario: 4 修改多商品积分活动关联的商品后，购买参加积分�
 			}]
 		}
 		"""
-	When jobs'永久删除'商品'商品3':weapp
+	When jobs'永久删除'商品'商品3'::weapp
 	When bill访问jobs的webapp
 	When bill购买jobs的商品
 		"""
@@ -495,8 +495,8 @@ Scenario: 4 修改多商品积分活动关联的商品后，购买参加积分�
 		}
 		"""
 	Then bill在jobs的webapp中拥有800会员积分
-	Given jobs登录系统:weapp
-	Then jobs可以获得最新订单详情:weapp
+	Given jobs登录系统::weapp
+	Then jobs可以获得最新订单详情::weapp
 		"""
 		{
 			"status": "待支付",
@@ -517,8 +517,8 @@ Scenario: 4 修改多商品积分活动关联的商品后，购买参加积分�
 @mall3 @ztq
 Scenario: 5 修改多商品积分活动关联的商品后，购买参加积分活动的商品和普通商品
 
-	Given jobs登录系统:weapp
-	When jobs更新商品'商品1':weapp
+	Given jobs登录系统::weapp
+	When jobs更新商品'商品1'::weapp
 		"""
 		{
 			"name": "商品1",
@@ -569,8 +569,8 @@ Scenario: 5 修改多商品积分活动关联的商品后，购买参加积分�
 		}
 		"""
 	Then bill在jobs的webapp中拥有960会员积分
-	Given jobs登录系统:weapp
-	Then jobs可以获得最新订单详情:weapp
+	Given jobs登录系统::weapp
+	Then jobs可以获得最新订单详情::weapp
 		"""
 		{
 			"status": "待支付",

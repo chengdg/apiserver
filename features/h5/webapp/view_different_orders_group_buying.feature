@@ -15,13 +15,13 @@ Feature:从个人中心浏览不同状态的订单列表中的团购订单
 """
 
 Background:
-	Given 重置weapp的bdd环境
-	Given 重置weizoom_card的bdd环境
-	Given jobs登录系统:weapp
-	When jobs添加微信证书:weapp
+	Given 重置'weapp'的bdd环境
+	Given 重置'weizoom_card'的bdd环境
+	Given jobs登录系统::weapp
+	When jobs添加微信证书::weapp
 
-	Given jobs已有微众卡支付权限:weapp
-	And jobs已添加支付方式:weapp
+	Given jobs已有微众卡支付权限::weapp
+	And jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "微众卡支付"
@@ -31,8 +31,8 @@ Background:
 		"""
 
 	#创建微众卡
-	Given test登录管理系统:weizoom_card
-	When test新建通用卡:weizoom_card
+	Given test登录管理系统::weizoom_card
+	When test新建通用卡::weizoom_card
 		"""
 		[{
 			"name":"100元微众卡",
@@ -52,7 +52,7 @@ Background:
 		"""
 
 	#微众卡审批出库
-	When test下订单:weizoom_card
+	When test下订单::weizoom_card
 			"""
 			[{
 				"card_info":[{
@@ -71,9 +71,9 @@ Background:
 				}
 			}]
 			"""
-	And test批量激活订单'0001'的卡:weizoom_card
+	And test批量激活订单'0001'的卡::weizoom_card
 
-	And jobs已添加商品规格:weapp
+	And jobs已添加商品规格::weapp
 		"""
 		[{
 			"name": "尺寸",
@@ -85,7 +85,7 @@ Background:
 			}]
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -117,7 +117,7 @@ Background:
 		}]
 		"""
 
-	When jobs新建团购活动:weapp
+	When jobs新建团购活动::weapp
 		"""
 		[{
 			"group_name": "团购活动1",
@@ -153,8 +153,8 @@ Background:
 			"share_description": "团购分享描述"
 		}]
 		"""
-	When jobs开启团购活动'团购活动1':weapp
-	When jobs开启团购活动'团购活动2':weapp
+	When jobs开启团购活动'团购活动1'::weapp
+	When jobs开启团购活动'团购活动2'::weapp
 
 	Given bill关注jobs的公众号
 	Given tom关注jobs的公众号
@@ -168,7 +168,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 
 	#bill作为团长开团参与团购活动"团购活动1"
 		When bill访问jobs的webapp
-		When bill参加jobs的团购活动"团购活动1"进行开团:weapp
+		When bill参加jobs的团购活动"团购活动1"进行开团::weapp
 			"""
 			{
 				"group_name": "团购活动1",
@@ -229,7 +229,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 
 	#tom参团"bill作为团长"购买
 		When tom访问jobs的webapp
-		When tom参加bill的团购活动"团购活动1":weapp
+		When tom参加bill的团购活动"团购活动1"::weapp
 			"""
 			{
 				"group_name": "团购活动1",
@@ -290,7 +290,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 
 	#tom作为团长开团参与团购活动"团购活动1"
 		When tom访问jobs的webapp
-		When tom参加jobs的团购活动"团购活动1"进行开团:weapp
+		When tom参加jobs的团购活动"团购活动1"进行开团::weapp
 			"""
 			{
 				"group_name": "团购活动1",
@@ -371,7 +371,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 
 	#bill参团"tom作为团长"购买：微众卡支付的订单，实付金额为0
 		When bill访问jobs的webapp
-		When bill参加tom的团购活动"团购活动1":weapp
+		When bill参加tom的团购活动"团购活动1"::weapp
 			"""
 			{
 				"group_name": "团购活动1",
@@ -455,7 +455,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 
 	#bill作为团长开团参与团购活动"团购活动2"
 		When bill访问jobs的webapp
-		When bill参加jobs的团购活动"团购活动2"进行开团:weapp
+		When bill参加jobs的团购活动"团购活动2"进行开团::weapp
 			"""
 			{
 				"group_name": "团购活动2",
@@ -556,7 +556,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 
 	#tom参团"bill作为团长"购买：微众卡支付部分订单金额
 		When tom访问jobs的webapp
-		When tom参加bill的团购活动"团购活动2":weapp
+		When tom参加bill的团购活动"团购活动2"::weapp
 			"""
 			{
 				"group_name": "团购活动2",
@@ -666,7 +666,7 @@ Scenario:2 订单列表只有团购订单-团购未成团(退款成功，微信�
 
 	#bill作为团长开团参与团购活动"团购活动1"
 		When bill访问jobs的webapp
-		When bill参加jobs的团购活动"团购活动1"进行开团:weapp
+		When bill参加jobs的团购活动"团购活动1"进行开团::weapp
 			"""
 			{
 				"group_name": "团购活动1",
@@ -698,7 +698,7 @@ Scenario:2 订单列表只有团购订单-团购未成团(退款成功，微信�
 
 	#tom参团"bill作为团长"购买
 		When tom访问jobs的webapp
-		When tom参加bill的团购活动"团购活动1":weapp
+		When tom参加bill的团购活动"团购活动1"::weapp
 			"""
 			{
 				"group_name": "团购活动1",
@@ -729,8 +729,8 @@ Scenario:2 订单列表只有团购订单-团购未成团(退款成功，微信�
 		When tom使用支付方式'微信支付'进行支付
 
 	#手动结束团购活动，未成功的团订单进入退款
-		Given jobs登录系统:weapp
-		When jobs关闭团购活动'团购活动1':weapp
+		Given jobs登录系统::weapp
+		When jobs关闭团购活动'团购活动1'::weapp
 
 		When bill访问jobs的webapp
 		When bill访问个人中心
@@ -766,13 +766,13 @@ Scenario:2 订单列表只有团购订单-团购未成团(退款成功，微信�
 			}]
 			"""
 
-@mall3 @group_t @gyct12 @ztqb
+@mall3 @group_t @gyct12
 Scenario:3 订单列表只有团购订单-团购成团订单发货、完成订单
 	#团购成功的订单进行发货和完成订单
 
 	#bill作为团长开团参与团购活动"团购活动1"
 		When bill访问jobs的webapp
-		When bill参加jobs的团购活动"团购活动1"进行开团:weapp
+		When bill参加jobs的团购活动"团购活动1"进行开团::weapp
 			"""
 			{
 				"group_name": "团购活动1",
@@ -804,7 +804,7 @@ Scenario:3 订单列表只有团购订单-团购成团订单发货、完成订�
 
 	#tom参团"bill作为团长"购买
 		When tom访问jobs的webapp
-		When tom参加bill的团购活动"团购活动1":weapp
+		When tom参加bill的团购活动"团购活动1"::weapp
 			"""
 			{
 				"group_name": "团购活动1",
@@ -836,7 +836,7 @@ Scenario:3 订单列表只有团购订单-团购成团订单发货、完成订�
 
 	#tom1参团"bill作为团长"购买
 		When tom1访问jobs的webapp
-		When tom1参加bill的团购活动"团购活动1":weapp
+		When tom1参加bill的团购活动"团购活动1"::weapp
 			"""
 			{
 				"group_name": "团购活动1",
@@ -868,7 +868,7 @@ Scenario:3 订单列表只有团购订单-团购成团订单发货、完成订�
 
 	#tom2参团"bill作为团长"购买
 		When tom2访问jobs的webapp
-		When tom2参加bill的团购活动"团购活动1":weapp
+		When tom2参加bill的团购活动"团购活动1"::weapp
 			"""
 			{
 				"group_name": "团购活动1",
@@ -901,7 +901,7 @@ Scenario:3 订单列表只有团购订单-团购成团订单发货、完成订�
 	#非会员参团购买
 	#tom3参团"bill作为团长"购买
 		When tom3访问jobs的webapp
-		When tom3参加bill的团购活动"团购活动1":weapp
+		When tom3参加bill的团购活动"团购活动1"::weapp
 			"""
 			{
 				"group_name": "团购活动1",
@@ -932,8 +932,8 @@ Scenario:3 订单列表只有团购订单-团购成团订单发货、完成订�
 		When tom3使用支付方式'微信支付'进行支付
 
 	#团购成功，对订单进行发货
-		Given jobs登录系统:weapp
-		When jobs对订单进行发货:weapp
+		Given jobs登录系统::weapp
+		When jobs对订单进行发货::weapp
 			"""
 			{
 				"order_no":"0001",
@@ -941,7 +941,7 @@ Scenario:3 订单列表只有团购订单-团购成团订单发货、完成订�
 				"number":"123456789"
 			}
 			"""
-		When jobs对订单进行发货:weapp
+		When jobs对订单进行发货::weapp
 			"""
 			{
 				"order_no": "0002",
@@ -985,8 +985,8 @@ Scenario:3 订单列表只有团购订单-团购成团订单发货、完成订�
 			""" 
 
 	#确认收货
-		Given jobs登录系统:weapp
-		When jobs完成订单'0001':weapp
+		Given jobs登录系统::weapp
+		When jobs完成订单'0001'::weapp
 
 		When tom访问jobs的webapp
 		When tom确认收货订单'0002'
@@ -1133,8 +1133,8 @@ Scenario:4 订单列表团购进行中订单+普通订单
 
 	#创建商品4的团购活动
 
-		Given jobs登录系统:weapp
-		When jobs新建团购活动:weapp
+		Given jobs登录系统::weapp
+		When jobs新建团购活动::weapp
 			"""
 			[{
 				"group_name": "团购活动4",
@@ -1152,11 +1152,11 @@ Scenario:4 订单列表团购进行中订单+普通订单
 				"share_description": "团购分享描述"
 			}]
 			"""
-		When jobs开启团购活动'团购活动4':weapp
+		When jobs开启团购活动'团购活动4'::weapp
 
 	#bill作为团长开团参与团购活动"团购活动4"
 		When bill访问jobs的webapp
-		When bill参加jobs的团购活动"团购活动4"进行开团:weapp
+		When bill参加jobs的团购活动"团购活动4"进行开团::weapp
 			"""
 			{
 				"group_name": "团购活动4",
@@ -1290,7 +1290,7 @@ Scenario:4 订单列表团购进行中订单+普通订单
 @mall3
 Scenario:5 订单列表团购订单-手机端开团未支付订单
 		When bill访问jobs的webapp
-		When bill参加jobs的团购活动"团购活动1"进行开团:weapp
+		When bill参加jobs的团购活动"团购活动1"进行开团::weapp
 			"""
 			{
 				"group_name": "团购活动1",
@@ -1336,8 +1336,8 @@ Scenario:5 订单列表团购订单-手机端开团未支付订单
 			"""
 
 		#活动结束，开团未支付订单自动取消
-		Given jobs登录系统:weapp
-		When jobs关闭团购活动'团购活动1':weapp
+		Given jobs登录系统::weapp
+		When jobs关闭团购活动'团购活动1'::weapp
 
 		When bill访问jobs的webapp
 		When bill访问个人中心
@@ -1350,7 +1350,7 @@ Scenario:5 订单列表团购订单-手机端开团未支付订单
 Scenario:6 订单列表团购订单-手机端参团未支付订单
 	#bill作为团长开团参与团购活动"团购活动1"
 		When bill访问jobs的webapp
-		When bill参加jobs的团购活动"团购活动1"进行开团:weapp
+		When bill参加jobs的团购活动"团购活动1"进行开团::weapp
 			"""
 			{
 				"group_name": "团购活动1",
@@ -1382,7 +1382,7 @@ Scenario:6 订单列表团购订单-手机端参团未支付订单
 
 	#tom参团"bill作为团长"购买
 		When tom访问jobs的webapp
-		When tom参加bill的团购活动"团购活动1":weapp
+		When tom参加bill的团购活动"团购活动1"::weapp
 			"""
 			{
 				"group_name": "团购活动1",
@@ -1428,8 +1428,8 @@ Scenario:6 订单列表团购订单-手机端参团未支付订单
 			"""
 
 	#手动结束团购活动，未成功的团订单进入退款
-		Given jobs登录系统:weapp
-		When jobs关闭团购活动'团购活动1':weapp
+		Given jobs登录系统::weapp
+		When jobs关闭团购活动'团购活动1'::weapp
 
 		When tom访问jobs的webapp
 		When tom访问个人中心

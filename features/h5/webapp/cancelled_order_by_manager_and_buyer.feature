@@ -5,10 +5,10 @@
 Feature: 后台和手机端对同一订单进行取消订单操作
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	And jobs已有微众卡支付权限:weapp
-	And jobs已添加支付方式:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs已有微众卡支付权限::weapp
+	And jobs已添加支付方式::weapp
 		"""
 		[{
 			"type":"货到付款"
@@ -21,7 +21,7 @@ Background:
 		}]
 		"""
 
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -37,8 +37,8 @@ Scenario:1 后台先取消,手机端再取消
 	jobs在后台进行取消订单操作
 	手机端再进行取消订单操作
 
-	Given jobs登录系统:weapp
-	When jobs添加优惠券规则:weapp
+	Given jobs登录系统::weapp
+	When jobs添加优惠券规则::weapp
 		"""
 		[{
 			"name": "单品券1",
@@ -51,7 +51,7 @@ Scenario:1 后台先取消,手机端再取消
 			"coupon_product": "商品1"
 		}]
 		"""
-	When jobs为会员发放优惠券:weapp
+	When jobs为会员发放优惠券::weapp
 		"""
 		{
 			"name": "单品券1",
@@ -60,7 +60,7 @@ Scenario:1 后台先取消,手机端再取消
 			"coupon_ids": ["coupon1_id_1"]
 		}
 		"""
-	Then jobs能获得优惠券规则列表:weapp
+	Then jobs能获得优惠券规则列表::weapp
 		"""
 		[{
 			"name": "单品券1",
@@ -86,8 +86,8 @@ Scenario:1 后台先取消,手机端再取消
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券规则列表:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券规则列表::weapp
 		"""
 		[{
 			"name": "单品券1",
@@ -98,12 +98,12 @@ Scenario:1 后台先取消,手机端再取消
 		}]
 		"""
 
-	Given jobs登录系统:weapp
-	When jobs'取消'订单'001':weapp
+	Given jobs登录系统::weapp
+	When jobs'取消'订单'001'::weapp
 	When bill访问jobs的webapp
 	Then bill'不能'取消订单'001'
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券规则列表:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券规则列表::weapp
 		"""
 		[{
 			"name": "单品券1",

@@ -10,13 +10,13 @@ Feature: 购买买赠活动的商品，手机端订单可以看到买赠商品�
 """
 
 Background:
-	Given 重置weapp的bdd环境
+	Given 重置'weapp'的bdd环境
 
 @mall3 @promotion @promotionPremium @order @allOrder @robert.wip
 Scenario:1 购买买赠活动的商品，在手机端的"待付款"、"待发货"、"待收货"、"待评价"中的订单，订单详情可以展示赠品的数量
 
-	Given jobs登录系统:weapp
-  	When jobs已添加支付方式:weapp
+	Given jobs登录系统::weapp
+  	When jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "货到付款",
@@ -28,7 +28,7 @@ Scenario:1 购买买赠活动的商品，在手机端的"待付款"、"待发货
 			"is_active": "启用"
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品赠品",
@@ -38,7 +38,7 @@ Scenario:1 购买买赠活动的商品，在手机端的"待付款"、"待发货
 			"price": 100.00
 		}]
 		"""
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品1买一赠二",

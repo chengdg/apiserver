@@ -10,10 +10,10 @@ Feature: 购买商品
 	"""
 
 Background:
-	Given 重置weapp的bdd环境
-	And jobs登录系统:weapp
-	And jobs成为自营帐号:weapp
-	And jobs已添加供货商:weapp
+	Given 重置'weapp'的bdd环境
+	And jobs登录系统::weapp
+	And jobs成为自营帐号::weapp
+	And jobs已添加供货商::weapp
 		"""
 		[{
 			"name": "土小宝",
@@ -29,7 +29,7 @@ Background:
 			"remark": ""
 		}]
 		"""
-	And jobs已添加运费配置:weapp
+	And jobs已添加运费配置::weapp
 		"""
 		[{
 			"name":"顺丰",
@@ -55,8 +55,8 @@ Background:
 			}]
 		}]
 		"""
-	When jobs选择'顺丰'运费配置:weapp
-	Given jobs已添加支付方式:weapp
+	When jobs选择'顺丰'运费配置::weapp
+	Given jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -66,7 +66,7 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"supplier": "土小宝",
@@ -139,8 +139,8 @@ Scenario: 1 购买单个商品
 			"actions": ["取消订单", "支付"]
 		}
 		"""
-	Given jobs登录系统:weapp
-	Then jobs可以获得最新订单详情:weapp
+	Given jobs登录系统::weapp
+	Then jobs可以获得最新订单详情::weapp
 		"""
 		{
 			"order_id": "001",
@@ -217,8 +217,8 @@ Scenario: 2 购买一个供货商的多个商品
 			}]
 		}
 		"""
-	Given jobs登录系统:weapp
-	Then jobs可以获得最新订单详情:weapp
+	Given jobs登录系统::weapp
+	Then jobs可以获得最新订单详情::weapp
 		"""
 		{
 			"order_id": "001",
@@ -243,8 +243,8 @@ Scenario: 2 购买一个供货商的多个商品
 		"""
 	When bill访问jobs的webapp
 	And bill使用支付方式'微信支付'进行支付
-	Given jobs登录系统:weapp
-	Then jobs可以看到订单列表:weapp
+	Given jobs登录系统::weapp
+	Then jobs可以看到订单列表::weapp
 		"""
 		[{
 			"order_no": "001",
@@ -331,8 +331,8 @@ Scenario: 3 购买多个供货商的多个商品,使用微信支付
 			}]
 		}
 		"""
-	Given jobs登录系统:weapp
-	Then jobs可以获得最新订单详情:weapp
+	Given jobs登录系统::weapp
+	Then jobs可以获得最新订单详情::weapp
 		"""
 		{
 			"order_no": "001",
@@ -358,8 +358,8 @@ Scenario: 3 购买多个供货商的多个商品,使用微信支付
 		"""
 	When bill访问jobs的webapp
 	And bill使用支付方式'微信支付'进行支付
-	Given jobs登录系统:weapp
-	Then jobs可以看到订单列表:weapp
+	Given jobs登录系统::weapp
+	Then jobs可以看到订单列表::weapp
 		"""
 		[{
 			"order_no": "001",
@@ -390,7 +390,7 @@ Scenario: 3 购买多个供货商的多个商品,使用微信支付
 			}]
 		}]
 		"""
-	When jobs对订单进行发货:weapp
+	When jobs对订单进行发货::weapp
 		"""
 		{
 			"order_no":"001-土小宝",
@@ -399,7 +399,7 @@ Scenario: 3 购买多个供货商的多个商品,使用微信支付
 			"shipper":"jobs"
 		}
 		"""
-	Then jobs可以看到订单列表:weapp
+	Then jobs可以看到订单列表::weapp
 		"""
 		[{
 			"order_no": "001",
@@ -438,8 +438,8 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 	1. 能看到订单详情
 	2. 能在不同状态下执行各种操作
 
-	Given jobs登录系统:weapp
-	When jobs更新商品'商品3':weapp
+	Given jobs登录系统::weapp
+	When jobs更新商品'商品3'::weapp
 		"""
 		{
 			"name": "商品3",
@@ -512,8 +512,8 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 			"actions": ["取消订单", "支付"]
 		}
 		"""
-	Given jobs登录系统:weapp
-	Then jobs可以获得最新订单详情:weapp
+	Given jobs登录系统::weapp
+	Then jobs可以获得最新订单详情::weapp
 		"""
 		{
 			"order_no": "001",
@@ -540,8 +540,8 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 		"""
 	When bill访问jobs的webapp
 	And bill使用支付方式'货到付款'进行支付
-	Given jobs登录系统:weapp
-	Then jobs可以看到订单列表:weapp
+	Given jobs登录系统::weapp
+	Then jobs可以看到订单列表::weapp
 		"""
 		[{
 			"order_no": "001",
@@ -573,7 +573,7 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 			}]
 		}]
 		"""
-	When jobs对订单进行发货:weapp
+	When jobs对订单进行发货::weapp
 		"""
 		{
 			"order_no":"001-丹江湖",
@@ -582,7 +582,7 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 			"shipper":"jobs"
 		}
 		"""
-	Then jobs可以看到订单列表:weapp
+	Then jobs可以看到订单列表::weapp
 		"""
 		[{
 			"order_no": "001",
@@ -614,7 +614,7 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 			}]
 		}]
 		"""
-	Then jobs可以获得最新订单详情:weapp
+	Then jobs可以获得最新订单详情::weapp
 		"""
 		{
 			"order_no": "001",
@@ -676,8 +676,8 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 			}]
 		}
 		"""
-	Given jobs登录系统:weapp
-	When jobs对订单进行发货:weapp
+	Given jobs登录系统::weapp
+	When jobs对订单进行发货::weapp
 		"""
 		{
 			"order_no":"001-土小宝",
@@ -686,7 +686,7 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 			"shipper":"jobs|备注"
 		}
 		"""
-	Then jobs可以看到订单列表:weapp
+	Then jobs可以看到订单列表::weapp
 		"""
 		[{
 			"order_no": "001",
@@ -749,9 +749,9 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 			}]
 		}
 		"""
-	Given jobs登录系统:weapp
-	When jobs完成订单'001-土小宝':weapp
-	Then jobs可以看到订单列表:weapp
+	Given jobs登录系统::weapp
+	When jobs完成订单'001-土小宝'::weapp
+	Then jobs可以看到订单列表::weapp
 		"""
 		[{
 			"order_no": "001",
@@ -814,9 +814,9 @@ Scenario: 4 购买多个供货商的多个商品,使用货到付款
 			}]
 		}
 		"""
-	Given jobs登录系统:weapp
-	When jobs完成订单'001-丹江湖':weapp
-	Then jobs可以看到订单列表:weapp
+	Given jobs登录系统::weapp
+	When jobs完成订单'001-丹江湖'::weapp
+	Then jobs可以看到订单列表::weapp
 		"""
 		[{
 			"order_no": "001",

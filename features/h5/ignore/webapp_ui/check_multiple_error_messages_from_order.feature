@@ -15,9 +15,9 @@ Feature:校验多个下单错误提示信息
 	"""
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	And jobs已添加支付方式:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "货到付款"
@@ -25,7 +25,7 @@ Background:
 			"type": "微信支付"
 		}]
 		"""
-	And jobs已添加商品规格:weapp
+	And jobs已添加商品规格::weapp
 		"""
 		[{
 			"name": "尺寸",
@@ -37,7 +37,7 @@ Background:
 			}]
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -97,7 +97,7 @@ Background:
 		}]
 		"""
 
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品5买二赠一",
@@ -112,7 +112,7 @@ Background:
 			"is_enable_cycle_mode": true
 		}]
 		"""
-	When jobs创建限时抢购活动:weapp
+	When jobs创建限时抢购活动::weapp
 		"""
 		[{
 			"name": "商品6限时抢购",
@@ -225,9 +225,9 @@ Scenario:1 校验多个下单错误信息提示（错误信息类型不同）
 		"""
 
 	#jobs在台进行下架、删除等操作
-	Given jobs登录系统:weapp
+	Given jobs登录系统::weapp
 	#修改商品1的库存为1（由2变为1）
-	When jobs更新商品'商品1'的库存为:weapp
+	When jobs更新商品'商品1'的库存为::weapp
 		"""
 		[{
 			"name":"商品1",
@@ -238,7 +238,7 @@ Scenario:1 校验多个下单错误信息提示（错误信息类型不同）
 		"""
 
 	#修改商品2的库存为0
-	When jobs更新商品'商品2'的库存为:weapp
+	When jobs更新商品'商品2'的库存为::weapp
 		"""
 		[{
 			"name":"商品2",
@@ -249,13 +249,13 @@ Scenario:1 校验多个下单错误信息提示（错误信息类型不同）
 		"""
 
 	#下架商品3
-	When jobs'下架'商品'商品3':weapp
+	When jobs'下架'商品'商品3'::weapp
 
 	#删除商品4
-	When jobs'永久删除'商品'商品4':weapp
+	When jobs'永久删除'商品'商品4'::weapp
 
 	#结束商品5参与的买赠活动
-	When jobs'结束'促销活动'商品5买二赠一':weapp
+	When jobs'结束'促销活动'商品5买二赠一'::weapp
 
 	#提交订单时校验多种错误提示信息
 	When bill在购物车订单编辑中点击提交订单

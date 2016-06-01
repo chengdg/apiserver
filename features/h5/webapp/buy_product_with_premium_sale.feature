@@ -32,9 +32,9 @@ Feature: 在webapp中购买参与买赠活动的商品
 """
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	And jobs已添加商品规格:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs已添加商品规格::weapp
 		"""
 		[{
 			"name": "尺寸",
@@ -46,7 +46,7 @@ Background:
 			}]
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -96,7 +96,7 @@ Background:
 		}]
 		"""
 	#支付方式
-	Given jobs已添加支付方式:weapp
+	Given jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -106,7 +106,7 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品1买二赠一",
@@ -479,8 +479,8 @@ Scenario: 6 购买多个 有规格的参与买赠的商品
 
 @mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
 Scenario: 7  创建多规格商品 非循环买赠活动，购买多个 有规格的参与买赠的商品 赠品只赠送一次
-	Given jobs登录系统:weapp
-	And jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品6",
@@ -500,7 +500,7 @@ Scenario: 7  创建多规格商品 非循环买赠活动，购买多个 有规�
 			}
 		}]
 		"""
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品6买一赠一",
@@ -562,8 +562,8 @@ Scenario: 7  创建多规格商品 非循环买赠活动，购买多个 有规�
 
 @mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
 Scenario: 8  多规格商品，买2赠1 循环买赠
-	Given jobs登录系统:weapp
-	And jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品8",
@@ -584,7 +584,7 @@ Scenario: 8  多规格商品，买2赠1 循环买赠
 		}]
 		"""
 
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品8买二赠一",
@@ -646,15 +646,15 @@ Scenario: 8  多规格商品，买2赠1 循环买赠
 
 @mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
 Scenario: 9  创建买赠活动，但活动时间没开始，按原有商品销售，不进行赠送
-	Given jobs登录系统:weapp
-	And jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品9",
 			"price": 200.00
 		}]
 		"""
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品9买1赠1",
@@ -694,15 +694,15 @@ Scenario: 9  创建买赠活动，但活动时间没开始，按原有商品销�
 
 @mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
 Scenario: 10 创建买赠活动，活动结束后，按原有商品销售，不进行赠送
-	Given jobs登录系统:weapp
-	And jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品10",
 			"price": 200.00
 		}]
 		"""
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品10买1赠1",
@@ -741,15 +741,15 @@ Scenario: 10 创建买赠活动，活动结束后，按原有商品销售，不�
 
 @mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
 Scenario: 11  创建买赠活动，选择商品时，活动进行中，但去付款时，活动已经结束了，系统提示：该活动已经过期
-	Given jobs登录系统:weapp
-	And jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品10",
 			"price": 200.00
 		}]
 		"""
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品10买1赠1",
@@ -791,15 +791,15 @@ Scenario: 11  创建买赠活动，选择商品时，活动进行中，但去付
 @mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip
 Scenario: 12 购买单个买赠活动商品，购买时活动进行中，提交订单时，该活动被商家手工结束
 
-	Given jobs登录系统:weapp
-	And jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品10",
 			"price": 200.00
 		}]
 		"""
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品10买1赠1",
@@ -814,8 +814,8 @@ Scenario: 12 购买单个买赠活动商品，购买时活动进行中，提交�
 			"is_enable_cycle_mode": true
 		}]
 		"""
-	Given jobs登录系统:weapp
-	When jobs'结束'促销活动'商品10买1赠1':weapp
+	Given jobs登录系统::weapp
+	When jobs'结束'促销活动'商品10买1赠1'::weapp
 	When bill访问jobs的webapp
 	And bill购买jobs的商品
 		"""
@@ -844,8 +844,8 @@ Scenario: 12 购买单个买赠活动商品，购买时活动进行中，提交�
 # __edit__ : 王丽   补充 "雪静"
 @mall3 @promotion @promotionPremium @meberGrade @robert.wip
 Scenario: 13 不同等级的会员购买会员价，同时有会员等级买赠活动的商品
-	Given jobs登录系统:weapp
-	When jobs添加会员等级:weapp
+	Given jobs登录系统::weapp
+	When jobs添加会员等级::weapp
 		"""
 		[{
 			"name": "铜牌会员",
@@ -861,7 +861,7 @@ Scenario: 13 不同等级的会员购买会员价，同时有会员等级买赠�
 			"discount": "7"
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品赠品",
@@ -916,30 +916,30 @@ Scenario: 13 不同等级的会员购买会员价，同时有会员等级买赠�
 			}
 		}]
 		"""
-	When jobs更新'marry2'的会员等级:weapp
+	When jobs更新'marry2'的会员等级::weapp
 		"""
 		{
 			"name":"marry2",
 			"member_rank":"铜牌会员"
 		}
 		"""
-	And jobs更新'marry3'的会员等级:weapp
+	And jobs更新'marry3'的会员等级::weapp
 		"""
 		{
 			"name":"marry3",
 			"member_rank":"银牌会员"
 		}
 		"""
-	And jobs更新'marry4'的会员等级:weapp
+	And jobs更新'marry4'的会员等级::weapp
 		"""
 		{
 			"name":"marry4",
 			"member_rank":"金牌会员"
 		}
 		"""
-	When jobs访问会员列表:weapp
-	Then jobs获得会员列表默认查询条件:weapp
-	Then jobs可以获得会员列表:weapp
+	When jobs访问会员列表::weapp
+	Then jobs获得会员列表默认查询条件::weapp
+	Then jobs可以获得会员列表::weapp
 		"""
 		[{
 			"name":"marry4",
@@ -958,7 +958,7 @@ Scenario: 13 不同等级的会员购买会员价，同时有会员等级买赠�
 			"member_rank":"普通会员"
 		}]
 		"""
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品6买一赠二",
@@ -1456,9 +1456,9 @@ Scenario: 15 购买有买赠活动的商品，活动进行中，把赠品下架�
 	1.bill购买买赠商品：商品1
 	2.bill获得创建订单失败的信息
 
-	Given jobs登录系统:weapp
-	When jobs'下架'商品'商品2':weapp
-	When jobs'永久删除'商品'商品3':weapp
+	Given jobs登录系统::weapp
+	When jobs'下架'商品'商品2'::weapp
+	When jobs'永久删除'商品'商品3'::weapp
 	When bill访问jobs的webapp
 	When bill购买jobs的商品
 		"""

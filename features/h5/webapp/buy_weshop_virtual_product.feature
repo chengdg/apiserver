@@ -10,10 +10,10 @@ Feature:购买虚拟产品
 	"""
 
 Background:
-	Given 重置weapp的bdd环境
+	Given 重置'weapp'的bdd环境
 	Given 设置jobs为自营平台账号
-	Given jobs登录系统:weapp
-	And jobs已添加商品分类:weapp
+	Given jobs登录系统::weapp
+	And jobs已添加商品分类::weapp
 		"""
 		[{
 			"name": "分类1"
@@ -21,7 +21,7 @@ Background:
 			"name": "分类2"
 		}]
 		"""
-	And jobs已添加供货商:weapp
+	And jobs已添加供货商::weapp
 		"""
 		[{
 			"name": "微众",
@@ -37,7 +37,7 @@ Background:
 			"remark": ""
 		}]
 		"""
-	And jobs已添加支付方式:weapp
+	And jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "货到付款",
@@ -50,8 +50,8 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	When jobs开通使用微众卡权限:weapp
-	When jobs添加支付方式:weapp
+	When jobs开通使用微众卡权限::weapp
+	When jobs添加支付方式::weapp
 		"""
 		[{
 			"type": "微众卡支付",
@@ -59,7 +59,7 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	Given jobs已添加商品:weapp
+	Given jobs已添加商品::weapp
 		"""
 		[{
 			"name": "微众虚拟商品1",
@@ -167,7 +167,7 @@ Background:
 			"status":"在售"
 		}]
 		"""
-	And jobs已创建微众卡:weapp
+	And jobs已创建微众卡::weapp
 		"""
 		{
 			"cards":[{
@@ -193,7 +193,7 @@ Background:
 			}]
 		}
 		"""
-	When jobs新建福利卡券活动:weapp
+	When jobs新建福利卡券活动::weapp
 		"""
 		[{
 			"product":
@@ -235,7 +235,7 @@ Background:
 			"create_time":"今天"
 		}]
 		"""
-	Given jobs设定会员积分策略:weapp
+	Given jobs设定会员积分策略::weapp
 		"""
 		{
 			"be_member_increase_count":20,
@@ -297,8 +297,8 @@ Scenario:2 购买单个虚拟商品，不参与任何促销活动
 		"""
 	#付款后，获得福利卡券
 	When bill使用支付方式'微信支付'进行支付订单'001'
-	Given jobs登录系统:weapp
-	When jobs自动发放卡券给订单'001':weapp
+	Given jobs登录系统::weapp
+	When jobs自动发放卡券给订单'001'::weapp
 		"""
 		[{
 			"id":"0000001",
@@ -359,8 +359,8 @@ Scenario:3 购买多个虚拟商品，不参与任何促销活动
 			"date":"今天"
 		}
 		"""
-	Given jobs登录系统:weapp
-	When jobs自动发放卡券给订单'001':weapp
+	Given jobs登录系统::weapp
+	When jobs自动发放卡券给订单'001'::weapp
 		"""
 		[{
 			"id":"0000001",
@@ -415,8 +415,8 @@ Scenario:3 购买多个虚拟商品，不参与任何促销活动
 
 Scenario:4 购买虚拟商品，参与促销活动
 	#微众虚拟商品1-参加积分抵扣
-	Given jobs登录系统:weapp
-	When jobs创建积分应用活动:weapp
+	Given jobs登录系统::weapp
+	When jobs创建积分应用活动::weapp
 		"""
 		[{
 			"name": "积分应用1",
@@ -446,8 +446,8 @@ Scenario:4 购买虚拟商品，参与促销活动
 		}
 		"""
 	When bill使用支付方式'微信支付'进行支付订单'001'
-	Given jobs登录系统:weapp
-	When jobs自动发放卡券给订单'001':weapp
+	Given jobs登录系统::weapp
+	When jobs自动发放卡券给订单'001'::weapp
 		"""
 		[{
 			"id":"0000001",
@@ -474,8 +474,8 @@ Scenario:4 购买虚拟商品，参与促销活动
 		}
 		"""
 	#微众虚拟商品2-多商品券
-	Given jobs登录系统:weapp
-	When jobs添加优惠券规则:weapp
+	Given jobs登录系统::weapp
+	When jobs添加优惠券规则::weapp
 		"""
 		[{
 			"name": "多商品券1",
@@ -489,7 +489,7 @@ Scenario:4 购买虚拟商品，参与促销活动
 		"""
 	When tom关注jobs的公众号
 	When tom访问jobs的webapp
-	When tom领取jobs的优惠券:weapp
+	When tom领取jobs的优惠券::weapp
 		"""
 		[{
 			"name": "多商品券1",
@@ -512,8 +512,8 @@ Scenario:4 购买虚拟商品，参与促销活动
 			"ship_address": "泰兴大厦"
 		}
 		"""
-	Given jobs登录系统:weapp
-	When jobs自动发放卡券给订单'002':weapp
+	Given jobs登录系统::weapp
+	When jobs自动发放卡券给订单'002'::weapp
 		"""
 		[{
 			"id":"0000011",

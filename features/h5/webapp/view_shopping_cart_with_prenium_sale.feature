@@ -5,9 +5,9 @@
 Feature: 添加参与买赠活动的商品到购物车中
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	And jobs已添加商品规格:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs已添加商品规格::weapp
 		"""
 		[{
 			"name": "尺寸",
@@ -19,7 +19,7 @@ Background:
 			}]
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -64,7 +64,7 @@ Background:
 			}
 		}]	
 		"""
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品1买二赠三",
@@ -322,15 +322,15 @@ Scenario: 5 放入多规格商品到购物车
 @mall3 @buy @cart   @mall.webapp @mall.webapp.shopping_cart
 Scenario: 6 新建买赠活动，买一赠一，买商品6赠 商品6，循环买赠
 	
-	Given jobs登录系统:weapp
-	And jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	And jobs已添加商品::weapp
 	"""
 		[{
 			"name": "商品6",
 			"price": 100.00
 		}]
 	"""
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 	"""
 		[{
 			"name": "商品6买1赠1",

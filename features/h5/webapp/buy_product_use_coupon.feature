@@ -44,9 +44,9 @@ Feature: 在webapp中使用优惠券购买商品（使用全局优惠劵）
 	"""
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	And jobs已添加商品规格:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs已添加商品规格::weapp
 		"""
 		[{
 			"name": "尺寸",
@@ -59,7 +59,7 @@ Background:
 		}]
 		"""
 	#商品6是新加的
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -113,7 +113,7 @@ Background:
 		}]
 		"""
 	#支付方式
-	Given jobs已添加支付方式:weapp
+	Given jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -123,7 +123,7 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	Given jobs已添加了优惠券规则:weapp
+	Given jobs已添加了优惠券规则::weapp
 		"""
 		[{
 			"name": "优惠券1",
@@ -167,7 +167,7 @@ Background:
 		"""
 	When bill关注jobs的公众号
 	When bill访问jobs的webapp
-	When bill领取jobs的优惠券:weapp
+	When bill领取jobs的优惠券::weapp
 		"""
 		[{
 			"name": "优惠券1",
@@ -188,7 +188,7 @@ Background:
 		"""
 	When tom关注jobs的公众号
 	When tom访问jobs的webapp
-	When tom领取jobs的优惠券:weapp
+	When tom领取jobs的优惠券::weapp
 		"""
 		[{
 			"name": "优惠券1",
@@ -203,8 +203,8 @@ Scenario:1 使用少于商品价格的优惠券金额进行购买
 	2. 优惠券状态变为“被bill使用”
 	3. 再次使用优惠券码，购物失败
 
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券1'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券1'的码库::weapp
 		"""
 		{
 			"coupon1_id_1": {
@@ -271,8 +271,8 @@ Scenario:1 使用少于商品价格的优惠券金额进行购买
 		}
 		"""
 	Then bill获得创建订单失败的信息'该优惠券已使用'
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券1'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券1'的码库::weapp
 		"""
 		{
 			"coupon1_id_1": {
@@ -296,8 +296,8 @@ Scenario:2 使用多于商品价格的优惠券金额进行购买
 	1. 订单状态直接变为'等待发货'
 	2. 优惠券状态变为“被bill使用”
 
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券2'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券2'的码库::weapp
 		"""
 		{
 			"coupon2_id_1": {
@@ -335,8 +335,8 @@ Scenario:2 使用多于商品价格的优惠券金额进行购买
 			"coupon_money": 50.00
 		}
 		"""
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券2'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券2'的码库::weapp
 		"""
 		{
 			"coupon2_id_1": {
@@ -381,8 +381,8 @@ Scenario:3 使用等于商品价格的优惠券金额进行购买
 			"coupon_money": 100.00
 		}
 		"""
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券2'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券2'的码库::weapp
 		"""
 		{
 			"coupon2_id_1": {
@@ -419,8 +419,8 @@ Scenario:4 输入错误的优惠券码进行购买
 		}
 		"""
 	Then bill获得创建订单失败的信息'请输入正确的优惠券号'
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券1'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券1'的码库::weapp
 		"""
 		{
 			"coupon1_id_1": {
@@ -431,7 +431,7 @@ Scenario:4 输入错误的优惠券码进行购买
 			}
 		}
 		"""
-	Then jobs能获得优惠券'优惠券2'的码库:weapp
+	Then jobs能获得优惠券'优惠券2'的码库::weapp
 		"""
 		{
 			"coupon2_id_1": {
@@ -442,7 +442,7 @@ Scenario:4 输入错误的优惠券码进行购买
 			}
 		}
 		"""
-	Then jobs能获得优惠券'优惠券3'的码库:weapp
+	Then jobs能获得优惠券'优惠券3'的码库::weapp
 		"""
 		{
 			"coupon3_id_1": {
@@ -483,8 +483,8 @@ Scenario:5 输入未领取的可用优惠券码进行购买，bill创建订单�
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券1'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券1'的码库::weapp
 		"""
 		{
 			"coupon1_id_1": {
@@ -495,7 +495,7 @@ Scenario:5 输入未领取的可用优惠券码进行购买，bill创建订单�
 			}
 		}
 		"""
-	Then jobs能获得优惠券'优惠券2'的码库:weapp
+	Then jobs能获得优惠券'优惠券2'的码库::weapp
 		"""
 		{
 			"coupon2_id_1": {
@@ -506,7 +506,7 @@ Scenario:5 输入未领取的可用优惠券码进行购买，bill创建订单�
 			}
 		}
 		"""
-	Then jobs能获得优惠券'优惠券3'的码库:weapp
+	Then jobs能获得优惠券'优惠券3'的码库::weapp
 		"""
 		{
 			"coupon3_id_1": {
@@ -542,8 +542,8 @@ Scenario:6 输入已过期的优惠券码进行购买
 		}
 		"""
 	Then bill获得创建订单失败的信息'该优惠券已过期'
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券4'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券4'的码库::weapp
 		"""
 		{
 			"coupon4_id_1": {
@@ -579,8 +579,8 @@ Scenario:7 输入别人的优惠券码进行购买
 		}
 		"""
 	Then bill获得创建订单失败的信息'该优惠券已被他人领取不能使用'
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券1'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券1'的码库::weapp
 		"""
 		{
 			"coupon1_id_3": {
@@ -601,8 +601,8 @@ Scenario:8 使用满金额条件的优惠券，购买小于金额条件的商品
 	bill购买jobs的商品时，商品金额小于优惠券使用金额
 	1.购物失败
 
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券3'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券3'的码库::weapp
 		"""
 		{
 			"coupon3_id_1": {
@@ -625,8 +625,8 @@ Scenario:8 使用满金额条件的优惠券，购买小于金额条件的商品
 		}
 		"""
 	Then bill获得创建订单失败的信息'该优惠券不满足使用金额限制'
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券3'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券3'的码库::weapp
 		"""
 		{
 			"coupon3_id_1": {
@@ -642,8 +642,8 @@ Scenario:9 使用满金额条件的优惠券，购买等于金额条件的商品
 	bill购买jobs的商品时，商品金额等于优惠券使用金额
 	1. 购物成功
 
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券3'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券3'的码库::weapp
 		"""
 		{
 			"coupon3_id_1": {
@@ -674,8 +674,8 @@ Scenario:9 使用满金额条件的优惠券，购买等于金额条件的商品
 			"coupon_money": 1.00
 		}
 		"""
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券3'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券3'的码库::weapp
 		"""
 		{
 			"coupon3_id_1": {
@@ -690,8 +690,8 @@ Scenario:9 使用满金额条件的优惠券，购买等于金额条件的商品
 Scenario:10 使用满金额条件的优惠券，购买大于金额条件的商品
 	bill购买jobs的商品时，商品金额大于优惠券使用金额
 
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券3'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券3'的码库::weapp
 		"""
 		{
 			"coupon3_id_1": {
@@ -722,8 +722,8 @@ Scenario:10 使用满金额条件的优惠券，购买大于金额条件的商�
 			"coupon_money": 1.00
 		}
 		"""
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券3'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券3'的码库::weapp
 		"""
 		{
 			"coupon3_id_1": {
@@ -737,8 +737,8 @@ Scenario:10 使用满金额条件的优惠券，购买大于金额条件的商�
 @mall3 @mall.webapp @mall.coupon
 Scenario:11 购买多规格商品，买1个商品的两个规格，总价格满足优惠劵使用条件
 
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券5'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券5'的码库::weapp
 		"""
 		{
 			"coupon5_id_1": {
@@ -774,8 +774,8 @@ Scenario:11 购买多规格商品，买1个商品的两个规格，总价格满�
 			"coupon_money": 10.00
 		}
 		"""
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券5'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券5'的码库::weapp
 		"""
 		{
 			"coupon5_id_1": {
@@ -791,8 +791,8 @@ Scenario:12 使用多于商品价格的优惠券进行购买，且不能抵扣�
 	bill购买jobs的商品时，优惠券金额大于商品金额时
 	1.只抵扣商品金额，不能抵扣运费
 
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券2'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券2'的码库::weapp
 		"""
 		{
 			"coupon2_id_1": {
@@ -831,8 +831,8 @@ Scenario:12 使用多于商品价格的优惠券进行购买，且不能抵扣�
 			"coupon_money": 20.00
 		}
 		"""
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券2'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券2'的码库::weapp
 		"""
 		{
 			"coupon2_id_1": {
@@ -847,8 +847,8 @@ Scenario:12 使用多于商品价格的优惠券进行购买，且不能抵扣�
 @mall3 @meberGrade @coupon @wip.bpuc13
 Scenario:13 不同等级的会员购买有会员价同时使用全体券的商品
 	#（全体券和会员价可以同时使用，但是满多少钱可以使用计算的是会员价）
-	Given jobs登录系统:weapp
-	And jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品9",
@@ -864,7 +864,7 @@ Scenario:13 不同等级的会员购买有会员价同时使用全体券的商�
 			"postage": "系统"
 		}]
 		"""
-	When jobs添加会员等级:weapp
+	When jobs添加会员等级::weapp
 		"""
 		[{
 			"name": "铜牌会员",
@@ -876,7 +876,7 @@ Scenario:13 不同等级的会员购买有会员价同时使用全体券的商�
 			"discount": "7"
 		}]
 		"""
-	Then jobs能获取会员等级列表:weapp
+	Then jobs能获取会员等级列表::weapp
 		"""
 		[{
 			"name": "普通会员",
@@ -893,24 +893,24 @@ Scenario:13 不同等级的会员购买有会员价同时使用全体券的商�
 		}]
 		"""
 	When nokia关注jobs的公众号
-	Given jobs登录系统:weapp
-	When jobs更新'nokia'的会员等级:weapp
+	Given jobs登录系统::weapp
+	When jobs更新'nokia'的会员等级::weapp
 		"""
 		{
 			"name": "nokia",
 			"member_rank": "金牌会员"
 		}
 		"""
-	When jobs更新'bill'的会员等级:weapp
+	When jobs更新'bill'的会员等级::weapp
 		"""
 		{
 			"name": "bill",
 			"member_rank": "铜牌会员"
 		}
 		"""
-	When jobs访问会员列表:weapp
-	Then jobs获得会员列表默认查询条件:weapp
-	Then jobs可以获得会员列表:weapp
+	When jobs访问会员列表::weapp
+	Then jobs获得会员列表默认查询条件::weapp
+	Then jobs可以获得会员列表::weapp
 		"""
 		[{
 			"name": "nokia",
@@ -923,7 +923,7 @@ Scenario:13 不同等级的会员购买有会员价同时使用全体券的商�
 			"member_rank": "铜牌会员"
 		}]
 		"""
-	Given jobs已添加了优惠券规则:weapp
+	Given jobs已添加了优惠券规则::weapp
 		"""
 		[{
 			"name": "全体券1",
@@ -936,7 +936,7 @@ Scenario:13 不同等级的会员购买有会员价同时使用全体券的商�
 		}]
 		"""
 	When tom访问jobs的webapp
-	When tom领取jobs的优惠券:weapp
+	When tom领取jobs的优惠券::weapp
 		"""
 		[{
 			"name": "全体券1",
@@ -944,7 +944,7 @@ Scenario:13 不同等级的会员购买有会员价同时使用全体券的商�
 		}]
 		"""
 	When bill访问jobs的webapp
-	When bill领取jobs的优惠券:weapp
+	When bill领取jobs的优惠券::weapp
 		"""
 		[{
 			"name": "全体券1",
@@ -952,15 +952,15 @@ Scenario:13 不同等级的会员购买有会员价同时使用全体券的商�
 		}]
 		"""
 	When nokia访问jobs的webapp
-	When nokia领取jobs的优惠券:weapp
+	When nokia领取jobs的优惠券::weapp
 		"""
 		[{
 			"name": "全体券1",
 			"coupon_ids": ["coupon9_id_3"]
 		}]
 		"""
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'全体券1'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'全体券1'的码库::weapp
 		"""
 		{
 			"coupon9_id_1": {
@@ -1123,8 +1123,8 @@ Scenario:13 不同等级的会员购买有会员价同时使用全体券的商�
 			}]
 		}
 		"""
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'全体券1'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'全体券1'的码库::weapp
 		"""
 		{
 			"coupon9_id_1": {
@@ -1157,8 +1157,8 @@ Scenario:13 不同等级的会员购买有会员价同时使用全体券的商�
 #editor: "王丽"
 @mall3 @meberGrade @coupon
 Scenario:14 【优惠券】-未到使用日期，不能使用
-	Given jobs登录系统:weapp
-	And jobs已添加了优惠券规则:weapp
+	Given jobs登录系统::weapp
+	And jobs已添加了优惠券规则::weapp
 		"""
 		[{
 			"name": "优惠券-未开始",
@@ -1170,7 +1170,7 @@ Scenario:14 【优惠券】-未到使用日期，不能使用
 		"""
 	When bill关注jobs的公众号
 	When bill访问jobs的webapp
-	When bill领取jobs的优惠券:weapp
+	When bill领取jobs的优惠券::weapp
 		"""
 		[{
 			"name": "优惠券-未开始",
@@ -1192,8 +1192,8 @@ Scenario:14 【优惠券】-未到使用日期，不能使用
 		"""
 	Then bill获得创建订单失败的信息'该优惠券活动尚未开始'
 
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券-未开始'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券-未开始'的码库::weapp
 		"""
 		{
 			"coupon6_id_1": {
@@ -1227,8 +1227,8 @@ Scenario:14 【优惠券】-未到使用日期，不能使用
 #针对重构过程中发现的bug7135补充
 @mall3 @coupon
 Scenario:15 使用未被领取的优惠券购买，手机端取消订单后查看该优惠券的信息
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'未领取优惠券'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'未领取优惠券'的码库::weapp
 		"""
 		{
 			"coupon7_id_1": {
@@ -1271,8 +1271,8 @@ Scenario:15 使用未被领取的优惠券购买，手机端取消订单后查�
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'未领取优惠券'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'未领取优惠券'的码库::weapp
 		"""
 		{
 			"coupon7_id_1": {
@@ -1303,8 +1303,8 @@ Scenario:15 使用未被领取的优惠券购买，手机端取消订单后查�
 		"""
 
 	When bill取消订单'001'
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'未领取优惠券'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'未领取优惠券'的码库::weapp
 		"""
 		{
 			"coupon7_id_1": {
@@ -1336,8 +1336,8 @@ Scenario:15 使用未被领取的优惠券购买，手机端取消订单后查�
 
 @mall3 @coupon
 Scenario:16 使用未被领取的优惠券购买，后台取消订单后查看该优惠券的信息
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'未领取优惠券'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'未领取优惠券'的码库::weapp
 		"""
 		{
 			"coupon7_id_1": {
@@ -1380,8 +1380,8 @@ Scenario:16 使用未被领取的优惠券购买，后台取消订单后查看�
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'未领取优惠券'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'未领取优惠券'的码库::weapp
 		"""
 		{
 			"coupon7_id_1": {
@@ -1411,9 +1411,9 @@ Scenario:16 使用未被领取的优惠券购买，后台取消订单后查看�
 		}
 		"""
 
-	When jobs'取消'订单'001':weapp
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'未领取优惠券'的码库:weapp
+	When jobs'取消'订单'001'::weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'未领取优惠券'的码库::weapp
 		"""
 		{
 			"coupon7_id_1": {

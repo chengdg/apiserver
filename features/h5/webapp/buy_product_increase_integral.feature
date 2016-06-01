@@ -23,9 +23,9 @@ Feature:用户通过分享链接购买商品，给分享者增加积分
 """
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	And jobs已添加支付方式:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "货到付款",
@@ -38,7 +38,7 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name":"商品1",
@@ -48,7 +48,7 @@ Background:
 			"price":100.00
 		}]
 		"""
-	And jobs设定会员积分策略:weapp
+	And jobs设定会员积分策略::weapp
 		"""
 		{
 			"be_member_increase_count":20,
@@ -62,8 +62,8 @@ Background:
 		}
 		"""
 
-	And bill关注jobs的公众号:weapp
-	And 开启手动清除cookie模式:weapp
+	And bill关注jobs的公众号::weapp
+	And 开启手动清除cookie模式::weapp
 
 @mall2 @member @member.shared_integral @mall3 @bert @aced
 Scenario:1 点击给未购买的分享者增加积分
@@ -73,7 +73,7 @@ Scenario:1 点击给未购买的分享者增加积分
 	3.tom点击bill分享的链接后，给bill增加积分
 	4.tom再次点击bill分享的链接后，不给bill增加积分
 
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When bill访问jobs的webapp
 	When bill获得jobs的20会员积分
 	Then bill在jobs的webapp中拥有20会员积分
@@ -87,10 +87,10 @@ Scenario:1 点击给未购买的分享者增加积分
 	When bill把jobs的商品"商品1"的链接分享到朋友圈
 
 	#nokia多次点击bill分享的统一链接，只奖励一次积分
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When nokia点击bill分享链接
 	When nokia点击bill分享链接
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When bill访问jobs的webapp
 	Then bill在jobs的webapp中拥有31会员积分
 	Then bill在jobs的webapp中获得积分日志
@@ -105,9 +105,9 @@ Scenario:1 点击给未购买的分享者增加积分
 		"""
 	#清空cookie，Nokia再次点击bill的分享链接，不再获得积分奖励
 	When bill把jobs的商品"商品1"的链接分享到朋友圈
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When nokia点击bill分享链接
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When bill访问jobs的webapp
 	Then bill在jobs的webapp中拥有31会员积分
 	Then bill在jobs的webapp中获得积分日志
@@ -120,7 +120,7 @@ Scenario:1 点击给未购买的分享者增加积分
 			"integral":20
 		}]
 		"""
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When tom点击bill分享链接
 	When tom点击bill分享链接
 	When bill访问jobs的webapp
@@ -147,7 +147,7 @@ Scenario:2 点击给已购买的分享者增加积分
 	3.tom点击bill分享的链接后，给bill增加积分
 	4.tom再次点击bill分享的链接后，不给bill增加积分
 
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When bill访问jobs的webapp
 	When bill获得jobs的20会员积分
 	Then bill在jobs的webapp中拥有20会员积分
@@ -184,7 +184,7 @@ Scenario:2 点击给已购买的分享者增加积分
 		}
 		"""
 	When bill把jobs的商品"商品1"的链接分享到朋友圈
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When bill访问jobs的webapp
 	Then bill在jobs的webapp中拥有20会员积分
 	Then bill在jobs的webapp中获得积分日志
@@ -195,9 +195,9 @@ Scenario:2 点击给已购买的分享者增加积分
 		}]
 		"""
 
-	When 清空浏览器:weapp
-	Given jobs登录系统:weapp
-	When jobs对订单进行发货:weapp
+	When 清空浏览器::weapp
+	Given jobs登录系统::weapp
+	When jobs对订单进行发货::weapp
 		"""
 		{
 			"order_no": "001",
@@ -206,8 +206,8 @@ Scenario:2 点击给已购买的分享者增加积分
 			"shipper": "jobs"
 		}
 		"""
-	When jobs完成订单'001':weapp
-	When 清空浏览器:weapp
+	When jobs完成订单'001'::weapp
+	When 清空浏览器::weapp
 	When bill访问jobs的webapp
 	Then bill在jobs的webapp中拥有91会员积分
 	Then bill在jobs的webapp中获得积分日志
@@ -224,7 +224,7 @@ Scenario:2 点击给已购买的分享者增加积分
 		}]
 		"""
 
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When nokia点击bill分享链接
 	When nokia点击bill分享链接
 	When bill访问jobs的webapp
@@ -245,7 +245,7 @@ Scenario:2 点击给已购买的分享者增加积分
 			"integral":20
 		}]
 		"""
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When tom点击bill分享链接
 	When tom点击bill分享链接
 	When bill访问jobs的webapp
@@ -277,7 +277,7 @@ Scenario:3 通过分享链接购买后给分享者增加积分
 	2.nokia再次点击bill分享的链接并购买，不给bill增加积分
 	3.tom点击bill分享的链接并购买，给bill增加积分
 
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When bill访问jobs的webapp
 	When bill获得jobs的20会员积分
 	Then bill在jobs的webapp中拥有20会员积分
@@ -290,7 +290,7 @@ Scenario:3 通过分享链接购买后给分享者增加积分
 		"""
 	When bill把jobs的商品"商品2"的链接分享到朋友圈
 
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When nokia点击bill分享链接
 	When nokia通过bill分享的链接购买jobs的商品
 		"""
@@ -317,7 +317,7 @@ Scenario:3 通过分享链接购买后给分享者增加积分
 		}
 		"""
 
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When bill访问jobs的webapp
 	Then bill在jobs的webapp中拥有31会员积分
 	Then bill在jobs的webapp中获得积分日志
@@ -331,9 +331,9 @@ Scenario:3 通过分享链接购买后给分享者增加积分
 		}]
 		"""
 
-	When 清空浏览器:weapp
-	Given jobs登录系统:weapp
-	When jobs对订单进行发货:weapp
+	When 清空浏览器::weapp
+	Given jobs登录系统::weapp
+	When jobs对订单进行发货::weapp
 		"""
 		{
 			"order_no": "001",
@@ -342,9 +342,9 @@ Scenario:3 通过分享链接购买后给分享者增加积分
 			"shipper": "jobs"
 		}
 		"""
-	When jobs完成订单'001':weapp
+	When jobs完成订单'001'::weapp
 
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When bill访问jobs的webapp
 	Then bill在jobs的webapp中拥有62会员积分
 	Then bill在jobs的webapp中获得积分日志
@@ -364,7 +364,7 @@ Scenario:3 通过分享链接购买后给分享者增加积分
 	#nolia再次点击bill分享的链接并购买，再次增加积分奖励
 	#清空了cookie
 	When bill把jobs的商品"商品2"的链接分享到朋友圈
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When nokia点击bill分享链接
 	When nokia通过bill分享的链接购买jobs的商品
 		"""
@@ -392,9 +392,9 @@ Scenario:3 通过分享链接购买后给分享者增加积分
 		}
 		"""
 
-	When 清空浏览器:weapp
-	Given jobs登录系统:weapp
-	When jobs对订单进行发货:weapp
+	When 清空浏览器::weapp
+	Given jobs登录系统::weapp
+	When jobs对订单进行发货::weapp
 		"""
 		{
 			"order_no": "002",
@@ -403,9 +403,9 @@ Scenario:3 通过分享链接购买后给分享者增加积分
 			"shipper": "jobs"
 		}
 		"""
-	When jobs完成订单'002':weapp
+	When jobs完成订单'002'::weapp
 
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When bill访问jobs的webapp
 	Then bill在jobs的webapp中拥有93会员积分
 	Then bill在jobs的webapp中获得积分日志
@@ -426,7 +426,7 @@ Scenario:3 通过分享链接购买后给分享者增加积分
 		"""
 	#tom点击bill分享的链接并购买，获得积分奖励
 	When bill把jobs的商品"商品2"的链接分享到朋友圈
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When tom点击bill分享链接
 	When tom通过bill分享的链接购买jobs的商品
 		"""
@@ -453,9 +453,9 @@ Scenario:3 通过分享链接购买后给分享者增加积分
 			}]
 		}
 		"""
-	When 清空浏览器:weapp
-	Given jobs登录系统:weapp
-	When jobs对订单进行发货:weapp
+	When 清空浏览器::weapp
+	Given jobs登录系统::weapp
+	When jobs对订单进行发货::weapp
 		"""
 		{
 			"order_no": "003",
@@ -464,10 +464,10 @@ Scenario:3 通过分享链接购买后给分享者增加积分
 			"shipper": "jobs"
 		}
 		"""
-	When jobs完成订单'003':weapp
+	When jobs完成订单'003'::weapp
 
 
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When bill访问jobs的webapp
 	Then bill在jobs的webapp中拥有135会员积分
 	Then bill在jobs的webapp中获得积分日志
@@ -498,18 +498,18 @@ Scenario:4 每次购买给邀请者增加积分
 	1.bill是tom的邀请者
 	2.tom每次购买jobs的商品，给bill增加积分
 
-	When 清空浏览器:weapp
-	When bill关注jobs的公众号:weapp
+	When 清空浏览器::weapp
+	When bill关注jobs的公众号::weapp
 	When bill访问jobs的webapp
 	When bill把jobs的商品"商品1"的链接分享到朋友圈
 
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When tom点击bill分享链接
-	When tom关注jobs的公众号:weapp
+	When tom关注jobs的公众号::weapp
 	When tom访问jobs的webapp
-	When 清空浏览器:weapp
-	Given jobs登录系统:weapp
-	Then jobs能获取到bill的好友:weapp
+	When 清空浏览器::weapp
+	Given jobs登录系统::weapp
+	Then jobs能获取到bill的好友::weapp
 		"""
 		[{
 			"name": "tom",
@@ -517,7 +517,7 @@ Scenario:4 每次购买给邀请者增加积分
 			"is_fans": "是"
 		}]
 		"""
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When tom访问jobs的webapp
 	When tom购买jobs的商品
 		"""
@@ -544,7 +544,7 @@ Scenario:4 每次购买给邀请者增加积分
 		}
 		"""
 
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When bill访问jobs的webapp
 	Then bill在jobs的webapp中拥有31会员积分
 	Then bill在jobs的webapp中获得积分日志
@@ -558,9 +558,9 @@ Scenario:4 每次购买给邀请者增加积分
 		}]
 		"""
 
-	When 清空浏览器:weapp
-	Given jobs登录系统:weapp
-	When jobs对订单进行发货:weapp
+	When 清空浏览器::weapp
+	Given jobs登录系统::weapp
+	When jobs对订单进行发货::weapp
 		"""
 		{
 			"order_no": "001",
@@ -569,9 +569,9 @@ Scenario:4 每次购买给邀请者增加积分
 			"shipper": "jobs"
 		}
 		"""
-	When jobs完成订单'001':weapp
+	When jobs完成订单'001'::weapp
 
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When bill访问jobs的webapp
 	Then bill在jobs的webapp中拥有81会员积分
 	Then bill在jobs的webapp中获得积分日志
@@ -594,23 +594,23 @@ Scenario:4 每次购买给邀请者增加积分
 @mall2 @member @member.shared_integral @mall3 @bert
 Scenario:5 购买商品返积分 基础积分设为0，额外积分奖励不为零
 
-	Given jobs登录系统:weapp
-	And jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name":"商品3",
 			"price":150.00
 		}]
 		"""
-	And jobs设定会员积分策略:weapp
+	And jobs设定会员积分策略::weapp
 		"""
 		{
 			"buy_award_count_for_buyer":0,
 			"order_money_percentage_for_each_buy":0.01
 		}
 		"""
-	When 清空浏览器:weapp
-	When bill关注jobs的公众号:weapp
+	When 清空浏览器::weapp
+	When bill关注jobs的公众号::weapp
 	When bill访问jobs的webapp
 	When bill购买jobs的商品
 		"""
@@ -637,9 +637,9 @@ Scenario:5 购买商品返积分 基础积分设为0，额外积分奖励不为�
 		}
 		"""
 
-	When 清空浏览器:weapp
-	Given jobs登录系统:weapp
-	When jobs对订单进行发货:weapp
+	When 清空浏览器::weapp
+	Given jobs登录系统::weapp
+	When jobs对订单进行发货::weapp
 		"""
 		{
 			"order_no": "001",
@@ -648,10 +648,10 @@ Scenario:5 购买商品返积分 基础积分设为0，额外积分奖励不为�
 			"shipper": "jobs"
 		}
 		"""
-	When jobs完成订单'001':weapp
+	When jobs完成订单'001'::weapp
 
 
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When bill访问jobs的webapp
 	Then bill在jobs的webapp中拥有21会员积分
 	Then bill在jobs的webapp中获得积分日志
@@ -668,23 +668,23 @@ Scenario:5 购买商品返积分 基础积分设为0，额外积分奖励不为�
 @mall2 @member @member.shared_integral @mall3 @bert
 Scenario:6 基础积分不为0，额外积分奖励，小数部分直接舍掉，最后积分为零的，没有积分明细奖励记录
 
-	Given jobs登录系统:weapp
-	And jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name":"商品4",
 			"price":50.00
 		}]
 		"""
-	And jobs设定会员积分策略:weapp
+	And jobs设定会员积分策略::weapp
 		"""
 		{
 			"buy_award_count_for_buyer":10,
 			"order_money_percentage_for_each_buy":0.01
 		}
 		"""
-	When 清空浏览器:weapp
-	When bill关注jobs的公众号:weapp
+	When 清空浏览器::weapp
+	When bill关注jobs的公众号::weapp
 	When bill访问jobs的webapp
 	When bill购买jobs的商品
 		"""
@@ -711,9 +711,9 @@ Scenario:6 基础积分不为0，额外积分奖励，小数部分直接舍掉�
 		}
 		"""
 
-	When 清空浏览器:weapp
-	Given jobs登录系统:weapp
-	When jobs对订单进行发货:weapp
+	When 清空浏览器::weapp
+	Given jobs登录系统::weapp
+	When jobs对订单进行发货::weapp
 		"""
 		{
 			"order_no": "001",
@@ -722,9 +722,9 @@ Scenario:6 基础积分不为0，额外积分奖励，小数部分直接舍掉�
 			"shipper": "jobs"
 		}
 		"""
-	When jobs完成订单'001':weapp
+	When jobs完成订单'001'::weapp
 
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When bill访问jobs的webapp
 	Then bill在jobs的webapp中拥有30会员积分
 	Then bill在jobs的webapp中获得积分日志
@@ -743,8 +743,8 @@ Scenario:7 推荐关注的好友购买奖励 基础积分设为0，额外积分�
 	1.bill是tom的邀请者
 	2.tom每次购买jobs的商品，给bill增加积分
 
-	Given jobs登录系统:weapp
-	And jobs设定会员积分策略:weapp
+	Given jobs登录系统::weapp
+	And jobs设定会员积分策略::weapp
 		"""
 		{
 			"buy_via_offline_increase_count_for_author":0,
@@ -752,18 +752,18 @@ Scenario:7 推荐关注的好友购买奖励 基础积分设为0，额外积分�
 		}
 		"""
 
-	When 清空浏览器:weapp
-	When bill关注jobs的公众号:weapp
+	When 清空浏览器::weapp
+	When bill关注jobs的公众号::weapp
 	When bill访问jobs的webapp
 	When bill把jobs的商品"商品1"的链接分享到朋友圈
 
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When tom点击bill分享链接
-	When tom关注jobs的公众号:weapp
+	When tom关注jobs的公众号::weapp
 	When tom访问jobs的webapp
-	When 清空浏览器:weapp
-	Given jobs登录系统:weapp
-	Then jobs能获取到bill的好友:weapp
+	When 清空浏览器::weapp
+	Given jobs登录系统::weapp
+	Then jobs能获取到bill的好友::weapp
 		"""
 		[{
 			"name": "tom",
@@ -771,7 +771,7 @@ Scenario:7 推荐关注的好友购买奖励 基础积分设为0，额外积分�
 			"is_fans": "是"
 		}]
 		"""
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When tom访问jobs的webapp
 	When tom购买jobs的商品
 		"""
@@ -796,9 +796,9 @@ Scenario:7 推荐关注的好友购买奖励 基础积分设为0，额外积分�
 		}
 		"""
 
-	When 清空浏览器:weapp
-	Given jobs登录系统:weapp
-	When jobs对订单进行发货:weapp
+	When 清空浏览器::weapp
+	Given jobs登录系统::weapp
+	When jobs对订单进行发货::weapp
 		"""
 		{
 			"order_no": "001",
@@ -807,9 +807,9 @@ Scenario:7 推荐关注的好友购买奖励 基础积分设为0，额外积分�
 			"shipper": "jobs"
 		}
 		"""
-	When jobs完成订单'001':weapp
+	When jobs完成订单'001'::weapp
 
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When bill访问jobs的webapp
 	Then bill在jobs的webapp中拥有21会员积分
 	Then bill在jobs的webapp中获得积分日志
@@ -828,18 +828,18 @@ Scenario:8 每次购买给邀请者增加积分
 	1.bill是tom的邀请者
 	2.tom每次购买jobs的商品，给bill增加积分
 
-	When 清空浏览器:weapp
-	When bill关注jobs的公众号:weapp
+	When 清空浏览器::weapp
+	When bill关注jobs的公众号::weapp
 	When bill访问jobs的webapp
 	When bill把jobs的商品"商品1"的链接分享到朋友圈
 
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When tom点击bill分享链接
-	When tom关注jobs的公众号:weapp
+	When tom关注jobs的公众号::weapp
 	When tom访问jobs的webapp
-	When 清空浏览器:weapp
-	Given jobs登录系统:weapp
-	Then jobs能获取到bill的好友:weapp
+	When 清空浏览器::weapp
+	Given jobs登录系统::weapp
+	Then jobs能获取到bill的好友::weapp
 		"""
 		[{
 			"name": "tom",
@@ -847,7 +847,7 @@ Scenario:8 每次购买给邀请者增加积分
 			"is_fans": "是"
 		}]
 		"""
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When tom访问jobs的webapp
 	When tom购买jobs的商品
 		"""
@@ -874,7 +874,7 @@ Scenario:8 每次购买给邀请者增加积分
 		}
 		"""
 
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When bill访问jobs的webapp
 	Then bill在jobs的webapp中拥有31会员积分
 	Then bill在jobs的webapp中获得积分日志
@@ -888,9 +888,9 @@ Scenario:8 每次购买给邀请者增加积分
 		}]
 		"""
 
-	When 清空浏览器:weapp
-	Given jobs登录系统:weapp
-	When jobs对订单进行发货:weapp
+	When 清空浏览器::weapp
+	Given jobs登录系统::weapp
+	When jobs对订单进行发货::weapp
 		"""
 		{
 			"order_no": "001",
@@ -902,7 +902,7 @@ Scenario:8 每次购买给邀请者增加积分
 	When tom访问jobs的webapp
 	And tom确认收货订单'001'
 
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When bill访问jobs的webapp
 	Then bill在jobs的webapp中拥有81会员积分
 	Then bill在jobs的webapp中获得积分日志
@@ -929,7 +929,7 @@ Scenario:9 通过分享链接购买后给分享者增加积分
 	2.nokia再次点击bill分享的链接并购买，不给bill增加积分
 	3.tom点击bill分享的链接并购买，给bill增加积分
 
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When bill访问jobs的webapp
 	When bill获得jobs的20会员积分
 	Then bill在jobs的webapp中拥有20会员积分
@@ -942,7 +942,7 @@ Scenario:9 通过分享链接购买后给分享者增加积分
 		"""
 	When bill把jobs的商品"商品2"的链接分享到朋友圈
 
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When nokia点击bill分享链接
 	When nokia通过bill分享的链接购买jobs的商品
 		"""
@@ -969,7 +969,7 @@ Scenario:9 通过分享链接购买后给分享者增加积分
 		}
 		"""
 
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When bill访问jobs的webapp
 	Then bill在jobs的webapp中拥有31会员积分
 	Then bill在jobs的webapp中获得积分日志
@@ -983,9 +983,9 @@ Scenario:9 通过分享链接购买后给分享者增加积分
 		}]
 		"""
 
-	When 清空浏览器:weapp
-	Given jobs登录系统:weapp
-	When jobs对订单进行发货:weapp
+	When 清空浏览器::weapp
+	Given jobs登录系统::weapp
+	When jobs对订单进行发货::weapp
 		"""
 		{
 			"order_no": "001",
@@ -995,11 +995,11 @@ Scenario:9 通过分享链接购买后给分享者增加积分
 		}
 		"""
 
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When nokia访问jobs的webapp
 	And nokia确认收货订单'001'
 
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When bill访问jobs的webapp
 	Then bill在jobs的webapp中拥有62会员积分
 	Then bill在jobs的webapp中获得积分日志
@@ -1019,7 +1019,7 @@ Scenario:9 通过分享链接购买后给分享者增加积分
 	#nolia再次点击bill分享的链接并购买，再次增加积分奖励
 	#清空了cookie
 	When bill把jobs的商品"商品2"的链接分享到朋友圈
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When nokia点击bill分享链接
 	When nokia通过bill分享的链接购买jobs的商品
 		"""
@@ -1047,9 +1047,9 @@ Scenario:9 通过分享链接购买后给分享者增加积分
 		}
 		"""
 
-	When 清空浏览器:weapp
-	Given jobs登录系统:weapp
-	When jobs对订单进行发货:weapp
+	When 清空浏览器::weapp
+	Given jobs登录系统::weapp
+	When jobs对订单进行发货::weapp
 		"""
 		{
 			"order_no": "002",
@@ -1062,7 +1062,7 @@ Scenario:9 通过分享链接购买后给分享者增加积分
 	When nokia访问jobs的webapp
 	And nokia确认收货订单'002'
 
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When bill访问jobs的webapp
 	Then bill在jobs的webapp中拥有93会员积分
 	Then bill在jobs的webapp中获得积分日志
@@ -1083,7 +1083,7 @@ Scenario:9 通过分享链接购买后给分享者增加积分
 		"""
 	#tom点击bill分享的链接并购买，获得积分奖励
 	When bill把jobs的商品"商品2"的链接分享到朋友圈
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When tom点击bill分享链接
 	When tom通过bill分享的链接购买jobs的商品
 		"""
@@ -1110,9 +1110,9 @@ Scenario:9 通过分享链接购买后给分享者增加积分
 			}]
 		}
 		"""
-	When 清空浏览器:weapp
-	Given jobs登录系统:weapp
-	When jobs对订单进行发货:weapp
+	When 清空浏览器::weapp
+	Given jobs登录系统::weapp
+	When jobs对订单进行发货::weapp
 		"""
 		{
 			"order_no": "003",
@@ -1125,7 +1125,7 @@ Scenario:9 通过分享链接购买后给分享者增加积分
 	When tom访问jobs的webapp
 	And tom确认收货订单'003'
 
-	When 清空浏览器:weapp
+	When 清空浏览器::weapp
 	When bill访问jobs的webapp
 	Then bill在jobs的webapp中拥有135会员积分
 	Then bill在jobs的webapp中获得积分日志

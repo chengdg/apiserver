@@ -9,9 +9,9 @@ Feature: 在webapp中购买有运费的商品
 """
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	And jobs已添加商品规格:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs已添加商品规格::weapp
 		"""
 		[{
 			"name": "尺寸",
@@ -31,7 +31,7 @@ Background:
 			}]
 		}]
 		"""
-	And jobs已添加运费配置:weapp
+	And jobs已添加运费配置::weapp
 		"""
 		[{
 			"name":"顺丰",
@@ -57,7 +57,7 @@ Background:
 			}]
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -127,7 +127,7 @@ Background:
 			}
 		}]
 		"""
-	And jobs已添加支付方式:weapp
+	And jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -137,7 +137,7 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	When jobs选择'顺丰'运费配置:weapp
+	When jobs选择'顺丰'运费配置::weapp
 	Given bill关注jobs的公众号
 	And tom关注jobs的公众号
 
@@ -621,8 +621,8 @@ Scenario:15 购买两个多规格商品
 
 @mall2 @mall.postage @mall.webapp @mall3 @duhao
 Scenario:16 jobs选择'免运费'运费配置
-	Given jobs登录系统:weapp
-	When jobs选择'免运费'运费配置:weapp
+	Given jobs登录系统::weapp
+	When jobs选择'免运费'运费配置::weapp
 	When bill访问jobs的webapp
 	When bill购买jobs的商品
 		"""
@@ -653,8 +653,8 @@ Scenario:17 更新邮费配置后进行购买
 	2.bill创建订单成功，邮费正常
 
 	#去掉特殊地区和指定地区
-	Given jobs登录系统:weapp
-	When jobs修改'顺丰'运费配置:weapp
+	Given jobs登录系统::weapp
+	When jobs修改'顺丰'运费配置::weapp
 		"""
 		{
 			"name":"顺丰",
@@ -664,7 +664,7 @@ Scenario:17 更新邮费配置后进行购买
 			"added_weight_price": 5.00
 		}
 		"""
-	Then jobs能获取'顺丰'运费配置:weapp
+	Then jobs能获取'顺丰'运费配置::weapp
 		"""
 		{
 			"name":"顺丰",
@@ -719,8 +719,8 @@ Scenario:17 更新邮费配置后进行购买
 @mall2 @mall3 @duhao @mall.postage
 Scenario:18 不同等级的会员购买有会员价同时有运费配置
 	#包邮条件:金额取商品原价的金额
-	Given jobs登录系统:weapp
-	And jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品14",
@@ -730,7 +730,7 @@ Scenario:18 不同等级的会员购买有会员价同时有运费配置
 			"is_member_product": "on"
 		}]
 		"""
-	When jobs添加会员等级:weapp
+	When jobs添加会员等级::weapp
 		"""
 		[{
 			"name": "铜牌会员",
@@ -738,14 +738,14 @@ Scenario:18 不同等级的会员购买有会员价同时有运费配置
 			"discount": "9"
 		}]
 		"""
-	And jobs更新'bill'的会员等级:weapp
+	And jobs更新'bill'的会员等级::weapp
 		"""
 		{
 			"name": "bill",
 			"member_rank": "铜牌会员"
 		}
 		"""
-	Then jobs能获取会员等级列表:weapp
+	Then jobs能获取会员等级列表::weapp
 		"""
 		[{
 			"name": "普通会员",
@@ -757,9 +757,9 @@ Scenario:18 不同等级的会员购买有会员价同时有运费配置
 			"discount": "9"
 		}]
 		"""
-	When jobs访问会员列表:weapp
-	Then jobs获得会员列表默认查询条件:weapp
-	And jobs可以获得会员列表:weapp
+	When jobs访问会员列表::weapp
+	Then jobs获得会员列表默认查询条件::weapp
+	And jobs可以获得会员列表::weapp
 		"""
 		[{
 			"name": "tom",
@@ -833,8 +833,8 @@ Scenario: 19 设置首重大于1的运费模板，进行购买商品
 	1.jobs设置首重大于1的运费模板
 	2.bill进行购买jobs的商品
 
-	Given jobs登录系统:weapp
-	And jobs已添加运费配置:weapp
+	Given jobs登录系统::weapp
+	And jobs已添加运费配置::weapp
 		"""
 		[{
 			"name":"天天",
@@ -860,7 +860,7 @@ Scenario: 19 设置首重大于1的运费模板，进行购买商品
 			}]
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品9",
@@ -882,7 +882,7 @@ Scenario: 19 设置首重大于1的运费模板，进行购买商品
 			}
 		}]
 		"""
-	When jobs选择'天天'运费配置:weapp
+	When jobs选择'天天'运费配置::weapp
 	When bill访问jobs的webapp
 	When bill购买jobs的商品
 		"""
@@ -932,8 +932,8 @@ Scenario: 19 设置首重大于1的运费模板，进行购买商品
 @mall2 @mall3 @tianqi @mall.postage
 Scenario: 20 设置首重0.1的运费模板，进行购买商品
 
-	Given jobs登录系统:weapp
-	And jobs已添加运费配置:weapp
+	Given jobs登录系统::weapp
+	And jobs已添加运费配置::weapp
 		"""
 		[{
 			"name":"圆通",
@@ -943,7 +943,7 @@ Scenario: 20 设置首重0.1的运费模板，进行购买商品
 			"added_weight_price": 1.00
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品20",
@@ -952,7 +952,7 @@ Scenario: 20 设置首重0.1的运费模板，进行购买商品
 			"postage": "系统"
 		}]
 		"""
-	When jobs选择'圆通'运费配置:weapp
+	When jobs选择'圆通'运费配置::weapp
 	When bill访问jobs的webapp
 	When bill购买jobs的商品
 		"""

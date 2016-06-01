@@ -4,9 +4,9 @@
 Feature:查看订单的物流信息
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	And jobs已添加支付方式:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "货到付款"
@@ -14,7 +14,7 @@ Background:
 			"type": "微信支付"
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -54,8 +54,8 @@ Scenario:1 查看'已发货'订单的物流信息,发货方式为'需要物流'
 		"""
 
 	#发货001时，物流公司不选择'其他'
-		Given jobs登录系统:weapp
-		When jobs对订单进行发货:weapp
+		Given jobs登录系统::weapp
+		When jobs对订单进行发货::weapp
 			"""
 			{
 				"order_no": "001",
@@ -74,8 +74,8 @@ Scenario:1 查看'已发货'订单的物流信息,发货方式为'需要物流'
 			"""
 
 		#修改物流信息
-		Given jobs登录系统:weapp
-		When jobs通过后台管理系统对'001'的物流信息进行修改:weapp
+		Given jobs登录系统::weapp
+		When jobs通过后台管理系统对'001'的物流信息进行修改::weapp
 			"""
 			{
 				"order_no":"001",
@@ -94,8 +94,8 @@ Scenario:1 查看'已发货'订单的物流信息,发货方式为'需要物流'
 			"""
 
 	#发货002时，物流公司选择'其他'
-		Given jobs登录系统:weapp
-		When jobs对订单进行发货:weapp
+		Given jobs登录系统::weapp
+		When jobs对订单进行发货::weapp
 			"""
 			{
 				"order_no": "002",
@@ -115,8 +115,8 @@ Scenario:1 查看'已发货'订单的物流信息,发货方式为'需要物流'
 			"""
 		
 		#修改物流信息
-		Given jobs登录系统:weapp
-		When jobs通过后台管理系统对'002'的物流信息进行修改:weapp
+		Given jobs登录系统::weapp
+		When jobs通过后台管理系统对'002'的物流信息进行修改::weapp
 			"""
 			{
 				"order_no": "002",
@@ -153,8 +153,8 @@ Scenario:2 查看'已发货'订单的物流信息,发货方式为'不需要物�
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	When jobs对订单进行发货:weapp
+	Given jobs登录系统::weapp
+	When jobs对订单进行发货::weapp
 		"""
 		{
 			"order_no": "001",

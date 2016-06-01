@@ -74,9 +74,9 @@ Feature:购买参与买赠活动的商品,下单失败后校验赠品的库存
 		A的库存为10,B的库存为1时
 """
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	Given jobs已添加支付方式:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	Given jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -94,8 +94,8 @@ Scenario:1 两个买赠活动选择同一个商品作为赠品,购买A和C,赠�
 	#买A赠B（买一赠二）
 	#买C赠B(买一赠三)
 	#B的库存为1，加入购物车商品A+C
-	Given jobs登录系统:weapp
-	Given jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	Given jobs已添加商品::weapp
 		"""
 		[{
 			"name": "赠品B",
@@ -117,7 +117,7 @@ Scenario:1 两个买赠活动选择同一个商品作为赠品,购买A和C,赠�
 			"price":100.00
 		}]
 		"""
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品A买一赠二",
@@ -192,8 +192,8 @@ Scenario:1 两个买赠活动选择同一个商品作为赠品,购买A和C,赠�
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	Then jobs能获取商品'赠品B':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获取商品'赠品B'::weapp
 		"""
 		{
 			"name": "赠品B",
@@ -214,8 +214,8 @@ Scenario:2 两个买赠活动选择同一个商品作为赠品,购买C和A,赠�
 	#买A赠B（买一赠二）
 	#买C赠B(买一赠三)
 	#B的库存为1，加入购物车商品C+A
-	Given jobs登录系统:weapp
-	Given jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	Given jobs已添加商品::weapp
 		"""
 		[{
 			"name": "赠品B",
@@ -237,7 +237,7 @@ Scenario:2 两个买赠活动选择同一个商品作为赠品,购买C和A,赠�
 			"price":100.00
 		}]
 		"""
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品A买一赠二",
@@ -312,8 +312,8 @@ Scenario:2 两个买赠活动选择同一个商品作为赠品,购买C和A,赠�
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	Then jobs能获取商品'赠品B':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获取商品'赠品B'::weapp
 		"""
 		{
 			"name": "赠品B",
@@ -334,8 +334,8 @@ Scenario:3 两个买赠活动选择同一个商品作为赠品,购买A和C,赠�
 	#买A赠B（买一赠二）
 	#买C赠B(买一赠三)
 	#B的库存为2，加入购物车商品A+C
-	Given jobs登录系统:weapp
-	Given jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	Given jobs已添加商品::weapp
 		"""
 		[{
 			"name": "赠品B",
@@ -357,7 +357,7 @@ Scenario:3 两个买赠活动选择同一个商品作为赠品,购买A和C,赠�
 			"price":100.00
 		}]
 		"""
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品A买一赠二",
@@ -428,8 +428,8 @@ Scenario:3 两个买赠活动选择同一个商品作为赠品,购买A和C,赠�
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	Then jobs能获取商品'赠品B':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获取商品'赠品B'::weapp
 		"""
 		{
 			"name": "赠品B",
@@ -450,8 +450,8 @@ Scenario:4 两个买赠活动选择同一个商品作为赠品,购买C和A,赠�
 	#买A赠B（买一赠二）
 	#买C赠B(买一赠三)
 	#B的库存为2，加入购物车商品C+A
-	Given jobs登录系统:weapp
-	Given jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	Given jobs已添加商品::weapp
 		"""
 		[{
 			"name": "赠品B",
@@ -473,7 +473,7 @@ Scenario:4 两个买赠活动选择同一个商品作为赠品,购买C和A,赠�
 			"price":100.00
 		}]
 		"""
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品A买一赠二",
@@ -545,8 +545,8 @@ Scenario:4 两个买赠活动选择同一个商品作为赠品,购买C和A,赠�
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	Then jobs能获取商品'赠品B':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获取商品'赠品B'::weapp
 		"""
 		{
 			"name": "赠品B",
@@ -567,8 +567,8 @@ Scenario:5 两个买赠活动选择同一个商品作为赠品,购买A和C,赠�
 	#买A赠B（买一赠二）
 	#买C赠B(买一赠三)
 	#B的库存为3，加入购物车商品A+C
-	Given jobs登录系统:weapp
-	Given jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	Given jobs已添加商品::weapp
 		"""
 		[{
 			"name": "赠品B",
@@ -590,7 +590,7 @@ Scenario:5 两个买赠活动选择同一个商品作为赠品,购买A和C,赠�
 			"price":100.00
 		}]
 		"""
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品A买一赠二",
@@ -661,8 +661,8 @@ Scenario:5 两个买赠活动选择同一个商品作为赠品,购买A和C,赠�
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	Then jobs能获取商品'赠品B':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获取商品'赠品B'::weapp
 		"""
 		{
 			"name": "赠品B",
@@ -683,8 +683,8 @@ Scenario:6 两个买赠活动选择同一个商品作为赠品,购买C和A,赠�
 	#买A赠B（买一赠二）
 	#买C赠B(买一赠三)
 	#B的库存为3，加入购物车商品C+A
-	Given jobs登录系统:weapp
-	Given jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	Given jobs已添加商品::weapp
 		"""
 		[{
 			"name": "赠品B",
@@ -706,7 +706,7 @@ Scenario:6 两个买赠活动选择同一个商品作为赠品,购买C和A,赠�
 			"price":100.00
 		}]
 		"""
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品A买一赠二",
@@ -777,8 +777,8 @@ Scenario:6 两个买赠活动选择同一个商品作为赠品,购买C和A,赠�
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	Then jobs能获取商品'赠品B':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获取商品'赠品B'::weapp
 		"""
 		{
 			"name": "赠品B",
@@ -800,8 +800,8 @@ Scenario:7 两个买赠活动选择同一商品作为赠品,购买A和B,赠品�
 	#买A赠A（买一赠一）;
 	#买B赠A(买一赠一)
 	#A的库存为1时，A+B
-	Given jobs登录系统:weapp
-	Given jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	Given jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品A",
@@ -820,7 +820,7 @@ Scenario:7 两个买赠活动选择同一商品作为赠品,购买A和B,赠品�
 			"price":100.00
 		}]
 		"""
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品A买一赠一",
@@ -896,8 +896,8 @@ Scenario:7 两个买赠活动选择同一商品作为赠品,购买A和B,赠品�
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	Then jobs能获取商品'商品A':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获取商品'商品A'::weapp
 		"""
 		{
 			"name": "商品A",
@@ -918,8 +918,8 @@ Scenario:8 两个买赠活动选择同一商品作为赠品,购买A和B,赠品�
 	#买A赠A（买一赠一）;
 	#买B赠A(买一赠一)
 	#A的库存为1时，B+A（优先分配主商品，其次按照商品顺序分配赠品）
-	Given jobs登录系统:weapp
-	Given jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	Given jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品A",
@@ -938,7 +938,7 @@ Scenario:8 两个买赠活动选择同一商品作为赠品,购买A和B,赠品�
 			"price":100.00
 		}]
 		"""
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品A买一赠一",
@@ -1014,8 +1014,8 @@ Scenario:8 两个买赠活动选择同一商品作为赠品,购买A和B,赠品�
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	Then jobs能获取商品'商品A':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获取商品'商品A'::weapp
 		"""
 		{
 			"name": "商品A",
@@ -1036,8 +1036,8 @@ Scenario:9 两个买赠活动选择同一商品作为赠品,购买A和B,赠品�
 	#买A赠A（买一赠一）;
 	#买B赠A(买一赠一)
 	#A的库存为2时，A+B
-	Given jobs登录系统:weapp
-	Given jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	Given jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品A",
@@ -1056,7 +1056,7 @@ Scenario:9 两个买赠活动选择同一商品作为赠品,购买A和B,赠品�
 			"price":100.00
 		}]
 		"""
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品A买一赠一",
@@ -1127,8 +1127,8 @@ Scenario:9 两个买赠活动选择同一商品作为赠品,购买A和B,赠品�
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	Then jobs能获取商品'商品A':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获取商品'商品A'::weapp
 		"""
 		{
 			"name": "商品A",
@@ -1149,8 +1149,8 @@ Scenario:10 两个买赠活动选择同一商品作为赠品,购买B和A,赠品�
 	#买A赠A（买一赠一）;
 	#买B赠A(买一赠一)
 	#A的库存为2时，B+A
-	Given jobs登录系统:weapp
-	Given jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	Given jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品A",
@@ -1169,7 +1169,7 @@ Scenario:10 两个买赠活动选择同一商品作为赠品,购买B和A,赠品�
 			"price":100.00
 		}]
 		"""
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品A买一赠一",
@@ -1240,8 +1240,8 @@ Scenario:10 两个买赠活动选择同一商品作为赠品,购买B和A,赠品�
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	Then jobs能获取商品'商品A':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获取商品'商品A'::weapp
 		"""
 		{
 			"name": "商品A",
@@ -1262,8 +1262,8 @@ Scenario:10 两个买赠活动选择同一商品作为赠品,购买B和A,赠品�
 Scenario:11 B的库存为0,D的库存正好满足买赠活动
 	#买A赠B(买1赠2,当B的库存为0时)
 	#买C赠D（买1赠2，当D的库存为2时）
-	Given jobs登录系统:weapp
-	Given jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	Given jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品A",
@@ -1297,7 +1297,7 @@ Scenario:11 B的库存为0,D的库存正好满足买赠活动
 			}
 		}]
 		"""
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品A赠B",
@@ -1367,8 +1367,8 @@ Scenario:11 B的库存为0,D的库存正好满足买赠活动
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	Then jobs能获取商品'赠品D':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获取商品'赠品D'::weapp
 		"""
 		{
 			"name": "赠品D",
@@ -1388,8 +1388,8 @@ Scenario:11 B的库存为0,D的库存正好满足买赠活动
 Scenario:12 B的为0,D的库存多余满足买赠活动
 	#买A赠B(买1赠2,当B的库存为0时)
 	#买C赠D（买1赠2，当D的库存为3时）
-	Given jobs登录系统:weapp
-	Given jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	Given jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品A",
@@ -1423,7 +1423,7 @@ Scenario:12 B的为0,D的库存多余满足买赠活动
 			}
 		}]
 		"""
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品A赠B",
@@ -1493,8 +1493,8 @@ Scenario:12 B的为0,D的库存多余满足买赠活动
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	Then jobs能获取商品'赠品D':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获取商品'赠品D'::weapp
 		"""
 		{
 			"name": "赠品D",
@@ -1514,8 +1514,8 @@ Scenario:12 B的为0,D的库存多余满足买赠活动
 Scenario:13 B的库存不足,D的库存正好满足买赠活动
 	#买A赠B(买1赠2,当B的库存为1时)
 	#买C赠D（买1赠2，当D的库存为2时）
-	Given jobs登录系统:weapp
-	Given jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	Given jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品A",
@@ -1549,7 +1549,7 @@ Scenario:13 B的库存不足,D的库存正好满足买赠活动
 			}
 		}]
 		"""
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品A赠B",
@@ -1619,8 +1619,8 @@ Scenario:13 B的库存不足,D的库存正好满足买赠活动
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	Then jobs能获取商品'赠品B':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获取商品'赠品B'::weapp
 		"""
 		{
 			"name": "赠品B",
@@ -1635,7 +1635,7 @@ Scenario:13 B的库存不足,D的库存正好满足买赠活动
 			}
 		}
 		"""
-	Then jobs能获取商品'赠品D':weapp
+	Then jobs能获取商品'赠品D'::weapp
 		"""
 		{
 			"name": "赠品D",
@@ -1655,8 +1655,8 @@ Scenario:13 B的库存不足,D的库存正好满足买赠活动
 Scenario:14 B的库存不足,D的库存多余满足买赠活动
 	#买A赠B(买1赠2,当B的库存为1时)
 	#买C赠D（买1赠2，当D的库存为3时）
-	Given jobs登录系统:weapp
-	Given jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	Given jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品A",
@@ -1690,7 +1690,7 @@ Scenario:14 B的库存不足,D的库存多余满足买赠活动
 			}
 		}]
 		"""
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品A赠B",
@@ -1760,8 +1760,8 @@ Scenario:14 B的库存不足,D的库存多余满足买赠活动
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	Then jobs能获取商品'赠品B':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获取商品'赠品B'::weapp
 		"""
 		{
 			"name": "赠品B",
@@ -1776,7 +1776,7 @@ Scenario:14 B的库存不足,D的库存多余满足买赠活动
 			}
 		}
 		"""
-	Then jobs能获取商品'赠品D':weapp
+	Then jobs能获取商品'赠品D'::weapp
 		"""
 		{
 			"name": "赠品D",
@@ -1795,8 +1795,8 @@ Scenario:14 B的库存不足,D的库存多余满足买赠活动
 #第4种情况
 @mall3 @promotion @premium_sale @ztq
 Scenario:15 买A赠A和B,赠品B'已赠完',购买A
-	Given jobs登录系统:weapp
-	Given jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	Given jobs已添加商品::weapp
 		"""
 		[{
 			"name":"商品A",
@@ -1824,7 +1824,7 @@ Scenario:15 买A赠A和B,赠品B'已赠完',购买A
 			}
 		}]
 		"""
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品A赠A和B",
@@ -1864,7 +1864,7 @@ Scenario:15 买A赠A和B,赠品B'已赠完',购买A
 		}
 		"""
 
-	Given jobs登录系统:weapp
+	Given jobs登录系统::weapp
 	Then jobs能获取商品'商品A'
 		"""
 		{
@@ -1898,8 +1898,8 @@ Scenario:15 买A赠A和B,赠品B'已赠完',购买A
 
 @mall3 @promotion @premium_sale @ztq
 Scenario:15 买A赠A和B,赠品B'库存不足',购买A
-	Given jobs登录系统:weapp
-	Given jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	Given jobs已添加商品::weapp
 		"""
 		[{
 			"name":"商品A",
@@ -1927,7 +1927,7 @@ Scenario:15 买A赠A和B,赠品B'库存不足',购买A
 			}
 		}]
 		"""
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品A赠A和B",
@@ -1967,8 +1967,8 @@ Scenario:15 买A赠A和B,赠品B'库存不足',购买A
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	Then jobs能获取商品'商品A':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获取商品'商品A'::weapp
 		"""
 		{
 			"name": "商品A",
@@ -1983,7 +1983,7 @@ Scenario:15 买A赠A和B,赠品B'库存不足',购买A
 			}
 		}
 		"""
-	Then jobs能获取商品'商品B':weapp
+	Then jobs能获取商品'商品B'::weapp
 		"""
 		{
 			"name": "商品B",

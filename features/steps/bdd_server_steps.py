@@ -2,29 +2,68 @@
 # bdd server相关的step
 
 import base64
+import decimal
 import json
+import os
 from cgi import parse_qs
+from datetime import datetime, date
 from wsgiref.simple_server import WSGIRequestHandler, make_server
 from wsgiref.util import setup_testing_defaults
 from features import environment
 
 from behave import *
 
-import settings
+try:
+	import settings
+except ImportError:
+	from django.conf import settings
+except:
+	raise ImportError('bdd_server import setting error.')
+
+BDD_SERVER2PORT = settings.BDD_SERVER2PORT
+
+BDD_SERVER_HOST = '127.0.0.1'
 
 
-def get_context_attrs(context, *args, **kwargs):
-	raw_context_kvs = context._stack[0]
-	context_kvs = {}
-	for k, v in raw_context_kvs.items():
-		if isinstance(v, (basestring, int, float, list, dict, bool)):
-			context_kvs[k] = v
-	return context_kvs
+def _default(obj):
+	if isinstance(obj, datetime):
+		return obj.strftime('%Y-%m-%d %H:%M:%S')
+	elif isinstance(obj, date):
+		return obj.strftime('%Y-%m-%d')
+	elif isinstance(obj, decimal.Decimal):
+		return str(obj)
+	else:
+		return ''
 
 
-def set_context_attrs(context, context_kvs):
+def _set_context_attrs(context, context_kvs):
 	for k, v in context_kvs.items():
-		setattr(context, k, v)
+		if v:
+			setattr(context, k, v)
+
+
+def _git_shell(git_command):
+	try:
+		return os.popen(git_command).read().strip()
+	except:
+		return None
+
+
+# 获得本BDD_SERVER名称
+try:
+	git_dir = os.path.abspath(_git_shell('git rev-parse --git-dir'))
+	project_dir = os.path.dirname(git_dir)
+	self_name = project_dir.split(os.sep)[-1]
+except BaseException as e:
+	print(e)
+	self_name = "You should install Git!!"
+	print(self_name)
+
+# 修改窗口名,目前只对windows有效
+try:
+	os.system("title {}_bdd_server".format(self_name))
+except:
+	pass
 
 
 class BDDRequestHandler(WSGIRequestHandler):
@@ -67,48 +106,78 @@ def step_impl(context):
 		# When the method is POST the query string will be sent
 		# in the HTTP request body which is passed by the WSGI server
 		# in the file like wsgi.input environment variable.
+		# 从http request解析请求
 		request_body = environ['wsgi.input'].read(request_body_size)
 		post = parse_qs(request_body)
 		step_data = json.loads(post['data'][0])
 		step = step_data['step'].strip()
+
+		# 1. 解析step
+		# 2. 执行step
+		# 3. 分类step执行结果
+		# 4. 返回http response
+
+		# 0:成功，1：业务失败，2：异常
+		result = 0
 		if step == '__reset__':
 			print('*********************** run step **********************')
-			print(u'重置bdd环境')
+			print(u'Reset bdd environment...')
 			environment.after_scenario(context, context.scenario)
 			environment.before_scenario(context, context.scenario)
-			return base64.b64encode('success')
-		else:
-			set_context_attrs(context, json.loads(step_data['context_kvs']))
 
-			step = u'%s\n"""\n%s\n"""' % (step_data['step'], step_data['context_text'])
+			resp = {
+				'result': result
+			}
+
+			return base64.b64encode(json.dumps(resp))
+		else:
+			# 解析请求携带的context
+			_set_context_attrs(context, json.loads(step_data['context_attrs']))
+
+			if step_data['context_text']:
+				step_content = step_data['context_text']
+			else:
+				step_content = step_data['context_table']
+			step = u'%s\n"""\n%s\n"""' % (step_data['step'], step_content)
 			print('*********************** run step **********************')
 			print(step)
 
-			try:
-				context.execute_steps(u'%s\n"""\n%s\n"""' % (step_data['step'], step_data['context_text']))
+			context_attrs = {}
+			traceback = ''
 
-				raw_context_kvs = context._stack[0]
-				context_kvs = {}
-				for k, v in raw_context_kvs.items():
-					if isinstance(v, (basestring, int, float, list, dict, bool)) and k != 'text':
-						try:
-							tmp = {'a': v}
-							json.dumps(tmp)
-							context_kvs[k] = v
-						except:
-							print('%s,%s .can not json.loads' % (k, type(v)))
-							pass
+			try:
+				context.execute_steps(step)
+			except AssertionError:
+				result = 1
+				from core.exceptionutil import full_stack
+				print('*********************** failure **********************')
+				traceback = full_stack()
+				print(traceback.decode('utf-8'))
+
 			except:
+				result = 2
 				from core.exceptionutil import full_stack
 				print('*********************** exception **********************')
-				stacktrace = full_stack()
-				print(stacktrace.decode('utf-8'))
-				return base64.b64encode(stacktrace)
+				traceback = full_stack()
+				print(traceback.decode('utf-8'))
 
-			# return base64.b64encode('success')
+			else:
+				result = 0
+				context_attrs = context._stack[0]
 
-			return base64.b64encode(json.dumps(context_kvs))
+			resp = {
+				'result': result,
+				'traceback': traceback,
+				'context_attrs': context_attrs
+			}
 
-	httpd = make_server('', settings.BDD_SERVER_PORT, simple_app, handler_class=BDDRequestHandler)
-	print("[bdd server] Serving on port {}...".format(settings.BDD_SERVER_PORT))
+			# 传递context时忽略基本类型外的对象
+			return base64.b64encode(json.dumps(resp, default=_default))
+
+	port = BDD_SERVER2PORT.get(self_name, 0)
+	assert port, "{} is not valid name.You can't change the git repository name!".format(self_name)
+
+	# 启动服务器
+	httpd = make_server('', port, simple_app, handler_class=BDDRequestHandler)
+	print("[{} bdd server] Serving on port {}...".format(self_name, port))
 	httpd.serve_forever()

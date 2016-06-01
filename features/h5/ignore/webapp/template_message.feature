@@ -5,10 +5,10 @@ Feature:模板消息
 	jobs设定开启模板消息，用户满足相应的模板消息的条件，可以收到相应的消息
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
 
-	And jobs已有模板消息:weapp
+	And jobs已有模板消息::weapp
 		"""
 		[{
 			"template_id":"",
@@ -40,14 +40,14 @@ Background:
 		}
 		"""
 
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
 			"price": 100.00
 		}]
 		"""
-	And jobs已添加支付方式:weapp
+	And jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -128,7 +128,7 @@ Scenario:1 启用模板消息，配置正确的模板ID，可以成功接收到�
 
 @message @templateMessage
 Scenario:2 未启用模板消息，配置正确的模板ID，不可以成功接收到消息
-	Given jobs登录系统:weapp
+	Given jobs登录系统::weapp
 	When jobs修改'IT科技'行业标题为'付款成功通知'的状态
 		"""
 		{
@@ -187,7 +187,7 @@ Scenario:2 未启用模板消息，配置正确的模板ID，不可以成功接�
 
 @message @templateMessage
 Scenario:3 启用模板消息，配置错误的模板ID，不可以成功接收到消息
-	Given jobs登录系统:weapp
+	Given jobs登录系统::weapp
 	When jobs给'IT科技'行业标题为'付款成功通知'的模板消息添加内容
 		"""
 		{

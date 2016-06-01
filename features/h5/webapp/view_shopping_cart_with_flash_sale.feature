@@ -9,9 +9,9 @@ Feature: 添加限时抢购商品到购物车中
 """
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	And jobs已添加商品规格:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs已添加商品规格::weapp
 		"""
 		[{
 			"name": "尺寸",
@@ -23,7 +23,7 @@ Background:
 			}]
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -71,7 +71,7 @@ Background:
 			}
 		}]	
 		"""
-	When jobs创建限时抢购活动:weapp
+	When jobs创建限时抢购活动::weapp
 		"""
 		[{
 			"name": "商品1限时抢购",
@@ -243,8 +243,8 @@ Scenario:2 放入多个商品到购物车，商品的限时抢购活动包括未
 @mall3 @buy @cart   @mall.webapp @mall.webapp.shopping_cart
 Scenario:3 放入多规格商品到购物车，无限购
 
-	Given jobs登录系统:weapp
-	And jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品7",
@@ -263,7 +263,7 @@ Scenario:3 放入多规格商品到购物车，无限购
 			}
 		}]
 		"""
-	When jobs创建限时抢购活动:weapp
+	When jobs创建限时抢购活动::weapp
 		"""
 		{
 			"name": "商品7限时抢购",

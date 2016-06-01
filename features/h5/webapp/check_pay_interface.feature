@@ -4,9 +4,9 @@
 Feature:在apiserver中进行微信支付和支付宝支付的校验
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	And jobs已添加商品:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name":"商品1",
@@ -21,8 +21,8 @@ Background:
 
 @mall3 @pay @ztq
 Scenario:1 选择使用支付方式:微信支付v2
-	Given jobs登录系统:weapp
-	When jobs添加支付方式:weapp
+	Given jobs登录系统::weapp
+	When jobs添加支付方式::weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -79,8 +79,8 @@ Scenario:1 选择使用支付方式:微信支付v2
 
 @mall3 @pay @ztq
 Scenario:2 选择使用支付方式:微信支付v3
-	Given jobs登录系统:weapp
-	When jobs添加支付方式:weapp
+	Given jobs登录系统::weapp
+	When jobs添加支付方式::weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -146,8 +146,8 @@ Scenario:2 选择使用支付方式:微信支付v3
 
 @mall3 @pay @ztq
 Scenario:3 选择使用支付方式:支付宝
-	Given jobs登录系统:weapp
-	When jobs添加支付方式:weapp
+	Given jobs登录系统::weapp
+	When jobs添加支付方式::weapp
 		"""
 		[{
 			"type": "支付宝",

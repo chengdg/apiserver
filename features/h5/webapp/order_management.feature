@@ -8,9 +8,9 @@
 Feature: 在webapp中管理订单
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	And jobs已添加商品:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -24,7 +24,7 @@ Background:
 		}]
 		"""
 	#支付方式
-	Given jobs已添加支付方式:weapp
+	Given jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -77,8 +77,8 @@ Scenario: 1 bill在下单购买jobs的商品后，使用货到付款进行支付
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	Then jobs可以看到订单列表:weapp
+	Given jobs登录系统::weapp
+	Then jobs可以看到订单列表::weapp
 		"""
 		[{
 			"order_no":"001",
@@ -97,7 +97,7 @@ Scenario: 1 bill在下单购买jobs的商品后，使用货到付款进行支付
 		}]
 		"""
 
-	When jobs填写发货信息:weapp
+	When jobs填写发货信息::weapp
 		"""
 		[{
 			"order_no": "001",
@@ -107,7 +107,7 @@ Scenario: 1 bill在下单购买jobs的商品后，使用货到付款进行支付
 			"ship_name": "bill"
 		}]
 		"""
-	Then jobs可以看到订单列表:weapp
+	Then jobs可以看到订单列表::weapp
 		"""
 		[{
 			"order_no": "001",
@@ -171,8 +171,8 @@ Scenario: 2 bill在下单购买jobs的商品后，又取消订单
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	Then jobs可以看到订单列表:weapp
+	Given jobs登录系统::weapp
+	Then jobs可以看到订单列表::weapp
 		"""
 		[{
 			"order_no":"001",
@@ -188,8 +188,8 @@ Scenario: 2 bill在下单购买jobs的商品后，又取消订单
 		"""
 
 	When bill取消订单'001'
-	Given jobs登录系统:weapp
-	Then jobs可以看到订单列表:weapp
+	Given jobs登录系统::weapp
+	Then jobs可以看到订单列表::weapp
 		"""
 		[{
 			"order_no":"001",
@@ -245,8 +245,8 @@ Scenario: 3 bill在下单购买jobs的商品后，jobs发货方式为"不需要�
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	Then jobs可以看到订单列表:weapp
+	Given jobs登录系统::weapp
+	Then jobs可以看到订单列表::weapp
 		"""
 		[{
 			"order_no": "001",
@@ -261,13 +261,13 @@ Scenario: 3 bill在下单购买jobs的商品后，jobs发货方式为"不需要�
 		}]
 		"""
 
-	When jobs填写发货信息:weapp
+	When jobs填写发货信息::weapp
 		"""
 		[{
 			"order_no": "001"
 		}]
 		"""
-	Then jobs可以看到订单列表:weapp
+	Then jobs可以看到订单列表::weapp
 		"""
 		[{
 			"order_no": "001",
@@ -341,8 +341,8 @@ Scenario: 4 bill 在不同时段下订单，订单列表按下订单的时间倒
 			}]
 		}
 		"""
-	Given jobs登录系统:weapp
-	Then jobs可以看到订单列表:weapp
+	Given jobs登录系统::weapp
+	Then jobs可以看到订单列表::weapp
 		"""
 		[{
 			"status": "待支付",

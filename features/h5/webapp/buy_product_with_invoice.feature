@@ -11,9 +11,9 @@ Feature:购买支持开票的商品
 	"""
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	And jobs已添加商品分类:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs已添加商品分类::weapp
 		"""
 		[{
 			"name": "分类1"
@@ -23,7 +23,7 @@ Background:
 			"name": "分类3"
 		}]
 		"""
-	And jobs已添加商品规格:weapp
+	And jobs已添加商品规格::weapp
 		"""
 		[{
 			"name": "颜色",
@@ -45,7 +45,7 @@ Background:
 			}]
 		}]
 		"""
-	When jobs已添加支付方式:weapp
+	When jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "货到付款",
@@ -58,7 +58,7 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "支持开票1",

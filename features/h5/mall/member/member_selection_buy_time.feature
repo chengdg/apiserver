@@ -6,9 +6,9 @@ Feature:会员列表查询会员的最后购买时间weapp
 """
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	And jobs添加会员等级:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs添加会员等级::weapp
 		"""
 		[{
 			"name": "银牌会员",
@@ -21,7 +21,7 @@ Background:
 		}]
 		"""
 
-	And jobs已添加支付方式:weapp
+	And jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "微众卡支付"
@@ -31,7 +31,7 @@ Background:
 			"type": "微信支付"
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -107,8 +107,8 @@ Background:
 		}
 		"""
 	And bill使用支付方式'微信支付'进行支付
-	Given jobs登录系统:weapp
-	When jobs对订单进行发货:weapp
+	Given jobs登录系统::weapp
+	When jobs对订单进行发货::weapp
 		"""
 		{
 			"order_no":"004",
@@ -131,8 +131,8 @@ Background:
 		}
 		"""
 	And bill使用支付方式'微信支付'进行支付
-	Given jobs登录系统:weapp
-	When jobs对订单进行发货:weapp
+	Given jobs登录系统::weapp
+	When jobs对订单进行发货::weapp
 		"""
 		{
 			"order_no":"005",
@@ -170,8 +170,8 @@ Background:
 			}]
 		}
 		"""
-	Given jobs登录系统:weapp
-	When jobs对订单进行发货:weapp
+	Given jobs登录系统::weapp
+	When jobs对订单进行发货::weapp
 		"""
 		{
 			"order_no":"007",
@@ -193,8 +193,8 @@ Background:
 			}]
 		}
 		"""
-	Given jobs登录系统:weapp
-	When jobs对订单进行发货:weapp
+	Given jobs登录系统::weapp
+	When jobs对订单进行发货::weapp
 		"""
 		{
 			"order_no":"008",
@@ -237,10 +237,10 @@ Background:
 
 @mall3 @member @memberList @ztq @abcg
 Scenario:1 按照会员的"最后购买时间"进行查询
-	Given jobs登录系统:weapp
+	Given jobs登录系统::weapp
 
 	#区间时间边界值查询，包含结束时间
-		When jobs设置会员查询条件:weapp
+		When jobs设置会员查询条件::weapp
 			"""
 			[{
 				"status":"全部",
@@ -248,7 +248,7 @@ Scenario:1 按照会员的"最后购买时间"进行查询
 				"last_buy_end_time":"1天后"
 			}]
 			"""
-		Then jobs可以获得会员列表:weapp
+		Then jobs可以获得会员列表::weapp
 			"""
 			[{
 				"name":"marry",
@@ -278,7 +278,7 @@ Scenario:1 按照会员的"最后购买时间"进行查询
 			"""
 
 	#无查询结果
-		When jobs设置会员查询条件:weapp
+		When jobs设置会员查询条件::weapp
 			"""
 			[{
 				"status":"全部",
@@ -286,13 +286,13 @@ Scenario:1 按照会员的"最后购买时间"进行查询
 				"last_buy_end_time":"2015-08-11 00:10"
 			}]
 			"""
-		Then jobs获得刷选结果人数:weapp
+		Then jobs获得刷选结果人数::weapp
 			"""
 			[{
 				"result_quantity":0
 			}]
 			"""
-		Then jobs可以获得会员列表:weapp
+		Then jobs可以获得会员列表::weapp
 			"""
 			[]
 			"""

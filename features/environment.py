@@ -44,14 +44,14 @@ def before_all(context):
 	# __create_system_user('bill')
 	# __create_system_user('tom')
 
-	weapp_working_dir = os.path.join(settings.WEAPP_DIR, 'weapp')
-	if not os.path.exists(weapp_working_dir):
-		info = '* ERROR: CAN NOT do bdd testing. Because bdd need %s be exists!!!' % weapp_working_dir
-		info = info.replace(os.path.sep, '/')
-		print('*' * 80)
-		print(info)
-		print('*' * 80)
-		sys.exit(3)
+	# weapp_working_dir = os.path.join(settings.WEAPP_DIR, 'weapp')
+	# if not os.path.exists(weapp_working_dir):
+	# 	info = '* ERROR: CAN NOT do bdd testing. Because bdd need %s be exists!!!' % weapp_working_dir
+	# 	info = info.replace(os.path.sep, '/')
+	# 	print('*' * 80)
+	# 	print(info)
+	# 	print('*' * 80)
+	# 	sys.exit(3)
 
 	#创建test case，使用assert
 	context.tc = unittest.TestCase('__init__')

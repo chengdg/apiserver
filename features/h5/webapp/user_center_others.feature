@@ -6,16 +6,16 @@
 Feature:个人中心（我的优惠券、微众卡余额查询）
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	And jobs已添加商品:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
 			"price": 200.00
 		}]
 		"""
-	And jobs已添加了优惠券规则:weapp
+	And jobs已添加了优惠券规则::weapp
 		"""
 		[{
 			"name": "单品券1",
@@ -42,8 +42,8 @@ Background:
 			"coupon_id_prefix": "coupon3_id_"
 		}]
 		"""
-	And jobs已有微众卡支付权限:weapp
-	And jobs已添加支付方式:weapp
+	And jobs已有微众卡支付权限::weapp
+	And jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "微众卡支付"
@@ -58,8 +58,8 @@ Background:
 
 @personCenter @myCoupon @ztq @mall3
 Scenario:1 个人中心-我的优惠券
-	Given jobs登录系统:weapp
-	When jobs为会员发放优惠券:weapp
+	Given jobs登录系统::weapp
+	When jobs为会员发放优惠券::weapp
 		"""
 		{
 			"name": "单品券1",
@@ -68,7 +68,7 @@ Scenario:1 个人中心-我的优惠券
 			"coupon_ids": ["coupon1_id_1"]
 		}
 		"""
-	When jobs为会员发放优惠券:weapp
+	When jobs为会员发放优惠券::weapp
 		"""
 		{
 			"name": "全体券2",
@@ -77,7 +77,7 @@ Scenario:1 个人中心-我的优惠券
 			"coupon_ids": ["coupon2_id_1"]
 		}
 		"""
-	When jobs为会员发放优惠券:weapp
+	When jobs为会员发放优惠券::weapp
 		"""
 		{
 			"name": "未开始3",

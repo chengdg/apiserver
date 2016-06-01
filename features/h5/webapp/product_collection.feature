@@ -6,10 +6,10 @@ Feature: 在webapp中收藏商品
 	bill能在webapp中收藏jobs添加的"商品"
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
 	
-	And jobs已添加商品规格:weapp
+	And jobs已添加商品规格::weapp
 		"""
 		[{
 			"name": "尺寸",
@@ -21,7 +21,7 @@ Background:
 			}]
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -46,8 +46,8 @@ Background:
 			"price": 100.00
 		}]
 		"""
-	And bill关注jobs的公众号:weapp
-	And tom关注jobs的公众号:weapp
+	And bill关注jobs的公众号::weapp
+	And tom关注jobs的公众号::weapp
 
 @mall2 @weapp.mall.collect.product @bert @mall3
 Scenario:1 收藏单个无规格商品
@@ -234,8 +234,8 @@ Scenario:4 收藏商品后，后台对此商品进行修改
 			}
 		}]
 		"""
-	Given jobs登录系统:weapp
-	When  jobs更新商品'商品1':weapp
+	Given jobs登录系统::weapp
+	When  jobs更新商品'商品1'::weapp
 		"""
 		{
 			"name": "商品1",

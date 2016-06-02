@@ -20,7 +20,7 @@ except ImportError:
 except:
 	raise ImportError('bdd_server import setting error.')
 
-BDD_SERVER2PORT = settings.CARD_SERVER_DOMAIN
+BDD_SERVER2PORT = settings.BDD_SERVER2PORT
 
 _ignore_keys = ['scenario', 'tags', 'text', 'table', 'log_capture', 'client']
 

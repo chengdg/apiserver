@@ -59,11 +59,6 @@ except BaseException as e:
 	self_name = "You should install Git!!"
 	print(self_name)
 
-# 修改窗口名,目前只对windows有效
-try:
-	os.system("title {}_bdd_server".format(self_name))
-except:
-	pass
 
 
 class BDDRequestHandler(WSGIRequestHandler):
@@ -90,6 +85,13 @@ def step_impl(context):
 	# A relatively simple WSGI application. It's going to print(out the)
 	# environment dictionary after being updated by setup_testing_defaults
 	def simple_app(environ, start_response):
+
+		# 修改窗口名,目前只对windows有效
+		try:
+			os.system("title {}_bdd_server".format(self_name))
+		except:
+			pass
+
 		setup_testing_defaults(environ)
 
 		status = '200 OK'

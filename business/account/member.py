@@ -44,7 +44,9 @@ class Member(business_model.Model):
 		'webapp_id',
 		'pay_money',
 		'update_time',
-		'status'
+		'status',
+		'fans_count',
+		'friend_count'
 	)
 
 	@staticmethod
@@ -374,3 +376,18 @@ class Member(business_model.Model):
 				return u'%s...' % output_str
 		except:
 			return self.username_for_html[:10]
+	@staticmethod
+	@param_required(['is_fans','member_id'])
+	def add_friend_count(args):
+		"""
+		@param[in] : 
+
+		会员建立关系后，增加member的friend_count,fans_count
+		"""
+		member_id = args['member_id']
+		is_fans = args['is_fans']
+		
+		if is_fans:
+			member_models.Member.update(friend_count=member_models.Member.friend_count + 1,fans_count=member_models.Member.fans_count + 1).dj_where(id=member_id).execute()
+		else:
+			member_models.Member.update(friend_count=member_models.Member.friend_count + 1).dj_where(id=member_id).execute()

@@ -135,6 +135,8 @@ class MemberSpread(business_model.Model):
 						'follower_member_id': member.id, 
 						"is_fans": is_fans})
 			member_relations_factory_obj.save()
+			followed_member.add_friend_count({'member_id':followed_member.id,"is_fans":is_fans})
+			member.add_friend_count({'member_id':member.id,"is_fans":False})
 
 		#处理分享链接
 		url = url_helper.remove_querystr_filed_from_request_url(shared_url)

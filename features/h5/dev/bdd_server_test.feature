@@ -6,7 +6,7 @@ Feature: 测试bdd server
 Background:
 	Given 重置'weapp'的bdd环境
 
-@mall3 @bdd_test
+@bdd_test
 Scenario:1. apiserver获得weapp的context
   When weapp设置context::weapp
   """
@@ -37,7 +37,7 @@ Scenario:1. apiserver获得weapp的context
   }
   """
 
-@mall3 @bdd_test
+@bdd_test
 Scenario:2. weapp获得apiserver的context
   When apiserver设置context
   """

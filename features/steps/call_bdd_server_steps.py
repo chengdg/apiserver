@@ -20,7 +20,12 @@ except ImportError:
 except:
 	raise ImportError('bdd_server import setting error.')
 
-BDD_SERVER2PORT = settings.BDD_SERVER2PORT
+# BDD_SERVER2PORT = settings.BDD_SERVER2PORT
+BDD_SERVER2PORT = {
+    'weapp': 8170,
+    'weizoom_card': 8171,
+    'apiserver': 8172
+}
 
 _ignore_keys = ['scenario', 'tags', 'text', 'table', 'log_capture', 'client']
 
@@ -78,6 +83,8 @@ def _run_bdd_server_step(step, context, bdd_server_name):
 
 	try:
 		resp_data = json.loads(base64.b64decode(response.text.encode('utf-8')).decode('utf-8'))
+
+		assert resp_data['bdd_server_name'] == bdd_server_name, "Lv chun bu dui ma zui ERROR,call {},but get {}".format(bdd_server_name,resp_data['bdd_server_name'])
 
 		result = int(resp_data['result'])
 		# 一切正常

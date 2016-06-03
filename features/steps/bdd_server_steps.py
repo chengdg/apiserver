@@ -20,6 +20,11 @@ except ImportError:
 except:
 	raise ImportError('bdd_server import setting error.')
 
+if not hasattr(settings, 'BDD_SERVER2PORT'):
+	from weapp import settings
+	assert hasattr(settings, 'BDD_SERVER2PORT'), 'BDD_SERVER2PORT import error!'
+
+
 BDD_SERVER2PORT = settings.BDD_SERVER2PORT
 
 BDD_SERVER_HOST = '127.0.0.1'
@@ -58,7 +63,6 @@ except BaseException as e:
 	print(e)
 	self_name = "You should install Git!!"
 	print(self_name)
-
 
 
 class BDDRequestHandler(WSGIRequestHandler):
@@ -128,7 +132,8 @@ def step_impl(context):
 			environment.before_scenario(context, context.scenario)
 
 			resp = {
-				'result': result
+				'result': result,
+				'bdd_server_name': self_name
 			}
 
 			return base64.b64encode(json.dumps(resp))
@@ -170,7 +175,8 @@ def step_impl(context):
 			resp = {
 				'result': result,
 				'traceback': traceback,
-				'context_attrs': context_attrs
+				'context_attrs': context_attrs,
+				'bdd_server_name': self_name
 			}
 
 			# 传递context时忽略基本类型外的对象

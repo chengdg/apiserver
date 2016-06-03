@@ -63,6 +63,8 @@ def step_impl(context, user, product_name ,error):
 # def step_impl(context, user, mp_user_name):
 # 	weapp_steps._run_weapp_step(u'When %s访问%s的webapp' % (user, mp_user_name), None)
 
+from bddserver.files import call_bdd_server_steps
+
 @when(u"{user}关注{mp_user_name}的公众号")
 def step_impl(context, user, mp_user_name):
 	call_bdd_server_steps._run_bdd_server_step(u'When %s关注%s的公众号' % (user, mp_user_name), context, u'weapp')

@@ -11,8 +11,8 @@ Feature: 会员绑定手机号
 """
 
 Background:
-    Given 重置weapp的bdd环境
-    Given jobs登录系统:weapp
+    Given 重置'weapp'的bdd环境
+    Given jobs登录系统::weapp
     Given bill关注jobs的公众号
 
 @mall3 @person @bindingPhone @bert

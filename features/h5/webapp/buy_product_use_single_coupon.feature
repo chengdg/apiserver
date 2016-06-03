@@ -42,9 +42,9 @@ Feature: 在webapp中使用优惠券购买商品（使用单品劵购买）
 	"""
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	And jobs已添加商品规格:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs已添加商品规格::weapp
 		"""
 		[{
 			"name": "尺寸",
@@ -57,7 +57,7 @@ Background:
 		}]
 		"""
 	#商品6是新加的
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[ {
 			"name": "商品1",
@@ -91,7 +91,7 @@ Background:
 		}]
 		"""
 	#支付方式
-	Given jobs已添加支付方式:weapp
+	Given jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -102,7 +102,7 @@ Background:
 		}]
 		"""
 	#优惠券6是新加的
-	Given jobs已添加了优惠券规则:weapp
+	Given jobs已添加了优惠券规则::weapp
 		"""
 		[{
 			"name": "优惠券1",
@@ -138,7 +138,7 @@ Background:
 		"""
 	When bill关注jobs的公众号
 	When bill访问jobs的webapp
-	When bill领取jobs的优惠券:weapp
+	When bill领取jobs的优惠券::weapp
 		"""
 		[{
 			"name": "优惠券1",
@@ -153,7 +153,7 @@ Background:
 		"""
 	When tom关注jobs的公众号
 	When tom访问jobs的webapp
-	When tom领取jobs的优惠券:weapp
+	When tom领取jobs的优惠券::weapp
 		"""
 		[{
 			"name": "优惠券1",
@@ -167,8 +167,8 @@ Background:
 @mall3 @mall.webapp @mall.coupon
 Scenario:1 使用单品优惠劵进行购买，该单品券适用于商品1，如果商品2使用，则，购买失败
 
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券1'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券1'的码库::weapp
 		"""
 		{
 			"coupon1_id_1": {
@@ -219,8 +219,8 @@ Scenario:1 使用单品优惠劵进行购买，该单品券适用于商品1，�
 		}
 		"""
 	Then bill获得创建订单失败的信息'该优惠券不能购买订单中的商品'
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券1'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券1'的码库::weapp
 		"""
 		{
 			"coupon1_id_1": {
@@ -243,8 +243,8 @@ Scenario:2 使用单品优惠劵进行购买，该单品券适用于商品3并�
 	1 买3件商品3，共60元，满足条件，可用单品劵；
 	2 买1件商品3，买一件商品2，订单满50，但单品不满50，不可以使用该单品卷
 
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券2'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券2'的码库::weapp
 		"""
 		{
 			"coupon2_id_1": {
@@ -298,8 +298,8 @@ Scenario:2 使用单品优惠劵进行购买，该单品券适用于商品3并�
 		}
 		"""
 	Then bill获得创建订单失败的信息'该优惠券指定商品金额不满足使用条件'
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券2'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券2'的码库::weapp
 		"""
 		{
 			"coupon2_id_1": {
@@ -319,8 +319,8 @@ Scenario:2 使用单品优惠劵进行购买，该单品券适用于商品3并�
 
 @mall3 @mall.webapp @mall.coupon
 Scenario:3 购买多规格商品，买1个商品的两个规格，总价格满足优惠劵使用条件
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券5'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券5'的码库::weapp
 		"""
 		{
 			"coupon5_id_1": {
@@ -356,8 +356,8 @@ Scenario:3 购买多规格商品，买1个商品的两个规格，总价格满�
 			"coupon_money": 10.00
 		}
 		"""
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券5'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券5'的码库::weapp
 		"""
 		{
 			"coupon5_id_1": {
@@ -372,8 +372,8 @@ Scenario:3 购买多规格商品，买1个商品的两个规格，总价格满�
 Scenario:4 使用多于商品价格的单品券进行购买，该单品券只适用于商品6
 	且不抵扣其他商品金额和运费金额
 
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券6'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券6'的码库::weapp
 		"""
 		{
 			"coupon6_id_1": {
@@ -415,8 +415,8 @@ Scenario:4 使用多于商品价格的单品券进行购买，该单品券只适
 			"coupon_money": 20.00
 		}
 		"""
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券6'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券6'的码库::weapp
 		"""
 		{
 			"coupon6_id_1": {
@@ -434,8 +434,8 @@ Scenario:5 不同等级的会员购买有会员价同时有单品券的商品
 	2. 选择单品券，商品价格变回原价，取消使用单品券，价格变回会员价
 	3. 和有会员价的商品同时购买，不影响其他会员价的商品
 
-	Given jobs登录系统:weapp
-	When jobs添加会员等级:weapp
+	Given jobs登录系统::weapp
+	When jobs添加会员等级::weapp
 		"""
 		[{
 			"name": "金牌会员",
@@ -443,7 +443,7 @@ Scenario:5 不同等级的会员购买有会员价同时有单品券的商品
 			"discount": "7"
 		}]
 		"""
-	Then jobs能获取会员等级列表:weapp
+	Then jobs能获取会员等级列表::weapp
 		"""
 		[{
 			"name": "普通会员",
@@ -455,16 +455,16 @@ Scenario:5 不同等级的会员购买有会员价同时有单品券的商品
 			"discount": "7"
 		}]
 		"""
-	When jobs更新'bill'的会员等级:weapp
+	When jobs更新'bill'的会员等级::weapp
 		"""
 		{
 			"name": "bill",
 			"member_rank": "金牌会员"
 		}
 		"""
-	When jobs访问会员列表:weapp
-	Then jobs获得会员列表默认查询条件:weapp
-	Then jobs可以获得会员列表:weapp
+	When jobs访问会员列表::weapp
+	Then jobs获得会员列表默认查询条件::weapp
+	Then jobs可以获得会员列表::weapp
 		"""
 		[{
 			"name": "tom",
@@ -474,7 +474,7 @@ Scenario:5 不同等级的会员购买有会员价同时有单品券的商品
 			"member_rank": "金牌会员"
 		}]
 		"""
-	When jobs更新商品'商品1':weapp
+	When jobs更新商品'商品1'::weapp
 		"""
 		{
 			"name": "商品1",
@@ -482,7 +482,7 @@ Scenario:5 不同等级的会员购买有会员价同时有单品券的商品
 			"is_member_product": "on"
 		}
 		"""
-	When jobs更新商品'商品2':weapp
+	When jobs更新商品'商品2'::weapp
 		"""
 		{
 			"name": "商品2",
@@ -490,7 +490,7 @@ Scenario:5 不同等级的会员购买有会员价同时有单品券的商品
 			"is_member_product": "on"
 		}
 		"""
-	Then jobs能获得优惠券'优惠券1'的码库:weapp
+	Then jobs能获得优惠券'优惠券1'的码库::weapp
 		"""
 		{
 			"coupon1_id_1": {
@@ -622,8 +622,8 @@ Scenario:5 不同等级的会员购买有会员价同时有单品券的商品
 			}]
 		}
 		"""
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券1'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券1'的码库::weapp
 		"""
 		{
 			"coupon1_id_1": {
@@ -644,8 +644,8 @@ Scenario:5 不同等级的会员购买有会员价同时有单品券的商品
 @mall3 @mall.webapp @mall.coupon
 Scenario: 6 购买有单品券的商品，但不使用单品券
 
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券'优惠券1'的码库:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券'优惠券1'的码库::weapp
 		"""
 		{
 			"coupon1_id_1": {

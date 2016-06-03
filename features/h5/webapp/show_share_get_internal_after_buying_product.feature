@@ -27,16 +27,16 @@ Feature:会员下单成功后提示分享赚积分
 	"""
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	And jobs设定会员积分策略:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs设定会员积分策略::weapp
 		"""
 		{
 			"integral_each_yuan":10,
 			"click_shared_url_increase_count":11
 		}
 		"""
-	And jobs已添加支付方式:weapp
+	And jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -49,7 +49,7 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name":"商品1",
@@ -59,7 +59,7 @@ Background:
 			"price":20.00
 		}]
 		"""
-	When jobs已添加单图文:weapp
+	When jobs已添加单图文::weapp
 		"""
 		[{
 			"title":"单图文1",
@@ -80,7 +80,7 @@ Background:
 			"jump_url":"www.baidu.com"
 		}]
 		"""
-	When jobs设置订单提交成功后提示分享赚积分信息:weapp
+	When jobs设置订单提交成功后提示分享赚积分信息::weapp
 		"""
 		{
 			"logo_pic":"1.jpg",
@@ -145,8 +145,8 @@ Scenario:1 会员下单成功后提示分享赚积分
 		}
 		"""
 	#后台修改分享赚积分设置
-	Given jobs登录系统:weapp
-	When jobs设置订单提交成功后提示分享赚积分信息:weapp
+	Given jobs登录系统::weapp
+	When jobs设置订单提交成功后提示分享赚积分信息::weapp
 		"""
 		{
 			"logo_pic":"1.jpg",

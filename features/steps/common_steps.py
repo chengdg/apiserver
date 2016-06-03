@@ -9,8 +9,7 @@ from db.account import models as account_models
 from db.mall import models as mall_models
 from db.member import models as member_models
 
-from features.steps import weapp_steps 
-
+from features.steps import call_bdd_server_steps
 import logging
 
 # @given(u"{user}获得访问'{webapp_owner_name}'数据的授权")
@@ -52,17 +51,30 @@ def step_impl(context, user, product_name ,error):
 	expected_product_id = mall_models.Product.get(name=product_name).id
 	context.tc.assertEquals(expected_product_id, detail[0]['id'])
 
+# @when(u"{user}关注{mp_user_name}的公众号")
+# def step_impl(context, user, mp_user_name):
+# 	weapp_steps._run_weapp_step(u'When %s关注%s的公众号' % (user, mp_user_name), None)
+#
+# @given(u"{user}关注{mp_user_name}的公众号")
+# def step_impl(context, user, mp_user_name):
+# 	weapp_steps._run_weapp_step(u'Given %s关注%s的公众号' % (user, mp_user_name), None)
+#
+# @when(u"{user}访问{mp_user_name}的webapp")
+# def step_impl(context, user, mp_user_name):
+# 	weapp_steps._run_weapp_step(u'When %s访问%s的webapp' % (user, mp_user_name), None)
+
 @when(u"{user}关注{mp_user_name}的公众号")
 def step_impl(context, user, mp_user_name):
-	weapp_steps._run_weapp_step(u'When %s关注%s的公众号' % (user, mp_user_name), None)
+	call_bdd_server_steps._run_bdd_server_step(u'When %s关注%s的公众号' % (user, mp_user_name), context, u'weapp')
 
 @given(u"{user}关注{mp_user_name}的公众号")
 def step_impl(context, user, mp_user_name):
-	weapp_steps._run_weapp_step(u'Given %s关注%s的公众号' % (user, mp_user_name), None)
+	call_bdd_server_steps._run_bdd_server_step(u'Given %s关注%s的公众号' % (user, mp_user_name), context, u'weapp')
 
 @when(u"{user}访问{mp_user_name}的webapp")
 def step_impl(context, user, mp_user_name):
-	weapp_steps._run_weapp_step(u'When %s访问%s的webapp' % (user, mp_user_name), None)
+	call_bdd_server_steps._run_bdd_server_step(u'When %s访问%s的webapp' % (user, mp_user_name), context, u'weapp')
+
 
 	# from eaglet.core.db import models as db_models
 	# db_models.db.close()

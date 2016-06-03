@@ -18,11 +18,11 @@ Feature:订单管理-团购
 	"""
 
 Background:
-	Given 重置weapp的bdd环境
-	Given 重置weizoom_card的bdd环境
-	Given jobs登录系统:weapp
-	When jobs添加微信证书:weapp
-	Given jobs已添加支付方式:weapp
+	Given 重置'weapp'的bdd环境
+	Given 重置'weizoom_card'的bdd环境
+	Given jobs登录系统::weapp
+	When jobs添加微信证书::weapp
+	Given jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -35,15 +35,15 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	When jobs开通使用微众卡权限:weapp
-	When jobs添加支付方式:weapp
+	When jobs开通使用微众卡权限::weapp
+	When jobs添加支付方式::weapp
 		"""
 		[{
 			"type": "微众卡支付",
 			"is_active": "启用"
 		}]
 		"""
-	Given jobs已添加商品:weapp
+	Given jobs已添加商品::weapp
 		"""
 		[{
 			"name":"商品1",
@@ -88,8 +88,8 @@ Background:
 		"""
 
 	#创建微众卡
-	Given test登录管理系统:weizoom_card
-	When test新建通用卡:weizoom_card
+	Given test登录管理系统::weizoom_card
+	When test新建通用卡::weizoom_card
 		"""
 		[{
 			"name":"50元微众卡",
@@ -115,7 +115,7 @@ Background:
 		}]
 		"""
 	#微众卡审批出库
-	When test下订单:weizoom_card
+	When test下订单::weizoom_card
 		"""
 		[{
 			"card_info":[{
@@ -139,9 +139,9 @@ Background:
 				}		
 		}]
 		"""
-	And test批量激活订单'0001'的卡:weizoom_card
+	And test批量激活订单'0001'的卡::weizoom_card
 
-	When jobs新建团购活动:weapp
+	When jobs新建团购活动::weapp
 		"""
 		[{
 			"group_name":"团购活动1",
@@ -182,8 +182,8 @@ Background:
 				"share_description":"团购活动2分享描述"
 		}]
 		"""
-	When jobs开启团购活动'团购活动1':weapp
-	When jobs开启团购活动'团购活动2':weapp
+	When jobs开启团购活动'团购活动1'::weapp
+	When jobs开启团购活动'团购活动2'::weapp
 
 	Given bill关注jobs的公众号
 	And tom关注jobs的公众号
@@ -194,7 +194,7 @@ Background:
 	#订单数据
 	#00101-待发货（团购中,bill开团'团购活动1'）
 		When bill访问jobs的webapp
-		When bill参加jobs的团购活动"团购活动1"进行开团:weapp
+		When bill参加jobs的团购活动"团购活动1"进行开团::weapp
 			"""
 			{
 				"group_name": "团购活动1",
@@ -225,7 +225,7 @@ Background:
 		When bill使用支付方式'微信支付'进行支付
 	#00102-待支付（有用微众卡,tom参团'团购活动1'）
 		When tom访问jobs的webapp
-		When tom参加bill的团购活动"团购活动1":weapp
+		When tom参加bill的团购活动"团购活动1"::weapp
 			"""
 			{
 				"group_name": "团购活动1",
@@ -259,7 +259,7 @@ Background:
 			"""
 	#00103-待发货（团购中，现金+微众卡支付，bill1参团'团购活动1'）
 		When bill1访问jobs的webapp
-		When bill1参加bill的团购活动"团购活动1":weapp
+		When bill1参加bill的团购活动"团购活动1"::weapp
 			"""
 			{
 				"group_name": "团购活动1",
@@ -294,7 +294,7 @@ Background:
 		When bill1使用支付方式'微信支付'进行支付
 	#00104-待发货（团购中，全额微众卡支付，bill2参团'团购活动1'）
 		When bill2访问jobs的webapp
-		When bill2参加bill的团购活动"团购活动1":weapp
+		When bill2参加bill的团购活动"团购活动1"::weapp
 			"""
 			{
 				"group_name": "团购活动1",
@@ -343,7 +343,7 @@ Background:
 
 	#00201-待发货（团购成功,tom开团'团购活动2'）
 		When tom访问jobs的webapp
-		When tom参加jobs的团购活动"团购活动2"进行开团:weapp
+		When tom参加jobs的团购活动"团购活动2"进行开团::weapp
 			"""
 			{
 				"group_name": "团购活动2",
@@ -373,7 +373,7 @@ Background:
 		When tom使用支付方式'微信支付'进行支付
 	#00202-待发货（团购成功,bill参团'团购活动2'）
 		When bill访问jobs的webapp
-		When bill参加tom的团购活动"团购活动2":weapp
+		When bill参加tom的团购活动"团购活动2"::weapp
 			"""
 			{
 				"group_name": "团购活动2",
@@ -403,7 +403,7 @@ Background:
 		When bill使用支付方式'微信支付'进行支付
 	#00203-待发货（团购成功,bill1参团'团购活动2'）
 		When bill1访问jobs的webapp
-		When bill1参加tom的团购活动"团购活动2":weapp
+		When bill1参加tom的团购活动"团购活动2"::weapp
 			"""
 			{
 				"group_name": "团购活动2",
@@ -433,7 +433,7 @@ Background:
 		When bill1使用支付方式'微信支付'进行支付
 	#00204-待发货（团购成功,bill2参团'团购活动2'）
 		When bill2访问jobs的webapp
-		When bill2参加tom的团购活动"团购活动2":weapp
+		When bill2参加tom的团购活动"团购活动2"::weapp
 			"""
 			{
 				"group_name": "团购活动2",
@@ -463,7 +463,7 @@ Background:
 		When bill2使用支付方式'微信支付'进行支付
 	#00205-待发货（团购成功,bill3参团'团购活动2'）
 		When bill3访问jobs的webapp
-		When bill3参加tom的团购活动"团购活动2":weapp
+		When bill3参加tom的团购活动"团购活动2"::weapp
 			"""
 			{
 				"group_name": "团购活动2",
@@ -501,8 +501,8 @@ Scenario:1 所有订单-查看团购订单
 	#团购成功的订单,订单列表页不能进行【申请退款】和【取消订单】操作
 	#团购成功的订单,订单详情页页不能进行【申请退款】和【取消订单】操作
 
-	Given jobs登录系统:weapp
-	Then jobs可以看到订单列表:weapp
+	Given jobs登录系统::weapp
+	Then jobs可以看到订单列表::weapp
 		"""
 		[{
 			"order_no":"00205",
@@ -605,7 +605,7 @@ Scenario:1 所有订单-查看团购订单
 
 	#查看团购订单的订单详情页
 		#优惠抵扣方式-订单详情页也不能进行'取消订单'操作
-		And jobs能获得订单'00205':weapp
+		And jobs能获得订单'00205'::weapp
 			"""
 			{
 				"order_no":"00205",
@@ -623,7 +623,7 @@ Scenario:1 所有订单-查看团购订单
 			}
 			"""
 		#微信支付方式-订单详情页也不能进行'申请退款'操作
-		And jobs能获得订单'00204':weapp
+		And jobs能获得订单'00204'::weapp
 			"""
 			{
 				"order_no":"00204",
@@ -643,7 +643,7 @@ Scenario:1 所有订单-查看团购订单
 
 	#对团购成功的订单进行【发货】、【标记完成】操作
 		#进行【发货】
-		When jobs对订单进行发货:weapp
+		When jobs对订单进行发货::weapp
 			"""
 			{
 				"order_no":"00205",
@@ -652,7 +652,7 @@ Scenario:1 所有订单-查看团购订单
 				"shipper":"jobs"
 			}
 			"""
-		When jobs对订单进行发货:weapp
+		When jobs对订单进行发货::weapp
 			"""
 			{
 				"order_no": "00204",
@@ -660,7 +660,7 @@ Scenario:1 所有订单-查看团购订单
 				"shipper": ""
 			}
 			"""
-		Then jobs可以看到订单列表:weapp
+		Then jobs可以看到订单列表::weapp
 			"""
 			[{
 				"order_no":"00205",
@@ -764,9 +764,9 @@ Scenario:1 所有订单-查看团购订单
 			}]
 			"""
 		#进行【标记完成】
-		When jobs'完成'订单'00205':weapp
-		When jobs'完成'订单'00204':weapp
-		Then jobs可以看到订单列表:weapp
+		When jobs'完成'订单'00205'::weapp
+		When jobs'完成'订单'00204'::weapp
+		Then jobs可以看到订单列表::weapp
 			"""
 			[{
 				"order_no":"00205",
@@ -872,13 +872,13 @@ Scenario:1 所有订单-查看团购订单
 
 @mall3 @order @eugene
 Scenario:2 所有订单-团购订单查询
-	When jobs根据给定条件查询订单:weapp
+	When jobs根据给定条件查询订单::weapp
 		"""
 		{
 			"order_type": "团购订单"
 		}
 		"""
-	Then jobs可以看到订单列表:weapp
+	Then jobs可以看到订单列表::weapp
 		"""
 		[{
 			"order_no":"00205",
@@ -1015,9 +1015,9 @@ Scenario:3 查看团购失败的订单
 			"""
 
 	#查看团购失败的订单
-		Given jobs登录系统:weapp
-		When jobs关闭团购活动'团购活动1':weapp
-		Then jobs可以看到订单列表:weapp
+		Given jobs登录系统::weapp
+		When jobs关闭团购活动'团购活动1'::weapp
+		Then jobs可以看到订单列表::weapp
 			"""
 			[{
 				"order_no":"00205",
@@ -1165,7 +1165,7 @@ Scenario:3 查看团购失败的订单
 					}]
 			}]
 			"""
-		And jobs获得财务审核'团购退款'订单列表:weapp
+		And jobs获得财务审核'团购退款'订单列表::weapp
 			"""
 			[{
 				"order_no":"00103",
@@ -1235,8 +1235,8 @@ Scenario:3 查看团购失败的订单
 				"""
 
 	#微信自动退款,订单状态自动标记为'退款成功'(因无法实现steps，所以注释掉)
-		# When 微信'退款成功'订单'00103':weapp
-		# When 微信'退款成功'订单'00101':weapp
+		# When 微信'退款成功'订单'00103'::weapp
+		# When 微信'退款成功'订单'00101'::weapp
 		# #现金+微众卡支付的订单，订单"退款成功"后，微众卡的钱退回
 		# 	When bill1访问jobs的webapp
 		# 	When bill1进行微众卡余额查询
@@ -1253,8 +1253,8 @@ Scenario:3 查看团购失败的订单
 		# 		}
 		# 		"""
 
-		# Given jobs登录系统:weapp
-		# Then jobs可以看到订单列表:weapp
+		# Given jobs登录系统::weapp
+		# Then jobs可以看到订单列表::weapp
 		# 	"""
 		# 	[{
 		# 		"order_no":"00205",
@@ -1402,7 +1402,7 @@ Scenario:3 查看团购失败的订单
 		# 			}]
 		# 	}]
 		# 	"""
-		# And jobs获得财务审核'团购退款'订单列表:weapp
+		# And jobs获得财务审核'团购退款'订单列表::weapp
 		# 	"""
 		# 	[{
 		# 		"order_no":"00103",

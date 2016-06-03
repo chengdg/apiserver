@@ -24,10 +24,10 @@ Feature: 增加对供货商的留言框
 
 Background:
 	#自营平台jobs的信息
-		Given 重置weapp的bdd环境
-		Given 设置jobs为自营平台账号:weapp
-		Given jobs登录系统:weapp
-		And jobs已添加供货商:weapp
+		Given 重置'weapp'的bdd环境
+		Given 设置jobs为自营平台账号::weapp
+		Given jobs登录系统::weapp
+		And jobs已添加供货商::weapp
 			"""
 			[{
 				"name": "供货商1",
@@ -43,7 +43,7 @@ Background:
 				"remark": ""
 			}]
 			"""
-		And jobs已添加支付方式:weapp
+		And jobs已添加支付方式::weapp
 			"""
 			[{
 				"type": "微信支付",
@@ -56,7 +56,7 @@ Background:
 				"is_active": "启用"
 			}]
 			"""
-		And jobs已添加商品:weapp
+		And jobs已添加商品::weapp
 			"""
 			[{
 				"supplier": "供货商1",
@@ -93,16 +93,16 @@ Background:
 			}]
 			"""
 	#商家bill的信息
-		Given 添加bill店铺名称为'bill商家':weapp
-		Given bill登录系统:weapp
-		And bill已添加支付方式:weapp
+		Given 添加bill店铺名称为'bill商家'::weapp
+		Given bill登录系统::weapp
+		And bill已添加支付方式::weapp
 			"""
 			[{
 				"type": "微信支付",
 				"is_active": "启用"
 			}]
 			"""
-		And bill已添加商品:weapp
+		And bill已添加商品::weapp
 			"""
 			[{
 				"name":"bill商品1",
@@ -134,16 +134,16 @@ Background:
 			"""
 
 	#商家tom的信息
-		Given 添加tom店铺名称为'tom商家':weapp
-		Given tom登录系统:weapp
-		And tom已添加支付方式:weapp
+		Given 添加tom店铺名称为'tom商家'::weapp
+		Given tom登录系统::weapp
+		And tom已添加支付方式::weapp
 			"""
 			[{
 				"type": "微信支付",
 				"is_active": "启用"
 			}]
 			"""
-		And tom已添加商品:weapp
+		And tom已添加商品::weapp
 			"""
 			[{
 				"name":"tom商品1",
@@ -179,8 +179,8 @@ Background:
 			}]
 			"""
 	#jobs后台商品信息
-		Given jobs登录系统:weapp
-		Then jobs获得商品池商品列表:weapp
+		Given jobs登录系统::weapp
+		Then jobs获得商品池商品列表::weapp
 			"""
 			[{
 				"name": "tom商品2",
@@ -216,7 +216,7 @@ Background:
 				"actions": ["放入待售"]
 			}]
 			"""
-		When jobs将商品池商品批量放入待售于'2016-05-24 10:30':weapp
+		When jobs将商品池商品批量放入待售于'2016-05-24 10:30'::weapp
 			"""
 			[
 				"tom商品2",
@@ -227,7 +227,7 @@ Background:
 			"""
 
 		#jobs修改采购价
-		When jobs更新商品'bill商品1':weapp
+		When jobs更新商品'bill商品1'::weapp
 			"""
 			{
 				"name":"bill商品1",
@@ -246,7 +246,7 @@ Background:
 				}
 			}
 			"""
-		When jobs更新商品'bill商品2':weapp
+		When jobs更新商品'bill商品2'::weapp
 			"""
 			{
 				"name":"bill商品2",
@@ -265,7 +265,7 @@ Background:
 				}
 			}
 			"""
-		When jobs更新商品'tom商品1':weapp
+		When jobs更新商品'tom商品1'::weapp
 			"""
 			{
 				"name":"tom商品1",
@@ -284,7 +284,7 @@ Background:
 				}
 			}
 			"""
-		When jobs更新商品'tom商品2':weapp
+		When jobs更新商品'tom商品2'::weapp
 			"""
 			{
 				"name":"tom商品2",
@@ -303,7 +303,7 @@ Background:
 				}
 			}
 			"""
-		When jobs批量上架商品:weapp
+		When jobs批量上架商品::weapp
 			"""
 			["bill商品1","bill商品2","tom商品1","tom商品2"]
 			"""
@@ -753,6 +753,7 @@ Scenario:1 手机端验证
 				}]
 			}
 			"""
+
 @mall3 @eugene
 Scenario:2 自营平台后台验证
 	#购买自营平台自建商品和商家同步的商品[供货商1、bill商家、tom商家]
@@ -805,8 +806,8 @@ Scenario:2 自营平台后台验证
 				}
 			}
 			"""
-		Given jobs登录系统:weapp
-		Then jobs可以看到订单列表:weapp
+		Given jobs登录系统::weapp
+		Then jobs可以看到订单列表::weapp
 			"""
 			[{
 				"order_no":"006",
@@ -856,7 +857,7 @@ Scenario:2 自营平台后台验证
 				}]
 			}]
 			"""
-		Then jobs能获得订单'006':weapp
+		Then jobs能获得订单'006'::weapp
 			"""
 			{
 				"order_no":"006",
@@ -898,8 +899,8 @@ Scenario:2 自营平台后台验证
 			"""
 
 	#商户平台同步留言信息-bill商家
-		Given bill登录系统:weapp
-		Then bill可以看到订单列表:weapp
+		Given bill登录系统::weapp
+		Then bill可以看到订单列表::weapp
 			"""
 			[{
 				"order_no":"006-bill商家",
@@ -923,7 +924,7 @@ Scenario:2 自营平台后台验证
 					}]
 			}]
 			"""
-		Then bill能获得订单'006-bill商家':weapp
+		Then bill能获得订单'006-bill商家'::weapp
 			"""
 			{
 				"order_no":"006-bill商家",
@@ -947,8 +948,8 @@ Scenario:2 自营平台后台验证
 			"""
 
 	#商户平台同步留言信息-tom商家
-		Given tom登录系统:weapp
-		Then tom可以看到订单列表:weapp
+		Given tom登录系统::weapp
+		Then tom可以看到订单列表::weapp
 			"""
 			[{
 				"order_no":"006-tom商家",
@@ -968,7 +969,7 @@ Scenario:2 自营平台后台验证
 					}]
 			}]
 			"""
-		Then tom能获得订单'006-tom商家':weapp
+		Then tom能获得订单'006-tom商家'::weapp
 			"""
 			{
 				"order_no":"006-tom商家",
@@ -1075,8 +1076,8 @@ Scenario:3 自营平台和商户平台导出订单
 				}
 			}
 			"""
-		Given jobs登录系统:weapp
-		Then jobs导出订单获取订单信息:weapp
+		Given jobs登录系统::weapp
+		Then jobs导出订单获取订单信息::weapp
 			|    order_no     |  order_time |   pay_time    | product_name |  model | product_unit_price | count | sales_money | weight | methods_of_payment | money_total | money | money_wcard | postage | integral | coupon_money | coupon_name |  status   | member | ship_name |  ship_tele  | ship_province |        ship_address           | shipper | leader_remark | sources | supplier_type | logistics |   number  | delivery_time | remark |  customer_message  | customer_source | customer_recommender | is_qr_code | is_older_mermber | purchase_price | purchase_costs |
 			|   009-bill商家  |     今天    |      今天     |   bill商品1  |        |        10.00       |   1   |    10.00    |   2    |      货到付款      |    30.00    | 30.00 |     0.00    |  0.00   |   0.00   |              |             |  待发货   |  tom1  |    AAA    | 13811223344 |    北京市     |    北京市 北京市 海淀区       |         |               | bill商家|   同步供货商  |           |           |               |        |bill商家订单009备注 |    直接关注     |                      |            |                  |      9.00      |      9.00      |
 			|   009-bill商家  |     今天    |      今天     |   bill商品2  |        |        20.00       |   1   |    20.00    |   2    |      货到付款      |             |       |             |  0.00   |          |              |             |  待发货   |  tom1  |    AAA    | 13811223344 |    北京市     |    北京市 北京市 海淀区       |         |               | bill商家|   同步供货商  |           |           |               |        |bill商家订单009备注 |    直接关注     |                      |            |                  |      19.00     |      19.00     |
@@ -1085,7 +1086,7 @@ Scenario:3 自营平台和商户平台导出订单
 			|   008-bill商家  |     今天    |      今天     |   bill商品2  |        |        20.00       |   1   |    20.00    |   2    |      货到付款      |             |       |             |  0.00   |          |              |             |  待发货   |  tom1  |    AAA    | 13811223344 |    北京市     |    北京市 北京市 海淀区       |         |               | bill商家|   自建供货商  |           |           |               |        |bill商家订单008备注 |    直接关注     |                      |            |                  |      19.00     |      19.00     |
 			|   008-tom商家   |     今天    |      今天     |   tom商品1   |        |        10.00       |   1   |    10.00    |   2    |      货到付款      |             |       |             |  0.00   |          |              |             |  待发货   |  tom1  |    AAA    | 13811223344 |    北京市     |    北京市 北京市 海淀区       |         |               | tom商家 |   同步供货商  |           |           |               |        |                    |    直接关注     |                      |            |                  |      10.00     |      10.00     |
 		
-		Then jobs导出订单获取订单统计信息:weapp
+		Then jobs导出订单获取订单统计信息::weapp
 			"""
 			[{
 				"订单量":2,
@@ -1100,15 +1101,15 @@ Scenario:3 自营平台和商户平台导出订单
 			}]
 			"""
 
-		Given bill登录系统:weapp
-		Then bill导出订单获取订单信息:weapp
+		Given bill登录系统::weapp
+		Then bill导出订单获取订单信息::weapp
 			|   order_no   |  order_time | pay_time | product_name |  model | product_unit_price | count | sales_money | weight | methods_of_payment | money_total | money | money_wcard | postage | integral | coupon_money | coupon_name |  status   | member | ship_name  |  ship_tel   | ship_province |      ship_address    | shipper | leader_remark | sources | logistics |   number  | delivery_time | remark   |  customer_message   | customer_source | customer_recommender | is_qr_code | is_older_mermber |
 			| 009-bill商家 |     今天    |   今天   |    bill商品1 |        |        9.00        |   1   |    9.00     |    2   |     微信支付       |     28.0    |  28.0 |    0.00     |  0.00   |   0.00   |     0.00     |             |  待发货   |  tom1  |    AAA     | 13811223344 |    北京市     | 北京市,北京市,海淀区 |         |               |  商城   |           |           |      今天     |          | bill商家订单009备注 |     直接关注    |                      |            |                  |
 			| 009-bill商家 |     今天    |   今天   |    bill商品2 |        |        19.00       |   1   |    19.00    |    2   |     微信支付       |             |       |             |         |          |              |             |  待发货   |  tom1  |    AAA     | 13811223344 |    北京市     | 北京市,北京市,海淀区 |         |               |  商城   |           |           |      今天     |          | bill商家订单009备注 |     直接关注    |                      |            |                  |
 			| 008-bill商家 |     今天    |   今天   |    bill商品1 |        |        9.00        |   1   |    9.00     |    2   |     微信支付       |     28.0    |  28.0 |    0.00     |  0.00   |   0.00   |     0.00     |             |  待发货   |  tom1  |    AAA     | 13811223344 |    北京市     | 北京市,北京市,海淀区 |         |               |  商城   |           |           |      今天     |          | bill商家订单008备注 |     直接关注    |                      |            |                  |
 			| 008-bill商家 |     今天    |   今天   |    bill商品2 |        |        19.00       |   1   |    19.00    |    2   |     微信支付       |             |       |             |         |          |              |             |  待发货   |  tom1  |    AAA     | 13811223344 |    北京市     | 北京市,北京市,海淀区 |         |               |  商城   |           |           |      今天     |          | bill商家订单008备注 |     直接关注    |                      |            |                  |
 
-		Then bill导出订单获取订单统计信息:weapp
+		Then bill导出订单获取订单统计信息::weapp
 			"""
 			[{
 				"订单量":2,

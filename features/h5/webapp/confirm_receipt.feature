@@ -4,9 +4,9 @@
 Feature: 会员确认、取消非本会员的订单
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	When jobs已添加支付方式:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	When jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "货到付款",
@@ -19,7 +19,7 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	When jobs已添加商品:weapp
+	When jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -80,8 +80,8 @@ Scenario:2 会员"确认收货"非本会员的订单
 		}
 		"""
 	And bill使用支付方式'微信支付'进行支付
-	Given jobs登录系统:weapp
-	When jobs对订单进行发货:weapp
+	Given jobs登录系统::weapp
+	When jobs对订单进行发货::weapp
 		"""
 		{
 			"order_no": "003",

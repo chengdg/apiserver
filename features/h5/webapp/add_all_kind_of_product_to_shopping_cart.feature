@@ -5,9 +5,9 @@ Feature: 添加普通商品，促销商品到购物车中
 	bill能在webapp中将jobs添加的"普通商品，促销商品"放入购物车
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	And jobs已添加商品规格:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs已添加商品规格::weapp
 		"""
 		[{
 			"name": "尺寸",
@@ -19,7 +19,7 @@ Background:
 			}]
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -48,7 +48,7 @@ Background:
 		}]	
 		"""
 
-	When jobs创建限时抢购活动:weapp
+	When jobs创建限时抢购活动::weapp
 		"""
 		[{
 			"name": "商品1限时抢购",
@@ -60,7 +60,7 @@ Background:
 		}]
 
 		"""
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品2买二赠一",
@@ -175,8 +175,8 @@ Scenario:1 放入多个商品（商品1,2,3）到购物车，商品1是限时抢
 
 @mall3 @mall.webapp @mall.webapp.shopping_cart
 Scenario:2 买赠活动商品，加入购物车的主商品数量小于买赠活动主商品的买赠基数数量
-	Given jobs登录系统:weapp
-	When jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	When jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品5",
@@ -188,7 +188,7 @@ Scenario:2 买赠活动商品，加入购物车的主商品数量小于买赠活
 			"stocks": 2
 		}]
 		"""
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品5买三赠一",

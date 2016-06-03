@@ -18,12 +18,12 @@ Feature: 手机端购买团购活动
 	"""
 
 Background:
-	Given 重置weapp的bdd环境
-	Given 重置weizoom_card的bdd环境
-	Given jobs登录系统:weapp
-	When jobs添加微信证书:weapp
-	Given jobs已有微众卡支付权限:weapp
-	And jobs已添加支付方式:weapp
+	Given 重置'weapp'的bdd环境
+	Given 重置'weizoom_card'的bdd环境
+	Given jobs登录系统::weapp
+	When jobs添加微信证书::weapp
+	Given jobs已有微众卡支付权限::weapp
+	And jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "支付宝"
@@ -37,8 +37,8 @@ Background:
 		"""
 
 	#创建微众卡
-	Given test登录管理系统:weizoom_card
-	When test新建通用卡:weizoom_card
+	Given test登录管理系统::weizoom_card
+	When test新建通用卡::weizoom_card
 		"""
 		[{
 			"name":"100元微众卡",
@@ -51,7 +51,7 @@ Background:
 		"""
 
 	#微众卡审批出库
-	When test下订单:weizoom_card
+	When test下订单::weizoom_card
 			"""
 			[{
 				"card_info":[{
@@ -65,9 +65,9 @@ Background:
 				}
 			}]
 			"""
-	And test批量激活订单'0001'的卡:weizoom_card
+	And test批量激活订单'0001'的卡::weizoom_card
 
-	When jobs添加邮费配置:weapp
+	When jobs添加邮费配置::weapp
 		"""
 		[{
 			"name":"顺丰",
@@ -77,8 +77,8 @@ Background:
 			"added_weight_price":5.00
 		}]
 		"""
-	And jobs选择'顺丰'运费配置:weapp
-	And jobs已添加商品:weapp
+	And jobs选择'顺丰'运费配置::weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -100,7 +100,7 @@ Background:
 			"stocks": 9
 		}]
 		"""
-	And jobs新建团购活动:weapp
+	And jobs新建团购活动::weapp
 		"""
 		[{
 			"group_name":"团购1",
@@ -146,8 +146,8 @@ Background:
 			"share_description":"团购分享描述"
 		}]
 		"""
-	When jobs开启团购活动'团购1':weapp
-	When jobs开启团购活动'团购2':weapp
+	When jobs开启团购活动'团购1'::weapp
+	When jobs开启团购活动'团购2'::weapp
 
 	Given bill关注jobs的公众号
 	And tom关注jobs的公众号
@@ -178,7 +178,7 @@ Scenario: 1 会员访问团购活动首页能进行开团
 
 	#bill是已关注的会员可以直接开团
 	#获得的是所有jobs开启的团购活动列表
-	Then bill能获得jobs的团购活动列表:weapp
+	Then bill能获得jobs的团购活动列表::weapp
 		"""
 		[{
 			"group_name": "团购2",
@@ -205,7 +205,7 @@ Scenario: 1 会员访问团购活动首页能进行开团
 
 	#bill开“团购5人团”，团购活动只能使用微信支付，有配送时间，运费0元
 	#支付完成后跳转到活动详情页-显示邀请好友参团
-	When bill参加jobs的团购活动"团购1"进行开团:weapp
+	When bill参加jobs的团购活动"团购1"进行开团::weapp
 		"""
 		{
 			"group_name": "团购1",
@@ -249,7 +249,7 @@ Scenario: 1 会员访问团购活动首页能进行开团
 		"""
 
 	#bill开团后，就不能重复开一个团购活动
-	When bill参加jobs的团购活动"团购1"进行开团:weapp
+	When bill参加jobs的团购活动"团购1"进行开团::weapp
 		"""
 		{
 			"group_name": "团购1",
@@ -265,7 +265,7 @@ Scenario: 1 会员访问团购活动首页能进行开团
 			}
 		}
 		"""
-	Then bill得到团购活动提示"只能开团一次":weapp
+	Then bill得到团购活动提示"只能开团一次"::weapp
 
 @mall3 @nj_group
 Scenario: 2 会员可以通过分享链接直接参加团购活动
@@ -274,7 +274,7 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 	2.非会员nokia通过分享链接能直接参团，不能开团购买
 
 	When bill访问jobs的webapp
-	When bill参加jobs的团购活动"团购2"进行开团:weapp
+	When bill参加jobs的团购活动"团购2"进行开团::weapp
 		"""
 		{
 			"group_name": "团购2",
@@ -316,11 +316,11 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 		}
 		"""
 
-	When bill把jobs的团购活动"团购2"的链接分享到朋友圈:weapp
+	When bill把jobs的团购活动"团购2"的链接分享到朋友圈::weapp
 
 	#会员打开链接显示-我要参团，看看还有什么团
 	When tom访问jobs的webapp
-	Then tom能获得bill在"团购2"下的团购活动页面:weapp
+	Then tom能获得bill在"团购2"下的团购活动页面::weapp
 		"""
 		[{
 			"group_name": "团购2",
@@ -336,7 +336,7 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 				}]
 		}]
 		"""
-	Then tom能获得jobs的参团商品列表:weapp
+	Then tom能获得jobs的参团商品列表::weapp
 		"""
 		[{
 			"group_name": "团购2"
@@ -344,7 +344,7 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 			"group_name": "团购1"
 		}]
 		"""
-	Then tom能获得"团购2"的已开团活动列表:weapp
+	Then tom能获得"团购2"的已开团活动列表::weapp
 		"""
 		[{
 			"group_name": "团购2",
@@ -355,7 +355,7 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 		"""
 
 	#支付完成后跳转到活动详情页显示-邀请好友参团,我要开团
-	When tom参加bill的团购活动"团购2":weapp
+	When tom参加bill的团购活动"团购2"::weapp
 		"""
 		{
 			"group_name": "团购2",
@@ -397,21 +397,21 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 		}
 		"""
 
-	Then tom能获得"团购1"的已开团活动列表:weapp
+	Then tom能获得"团购1"的已开团活动列表::weapp
 		"""
 		[]
 		"""
-	Then tom能获得"团购2"的已开团活动列表:weapp
+	Then tom能获得"团购2"的已开团活动列表::weapp
 		"""
 		[]
 		"""
 
-	When 清空浏览器:weapp
-	When nokia点击bill分享链接:weapp
+	When 清空浏览器::weapp
+	When nokia点击bill分享链接::weapp
 	When nokia关注jobs的公众号
 	When nokia取消关注jobs的公众号
 	When nokia访问jobs的webapp
-	Then nokia能获得jobs的团购活动列表:weapp
+	Then nokia能获得jobs的团购活动列表::weapp
 		"""
 		[{
 			"group_name": "团购2",
@@ -437,7 +437,7 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 		"""
 
 	#非会员支付完成后跳转二维码引导关注
-	When nokia参加bill的团购活动"团购2":weapp
+	When nokia参加bill的团购活动"团购2"::weapp
 		"""
 		{
 			"group_name": "团购2",
@@ -481,7 +481,7 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 		"""
 
 	#非会员不能开团,点击“我要开团”弹出二维码
-	Then nokia能获得jobs的团购活动列表:weapp
+	Then nokia能获得jobs的团购活动列表::weapp
 		"""
 		[{
 			"group_name": "团购2",
@@ -505,11 +505,11 @@ Scenario: 2 会员可以通过分享链接直接参加团购活动
 				}]
 		}]
 		"""
-	Then nokia能获得"团购1"的已开团活动列表:weapp
+	Then nokia能获得"团购1"的已开团活动列表::weapp
 		"""
 		[]
 		"""
-	Then nokia能获得"团购2"的已开团活动列表:weapp
+	Then nokia能获得"团购2"的已开团活动列表::weapp
 		"""
 		[]
 		"""
@@ -527,7 +527,7 @@ Scenario: 3 会员开团后团购活动成功
 
 	#bill参与团购"团购2"开团
 	When bill访问jobs的webapp
-	When bill参加jobs的团购活动"团购2"进行开团:weapp
+	When bill参加jobs的团购活动"团购2"进行开团::weapp
 		"""
 		{
 			"group_name": "团购2",
@@ -557,7 +557,7 @@ Scenario: 3 会员开团后团购活动成功
 
 	#tom参与bill开的团
 	When tom访问jobs的webapp
-	Then tom能获得"团购2"的已开团活动列表:weapp
+	Then tom能获得"团购2"的已开团活动列表::weapp
 		"""
 		[{
 			"group_name": "团购2",
@@ -566,7 +566,7 @@ Scenario: 3 会员开团后团购活动成功
 			"participant_count": "1/5"
 		}]
 		"""
-	When tom参加bill的团购活动"团购2":weapp
+	When tom参加bill的团购活动"团购2"::weapp
 		"""
 		{
 			"group_name": "团购2",
@@ -596,7 +596,7 @@ Scenario: 3 会员开团后团购活动成功
 
 	#tom1参与bill开的团
 	When tom1访问jobs的webapp
-	Then tom1能获得"团购2"的已开团活动列表:weapp
+	Then tom1能获得"团购2"的已开团活动列表::weapp
 		"""
 		[{
 			"group_name": "团购2",
@@ -605,7 +605,7 @@ Scenario: 3 会员开团后团购活动成功
 			"participant_count": "2/5"
 		}]
 		"""
-	When tom1参加bill的团购活动"团购2":weapp
+	When tom1参加bill的团购活动"团购2"::weapp
 		"""
 		{
 			"group_name": "团购2",
@@ -635,7 +635,7 @@ Scenario: 3 会员开团后团购活动成功
 
 	#tom2参与bill开的团
 	When tom2访问jobs的webapp
-	Then tom2能获得"团购2"的已开团活动列表:weapp
+	Then tom2能获得"团购2"的已开团活动列表::weapp
 		"""
 		[{
 			"group_name": "团购2",
@@ -644,7 +644,7 @@ Scenario: 3 会员开团后团购活动成功
 			"participant_count": "3/5"
 		}]
 		"""
-	When tom2参加bill的团购活动"团购2":weapp
+	When tom2参加bill的团购活动"团购2"::weapp
 		"""
 		{
 			"group_name": "团购2",
@@ -674,7 +674,7 @@ Scenario: 3 会员开团后团购活动成功
 
 	#tom3参与bill开的团
 	When tom3访问jobs的webapp
-	Then tom3能获得"团购2"的已开团活动列表:weapp
+	Then tom3能获得"团购2"的已开团活动列表::weapp
 		"""
 		[{
 			"group_name": "团购2",
@@ -683,7 +683,7 @@ Scenario: 3 会员开团后团购活动成功
 			"participant_count": "4/5"
 		}]
 		"""
-	When tom3参加bill的团购活动"团购2":weapp
+	When tom3参加bill的团购活动"团购2"::weapp
 		"""
 		{
 			"group_name": "团购2",
@@ -714,7 +714,7 @@ Scenario: 3 会员开团后团购活动成功
 
 	#团购活动达到上限，团购成功，下一个人就不能参加这个活动了
 	When tom4访问jobs的webapp
-	Then tom4能获得"团购2"的已开团活动列表:weapp
+	Then tom4能获得"团购2"的已开团活动列表::weapp
 		"""
 		[]
 		"""
@@ -728,7 +728,7 @@ Scenario: 4 会员开团后团购活动失败
 	4.库存恢复
 
 	When bill访问jobs的webapp
-	When bill参加jobs的团购活动"团购2"进行开团:weapp
+	When bill参加jobs的团购活动"团购2"进行开团::weapp
 		"""
 		{
 			"group_name": "团购2",
@@ -775,8 +775,8 @@ Scenario: 4 会员开团后团购活动失败
 		"""
 
 	#下单成功，库存减少
-	Given jobs登录系统:weapp
-	Then jobs能获取商品'商品2':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获取商品'商品2'::weapp
 		"""
 		{
 			"name": "商品2",
@@ -787,7 +787,7 @@ Scenario: 4 会员开团后团购活动失败
 			"postage": 10.00
 		}
 		"""
-	When jobs关闭团购活动'团购2':weapp
+	When jobs关闭团购活动'团购2'::weapp
 
 	When bill访问jobs的webapp
 	When bill进行微众卡余额查询
@@ -805,8 +805,8 @@ Scenario: 4 会员开团后团购活动失败
 		"""
 
 	#团购失败，库存恢复
-	Given jobs登录系统:weapp
-	Then jobs能获取商品'商品2':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获取商品'商品2'::weapp
 		"""
 		{
 			"name": "商品2",
@@ -833,7 +833,7 @@ Scenario: 5 会员开团不进行支付，开团不成功
 	1.其他会员获取不到参团列表
 
 	When bill访问jobs的webapp
-	When bill参加jobs的团购活动"团购2"进行开团:weapp
+	When bill参加jobs的团购活动"团购2"进行开团::weapp
 		"""
 		{
 			"group_name": "团购2",
@@ -876,7 +876,7 @@ Scenario: 5 会员开团不进行支付，开团不成功
 		"""
 
 	When tom3访问jobs的webapp
-	Then tom3能获得"团购2"的已开团活动列表:weapp
+	Then tom3能获得"团购2"的已开团活动列表::weapp
 		"""
 		[]
 		"""
@@ -890,7 +890,7 @@ Scenario: 6 一个会员可以参加多个会员开启的团购活动
 	And tom3关注jobs的公众号
 
 	When bill访问jobs的webapp
-	When bill参加jobs的团购活动"团购2"进行开团:weapp
+	When bill参加jobs的团购活动"团购2"进行开团::weapp
 		"""
 		{
 			"group_name": "团购2",
@@ -920,7 +920,7 @@ Scenario: 6 一个会员可以参加多个会员开启的团购活动
 	When bill使用支付方式'微信支付'进行支付
 
 	When tom访问jobs的webapp
-	When tom参加jobs的团购活动"团购2"进行开团:weapp
+	When tom参加jobs的团购活动"团购2"进行开团::weapp
 		"""
 		{
 			"group_name": "团购2",
@@ -951,7 +951,7 @@ Scenario: 6 一个会员可以参加多个会员开启的团购活动
 
 	When tom1访问jobs的webapp
 	#参团列表参团人数一样的话以开团时间倒序显示
-	Then tom1能获得"团购2"的已开团活动列表:weapp
+	Then tom1能获得"团购2"的已开团活动列表::weapp
 		"""
 		[{
 			"group_name": "团购2",
@@ -965,7 +965,7 @@ Scenario: 6 一个会员可以参加多个会员开启的团购活动
 			"participant_count": "1/5"
 		}]
 		"""
-	When tom1参加bill的团购活动"团购2":weapp
+	When tom1参加bill的团购活动"团购2"::weapp
 		"""
 		{
 			"group_name": "团购2",
@@ -993,7 +993,7 @@ Scenario: 6 一个会员可以参加多个会员开启的团购活动
 		}
 		"""
 	When tom1使用支付方式'微信支付'进行支付
-	When tom1参加tom的团购活动"团购2":weapp
+	When tom1参加tom的团购活动"团购2"::weapp
 		"""
 		{
 			"group_name": "团购2",
@@ -1023,7 +1023,7 @@ Scenario: 6 一个会员可以参加多个会员开启的团购活动
 	When tom1使用支付方式'微信支付'进行支付
 
 	When tom访问jobs的webapp
-	Then tom能获得"团购2"的已开团活动列表:weapp
+	Then tom能获得"团购2"的已开团活动列表::weapp
 		"""
 		[{
 			"group_name": "团购2",
@@ -1032,7 +1032,7 @@ Scenario: 6 一个会员可以参加多个会员开启的团购活动
 			"participant_count": "2/5"
 		}]
 		"""
-	When tom参加bill的团购活动"团购2":weapp
+	When tom参加bill的团购活动"团购2"::weapp
 		"""
 		{
 			"group_name": "团购2",
@@ -1062,7 +1062,7 @@ Scenario: 6 一个会员可以参加多个会员开启的团购活动
 	When tom使用支付方式'微信支付'进行支付
 
 	When tom3访问jobs的webapp
-	When tom3参加bill的团购活动"团购2":weapp
+	When tom3参加bill的团购活动"团购2"::weapp
 		"""
 		{
 			"group_name": "团购2",
@@ -1093,7 +1093,7 @@ Scenario: 6 一个会员可以参加多个会员开启的团购活动
 
 	When tom2访问jobs的webapp
 	#参团列表优先显示拼团人数差一人的团购活动
-	Then tom2能获得"团购2"的已开团活动列表:weapp
+	Then tom2能获得"团购2"的已开团活动列表::weapp
 		"""
 		[{
 			"group_name": "团购2",
@@ -1136,8 +1136,8 @@ Scenario: 7 会员把商品添加购物车后，后台把这个商品创建成�
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	When jobs新建团购活动:weapp
+	Given jobs登录系统::weapp
+	When jobs新建团购活动::weapp
 		"""
 		[{
 			"group_name":"团购3",
@@ -1160,7 +1160,7 @@ Scenario: 7 会员把商品添加购物车后，后台把这个商品创建成�
 				"share_description":"团购分享描述"
 		}]
 		"""
-	When jobs开启团购活动'团购3':weapp
+	When jobs开启团购活动'团购3'::weapp
 
 	When bill访问jobs的webapp
 	Then bill能获得购物车
@@ -1175,8 +1175,8 @@ Scenario: 7 会员把商品添加购物车后，后台把这个商品创建成�
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	When jobs关闭团购活动'团购3':weapp
+	Given jobs登录系统::weapp
+	When jobs关闭团购活动'团购3'::weapp
 
 	When bill访问jobs的webapp
 	Then bill能获得购物车

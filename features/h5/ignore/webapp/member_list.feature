@@ -69,8 +69,8 @@ Scenario:1 微信用户关注公众号成为会员
 	When bill获得jobs的20会员积分
 	Then bill在jobs的webapp中拥有20会员积分
 	Given jobs登录系统
-	When jobs访问会员列表:weapp
-	Then jobs获得会员列表默认查询条件:weapp
+	When jobs访问会员列表::weapp
+	Then jobs获得会员列表默认查询条件::weapp
 	Then jobs可以获得会员列表
 		"""
 		[{
@@ -110,8 +110,8 @@ Scenario:1 微信用户关注公众号成为会员
 	When tom获得jobs的20会员积分
 	Then tom在jobs的webapp中拥有20会员积分
 	Given jobs登录系统
-	When jobs访问会员列表:weapp
-	Then jobs获得会员列表默认查询条件:weapp
+	When jobs访问会员列表::weapp
+	Then jobs获得会员列表默认查询条件::weapp
 	Then jobs可以获得会员列表
 		"""
 		[{
@@ -159,8 +159,8 @@ Scenario:1 微信用户关注公众号成为会员
 	When nokia获得jobs的20会员积分
 	Then nokia在jobs的webapp中拥有20会员积分
 	Given jobs登录系统
-	When jobs访问会员列表:weapp
-	Then jobs获得会员列表默认查询条件:weapp
+	When jobs访问会员列表::weapp
+	Then jobs获得会员列表默认查询条件::weapp
 	Then jobs可以获得会员列表
 		"""
 		[{
@@ -213,8 +213,8 @@ Scenario:1 微信用户关注公众号成为会员
 	When tom1获得jobs的20会员积分
 	Then tom1在jobs的webapp中拥有20会员积分
 	Given jobs登录系统
-	When jobs访问会员列表:weapp
-	Then jobs获得会员列表默认查询条件:weapp
+	When jobs访问会员列表::weapp
+	Then jobs获得会员列表默认查询条件::weapp
 	Then jobs可以获得会员列表
 		"""
 		[{
@@ -287,8 +287,8 @@ Scenario:1 微信用户关注公众号成为会员
 	Given jobs登录系统
 	When jobs对最新订单进行发货
 	When jobs'完成'最新订单
-	When jobs访问会员列表:weapp
-	Then jobs获得会员列表默认查询条件:weapp
+	When jobs访问会员列表::weapp
+	Then jobs获得会员列表默认查询条件::weapp
 	Then jobs可以获得会员列表
 		"""
 		[{
@@ -352,8 +352,8 @@ Scenario:1 微信用户关注公众号成为会员
 	Given jobs登录系统
 	When jobs对最新订单进行发货
 	When jobs'完成'最新订单
-	When jobs访问会员列表:weapp
-	Then jobs获得会员列表默认查询条件:weapp
+	When jobs访问会员列表::weapp
+	Then jobs获得会员列表默认查询条件::weapp
 	Then jobs可以获得会员列表
 		"""
 		[{
@@ -405,8 +405,8 @@ Scenario:1 微信用户关注公众号成为会员
 
 	When bill取消关注jobs的公众号
 	Given jobs登录系统
-	When jobs访问会员列表:weapp
-	Then jobs获得会员列表默认查询条件:weapp
+	When jobs访问会员列表::weapp
+	Then jobs获得会员列表默认查询条件::weapp
 	Then jobs可以获得会员列表
 		"""
 		[{

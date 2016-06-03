@@ -24,9 +24,9 @@ Feature: webapp商品列表页搜索商品
 	"""
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	When jobs'修改'通用设置:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	When jobs'修改'通用设置::weapp
 		"""
 		{
 			"product_sales": "关闭",
@@ -35,7 +35,7 @@ Background:
 			"shopping_cart": "关闭"
 		}
 		"""
-	Given jobs已添加支付方式:weapp
+	Given jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "支付宝"
@@ -45,7 +45,7 @@ Background:
 			"type": "微信支付"
 		}]
 		"""
-	And jobs已添加商品分类:weapp
+	And jobs已添加商品分类::weapp
 		"""
 		[{
 			"name": "分类1"
@@ -55,7 +55,7 @@ Background:
 			"name": "分类3"
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -114,8 +114,8 @@ Scenario:1 后台修改通用配置(开启和关闭商品搜索功能)
 	When bill访问jobs的webapp
 	Then bill'能'获得商品搜索框
 	#后台修改通用配置关闭商品搜索功能
-	Given jobs登录系统:weapp
-	When jobs'修改'通用设置:weapp
+	Given jobs登录系统::weapp
+	When jobs'修改'通用设置::weapp
 		"""
 		{
 			"product_sales": "关闭",
@@ -591,9 +591,9 @@ Scenario:6 搜索商品结果按后台商品排序显示顺序
 	jobs更新商品列表的商品排序
 	1.搜索出的结果根据商品列表排序进行排列
 
-	Given jobs登录系统:weapp
-	When jobs更新'商品2'商品排序1:weapp
-	When jobs更新'商品3'商品排序2:weapp
+	Given jobs登录系统::weapp
+	When jobs更新'商品2'商品排序1::weapp
+	When jobs更新'商品3'商品排序2::weapp
 	When bill访问jobs的webapp
 	When bill浏览jobs的webapp的'全部'商品列表页
 	When bill搜索商品
@@ -616,9 +616,9 @@ Scenario:6 搜索商品结果按后台商品排序显示顺序
 			"name": "商品1"
 		}]
 		"""
-	Given jobs登录系统:weapp
-	When jobs更新分类'分类3'中商品'小米商品2'商品排序1:weapp
-	When jobs更新分类'分类3'中商品'商品苹果3'商品排序2:weapp
+	Given jobs登录系统::weapp
+	When jobs更新分类'分类3'中商品'小米商品2'商品排序1::weapp
+	When jobs更新分类'分类3'中商品'商品苹果3'商品排序2::weapp
 	#更新商品分组里面的排序后，搜索商品结果根据商品列表排序进行排列
 	When bill访问jobs的webapp
 	When bill浏览jobs的webapp的'分类3'商品列表页

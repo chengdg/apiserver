@@ -11,9 +11,9 @@ Feature: bill在webapp中某个商品详情中能够看到对商品评价信息
 
 
 Background:
-    Given 重置weapp的bdd环境
-    Given jobs登录系统:weapp
-    And jobs已添加商品:weapp
+    Given 重置'weapp'的bdd环境
+    Given jobs登录系统::weapp
+    And jobs已添加商品::weapp
         """
         [{
             "name": "商品1",
@@ -27,7 +27,7 @@ Background:
         }]
         """
     Given bill关注jobs的公众号
-    Given jobs已有的订单:weapp
+    Given jobs已有的订单::weapp
         """
         [{
             "order_no":"1",
@@ -114,7 +114,7 @@ Background:
         """
 
     Given tom关注jobs的公众号
-    And jobs已有的订单:weapp
+    And jobs已有的订单::weapp
         """
         [{
             "order_no":"3",
@@ -176,9 +176,9 @@ Background:
             "review_detail": "商品2不太好！！！！！！！"
         }
         """
-    Given jobs登录系统:weapp
-    When jobs已获取对商品的评价信息:weapp
-    And jobs已完成对商品的评价信息审核:weapp
+    Given jobs登录系统::weapp
+    When jobs已获取对商品的评价信息::weapp
+    And jobs已完成对商品的评价信息审核::weapp
         """
         [{
             "member": "tom",

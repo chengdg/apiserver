@@ -5,9 +5,9 @@ Feature: 在webapp中浏览商品列表
 	bill能在webapp中看到jobs添加的"商品列表"
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	And jobs已添加商品分类:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs已添加商品分类::weapp
 		"""
 		[{
 			"name": "分类1"
@@ -19,7 +19,7 @@ Background:
 			"name": "分类4"
 		}]	
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品11",

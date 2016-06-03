@@ -29,10 +29,10 @@ Feature: 在webapp中购买参与积分应用活动的商品
 """
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
 
-	And jobs已添加商品规格:weapp
+	And jobs已添加商品规格::weapp
 		"""
 		[{
 			"name": "尺寸",
@@ -44,7 +44,7 @@ Background:
 			}]
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -91,14 +91,14 @@ Background:
 			}
 		}]
 		"""
-	Given jobs设定会员积分策略:weapp
+	Given jobs设定会员积分策略::weapp
 		"""
 		{
 			"integral_each_yuan": 2
 		}
 		"""
 	#支付方式
-	Given jobs已添加支付方式:weapp
+	Given jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -108,7 +108,7 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	When jobs创建积分应用活动:weapp
+	When jobs创建积分应用活动::weapp
 		"""
 		[{
 			"name": "商品1积分应用",
@@ -145,7 +145,7 @@ Background:
 			}]
 		}]
 		"""
-	Given bill关注jobs的公众号:weapp
+	Given bill关注jobs的公众号::weapp
 
 @mall3 @mall.promotion @mall.webapp.promotion @mall.promotion.integral @robert.wip
 Scenario: 1 购买单个积分折扣商品，积分金额小于最大折扣金额
@@ -283,8 +283,8 @@ Scenario: 4 购买多个积分折扣商品，总积分金额小于最大折扣�
 Scenario: 5 购买单个积分折扣商品，积分活动还未开始
 	积分活动还未开始，按原价下单
 
-	Given jobs登录系统:weapp
-	When jobs创建积分应用活动:weapp
+	Given jobs登录系统::weapp
+	When jobs创建积分应用活动::weapp
 		"""
 		[{
 			"name": "商品4积分应用",
@@ -335,8 +335,8 @@ Scenario: 5 购买单个积分折扣商品，积分活动还未开始
 Scenario: 6 购买单个积分折扣商品，积分活动已结束，积分活动不是永久有效
 	积分活动还未开始，按原价下单
 
-	Given jobs登录系统:weapp
-	When jobs创建积分应用活动:weapp
+	Given jobs登录系统::weapp
+	When jobs创建积分应用活动::weapp
 		"""
 		[{
 			"name": "商品4积分应用",
@@ -402,8 +402,8 @@ Scenario: 6 购买单个积分折扣商品，积分活动已结束，积分活�
 Scenario: 7 购买单个积分折扣商品，积分活动时间已结束，但积分活动设置为永久有效
 	积分活动永久有效，按积分折扣后的价格下单
 
-	Given jobs登录系统:weapp
-	When jobs创建积分应用活动:weapp
+	Given jobs登录系统::weapp
+	When jobs创建积分应用活动::weapp
 		"""
 		[{
 			"name": "商品4积分应用",
@@ -492,8 +492,8 @@ Scenario: 8 购买单个积分折扣商品，超出库存限制 后台进行库�
 Scenario: 9 购买单个,多规格积分折扣商品，积分活动已结束，但积分活动设置为永久有效
 	积分活动永久有效，按积分折扣后的价格下单
 
-	Given jobs登录系统:weapp
-	When jobs创建积分应用活动:weapp
+	Given jobs登录系统::weapp
+	When jobs创建积分应用活动::weapp
 		"""
 		[{
 			"name": "商品5积分应用",
@@ -552,8 +552,8 @@ Scenario: 9 购买单个,多规格积分折扣商品，积分活动已结束，�
 @mall3 @promotion @mall.promotion @mall.webapp.promotion @robert.wip @aac
 Scenario: 10 购买单个积分应用活动商品，购买时活动进行中，提交订单时，该活动被商家手工结束
 
-	Given jobs登录系统:weapp
-	When jobs创建积分应用活动:weapp
+	Given jobs登录系统::weapp
+	When jobs创建积分应用活动::weapp
 		"""
 		[{
 			"name": "商品4积分应用",
@@ -571,8 +571,8 @@ Scenario: 10 购买单个积分应用活动商品，购买时活动进行中，�
 	When bill访问jobs的webapp
 	When bill获得jobs的150会员积分
 
-	Given jobs登录系统:weapp
-	When jobs'结束'促销活动'商品4积分应用':weapp
+	Given jobs登录系统::weapp
+	When jobs'结束'促销活动'商品4积分应用'::weapp
 	When bill购买jobs的商品
 		"""
 		{
@@ -604,8 +604,8 @@ Scenario: 11 不同等级的会员购买有会员价同时有积分统一设置�
 	And tom2关注jobs的公众号
 	And tom3关注jobs的公众号
 	And tom4关注jobs的公众号
-	Given jobs登录系统:weapp
-	And jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品10",
@@ -617,7 +617,7 @@ Scenario: 11 不同等级的会员购买有会员价同时有积分统一设置�
 			"is_member_product": "on"
 		}]
 		"""
-	When jobs创建积分应用活动:weapp
+	When jobs创建积分应用活动::weapp
 		"""
 		[{
 			"name": "商品11积分应用",
@@ -632,7 +632,7 @@ Scenario: 11 不同等级的会员购买有会员价同时有积分统一设置�
 				}]
 		}]
 		"""
-	When jobs添加会员等级:weapp
+	When jobs添加会员等级::weapp
 		"""
 		[{
 			"name": "铜牌会员",
@@ -645,30 +645,30 @@ Scenario: 11 不同等级的会员购买有会员价同时有积分统一设置�
 			"discount": "7"
 		}]
 		"""
-	When jobs更新'tom2'的会员等级:weapp
+	When jobs更新'tom2'的会员等级::weapp
 		"""
 		{
 			"name": "tom2",
 			"member_rank": "铜牌会员"
 		}
 		"""
-	When jobs更新'tom3'的会员等级:weapp
+	When jobs更新'tom3'的会员等级::weapp
 		"""
 		{
 			"name": "tom4",
 			"member_rank": "银牌会员"
 		}
 		"""
-	When jobs更新'tom4'的会员等级:weapp
+	When jobs更新'tom4'的会员等级::weapp
 		"""
 		{
 			"name": "tom4",
 			"member_rank": "金牌会员"
 		}
 		"""
-	When jobs访问会员列表:weapp
-	Then jobs获得会员列表默认查询条件:weapp
-	Then jobs可以获得会员列表:weapp
+	When jobs访问会员列表::weapp
+	Then jobs获得会员列表默认查询条件::weapp
+	Then jobs可以获得会员列表::weapp
 		"""
 		[{
 			"name": "tom4",
@@ -812,8 +812,8 @@ Scenario: 12 不同等级的会员购买有会员价同时有根据等级设置�
 	And bill2关注jobs的公众号
 	And bill3关注jobs的公众号
 	And bill4关注jobs的公众号
-	And jobs登录系统:weapp
-	And jobs已添加商品:weapp
+	And jobs登录系统::weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品12",
@@ -822,7 +822,7 @@ Scenario: 12 不同等级的会员购买有会员价同时有根据等级设置�
 		}]
 		"""
 
-	When jobs添加会员等级:weapp
+	When jobs添加会员等级::weapp
 		"""
 		[{
 			"name": "铜牌会员",
@@ -835,30 +835,30 @@ Scenario: 12 不同等级的会员购买有会员价同时有根据等级设置�
 			"discount": "7"
 		}]
 		"""
-	When jobs更新'bill2'的会员等级:weapp
+	When jobs更新'bill2'的会员等级::weapp
 		"""
 		{
 			"name": "bill2",
 			"member_rank": "铜牌会员"
 		}
 		"""
-	When jobs更新'bill3'的会员等级:weapp
+	When jobs更新'bill3'的会员等级::weapp
 		"""
 		{
 			"name": "bill3",
 			"member_rank": "银牌会员"
 		}
 		"""
-	When jobs更新'bill4'的会员等级:weapp
+	When jobs更新'bill4'的会员等级::weapp
 		"""
 		{
 			"name": "bill4",
 			"member_rank": "金牌会员"
 		}
 		"""
-	When jobs访问会员列表:weapp
-	Then jobs获得会员列表默认查询条件:weapp
-	Then jobs可以获得会员列表:weapp
+	When jobs访问会员列表::weapp
+	Then jobs获得会员列表默认查询条件::weapp
+	Then jobs可以获得会员列表::weapp
 		"""
 		[{
 			"name": "bill4",
@@ -877,7 +877,7 @@ Scenario: 12 不同等级的会员购买有会员价同时有根据等级设置�
 			"member_rank": "普通会员"
 		}]
 		"""
-	When jobs创建积分应用活动:weapp
+	When jobs创建积分应用活动::weapp
 		"""
 		[{
 			"name": "商品12积分应用",
@@ -1057,8 +1057,8 @@ Scenario: 13 不同等级的会员购买原价同时有根据等级设置积分�
 	And bill2关注jobs的公众号
 	And bill3关注jobs的公众号
 	And bill4关注jobs的公众号
-	And jobs登录系统:weapp
-	And jobs已添加商品:weapp
+	And jobs登录系统::weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品13",
@@ -1066,7 +1066,7 @@ Scenario: 13 不同等级的会员购买原价同时有根据等级设置积分�
 			"is_member_product": "no"
 		}]
 		"""
-	When jobs添加会员等级:weapp
+	When jobs添加会员等级::weapp
 		"""
 		[{
 			"name": "铜牌会员",
@@ -1079,30 +1079,30 @@ Scenario: 13 不同等级的会员购买原价同时有根据等级设置积分�
 			"discount": "7"
 		}]
 		"""
-	When jobs更新'bill2'的会员等级:weapp
+	When jobs更新'bill2'的会员等级::weapp
 		"""
 		{
 			"name": "bill2",
 			"member_rank": "铜牌会员"
 		}
 		"""
-	When jobs更新'bill3'的会员等级:weapp
+	When jobs更新'bill3'的会员等级::weapp
 		"""
 		{
 			"name": "bill3",
 			"member_rank": "银牌会员"
 		}
 		"""
-	When jobs更新'bill4'的会员等级:weapp
+	When jobs更新'bill4'的会员等级::weapp
 		"""
 		{
 			"name": "bill4",
 			"member_rank": "金牌会员"
 		}
 		"""
-	When jobs访问会员列表:weapp
-	Then jobs获得会员列表默认查询条件:weapp
-	Then jobs可以获得会员列表:weapp
+	When jobs访问会员列表::weapp
+	Then jobs获得会员列表默认查询条件::weapp
+	Then jobs可以获得会员列表::weapp
 		"""
 		[{
 			"name": "bill4",
@@ -1122,7 +1122,7 @@ Scenario: 13 不同等级的会员购买原价同时有根据等级设置积分�
 		}]
 		"""
 
-	When jobs创建积分应用活动:weapp
+	When jobs创建积分应用活动::weapp
 		"""
 		[{
 			"name": "商品13积分应用",
@@ -1303,8 +1303,8 @@ Scenario: 14 单品积分活动小数抵扣数据错误
 	1.抵扣金额小于1元的小数
 	2.抵扣金额大于1元的小数
 
-	Given jobs登录系统:weapp
-	And jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品10",
@@ -1317,7 +1317,7 @@ Scenario: 14 单品积分活动小数抵扣数据错误
 			"price": 1.98
 		}]
 		"""
-	When jobs创建积分应用活动:weapp
+	When jobs创建积分应用活动::weapp
 		"""
 		[{
 			"name": "商品10积分应用",
@@ -1462,8 +1462,8 @@ Scenario: 15 购买积分抵扣为小数的商品
 	1.抵扣率百分比保留小数点后两位
 
 
-	Given jobs登录系统:weapp
-	And jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品13",
@@ -1471,7 +1471,7 @@ Scenario: 15 购买积分抵扣为小数的商品
 		}]
 		"""
 	#百分比保留两位小数
-	When jobs创建积分应用活动:weapp
+	When jobs创建积分应用活动::weapp
 		"""
 		[{
 			"name": "商品13积分应用",
@@ -1522,8 +1522,8 @@ Scenario: 15 购买积分抵扣为小数的商品
 Scenario: 16 购买积分抵扣多规格商品
 
 
-	Given jobs登录系统:weapp
-	And jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品14",
@@ -1542,7 +1542,7 @@ Scenario: 16 购买积分抵扣多规格商品
 			}
 		}]
 		"""
-	When jobs创建积分应用活动:weapp
+	When jobs创建积分应用活动::weapp
 		"""
 		[{
 			"name": "商品14积分应用",
@@ -1625,8 +1625,8 @@ Scenario: 17 购买同时参加积分抵扣和限时抢购的商品
 	1.设置积分抵扣的值超过限时抢购的最终价格
 	2.购买商品使用积分时，抵扣的金额是限时抢购的金额
 
-	Given jobs登录系统:weapp
-	And jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品15",
@@ -1648,7 +1648,7 @@ Scenario: 17 购买同时参加积分抵扣和限时抢购的商品
 			}
 		}]
 		"""
-	When jobs创建积分应用活动:weapp
+	When jobs创建积分应用活动::weapp
 		"""
 		[{
 			"name": "商品15积分应用",
@@ -1674,7 +1674,7 @@ Scenario: 17 购买同时参加积分抵扣和限时抢购的商品
 			}]
 		}]
 		"""
-	When jobs创建限时抢购活动:weapp
+	When jobs创建限时抢购活动::weapp
 		"""
 		[{
 			"name": "商品15限时抢购",
@@ -1751,15 +1751,15 @@ Scenario: 18 购买积分抵扣商品修改价格后
 	1.修改商品的价格小于积分抵扣的价格
 	2.购买商品使用积分时，抵扣的金额是修改后的商品金额
 
-	Given jobs登录系统:weapp
-	And jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品17",
 			"price": 39.99
 		}]
 		"""
-	When jobs创建积分应用活动:weapp
+	When jobs创建积分应用活动::weapp
 		"""
 		[{
 			"name": "商品17积分应用",
@@ -1774,7 +1774,7 @@ Scenario: 18 购买积分抵扣商品修改价格后
 			}]
 		}]
 		"""
-	When jobs更新商品'商品17':weapp
+	When jobs更新商品'商品17'::weapp
 		"""
 		{
 			"name": "商品17",
@@ -1819,8 +1819,8 @@ Scenario: 19 购买积分抵扣多规格商品修改价格后
 	2.购买商品使用积分时，小于积分抵扣金额的规格，抵扣的金额是修改后的商品金额
 	3.购买商品使用积分时，大于积分抵扣金额的规格，抵扣的金额是原来设置的积分抵扣金额
 
-	Given jobs登录系统:weapp
-	And jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品18",
@@ -1839,7 +1839,7 @@ Scenario: 19 购买积分抵扣多规格商品修改价格后
 			}
 		}]
 		"""
-	When jobs创建积分应用活动:weapp
+	When jobs创建积分应用活动::weapp
 		"""
 		[{
 			"name": "商品18积分应用",
@@ -1854,7 +1854,7 @@ Scenario: 19 购买积分抵扣多规格商品修改价格后
 			}]
 		}]
 		"""
-	When jobs更新商品'商品18':weapp
+	When jobs更新商品'商品18'::weapp
 		"""
 		{
 			"name": "商品18",
@@ -1923,8 +1923,8 @@ Scenario: 20 购买积分抵扣多规格商品多个数量
 	设置完积分活动
 	1.购买多规格商品多个数量
 
-	Given jobs登录系统:weapp
-	And jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品19",
@@ -1943,7 +1943,7 @@ Scenario: 20 购买积分抵扣多规格商品多个数量
 			}
 		}]
 		"""
-	When jobs创建积分应用活动:weapp
+	When jobs创建积分应用活动::weapp
 		"""
 		[{
 			"name": "商品19积分应用",
@@ -2010,15 +2010,15 @@ Scenario: 21 购买积分抵扣商品修改价格后多个商品
 	2.购买商品使用积分时，抵扣的金额是修改后的商品金额
 	3.购买多个商品
 
-	Given jobs登录系统:weapp
-	And jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品20",
 			"price": 10.00
 		}]
 		"""
-	When jobs创建积分应用活动:weapp
+	When jobs创建积分应用活动::weapp
 		"""
 		[{
 			"name": "商品20积分应用",
@@ -2033,7 +2033,7 @@ Scenario: 21 购买积分抵扣商品修改价格后多个商品
 			}]
 		}]
 		"""
-	When jobs更新商品'商品20':weapp
+	When jobs更新商品'商品20'::weapp
 		"""
 		{
 			"name": "商品20",

@@ -9,15 +9,15 @@ Feature: 禁止修改链接串账号
 	"""
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	And jobs已添加支付方式:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "微信支付"
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -28,14 +28,14 @@ Background:
 		}]
 		"""
 	And bill关注jobs的公众号
-	Given tom登录系统:weapp
-	And tom已添加支付方式:weapp
+	Given tom登录系统::weapp
+	And tom已添加支付方式::weapp
 		"""
 		[{
 			"type": "微信支付"
 		}]
 		"""
-	And tom已添加商品:weapp
+	And tom已添加商品::weapp
 		"""
 		[{
 			"name": "商品3",
@@ -77,8 +77,8 @@ Scenario: 1 修改本商户商品ID，进行访问
 			}]
 		}
 		"""
-	Given jobs登录系统:weapp
-	Then jobs可以获得最新订单详情:weapp
+	Given jobs登录系统::weapp
+	Then jobs可以获得最新订单详情::weapp
 		"""
 		{
 			"status": "待支付",

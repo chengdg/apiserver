@@ -11,9 +11,9 @@ Feature: 查看手机端已处理订单详情页的提示信息
 	"""
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	And jobs已添加商品:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "配送商品1",
@@ -31,7 +31,7 @@ Background:
 			"distribution_time":"on"
 		}]
 		"""
-	And jobs已添加支付方式:weapp
+	And jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "微信支付"
@@ -68,8 +68,8 @@ Scenario:1 购买有配送时间的商品,查看'已处理'状态订单详情页
 			}]
 		}
 		"""
-	Given jobs登录系统:weapp
-	When jobs对订单进行发货:weapp
+	Given jobs登录系统::weapp
+	When jobs对订单进行发货::weapp
 		"""
 		{
 			"order_no":"001",
@@ -77,7 +77,7 @@ Scenario:1 购买有配送时间的商品,查看'已处理'状态订单详情页
 			"shipper": ""
 		}
 		"""
-	Then jobs能获得订单'001':weapp
+	Then jobs能获得订单'001'::weapp
 		"""
 		{
 			"order_no": "001",

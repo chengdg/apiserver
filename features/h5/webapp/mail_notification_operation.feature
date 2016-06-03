@@ -5,15 +5,15 @@ Feature:运营邮件通知
 	jobs设定开启运营邮件通知，用户订单满足相应的条件，配置的运营邮箱可以收到相应的邮件通知
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	Given jobs设定会员积分策略:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	Given jobs设定会员积分策略::weapp
 		"""
 		{
 			"integral_each_yuan": 2
 		}
 		"""
-	And jobs已添加支付方式:weapp
+	And jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "货到付款"
@@ -21,7 +21,7 @@ Background:
 			"type": "微信支付"
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -41,7 +41,7 @@ Background:
 		}]
 		"""
 
-	When jobs创建积分应用活动:weapp
+	When jobs创建积分应用活动::weapp
 		"""
 		[{
 			"name": "商品1积分应用",
@@ -56,7 +56,7 @@ Background:
 			}]
 		}]
 		"""
-	When jobs创建买赠活动:weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品2买一赠一",
@@ -74,7 +74,7 @@ Background:
 			"is_enable_cycle_mode": true
 		}]
 		"""
-	When jobs创建限时抢购活动:weapp
+	When jobs创建限时抢购活动::weapp
 		"""
 		[{
 			"name": "商品3限时抢购",
@@ -88,7 +88,7 @@ Background:
 			"limit_period": 1
 		}]
 		"""
-	Given jobs已添加了优惠券规则:weapp
+	Given jobs已添加了优惠券规则::weapp
 		"""
 		[{
 			"name": "单品券4",
@@ -99,12 +99,12 @@ Background:
 			"coupon_product": "商品4"
 		}]
 		"""
-	And jobs初始化邮件通知:weapp
+	And jobs初始化邮件通知::weapp
 	Given bill关注jobs的公众号
 	Given tom关注jobs的公众号
 
-	Given jobs登录系统:weapp
-	When jobs为会员发放优惠券:weapp
+	Given jobs登录系统::weapp
+	When jobs为会员发放优惠券::weapp
 		"""
 		{
 			"name": "单品券4",
@@ -118,15 +118,15 @@ Scenario:1 启用"下单时"邮件通知
 	#1 bill购买单个商品（积分活动）；配置两个运营接收邮件，可以正确只收到一次邮件通知
 	#2 tom购买多个商品（买赠、限时抢购、优惠券）；配置两个运营接收邮件，可以正确只收到一次邮件通知
 	
-	Given jobs登录系统:weapp
-	When jobs配置'下单时'邮件通知:weapp
+	Given jobs登录系统::weapp
+	When jobs配置'下单时'邮件通知::weapp
 		"""
 		{
 			"emails":"ceshi@weizoom.com|ceshi02@weizoom.com",
 			"member_ids":""
 		}
 		"""
-	When jobs启用'下单时'邮件通知:weapp
+	When jobs启用'下单时'邮件通知::weapp
 	#购买单个商品（积分活动），成功下单
 		When bill访问jobs的webapp
 		When bill获得jobs的200会员积分
@@ -251,15 +251,15 @@ Scenario:2 启用"付款时"邮件通知
 	#1 bill购买单个商品（积分活动）；配置运营接收邮件，可以正确只收到一次邮件通知
 	#2 tom购买多个商品（买赠、限时抢购、优惠券）；配置运营接收邮件，可以正确只收到一次邮件通知
 	
-	Given jobs登录系统:weapp
-	When jobs配置'付款时'邮件通知:weapp
+	Given jobs登录系统::weapp
+	When jobs配置'付款时'邮件通知::weapp
 		"""
 		{
 			"emails":"ceshi@weizoom.com",
 			"member_ids":""
 		}
 		"""
-	When jobs启用'付款时'邮件通知:weapp
+	When jobs启用'付款时'邮件通知::weapp
 	#购买单个商品（积分活动），成功下单
 		When bill访问jobs的webapp
 		When bill获得jobs的200会员积分
@@ -389,15 +389,15 @@ Scenario:3 启用"取消时"邮件通知
 	#1 bill购买单个商品（积分活动）；配置运营接收邮件，可以正确只收到一次邮件通知
 	#2 tom购买多个商品（买赠、限时抢购、优惠券）；配置运营接收邮件，可以正确只收到一次邮件通知
 
-	Given jobs登录系统:weapp
-	When jobs配置'取消时'邮件通知:weapp
+	Given jobs登录系统::weapp
+	When jobs配置'取消时'邮件通知::weapp
 		"""
 		{
 			"emails":"ceshi@weizoom.com",
 			"member_ids":""
 		}
 		"""
-	When jobs启用'取消时'邮件通知:weapp
+	When jobs启用'取消时'邮件通知::weapp
 	#购买单个商品（积分活动），成功下单
 		When bill访问jobs的webapp
 		When bill获得jobs的200会员积分
@@ -527,15 +527,15 @@ Scenario:4 启用"完成时"邮件通知
 	#1 bill购买单个商品（积分活动）；配置运营接收邮件，可以正确只收到一次邮件通知
 	#2 tom购买多个商品（买赠、限时抢购、优惠券）；配置运营接收邮件，可以正确只收到一次邮件通知
 
-	Given jobs登录系统:weapp
-	When jobs配置'完成时'邮件通知:weapp
+	Given jobs登录系统::weapp
+	When jobs配置'完成时'邮件通知::weapp
 		"""
 		{
 			"emails":"ceshi@weizoom.com",
 			"member_ids":""
 		}
 		"""
-	When jobs启用'完成时'邮件通知:weapp
+	When jobs启用'完成时'邮件通知::weapp
 	#购买单个商品（积分活动），成功下单
 		When bill访问jobs的webapp
 		When bill获得jobs的200会员积分
@@ -571,8 +571,8 @@ Scenario:4 启用"完成时"邮件通知
 				}]
 			}
 			"""
-		Given jobs登录系统:weapp
-		When jobs对订单进行发货:weapp
+		Given jobs登录系统::weapp
+		When jobs对订单进行发货::weapp
 			"""
 			{
 				"order_no":"0000001",
@@ -652,8 +652,8 @@ Scenario:4 启用"完成时"邮件通知
 			}
 			"""
 		When tom使用支付方式'微信支付'进行支付
-		Given jobs登录系统:weapp
-		When jobs对订单进行发货:weapp
+		Given jobs登录系统::weapp
+		When jobs对订单进行发货::weapp
 			"""
 			{
 				"order_no":"0000002",

@@ -8,11 +8,11 @@ Feature:使用微众卡购买商品
 	feathure里要加一个  "weizoom_card_money":50.00,的字段
 
 Background:
-	Given 重置weapp的bdd环境
-	Given 重置weizoom_card的bdd环境
-	Given jobs登录系统:weapp
-	And jobs已有微众卡支付权限:weapp
-	And jobs已添加支付方式:weapp
+	Given 重置'weapp'的bdd环境
+	Given 重置'weizoom_card'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs已有微众卡支付权限::weapp
+	And jobs已添加支付方式::weapp
 		"""
 		[{
 			"type":"货到付款"
@@ -24,7 +24,7 @@ Background:
 			"type":"微众卡支付"
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -33,8 +33,8 @@ Background:
 		"""
 
 	#创建微众卡
-	Given test登录管理系统:weizoom_card
-	When test新建通用卡:weizoom_card
+	Given test登录管理系统::weizoom_card
+	When test新建通用卡::weizoom_card
 		"""
 		[{
 			"name":"100元微众卡",
@@ -75,7 +75,7 @@ Background:
 		"""
 
 	#微众卡审批出库
-	When test下订单:weizoom_card
+	When test下订单::weizoom_card
 		"""
 		[{
 			"card_info":[{
@@ -105,7 +105,7 @@ Background:
 		}]
 		"""
 
-	When test下订单:weizoom_card
+	When test下订单::weizoom_card
 		"""
 		[{
 			"card_info":[{
@@ -121,11 +121,11 @@ Background:
 		"""
 
 	#激活微众
-	When test激活卡号'100000001'的卡:weizoom_card
-	When test激活卡号'050000001'的卡:weizoom_card
-	When test激活卡号'050000002'的卡:weizoom_card
-	When test激活卡号'030000001'的卡:weizoom_card
-	When test激活卡号'000000001'的卡:weizoom_card
+	When test激活卡号'100000001'的卡::weizoom_card
+	When test激活卡号'050000001'的卡::weizoom_card
+	When test激活卡号'050000002'的卡::weizoom_card
+	When test激活卡号'030000001'的卡::weizoom_card
+	When test激活卡号'000000001'的卡::weizoom_card
 
 	#调整有效期（没有实现对有效期调整的功能）
 	#100000001：未使用
@@ -135,7 +135,7 @@ Background:
 	#030000003：已过期
 	#000000001：已用完
 
-	And test批量激活订单'0002'的卡:weizoom_card
+	And test批量激活订单'0002'的卡::weizoom_card
 
 	And bill关注jobs的公众号
 
@@ -1028,8 +1028,8 @@ Scenario:10 用两张微众卡购买，第二张卡的金额大于商品金额
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	When jobs'取消'订单'001':weapp
+	Given jobs登录系统::weapp
+	When jobs'取消'订单'001'::weapp
 
 	When bill访问jobs的webapp
 	When bill进行微众卡余额查询
@@ -1269,8 +1269,8 @@ Scenario:7 用已过期的微众卡购买商品时
 			}]
 		}
 		"""
-	Given jobs登录系统:weapp
-	Then jobs能获取微众卡'030000003':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获取微众卡'030000003'::weapp
 		"""
 		{
 			"status":"已过期",

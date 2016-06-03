@@ -5,11 +5,11 @@
 Feature: 取消订单后，校验后台优惠券规则列表信息
 
 Background:
-	Given 重置weapp的bdd环境
-	Given 重置weizoom_card的bdd环境
-	Given jobs登录系统:weapp
-	And jobs已有微众卡支付权限:weapp
-	And jobs已添加支付方式:weapp
+	Given 重置'weapp'的bdd环境
+	Given 重置'weizoom_card'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs已有微众卡支付权限::weapp
+	And jobs已添加支付方式::weapp
 		"""
 		[{
 			"type":"货到付款"
@@ -22,7 +22,7 @@ Background:
 		}]
 		"""
 
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -33,8 +33,8 @@ Background:
 
 @mall3
 Scenario:1 后台取消使用优惠券的'待支付'状态的订单
-	Given jobs登录系统:weapp
-	When jobs添加优惠券规则:weapp
+	Given jobs登录系统::weapp
+	When jobs添加优惠券规则::weapp
 		"""
 		[{
 			"name": "单品券1",
@@ -47,7 +47,7 @@ Scenario:1 后台取消使用优惠券的'待支付'状态的订单
 			"coupon_product": "商品1"
 		}]
 		"""
-	When jobs为会员发放优惠券:weapp
+	When jobs为会员发放优惠券::weapp
 		"""
 		{
 			"name": "单品券1",
@@ -56,7 +56,7 @@ Scenario:1 后台取消使用优惠券的'待支付'状态的订单
 			"coupon_ids": ["coupon1_id_1"]
 		}
 		"""
-	Then jobs能获得优惠券规则列表:weapp
+	Then jobs能获得优惠券规则列表::weapp
 		"""
 		[{
 			"name": "单品券1",
@@ -82,8 +82,8 @@ Scenario:1 后台取消使用优惠券的'待支付'状态的订单
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券规则列表:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券规则列表::weapp
 		"""
 		[{
 			"name": "单品券1",
@@ -93,8 +93,8 @@ Scenario:1 后台取消使用优惠券的'待支付'状态的订单
 			"end_date": "1天后"
 		}]
 		"""
-	When jobs'取消'订单'001':weapp
-	Then jobs能获得优惠券规则列表:weapp
+	When jobs'取消'订单'001'::weapp
+	Then jobs能获得优惠券规则列表::weapp
 		"""
 		[{
 			"name": "单品券1",
@@ -107,8 +107,8 @@ Scenario:1 后台取消使用优惠券的'待支付'状态的订单
 
 @mall3
 Scenario:2 手机端取消使用优惠券的'待支付'状态的订单
-	Given jobs登录系统:weapp
-	When jobs添加优惠券规则:weapp
+	Given jobs登录系统::weapp
+	When jobs添加优惠券规则::weapp
 		"""
 		[{
 			"name": "全体券2",
@@ -120,7 +120,7 @@ Scenario:2 手机端取消使用优惠券的'待支付'状态的订单
 			"coupon_id_prefix": "coupon2_id_"
 		}]
 		"""
-	When jobs为会员发放优惠券:weapp
+	When jobs为会员发放优惠券::weapp
 		"""
 		{
 			"name": "全体券2",
@@ -129,7 +129,7 @@ Scenario:2 手机端取消使用优惠券的'待支付'状态的订单
 			"coupon_ids": ["coupon2_id_1"]
 		}
 		"""
-	Then jobs能获得优惠券规则列表:weapp
+	Then jobs能获得优惠券规则列表::weapp
 		"""
 		[{
 			"name": "全体券2",
@@ -155,8 +155,8 @@ Scenario:2 手机端取消使用优惠券的'待支付'状态的订单
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券规则列表:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券规则列表::weapp
 		"""
 		[{
 			"name": "全体券2",
@@ -168,8 +168,8 @@ Scenario:2 手机端取消使用优惠券的'待支付'状态的订单
 		"""
 
 	When bill取消订单'001'
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券规则列表:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券规则列表::weapp
 		"""
 		[{
 			"name": "全体券2",
@@ -182,8 +182,8 @@ Scenario:2 手机端取消使用优惠券的'待支付'状态的订单
 
 @mall3
 Scenario:3 后台取消只使用优惠券支付的'待发货'状态的订单
-	Given jobs登录系统:weapp
-	When jobs添加优惠券规则:weapp
+	Given jobs登录系统::weapp
+	When jobs添加优惠券规则::weapp
 		"""
 		[{
 			"name": "单品券3",
@@ -196,7 +196,7 @@ Scenario:3 后台取消只使用优惠券支付的'待发货'状态的订单
 			"coupon_product": "商品1"
 		}]
 		"""
-	When jobs为会员发放优惠券:weapp
+	When jobs为会员发放优惠券::weapp
 		"""
 		{
 			"name": "单品券3",
@@ -205,7 +205,7 @@ Scenario:3 后台取消只使用优惠券支付的'待发货'状态的订单
 			"coupon_ids": ["coupon3_id_1"]
 		}
 		"""
-	Then jobs能获得优惠券规则列表:weapp
+	Then jobs能获得优惠券规则列表::weapp
 		"""
 		[{
 			"name": "单品券3",
@@ -231,8 +231,8 @@ Scenario:3 后台取消只使用优惠券支付的'待发货'状态的订单
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券规则列表:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券规则列表::weapp
 		"""
 		[{
 			"name": "单品券3",
@@ -242,8 +242,8 @@ Scenario:3 后台取消只使用优惠券支付的'待发货'状态的订单
 			"end_date": "1天后"
 		}]
 		"""
-	When jobs'取消'订单'001':weapp
-	Then jobs能获得优惠券规则列表:weapp
+	When jobs'取消'订单'001'::weapp
+	Then jobs能获得优惠券规则列表::weapp
 		"""
 		[{
 			"name": "单品券3",
@@ -257,8 +257,8 @@ Scenario:3 后台取消只使用优惠券支付的'待发货'状态的订单
 @mall3
 Scenario:4 后台取消使用微众卡和优惠券支付的'待发货'状态的订单
 	#创建微众卡
-	Given test登录管理系统:weizoom_card
-	When test新建通用卡:weizoom_card
+	Given test登录管理系统::weizoom_card
+	When test新建通用卡::weizoom_card
 		"""
 		[{
 			"name":"50元微众卡",
@@ -271,7 +271,7 @@ Scenario:4 后台取消使用微众卡和优惠券支付的'待发货'状态的�
 		"""
 
 	#微众卡审批出库
-	When test下订单:weizoom_card
+	When test下订单::weizoom_card
 			"""
 			[{
 				"card_info":[{
@@ -285,10 +285,10 @@ Scenario:4 后台取消使用微众卡和优惠券支付的'待发货'状态的�
 				}
 			}]
 			"""
-	And test批量激活订单'0001'的卡:weizoom_card
+	And test批量激活订单'0001'的卡::weizoom_card
 
-	Given jobs登录系统:weapp
-	When jobs添加优惠券规则:weapp
+	Given jobs登录系统::weapp
+	When jobs添加优惠券规则::weapp
 		"""
 		[{
 			"name": "全体券4",
@@ -300,7 +300,7 @@ Scenario:4 后台取消使用微众卡和优惠券支付的'待发货'状态的�
 			"coupon_id_prefix": "coupon4_id_"
 		}]
 		"""
-	When jobs为会员发放优惠券:weapp
+	When jobs为会员发放优惠券::weapp
 		"""
 		{
 			"name": "全体券4",
@@ -309,7 +309,7 @@ Scenario:4 后台取消使用微众卡和优惠券支付的'待发货'状态的�
 			"coupon_ids": ["coupon4_id_1"]
 		}
 		"""
-	Then jobs能获得优惠券规则列表:weapp
+	Then jobs能获得优惠券规则列表::weapp
 		"""
 		[{
 			"name": "全体券4",
@@ -339,8 +339,8 @@ Scenario:4 后台取消使用微众卡和优惠券支付的'待发货'状态的�
 		}
 		"""
 
-	Given jobs登录系统:weapp
-	Then jobs能获得优惠券规则列表:weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得优惠券规则列表::weapp
 		"""
 		[{
 			"name": "全体券4",
@@ -350,8 +350,8 @@ Scenario:4 后台取消使用微众卡和优惠券支付的'待发货'状态的�
 			"end_date": "1天后"
 		}]
 		"""
-	When jobs'取消'订单'001':weapp
-	Then jobs能获得优惠券规则列表:weapp
+	When jobs'取消'订单'001'::weapp
+	Then jobs能获得优惠券规则列表::weapp
 		"""
 		[{
 			"name": "全体券4",

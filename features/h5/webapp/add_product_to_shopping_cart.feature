@@ -5,9 +5,9 @@ Feature: 添加商品到购物车中
 	bill能在webapp中将jobs添加的"商品"放入购物车
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	And jobs已添加商品规格:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs已添加商品规格::weapp
 		"""
 		[{
 			"name": "尺寸",
@@ -19,7 +19,7 @@ Background:
 			}]
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -230,8 +230,8 @@ Scenario:3 商品添加到购物车后，后台对商品进行上下架管理
 			"invalid_products": []
 		}
 		"""
-	Given jobs登录系统:weapp
-	When jobs'下架'商品'商品1':weapp
+	Given jobs登录系统::weapp
+	When jobs'下架'商品'商品1'::weapp
 	When bill访问jobs的webapp
 	Then bill能获得购物车
 		"""
@@ -250,8 +250,8 @@ Scenario:3 商品添加到购物车后，后台对商品进行上下架管理
 			}]
 		}
 		"""
-	Given jobs登录系统:weapp
-	When jobs'上架'商品'商品1':weapp
+	Given jobs登录系统::weapp
+	When jobs'上架'商品'商品1'::weapp
 	When bill访问jobs的webapp
 	Then bill能获得购物车
 		"""
@@ -321,8 +321,8 @@ Scenario:4 商品添加到购物车后，后台对商品规格进行修改
 		}
 		"""
 	#更改规格M的库存为0
-	Given jobs登录系统:weapp
-	When jobs更新商品'商品3':weapp
+	Given jobs登录系统::weapp
+	When jobs更新商品'商品3'::weapp
 		"""
 		{
 			"name": "商品3",
@@ -342,7 +342,7 @@ Scenario:4 商品添加到购物车后，后台对商品规格进行修改
 			}
 		}
 		"""
-	Then jobs能获取商品'商品3':weapp
+	Then jobs能获取商品'商品3'::weapp
 		"""
 		{
 			"name": "商品3",
@@ -420,8 +420,8 @@ Scenario:4 商品添加到购物车后，后台对商品规格进行修改
 			}]
 		}
 		"""
-	Given jobs登录系统:weapp
-	When jobs删除商品规格'尺寸'的值'S':weapp
+	Given jobs登录系统::weapp
+	When jobs删除商品规格'尺寸'的值'S'::weapp
 	When bill访问jobs的webapp
 	Then bill能获得购物车
 		"""
@@ -484,8 +484,8 @@ Scenario:4 商品添加到购物车后，后台对商品规格进行修改
 			}]
 		}
 		"""
-	Given jobs登录系统:weapp
-	When jobs更新商品'商品4':weapp
+	Given jobs登录系统::weapp
+	When jobs更新商品'商品4'::weapp
 		"""
 		{
 			"name": "商品4",
@@ -553,8 +553,8 @@ Scenario:4 商品添加到购物车后，后台对商品规格进行修改
 			"invalid_products": []
 		}
 		"""
-	Given jobs登录系统:weapp
-	When jobs更新商品'商品1':weapp
+	Given jobs登录系统::weapp
+	When jobs更新商品'商品1'::weapp
 		"""
 		{
 			"name": "商品1",
@@ -687,8 +687,8 @@ Scenario:6 商品添加到购物车后，后台对商品的价格，库存进行
 		}
 		"""
 	#更改规格M的库存为3 S的价格为10
-	Given jobs登录系统:weapp
-	When jobs更新商品'商品3':weapp
+	Given jobs登录系统::weapp
+	When jobs更新商品'商品3'::weapp
 		"""
 		{
 			"name": "商品3",
@@ -708,7 +708,7 @@ Scenario:6 商品添加到购物车后，后台对商品的价格，库存进行
 			}
 		}
 		"""
-	Then jobs能获取商品'商品3':weapp
+	Then jobs能获取商品'商品3'::weapp
 		"""
 		{
 			"name": "商品3",

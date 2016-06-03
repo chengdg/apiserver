@@ -14,9 +14,9 @@ Feature: webapp商品列表页显示商品销量
 	"""
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	When jobs'修改'通用设置:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	When jobs'修改'通用设置::weapp
 		"""
 		{
 			"product_sales": "开启",
@@ -25,7 +25,7 @@ Background:
 			"shopping_cart": "关闭"
 		}
 		"""
-	Given jobs已添加支付方式:weapp
+	Given jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "支付宝"
@@ -35,7 +35,7 @@ Background:
 			"type": "微信支付"
 		}]
 		"""
-	And jobs已添加商品分类:weapp
+	And jobs已添加商品分类::weapp
 		"""
 		[{
 			"name": "分类1"
@@ -45,7 +45,7 @@ Background:
 			"name": "分类3"
 		}]
 		"""
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -170,8 +170,8 @@ Scenario:1 后台修改通用配置(开启和关闭商品销量功能)
 			"sales": 6
 		}]
 		"""
-	Given jobs登录系统:weapp
-	When jobs'修改'通用设置:weapp
+	Given jobs登录系统::weapp
+	When jobs'修改'通用设置::weapp
 		"""
 		{
 			"product_sales": "关闭",

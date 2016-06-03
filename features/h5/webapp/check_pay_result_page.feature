@@ -4,11 +4,11 @@
 Feature:校验手机端支付结果页面
 
 Background:
-	Given 重置weapp的bdd环境
-	Given 重置weizoom_card的bdd环境
-	Given jobs登录系统:weapp
-	And jobs已有微众卡支付权限:weapp
-	And jobs已添加支付方式:weapp
+	Given 重置'weapp'的bdd环境
+	Given 重置'weizoom_card'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs已有微众卡支付权限::weapp
+	And jobs已添加支付方式::weapp
 		"""
 		[{
 			"type":"货到付款"
@@ -22,8 +22,8 @@ Background:
 		"""
 
 	#创建微众卡
-	Given test登录管理系统:weizoom_card
-	When test新建通用卡:weizoom_card
+	Given test登录管理系统::weizoom_card
+	When test新建通用卡::weizoom_card
 		"""
 		[{
 			"name":"100元微众卡",
@@ -43,7 +43,7 @@ Background:
 		"""
 
 	#微众卡审批出库
-	When test下订单:weizoom_card
+	When test下订单::weizoom_card
 			"""
 			[{
 				"card_info":[{
@@ -62,9 +62,9 @@ Background:
 				}
 			}]
 			"""
-	And test批量激活订单'0001'的卡:weizoom_card
+	And test批量激活订单'0001'的卡::weizoom_card
 
-	And jobs已添加商品:weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -220,8 +220,8 @@ Scenario:3 支付结果页面支付方式为'货到付款'
 Scenario:4 支付结果页面支付方式为'优惠抵扣'，使用优惠券支付
 	#bill选择'支付宝'支付方式，单品券抵扣全部
 
-	Given jobs登录系统:weapp
-	Given jobs已添加了优惠券规则:weapp
+	Given jobs登录系统::weapp
+	Given jobs已添加了优惠券规则::weapp
 		"""
 		[{
 			"name": "优惠券1",
@@ -232,7 +232,7 @@ Scenario:4 支付结果页面支付方式为'优惠抵扣'，使用优惠券支�
 			"coupon_product": "商品1"
 		}]
 		"""
-	When bill领取jobs的优惠券:weapp
+	When bill领取jobs的优惠券::weapp
 		"""
 		[{
 			"name": "优惠券1",
@@ -280,8 +280,8 @@ Scenario:4 支付结果页面支付方式为'优惠抵扣'，使用优惠券支�
 Scenario:5 支付结果页面支付方式为'优惠抵扣'，使用整单积分抵扣
 	#bill选择'货到付款'支付方式，整单积分抵扣全部
 
-	Given jobs登录系统:weapp
-	Given jobs设定会员积分策略:weapp
+	Given jobs登录系统::weapp
+	Given jobs设定会员积分策略::weapp
 		"""
 		{
 			"integral_each_yuan": 2,
@@ -375,8 +375,8 @@ Scenario:6 支付结果页面支付方式为'优惠抵扣'，使用微众卡支�
 Scenario:7 支付结果页面支付方式为'优惠抵扣'，使用微众卡和优惠券支付
 	#bill选择'微信支付'支付方式，使用微众卡和全体券抵扣全部
 
-	Given jobs登录系统:weapp
-	Given jobs已添加了优惠券规则:weapp
+	Given jobs登录系统::weapp
+	Given jobs已添加了优惠券规则::weapp
 		"""
 		[{
 			"name": "优惠券1",
@@ -386,7 +386,7 @@ Scenario:7 支付结果页面支付方式为'优惠抵扣'，使用微众卡和�
 			"coupon_id_prefix": "coupon1_id_"
 		}]
 		"""
-	When bill领取jobs的优惠券:weapp
+	When bill领取jobs的优惠券::weapp
 		"""
 		[{
 			"name": "优惠券1",
@@ -439,14 +439,14 @@ Scenario:7 支付结果页面支付方式为'优惠抵扣'，使用微众卡和�
 Scenario:8 支付结果页面支付方式为'优惠抵扣'，使用微众卡和积分支付
 	#bill选择'微信支付'支付方式，使用微众卡和单品积分抵扣全部
 
-	Given jobs登录系统:weapp
-	Given jobs设定会员积分策略:weapp
+	Given jobs登录系统::weapp
+	Given jobs设定会员积分策略::weapp
 		"""
 		{
 			"integral_each_yuan": 2
 		}
 		"""
-	When jobs创建积分应用活动:weapp
+	When jobs创建积分应用活动::weapp
 		"""
 		[{
 			"name": "商品1积分应用",

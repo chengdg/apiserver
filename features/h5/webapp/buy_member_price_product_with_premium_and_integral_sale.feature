@@ -6,9 +6,9 @@ Feature:手机端购买同时参与会员折扣,买赠和单品积分抵扣活�
 	#bug4305-手机端购买参与“会员价+买赠+积分应用”商品时，提交订单不成功（只提示正在提交订单，页面不跳转）
 
 Background:
-	Given 重置weapp的bdd环境
-	Given jobs登录系统:weapp
-	When jobs已添加支付方式:weapp
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	When jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "微信支付",
@@ -21,14 +21,14 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	Given jobs设定会员积分策略:weapp
+	Given jobs设定会员积分策略::weapp
 		"""
 		{
 			"integral_each_yuan": 2
 		}
 		"""
 	
-	When jobs添加会员等级:weapp
+	When jobs添加会员等级::weapp
 		"""
 		[{
 			"name": "铜牌会员",
@@ -44,24 +44,24 @@ Background:
 	And bill2关注jobs的公众号
 	And bill3关注jobs的公众号
 
-	Given jobs登录系统:weapp
-	When jobs更新'bill2'的会员等级:weapp
+	Given jobs登录系统::weapp
+	When jobs更新'bill2'的会员等级::weapp
 		"""
 		{
 			"name":"bill2",
 			"member_rank":"铜牌会员"
 		}
 		"""
-	When jobs更新'bill3'的会员等级:weapp
+	When jobs更新'bill3'的会员等级::weapp
 		"""
 		{
 			"name":"bill3",
 			"member_rank":"银牌会员"
 		}
 		"""
-	When jobs访问会员列表:weapp
-	Then jobs获得会员列表默认查询条件:weapp
-	Then jobs可以获得会员列表:weapp
+	When jobs访问会员列表::weapp
+	Then jobs获得会员列表默认查询条件::weapp
+	Then jobs可以获得会员列表::weapp
 		"""
 		[{
 			"name":"bill3",
@@ -74,7 +74,7 @@ Background:
 			"member_rank":"普通会员"
 		}]
 		"""
-	When jobs已添加商品:weapp
+	When jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -88,8 +88,8 @@ Background:
 
 @mall3 @robert.wip
 Scenario:1 购买会员价，买赠（全部会员）和积分抵扣（分级设置）活动的商品
-	Given jobs登录系统:weapp
-	When jobs创建买赠活动:weapp
+	Given jobs登录系统::weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品1买一赠二",
@@ -105,7 +105,7 @@ Scenario:1 购买会员价，买赠（全部会员）和积分抵扣（分级设
 			"is_enable_cycle_mode": true
 		}]
 		"""
-	When jobs创建积分应用活动:weapp
+	When jobs创建积分应用活动::weapp
 		"""
 		[{
 			"name": "商品1积分应用",
@@ -168,8 +168,8 @@ Scenario:1 购买会员价，买赠（全部会员）和积分抵扣（分级设
 
 @mall3 @robert.wip
 Scenario:2 购买会员价，买赠（全部会员）和积分抵扣（统一设置）活动的商品
-	Given jobs登录系统:weapp
-	When jobs创建买赠活动:weapp
+	Given jobs登录系统::weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品1买一赠二",
@@ -185,7 +185,7 @@ Scenario:2 购买会员价，买赠（全部会员）和积分抵扣（统一设
 			"is_enable_cycle_mode": true
 		}]
 		"""
-	When jobs创建积分应用活动:weapp
+	When jobs创建积分应用活动::weapp
 		"""
 		[{
 			"name": "商品1积分应用",
@@ -239,8 +239,8 @@ Scenario:2 购买会员价，买赠（全部会员）和积分抵扣（统一设
 
 @mall3 @robert.wip
 Scenario:3 购买会员价，买赠（某一等级）和积分抵扣（分级设置）活动的商品
-	Given jobs登录系统:weapp
-	When jobs创建买赠活动:weapp
+	Given jobs登录系统::weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品1买一赠一",
@@ -256,7 +256,7 @@ Scenario:3 购买会员价，买赠（某一等级）和积分抵扣（分级设
 			"is_enable_cycle_mode": true
 		}]
 		"""
-	When jobs创建积分应用活动:weapp
+	When jobs创建积分应用活动::weapp
 		"""
 		[{
 			"name": "商品1积分应用",
@@ -353,8 +353,8 @@ Scenario:3 购买会员价，买赠（某一等级）和积分抵扣（分级设
 
 @mall3 @robert.wip
 Scenario:4 购买会员价，买赠（某一等级）和积分抵扣（统一设置）活动的商品
-	Given jobs登录系统:weapp
-	When jobs创建买赠活动:weapp
+	Given jobs登录系统::weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品1买一赠一",
@@ -370,7 +370,7 @@ Scenario:4 购买会员价，买赠（某一等级）和积分抵扣（统一设
 			"is_enable_cycle_mode": true
 		}]
 		"""
-	When jobs创建积分应用活动:weapp
+	When jobs创建积分应用活动::weapp
 		"""
 		[{
 			"name": "商品1积分应用",

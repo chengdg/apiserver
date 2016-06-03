@@ -15,11 +15,11 @@ Feature:jobs管理系统里待支付的订单，用户可以在手机端直接�
 		9.
 	"""
 Background:
-	Given 重置weapp的bdd环境
-	Given 重置weizoom_card的bdd环境
-	Given jobs登录系统:weapp
-	And jobs已有微众卡支付权限:weapp
-	And jobs已添加支付方式:weapp
+	Given 重置'weapp'的bdd环境
+	Given 重置'weizoom_card'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs已有微众卡支付权限::weapp
+	And jobs已添加支付方式::weapp
 		"""
 		[{
 			"type":"货到付款"
@@ -31,8 +31,8 @@ Background:
 		"""
 
 	#创建微众卡
-	Given test登录管理系统:weizoom_card
-	When test新建通用卡:weizoom_card
+	Given test登录管理系统::weizoom_card
+	When test新建通用卡::weizoom_card
 		"""
 		[{
 			"name":"100元微众卡",
@@ -45,7 +45,7 @@ Background:
 		"""
 
 	#微众卡审批出库
-	When test下订单:weizoom_card
+	When test下订单::weizoom_card
 		"""
 		[{
 			"card_info":[{
@@ -59,10 +59,10 @@ Background:
 			}
 		}]
 		"""
-	And test批量激活订单'0001'的卡:weizoom_card
+	And test批量激活订单'0001'的卡::weizoom_card
 
-	Given jobs登录系统:weapp
-	And jobs已添加商品:weapp
+	Given jobs登录系统::weapp
+	And jobs已添加商品::weapp
 		"""
 		[{
 			"name": "商品1",
@@ -79,8 +79,8 @@ Background:
 	When bill获得jobs的150会员积分
 	Then bill在jobs的webapp中拥有150会员积分
 
-	Given jobs登录系统:weapp
-	Given jobs已添加了优惠券规则:weapp
+	Given jobs登录系统::weapp
+	Given jobs已添加了优惠券规则::weapp
 		"""
 		[{
 			"name": "全体券1",
@@ -97,7 +97,7 @@ Background:
 			"coupon_product": "商品2"
 		}]
 		"""
-	And jobs设定会员积分策略:weapp
+	And jobs设定会员积分策略::weapp
 		"""
 		{
 			"use_ceiling": 100,
@@ -227,15 +227,15 @@ Scenario:1 bill能取消待支付订单
 			"status": "已取消"
 		}
 		"""
-	Given jobs登录系统:weapp
-	Then jobs能获得订单'001':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得订单'001'::weapp
 		"""
 		{
 			"order_no": "001",
 			"status": "已取消"
 		}
 		"""
-	Then jobs能获取商品'商品1':weapp
+	Then jobs能获取商品'商品1'::weapp
 		"""
 		{
 			"name": "商品1",
@@ -260,22 +260,22 @@ Scenario:2 bill不能取消使用了优惠券的待发货订单
 			"status": "待发货"
 		}
 		"""
-	Given jobs登录系统:weapp
-	Then jobs能获得订单'002':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得订单'002'::weapp
 		"""
 		{
 			"order_no": "002",
 			"status": "待发货"
 		}
 		"""
-	Then jobs能获取商品'商品1':weapp
+	Then jobs能获取商品'商品1'::weapp
 		"""
 		{
 			"name": "商品1",
 			"stocks": 4
 		}
 		"""
-	Then jobs获取优惠券'coupon1_id_1'状态:weapp
+	Then jobs获取优惠券'coupon1_id_1'状态::weapp
 		"""
 		{
 			"coupon_code": "coupon1_id_1",
@@ -302,15 +302,15 @@ Scenario:3 bill不能取消使用了积分的待发货订单
 		"""
 	Then bill在jobs的webapp中拥有0会员积分
 
-	Given jobs登录系统:weapp
-	Then jobs能获得订单'003':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得订单'003'::weapp
 		"""
 		{
 			"order_no": "003",
 			"status": "待发货"
 		}
 		"""
-	Then jobs能获取商品'商品1':weapp
+	Then jobs能获取商品'商品1'::weapp
 		"""
 		{
 			"name": "商品1",
@@ -338,15 +338,15 @@ Scenario:4 bill能取消使用积分的待支付订单
 		}
 		"""
 	Then bill在jobs的webapp中拥有50会员积分
-	Given jobs登录系统:weapp
-	Then jobs能获得订单'004':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得订单'004'::weapp
 		"""
 		{
 			"order_no": "004",
 			"status": "已取消"
 		}
 		"""
-	Then jobs能获取商品'商品1':weapp
+	Then jobs能获取商品'商品1'::weapp
 		"""
 		{
 			"name": "商品1",
@@ -372,22 +372,22 @@ Scenario:5 bill能取消使用了单品券的待支付订单
 			"status": "已取消"
 		}
 		"""
-	Given jobs登录系统:weapp
-	Then jobs能获得订单'005':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得订单'005'::weapp
 		"""
 		{
 			"order_no": "005",
 			"status": "已取消"
 		}
 		"""
-	Then jobs能获取商品'商品2':weapp
+	Then jobs能获取商品'商品2'::weapp
 		"""
 		{
 			"name": "商品2",
 			"stocks": 3
 		}
 		"""
-	Then jobs获取优惠券'coupon2_id_1'状态:weapp
+	Then jobs获取优惠券'coupon2_id_1'状态::weapp
 		"""
 		{
 			"coupon_code": "coupon2_id_1",
@@ -413,22 +413,22 @@ Scenario:6 bill能取消使用了优惠券的待支付订单
 			"status": "已取消"
 		}
 		"""
-	Given jobs登录系统:weapp
-	Then jobs能获得订单'006':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得订单'006'::weapp
 		"""
 		{
 			"order_no": "006",
 			"status": "已取消"
 		}
 		"""
-	Then jobs能获取商品'商品2':weapp
+	Then jobs能获取商品'商品2'::weapp
 		"""
 		{
 			"name": "商品2",
 			"stocks": 4
 		}
 		"""
-	Then jobs获取优惠券'coupon1_id_2'状态:weapp
+	Then jobs获取优惠券'coupon1_id_2'状态::weapp
 		"""
 		{
 			"coupon_code": "coupon1_id_2",
@@ -453,15 +453,15 @@ Scenario:7 bill不能取消使用了微众卡的待发货订单
 			"status": "待发货"
 		}
 		"""
-	Given jobs登录系统:weapp
-	Then jobs能获得订单'007':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得订单'007'::weapp
 		"""
 		{
 			"order_no": "007",
 			"status": "待发货"
 		}
 		"""
-	Then jobs能获取商品'商品2':weapp
+	Then jobs能获取商品'商品2'::weapp
 		"""
 		{
 			"name": "商品2",
@@ -501,15 +501,15 @@ Scenario:8 bill能取消使用了微众卡的待支付订单
 			"status": "已取消"
 		}
 		"""
-	Given jobs登录系统:weapp
-	Then jobs能获得订单'008':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得订单'008'::weapp
 		"""
 		{
 			"order_no": "008",
 			"status": "已取消"
 		}
 		"""
-	Then jobs能获取商品'商品2':weapp
+	Then jobs能获取商品'商品2'::weapp
 		"""
 		{
 			"name": "商品2",
@@ -540,8 +540,8 @@ Scenario:9 bill能取买赠订单，主商品和赠品库存正常
 	3. '商品2'库存更新加2
 	4. 微众卡状态为'已使用'
 
-	Given jobs登录系统:weapp
-	When jobs创建买赠活动:weapp
+	Given jobs登录系统::weapp
+	When jobs创建买赠活动::weapp
 		"""
 		[{
 			"name": "商品1买一赠二",
@@ -571,15 +571,15 @@ Scenario:9 bill能取买赠订单，主商品和赠品库存正常
 			}]
 		}
 		"""
-	Given jobs登录系统:weapp
-	Then jobs能获取商品'商品1':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获取商品'商品1'::weapp
 		"""
 		{
 			"name": "商品1",
 			"stocks": 2
 		}
 		"""
-	Then jobs能获取商品'商品2':weapp
+	Then jobs能获取商品'商品2'::weapp
 		"""
 		{
 			"name": "商品2",
@@ -596,22 +596,22 @@ Scenario:9 bill能取买赠订单，主商品和赠品库存正常
 			"status": "已取消"
 		}
 		"""
-	Given jobs登录系统:weapp
-	Then jobs能获得订单'009':weapp
+	Given jobs登录系统::weapp
+	Then jobs能获得订单'009'::weapp
 		"""
 		{
 			"order_no": "009",
 			"status": "已取消"
 		}
 		"""
-	Then jobs能获取商品'商品1':weapp
+	Then jobs能获取商品'商品1'::weapp
 		"""
 		{
 			"name": "商品1",
 			"stocks": 4
 		}
 		"""
-	Then jobs能获取商品'商品2':weapp
+	Then jobs能获取商品'商品2'::weapp
 		"""
 		{
 			"name": "商品2",

@@ -16,9 +16,9 @@ BDD_SERVER
 1. 调用外部step的feature需要重置其环境，例：
 		Given 重置'weapp'的bdd环境
 		Given 重置'weizoom_card'的bdd环境
-2. 调用外部step需要在step结尾增加标签`::{bdd_server_name}`, 例：
+2. 调用外部step需要在step结尾增加标签`::{bdd_server_name}`, bdd_server_name指的是项目名称，如apiserver、weizoom_card,例：
 		Given jobs已添加商品::weapp
-3. `xxx::yyy`形式step已经被BDD_SERVER占用，不要新建此类型step
+3. `xxx::yyy`形式step已经被BDD_SERVER占用，不要新建此类型step。
 
 ### 2.2 编写、调试step实现（*_steps.py）
 1. 可以和同一个项目中通过context传递上下文参数一样跨BDD_SERVER传递，如context.latest_order_id依然可用。

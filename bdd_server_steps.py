@@ -59,6 +59,9 @@ try:
 	git_dir = os.path.abspath(_git_shell('git rev-parse --git-dir'))
 	project_dir = os.path.dirname(git_dir)
 	self_name = project_dir.split(os.sep)[-1]
+	# 兼容weapp
+	if self_name == 'Weapp':
+		self_name = 'weapp'
 except BaseException as e:
 	print(e)
 	self_name = "You should install Git!!"

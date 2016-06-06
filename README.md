@@ -1,10 +1,7 @@
 BDD_SERVER
 ----------------------
 
-## 概述
-
-安装：
-`pip install git+https://git2.weizzz.com:84/weizoom/bddserver.git`
+## 1.概述
 
 ### 基本功能
 
@@ -12,22 +9,9 @@ BDD_SERVER
 2. 具有call_bdd_server，可调用外部step
 
 
+## 2. 使用指南
 
-### 文件
-
-bdd_server（被外部调用）:
-1. start_bdd_server.bat 	# 启动脚本
-2. features/bdd_server/bdd_server.feature	# 启动feature
-3. features/steps/bdd_server_steps.py	# BDD_SERVER服务器
-
-call_bdd_server（调用外部）:
-1. features/steps/call_bdd_server_step.py # 调用外部step
-
-
-
-## 使用指南
-
-### 编写feature(*.feature文件)
+### 2.1 编写feature(*.feature文件)
 
 1. 调用外部step的feature需要重置其环境，例：
 		Given 重置'weapp'的bdd环境
@@ -36,17 +20,17 @@ call_bdd_server（调用外部）:
 		Given jobs已添加商品::weapp
 3. `xxx::yyy`形式step已经被BDD_SERVER占用，不要新建此类型step
 
-### 编写、调试step实现（*_steps.py）
+### 2.2 编写、调试step实现（*_steps.py）
 1. 可以和同一个项目中通过context传递上下文参数一样跨BDD_SERVER传递，如context.latest_order_id依然可用。
 	1. 不能传递不可json序列化对象，也就是不能json.dumps的对象
 	2. 如非必要，不推荐使用
 2. 通常所有信息已经可以在执行behave命令的窗口看到，但是也许还有剩余的在BDD_SERVER窗口。
 
-### 运行
+### 2.3 运行
 1. 同单项目运行一样执行初始化，如执行相关rebuild.bat
 2. 运行相关server和BDD_SERVER，即各项目的start_service.bat、start_bdd_server.bat
 
-### 封装step
+### 2.4 封装step
 
 对于一个服务，可能并不关心其他服务创建数据的细节，所以可以把相关外部调用step封装成一个，而后又step实现去以子step的形式具体调用step。
 典型案例(细节数据省略)：
@@ -106,12 +90,104 @@ def step_impl(context):
 	...
 ```
 
-## 维护
-TODO
-	这个是难点。。。还没想好。。。。
 
-1. 因为有各种各样的python项目，所以需要有一份兼容各种项目的BDD_SERVER系统
-2. 因为behave的特性，无法把BDD_SERVER变成一个包或者一个目录，这就面临着改一个地方需要跑到各个项目改一遍，需要有方法能只维护一份代码
-3. 端口分配。如何在有很多BDD_SERVER的时候，能够让各BDD_SERVER端口不冲突，能够让调用外部时能够正确的获得端口。 （注：使用的域名都是127.0.0.1）
 
-方法todo
+## 3. BDD_SERVER原理
+
+### 3.1. 运行原理
+
+简而言之，启动一个名为BDD_SERVER的http server，通过http的方式传递数据。
+
+	1. 启动bdd_server服务。
+	2. call_bdd_server解析behave step，并以http请求方式发送给bdd_server。
+	3. bdd_server收到请求后解析成behave step，以子step（`context.execute_steps(step)`）方式执行。
+	4. bdd_server执行完毕后把结果解析成http响应发回。
+	5. call_bdd_server收到响应后，根据约定判定是否执行成功，以及显示信息。
+
+如图：
+![](bdd_server.png)
+
+如果图片没渲染出来，请查看<https://git2.weizzz.com:84/weizoom/bddserver/raw/master/bdd_server.png>
+
+### 3.2. 文件结构
+
+因为behave的限制，实现BDD_SERVER必须为此目录结构：
+
+```
+/.
+│  start_bdd_server.bat
+│  start_bdd_server.sh
+│
+├─bddserver
+│      .gitignore
+│      bdd_server_steps.py
+│      call_bdd_server_steps.py
+│      README.md
+│      __init__.py
+│
+└─features
+    │  environment.py
+    │  __init__.py
+    │
+    ├─bdd_server
+    │      bdd_server.feature
+    │
+    └─steps
+            bdd_server_steps.py
+            __init__.py
+
+```
+
+
+## 4. 维护
+
+### 4.1. code-base
+
+code-base中具有上述文件结构
+
+### 4.2. 非code-base
+
+1. 按照上述结构增加文件，参考code-base
+2. bddserver是个特殊目录，实际上是git subtree，添加方法见下文
+
+### 4.3. bddserver目录
+
+为了能使各项目使用的BDD_SERVER保持一致，需要用git管理起来。又因为behave的本身限制，对于可能频繁变动的bdd_server_steps.py和call_bdd_server_steps.py文件，使用git subtree管理。对于上述两个，behave使用**step_library**描述（参见<https://github.com/behave/behave/blob/master/features/step.use_step_library.feature>）。
+
+#### 4.3.1 step_library
+
+参见：<https://github.com/behave/behave/blob/master/features/step.use_step_library.feature>
+
+**step_library**是behave官方推荐的管理step库的方式，简而言之，step实现可以放在任何位置，然后在features/step/里有一个文件把它import进来，这就是features/step/bdd_server_steps.py的作用。
+
+**注**： behave不支持steps目录中子目录的steps文件，参见<https://github.com/behave/behave/issues/169>。
+
+### 4.3.2 subtree
+#### 增加bdd_server子目录的方式
+
+```
+git remote add -f bddserver https://git2.weizzz.com:84/weizoom/bddserver.git
+git subtree add --prefix=bddserver bddserver master --squash
+```
+**注**：上述subtree命令只能在git项目根目录执行，如果实际项目代码文件不在根目录（如weapp项目），需要--prefix时增加路径：
+```
+git subtree add --prefix=weapp/bddserver bddserver master --squash
+```
+
+#### 更新代码
+
+因为subtree目录本身就是代码的一部分，所以按照git更新就可以了，而且只用一个人更新并提交代码即可。
+如果没有增加过remote，需要第一次更新时候执行：
+```
+git remote add -f bddserver https://git2.weizzz.com:84/weizoom/bddserver.git
+```
+
+```
+git subtree pull --prefix=bddserver bddserver master --squash
+```
+
+**注**：--prefix扔然要指定位置,如weapp更新：
+
+```
+git subtree pull --prefix=weapp/bddserver bddserver master --squash
+```

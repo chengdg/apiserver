@@ -164,7 +164,7 @@ Background:
 		}]
 		"""
 
-@mall3 @mall.webapp @mall.coupon @ztqb
+@mall3 @mall.webapp @mall.coupon
 Scenario:1 使用单品优惠劵进行购买，该单品券适用于商品1，如果商品2使用，则，购买失败
 
 	Given jobs登录系统::weapp

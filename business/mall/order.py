@@ -152,7 +152,7 @@ class Order(business_model.Model):
 			order.context['order'] = order_model
 			order._init_slot_from_model(order_model)
 			#TODO2: this is ugly, need moved into __init__
-			order.ship_area = regional_util.get_str_value_by_string_ids(order_model.area)
+			# order.ship_area = regional_util.get_str_value_by_string_ids(order_model.area)
 			order.context['is_valid'] = True
 			orders.append(order)
 
@@ -1362,3 +1362,43 @@ class Order(business_model.Model):
 			return order_group_info
 		else:
 			return {}
+
+	@staticmethod
+	@param_required(['orders', 'woid'])
+	def get_group_infos_for_orders(args):
+		orders = args['orders']
+		woid = args['woid']
+		order_ids = [order.order_id for order in orders]
+
+		if not orders:
+			return {}
+		order_has_groups = mall_models.OrderHasGroup.select().dj_where(order_id__in=order_ids)
+
+		order_id2order_has_group = {o.order_id: o for o in order_has_groups}
+
+		group_order_ids = order_id2order_has_group.keys()
+
+		order_id2group_info = {}
+
+		for order in orders:
+			if order.order_id in group_order_ids:
+				activity_url = ''
+				order_group_info = order_id2order_has_group[order.order_id].to_dict()
+				if order.status == mall_models.ORDER_STATUS_NOT:
+					activity_url = 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/m_group/?webapp_owner_id=' + str(
+						order.context['webapp_owner'].id) + '&id=' + order_group_info['activity_id']
+				else:
+					url = GroupBuyOPENAPI['get_group_url']
+					data = {
+						'woid': woid,
+						'group_id': order_group_info['group_id']
+					}
+					is_success, group_url_info = microservice_consume(url=url, data=data)
+					if is_success:
+						activity_url = 'http://' + settings.WEAPP_DOMAIN + group_url_info['group_url']
+				order_group_info['activity_url'] = activity_url
+				order_id2group_info[order.order_id] = order_group_info
+			else:
+				order_id2group_info[order.order_id] = {}
+
+		return order_id2group_info

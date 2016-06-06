@@ -33,18 +33,22 @@ class AOrderList(api_resource.ApiResource):
 		"""
 		webapp_user = args['webapp_user']
 		webapp_owner = args['webapp_owner']
-		data = {
-			'info': 'order_list'
-		}
 
 		orders = Order.get_orders_for_webapp_user({
 			'webapp_owner': webapp_owner,
 			'webapp_user': webapp_user
 		})
 
-		# 过滤已取消的团购订单,但优惠抵扣的显示
-		orders = filter(lambda order: not(order.is_group_buy and order.status == mall_models.ORDER_STATUS_CANCEL) or order.pay_interface_type ==  mall_models.PAY_INTERFACE_PREFERENCE ,orders)
+		# finished 1.团购
+		# finished 2.订单循环
+		# todo 3.评论
+		# todo 4.商品
 
+		order_id2group_info = Order.get_group_infos_for_orders({'orders': orders, 'woid': webapp_owner.id})
+
+		# 过滤已取消的团购订单,但优惠抵扣的显示
+		# orders = filter(lambda order: not(order.is_group_buy and order.status == mall_models.ORDER_STATUS_CANCEL) or order.pay_interface_type ==  mall_models.PAY_INTERFACE_PREFERENCE ,orders)
+		orders = filter(lambda order: not(order_id2group_info[order.order_id] and order.status == mall_models.ORDER_STATUS_CANCEL) or order.pay_interface_type == mall_models.PAY_INTERFACE_PREFERENCE, orders)
 		order_datas = []
 		for order in orders:
 			#子订单不显示在订单列表中
@@ -73,8 +77,8 @@ class AOrderList(api_resource.ApiResource):
 				'red_envelope': order.red_envelope,
 				'red_envelope_created': order.red_envelope_created,
 				'products': [],
-				'is_group_buy': order.is_group_buy,
-				'order_group_info': order.order_group_info
+				'is_group_buy': bool(order_id2group_info[order.order_id]),
+				'order_group_info': order_id2group_info[order.order_id]
 			}
 
 			order_products = OrderProducts.get_for_order({

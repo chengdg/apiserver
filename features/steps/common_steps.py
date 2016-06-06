@@ -9,7 +9,6 @@ from db.account import models as account_models
 from db.mall import models as mall_models
 from db.member import models as member_models
 
-from features.steps import call_bdd_server_steps
 import logging
 
 # @given(u"{user}获得访问'{webapp_owner_name}'数据的授权")

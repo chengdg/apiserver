@@ -800,17 +800,23 @@ class Order(business_model.Model):
 				new_order.supplier = supplier
 				new_order.total_purchase_price = sum(map(lambda product:product.purchase_price * product.purchase_count, supplier2products[supplier]))
 				
-				if product.type == 'virtual':
-					#如果是虚拟商品，子订单的订单类型跟商品设为一样
-					#duhao 20160527  weshop定制功能
-					new_order.type = product.type
+				#weshop
+				if len(supplier2products[supplier]) > 0:
+					product = supplier2products[supplier][0]
+					if product.type == 'virtual':
+						#如果是虚拟商品，子订单的订单类型跟商品设为一样
+						#duhao 20160527  weshop定制功能
+						new_order.type = product.type
+					else:
+						is_virtual = False
+					if product.type == 'wzcard':
+						#如果是虚拟商品，子订单的订单类型跟商品设为一样
+						#duhao 20160527  weshop定制功能
+						new_order.type = product.type
+					else:
+						is_wzcard = False
 				else:
 					is_virtual = False
-				if product.type == 'wzcard':
-					#如果是虚拟商品，子订单的订单类型跟商品设为一样
-					#duhao 20160527  weshop定制功能
-					new_order.type = product.type
-				else:
 					is_wzcard = False
 					
 				new_order.save()
@@ -855,17 +861,23 @@ class Order(business_model.Model):
 				new_order.total_purchase_price = sum(map(lambda product:product.purchase_price * product.purchase_count, supplier_user_id2products[supplier_user_id]))
 				new_order.pay_interface_type = mall_models.PAY_INTERFACE_WEIXIN_PAY
 
-				if product.type == 'virtual':
-					#如果是虚拟商品，子订单的订单类型跟商品设为一样
-					#duhao 20160527  weshop定制功能
-					new_order.type = product.type
+				#weshop
+				if len(supplier_user_id2products[supplier_user_id]) > 0:
+					product = supplier_user_id2products[supplier_user_id][0]
+					if product.type == 'virtual':
+						#如果是虚拟商品，子订单的订单类型跟商品设为一样
+						#duhao 20160527  weshop定制功能
+						new_order.type = product.type
+					else:
+						is_virtual = False
+					if product.type == 'wzcard':
+						#如果是虚拟商品，子订单的订单类型跟商品设为一样
+						#duhao 20160527  weshop定制功能
+						new_order.type = product.type
+					else:
+						is_wzcard = False
 				else:
 					is_virtual = False
-				if product.type == 'wzcard':
-					#如果是虚拟商品，子订单的订单类型跟商品设为一样
-					#duhao 20160527  weshop定制功能
-					new_order.type = product.type
-				else:
 					is_wzcard = False
 					
 				new_order.save()

@@ -30,6 +30,24 @@ BDD_SERVER2PORT = settings.BDD_SERVER2PORT
 BDD_SERVER_HOST = '127.0.0.1'
 
 
+def full_stack():
+    import traceback, sys
+    exc = sys.exc_info()[0]
+    stack = traceback.extract_stack()[:-1]  # last one would be full_stack()
+    if not exc is None:  # i.e. if an exception is present
+        del stack[-1]       # remove call of full_stack, the printed exception
+        # will contain the caught exception caller instead
+    trc = 'Traceback (most recent call last, REVERSED CALL ORDER):\n'
+    stackstr = trc + ''.join(reversed(traceback.format_list(stack)))
+    if not exc is None:
+        stackstr += '  ' + traceback.format_exc().lstrip(trc)
+
+    return stackstr
+
+def unicode_full_stack():
+    return full_stack().decode('utf-8')
+
+
 def _default(obj):
 	if isinstance(obj, datetime):
 		return obj.strftime('%Y-%m-%d %H:%M:%S')
@@ -159,14 +177,12 @@ def step_impl(context):
 				context.execute_steps(step)
 			except AssertionError:
 				result = 1
-				from core.exceptionutil import full_stack
 				print('*********************** failure **********************')
 				traceback = full_stack()
 				print(traceback.decode('utf-8'))
 
 			except:
 				result = 2
-				from core.exceptionutil import full_stack
 				print('*********************** exception **********************')
 				traceback = full_stack()
 				print(traceback.decode('utf-8'))

@@ -1,5 +1,6 @@
 # apiserver: 微商城后端API Server #
 
+注意安装eaglet：`pip install git+https://git2.weizzz.com:84/microservice/eaglet.git`
 
 ## 文档 ##
 

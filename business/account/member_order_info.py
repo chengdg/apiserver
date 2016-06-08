@@ -20,6 +20,9 @@ from business import model as business_model
 import settings
 from business.decorator import cached_context_property
 
+from util.microservice_consumer import microservice_consume
+from business.mall.review.review_openapi import REVIEWOPENAPI
+
 class MemberOrderInfo(business_model.Model):
 	"""会员订单信息
 	"""
@@ -64,14 +67,20 @@ class MemberOrderInfo(business_model.Model):
 		orderIds = [order.id for order in orders]
 		order_has_product_list_ids = []
 		for i in mall_models.OrderHasProduct.select().dj_where(order_id__in=orderIds):
-			order_has_product_list_ids.append(i.id)
+			order_has_product_list_ids.append(str(i.id))
 
 		# 得到用户已晒图的商品order_has_product.id列表
-		prp = set()
-		for i in mall_models.ProductReviewPicture.select().dj_where(order_has_product_id__in=order_has_product_list_ids):
-			prp.add(i.order_has_product_id)
-
-		count = len(order_has_product_list_ids) - len(prp)
+		# prp = set()
+		# for i in mall_models.ProductReviewPicture.select().dj_where(order_has_product_id__in=order_has_product_list_ids):
+		# 	prp.add(i.order_has_product_id)
+		url = REVIEWOPENAPI['reviewed_count']
+		order_has_product_list_ids_str = "_".join(order_has_product_list_ids)
+		param_data = {'order_has_product_list_ids':order_has_product_list_ids_str}
+		is_success, reviews_data = microservice_consume(url=url, data=param_data)
+		reviewed_count = 0
+		if is_success:
+			reviewed_count = reviews_data['reviewed_count']
+		count = len(order_has_product_list_ids) - int(reviewed_count)
 
 		return count
 

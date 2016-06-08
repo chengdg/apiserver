@@ -9,6 +9,8 @@ from util import dateutil as utils_dateutil
 #import resource
 from business.mall.product import Product
 from business.mall.review.product_reviews import ProductReviews
+from business.mall.review.review_openapi import REVIEWOPENAPI
+from util.microservice_consumer import microservice_consume
 from eaglet.core import watchdog
 from eaglet.utils.api_resource import APIResourceClient
 
@@ -63,15 +65,43 @@ class AProduct(api_resource.ApiResource):
 					product.promotion = None
 					product.promotion_title = product.product_promotion_title
 
-			product_reviews = ProductReviews.get_from_product_id({
-				'webapp_owner': webapp_owner,
-				'product_id': product_id,
-			})
-			if product_reviews:
-				reviews = product_reviews.products
-				reviews = reviews[:2]
-			else:
-				reviews = []
+			# product_reviews = ProductReviews.get_from_product_id({
+			# 	'webapp_owner': webapp_owner,
+			# 	'product_id': product_id,
+			# })
+			url = REVIEWOPENAPI['evaluates_from_product_id']
+			param_data = {'woid':webapp_owner.id, 'product_id':product_id}
+			is_success, reviews_data = microservice_consume(url=url, data=param_data)
+			reviews = []
+			if is_success:
+				reviews = reviews_data['product_reviews']
+
+
+			# if product_reviews:
+			# 	reviews = product_reviews.products
+			# 	reviews = reviews[:2]
+			# else:
+			# 	reviews = []
+			# #假数据
+			# reviews =  [
+	  #                   {
+	  #                     "status": "2",
+	  #                     "member_icon": "",
+	  #                     "created_at": "2016-06-06 10:32:10",
+	  #                     "member_id": 1,
+	  #                     "review_detail": "123asdfa",
+	  #                     "member_name": "bill",
+	  #                   },
+	  #                   {
+	  #                     "status": "1",
+	  #                     "member_icon": "",
+	  #                     "created_at": "2016-06-06 11:53:12",
+	  #                     "member_id": 1,
+	  #                     "review_detail": "fgsfsfdgsfdgsfg",
+	  #                     "member_name": "bill",
+	  #                   }
+	  #                 ]
+	  #       #假数据
 
 			result = product.to_dict(extras=['hint'])
 

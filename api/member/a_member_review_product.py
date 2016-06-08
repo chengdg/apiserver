@@ -26,7 +26,7 @@ import logging
 
 class AMemberReviewProduct(api_resource.ApiResource):
 	"""
-	会员评论商品
+	会员评论商品(废弃，代码迁移到营销工具中了)
 
 	@see 原始源码在`webapp/modules/mall/request_api_util.py`中的`create_product_review()`。
 	"""

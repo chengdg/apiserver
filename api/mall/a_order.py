@@ -256,4 +256,16 @@ class AOrder(api_resource.ApiResource):
 
 		order_data = AOrder.to_dict(order)
 		order_data.update({'mall_type': args['webapp_owner'].user_profile.webapp_type})
+
+		# 调试bug 9094
+		if order_id == '20160314103614898':
+			try:
+				import json
+
+				json.dumps(order_data)
+			except:
+				msg = unicode_full_stack()
+				print('--------abcdef',msg)
+				watchdog.info(msg, log_type='online')
+
 		return order_data

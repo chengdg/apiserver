@@ -30,7 +30,7 @@ class AllocateResourceServiceBase(business_model.Service):
 	def register_allocator(self, allocator):
 		self.__allocators.append(allocator)
 		self.__type2allocator[allocator.resource_type] = allocator
-		logging.info("registered allocator: {} => {}".format(allocator.resource_type, allocator))
+		#logging.info("registered allocator: {} => {}".format(allocator.resource_type, allocator))
 
 	def allocate_resource_for(self, order, purchase_info):
 		"""
@@ -42,9 +42,9 @@ class AllocateResourceServiceBase(business_model.Service):
 		is_success = True
 		reasons = []
 		for allocator in self.__allocators:
-			logging.info("allocating resource using {}".format(allocator))
+			#logging.info("allocating resource using {}".format(allocator))
 			is_success_once, failure_reasons, resource = allocator.allocate_resource(order, purchase_info)
-			logging.info("allocation result: is_success: {}, reasons: {}, resource: {}".format(is_success, failure_reasons, resource))
+			#logging.info("allocation result: is_success: {}, reasons: {}, resource: {}".format(is_success, failure_reasons, resource))
 			if not is_success_once:
 				is_success = False
 				if resource:
@@ -58,11 +58,11 @@ class AllocateResourceServiceBase(business_model.Service):
 					resources.extend(resource)
 				else:
 					resources.append(resource)
-			else:
-				logging.error("`resource` SHOULD NOT be None! Please check it.")
+			#else:
+				#logging.error("`resource` SHOULD NOT be None! Please check it.")
 		if not is_success:
 			# 释放已分配的资源
-			logging.info("release all allocated resources: {}".format(resources))
+			#logging.info("release all allocated resources: {}".format(resources))
 			self.release(resources)
 			resources = []
 		
@@ -85,10 +85,10 @@ class AllocateResourceServiceBase(business_model.Service):
 				allocator = self._find_allocator_by_type(resource.type)
 				if allocator:
 					allocator.release(resource)
-					logging.info("Resorce {} released".format(resource))
-				else:
-					logging.warning("No allocator of resource type '{}', resource: {}".format(resource.type, resource))
-			else:
-				logging.error("Unexpected None resource, skipped")
+					#logging.info("Resorce {} released".format(resource))
+			# 	else:
+			# 		logging.warning("No allocator of resource type '{}', resource: {}".format(resource.type, resource))
+			# else:
+			# 	logging.error("Unexpected None resource, skipped")
 		#for allocator in self.__allocators:
 		#	allocator.release(resources)

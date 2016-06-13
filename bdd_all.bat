@@ -1,1 +1,0 @@
-behave --no-skipped --tags @mall3 --tags ~@ui --tags ~@ignore

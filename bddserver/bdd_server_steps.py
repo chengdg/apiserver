@@ -22,8 +22,8 @@ except:
 
 if not hasattr(settings, 'BDD_SERVER2PORT'):
 	from weapp import settings
-	assert hasattr(settings, 'BDD_SERVER2PORT'), 'BDD_SERVER2PORT import error!'
 
+	assert hasattr(settings, 'BDD_SERVER2PORT'), 'BDD_SERVER2PORT import error!'
 
 BDD_SERVER2PORT = settings.BDD_SERVER2PORT
 
@@ -31,21 +31,22 @@ BDD_SERVER_HOST = '127.0.0.1'
 
 
 def full_stack():
-    import traceback, sys
-    exc = sys.exc_info()[0]
-    stack = traceback.extract_stack()[:-1]  # last one would be full_stack()
-    if not exc is None:  # i.e. if an exception is present
-        del stack[-1]       # remove call of full_stack, the printed exception
-        # will contain the caught exception caller instead
-    trc = 'Traceback (most recent call last, REVERSED CALL ORDER):\n'
-    stackstr = trc + ''.join(reversed(traceback.format_list(stack)))
-    if not exc is None:
-        stackstr += '  ' + traceback.format_exc().lstrip(trc)
+	import traceback, sys
+	exc = sys.exc_info()[0]
+	stack = traceback.extract_stack()[:-1]  # last one would be full_stack()
+	if not exc is None:  # i.e. if an exception is present
+		del stack[-1]  # remove call of full_stack, the printed exception
+		# will contain the caught exception caller instead
+	trc = 'Traceback (most recent call last, REVERSED CALL ORDER):\n'
+	stackstr = trc + ''.join(reversed(traceback.format_list(stack)))
+	if not exc is None:
+		stackstr += '  ' + traceback.format_exc().lstrip(trc)
 
-    return stackstr
+	return stackstr
+
 
 def unicode_full_stack():
-    return full_stack().decode('utf-8')
+	return full_stack().decode('utf-8')
 
 
 def _default(obj):
@@ -74,15 +75,11 @@ def _git_shell(git_command):
 
 # 获得本BDD_SERVER名称
 try:
-	git_dir = os.path.abspath(_git_shell('git rev-parse --git-dir'))
-	project_dir = os.path.dirname(git_dir)
-	self_name = project_dir.split(os.sep)[-1]
-	# 兼容weapp
-	if self_name == 'Weapp':
-		self_name = 'weapp'
+	current_path = os.path.split(os.path.realpath(__file__))[0]
+	self_name = current_path.split(os.sep)[-2]
 except BaseException as e:
 	print(e)
-	self_name = "You should install Git!!"
+	self_name = "BDD_SERVER name error!"
 	print(self_name)
 
 

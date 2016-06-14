@@ -261,7 +261,13 @@ class Order(business_model.Model):
 					elif sub_order.supplier_user_id == sub_order.supplier == product.supplier_user_id == product.supplier == 0:
 						sub_order.products.append(product.to_dict())
 
+				if self.id == 277133:
+					print('abcde-1', business_model.Model.to_dict(sub_order, 'products', 'latest_express_detail'))
+
 				sub_orders.append(business_model.Model.to_dict(sub_order, 'products', 'latest_express_detail'))
+
+		if self.id == 277133:
+			print('abcde-2', sub_orders)
 
 		return sub_orders
 

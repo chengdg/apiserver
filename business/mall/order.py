@@ -249,6 +249,11 @@ class Order(business_model.Model):
 
 				sub_order.products = []
 
+				if self.id == 277133:
+					print('abcde-999', sub_order.products)
+				else:
+					print('qwert',sub_order.products)
+
 				for product in self.products:
 					#新的数据中已经有supplier字段了，但是为了兼容旧的数据，此处要做此处理
 					if not product.supplier:

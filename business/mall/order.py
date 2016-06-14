@@ -241,6 +241,9 @@ class Order(business_model.Model):
 					'webapp_user': self.context['webapp_user'],
 					'order_id': sub_order_id
 				})
+
+				print('abcde-888', sub_order.products)
+
 				for product in self.products:
 					#新的数据中已经有supplier字段了，但是为了兼容旧的数据，此处要做此处理
 					if not product.supplier:

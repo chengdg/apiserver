@@ -301,7 +301,9 @@ class Order(business_model.Model):
 		订单中的商品，包含商品的信息
 		"""
 		products = self.context.get('products', None)
-		if not products:
+
+		# def sub_orders中需要覆盖order.products为[],所以需要用is None判断
+		if products is None:
 			try:
 				products = OrderProducts.get_for_order({
 					'webapp_owner': self.context['webapp_owner'],

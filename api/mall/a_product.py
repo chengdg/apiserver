@@ -9,8 +9,9 @@ from util import dateutil as utils_dateutil
 #import resource
 from business.mall.product import Product
 from business.mall.review.product_reviews import ProductReviews
-from util.microservice_consumer import microservice_consume
 from eaglet.core import watchdog
+from eaglet.utils.api_resource import APIResourceClient
+
 
 class AProduct(api_resource.ApiResource):
 	"""
@@ -35,18 +36,16 @@ class AProduct(api_resource.ApiResource):
 		webapp_owner = args['webapp_owner']
 		webapp_user = args['webapp_user']
 
-		url = GroupBuyOPENAPI['group_buy_product']
 		param_data = {'pid': product_id, 'woid': webapp_owner.id, 'member_id': webapp_user.member.id}
-		is_success, group_buy_product = microservice_consume(url=url, data=param_data)
 
-		if is_success:
+		resource = APIResourceClient(settings.WEAPP_DOMAIN, GroupBuyOPENAPI['group_buy_product'])
+		is_success, code, group_buy_product = resource.get(param_data)
+		if is_success and code == 200:
 			if group_buy_product['is_in_group_buy']:
 				return {
 					'is_in_group_buy': True,
 					'activity_url': 'http://' + settings.WEAPP_DOMAIN + group_buy_product['activity_url']
 				}
-
-
 
 		product = Product.from_id({
 			'webapp_owner': webapp_owner,

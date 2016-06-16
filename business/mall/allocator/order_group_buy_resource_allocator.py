@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
-
+from eaglet.utils.api_resource import APIResourceClient
 import settings
 from business import model as business_model
 from business.resource.group_buy_resource import GroupBuyResource
@@ -8,7 +8,7 @@ from db.mall import models as mall_models
 
 
 # 团购服务api接口
-from util.microservice_consumer import microservice_consume
+
 
 GroupBuyOPENAPI = {
 	# 'group_buy_product': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/group_buy_product',
@@ -17,14 +17,20 @@ GroupBuyOPENAPI = {
 	# 'check_group_buy': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/check_group_buy',
 	# 'group_buy_info': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/group_buy_info',
 	# 'get_group_url': 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/api/get_group_url',
-	'group_buy_product': 'http://' + settings.WEAPP_DOMAIN + '/apps/group/api/group_buy_product',
-	'group_buy_products': 'http://' + settings.WEAPP_DOMAIN + '/apps/group/api/group_buy_products',
-	'order_action': 'http://' + settings.WEAPP_DOMAIN + '/apps/group/api/order_action',
-	'check_group_buy': 'http://' + settings.WEAPP_DOMAIN + '/apps/group/api/check_group_buy',
-	'group_buy_info': 'http://' + settings.WEAPP_DOMAIN + '/apps/group/api/group_buy_info',
-	'get_group_url': 'http://' + settings.WEAPP_DOMAIN + '/apps/group/api/get_group_url',
-}
+	# 'group_buy_product': 'http://' + settings.WEAPP_DOMAIN + '/apps/group/api/group_buy_product',
+	# 'group_buy_products': 'http://' + settings.WEAPP_DOMAIN + '/apps/group/api/group_buy_products',
+	# 'order_action': 'http://' + settings.WEAPP_DOMAIN + '/apps/group/api/order_action',
+	# 'check_group_buy': 'http://' + settings.WEAPP_DOMAIN + '/apps/group/api/check_group_buy',
+	# 'group_buy_info': 'http://' + settings.WEAPP_DOMAIN + '/apps/group/api/group_buy_info',
+	# 'get_group_url': 'http://' + settings.WEAPP_DOMAIN + '/apps/group/api/get_group_url',
 
+	'group_buy_product': 'apps/group/api/group_buy_product',
+	'group_buy_products': 'apps/group/api/group_buy_products',
+	'order_action': 'apps/group/api/order_action',
+	'check_group_buy': 'apps/group/api/check_group_buy',
+	'group_buy_info': 'apps/group/api/group_buy_info',
+	'get_group_url': 'apps/group/api/get_group_url',
+}
 
 
 
@@ -70,15 +76,19 @@ class OrderGroupBuyAllocator(business_model.Service):
 
 		if is_success:
 			# 申请资源
-			url = GroupBuyOPENAPI['check_group_buy']
+
 			param_data = {
 				'member_id': self.context['webapp_user'].member.id,
 				'group_id': purchase_info.group_id,
 				'pid': pid,
 				'woid': self.context['webapp_owner'].id
 			}
-			is_success, group_buy_product_info = microservice_consume(url=url, data=param_data)
-			if is_success:
+
+			resource = APIResourceClient(host=settings.WEAPP_DOMAIN, resource=GroupBuyOPENAPI['check_group_buy'])
+
+			is_success, code, group_buy_product_info = resource.get(params=param_data)
+
+			if is_success and code == 200:
 				is_success = group_buy_product_info['is_success']
 				reason = group_buy_product_info['reason']
 			else:

@@ -76,67 +76,67 @@ def microservice_consume(url='', data={}, method='get', timeout=None):
 		raise Exception(e)
 
 
-# 访问eaglet
-@conn_try_again
-def microservice_consume2(url='', data={}, method='get', timeout=None):
-	_timeout = timeout if timeout else DEFAULT_TIMEOUT
-	try:
-		if method == 'get':
-			resp = requests.get(url, data, timeout=_timeout)
-		elif method == 'post':
-			resp = requests.post(url, data, timeout=_timeout)
-		else:
-			# 兼容架构中的put、delete方法
-			url = url + '?_method=' + method if '_method' not in url else url
-			resp = requests.post(url, data, timeout=_timeout)
-		if resp.status_code == 200:
-			resp_content = json.loads(resp.text)
-			# resp_data = resp['data']
-			try:
-				weizoom_code = resp_content['code']
-			except:
-				weizoom_code = 10086  # 无法得到正确weizoom_code时的默认值
-			if weizoom_code == 200 or weizoom_code == 500:
-				watchdog.info(
-					u'microservice_consume_log,外部接口成功调用日志.code:%s,weizoom_code:%s,url:%s，request_data:%s,resp:%s' % (
-						resp.status_code, weizoom_code, url, str(data), resp_content))
-				return True, resp_content
-			else:
-				watchdog.alert(
-					u'microservice_consume_alert,外部接口调用错误-wzcode错误状态码.code:%s,weizoom_code:%s,url:%s，request_data:%s,resp:%s' % (
-						resp.status_code, weizoom_code, url, str(data), resp_content))
-				raise ResponseCodeException
-		else:
-			watchdog.alert(u'microservice_consume_alert,外部接口调用错误-http错误状态码.code:%s,url:%s，data:%s,method:%s' % (
-				resp.status_code, url, str(data), method))
-			raise ResponseCodeException
-	except BaseException as e:
-		traceback = unicode_full_stack()
-		watchdog.alert(u'外部接口调用错误-异常.url:%s,msg:%s,url:%s ,data:%s' % (url, traceback, url, str(data)))
-		raise Exception(e)
-
-# 测试代码
-# url = 'http://red.weapp.weizzz.com/m/apps/group/api/group_buy_product'
-# # url = 'http://weapp.weizoom.com/m/apps/group/api/group_buy_products'
-# param_data = {'pid': '48', 'woid': '9'}
-# is_success, resp_data = microservice_consume(url=url, data=param_data)
-# print('--------is_success',is_success)
-# print('resp',resp_data)
-
-
-def process_resp(is_success,resp):
-	msg = ''
-	if is_success:
-		data = resp['data']
-		if resp['code'] == 200:
-			can_use = True
-		else:
-			msg = data['reason']
-			can_use = False
-	else:
-		data = {}
-		can_use = False
-		msg = u'系统繁忙'
-
-	return can_use, msg, data
+# # 访问eaglet
+# @conn_try_again
+# def microservice_consume2(url='', data={}, method='get', timeout=None):
+# 	_timeout = timeout if timeout else DEFAULT_TIMEOUT
+# 	try:
+# 		if method == 'get':
+# 			resp = requests.get(url, data, timeout=_timeout)
+# 		elif method == 'post':
+# 			resp = requests.post(url, data, timeout=_timeout)
+# 		else:
+# 			# 兼容架构中的put、delete方法
+# 			url = url + '?_method=' + method if '_method' not in url else url
+# 			resp = requests.post(url, data, timeout=_timeout)
+# 		if resp.status_code == 200:
+# 			resp_content = json.loads(resp.text)
+# 			# resp_data = resp['data']
+# 			try:
+# 				weizoom_code = resp_content['code']
+# 			except:
+# 				weizoom_code = 10086  # 无法得到正确weizoom_code时的默认值
+# 			if weizoom_code == 200 or weizoom_code == 500:
+# 				watchdog.info(
+# 					u'microservice_consume_log,外部接口成功调用日志.code:%s,weizoom_code:%s,url:%s，request_data:%s,resp:%s' % (
+# 						resp.status_code, weizoom_code, url, str(data), resp_content))
+# 				return True, resp_content
+# 			else:
+# 				watchdog.alert(
+# 					u'microservice_consume_alert,外部接口调用错误-wzcode错误状态码.code:%s,weizoom_code:%s,url:%s，request_data:%s,resp:%s' % (
+# 						resp.status_code, weizoom_code, url, str(data), resp_content))
+# 				raise ResponseCodeException
+# 		else:
+# 			watchdog.alert(u'microservice_consume_alert,外部接口调用错误-http错误状态码.code:%s,url:%s，data:%s,method:%s' % (
+# 				resp.status_code, url, str(data), method))
+# 			raise ResponseCodeException
+# 	except BaseException as e:
+# 		traceback = unicode_full_stack()
+# 		watchdog.alert(u'外部接口调用错误-异常.url:%s,msg:%s,url:%s ,data:%s' % (url, traceback, url, str(data)))
+# 		raise Exception(e)
+#
+# # 测试代码
+# # url = 'http://red.weapp.weizzz.com/m/apps/group/api/group_buy_product'
+# # # url = 'http://weapp.weizoom.com/m/apps/group/api/group_buy_products'
+# # param_data = {'pid': '48', 'woid': '9'}
+# # is_success, resp_data = microservice_consume(url=url, data=param_data)
+# # print('--------is_success',is_success)
+# # print('resp',resp_data)
+#
+#
+# def process_resp(is_success,resp):
+# 	msg = ''
+# 	if is_success:
+# 		data = resp['data']
+# 		if resp['code'] == 200:
+# 			can_use = True
+# 		else:
+# 			msg = data['reason']
+# 			can_use = False
+# 	else:
+# 		data = {}
+# 		can_use = False
+# 		msg = u'系统繁忙'
+#
+# 	return can_use, msg, data
 

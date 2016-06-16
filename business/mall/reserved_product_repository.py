@@ -6,15 +6,23 @@ ReservedProductRepository用于获取一组ReservedProduct，ReservedProductRepo
 
 """
 
+import json
+from bs4 import BeautifulSoup
+import math
+import itertools
+
 from business.mall.allocator.order_group_buy_resource_allocator import GroupBuyOPENAPI
 from eaglet.decorator import param_required
 #from wapi import wapi_utils
+from eaglet.core.cache import utils as cache_util
+from db.mall import models as mall_models
 #import resource
-from business import model as business_model
+from eaglet.core import watchdog
+from business import model as business_model 
 from business.mall.reserved_product import ReservedProduct 
 from business.mall.forbidden_coupon_product_ids import ForbiddenCouponProductIds
 import settings
-from eaglet.utils.api_resource import APIResourceClient
+from util.microservice_consumer import microservice_consume
 
 
 class ReservedProductRepository(business_model.Model):
@@ -109,13 +117,12 @@ class ReservedProductRepository(business_model.Model):
 				"product_info": product_info
 			})
 
+			# todo requests团购请求
 			if purchase_info.group_id:
-				params = {'group_id': purchase_info.group_id, 'woid': self.context['webapp_owner'].id}
-
-				resource = APIResourceClient(settings.WEAPP_DOMAIN, GroupBuyOPENAPI['group_buy_info'])
-				is_success, code, group_buy_info = resource.get(params=params)
-
-				if is_success and code == 200:
+				url = GroupBuyOPENAPI['group_buy_info']
+				param_data = {'group_id': purchase_info.group_id, 'woid': self.context['webapp_owner'].id}
+				is_success, group_buy_info = microservice_consume(url=url, data=param_data)
+				if is_success:
 					group_buy_price = group_buy_info['group_buy_price']
 					reversed_product.price = group_buy_price
 

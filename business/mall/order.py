@@ -21,12 +21,12 @@ from core.sendmail import sendmail
 from eaglet.core import watchdog
 import db.account.models as accout_models
 from eaglet.core.wxapi import get_weixin_api
-from eaglet.utils.api_resource import APIResourceClient
 from features.util.bdd_util import set_bdd_mock
-
+from services.notify_group_buy_after_pay_service.task import notify_group_buy_after_pay
 from services.record_order_status_log_service.task import record_order_status_log
 from services.send_template_message_service.task import send_template_message
 from services.update_product_sale_service.task import update_product_sale
+from util.microservice_consumer import microservice_consume
 from util.mysql_str_util import filter_invalid_str
 from util.regional_util import get_str_value_by_string_ids
 
@@ -1197,16 +1197,15 @@ class Order(business_model.Model):
 
 		# 通知团购订单支付完成
 		if self.is_group_buy and action in ['buy', 'pay']:
-			params = {
+			url = GroupBuyOPENAPI['order_action']
+			data = {
 				'order_id': self.order_id,
 				'member_id': self.context['webapp_user'].member.id,
 				'action': action,
 				'woid': self.context['webapp_owner'].id,
 				'group_id': self.order_group_info['group_id']
 			}
-
-			resource_client = APIResourceClient(settings.WEAPP_DOMAIN,GroupBuyOPENAPI['order_action'])
-			resource_client.put(params)
+			notify_group_buy_after_pay(url, data)
 			# notify_group_buy_after_pay.delay(url, data)
 
 
@@ -1356,16 +1355,14 @@ class Order(business_model.Model):
 			if self.status == mall_models.ORDER_STATUS_NOT:
 				activity_url = 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/m_group/?webapp_owner_id=' + str(self.context['webapp_owner'].id) + '&id=' + order_group_info['activity_id']
 			else:
-				params = {
+				url = GroupBuyOPENAPI['get_group_url']
+				data = {
 					'woid': self.context['webapp_owner'].id,
 					'group_id': order_group_info['group_id']
 				}
-				resource = APIResourceClient(settings.WEAPP_DOMAIN, GroupBuyOPENAPI['get_group_url'])
-				is_success, code, group_url_info = resource.get(params=params)
-
-				if is_success and code == 200:
+				is_success, group_url_info = microservice_consume(url=url,data=data)
+				if is_success:
 					activity_url = 'http://' + settings.WEAPP_DOMAIN + group_url_info['group_url']
-
 			order_group_info['activity_url'] = activity_url
 			return order_group_info
 		else:
@@ -1396,16 +1393,13 @@ class Order(business_model.Model):
 					activity_url = 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/m_group/?webapp_owner_id=' + str(
 						order.context['webapp_owner'].id) + '&id=' + order_group_info['activity_id']
 				else:
-
-					params = {
+					url = GroupBuyOPENAPI['get_group_url']
+					data = {
 						'woid': woid,
 						'group_id': order_group_info['group_id']
 					}
-
-					resource = APIResourceClient(settings.WEAPP_DOMAIN, GroupBuyOPENAPI['get_group_url'])
-					is_success, code, group_url_info = resource.get(params=params)
-
-					if is_success and code == 200:
+					is_success, group_url_info = microservice_consume(url=url, data=data)
+					if is_success:
 						activity_url = 'http://' + settings.WEAPP_DOMAIN + group_url_info['group_url']
 				order_group_info['activity_url'] = activity_url
 				order_id2group_info[order.order_id] = order_group_info

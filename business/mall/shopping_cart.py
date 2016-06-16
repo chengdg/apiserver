@@ -4,13 +4,20 @@
 
 """
 
-from business.mall.allocator.order_group_buy_resource_allocator import GroupBuyOPENAPI
-from eaglet.decorator import param_required
-from eaglet.utils.api_resource import APIResourceClient
+import json
+from bs4 import BeautifulSoup
+import math
+from datetime import datetime
 
+from business.mall.allocator.order_group_buy_resource_allocator import GroupBuyOPENAPI
+from util.microservice_consumer import microservice_consume
+from eaglet.decorator import param_required
 #from wapi import wapi_utils
+from eaglet.core.cache import utils as cache_util
 from db.mall import models as mall_models
+from db.mall import promotion_models
 #import resource
+from eaglet.core import watchdog
 from business import model as business_model
 import settings
 from business.decorator import cached_context_property
@@ -106,18 +113,18 @@ class ShoppingCart(business_model.Model):
 		product_ids = '_'.join([str(product.id) for product in products])
 
 		if product_ids:
+			url = GroupBuyOPENAPI['group_buy_products']
 
-			params = {
+			data = {
 				'pids': product_ids,
 				'woid': self.context['webapp_owner'].id,
 			}
 
-			resource = APIResourceClient(settings.WEAPP_DOMAIN, GroupBuyOPENAPI['group_buy_products'])
-			is_success, code, data = resource.get(params=params)
+			is_success, res = microservice_consume(url=url, data=data)
 
 			# 团购商品放入禁用商品列表
-			if is_success and code == 200:
-				group_buy_product_ids = [p['pid'] for p in filter(lambda x: x['pid'] if x['is_in_group_buy'] else False, data['pid2is_in_group_buy'])]
+			if is_success:
+				group_buy_product_ids = [p['pid'] for p in filter(lambda x: x['pid'] if x['is_in_group_buy'] else False, res['pid2is_in_group_buy'])]
 			else:
 				group_buy_product_ids = []
 		else:

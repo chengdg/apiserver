@@ -91,7 +91,7 @@ class WZCardResourceAllocator(business_model.Service):
 				"is_success": False,
 				"type": data['type'],
 				"msg": msg,
-				"short_msg": msg
+				"short_msg": u'系统繁忙'
 			}
 			return False, [reason], None
 

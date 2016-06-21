@@ -231,14 +231,14 @@ Scenario:1 bill 进入待评价列表，该列表中显示的是订单状态为"
             "process_score": "4"
         }
         """
-    Then bill获取订单'2'中'商品2'的追加晒图页面::weapp
-        """
-        {
-            "product_score": "4",
-            "review_detail": "商品2不太好！！！！！",
-            "picture_list":[]
-        }
-        """
+    #Then bill获取订单'2'中'商品2'的追加晒图页面::weapp
+    #    """
+    #    {
+    #        "product_score": "4",
+    #        "review_detail": "商品2不太好！！！！！",
+    #        "picture_list":[]
+    #    }
+    #    """
     Then bill成功获取个人中心的'待评价'列表
         """
         [{

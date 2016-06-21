@@ -263,7 +263,7 @@ Scenario:1 bill 进入待评价列表，该列表中显示的是订单状态为"
         }]
         """
 
-    When bill完成订单'2'中'商品2'的追加晒图评价::weapp
+    When bill完成订单'2'中'商品2'的追加晒图::weapp
         """
         {
             "picture_list": "['/static/upload/webapp/3_20151102/2015_11_02_18_24_49_948000.png']"

@@ -75,7 +75,7 @@ class WZCard(object):
 		#
 		# is_success, code, data = resource.post(params=params)
 
-		resp = Resource.use("card").post({
+		resp = Resource.use("card_apiserver").post({
 			"resource":"card.checked_card",
 			"data":params
 		})
@@ -106,7 +106,7 @@ class WZCard(object):
 
 		# resource = APIResourceClient(host=settings.CARD_SERVER_DOMAIN, resource='card.trade')
 
-		resp = Resource.use('card').post({
+		resp = Resource.use('card_apiserver').post({
 			'resource': 'card.trade',
 			'data': params
 		})
@@ -185,7 +185,7 @@ class WZCard(object):
 		#
 		# is_success, code, data = resource.delete(params=data)
 
-		resp = Resource.use('card').delete(
+		resp = Resource.use('card_apiserver').delete(
 			{
 				'resource': 'card.trade',
 				'data': data

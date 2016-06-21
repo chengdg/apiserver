@@ -48,18 +48,28 @@ class AUsableWZCard(api_resource.ApiResource):
 				'msg': msg
 			}
 
-		is_success, code, data = checker.check(request_data)
+		# is_success, code, data = checker.check(request_data)
 
-		if is_success and code == 200:
-			return {
-				'id': args['wzcard_id'],
-				'code': 200,
-				'balance': data['balance']
-			}
+
+		resp = checker.check(request_data)
+
+		if resp:
+			code = resp['code']
+			data = resp['data']
+			if code == 200:
+				return {
+					'id': args['wzcard_id'],
+					'code': 200,
+					'balance': data['balance']
+				}
+			else:
+				return {
+					'code': 500,
+					'msg': msg
+				}
 		else:
-			msg = u'系统繁忙' if code != 500 else data['reason']
-
 			return {
-				'code': 400,
-				'msg': msg
+				'code': 500,
+				'msg': u'系统繁忙'
 			}
+

@@ -16,8 +16,7 @@ from business.mall.order_products import OrderProducts
 from business.mall.order_config import OrderConfig
 from business.mall.review.waiting_review_order import WaitingReviewOrder
 
-from util.microservice_consumer import microservice_consume
-from business.mall.review.review_openapi import REVIEWOPENAPI
+from eaglet.utils.resource_client import Resource
 
 class AOrderList(api_resource.ApiResource):
 	"""
@@ -51,14 +50,17 @@ class AOrderList(api_resource.ApiResource):
 		# 过滤已取消的团购订单,但优惠抵扣的显示
 		# orders = filter(lambda order: not(order.is_group_buy and order.status == mall_models.ORDER_STATUS_CANCEL) or order.pay_interface_type ==  mall_models.PAY_INTERFACE_PREFERENCE ,orders)
 		orders = filter(lambda order: not(order_id2group_info[order.order_id] and order.status == mall_models.ORDER_STATUS_CANCEL) or order.pay_interface_type == mall_models.PAY_INTERFACE_PREFERENCE, orders)
-		url = REVIEWOPENAPI['order_evaluates_from_member_id']
 		param_data = {'woid':args['webapp_owner'].id, 'member_id':args['webapp_user'].member.id }
-		is_success, reviews_data = microservice_consume(url=url, data=param_data)
+		get_order_review_json = []
 
-		if is_success:
-			get_order_review_json = reviews_data['orders']
-		else:
-			get_order_review_json = []
+		resp = Resource.use('marketapp_apiserver').get({
+				'resource': 'evaluate.get_order_evaluates',
+				'data': param_data
+			})
+		if resp:
+			code = resp["code"]
+			if code == 200:
+				get_order_review_json = resp["data"]['orders']
 		order_id2review = {}
 		if get_order_review_json:
 			for order_review in get_order_review_json:
@@ -71,14 +73,6 @@ class AOrderList(api_resource.ApiResource):
 			if order.origin_order_id > 0:
 				continue
 
-			# waiting_review_order = WaitingReviewOrder.get_for_order({
-			# 	'webapp_owner': webapp_owner,
-			# 	'order': order,
-			# 	'webapp_user': webapp_user
-			# 	})
-
-			# review_is_finished = waiting_review_order.reviewed
-			#TODO api请求，请求从
 			if order_id2review.has_key(order.id):
 				review_is_finished = order_id2review[order.id]
 			else:

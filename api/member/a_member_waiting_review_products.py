@@ -12,8 +12,7 @@ from eaglet.decorator import param_required
 from business.mall.order_review import OrderReview
 from business.mall.review.waiting_review_orders import WaitingReviewOrders
 
-from util.microservice_consumer import microservice_consume
-from business.mall.review.review_openapi import REVIEWOPENAPI
+from eaglet.utils.resource_client import Resource
 
 import logging
 #from eaglet.core import watchdog
@@ -41,14 +40,16 @@ class AMemberWaitingReviewProducts(api_resource.ApiResource):
 			})
 
 		orders = waiting_review_orders.orders
-		url = REVIEWOPENAPI['evaluates_from_member_id']
 		param_data = {'woid':args['webapp_owner'].id, 'member_id':args['webapp_user'].member.id }
-		is_success, reviews_data = microservice_consume(url=url, data=param_data)
-
-		if is_success:
-			get_order_review_json = reviews_data['orders']
-		else:
-			get_order_review_json = []
+		get_order_review_json = []
+		resp = Resource.use('marketapp_apiserver').get({
+				'resource': 'evaluate.get_product_evaluates_status',
+				'data': param_data
+			})
+		if resp:
+			code = resp["code"]
+			if code == 200:
+				get_order_review_json = resp["data"]['orders']
 
 		review2value = {}
 		for order_json in get_order_review_json:
@@ -64,8 +65,6 @@ class AMemberWaitingReviewProducts(api_resource.ApiResource):
 
 				review2value[product_id_temp_review] = product_json["has_reviewed"]
 				review2value[product_id_temp_picture] = product_json["has_reviewed_picture"]
-		#TODO
-		#获取结果并重新构建数据
 
 
 		order_list = []

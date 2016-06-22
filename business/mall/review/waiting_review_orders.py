@@ -66,7 +66,6 @@ class WaitingReviewOrders(business_model.Model):
 				})
 			if waiting_review_order:
 				waiting_review_orders.append(waiting_review_order)
-		print "waiting_review_orders>>>>>>>",waiting_review_orders
 		self.orders = waiting_review_orders
 
 

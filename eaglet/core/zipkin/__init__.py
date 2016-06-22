@@ -1,1 +1,0 @@
-zipkinClient = None

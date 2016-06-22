@@ -7,8 +7,6 @@
 import json
 
 import db.mall.models as mall_models
-import settings
-from eaglet.utils.api_resource import APIResourceClient
 
 from eaglet.utils.resource_client import Resource
 

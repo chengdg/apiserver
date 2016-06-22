@@ -14,7 +14,7 @@ from business import model as business_model
 from business.mall.reserved_product import ReservedProduct 
 from business.mall.forbidden_coupon_product_ids import ForbiddenCouponProductIds
 import settings
-from eaglet.utils.api_resource import APIResourceClient
+from eaglet.utils.resource_client import Resource
 
 
 class ReservedProductRepository(business_model.Model):
@@ -112,10 +112,13 @@ class ReservedProductRepository(business_model.Model):
 			if purchase_info.group_id:
 				params = {'group_id': purchase_info.group_id, 'woid': self.context['webapp_owner'].id}
 
-				resource = APIResourceClient(settings.WEAPP_DOMAIN, GroupBuyOPENAPI['group_buy_info'])
-				is_success, code, group_buy_info = resource.get(params=params)
+				resp = Resource.use('marketapp_apiserver').get({
+					'resource': GroupBuyOPENAPI['group_buy_info'],
+					'data': params
+				})
 
-				if is_success and code == 200:
+				if resp and resp['code'] == 200:
+					group_buy_info = resp['data']
 					group_buy_price = group_buy_info['group_buy_price']
 					reversed_product.price = group_buy_price
 

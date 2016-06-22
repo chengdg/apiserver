@@ -6,7 +6,7 @@
 
 from business.mall.allocator.order_group_buy_resource_allocator import GroupBuyOPENAPI
 from eaglet.decorator import param_required
-from eaglet.utils.api_resource import APIResourceClient
+from eaglet.utils.resource_client import Resource
 
 #from wapi import wapi_utils
 from db.mall import models as mall_models
@@ -112,12 +112,14 @@ class ShoppingCart(business_model.Model):
 				'woid': self.context['webapp_owner'].id,
 			}
 
-			resource = APIResourceClient(settings.WEAPP_DOMAIN, GroupBuyOPENAPI['group_buy_products'])
-			is_success, code, data = resource.get(params=params)
+			resp = Resource.use('marketapp_apiserver').get({
+				'resource': GroupBuyOPENAPI['group_buy_products'],
+				'data': params
+			})
 
 			# 团购商品放入禁用商品列表
-			if is_success and code == 200:
-				group_buy_product_ids = [p['pid'] for p in filter(lambda x: x['pid'] if x['is_in_group_buy'] else False, data['pid2is_in_group_buy'])]
+			if resp and resp['code'] == 200:
+				group_buy_product_ids = [p['pid'] for p in filter(lambda x: x['pid'] if x['is_in_group_buy'] else False, resp['data']['pid2is_in_group_buy'])]
 			else:
 				group_buy_product_ids = []
 		else:

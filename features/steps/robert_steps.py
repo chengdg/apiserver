@@ -359,7 +359,7 @@ def step_impl(context, webapp_user_name):
 def __check_order(context, webapp_user_name):
 	order_id = context.created_order_id
 	if order_id == -1:
-		print 'Server Error: ', json.dumps(json.loads(context.response.content), indent=True)
+		print('Server Error: ', json.dumps(json.loads(context.response.content), indent=True))
 		assert False, "order_id must NOT be -1"
 		return
 
@@ -728,9 +728,6 @@ def step_impl(context, webapp_user_name):
 		# 获取购物车参数
 		product_ids, product_counts, product_model_names = _get_shopping_cart_parameters(context.webapp_user.id, argument, context.webapp_owner_id)
 		url = '/mall/purchasing/?woid=%s&product_ids=%s&product_counts=%s&product_model_names=%s' % (context.webapp_owner_id, product_ids, product_counts, product_model_names)
-		print '==========================================***************************************'
-		print url
-		print '==========================================***************************************'
 		product_infos = {
 			'product_ids': product_ids,
 			'product_counts': product_counts,
@@ -743,9 +740,6 @@ def step_impl(context, webapp_user_name):
 		# 获取购物车参数
 		product_ids, product_counts, product_model_names = _get_shopping_cart_parameters(context.webapp_user.id, argument, context.webapp_owner_id)
 		url = '/mall/purchasing/?woid=%s&product_ids=%s&product_counts=%s&product_model_names=%s' % (context.webapp_owner_id, product_ids, product_counts, product_model_names)
-		print '==========================================***************************************'
-		print url
-		print '==========================================***************************************'
 		product_infos = {
 			'product_ids': product_ids,
 			'product_counts': product_counts,
@@ -966,7 +960,6 @@ def step_click_check_out(context, webapp_user_name):
 	else:
 		context.created_order_id = -1
 		context.server_error_msg = response.data['detail']
-		print "buy_error----------------------------",context.server_error_msg
 
 	if context.created_order_id != -1:
 		if 'date' in argument:

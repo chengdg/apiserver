@@ -323,19 +323,28 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 	if context.created_order_id != -1:
 		if 'date' in args:
 			mall_models.Order.update(created_at=bdd_util.get_datetime_str(args['date'])).dj_where(order_id=context.created_order_id).execute()
-		if 'order_id' in args:
+		if 'order_id' in args :
 			context.response.data['order_id'] = args['order_id']
 			db_order = mall_models.Order.get(order_id=context.created_order_id)
 			if db_order.weizoom_card_money > 0:
 				card_info = mall_models.OrderCardInfo.select().dj_where(order_id=db_order.order_id).first()
-				card_info.order_id = args['order_id']
+				if 'wz' in args['order_id']:
+					card_info.order_id = card_info.order_id + 'wz'
+				else:
+					card_info.order_id = args['order_id']
 				card_info.save()
 
 				# wzcard_has_orders = wzcard_models.WeizoomCardHasOrder.select().dj_where(order_id=db_order.order_id)
 				# for wzcard_has_order in wzcard_has_orders:
 				# 	wzcard_has_order.order_id = args['order_id']
 				# 	wzcard_has_order.save()
-			db_order.order_id=args['order_id']
+
+			# zhaolei  pay专用订单号
+			if 'wz' in args['order_id']:
+				db_order.order_id = db_order.order_id + 'wz'
+				args['order_id'] = db_order.order_id
+			else:
+				db_order.order_id = args['order_id']
 			db_order.save()
 			if db_order.origin_order_id <0:
 				for order in mall_models.Order.select().dj_where(origin_order_id=db_order.id):
@@ -365,7 +374,6 @@ def __check_order(context, webapp_user_name):
 
 	url = '/mall/order/?woid=%s&order_id=%s' % (context.webapp_owner_id, order_id)
 	response = context.client.get(bdd_util.nginx(url), follow=True)
-
 	actual_order = response.data['order']
 	actual_order['order_no'] = actual_order['order_id']
 	actual_order['status'] = actual_order['status_text']
@@ -460,7 +468,12 @@ def step_impl(context, webapp_user_name):
 @then(u"{webapp_usr_name}手机端获取订单'{order_id}'")
 def step_impl(context, webapp_usr_name, order_id):
 	# 为获取完可顺利支付
-	context.created_order_id = order_id
+
+	if order_id == 'wz':
+		order_id = context.created_order_id
+	else:
+		context.created_order_id = order_id
+
 
 	url = '/mall/order/?woid=%s&order_id=%s' % (context.webapp_owner_id, order_id)
 	response = context.client.get(bdd_util.nginx(url), follow=True)

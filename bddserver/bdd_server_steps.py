@@ -83,6 +83,7 @@ except BaseException as e:
 	print(self_name)
 
 
+
 class BDDRequestHandler(WSGIRequestHandler):
 	def handle(self):
 		WSGIRequestHandler.handle(self)
@@ -197,7 +198,6 @@ def step_impl(context):
 
 			# 传递context时忽略基本类型外的对象
 			return base64.b64encode(json.dumps(resp, default=_default))
-
 	port = BDD_SERVER2PORT.get(self_name, 0)
 	assert port, "{} is not valid name.You can't change the git repository name!".format(self_name)
 

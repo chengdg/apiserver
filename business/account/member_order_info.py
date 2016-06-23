@@ -20,6 +20,8 @@ from business import model as business_model
 import settings
 from business.decorator import cached_context_property
 
+from eaglet.utils.resource_client import Resource
+
 class MemberOrderInfo(business_model.Model):
 	"""会员订单信息
 	"""
@@ -64,14 +66,23 @@ class MemberOrderInfo(business_model.Model):
 		orderIds = [order.id for order in orders]
 		order_has_product_list_ids = []
 		for i in mall_models.OrderHasProduct.select().dj_where(order_id__in=orderIds):
-			order_has_product_list_ids.append(i.id)
+			order_has_product_list_ids.append(str(i.id))
 
-		# 得到用户已晒图的商品order_has_product.id列表
-		prp = set()
-		for i in mall_models.ProductReviewPicture.select().dj_where(order_has_product_id__in=order_has_product_list_ids):
-			prp.add(i.order_has_product_id)
 
-		count = len(order_has_product_list_ids) - len(prp)
+		reviewed_count = 0
+		if order_has_product_list_ids:
+			order_has_product_list_ids_str = "_".join(order_has_product_list_ids)
+			param_data = {'order_has_product_list_ids':order_has_product_list_ids_str}
+			resp = Resource.use('marketapp_apiserver').get({
+				'resource': 'evaluate.get_unreviewd_count',
+				'data': param_data
+			})
+
+			if resp:
+				code = resp["code"]
+				if code == 200:
+					reviewed_count = resp["data"]['reviewed_count']
+		count = len(order_has_product_list_ids) - int(reviewed_count)
 
 		return count
 

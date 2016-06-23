@@ -28,7 +28,7 @@ import logging
 
 class AReview(api_resource.ApiResource):
 	"""
-	评论
+	评论"废弃"
 
 	@see 原始源码在`webapp/modules/mall/request_api_util.py`中的`create_product_review()`。
 	"""

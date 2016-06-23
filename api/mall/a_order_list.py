@@ -16,6 +16,7 @@ from business.mall.order_products import OrderProducts
 from business.mall.order_config import OrderConfig
 from business.mall.review.waiting_review_order import WaitingReviewOrder
 
+from eaglet.utils.resource_client import Resource
 
 class AOrderList(api_resource.ApiResource):
 	"""
@@ -49,20 +50,33 @@ class AOrderList(api_resource.ApiResource):
 		# 过滤已取消的团购订单,但优惠抵扣的显示
 		# orders = filter(lambda order: not(order.is_group_buy and order.status == mall_models.ORDER_STATUS_CANCEL) or order.pay_interface_type ==  mall_models.PAY_INTERFACE_PREFERENCE ,orders)
 		orders = filter(lambda order: not(order_id2group_info[order.order_id] and order.status == mall_models.ORDER_STATUS_CANCEL) or order.pay_interface_type == mall_models.PAY_INTERFACE_PREFERENCE, orders)
+		param_data = {'woid':args['webapp_owner'].id, 'member_id':args['webapp_user'].member.id }
+		get_order_review_json = []
+
+		resp = Resource.use('marketapp_apiserver').get({
+				'resource': 'evaluate.get_order_evaluates',
+				'data': param_data
+			})
+		if resp:
+			code = resp["code"]
+			if code == 200:
+				get_order_review_json = resp["data"]['orders']
+		order_id2review = {}
+		if get_order_review_json:
+			for order_review in get_order_review_json:
+				order_id2review[int(order_review["order_id"])]=order_review["order_is_reviewed"]
+				#order_id指的是order.id
+
 		order_datas = []
 		for order in orders:
 			#子订单不显示在订单列表中
 			if order.origin_order_id > 0:
 				continue
 
-			waiting_review_order = WaitingReviewOrder.get_for_order({
-				'webapp_owner': webapp_owner,
-				'order': order,
-				'webapp_user': webapp_user
-				})
-
-			review_is_finished = waiting_review_order.reviewed
-
+			if order_id2review.has_key(order.id):
+				review_is_finished = order_id2review[order.id]
+			else:
+				review_is_finished = False
 			data = {
 				'id': order.id,
 				'order_id': order.order_id,

@@ -123,6 +123,7 @@ def __sort(dict_array):
 
 @then(u"{webapp_user}成功获取个人中心的'待评价'列表")
 def step_get_presonal_review_list(context, webapp_user):
+	context.client = bdd_util.login(webapp_user)
 	expected = json.loads(context.text)
 	url = "/member/waiting_review_products"
 	response = context.client.get(url, {

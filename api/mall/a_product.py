@@ -9,6 +9,8 @@ from util import dateutil as utils_dateutil
 #import resource
 from business.mall.product import Product
 from business.mall.review.product_reviews import ProductReviews
+
+from eaglet.utils.resource_client import Resource
 from eaglet.core import watchdog
 from eaglet.utils.resource_client import Resource
 
@@ -70,15 +72,19 @@ class AProduct(api_resource.ApiResource):
 					product.promotion = None
 					product.promotion_title = product.product_promotion_title
 
-			product_reviews = ProductReviews.get_from_product_id({
-				'webapp_owner': webapp_owner,
-				'product_id': product_id,
+
+			param_data = {'woid':webapp_owner.id, 'product_id':product_id}
+			reviews = []
+			resp = Resource.use('marketapp_apiserver').get({
+				'resource': 'evaluate.get_product_evaluates',
+				'data': param_data
 			})
-			if product_reviews:
-				reviews = product_reviews.products
-				reviews = reviews[:2]
-			else:
-				reviews = []
+
+			if resp:
+				code = resp["code"]
+				if code == 200:
+
+					reviews = resp["data"]['product_reviews']
 
 			result = product.to_dict(extras=['hint'])
 

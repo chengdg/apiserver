@@ -1202,7 +1202,8 @@ class Order(business_model.Model):
 				'member_id': self.context['webapp_user'].member.id,
 				'action': action,
 				'woid': self.context['webapp_owner'].id,
-				'group_id': self.order_group_info['group_id']
+				'group_id': self.order_group_info['group_id'],
+				'is_test': 1 if settings.IS_UNDER_BDD else 0  # BDD
 			}
 
 			Resource.use('marketapp_apiserver').put({

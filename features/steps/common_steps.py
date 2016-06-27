@@ -63,6 +63,8 @@ def step_impl(context, user, product_name ,error):
 # 	weapp_steps._run_weapp_step(u'When %s访问%s的webapp' % (user, mp_user_name), None)
 
 from bddserver import call_bdd_server_steps
+from features.util import http
+
 
 @when(u"{user}关注{mp_user_name}的公众号")
 def step_impl(context, user, mp_user_name):
@@ -86,11 +88,32 @@ def step_impl(context, user, mp_user_name):
 	client = bdd_util.login(user, None, context=context)
 	
 	#获得访问mp_user_name数据的access token
-	response = client.put('/user/access_token/', {
+	#修改授权方式
+	#换取code
+	url = "http://api.weapp.com/member_service/oauth/oauth/?_method=post"
+	data = {
 		'woid': webapp_owner.id,
 		'openid': '%s_%s' % (user, mp_user_name)
-	})
-	client.webapp_user.access_token = response.body['data']['access_token']
+	}
+	result = http.request(url, data, 'post')
+
+	code = result['data']['code']
+	logging.info(">>>>>>>>>>>>>>:::@@#@:")
+	logging.info(code)
+	logging.info(">>>>>>>>>>>>>>:::@@#@:2")
+	#get accesstoken
+	url = "http://api.weapp.com/member_service/oauth/access_token/?_method=post"
+	data = {
+		'woid': webapp_owner.id,
+		'code': code
+	}
+	result = http.request(url, data, 'post')
+	client.webapp_user.access_token = result['data']['access_token']
+	# response = client.put('/user/access_token/', {
+	# 	'woid': webapp_owner.id,
+	# 	'openid': '%s_%s' % (user, mp_user_name)
+	# })
+	# client.webapp_user.access_token = response.body['data']['access_token']
 	logging.info('>>>>>> ACCESS_TOKEN : %s' % client.webapp_user.access_token)
 	client.woid = webapp_owner.id
 
@@ -108,7 +131,7 @@ def step_impl(context, user, mp_user_name):
 			pass
 		else:
 			context.o_fmt = context.fmt
-			context.o_shared_url = context.shared_url
+			context.o_shared_url =  context.shared_url if hasattr(context, 'shared_url') else ""
 
 	context.fmt = ''
 	context.shared_url = ''

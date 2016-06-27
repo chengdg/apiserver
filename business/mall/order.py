@@ -1086,7 +1086,7 @@ class Order(business_model.Model):
 		"""
 		取消订单
 		"""
-		logging.info(u"Order id:{} is to be cancelled. Resources should be released first.".format(self.id))
+		#logging.info(u"Order id:{} is to be cancelled. Resources should be released first.".format(self.id))
 		self.__release_order_resources()
 
 		# 更新订单状态

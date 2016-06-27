@@ -64,12 +64,12 @@ class AUsableWZCard(api_resource.ApiResource):
 				}
 			else:
 				return {
-					'code': 500,
+					'code': 400,
 					'msg': msg
 				}
 		else:
 			return {
-				'code': 500,
+				'code': 400,
 				'msg': u'系统繁忙'
 			}
 

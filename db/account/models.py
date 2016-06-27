@@ -136,7 +136,8 @@ class AccessToken(models.Model):
 	woid = models.CharField(max_length=100, verbose_name='woid')
 	openid = models.CharField(max_length=100, verbose_name='openid')
 	expires_in = models.CharField(max_length=100, verbose_name='openid')
-	times = models.IntegerField(default=0)
+	times = models.CharField(max_length=100, default='86400')
+	code = models.CharField(max_length=100, default='')
 	created_at = models.DateTimeField(auto_now_add=True)
 
 	class Meta(object):

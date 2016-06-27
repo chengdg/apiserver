@@ -3,7 +3,7 @@ import json
 import time
 
 from behave import *
-
+from features.util import http
 from features.util import bdd_util
 from features.util.helper import WAIT_SHORT_TIME
 from db.mall import models as mall_models
@@ -48,10 +48,19 @@ def step_impl(context, shared_url, webapp_owner_name, product_name):
 
 	context.shared_url = shared_url
 
-	response = context.client.put('/member/shared_url/', {
+	# response = context.client.put('/member/shared_url/', {
+	# 	'title': product_name,
+	# 	'shared_url': shared_url
+	# })
+
+	#member server
+	data = {
 		'title': product_name,
 		'shared_url': shared_url
-	})
+	}
+	url = "http://api.weapp.com/member_service/member/shared_url/?_method=put"
+	http.request(url, data, 'post')
+
 
 	# if member:
 	# 	fmt = member.token
@@ -92,7 +101,7 @@ def step_impl(context, webapp_user_name, shared_webapp_user_name):
 			'webapp_owner': webapp_owner
 			})
 
-
+	current_member = __get_member_by_openid(current_openid)
 	new_step = u'''When %s访问%s的webapp'''% (webapp_user_name, webapp_owner_name)
 	logging.info("Converted step:\n %s" % new_step)
 	context.execute_steps(new_step)
@@ -103,11 +112,18 @@ def step_impl(context, webapp_user_name, shared_webapp_user_name):
 
 	context.fmt = shared_member.token
 	context.shared_url = shared_url
-	response = context.client.put('/member/member_spread/', {
+	# response = context.client.put('/member/member_spread/', {
+	# 	'fmt': shared_member.token,
+	# 	'url': context.shared_url
+	# })
+	#member server
+	data ={
 		'fmt': shared_member.token,
-		'url': context.shared_url
-	})
-
+		'url': context.shared_url,
+		'mt': current_member.token
+	}
+	url = "http://api.weapp.com/member_service/member/member_spread/?_method=put"
+	http.request(url, data, 'post')
 
 
 @When('{user}通过{shared_user}分享的链接购买{webapp_owner_name}的商品')

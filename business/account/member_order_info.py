@@ -54,9 +54,9 @@ class MemberOrderInfo(business_model.Model):
 		self.context['webapp_user'] = webapp_user
 		self.__fill_detail()
 
-	def __get_count_of_unfinished_product_review_picture(self, webapp_user_id):
+	def __get_order_has_product_list_ids(self, webapp_user_id):
 		'''
-		返回webapp_user已完成订单中， 未完成晒图的商品数量
+		返回order_has_product_list_ids
 		'''
 		count = 0
 		# 得到用户所有已完成订单
@@ -67,24 +67,7 @@ class MemberOrderInfo(business_model.Model):
 		order_has_product_list_ids = []
 		for i in mall_models.OrderHasProduct.select().dj_where(order_id__in=orderIds):
 			order_has_product_list_ids.append(str(i.id))
-
-
-		reviewed_count = 0
-		if order_has_product_list_ids:
-			order_has_product_list_ids_str = "_".join(order_has_product_list_ids)
-			param_data = {'order_has_product_list_ids':order_has_product_list_ids_str}
-			resp = Resource.use('marketapp_apiserver').get({
-				'resource': 'evaluate.get_unreviewd_count',
-				'data': param_data
-			})
-
-			if resp:
-				code = resp["code"]
-				if code == 200:
-					reviewed_count = resp["data"]['reviewed_count']
-		count = len(order_has_product_list_ids) - int(reviewed_count)
-
-		return count
+		return order_has_product_list_ids
 
 	def __get_order_stats_from_db(self, cache_key, webapp_user_id):
 		"""
@@ -98,8 +81,8 @@ class MemberOrderInfo(business_model.Model):
 				"not_paid": mall_models.Order.select().dj_where(webapp_user_id=webapp_user_id, status=mall_models.ORDER_STATUS_NOT, origin_order_id__lte=0).count(),
 				"not_ship_count": mall_models.Order.select().dj_where(webapp_user_id=webapp_user_id, status=mall_models.ORDER_STATUS_PAYED_NOT_SHIP, origin_order_id__lte=0).count(),
 				"shiped_count": mall_models.Order.select().dj_where(webapp_user_id=webapp_user_id, status=mall_models.ORDER_STATUS_PAYED_SHIPED, origin_order_id__lte=0).count(),
-				# "review_count": self.__get_count_of_unfinished_product_review_picture(webapp_user_id),
-				"finished_count": mall_models.Order.select().dj_where(webapp_user_id=webapp_user_id, status=mall_models.ORDER_STATUS_SUCCESSED,origin_order_id__lte=0).count()
+				"finished_count": mall_models.Order.select().dj_where(webapp_user_id=webapp_user_id, status=mall_models.ORDER_STATUS_SUCCESSED,origin_order_id__lte=0).count(),
+				"order_has_product_list_ids": self.__get_order_has_product_list_ids(webapp_user_id)
 			}
 			ret = {
 				'keys': [cache_key],
@@ -109,6 +92,23 @@ class MemberOrderInfo(business_model.Model):
 			#except:
 			#return None
 		return inner_func
+	def __get_review_count(self, stats):
+		order_has_product_list_ids = stats['order_has_product_list_ids']
+		reviewed_count = 0
+		if order_has_product_list_ids:
+			order_has_product_list_ids_str = "_".join(order_has_product_list_ids)
+			param_data = {'order_has_product_list_ids':order_has_product_list_ids_str}
+			resp = Resource.use('marketapp_apiserver').get({
+				'resource': 'evaluate.get_unreviewd_count',
+				'data': param_data
+			})
+
+			if resp:
+				code = resp["code"]
+				if code == 200:
+					reviewed_count = resp["data"]['reviewed_count']
+		review_count = len(order_has_product_list_ids) - int(reviewed_count)
+		return review_count
 
 	def __fill_detail(self):
 		"""
@@ -122,7 +122,7 @@ class MemberOrderInfo(business_model.Model):
 		self.not_payed_order_count = stats['not_paid']
 		self.not_ship_order_count = stats["not_ship_count"]
 		self.shiped_order_count = stats["shiped_count"]
-		self.review_count = self.__get_count_of_unfinished_product_review_picture(webapp_user.id)
+		self.review_count = self.__get_review_count(stats)
 		self.finished_count = stats['finished_count']
 
 

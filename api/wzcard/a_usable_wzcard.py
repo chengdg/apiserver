@@ -65,7 +65,7 @@ class AUsableWZCard(api_resource.ApiResource):
 			else:
 				return {
 					'code': 400,
-					'msg': resp['reason']
+					'msg': data['reason']
 				}
 		else:
 			return {

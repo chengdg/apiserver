@@ -649,3 +649,8 @@ class WebAppUser(business_model.Model):
 				member.grade = new_grade
 				member.save()
 				break
+
+
+	@cached_context_property
+	def wzcard_package(self):
+		pass

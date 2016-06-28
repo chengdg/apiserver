@@ -9,7 +9,7 @@
 from eaglet.core import api_resource
 from eaglet.decorator import param_required
 
-from business.wzcard.wzcard import WZCard
+from business.wzcard.wzcardutil import WZCardUtil
 
 
 class AUsableWZCard(api_resource.ApiResource):
@@ -37,7 +37,7 @@ class AUsableWZCard(api_resource.ApiResource):
 			'exist_cards': exist_cards
 		}
 
-		checker = WZCard(webapp_user, webapp_owner)
+		checker = WZCardUtil(webapp_user, webapp_owner)
 
 		card_numbers = exist_cards + [args['wzcard_id']]
 

@@ -5,7 +5,7 @@
 from eaglet.core import api_resource
 from eaglet.decorator import param_required
 
-from business.wzcard.wzcard import WZCard
+from business.wzcard.wzcardutil import WZCardUtil
 
 
 class BindingCard(api_resource.ApiResource):

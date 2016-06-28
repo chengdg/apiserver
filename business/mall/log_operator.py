@@ -9,7 +9,7 @@ from db.mall import models as mall_models
 from db.wzcard import models as wzcard_models
 from business.mall.supplier import Supplier
 import logging
-from business.wzcard.wzcard import WZCard
+from business.wzcard.wzcardutil import WZCardUtil
 
 class LogOperator(business_model.Model):
 	"""操作日志记录器

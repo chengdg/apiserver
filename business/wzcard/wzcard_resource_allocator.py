@@ -7,7 +7,7 @@
 import logging
 import json
 from business import model as business_model
-from business.wzcard.wzcard import WZCard
+from business.wzcard.wzcardutil import WZCardUtil
 from db.mall import models as mall_models
 # 每单用微众卡数量
 from business.wzcard.wzcard_resource import WZCardResource
@@ -59,7 +59,7 @@ class WZCardResourceAllocator(business_model.Service):
 		valid_money = order.postage + sum(
 			[product.original_price * product.purchase_count for product in order.products])
 
-		wzcard = WZCard(self.__webapp_user, self.__webapp_owner)
+		wzcard = WZCardUtil(self.__webapp_user, self.__webapp_owner)
 
 		card_numbers = [x['card_number'] for x in purchase_info.wzcard_info]
 
@@ -209,7 +209,7 @@ class WZCardResourceAllocator(business_model.Service):
 		logging.info("calling WZCardResourceAllocator.release() to release resources, resource: {}".format(resource))
 		order_id = resource.order_id
 		trade_id = resource.trade_id
-		wzcard = WZCard(self.__webapp_user, self.__webapp_owner)
+		wzcard = WZCardUtil(self.__webapp_user, self.__webapp_owner)
 		is_success = wzcard.refund(order_id, trade_id)
 			# TODO: 如果退款失败怎么办？
 		logging.info("WZCard refunded: is_success: {}, order_id: {}".format(is_success, order_id))

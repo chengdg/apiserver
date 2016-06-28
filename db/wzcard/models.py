@@ -111,3 +111,23 @@ class WeizoomCardHasOrder(models.Model):
 		db_table = 'market_tool_weizoom_card_has_order'
 		verbose_name = '微众卡支付交易记录'
 		verbose_name_plural = '微众卡支付交易记录'
+
+
+WEIZOOM_CARD_SOURCE_WEAPP = 0	#目前没用到
+WEIZOOM_CARD_SOURCE_REBATE = 1	#返利活动
+WEIZOOM_CARD_SOURCE_VIRTUAL = 2  #福利卡券
+class MemberHasWeizoomCard(models.Model):
+	"""
+	给会员发放的微众卡
+	"""
+	member_id = models.IntegerField() #会员id
+	member_name = models.CharField(max_length=1024) #会员名称
+	card_number = models.CharField(max_length=50) #微众卡卡号
+	card_password = models.CharField(max_length=100) #微众卡密码
+	relation_id = models.CharField(max_length=128) #关联的活动id
+	source = models.IntegerField() #微众卡来源
+
+	created_at = models.DateTimeField(auto_now_add=True) #发放时间
+
+	class Meta(object):
+		db_table = 'member_has_weizoom_card'

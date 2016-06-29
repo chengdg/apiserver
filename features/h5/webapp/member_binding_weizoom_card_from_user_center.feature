@@ -13,10 +13,11 @@ Feature:会员绑定微众卡
 	"""
 
 Background:
+	Given 重置'weapp'的bdd环境
 	Given 重置'weizoom_card'的bdd环境
-	Given 设置jobs为自营平台账号
-	Given jobs登录系统
-	And jobs已添加供货商
+	Given 设置jobs为自营平台账号::weapp
+	Given jobs登录系统::weapp
+	And jobs已添加供货商::weapp
 		"""
 		[{
 			"name": "供货商 a",
@@ -26,7 +27,7 @@ Background:
 			"remark": "备注"
 		}]
 		"""
-	And jobs已添加支付方式
+	And jobs已添加支付方式::weapp
 		"""
 		[{
 			"type": "货到付款",
@@ -39,8 +40,8 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	When jobs开通使用微众卡权限
-	When jobs添加支付方式
+	When jobs开通使用微众卡权限::weapp
+	When jobs添加支付方式::weapp
 		"""
 		[{
 			"type": "微众卡支付",
@@ -48,7 +49,7 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	Given jobs已添加商品
+	Given jobs已添加商品::weapp
 		"""
 		[{
 			"name":"商品1",
@@ -70,8 +71,8 @@ Background:
 		"""
 
 	#普通商家nokia
-	Given nokia登录系统
-	And nokia已添加支付方式
+	Given nokia登录系统::weapp
+	And nokia已添加支付方式::weapp
 		"""
 		[{
 			"type": "货到付款",
@@ -84,8 +85,8 @@ Background:
 			"is_active": "启用"
 		}]
 		"""
-	When nokia开通使用微众卡权限
-	Given nokia已添加商品
+	When nokia开通使用微众卡权限::weapp
+	Given nokia已添加商品::weapp
 		"""
 		[{
 			"name":"nokia商品1",
@@ -195,6 +196,7 @@ Scenario:1 微众卡绑定-输入有效的微众卡号和密码
 				}
 		}
 		"""
+	Then bill获得提示信息'恭喜您 绑定成功'
 	When bill绑定微众卡
 		"""
 		{
@@ -207,34 +209,7 @@ Scenario:1 微众卡绑定-输入有效的微众卡号和密码
 				}
 		}
 		"""
-	Then bill获得微众卡包列表
-		"""
-		[{
-			"can_use":
-				[{
-					"card_start_date":"2016-06-16 00:00",
-					"card_end_date":"2026-06-16 00:00",
-					"card_remain_value":10.00,
-					"card_total_value":10.00,
-					"id":"101000002",
-					"binding_date":"2016-06-16",
-					"source":"用户绑定",
-					"actions":["查看详情"],
-					"status":"未使用"
-				},{
-					"card_start_date":"2016-06-16 00:00",
-					"card_end_date":"2026-06-16 00:00",
-					"card_remain_value":10.00,
-					"card_total_value":10.00,
-					"id":"101000001",
-					"binding_date":"2016-06-16",
-					"source":"用户绑定",
-					"actions":["查看详情"],
-					"status":"未使用"
-				}],
-			"not_use":[]
-		}]
-		"""
+	Then bill获得提示信息'恭喜您 绑定成功'
 	#同一张卡，可以多人绑定
 	When tom访问jobs的webapp
 	When tom绑定微众卡
@@ -249,24 +224,7 @@ Scenario:1 微众卡绑定-输入有效的微众卡号和密码
 				}
 		}
 		"""
-	Then tom获得微众卡包列表
-		"""
-		[{
-			"can_use":
-				[{
-					"card_start_date":"2016-06-16 00:00",
-					"card_end_date":"2026-06-16 00:00",
-					"card_remain_value":10.00,
-					"card_total_value":10.00,
-					"id":"101000001",
-					"binding_date":"2016-06-16",
-					"source":"用户绑定",
-					"actions":["查看详情"],
-					"status":"未使用"
-				}],
-			"not_use":[]
-		}]
-		"""
+	Then tom获得提示信息'恭喜您 绑定成功'
 	#同一张卡，可以在不同商家绑定
 	When bill访问nokia的webapp
 	When bill绑定微众卡
@@ -281,142 +239,7 @@ Scenario:1 微众卡绑定-输入有效的微众卡号和密码
 				}
 		}
 		"""
-	Then bill获得微众卡包列表
-		"""
-		[{
-			"can_use":
-				[{
-					"card_start_date":"2016-06-16 00:00",
-					"card_end_date":"2026-06-16 00:00",
-					"card_remain_value":10.00,
-					"card_total_value":10.00,
-					"id":"101000001",
-					"binding_date":"2016-06-16",
-					"source":"用户绑定",
-					"actions":["查看详情"],
-					"status":"未使用"
-				}],
-			"not_use":[]
-		}]
-		"""
-	#绑定成功后，后台将卡停用，微众卡包中不可用，显示'未激活'
-		Given test登录管理系统::weizoom_card
-		When test停用卡号'101000002'的卡
-		When bill访问jobs的webapp
-		Then bill获得微众卡包列表
-			"""
-			[{
-				"can_use":
-					[{
-						"card_start_date":"2016-06-16 00:00",
-						"card_end_date":"2026-06-16 00:00",
-						"card_remain_value":10.00,
-						"card_total_value":10.00,
-						"id":"101000001",
-						"binding_date":"2016-06-16",
-						"source":"用户绑定",
-						"actions":["查看详情"],
-						"status":"未使用"
-					}],
-				"not_use":
-					[{
-						"card_start_date":"2016-06-16 00:00",
-						"card_end_date":"2026-06-16 00:00",
-						"card_remain_value":10.00,
-						"card_total_value":10.00,
-						"id":"101000002",
-						"binding_date":"2016-06-16",
-						"source":"用户绑定",
-						"actions":["查看详情"],
-						"status":"未激活"
-					}]
-			}]
-			"""
-	#绑定成功后，当该卡余额为0时，微众卡包中不可用，显示'已用完'
-		When bill访问jobs的webapp
-		When bill购买jobs的商品
-			"""
-			{
-				"pay_type": "微信支付",
-				"products":[{
-					"name":"商品1",
-					"price":10.00,
-					"count":1
-				}],
-				"weizoom_card":[{
-					"card_name":"101000001",
-					"card_pass":"1234567"
-				}]
-			}
-			"""
-		Then bill获得微众卡包列表
-			"""
-			[{
-				"can_use":[],
-				"not_use":
-					[{
-						"card_start_date":"2016-06-16 00:00",
-						"card_end_date":"2026-06-16 00:00",
-						"card_remain_value":10.00,
-						"card_total_value":10.00,
-						"id":"101000001",
-						"binding_date":"2016-06-16",
-						"source":"用户绑定",
-						"actions":["查看详情"],
-						"status":"已用完"
-					},{
-						"card_start_date":"2016-06-16 00:00",
-						"card_end_date":"2026-06-16 00:00",
-						"card_remain_value":10.00,
-						"card_total_value":10.00,
-						"id":"101000002",
-						"binding_date":"2016-06-16",
-						"source":"用户绑定",
-						"actions":["查看详情"],
-						"status":"未激活"
-					}]
-			}]
-			"""
-
-		When bill访问nokia的webapp
-		Then bill获得微众卡包列表
-			"""
-			[{
-				"can_use":[],
-				"not_use":
-					[{
-						"card_start_date":"2016-06-16 00:00",
-						"card_end_date":"2026-06-16 00:00",
-						"card_remain_value":10.00,
-						"card_total_value":10.00,
-						"id":"101000001",
-						"binding_date":"2016-06-16",
-						"source":"用户绑定",
-						"actions":["查看详情"],
-						"status":"已用完"
-					}]
-			}]
-			"""
-
-		When tom访问jobs的webapp
-		Then tom获得微众卡包列表
-			"""
-			[{
-				"can_use":[],
-				"not_use":
-					[{
-						"card_start_date":"2016-06-16 00:00",
-						"card_end_date":"2026-06-16 00:00",
-						"card_remain_value":10.00,
-						"card_total_value":10.00,
-						"id":"101000001",
-						"binding_date":"2016-06-16",
-						"source":"用户绑定",
-						"actions":["查看详情"],
-						"status":"已用完"
-					}]
-			}]
-			"""
+	Then bill获得提示信息'恭喜您 绑定成功'
 
 @binding_weizoon_card
 Scenario:2 微众卡绑定-输入无效的微众卡号和密码

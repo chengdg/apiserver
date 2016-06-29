@@ -14,7 +14,7 @@ Feature:查看微众卡包列表
 				有效期:显示卡的有效期，格式xxxx/xx/xx~xxxx/xx/xx
 				来源:显示卡的来源，商城下单（购买的电子微众卡）、绑定卡、返利卡
 				【详情】:点击跳转到该张微众卡的使用详情页面
-				【点击查看不可用卡】:默认收起，点击展示不可以卡的数据（已用完、已过期、已冻结）
+				【点击查看不可用卡】:默认收起，点击展示不可以卡的数据（已用完、已过期、已冻结（卡的状态为未激活））
 	"""
 
 Background:
@@ -123,7 +123,7 @@ Background:
 			"comments":"微众卡"
 		}]
 		"""
-	When test新建限制卡:weizoom_card
+	When test新建限制卡::weizoom_card
 		"""
 		[{
 			"name":"风暴卡1",
@@ -232,8 +232,7 @@ Scenario:1 查看我的卡包-微众卡包列表
 						"id":"101000002",
 						"binding_date":"2016-06-16",
 						"source":"绑定卡",
-						"actions":["详情"],
-						"status":"未使用"
+						"actions":["详情"]
 					},{
 						"card_start_date":"2016-06-16 00:00",
 						"card_end_date":"2026-06-16 00:00",
@@ -242,8 +241,7 @@ Scenario:1 查看我的卡包-微众卡包列表
 						"id":"101000001",
 						"binding_date":"2016-06-16",
 						"source":"绑定卡",
-						"actions":["详情"],
-						"status":"未使用"
+						"actions":["详情"]
 					}],
 				"not_use":[]
 			}]
@@ -274,8 +272,7 @@ Scenario:1 查看我的卡包-微众卡包列表
 						"id":"101000001",
 						"binding_date":"2016-06-16",
 						"source":"绑定卡",
-						"actions":["详情"],
-						"status":"未使用"
+						"actions":["详情"]
 					}],
 				"not_use":[]
 			}]
@@ -306,8 +303,7 @@ Scenario:1 查看我的卡包-微众卡包列表
 						"id":"101000001",
 						"binding_date":"2016-06-16",
 						"source":"绑定卡",
-						"actions":["详情"],
-						"status":"未使用"
+						"actions":["详情"]
 					}],
 				"not_use":[]
 			}]
@@ -329,8 +325,7 @@ Scenario:1 查看我的卡包-微众卡包列表
 							"id":"101000001",
 							"binding_date":"2016-06-16",
 							"source":"绑定卡",
-							"actions":["详情"],
-							"status":"未使用"
+							"actions":["详情"]
 						}],
 					"not_use":
 						[{

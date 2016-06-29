@@ -82,13 +82,6 @@ Background:
 			"money":"10.00",
 			"num":"3",
 			"comments":"微众卡"
-		},{
-			"name":"20元微众卡",
-			"prefix_value":"102",
-			"type":"virtual",
-			"money":"20.00",
-			"num":"1",
-			"comments":"微众卡"
 		}]
 		"""
 
@@ -104,20 +97,6 @@ Background:
 			}],
 			"order_info":{
 				"order_id":"0001"
-				}
-		}]
-		"""
-	When test下订单::weizoom_card
-		"""
-		[{
-			"card_info":[{
-				"name":"20元微众卡",
-				"order_num":"1",
-				"start_date":"2016-06-16 00:00",
-				"end_date":"2016-06-16 00:00"
-			}],
-			"order_info":{
-				"order_id":"0002"
 				}
 		}]
 		"""

@@ -205,7 +205,7 @@ Scenario:1 微众卡绑定-输入有效的微众卡号和密码
 				}
 		}
 		"""
-	Then bill获得提示信息'恭喜您 绑定成功'
+	Then bill获得绑定微众卡提示信息'恭喜您 绑定成功'
 	When bill绑定微众卡
 		"""
 		{
@@ -218,7 +218,7 @@ Scenario:1 微众卡绑定-输入有效的微众卡号和密码
 				}
 		}
 		"""
-	Then bill获得提示信息'恭喜您 绑定成功'
+	Then bill获得绑定微众卡提示信息'恭喜您 绑定成功'
 	#同一张卡，可以多人绑定
 	When tom访问jobs的webapp
 	When tom绑定微众卡
@@ -233,7 +233,7 @@ Scenario:1 微众卡绑定-输入有效的微众卡号和密码
 				}
 		}
 		"""
-	Then tom获得提示信息'恭喜您 绑定成功'
+	Then tom获得绑定微众卡提示信息'恭喜您 绑定成功'
 	#同一张卡，可以在不同商家绑定
 	When bill访问nokia的webapp
 	When bill绑定微众卡
@@ -248,7 +248,7 @@ Scenario:1 微众卡绑定-输入有效的微众卡号和密码
 				}
 		}
 		"""
-	Then bill获得提示信息'恭喜您 绑定成功'
+	Then bill获得绑定微众卡提示信息'恭喜您 绑定成功'
 
 @binding_weizoon_card
 Scenario:2 微众卡绑定-输入无效的微众卡号和密码
@@ -283,7 +283,7 @@ Scenario:2 微众卡绑定-输入无效的微众卡号和密码
 					}
 			}
 			"""
-		Then bill获得提示信息'该微众卡余额为0！'
+		Then bill获得绑定微众卡提示信息'该微众卡余额为0！'
 	#该微众卡已经添加！
 		When bill访问jobs的webapp
 		When bill绑定微众卡
@@ -310,7 +310,7 @@ Scenario:2 微众卡绑定-输入无效的微众卡号和密码
 					}
 			}
 			"""
-		Then bill获得提示信息'该微众卡已经添加！'
+		Then bill获得绑定微众卡提示信息'该微众卡已经添加！'
 	#微众卡未激活！
 		Given test登录管理系统::weizoom_card
 		When test停用卡号'101000003'的卡::weizoom_card
@@ -327,7 +327,7 @@ Scenario:2 微众卡绑定-输入无效的微众卡号和密码
 					}
 			}
 			"""
-		Then bill获得提示信息'微众卡未激活！'
+		Then bill获得绑定微众卡提示信息'微众卡未激活！'
 	#微众卡已过期！
 		When bill访问jobs的webapp
 		When bill绑定微众卡
@@ -342,7 +342,7 @@ Scenario:2 微众卡绑定-输入无效的微众卡号和密码
 					}
 			}
 			"""
-		Then bill获得提示信息'微众卡已过期！'
+		Then bill获得绑定微众卡提示信息'微众卡已过期！'
 	#该专属卡不能在此商家使用！
 		When bill访问jobs的webapp
 		When bill绑定微众卡
@@ -357,7 +357,7 @@ Scenario:2 微众卡绑定-输入无效的微众卡号和密码
 					}
 			}
 			"""
-		Then bill获得提示信息'该专属卡不能在此商家使用！'
+		Then bill获得绑定微众卡提示信息'该专属卡不能在此商家使用！'
 	#卡号或密码错误！
 		When bill访问jobs的webapp
 		When bill绑定微众卡
@@ -372,7 +372,7 @@ Scenario:2 微众卡绑定-输入无效的微众卡号和密码
 					}
 			}
 			"""
-		Then bill获得提示信息'卡号或密码错误！'
+		Then bill获得绑定微众卡提示信息'卡号或密码错误！'
 
 		When bill访问jobs的webapp
 		When bill绑定微众卡
@@ -387,4 +387,4 @@ Scenario:2 微众卡绑定-输入无效的微众卡号和密码
 					}
 			}
 			"""
-		Then bill获得提示信息'卡号或密码错误！'
+		Then bill获得绑定微众卡提示信息'卡号或密码错误！'

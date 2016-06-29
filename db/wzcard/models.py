@@ -116,6 +116,7 @@ class WeizoomCardHasOrder(models.Model):
 WEIZOOM_CARD_SOURCE_WEAPP = 0	#目前没用到
 WEIZOOM_CARD_SOURCE_REBATE = 1	#返利活动
 WEIZOOM_CARD_SOURCE_VIRTUAL = 2  #福利卡券
+WEIZOOM_CARD_SOURCE_BIND = 3 # 绑定卡
 class MemberHasWeizoomCard(models.Model):
 	"""
 	给会员发放的微众卡

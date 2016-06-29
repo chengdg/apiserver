@@ -101,6 +101,8 @@ REDIS_HOST = 'redis.weapp.com'
 REDIS_PORT = 6379
 REDIS_CACHES_DB = 1
 
+REDIS_COMMON_DB = 4
+
 # BDD_SERVER相关配置
 BDD_SERVER2PORT = {
     'weapp': 8170,
@@ -211,3 +213,5 @@ REGISTERED_LOCK_NAMES = {
 
 # CARD_SERVER_DOMAIN = "api.card.com"
 CARD_SERVER_DOMAIN = "cardapi.weapp.com"
+
+COMMON_SERVICE_ERROR_TYPE = 'common:wtf'

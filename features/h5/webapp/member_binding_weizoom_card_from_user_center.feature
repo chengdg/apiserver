@@ -29,7 +29,7 @@ Background:
 	And jobs已添加供货商::weapp
 		"""
 		[{
-			"name": "供货商 a",
+			"name": "供货商a",
 			"responsible_person": "张大众",
 			"supplier_tel": "15211223344",
 			"supplier_address": "北京市海淀区海淀科技大厦",
@@ -190,7 +190,7 @@ Background:
 	When test批量激活订单'0001'的卡::weizoom_card
 	When test批量激活订单'0003'的卡::weizoom_card
 
-@binding_weizoon_card
+@binding_weizoon_card @mall3
 Scenario:1 微众卡绑定-输入有效的微众卡号和密码
 	When bill访问jobs的webapp
 	When bill绑定微众卡
@@ -329,20 +329,20 @@ Scenario:2 微众卡绑定-输入无效的微众卡号和密码
 			"""
 		Then bill获得绑定微众卡提示信息'微众卡未激活！'
 	#微众卡已过期！
-		When bill访问jobs的webapp
-		When bill绑定微众卡
-			"""
-			{
-				"binding_date":"2016-06-16",
-				"binding_shop":"jobs",
-				"weizoom_card_info":
-					{
-						"id":"102000001",
-						"password":"1234567"
-					}
-			}
-			"""
-		Then bill获得绑定微众卡提示信息'微众卡已过期！'
+#		When bill访问jobs的webapp
+#		When bill绑定微众卡
+#			"""
+#			{
+#				"binding_date":"2016-06-16",
+#				"binding_shop":"jobs",
+#				"weizoom_card_info":
+#					{
+#						"id":"102000001",
+#						"password":"1234567"
+#					}
+#			}
+#			"""
+#		Then bill获得绑定微众卡提示信息'微众卡已过期！'
 	#该专属卡不能在此商家使用！
 		When bill访问jobs的webapp
 		When bill绑定微众卡

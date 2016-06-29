@@ -24,7 +24,7 @@ def step_impl(context, user):
 	"""
 	_a = json.loads(context.text)['weizoom_card_info']
 
-	url = '/wzcard/order/?_method=put'
+	url = '/wzcard/binding_card/?_method=put'
 	data = {
 		'card_number': _a['id'],
 		'card_password': _a['password']
@@ -36,16 +36,16 @@ def step_impl(context, user):
 		"""
 		@type context: behave.runner.Context
 		"""
-		actual = json.loads(context.text)
+		actual = context.response.body
 		code = actual['code']
 		data = actual['data']
-		type = data['type']
+		type = data.get('type')
 
 		if msg == u'恭喜您 绑定成功':
 			assert code == 200
 		else:
 			assert code == 500
-			if msg == u'卡号或密码错误':
+			if msg == u'卡号或密码错误！':
 				assert type in ('wzcard:nosuch', 'wzcard:wrongpass')
 			elif msg == u'该微众卡余额为0！':
 				assert type in ('wzcard:exhausted')

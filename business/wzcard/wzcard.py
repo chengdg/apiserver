@@ -118,8 +118,6 @@ class WZCard(business_model.Model):
 		检查微众卡，编辑订单页接口使用
 		@type args: h5请求参数
 		"""
-		webapp_owner = args['webapp_owner']
-		webapp_user = args['webapp_user']
 
 		params = {
 			'card_infos': json.dumps(args['card_infos'])
@@ -145,7 +143,7 @@ class WZCard(business_model.Model):
 		# 一人一自然天最多可输错10次密码
 		today = str(datetime.datetime.today().date())
 
-		key = 'bind_card_error_times:' + today
+		key = 'bind_card_error_times_{}:{}'.format(today, str(webapp_user.id))
 
 		error_times = r.get(key)
 
@@ -177,7 +175,7 @@ class WZCard(business_model.Model):
 					return False, 'wzcard:has_bound', None
 
 				# 判断余额是否为0
-				if data['balance'] == 0:
+				if float(data['balance']) == 0:
 					r.incr(key)
 					return False, 'wzcard:exhausted', None
 
@@ -200,7 +198,10 @@ class WZCard(business_model.Model):
 					if not get_card_infos_resp:
 						return False, 'common:wtf', None
 
-					card_info = get_card_infos_resp['data']['card_infos'][0]
+					card_info = get_card_infos_resp['data']['card_infos'][0].values()[0]
+					print('------------card_info', type(card_info), card_info)
+
+					print('---------------------get_card_infos_resp', get_card_infos_resp)
 
 					data['valid_time_from'] = card_info['valid_time_from']
 					data['valid_time_to'] = card_info['valid_time_to']

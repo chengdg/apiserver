@@ -13,7 +13,6 @@ from eaglet.decorator import param_required
 #from wapi import wapi_utils
 from eaglet.core.cache import utils as cache_util
 
-from business.wzcard.wzcard_package import WZCardPackage
 from core.exceptionutil import unicode_full_stack
 from db.mall import models as mall_models
 from db.mall import promotion_models

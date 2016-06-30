@@ -9,12 +9,24 @@ from features.util import bdd_util
 from features.util.helper import WAIT_SHORT_TIME
 from db.mall import models as mall_models
 from db.member import models as member_models
+from db.wzcard import models as wzcard_models
 
 from business.account.webapp_user import WebAppUser
 from business.account.webapp_owner import WebAppOwner
 
 from eaglet.core.cache import utils as cache_util
 import logging
+
+SOURCE2TEXT = {
+	wzcard_models.WEIZOOM_CARD_SOURCE_REBATE: u'返利活动',
+	wzcard_models.WEIZOOM_CARD_SOURCE_VIRTUAL: u'福利卡券',
+	wzcard_models.WEIZOOM_CARD_SOURCE_BIND: u'绑定卡',
+}
+
+STATUS2TEXT = {
+	'inactive': u'未激活',
+	'empty': u'已用完'
+}
 
 
 @when(u"{user}绑定微众卡")
@@ -76,14 +88,24 @@ def step_impl(context, user):
 
 	expected = json.loads(context.text)
 
-	print('----------usable_cards',expected)
+	if 'usable_cards' in expected:
+		for a in expected['usable_cards']:
+			del a['actions']
+			del a['binding_date']
+	if 'unusable_cards' in expected:
+		for a in expected['unusable_cards']:
+			del a['actions']
+			del a['binding_date']
 
-	# if
-	for a in expected['usable_cards']:
-		del a['actions']
-		del a['binding_date']
-	for a in expected['unusable_cards']:
-		del a['actions']
-		del a['binding_date']
+	for a in actual['usable_cards']:
+		a['source'] = SOURCE2TEXT[a['source']]
+		a['valid_time_to'] = a['valid_time_to'][:16]
+		a['valid_time_from'] = a['valid_time_from'][:16]
+
+	for a in actual['unusable_cards']:
+		a['source'] = SOURCE2TEXT[a['source']]
+		a['valid_time_to'] = a['valid_time_to'][:16]
+		a['valid_time_from'] = a['valid_time_from'][:16]
+		a['status'] = STATUS2TEXT[a['status']]
 
 	bdd_util.assert_dict(expected, actual)

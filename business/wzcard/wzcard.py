@@ -43,13 +43,13 @@ class WZCard(business_model.Model):
 		self.face_value = card_detail['face_value']
 		self.valid_time_from = card_detail['valid_time_from']
 		self.valid_time_to = card_detail['valid_time_to']
-		self.balance = card_detail['balance']
+		self.balance = "%.2f" % float(card_detail['balance'])
 		# self.status_text = card_detail['status_text']
 		self.status = card_detail.get('internal_status', '11')
 
 		if member_has_card_model:
 			self.source = member_has_card_model.source
-			self.bound_at = member_has_card_model.created_at
+			self.bound_at = member_has_card_model.id
 
 		# self.context['webapp_user'] = webapp_user
 		# self.context['webapp_owner'] = webapp_owner
@@ -220,6 +220,7 @@ class WZCard(business_model.Model):
 
 					# 获得有效期
 					if not get_card_infos_resp:
+						print('------------------------1',get_card_infos_resp)
 						return False, 'common:wtf', None
 
 					card_info = get_card_infos_resp['data']['card_infos'][0].values()[0]
@@ -233,6 +234,7 @@ class WZCard(business_model.Model):
 
 
 		else:
+			print('--------------------------------2')
 			# card微服务失败
 			return False, 'common:wtf'
 
@@ -243,7 +245,12 @@ class WZCard(business_model.Model):
 		member_has_cards:MemberHasWeizoomCard models
 
 		"""
-		member_has_cards = args['member_has_cards']
+		member_has_cards = list(args['member_has_cards'])
+
+		if len(member_has_cards) == 0:
+			print('-----len==0')
+			return True, [], []
+
 		card_number2models = {a.card_number: a for a in member_has_cards}
 		card_numbers_passwords = [{'card_number': a.card_number, 'card_password': a.card_password} for a in
 		                          member_has_cards]
@@ -252,8 +259,7 @@ class WZCard(business_model.Model):
 			'card_infos': card_numbers_passwords
 		})
 
-		if resp and resp['code'] == 200:
-
+		if resp:
 
 			card_infos = resp['data']['card_infos']
 			cards = []
@@ -265,14 +271,15 @@ class WZCard(business_model.Model):
 
 				cards.append(WZCard(member_has_card_model, card_detail))
 
-			cards = sorted(cards, key=lambda x: x.bound_at)
+			cards = sorted(cards, key=lambda x: -x.bound_at)
 
 
-			usable_cards = filter(lambda x: x.status in ('used', 'unused') or True, cards)
-			unusable_cards = filter(lambda x: x.status in ('empty', 'inactive','expired'), cards)
+			usable_cards = filter(lambda x: x.status in ('used', 'unused'), cards)
+			unusable_cards = filter(lambda x: x.status in ('empty', 'inactive', 'expired'), cards)
 
 			return True, usable_cards, unusable_cards
 
 
 		else:
+			print('--------------------------------4_resp',resp)
 			return False, None, None

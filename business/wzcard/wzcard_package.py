@@ -28,11 +28,7 @@ class WZCardPackage(business_model.Model):
 		is_success, self.usable_cards, self.unusable_cards = WZCard.from_member_has_cards(
 			{'member_has_cards': member_has_cards})
 
-		if is_success:
-			self.is_valid = True
-		else:
-			self.is_valid = False
-
+		self.is_valid = is_success
 
 
 	@staticmethod

@@ -186,7 +186,7 @@ Background:
 	When test批量激活订单'0001'的卡::weizoom_card
 	When test批量激活订单'0003'的卡::weizoom_card
 
-@weizoon_card_list
+@weizoon_card @weizoon_card_list
 Scenario:1 查看我的卡包-微众卡包列表
 	#我的卡包-微众卡包数据为空
 		When bill访问jobs的webapp

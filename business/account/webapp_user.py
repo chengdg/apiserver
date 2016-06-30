@@ -652,6 +652,8 @@ class WebAppUser(business_model.Model):
 				break
 
 
-	@cached_context_property
-	def wzcard_package(self):
-		return WZCardPackage.get_package_by_webapp_user({'webapp_user': self})
+	# @cached_context_property
+	# def wzcard_package(self):
+	# 	from business.wzcard.wzcard_package import WZCardPackage
+	#
+	# 	return WZCardPackage.get_package_by_webapp_user({'webapp_user': self})

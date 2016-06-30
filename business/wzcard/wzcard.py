@@ -24,6 +24,11 @@ class WZCard(business_model.Model):
 		'card_number',
 		'card_password',
 		'source',
+
+		'valid_time_from'
+		'valid_time_to',
+		'face_value'
+
 	)
 
 	def __init__(self, webapp_user, webapp_owner):
@@ -143,9 +148,13 @@ class WZCard(business_model.Model):
 		# 一人一自然天最多可输错10次密码
 		today = str(datetime.datetime.today().date())
 
-		key = 'bind_card_error_times_{}:{}'.format(today, str(webapp_user.id))
+		times_key = 'bind_card_error_times_{}:{}'.format(today, str(webapp_user.id))
 
-		error_times = r.get(key)
+		times_value = r.get(times_key)
+
+		error_times = int(times_value) if times_value else 0
+
+		print('------------------error_times',error_times,type(error_times))
 
 		if error_times >= 10:
 			return False, 'wzcard:ten_times_error', None
@@ -164,19 +173,19 @@ class WZCard(business_model.Model):
 
 			if code == 500:
 
-				r.incr(key)
+				r.incr(times_key)
 				return False, data['type'], None
 			else:
 
 				# 判断是否绑定过
 				if wzcard_models.MemberHasWeizoomCard.select().dj_where(member_id=member_id,
 				                                                        card_number=card_number).count() > 0:
-					r.incr(key)
+					r.incr(times_key)
 					return False, 'wzcard:has_bound', None
 
 				# 判断余额是否为0
 				if float(data['balance']) == 0:
-					r.incr(key)
+					r.incr(times_key)
 					return False, 'wzcard:exhausted', None
 
 
@@ -199,9 +208,6 @@ class WZCard(business_model.Model):
 						return False, 'common:wtf', None
 
 					card_info = get_card_infos_resp['data']['card_infos'][0].values()[0]
-					print('------------card_info', type(card_info), card_info)
-
-					print('---------------------get_card_infos_resp', get_card_infos_resp)
 
 					data['valid_time_from'] = card_info['valid_time_from']
 					data['valid_time_to'] = card_info['valid_time_to']
@@ -214,3 +220,23 @@ class WZCard(business_model.Model):
 		else:
 			# card微服务失败
 			return False, 'common:wtf'
+
+	@staticmethod
+	@param_required(['member_has_cards'])
+	def from_member_has_cards(args):
+		"""
+		member_has_cards:MemberHasWeizoomCard models
+
+		"""
+		member_has_cards = args['member_has_cards']
+		card_numbers = [a.card_number for a in member_has_cards]
+		card_numbers_passwords = [{'card_number':a.card_number,'card_password':a.password} for a in member_has_cards]
+
+		resp = WZCard.get_card_infos({
+			'card_infos': card_numbers_passwords
+		})
+
+		if resp and resp['code'] == 200:
+			card_infos = resp['card_infos']
+			check_failed_cards = resp['check_failed_cards']
+		# card_infos =

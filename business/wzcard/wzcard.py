@@ -25,17 +25,34 @@ class WZCard(business_model.Model):
 		'card_password',
 		'source',
 
-		'valid_time_from'
+		'valid_time_from',
 		'valid_time_to',
-		'face_value'
+		'face_value',
+		'status_text',
+		'balance',
+		'bound_at',
+		'status'
 
 	)
 
-	def __init__(self, webapp_user, webapp_owner):
+	def __init__(self, member_has_card_model, card_detail):
 		business_model.Model.__init__(self)
 
-		self.context['webapp_user'] = webapp_user
-		self.context['webapp_owner'] = webapp_owner
+		self.card_number = card_detail['card_number']
+		self.card_password = card_detail['card_password']
+		self.face_value = card_detail['face_value']
+		self.valid_time_from = card_detail['valid_time_from']
+		self.valid_time_to = card_detail['valid_time_to']
+		self.balance = card_detail['balance']
+		# self.status_text = card_detail['status_text']
+		self.status = card_detail.get('status', '11')
+
+		if member_has_card_model:
+			self.source = member_has_card_model.source
+			self.bound_at = member_has_card_model.created_at
+
+		# self.context['webapp_user'] = webapp_user
+		# self.context['webapp_owner'] = webapp_owner
 
 	# def __get_webapp_user_info(self):
 	# 	"""
@@ -154,7 +171,6 @@ class WZCard(business_model.Model):
 
 		error_times = int(times_value) if times_value else 0
 
-
 		if error_times >= 10:
 			return False, 'wzcard:ten_times_error', None
 
@@ -228,21 +244,39 @@ class WZCard(business_model.Model):
 
 		"""
 		member_has_cards = args['member_has_cards']
-		card_numbers = [a.card_number for a in member_has_cards]
-		card_numbers_passwords = [{'card_number': a.card_number, 'card_password': a.password} for a in member_has_cards]
+		card_number2models = {a.card_number: a for a in member_has_cards}
+		card_numbers_passwords = [{'card_number': a.card_number, 'card_password': a.card_password} for a in member_has_cards]
 
 		resp = WZCard.get_card_infos({
 			'card_infos': card_numbers_passwords
 		})
 
 		if resp and resp['code'] == 200:
-			card_infos = resp['card_infos']
+
+			print('--------------resp',resp)
+
+			card_infos = resp['data']['card_infos']
 			cards = []
 			for card in card_infos:
-				card = WZCard()
+				card_detail = card.values()[0]
 
+				card_number = card.keys()[0]
+				member_has_card_model = card_number2models[card_number]
 
+				cards.append(WZCard(member_has_card_model, card_detail))
+
+			cards = sorted(cards, key=lambda x: x.bound_at)
+
+			print('-----------cards',cards)
+
+			usable_cards = filter(lambda x: x.status in ('11') or True, cards)
+			unusable_cards = filter(lambda x: x.status in ('222'), cards)
+
+			print('----------usable_cards',usable_cards)
+			print('-------------unusable_cards',unusable_cards)
+
+			return True, usable_cards, unusable_cards
 
 
 		else:
-			return False, None
+			return False, None, None

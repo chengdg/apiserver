@@ -8,7 +8,7 @@ from eaglet.decorator import param_required
 from business.wzcard.wzcard import WZCard
 
 
-class BindingCard(api_resource.ApiResource):
+class ABindingCard(api_resource.ApiResource):
 	app = 'wzcard'
 	resource = 'binding_card'
 

@@ -28,6 +28,7 @@ from business.decorator import cached_context_property
 from util import regional_util
 from business.account.member_order_info import MemberOrderInfo
 from business.account.social_account import SocialAccount
+from business.wzcard.wzcard_package import WZCardPackage
 
 from business.mall.coupon.coupon import Coupon
 
@@ -652,8 +653,7 @@ class WebAppUser(business_model.Model):
 				break
 
 
-	# @cached_context_property
-	# def wzcard_package(self):
-	# 	from business.wzcard.wzcard_package import WZCardPackage
-	#
-	# 	return WZCardPackage.from_webapp_user({'webapp_user': self})
+	@cached_context_property
+	def wzcard_package(self):
+
+		return WZCardPackage.from_webapp_user({'webapp_user': self})

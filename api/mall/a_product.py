@@ -9,8 +9,10 @@ from util import dateutil as utils_dateutil
 #import resource
 from business.mall.product import Product
 from business.mall.review.product_reviews import ProductReviews
+
+from eaglet.utils.resource_client import Resource
 from eaglet.core import watchdog
-from eaglet.utils.api_resource import APIResourceClient
+from eaglet.utils.resource_client import Resource
 
 
 class AProduct(api_resource.ApiResource):
@@ -38,13 +40,20 @@ class AProduct(api_resource.ApiResource):
 
 		param_data = {'pid': product_id, 'woid': webapp_owner.id, 'member_id': webapp_user.member.id}
 
-		resource = APIResourceClient(settings.WEAPP_DOMAIN, GroupBuyOPENAPI['group_buy_product'])
-		is_success, code, group_buy_product = resource.get(param_data)
-		if is_success and code == 200:
-			if group_buy_product['is_in_group_buy']:
+
+		resp = Resource.use('marketapp_apiserver').get({
+			'resource':GroupBuyOPENAPI['group_buy_product'],
+			'data':param_data
+		})
+
+
+		if resp and resp['code'] == 200:
+			data = resp['data']
+
+			if data['is_in_group_buy']:
 				return {
 					'is_in_group_buy': True,
-					'activity_url': 'http://' + settings.WEAPP_DOMAIN + group_buy_product['activity_url']
+					'activity_url': 'http://' + settings.WEAPP_DOMAIN + data['activity_url']
 				}
 
 		product = Product.from_id({
@@ -63,15 +72,19 @@ class AProduct(api_resource.ApiResource):
 					product.promotion = None
 					product.promotion_title = product.product_promotion_title
 
-			product_reviews = ProductReviews.get_from_product_id({
-				'webapp_owner': webapp_owner,
-				'product_id': product_id,
+
+			param_data = {'woid':webapp_owner.id, 'product_id':product_id}
+			reviews = []
+			resp = Resource.use('marketapp_apiserver').get({
+				'resource': 'evaluate.get_product_evaluates',
+				'data': param_data
 			})
-			if product_reviews:
-				reviews = product_reviews.products
-				reviews = reviews[:2]
-			else:
-				reviews = []
+
+			if resp:
+				code = resp["code"]
+				if code == 200:
+
+					reviews = resp["data"]['product_reviews']
 
 			result = product.to_dict(extras=['hint'])
 

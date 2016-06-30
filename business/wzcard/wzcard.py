@@ -7,8 +7,10 @@
 import json
 
 import db.mall.models as mall_models
-import settings
-from eaglet.utils.api_resource import APIResourceClient
+
+from eaglet.utils.resource_client import Resource
+
+
 
 class WZCard(object):
 	"""
@@ -67,11 +69,16 @@ class WZCard(object):
 
 		# is_success, resp = microservice_consume2(url=url, data=data, method='post')
 
-		resource = APIResourceClient(host=settings.CARD_SERVER_DOMAIN, resource='card.checked_card')
+		# resource = APIResourceClient(host=settings.CARD_SERVER_DOMAIN, resource='card.checked_card')
+		#
+		# is_success, code, data = resource.post(params=params)
 
-		is_success, code, data = resource.post(params=params)
+		resp = Resource.use("card_apiserver").post({
+			"resource":"card.checked_card",
+			"data":params
+		})
 
-		return is_success, code, data
+		return resp
 
 	def use(self, wzcard_info, money, valid_money, order_id):
 		"""
@@ -95,21 +102,42 @@ class WZCard(object):
 		# url = "http://" + settings.CARD_SERVER_DOMAIN + '/card/trade'
 		# is_success, resp = microservice_consume2(url=url, data=data, method='post')
 
-		resource = APIResourceClient(host=settings.CARD_SERVER_DOMAIN, resource='card.trade')
+		# resource = APIResourceClient(host=settings.CARD_SERVER_DOMAIN, resource='card.trade')
 
-		is_success, code, data = resource.post(params=params)
+		resp = Resource.use('card_apiserver').post({
+			'resource': 'card.trade',
+			'data': params
+		})
 
-		if not is_success:
-			can_use = False
-			msg = u'系统繁忙'
-			data['type'] = 'wzcard:call_service_error'
-		else:
+		data = {}
+
+		if resp:
+			code = resp['code']
+			data = resp['data']
 			if code == 200:
 				can_use = True
 				msg = ''
 			else:
 				can_use = False
 				msg = data['reason']
+		else:
+			can_use = False
+			msg = u'系统繁忙'
+			data['type'] = 'wzcard:call_service_error'
+
+		# is_success, code, data = resource.post(params=params)
+		#
+		# if not is_success:
+		# 	can_use = False
+		# 	msg = u'系统繁忙'
+		# 	data['type'] = 'wzcard:call_service_error'
+		# else:
+		# 	if code == 200:
+		# 		can_use = True
+		# 		msg = ''
+		# 	else:
+		# 		can_use = False
+		# 		msg = data['reason']
 
 		if can_use:
 			self.__record(order_id, data)
@@ -151,9 +179,18 @@ class WZCard(object):
 		# url = "http://" + settings.CARD_SERVER_DOMAIN + '/card/trade'
 		# is_success, code, data = microservice_consume2(url=url, data=data, method='delete')
 
-		resource = APIResourceClient(host=settings.CARD_SERVER_DOMAIN, resource='card.trade')
+		# resource = APIResourceClient(host=settings.CARD_SERVER_DOMAIN, resource='card.trade')
+		#
+		# is_success, code, data = resource.delete(params=data)
 
-		is_success, code, data = resource.delete(params=data)
+		resp = Resource.use('card_apiserver').delete(
+			{
+				'resource': 'card.trade',
+				'data': data
+			}
+		)
+
+		is_success = resp and resp['code'] == 200
 
 		return is_success
 

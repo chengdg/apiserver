@@ -21,7 +21,7 @@ from core.sendmail import sendmail
 from eaglet.core import watchdog
 import db.account.models as accout_models
 from eaglet.core.wxapi import get_weixin_api
-from eaglet.utils.api_resource import APIResourceClient
+from eaglet.utils.resource_client import Resource
 from features.util.bdd_util import set_bdd_mock
 
 from services.record_order_status_log_service.task import record_order_status_log
@@ -1202,12 +1202,15 @@ class Order(business_model.Model):
 				'member_id': self.context['webapp_user'].member.id,
 				'action': action,
 				'woid': self.context['webapp_owner'].id,
-				'group_id': self.order_group_info['group_id']
+				'group_id': self.order_group_info['group_id'],
+				'is_test': 1 if settings.IS_UNDER_BDD else 0  # BDD
 			}
 
-			resource_client = APIResourceClient(settings.WEAPP_DOMAIN,GroupBuyOPENAPI['order_action'])
-			resource_client.put(params)
-			# notify_group_buy_after_pay.delay(url, data)
+			Resource.use('marketapp_apiserver').put({
+				'resource': GroupBuyOPENAPI['order_action'],
+				'data': params
+			})
+
 
 
 
@@ -1360,10 +1363,14 @@ class Order(business_model.Model):
 					'woid': self.context['webapp_owner'].id,
 					'group_id': order_group_info['group_id']
 				}
-				resource = APIResourceClient(settings.WEAPP_DOMAIN, GroupBuyOPENAPI['get_group_url'])
-				is_success, code, group_url_info = resource.get(params=params)
 
-				if is_success and code == 200:
+				resp = Resource.use('marketapp_apiserver').get({
+					'resource': GroupBuyOPENAPI['get_group_url'],
+					'data': params
+				})
+
+				if resp and resp['code'] == 200:
+					group_url_info = resp['data']
 					activity_url = 'http://' + settings.WEAPP_DOMAIN + group_url_info['group_url']
 
 			order_group_info['activity_url'] = activity_url
@@ -1402,10 +1409,13 @@ class Order(business_model.Model):
 						'group_id': order_group_info['group_id']
 					}
 
-					resource = APIResourceClient(settings.WEAPP_DOMAIN, GroupBuyOPENAPI['get_group_url'])
-					is_success, code, group_url_info = resource.get(params=params)
+					resp = Resource.use('marketapp_apiserver').get({
+						'resource': GroupBuyOPENAPI['get_group_url'],
+						'data': params
+					})
 
-					if is_success and code == 200:
+					if resp and resp['code'] == 200:
+						group_url_info = resp['data']
 						activity_url = 'http://' + settings.WEAPP_DOMAIN + group_url_info['group_url']
 				order_group_info['activity_url'] = activity_url
 				order_id2group_info[order.order_id] = order_group_info

@@ -656,4 +656,4 @@ class WebAppUser(business_model.Model):
 	# def wzcard_package(self):
 	# 	from business.wzcard.wzcard_package import WZCardPackage
 	#
-	# 	return WZCardPackage.get_package_by_webapp_user({'webapp_user': self})
+	# 	return WZCardPackage.from_webapp_user({'webapp_user': self})

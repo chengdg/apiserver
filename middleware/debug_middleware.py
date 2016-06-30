@@ -42,6 +42,11 @@ class RedisMiddleware(object):
 			
 			cache.utils.clear_db()
 
+			# 清理库4
+			import redis
+			r = redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_COMMON_DB)
+			r.flushdb()
+
 			for key,value in access_token_dict.items():
 				cache.utils.SET_CACHE(key, value)
 

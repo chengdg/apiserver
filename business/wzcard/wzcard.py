@@ -154,7 +154,6 @@ class WZCard(business_model.Model):
 
 		error_times = int(times_value) if times_value else 0
 
-		print('------------------error_times',error_times,type(error_times))
 
 		if error_times >= 10:
 			return False, 'wzcard:ten_times_error', None
@@ -230,7 +229,7 @@ class WZCard(business_model.Model):
 		"""
 		member_has_cards = args['member_has_cards']
 		card_numbers = [a.card_number for a in member_has_cards]
-		card_numbers_passwords = [{'card_number':a.card_number,'card_password':a.password} for a in member_has_cards]
+		card_numbers_passwords = [{'card_number': a.card_number, 'card_password': a.password} for a in member_has_cards]
 
 		resp = WZCard.get_card_infos({
 			'card_infos': card_numbers_passwords
@@ -238,5 +237,12 @@ class WZCard(business_model.Model):
 
 		if resp and resp['code'] == 200:
 			card_infos = resp['card_infos']
-			check_failed_cards = resp['check_failed_cards']
-		# card_infos =
+			cards = []
+			for card in card_infos:
+				card = WZCard()
+
+
+
+
+		else:
+			return False, None

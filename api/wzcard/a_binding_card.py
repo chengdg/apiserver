@@ -29,7 +29,8 @@ class BindingCard(api_resource.ApiResource):
 				'card_number': card_number,
 				'face_value': _data['face_value'],
 				'balance': _data['balance'],
-				'resource': _data['resource']
+				'valid_time_from': _data['valid_time_from'],
+				'valid_time_to':	_data['valid_time_to']
 
 			}
 		else:

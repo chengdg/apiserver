@@ -45,7 +45,7 @@ class WZCard(business_model.Model):
 		self.valid_time_to = card_detail['valid_time_to']
 		self.balance = card_detail['balance']
 		# self.status_text = card_detail['status_text']
-		self.status = card_detail.get('status', '11')
+		self.status = card_detail.get('internal_status', '11')
 
 		if member_has_card_model:
 			self.source = member_has_card_model.source
@@ -245,7 +245,8 @@ class WZCard(business_model.Model):
 		"""
 		member_has_cards = args['member_has_cards']
 		card_number2models = {a.card_number: a for a in member_has_cards}
-		card_numbers_passwords = [{'card_number': a.card_number, 'card_password': a.card_password} for a in member_has_cards]
+		card_numbers_passwords = [{'card_number': a.card_number, 'card_password': a.card_password} for a in
+		                          member_has_cards]
 
 		resp = WZCard.get_card_infos({
 			'card_infos': card_numbers_passwords
@@ -253,7 +254,6 @@ class WZCard(business_model.Model):
 
 		if resp and resp['code'] == 200:
 
-			print('--------------resp',resp)
 
 			card_infos = resp['data']['card_infos']
 			cards = []
@@ -267,13 +267,9 @@ class WZCard(business_model.Model):
 
 			cards = sorted(cards, key=lambda x: x.bound_at)
 
-			print('-----------cards',cards)
 
-			usable_cards = filter(lambda x: x.status in ('11') or True, cards)
-			unusable_cards = filter(lambda x: x.status in ('222'), cards)
-
-			print('----------usable_cards',usable_cards)
-			print('-------------unusable_cards',unusable_cards)
+			usable_cards = filter(lambda x: x.status in ('used', 'unused') or True, cards)
+			unusable_cards = filter(lambda x: x.status in ('empty', 'inactive','expired'), cards)
 
 			return True, usable_cards, unusable_cards
 

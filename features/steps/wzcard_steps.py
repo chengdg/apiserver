@@ -60,3 +60,30 @@ def step_impl(context, user):
 
 			else:
 				raise NotImplementedError
+
+
+@then(u"{user}获得微众卡包列表")
+def step_impl(context, user):
+	"""
+	@type context: behave.runner.Context
+	"""
+	url = '/wzcard/binding_cards/'
+	response = context.client.get(url)
+
+	resp = response.body
+
+	actual = resp['data']
+
+	expected = json.loads(context.text)
+
+	print('----------usable_cards',expected)
+
+	# if
+	for a in expected['usable_cards']:
+		del a['actions']
+		del a['binding_date']
+	for a in expected['unusable_cards']:
+		del a['actions']
+		del a['binding_date']
+
+	bdd_util.assert_dict(expected, actual)

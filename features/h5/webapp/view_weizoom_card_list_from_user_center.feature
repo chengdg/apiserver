@@ -26,7 +26,7 @@ Background:
 	And jobs已添加供货商::weapp
 		"""
 		[{
-			"name": "供货商 a",
+			"name": "供货商a",
 			"responsible_person": "张大众",
 			"supplier_tel": "15211223344",
 			"supplier_address": "北京市海淀区海淀科技大厦",
@@ -187,7 +187,7 @@ Background:
 	When test批量激活订单'0001'的卡::weizoom_card
 	When test批量激活订单'0003'的卡::weizoom_card
 
-@weizoon_card @weizoon_card_list
+@weizoon_card @weizoon_card_list @ztqb
 Scenario:1 查看我的卡包-微众卡包列表
 	#我的卡包-微众卡包数据为空
 		When bill访问jobs的webapp
@@ -224,27 +224,27 @@ Scenario:1 查看我的卡包-微众卡包列表
 		Then bill获得微众卡包列表
 			"""
 			[{
-				"can_use":
+				"usable_cards":
 					[{
-						"card_start_date":"2016-06-16 00:00",
-						"card_end_date":"2026-06-16 00:00",
-						"card_remain_value":10.00,
-						"card_total_value":10.00,
-						"id":"101000002",
+						"valid_time_from":"2016-06-16 00:00",
+						"valid_time_to":"2026-06-16 00:00",
+						"balance":10.00,
+						"face_value":10.00,
+						"card_number":"101000002",
 						"binding_date":"2016-06-16",
 						"source":"绑定卡",
 						"actions":["详情"]
 					},{
-						"card_start_date":"2016-06-16 00:00",
-						"card_end_date":"2026-06-16 00:00",
-						"card_remain_value":10.00,
-						"card_total_value":10.00,
-						"id":"101000001",
+						"valid_time_from":"2016-06-16 00:00",
+						"valid_time_to":"2026-06-16 00:00",
+						"balance":10.00,
+						"face_value":10.00,
+						"card_number":"101000001",
 						"binding_date":"2016-06-16",
 						"source":"绑定卡",
 						"actions":["详情"]
 					}],
-				"not_use":[]
+				"unusable_cards":[]
 			}]
 			"""
 		#同一张卡，可以多人绑定
@@ -264,18 +264,18 @@ Scenario:1 查看我的卡包-微众卡包列表
 		Then tom获得微众卡包列表
 			"""
 			[{
-				"can_use":
+				"usable_cards":
 					[{
-						"card_start_date":"2016-06-16 00:00",
-						"card_end_date":"2026-06-16 00:00",
-						"card_remain_value":10.00,
-						"card_total_value":10.00,
-						"id":"101000001",
+						"valid_time_from":"2016-06-16 00:00",
+						"valid_time_to":"2026-06-16 00:00",
+						"balance":10.00,
+						"face_value":10.00,
+						"card_number":"101000001",
 						"binding_date":"2016-06-16",
 						"source":"绑定卡",
 						"actions":["详情"]
 					}],
-				"not_use":[]
+				"unusable_cards":[]
 			}]
 			"""
 		#同一张卡，可以在不同商家绑定
@@ -295,46 +295,46 @@ Scenario:1 查看我的卡包-微众卡包列表
 		Then bill获得微众卡包列表
 			"""
 			[{
-				"can_use":
+				"usable_cards":
 					[{
-						"card_start_date":"2016-06-16 00:00",
-						"card_end_date":"2026-06-16 00:00",
-						"card_remain_value":10.00,
-						"card_total_value":10.00,
-						"id":"101000001",
+						"valid_time_from":"2016-06-16 00:00",
+						"valid_time_to":"2026-06-16 00:00",
+						"balance":10.00,
+						"face_value":10.00,
+						"card_number":"101000001",
 						"binding_date":"2016-06-16",
 						"source":"绑定卡",
 						"actions":["详情"]
 					}],
-				"not_use":[]
+				"unusable_cards":[]
 			}]
 			"""
 	#我的卡包-微众卡包数据不为空（包含不可用的卡）
 		#绑定成功后，后台将卡停用，微众卡包中不可用，显示'未激活'
 			Given test登录管理系统::weizoom_card
-			When test停用卡号'101000002'的卡
+			When test停用卡号'101000002'的卡::weizoom_card
 			When bill访问jobs的webapp
 			Then bill获得微众卡包列表
 				"""
 				[{
-					"can_use":
+					"usable_cards":
 						[{
-							"card_start_date":"2016-06-16 00:00",
-							"card_end_date":"2026-06-16 00:00",
-							"card_remain_value":10.00,
-							"card_total_value":10.00,
-							"id":"101000001",
+							"valid_time_from":"2016-06-16 00:00",
+							"valid_time_to":"2026-06-16 00:00",
+							"balance":10.00,
+							"face_value":10.00,
+							"card_number":"101000001",
 							"binding_date":"2016-06-16",
 							"source":"绑定卡",
 							"actions":["详情"]
 						}],
-					"not_use":
+					"unusable_cards":
 						[{
-							"card_start_date":"2016-06-16 00:00",
-							"card_end_date":"2026-06-16 00:00",
-							"card_remain_value":10.00,
-							"card_total_value":10.00,
-							"id":"101000002",
+							"valid_time_from":"2016-06-16 00:00",
+							"valid_time_to":"2026-06-16 00:00",
+							"balance":10.00,
+							"face_value":10.00,
+							"card_number":"101000002",
 							"binding_date":"2016-06-16",
 							"source":"绑定卡",
 							"actions":["详情"],
@@ -362,24 +362,24 @@ Scenario:1 查看我的卡包-微众卡包列表
 			Then bill获得微众卡包列表
 				"""
 				[{
-					"can_use":[],
-					"not_use":
+					"usable_cards":[],
+					"unusable_cards":
 						[{
-							"card_start_date":"2016-06-16 00:00",
-							"card_end_date":"2026-06-16 00:00",
-							"card_remain_value":10.00,
-							"card_total_value":10.00,
-							"id":"101000002",
+							"valid_time_from":"2016-06-16 00:00",
+							"valid_time_to":"2026-06-16 00:00",
+							"balance":10.00,
+							"face_value":10.00,
+							"card_number":"101000002",
 							"binding_date":"2016-06-16",
 							"source":"绑定卡",
 							"actions":["详情"],
 							"status":"未激活"
 						},{
-							"card_start_date":"2016-06-16 00:00",
-							"card_end_date":"2026-06-16 00:00",
-							"card_remain_value":10.00,
-							"card_total_value":10.00,
-							"id":"101000001",
+							"valid_time_from":"2016-06-16 00:00",
+							"valid_time_to":"2026-06-16 00:00",
+							"balance":10.00,
+							"face_value":10.00,
+							"card_number":"101000001",
 							"binding_date":"2016-06-16",
 							"source":"绑定卡",
 							"actions":["详情"],
@@ -392,14 +392,14 @@ Scenario:1 查看我的卡包-微众卡包列表
 			Then bill获得微众卡包列表
 				"""
 				[{
-					"can_use":[],
-					"not_use":
+					"usable_cards":[],
+					"unusable_cards":
 						[{
-							"card_start_date":"2016-06-16 00:00",
-							"card_end_date":"2026-06-16 00:00",
-							"card_remain_value":10.00,
-							"card_total_value":10.00,
-							"id":"101000001",
+							"valid_time_from":"2016-06-16 00:00",
+							"valid_time_to":"2026-06-16 00:00",
+							"balance":10.00,
+							"face_value":10.00,
+							"card_number":"101000001",
 							"binding_date":"2016-06-16",
 							"source":"绑定卡",
 							"actions":["详情"],
@@ -412,14 +412,14 @@ Scenario:1 查看我的卡包-微众卡包列表
 			Then tom获得微众卡包列表
 				"""
 				[{
-					"can_use":[],
-					"not_use":
+					"usable_cards":[],
+					"unusable_cards":
 						[{
-							"card_start_date":"2016-06-16 00:00",
-							"card_end_date":"2026-06-16 00:00",
-							"card_remain_value":10.00,
-							"card_total_value":10.00,
-							"id":"101000001",
+							"valid_time_from":"2016-06-16 00:00",
+							"valid_time_to":"2026-06-16 00:00",
+							"balance":10.00,
+							"face_value":10.00,
+							"card_number":"101000001",
 							"binding_date":"2016-06-16",
 							"source":"绑定卡",
 							"actions":["详情"],

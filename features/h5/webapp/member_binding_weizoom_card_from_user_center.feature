@@ -188,6 +188,7 @@ Background:
 
 	#激活微众卡
 	When test批量激活订单'0001'的卡::weizoom_card
+	When test批量激活订单'0002'的卡::weizoom_card
 	When test批量激活订单'0003'的卡::weizoom_card
 
 @binding_weizoon_card @mall3
@@ -329,20 +330,20 @@ Scenario:2 微众卡绑定-输入无效的微众卡号和密码
 			"""
 		Then bill获得绑定微众卡提示信息'微众卡未激活！'
 	#微众卡已过期！
-#		When bill访问jobs的webapp
-#		When bill绑定微众卡
-#			"""
-#			{
-#				"binding_date":"2016-06-16",
-#				"binding_shop":"jobs",
-#				"weizoom_card_info":
-#					{
-#						"id":"102000001",
-#						"password":"1234567"
-#					}
-#			}
-#			"""
-#		Then bill获得绑定微众卡提示信息'微众卡已过期！'
+		When bill访问jobs的webapp
+		When bill绑定微众卡
+			"""
+			{
+				"binding_date":"2016-06-16",
+				"binding_shop":"jobs",
+				"weizoom_card_info":
+					{
+						"id":"102000001",
+						"password":"1234567"
+					}
+			}
+			"""
+		Then bill获得绑定微众卡提示信息'微众卡已过期！'
 	#该专属卡不能在此商家使用！
 		When bill访问jobs的webapp
 		When bill绑定微众卡

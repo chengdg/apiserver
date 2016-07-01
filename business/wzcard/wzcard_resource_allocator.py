@@ -7,6 +7,7 @@
 import logging
 import json
 from business import model as business_model
+from business.wzcard.wzcard import WZCard
 from business.wzcard.wzcardutil import WZCardUtil
 from db.mall import models as mall_models
 # 每单用微众卡数量
@@ -61,7 +62,8 @@ class WZCardResourceAllocator(business_model.Service):
 
 		wzcard = WZCardUtil(self.__webapp_user, self.__webapp_owner)
 
-		card_numbers = [x['card_number'] for x in purchase_info.wzcard_info]
+		# card_numbers = [x['card_number'] for x in purchase_info.wzcard_info]
+		card_numbers = purchase_info.wzcard_info
 
 		is_success, msg = wzcard.boring_check(card_numbers)
 		if not is_success:
@@ -73,7 +75,11 @@ class WZCardResourceAllocator(business_model.Service):
 			}
 			return False, [reason], None
 
-		can_use, msg, data = wzcard.use(purchase_info.wzcard_info, order.final_price, valid_money, order.order_id)
+		usable_wzcard_info = WZCard.get_by_card_numbers(
+			{'webapp_user': self.__webapp_user, 'card_numbers': card_numbers})
+
+		can_use, msg, data = wzcard.use(usable_wzcard_info, order.final_price, valid_money, order.order_id)
+
 
 		if can_use:
 			paid_money = float(data['paid_money'])
@@ -211,7 +217,7 @@ class WZCardResourceAllocator(business_model.Service):
 		trade_id = resource.trade_id
 		wzcard = WZCardUtil(self.__webapp_user, self.__webapp_owner)
 		is_success = wzcard.refund(order_id, trade_id)
-			# TODO: 如果退款失败怎么办？
+		# TODO: 如果退款失败怎么办？
 		logging.info("WZCard refunded: is_success: {}, order_id: {}".format(is_success, order_id))
 		return
 

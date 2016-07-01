@@ -139,7 +139,7 @@ Background:
 
 	And bill关注jobs的公众号
 
-@mall3 @mall2 @wip.bpuc1 @mall.pay_weizoom_card @victor
+@mall3 @mall2 @wip.bpuc1 @mall.pay_weizoom_card @victor @ztqb
 #购买流程.编辑订单.微众卡使用
 Scenario:1 微众卡金额大于订单金额时进行支付
 	bill用微众卡购买jobs的商品时,微众卡金额大于订单金额
@@ -163,6 +163,19 @@ Scenario:1 微众卡金额大于订单金额时进行支付
 		"""
 
 	When bill访问jobs的webapp
+	When bill绑定微众卡
+	"""
+	{
+		"binding_date":"2016-06-16",
+		"binding_shop":"jobs",
+		"weizoom_card_info":
+			{
+				"id":"100000001",
+				"password":"1234567"
+			}
+	}
+	"""
+	Then bill获得绑定微众卡提示信息'恭喜您 绑定成功'
 	When bill购买jobs的商品
 		"""
 		{

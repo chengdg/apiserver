@@ -290,3 +290,16 @@ class WZCard(business_model.Model):
 
 		else:
 			return False, None, None
+
+	@staticmethod
+	@param_required(['card_numbers', 'webapp_user'])
+	def get_by_card_numbers(args):
+		card_numbers = args['card_numbers']
+		member_id = args['webapp_user'].member.id
+		member_has_cards = wzcard_models.MemberHasWeizoomCard.select().dj_where(member_id=member_id,
+		                                                                        card_number__in=card_numbers)
+		# todo 排序
+
+		usable_wzcard_info = [{a.card_number: a.card_password} for a in member_has_cards]
+
+		return usable_wzcard_info

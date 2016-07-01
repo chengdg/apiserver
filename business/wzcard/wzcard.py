@@ -28,8 +28,7 @@ class WZCard(business_model.Model):
 		'valid_time_from',
 		'valid_time_to',
 		'face_value',
-		'status_text',
-		'balance',
+		'balance',  # 'used', 'unused','empty', 'inactive', 'expired'
 		'bound_at',
 		'status'
 
@@ -220,7 +219,6 @@ class WZCard(business_model.Model):
 
 					# 获得有效期
 					if not get_card_infos_resp:
-						print('------------------------1',get_card_infos_resp)
 						return False, 'common:wtf', None
 
 					card_info = get_card_infos_resp['data']['card_infos'][0].values()[0]
@@ -234,7 +232,6 @@ class WZCard(business_model.Model):
 
 
 		else:
-			print('--------------------------------2')
 			# card微服务失败
 			return False, 'common:wtf'
 
@@ -248,7 +245,6 @@ class WZCard(business_model.Model):
 		member_has_cards = list(args['member_has_cards'])
 
 		if len(member_has_cards) == 0:
-			print('-----len==0')
 			return True, [], []
 
 		card_number2models = {a.card_number: a for a in member_has_cards}
@@ -273,7 +269,6 @@ class WZCard(business_model.Model):
 
 			cards = sorted(cards, key=lambda x: -x.bound_at)
 
-
 			usable_cards = filter(lambda x: x.status in ('used', 'unused'), cards)
 			unusable_cards = filter(lambda x: x.status in ('empty', 'inactive', 'expired'), cards)
 
@@ -281,5 +276,4 @@ class WZCard(business_model.Model):
 
 
 		else:
-			print('--------------------------------4_resp',resp)
 			return False, None, None

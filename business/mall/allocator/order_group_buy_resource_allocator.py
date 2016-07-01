@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
-from eaglet.utils.api_resource import APIResourceClient
-import settings
+from eaglet.utils.resource_client import Resource
 from business import model as business_model
 from business.resource.group_buy_resource import GroupBuyResource
 from db.mall import models as mall_models
@@ -24,12 +23,12 @@ GroupBuyOPENAPI = {
 	# 'group_buy_info': 'http://' + settings.WEAPP_DOMAIN + '/apps/group/api/group_buy_info',
 	# 'get_group_url': 'http://' + settings.WEAPP_DOMAIN + '/apps/group/api/get_group_url',
 
-	'group_buy_product': 'apps/group/api/group_buy_product',
-	'group_buy_products': 'apps/group/api/group_buy_products',
-	'order_action': 'apps/group/api/order_action',
-	'check_group_buy': 'apps/group/api/check_group_buy',
-	'group_buy_info': 'apps/group/api/group_buy_info',
-	'get_group_url': 'apps/group/api/get_group_url',
+	'group_buy_product': 'group.group_buy_product',
+	'group_buy_products': 'group.group_buy_products',
+	'order_action': 'group.order_action',
+	'check_group_buy': 'group.check_group_buy',
+	'group_buy_info': 'group.group_buy_info',
+	'get_group_url': 'group.get_group_url',
 }
 
 
@@ -84,11 +83,13 @@ class OrderGroupBuyAllocator(business_model.Service):
 				'woid': self.context['webapp_owner'].id
 			}
 
-			resource = APIResourceClient(host=settings.WEAPP_DOMAIN, resource=GroupBuyOPENAPI['check_group_buy'])
+			resp = Resource.use('marketapp_apiserver').get({
+				'resource': GroupBuyOPENAPI['check_group_buy'],
+				'data': param_data
+			})
 
-			is_success, code, group_buy_product_info = resource.get(params=param_data)
-
-			if is_success and code == 200:
+			if resp and resp['code'] == 200:
+				group_buy_product_info = resp['data']
 				is_success = group_buy_product_info['is_success']
 				reason = group_buy_product_info['reason']
 			else:

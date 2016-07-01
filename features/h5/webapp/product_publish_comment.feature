@@ -80,47 +80,6 @@ Background:
         }]
         """
 
-@mall2 @person @productReview @product @review  @mall.webapp.comment.dd @bert @mall3
-Scenario:1 评价包括文字与晒图
-    When bill访问jobs的webapp
-    And bill完成订单'1'中'商品1'的评价
-        """
-        {
-            "product_score": "4",
-            "review_detail": "商商商品1还不错！！！！！品1还不错！！！商商品1还不错！！！！！品1还不错！！！商商品1还不错！！！！！品1还不错！！！商商品1还不错！！！！！品1还不错！！！商商品1还不错！！！！！品1还不错！！！商商品1还不错！！！！！品1还不错！！！商商品1还不错！！！！！品1还不错！！！商商品1还不错！！！！！品1还不错！！！商商品1还不错！！！！！品1还不错！！！商品1还不错！！！！！品1还不错！！！!",
-            "serve_score": "4",
-            "deliver_score": "4",
-            "process_score": "4",
-            "picture_list": "['/static/upload/webapp/3_20151102/2015_11_02_18_24_49_948000.png']"
-        }
-        """
-    Then 订单'1'中'商品1'的评商品评价提示信息'发表评价失败'
-    # And 订单'1'中'商品1'的评商品评价提示详情'评价文字要求在200字以内'
-
-    #文字在200以内，成功提交
-    When bill完成订单'1'中'商品1'的评价
-        """
-        {
-            "product_score": "4",
-            "review_detail": "商品1还不错！！！！！",
-            "serve_score": "4",
-            "deliver_score": "4",
-            "process_score": "4",
-            "picture_list": "['/static/upload/webapp/3_20151102/2015_11_02_18_24_49_948000.png']"
-        }
-        """
-    Then bill成功获取个人中心的'待评价'列表
-        """
-        [{
-            "order_no": "2",
-            "products": [
-                {
-                    "product_name": "商品2"
-                }
-            ]
-        }]
-        """
-
 @mall2 @person @productReview @product @review   @mall.webapp.comment.dd @mall3 @bert
 Scenario:2 无晒图
     When bill访问jobs的webapp

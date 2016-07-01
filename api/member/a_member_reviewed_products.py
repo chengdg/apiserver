@@ -16,7 +16,7 @@ import logging
 
 class AMemberReviewedProducts(api_resource.ApiResource):
 	"""
-	获取商品的评论列表
+	获取商品的评论列表(废弃，代码迁移到营销工具中了)
 	"""
 	app = 'member'
 	resource = 'reviewed_products'

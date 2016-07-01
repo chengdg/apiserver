@@ -8,7 +8,7 @@ import logging
 import json
 from business import model as business_model
 from business.wzcard.wzcard import WZCard
-from business.wzcard.wzcardutil import WZCardUtil
+# from business.wzcard.wzcardutil import WZCardUtil
 from db.mall import models as mall_models
 # 每单用微众卡数量
 from business.wzcard.wzcard_resource import WZCardResource
@@ -60,26 +60,36 @@ class WZCardResourceAllocator(business_model.Service):
 		valid_money = order.postage + sum(
 			[product.original_price * product.purchase_count for product in order.products])
 
-		wzcard = WZCardUtil(self.__webapp_user, self.__webapp_owner)
-
 		# card_numbers = [x['card_number'] for x in purchase_info.wzcard_info]
 		card_numbers = purchase_info.wzcard_info
 
-		is_success, msg = wzcard.boring_check(card_numbers)
-		if not is_success:
-			reason = {
-				"is_success": False,
-				"type": 'wzcard:exceeded',
-				"msg": msg,
-				"short_msg": msg
-			}
-			return False, [reason], None
+		# is_success, msg = WZCard.boring_check(card_numbers)
+		# if not is_success:
+		# 	reason = {
+		# 		"is_success": False,
+		# 		"type": 'wzcard:exceeded',
+		# 		"msg": msg,
+		# 		"short_msg": msg
+		# 	}
+		# 	return False, [reason], None
 
 		usable_wzcard_info = WZCard.get_by_card_numbers(
 			{'webapp_user': self.__webapp_user, 'card_numbers': card_numbers})
 
-		can_use, msg, data = wzcard.use(usable_wzcard_info, order.final_price, valid_money, order.order_id)
-
+		print('--------usable_wzcard_info', usable_wzcard_info)
+		try:
+			can_use, msg, data = WZCard.use({
+				'wzcard_info': usable_wzcard_info,
+				'money': order.final_price,
+				'order_id': order.order_id,
+				'webapp_user': self.__webapp_user,
+				'webapp_owner': self.__webapp_owner
+			})
+		except:
+			from eaglet.core.exceptionutil import unicode_full_stack
+			print('__________________________________________')
+			print(unicode_full_stack())
+			print('__________________________________________')
 
 		if can_use:
 			paid_money = float(data['paid_money'])
@@ -215,11 +225,10 @@ class WZCardResourceAllocator(business_model.Service):
 		logging.info("calling WZCardResourceAllocator.release() to release resources, resource: {}".format(resource))
 		order_id = resource.order_id
 		trade_id = resource.trade_id
-		wzcard = WZCardUtil(self.__webapp_user, self.__webapp_owner)
-		is_success = wzcard.refund(order_id, trade_id)
+		# wzcard = WZCardUtil(self.__webapp_user, self.__webapp_owner)
+		is_success = WZCard.refund({'order_id': order_id, 'trade_id': trade_id})
 		# TODO: 如果退款失败怎么办？
-		logging.info("WZCard refunded: is_success: {}, order_id: {}".format(is_success, order_id))
-		return
+		return is_success
 
 	@property
 	def resource_type(self):

@@ -32,7 +32,7 @@ class WaitingReviewOrder(business_model.Model):
 		'order_is_reviewed',
 		'created_at',
 		'final_price',
-		'reviewed'
+		'reviewed',
 	)
 
 	@staticmethod
@@ -82,12 +82,12 @@ class WaitingReviewOrder(business_model.Model):
 			has_reviewed = False
 			
 			rid = order_product.rid
-			for product_review in mall_models.ProductReview.select().dj_where(product_id=order_product.id, order_has_product_id=rid, order_id=order.id, member_id=webapp_user.member.id):
-				reviewed = True
-				has_reviewed = True
-				if mall_models.ProductReviewPicture.select().dj_where(product_review=product_review).count() > 0:
-					has_reviewed_picture = True
-					break
+			# for product_review in mall_models.ProductReview.select().dj_where(product_id=order_product.id, order_has_product_id=rid, order_id=order.id, member_id=webapp_user.member.id):
+			# 	reviewed = True
+			# 	has_reviewed = True
+			# 	if mall_models.ProductReviewPicture.select().dj_where(product_review=product_review).count() > 0:
+			# 		has_reviewed_picture = True
+			# 		break
 
 			order_product.has_reviewed_picture = has_reviewed_picture
 			order_product.has_reviewed = has_reviewed

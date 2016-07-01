@@ -148,19 +148,19 @@ Scenario:1 微众卡金额大于订单金额时进行支付
 	3.微众卡金额减少,状态为“已使用”
 
 	When bill访问jobs的webapp
-	When bill进行微众卡余额查询
-		"""
-		{
-			"id":"100000001",
-			"password":"1234567"
-		}
-		"""
-	Then bill获得微众卡余额查询结果
-		"""
-		{
-			"card_remaining":100.00
-		}
-		"""
+#	When bill进行微众卡余额查询
+#		"""
+#		{
+#			"id":"100000001",
+#			"password":"1234567"
+#		}
+#		"""
+#	Then bill获得微众卡余额查询结果
+#		"""
+#		{
+#			"card_remaining":100.00
+#		}
+#		"""
 
 	When bill访问jobs的webapp
 	When bill绑定微众卡

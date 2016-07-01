@@ -5,7 +5,10 @@ from eaglet.core import watchdog
 from eaglet.utils.resource_client import Resource
 from business import model as business_model
 from db.wzcard import models as wzcard_models
+
 from db.mall import models as mall_models
+
+from eaglet.utils.resource_client import Resource
 
 from eaglet.decorator import param_required
 
@@ -87,6 +90,71 @@ class WZCard(business_model.Model):
 	# 		'valid_money': -1,  # 商品原价+运费
 	# 		'customer_type': -1
 	# 	}
+
+
+	@staticmethod
+	@param_required(['wzcard_info', 'money', 'order_id', 'webapp_user', 'webapp_owner'])
+	def use(args):
+		wzcard_info = args['wzcard_info']
+
+		webapp_owner = args['webapp_owner']
+		order_id = args['order_id']
+		webapp_user = args['webapp_user']
+
+		if webapp_user.member.is_subscribed:
+			if mall_models.Order.select().dj_where(webapp_user_id=webapp_user.id).count() > 0:
+				customer_type = 0
+			else:
+				customer_type = 1
+		else:
+			customer_type = 2
+
+		try:
+			x = json.dumps(wzcard_info)
+			print('------------------3,x', x)
+		except:
+			print('-----------------------3')
+
+		params = {
+			'card_infos': json.dumps(wzcard_info),
+			'money': args['money'],
+			'valid_money': -1,
+			'order_id': order_id,
+			'shop_id': webapp_owner.id,
+			'shop_name': webapp_owner.user_profile.store_name,
+			'customer_id': args['webapp_user'].member.id,
+			'customer_type': customer_type
+		}
+
+		resp = Resource.use('card_apiserver').post({
+			'resource': 'card.trade',
+			'data': params
+		})
+
+		data = {}
+
+		if resp:
+			code = resp['code']
+			data = resp['data']
+			if code == 200:
+				can_use = True
+				msg = ''
+			else:
+				can_use = False
+				msg = data['reason']
+		else:
+			can_use = False
+			msg = u'系统繁忙'
+			data['type'] = 'wzcard:call_service_error'
+
+		if can_use:
+			mall_models.OrderCardInfo.create(
+				order_id=order_id,
+				trade_id=data['trade_id'],
+				used_card=data['used_cards']
+			)
+
+		return can_use, msg, data
 
 	@staticmethod
 	@param_required(['webapp_user', 'webapp_owner', 'card_number', 'card_password'])
@@ -300,6 +368,38 @@ class WZCard(business_model.Model):
 		                                                                        card_number__in=card_numbers)
 		# todo 排序
 
-		usable_wzcard_info = [{a.card_number: a.card_password} for a in member_has_cards]
+		# usable_wzcard_info = [{a.card_number: a.card_password} for a in member_has_cards]
+		usable_wzcard_info = [{'card_number': a.card_number, 'card_password': a.card_password} for a in
+		                      member_has_cards]
 
 		return usable_wzcard_info
+
+	@staticmethod
+	@param_required(['order_id', 'trade_id'])
+	def refund(args):
+		"""
+		微众卡退款，取消订单或者下单失败时使用
+		@param order_id:
+		@param trade_id:
+		@return:
+		"""
+		# 交易类型（支付失败退款：0、普通退款：1）
+		if mall_models.Order.select().dj_where(order_id=args['order_id']).first():
+			trade_type = 1
+		else:
+			trade_type = 0
+		data = {
+			'trade_id': args['trade_id'],
+			'trade_type': trade_type
+		}
+
+		resp = Resource.use('card_apiserver').delete(
+			{
+				'resource': 'card.trade',
+				'data': data
+			}
+		)
+
+		is_success = resp and resp['code'] == 200
+
+		return is_success

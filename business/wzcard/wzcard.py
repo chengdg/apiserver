@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
 import json
 
+from eaglet.core import watchdog
 from eaglet.utils.resource_client import Resource
 from business import model as business_model
 from db.wzcard import models as wzcard_models
 from db.mall import models as mall_models
 
 from eaglet.decorator import param_required
-# from db.wzcard.models import WeizoomCardRule, WeizoomCard
-import logging
-from decimal import Decimal
-from core.decorator import deprecated
+
 import datetime
 
 import settings
@@ -269,8 +267,23 @@ class WZCard(business_model.Model):
 
 			cards = sorted(cards, key=lambda x: -x.bound_at)
 
-			usable_cards = filter(lambda x: x.status in ('used', 'unused'), cards)
-			unusable_cards = filter(lambda x: x.status in ('empty', 'inactive', 'expired'), cards)
+			usable_cards = []
+			unusable_cards = []
+			_cards = []
+			for card in cards:
+				if card.status in ('used', 'unused'):
+					usable_cards.append(card)
+				elif card.status in ('empty', 'expired'):
+					_cards.append(card)
+				elif card.status == 'inactive':
+					unusable_cards.append(card)
+				else:
+					watchdog.alert({
+						'description': u'Error card status',
+						'card_number': card.card_number,
+						'card_status': card.status
+					})
+			unusable_cards.extend(_cards)
 
 			return True, usable_cards, unusable_cards
 

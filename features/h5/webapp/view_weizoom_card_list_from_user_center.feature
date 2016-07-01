@@ -434,14 +434,14 @@ Scenario:2 查看我的卡包-微众卡包不可用卡列表
 				"""
 			Then bill获得微众卡包列表
 				"""
-				[{
+				{
 					"usable_cards":[],
 					"unusable_cards":
 						[{
 							"valid_time_from":"2016-06-16 00:00",
 							"valid_time_to":"2026-06-16 00:00",
-							"balance":10.00,
-							"face_value":10.00,
+							"balance":"10.00",
+							"face_value":"10.00",
 							"card_number":"101000002",
 							"binding_date":"2016-06-16",
 							"source":"绑定卡",
@@ -468,7 +468,7 @@ Scenario:2 查看我的卡包-微众卡包不可用卡列表
 							"actions":["详情"],
 							"status":"已用完"
 						}]
-				}]
+				}
 				"""
 
 			When bill访问nokia的webapp

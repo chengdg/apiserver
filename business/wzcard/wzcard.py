@@ -4,6 +4,7 @@ import json
 from eaglet.core import watchdog
 from eaglet.utils.resource_client import Resource
 from business import model as business_model
+from business.account.webapp_owner import WebAppOwner as WebAppOwner
 from db.wzcard import models as wzcard_models
 
 from db.mall import models as mall_models
@@ -12,10 +13,18 @@ from eaglet.utils.resource_client import Resource
 
 from eaglet.decorator import param_required
 
+from db.account import models as account_models
+from eaglet.decorator import param_required
+from eaglet.core.cache import utils as cache_util
+# from db.wzcard.models import WeizoomCardRule, WeizoomCard
+import logging
+from decimal import Decimal
+from core.decorator import deprecated
 import datetime
 
 import settings
 import redis
+from util.webapp_id2nickname import get_nickname_from_webapp_id
 
 r = redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_COMMON_DB)
 
@@ -403,3 +412,74 @@ class WZCard(business_model.Model):
 		is_success = resp and resp['code'] == 200
 
 		return is_success
+
+	@staticmethod
+	@param_required(['webapp_user', 'webapp_owner', 'card_id'])
+	def from_card_id(args):
+		"""
+		MemberHasWeizoomCard models的id 
+		通过card_id获取微众卡的卡详情
+		"""
+
+		webapp_owner = args['webapp_owner']
+		webapp_user = args['webapp_user']
+		member_id= webapp_user.member.id
+		card_id = args['card_id']
+
+		member_has_cards = wzcard_models.MemberHasWeizoomCard.select().dj_where(member_id=member_id,id=card_id)
+		#卡详情和卡的购物信息
+		card_detail = []
+		weizoom_card_orders_list = []
+		#卡详情和卡的购物信息
+		if member_has_cards:
+			card_numbers_passwords = [{'card_number': a.card_number, 'card_password': a.card_password} for a in
+		                          member_has_cards]
+
+			resp = WZCard.get_card_infos({
+				'card_infos': card_numbers_passwords
+			})
+
+			if resp:
+				card_infos = resp['data']['card_infos']
+				for card in card_infos:
+					card_detail = card.values()[0]
+
+			param = {'card_infos':json.dumps(card_numbers_passwords)}
+			resp = Resource.use('card_apiserver').post({
+			'resource': 'card.get_cards_use_info',
+			'data': param
+			})
+
+			if resp:
+				card_infos = resp['data']['card_infos']
+				card_has_orders = card_infos[0][card_numbers_passwords[0]['card_number']]['orders']
+
+				if card_has_orders:
+					order_num2money = {co['order_id']: co['money'] for co in card_has_orders}
+					order_nums = [co['order_id'] for co in card_has_orders]
+					orders = mall_models.Order.select().dj_where(order_id__in=order_nums).order_by('-created_at')
+					
+					for order in orders:
+						order_id = order.id
+						order_num = order.order_id
+						money = order_num2money[order_num]
+						webapp_id = order.webapp_id
+						if webapp_id:
+							key = "webapp_id2nickname_%s" %webapp_id
+							nickname = cache_util.get_from_cache(key, get_nickname_from_webapp_id(key, webapp_id))
+						else:
+							nickname = ""
+						weizoom_card_orders_list.append({
+							'created_at': order.created_at,
+							'money': money,
+							'order_id':order_num,
+							"nickname":nickname
+						})
+
+		return card_detail,weizoom_card_orders_list
+
+
+
+
+
+

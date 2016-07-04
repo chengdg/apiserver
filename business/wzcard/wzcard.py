@@ -2,24 +2,13 @@
 import json
 
 from eaglet.core import watchdog
-from eaglet.utils.resource_client import Resource
-from business import model as business_model
-from business.account.webapp_owner import WebAppOwner as WebAppOwner
-from db.wzcard import models as wzcard_models
-
-from db.mall import models as mall_models
-
-from eaglet.utils.resource_client import Resource
-
-from eaglet.decorator import param_required
-
-from db.account import models as account_models
-from eaglet.decorator import param_required
 from eaglet.core.cache import utils as cache_util
-# from db.wzcard.models import WeizoomCardRule, WeizoomCard
-import logging
-from decimal import Decimal
-from core.decorator import deprecated
+from eaglet.decorator import param_required
+from eaglet.utils.resource_client import Resource
+
+from business import model as business_model
+from db.mall import models as mall_models
+from db.wzcard import models as wzcard_models
 import datetime
 
 import settings
@@ -372,10 +361,13 @@ class WZCard(business_model.Model):
 	@param_required(['card_numbers', 'webapp_user'])
 	def get_by_card_numbers(args):
 		card_numbers = args['card_numbers']
+
 		member_id = args['webapp_user'].member.id
 		member_has_cards = wzcard_models.MemberHasWeizoomCard.select().dj_where(member_id=member_id,
 		                                                                        card_number__in=card_numbers)
-		# todo 排序
+		# 保证顺序
+		card_index = {card_number: index for index, card_number in enumerate(card_numbers)}
+		member_has_cards = sorted(member_has_cards, key=lambda x: card_index[x.card_number])
 
 		# usable_wzcard_info = [{a.card_number: a.card_password} for a in member_has_cards]
 		usable_wzcard_info = [{'card_number': a.card_number, 'card_password': a.card_password} for a in
@@ -388,9 +380,6 @@ class WZCard(business_model.Model):
 	def refund(args):
 		"""
 		微众卡退款，取消订单或者下单失败时使用
-		@param order_id:
-		@param trade_id:
-		@return:
 		"""
 		# 交易类型（支付失败退款：0、普通退款：1）
 		if mall_models.Order.select().dj_where(order_id=args['order_id']).first():
@@ -423,17 +412,17 @@ class WZCard(business_model.Model):
 
 		webapp_owner = args['webapp_owner']
 		webapp_user = args['webapp_user']
-		member_id= webapp_user.member.id
+		member_id = webapp_user.member.id
 		card_id = args['card_id']
 
-		member_has_cards = wzcard_models.MemberHasWeizoomCard.select().dj_where(member_id=member_id,id=card_id)
-		#卡详情和卡的购物信息
+		member_has_cards = wzcard_models.MemberHasWeizoomCard.select().dj_where(member_id=member_id, id=card_id)
+		# 卡详情和卡的购物信息
 		card_detail = []
 		weizoom_card_orders_list = []
-		#卡详情和卡的购物信息
+		# 卡详情和卡的购物信息
 		if member_has_cards:
 			card_numbers_passwords = [{'card_number': a.card_number, 'card_password': a.card_password} for a in
-		                          member_has_cards]
+			                          member_has_cards]
 
 			resp = WZCard.get_card_infos({
 				'card_infos': card_numbers_passwords
@@ -444,10 +433,10 @@ class WZCard(business_model.Model):
 				for card in card_infos:
 					card_detail = card.values()[0]
 
-			param = {'card_infos':json.dumps(card_numbers_passwords)}
+			param = {'card_infos': json.dumps(card_numbers_passwords)}
 			resp = Resource.use('card_apiserver').post({
-			'resource': 'card.get_cards_use_info',
-			'data': param
+				'resource': 'card.get_cards_use_info',
+				'data': param
 			})
 
 			if resp:
@@ -458,28 +447,22 @@ class WZCard(business_model.Model):
 					order_num2money = {co['order_id']: co['money'] for co in card_has_orders}
 					order_nums = [co['order_id'] for co in card_has_orders]
 					orders = mall_models.Order.select().dj_where(order_id__in=order_nums).order_by('-created_at')
-					
+
 					for order in orders:
 						order_id = order.id
 						order_num = order.order_id
 						money = order_num2money[order_num]
 						webapp_id = order.webapp_id
 						if webapp_id:
-							key = "webapp_id2nickname_%s" %webapp_id
+							key = "webapp_id2nickname_%s" % webapp_id
 							nickname = cache_util.get_from_cache(key, get_nickname_from_webapp_id(key, webapp_id))
 						else:
 							nickname = ""
 						weizoom_card_orders_list.append({
 							'created_at': order.created_at,
 							'money': money,
-							'order_id':order_num,
-							"nickname":nickname
+							'order_id': order_num,
+							"nickname": nickname
 						})
 
-		return card_detail,weizoom_card_orders_list
-
-
-
-
-
-
+		return card_detail, weizoom_card_orders_list

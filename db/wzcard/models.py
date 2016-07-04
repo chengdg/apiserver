@@ -124,7 +124,7 @@ class MemberHasWeizoomCard(models.Model):
 	member_id = models.IntegerField() #会员id
 	member_name = models.CharField(max_length=1024) #会员名称
 	card_number = models.CharField(max_length=50) #微众卡卡号
-	card_password = models.CharField(max_length=100) #微众卡密码
+	card_password = models.CharField(max_length=512) #微众卡密码
 	relation_id = models.CharField(max_length=128) #关联的活动id
 	source = models.IntegerField() #微众卡来源
 

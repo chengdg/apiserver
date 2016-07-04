@@ -69,7 +69,7 @@ class AccessToken(business_model.Model):
 		if self.access_token:
 			return self.access_token
 		try:
-			db_model = account_models.AccessToken.get(woid=self.woid, openid=self.openid, access_token!='')
+			db_model = account_models.AccessToken.get(woid=self.woid, openid=self.openid)
 		except:
 			db_model = None
 		if db_model:
@@ -113,7 +113,7 @@ class AccessToken(business_model.Model):
 		if self.access_token:
 			return self.access_token
 		try:
-			db_model = account_models.AccessToken.get(woid=self.woid, openid=self.openid,access_token!='')
+			db_model = account_models.AccessToken.get(woid=self.woid, openid=self.openid)
 		except:
 			db_model = None
 

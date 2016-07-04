@@ -155,6 +155,12 @@ CTYPT_INFO = {
     'encodingAESKey': 'BPQSp7DFZSs1lz3EBEoIGe6RVCJCFTnGim2mzJw5W4I'
 }
 
+WZCARD_ENCRYPT_INFO = {
+    'id': 'wzcard',
+    'token': '23d0d602ffb6k3f47d7ec49d0a80k9',
+    'encodingAESKey': 'BPQSp7DFZSs1lz7EBToIGe6RVC8CFTnGZm2mzJw5W4I'
+}
+
 if MODE == 'test':
     APPID = 'wx9b89fe19768a02d2'
 else:

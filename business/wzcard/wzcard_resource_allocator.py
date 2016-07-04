@@ -76,7 +76,7 @@ class WZCardResourceAllocator(business_model.Service):
 		usable_wzcard_info = WZCard.get_by_card_numbers(
 			{'webapp_user': self.__webapp_user, 'card_numbers': card_numbers})
 
-		print('--------usable_wzcard_info', usable_wzcard_info)
+
 		try:
 			can_use, msg, data = WZCard.use({
 				'wzcard_info': usable_wzcard_info,

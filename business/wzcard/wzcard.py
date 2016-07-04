@@ -14,8 +14,12 @@ import datetime
 import settings
 import redis
 from util.webapp_id2nickname import get_nickname_from_webapp_id
+from util import msg_crypt
 
 r = redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_COMMON_DB)
+
+crypt = msg_crypt.MsgCrypt(settings.WZCARD_ENCRYPT_INFO['token'], settings.WZCARD_ENCRYPT_INFO['encodingAESKey'],
+                           settings.WZCARD_ENCRYPT_INFO['id'])
 
 
 class WZCard(business_model.Model):
@@ -52,43 +56,14 @@ class WZCard(business_model.Model):
 		# self.context['webapp_user'] = webapp_user
 		# self.context['webapp_owner'] = webapp_owner
 
-	# def __get_webapp_user_info(self):
-	# 	"""
-	# 	微众卡相关的用户信息
-	# 	@return:
-	# 	"""
-	# 	# customer_type 使用者类型(普通会员：0、会员首单：1、非会员：2)
-	# 	if self.webapp_user.member.is_subscribed:
-	# 		if mall_models.Order.select().dj_where(webapp_user_id=self.webapp_user.id).count() > 0:
-	# 			customer_type = 0
-	# 		else:
-	# 			customer_type = 1
-	# 	else:
-	# 		customer_type = 2
-	#
-	# 	return {
-	# 		'customer_type': customer_type,
-	# 		'customer_id': self.webapp_user.member.id,
-	# 	}
-	#
-	# def __get_webapp_owner_info(self):
-	# 	"""
-	# 	微众卡相关的商户信息
-	# 	@return:
-	# 	"""
-	# 	return {
-	# 		'shop_id': self.context['webapp_owner'].id,
-	# 		'shop_name': self.context['webapp_owner'].user_profile.store_name,
-	# 	}
-	#
-	# def __get_boring_args(self):
-	# 	return {
-	# 		'customer_id': self.context['webapp_user'].member.id,
-	# 		'exist_cards': json.dumps([]),
-	# 		'valid_money': -1,  # 商品原价+运费
-	# 		'customer_type': -1
-	# 	}
+	@classmethod
+	def __encrypt_password(cls, raw_password):
+		password = str(raw_password)
+		return crypt.EncryptMsg(password)
 
+	@classmethod
+	def __decrypt_password(cls, encrypt_password):
+		return crypt.DecryptMsg(encrypt_password)[1]
 
 	@staticmethod
 	@param_required(['wzcard_info', 'money', 'order_id', 'webapp_user', 'webapp_owner'])
@@ -107,12 +82,6 @@ class WZCard(business_model.Model):
 		else:
 			customer_type = 2
 
-		try:
-			x = json.dumps(wzcard_info)
-			print('------------------3,x', x)
-		except:
-			print('-----------------------3')
-
 		params = {
 			'card_infos': json.dumps(wzcard_info),
 			'money': args['money'],
@@ -123,7 +92,7 @@ class WZCard(business_model.Model):
 			'customer_id': args['webapp_user'].member.id,
 			'customer_type': customer_type
 		}
-
+		print('-----------in use ',params)
 		resp = Resource.use('card_apiserver').post({
 			'resource': 'card.trade',
 			'data': params
@@ -268,11 +237,10 @@ class WZCard(business_model.Model):
 
 
 				else:
-					# todo 加密
 					# 绑卡
 					wzcard_models.MemberHasWeizoomCard.create(
 						member_id=member_id, member_name='',
-						card_number=card_number, card_password=card_password,
+						card_number=card_number, card_password=WZCard.__encrypt_password(card_password),
 						relation_id='',
 						source=wzcard_models.WEIZOOM_CARD_SOURCE_BIND
 					)
@@ -370,7 +338,7 @@ class WZCard(business_model.Model):
 		member_has_cards = sorted(member_has_cards, key=lambda x: card_index[x.card_number])
 
 		# usable_wzcard_info = [{a.card_number: a.card_password} for a in member_has_cards]
-		usable_wzcard_info = [{'card_number': a.card_number, 'card_password': a.card_password} for a in
+		usable_wzcard_info = [{'card_number': a.card_number, 'card_password': WZCard.__decrypt_password(a.card_password)} for a in
 		                      member_has_cards]
 
 		return usable_wzcard_info
@@ -421,7 +389,7 @@ class WZCard(business_model.Model):
 		weizoom_card_orders_list = []
 		# 卡详情和卡的购物信息
 		if member_has_cards:
-			card_numbers_passwords = [{'card_number': a.card_number, 'card_password': a.card_password} for a in
+			card_numbers_passwords = [{'card_number': a.card_number, 'card_password': WZCard.__decrypt_password(a.card_password)} for a in
 			                          member_has_cards]
 
 			resp = WZCard.get_card_infos({

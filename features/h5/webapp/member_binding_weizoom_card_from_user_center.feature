@@ -191,7 +191,7 @@ Background:
 	When test批量激活订单'0002'的卡::weizoom_card
 	When test批量激活订单'0003'的卡::weizoom_card
 
-@mall3 @binding_weizoon_card @ztq
+@mall3 @binding_weizoon_card @weizoom_card @ztq
 Scenario:1 微众卡绑定-输入有效的微众卡号和密码
 	When bill访问jobs的webapp
 	When bill绑定微众卡
@@ -251,7 +251,7 @@ Scenario:1 微众卡绑定-输入有效的微众卡号和密码
 		"""
 	Then bill获得绑定微众卡提示信息'恭喜您 绑定成功'
 
-@mall3 @binding_weizoon_card @ztq
+@mall3 @binding_weizoon_card @weizoom_card @ztq
 Scenario:2 微众卡绑定-输入无效的微众卡号和密码
 	#该微众卡余额为0！
 		When bill访问nokia的webapp

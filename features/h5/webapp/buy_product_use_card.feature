@@ -139,7 +139,7 @@ Background:
 
 	And bill关注jobs的公众号
 
-@mall3 @mall2 @wip.bpuc1 @mall.pay_weizoom_card @victor
+@mall3 @mall2 @wip.bpuc1 @mall.pay_weizoom_card @victor  @weizoom_card
 #购买流程.编辑订单.微众卡使用
 Scenario:1 微众卡金额大于订单金额时进行支付
 	bill用微众卡购买jobs的商品时,微众卡金额大于订单金额
@@ -167,7 +167,7 @@ Scenario:1 微众卡金额大于订单金额时进行支付
 
 		}
 		"""
-	Then bill获得绑定微众卡提示信息'恭喜您 绑定成功'
+
 	When bill购买jobs的商品
 		"""
 		{
@@ -205,7 +205,7 @@ Scenario:1 微众卡金额大于订单金额时进行支付
 		}
 		"""
 
-@mall3 @mall2 @mall.pay_weizoom_card @victor
+@mall3 @mall2 @mall.pay_weizoom_card @victor  @weizoom_card
 #购买流程.编辑订单.微众卡使用
 Scenario:2 微众卡金额等于订单金额时进行支付
 	bill用微众卡购买jobs的商品时,微众卡金额等于订单金额
@@ -258,7 +258,7 @@ Scenario:2 微众卡金额等于订单金额时进行支付
 		}
 		"""
 
-@mall3 @mall2 @mall.pay_weizoom_card @victor
+@mall3 @mall2 @mall.pay_weizoom_card @victor  @weizoom_card
 #购买流程.编辑订单.微众卡使用
 Scenario:3 微众卡金额小于订单金额时进行支付
 	bill用微众卡购买jobs的商品时,微众卡金额小于订单金额
@@ -311,7 +311,7 @@ Scenario:3 微众卡金额小于订单金额时进行支付
 		}
 		"""
 
-@mall3 @mall2 @mall.pay_weizoom_card @victor
+@mall3 @mall2 @mall.pay_weizoom_card @victor @weizoom_card
 #购买流程.编辑订单.微众卡使用
 Scenario:4 用已用完的微众卡购买商品时
 	bill用已用完的微众卡购买jobs的商品时
@@ -363,7 +363,7 @@ Scenario:4 用已用完的微众卡购买商品时
 		}
 		"""
 
-@mall3 @mall2 @mall.pay_weizoom_card @victor
+@mall3 @mall2 @mall.pay_weizoom_card @victor @weizoom_card
 #购买流程.编辑订单.微众卡使用
 Scenario:5 用已使用过的微众卡购买商品时
 	1.创建订单成功，订单状态为“待发货”
@@ -415,7 +415,7 @@ Scenario:5 用已使用过的微众卡购买商品时
 		}
 		"""
 
-@mall3 @mall2 @mall.pay_weizoom_card @victor
+@mall3 @mall2 @mall.pay_weizoom_card @victor @weizoom_card
 #购买流程.编辑订单.微众卡使用
 Scenario:6 用10张微众卡共同支付
 	1.创建订单成功，订单状态为“待支付”
@@ -636,7 +636,7 @@ Scenario:6 用10张微众卡共同支付
 			}
 			"""
 
-@mall3 @mall2 @mall.pay_weizoom_card @victor
+@mall3 @mall2 @mall.pay_weizoom_card @victor @weizoom_card
 #购买流程.编辑订单.微众卡使用
 Scenario:7 用11张微众卡共同支付
 	1.创建订单失败错误提示：只能使用10张微众卡
@@ -846,7 +846,7 @@ Scenario:7 用11张微众卡共同支付
 			}
 			"""
 
-@mall3 @mall2 @mall.pay_weizoom_card @victor
+@mall3 @mall2 @mall.pay_weizoom_card @victor @weizoom_card
 #购买流程.编辑订单.微众卡使用
 Scenario:8 用微众卡购买商品时，输入两张同样的卡号密码
 	bill用微众卡购买jobs的商品时,输入错误的卡号密码
@@ -888,7 +888,7 @@ Scenario:8 用微众卡购买商品时，输入两张同样的卡号密码
 		}
 		"""
 
-@mall3 @mall2 @mall @mall.pay_weizoom_card @victor
+@mall3 @mall2 @mall @mall.pay_weizoom_card @victor @weizoom_card
 #购买流程.编辑订单.微众卡使用
 Scenario:9 用两张微众卡购买，第一张卡的金额大于商品金额
 	1.使用两张微众卡进行购买，微众卡金额大于商品金额
@@ -957,7 +957,7 @@ Scenario:9 用两张微众卡购买，第一张卡的金额大于商品金额
 		"""
 
 #根据bug补充7240#新新
-@mall3 @mall.pay_weizoom_card @victor @wip.bpuc13 @ztq
+@mall3 @mall.pay_weizoom_card @victor @wip.bpuc13 @ztq @weizoom_card
 #购买流程.编辑订单.微众卡使用
 Scenario:10 用两张微众卡购买，第二张卡的金额大于商品金额
 	1.使用两张微众卡进行购买，微众卡金额大于商品金额
@@ -1059,7 +1059,7 @@ Scenario:10 用两张微众卡购买，第二张卡的金额大于商品金额
 		"""
 
 #根据bug补充7240#新新
-@mall3 @mall.pay_weizoom_card @victor @wip.bpuc14 @ztq
+@mall3 @mall.pay_weizoom_card @victor @wip.bpuc14 @ztq @weizoom_card
 #购买流程.编辑订单.微众卡使用
 Scenario:11 用两张微众卡购买，2张卡小于商品金额,购买待支付状态
 	1.使用两张微众卡进行购买，bill取消订单

@@ -29,6 +29,9 @@ Background:
 		[{
 			"name": "商品1",
 			"price": 50.00
+		},{
+			"name": "商品2",
+			"price": 20.00
 		}]
 		"""
 
@@ -61,7 +64,7 @@ Background:
 			"name":"0元微众卡",
 			"prefix_value":"000",
 			"type":"virtual",
-			"money":"0.00",
+			"money":"10.00",
 			"num":"1",
 			"comments":"微众卡"
 		},{
@@ -149,17 +152,17 @@ Scenario:1 微众卡金额大于订单金额时进行支付
 
 	When bill访问jobs的webapp
 	When bill绑定微众卡
-	"""
-	{
-		"binding_date":"2016-06-16",
-		"binding_shop":"jobs",
-		"weizoom_card_info":
-			{
-				"id":"100000001",
-				"password":"1234567"
-			}
-	}
-	"""
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"100000001",
+					"password":"1234567"
+				}
+		}
+		"""
 	Then bill能获得微众卡'100000001'的详情信息
 		"""
 		{
@@ -214,6 +217,18 @@ Scenario:2 微众卡金额等于订单金额时进行支付
 	3.微众卡金额减少,状态为“已用完”
 
 	When bill访问jobs的webapp
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"050000002",
+					"password":"1234567"
+				}
+		}
+		"""
 	When bill购买jobs的商品
 		"""
 		{
@@ -244,17 +259,11 @@ Scenario:2 微众卡金额等于订单金额时进行支付
 			}]
 		}
 		"""
-	When bill进行微众卡余额查询
+	Then bill能获得微众卡'050000002'的详情信息
 		"""
 		{
-			"id":"050000002",
-			"password":"1234567"
-		}
-		"""
-	Then bill获得微众卡余额查询结果
-		"""
-		{
-			"card_remaining":0.00
+			"card_remain_value":0.00
+
 		}
 		"""
 
@@ -266,6 +275,18 @@ Scenario:3 微众卡金额小于订单金额时进行支付
 	2.微众卡金额为零,状态为“已使用”
 
 	When bill访问jobs的webapp
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"030000001",
+					"password":"1234567"
+				}
+		}
+		"""
 	When bill购买jobs的商品
 		"""
 		{
@@ -297,82 +318,78 @@ Scenario:3 微众卡金额小于订单金额时进行支付
 		}
 		"""
 
-	When bill进行微众卡余额查询
+	Then bill能获得微众卡'030000001'的详情信息
 		"""
 		{
-			"id":"030000001",
-			"password":"1234567"
-		}
-		"""
-	Then bill获得微众卡余额查询结果
-		"""
-		{
-			"card_remaining":0.00
+			"card_remain_value":0.00
+
 		}
 		"""
 
 @mall3 @mall2 @mall.pay_weizoom_card @victor @weizoom_card
 #购买流程.编辑订单.微众卡使用
-Scenario:4 用已用完的微众卡购买商品时
-	bill用已用完的微众卡购买jobs的商品时
-	1.创建订单成功，订单状态为“等待支付”
-	2.微众卡金额不变,状态为“已用完”
-
-	When bill访问jobs的webapp
-	When bill购买jobs的商品
-		"""
-		{
-			"pay_type": "微信支付",
-			"products":[{
-				"name":"商品1",
-				"price":50.00,
-				"count":1
-			}],
-			"weizoom_card":[{
-				"card_name":"000000001",
-				"card_pass":"1234567"
-			}]
-		}
-		"""
-
-	Then bill成功创建订单
-		"""
-		{
-			"status": "待支付",
-			"final_price": 50.00,
-			"product_price": 50.00,
-			"products":[{
-				"name":"商品1",
-				"price":50.00,
-				"count":1
-			}]
-		}
-		"""
-	
-	When bill进行微众卡余额查询
-		"""
-		{
-			"id":"000000001",
-			"password":"1234567"
-		}
-		"""
-	Then bill获得微众卡余额查询结果
-		"""
-		{
-			"card_remaining":0.00
-		}
-		"""
-
-@mall3 @mall2 @mall.pay_weizoom_card @victor @weizoom_card
-#购买流程.编辑订单.微众卡使用
-Scenario:5 用已使用过的微众卡购买商品时
+Scenario:4 用已使用过的微众卡购买商品时
 	1.创建订单成功，订单状态为“待发货”
 	2.扣除微众卡金额,状态为“已用完”
 
 	When bill访问jobs的webapp
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"050000001",
+					"password":"1234567"
+				}
+		}
+		"""
 	When bill购买jobs的商品
 		"""
 		{
+			"order_id":"0001",
+			"pay_type": "微信支付",
+			"products":[{
+				"name":"商品2",
+				"price":20.00,
+				"count":1
+			}],
+			"weizoom_card":[{
+				"card_name":"050000001",
+				"card_pass":"1234567"
+			}]
+		}
+		"""
+	Then bill成功创建订单
+		"""
+		{
+			"order_id": "0001",
+			"status": "待发货",
+			"final_price": 0.00,
+			"product_price": 20.00,
+			"weizoom_card_money":20.00,
+			"products":[{
+				"name":"商品2",
+				"price":20.00,
+				"count":1
+			}]
+		}
+		"""
+	Then bill能获得微众卡'050000001'的详情信息
+		"""
+		{
+			"card_remain_value":30.00
+
+		}
+		"""
+
+	#使用已使用的微众购买商品
+	When bill访问jobs的webapp
+	When bill购买jobs的商品
+		"""
+		{
+			"order_id":"0002",
 			"pay_type": "微信支付",
 			"products":[{
 				"name":"商品1",
@@ -385,14 +402,14 @@ Scenario:5 用已使用过的微众卡购买商品时
 			}]
 		}
 		"""
-
 	Then bill成功创建订单
 		"""
 		{
-			"status": "待发货",
-			"final_price": 0.00,
+			"order_id": "0002",
+			"status": "待支付",
+			"final_price": 20.00,
 			"product_price": 50.00,
-			"weizoom_card_money":50.00,
+			"weizoom_card_money":30.00,
 			"products":[{
 				"name":"商品1",
 				"price":50.00,
@@ -400,18 +417,11 @@ Scenario:5 用已使用过的微众卡购买商品时
 			}]
 		}
 		"""
-	
-	When bill进行微众卡余额查询
+	Then bill能获得微众卡'050000001'的详情信息
 		"""
 		{
-			"id":"050000001",
-			"password":"1234567"
-		}
-		"""
-	Then bill获得微众卡余额查询结果
-		"""
-		{
-			"card_remaining":0.00
+			"card_remain_value":0.00
+
 		}
 		"""
 
@@ -422,6 +432,140 @@ Scenario:6 用10张微众卡共同支付
 	2.扣除微众卡金额,状态为“已用完”
 
 	When bill访问jobs的webapp
+	#绑定微众卡
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"001000001",
+					"password":"1234567"
+				}
+		}
+		"""
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"001000002",
+					"password":"1234567"
+				}
+		}
+		"""
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"001000003",
+					"password":"1234567"
+				}
+		}
+		"""
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"001000004",
+					"password":"1234567"
+				}
+		}
+		"""
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"001000005",
+					"password":"1234567"
+				}
+		}
+		"""
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"001000006",
+					"password":"1234567"
+				}
+		}
+		"""
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"001000007",
+					"password":"1234567"
+				}
+		}
+		"""
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"001000008",
+					"password":"1234567"
+				}
+		}
+		"""
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"001000009",
+					"password":"1234567"
+				}
+		}
+		"""
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"001000010",
+					"password":"1234567"
+				}
+		}
+		"""
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"001000011",
+					"password":"1234567"
+				}
+		}
+		"""
+
 	When bill购买jobs的商品
 		"""
 		{
@@ -482,167 +626,234 @@ Scenario:6 用10张微众卡共同支付
 
 	#查询微众卡余额
 		#001000001
-		When bill进行微众卡余额查询
+		Then bill能获得微众卡'001000001'的详情信息
 			"""
 			{
-				"id":"001000001",
-				"password":"1234567"
-			}
-			"""
-		Then bill获得微众卡余额查询结果
-			"""
-			{
-				"card_remaining":0.00
+				"card_remain_value":0.00
+
 			}
 			"""
 		#001000002
-		When bill进行微众卡余额查询
+		Then bill能获得微众卡'001000002'的详情信息
 			"""
 			{
-				"id":"001000002",
-				"password":"1234567"
-			}
-			"""
-		Then bill获得微众卡余额查询结果
-			"""
-			{
-				"card_remaining":0.00
+				"card_remain_value":0.00
+
 			}
 			"""
 		#001000003
-		When bill进行微众卡余额查询
+		Then bill能获得微众卡'001000003'的详情信息
 			"""
 			{
-				"id":"001000003",
-				"password":"1234567"
-			}
-			"""
-		Then bill获得微众卡余额查询结果
-			"""
-			{
-				"card_remaining":0.00
+				"card_remain_value":0.00
+
 			}
 			"""
 		#001000004
-		When bill进行微众卡余额查询
+		Then bill能获得微众卡'001000004'的详情信息
 			"""
 			{
-				"id":"001000004",
-				"password":"1234567"
-			}
-			"""
-		Then bill获得微众卡余额查询结果
-			"""
-			{
-				"card_remaining":0.00
+				"card_remain_value":0.00
+
 			}
 			"""
 		#001000005
-		When bill进行微众卡余额查询
+		Then bill能获得微众卡'001000005'的详情信息
 			"""
 			{
-				"id":"001000005",
-				"password":"1234567"
-			}
-			"""
-		Then bill获得微众卡余额查询结果
-			"""
-			{
-				"card_remaining":0.00
+				"card_remain_value":0.00
+
 			}
 			"""
 		#001000006
-		When bill进行微众卡余额查询
+		Then bill能获得微众卡'001000006'的详情信息
 			"""
 			{
-				"id":"001000006",
-				"password":"1234567"
-			}
-			"""
-		Then bill获得微众卡余额查询结果
-			"""
-			{
-				"card_remaining":0.00
+				"card_remain_value":0.00
+
 			}
 			"""
 		#001000007
-		When bill进行微众卡余额查询
+		Then bill能获得微众卡'001000007'的详情信息
 			"""
 			{
-				"id":"001000007",
-				"password":"1234567"
-			}
-			"""
-		Then bill获得微众卡余额查询结果
-			"""
-			{
-				"card_remaining":0.00
+				"card_remain_value":0.00
+
 			}
 			"""
 		#001000008
-		When bill进行微众卡余额查询
+		Then bill能获得微众卡'001000008'的详情信息
 			"""
 			{
-				"id":"001000008",
-				"password":"1234567"
-			}
-			"""
-		Then bill获得微众卡余额查询结果
-			"""
-			{
-				"card_remaining":0.00
+				"card_remain_value":0.00
+
 			}
 			"""
 		#001000009
-		When bill进行微众卡余额查询
+		Then bill能获得微众卡'001000009'的详情信息
 			"""
 			{
-				"id":"001000009",
-				"password":"1234567"
-			}
-			"""
-		Then bill获得微众卡余额查询结果
-			"""
-			{
-				"card_remaining":0.00
+				"card_remain_value":0.00
+
 			}
 			"""
 		#001000010
-		When bill进行微众卡余额查询
+		Then bill能获得微众卡'001000010'的详情信息
 			"""
 			{
-				"id":"001000010",
-				"password":"1234567"
-			}
-			"""
-		Then bill获得微众卡余额查询结果
-			"""
-			{
-				"card_remaining":0.00
+				"card_remain_value":0.00
+
 			}
 			"""
 		#001000011
-		When bill进行微众卡余额查询
+		Then bill能获得微众卡'001000011'的详情信息
 			"""
 			{
-				"id":"001000011",
-				"password":"1234567"
-			}
-			"""
-		Then bill获得微众卡余额查询结果
-			"""
-			{
-				"card_remaining":1.00
+				"card_remain_value":1.00
+
 			}
 			"""
 
-@mall3 @mall2 @mall.pay_weizoom_card @victor @weizoom_card
+@mall3 @mall2 @mall.pay_weizoom_card @victor
 #购买流程.编辑订单.微众卡使用
 Scenario:7 用11张微众卡共同支付
 	1.创建订单失败错误提示：只能使用10张微众卡
 	2.微众卡金额,状态不变
 
 	When bill访问jobs的webapp
+	#绑定微众卡
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"001000001",
+					"password":"1234567"
+				}
+		}
+		"""
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"001000002",
+					"password":"1234567"
+				}
+		}
+		"""
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"001000003",
+					"password":"1234567"
+				}
+		}
+		"""
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"001000004",
+					"password":"1234567"
+				}
+		}
+		"""
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"001000005",
+					"password":"1234567"
+				}
+		}
+		"""
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"001000006",
+					"password":"1234567"
+				}
+		}
+		"""
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"001000007",
+					"password":"1234567"
+				}
+		}
+		"""
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"001000008",
+					"password":"1234567"
+				}
+		}
+		"""
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"001000009",
+					"password":"1234567"
+				}
+		}
+		"""
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"001000010",
+					"password":"1234567"
+				}
+		}
+		"""
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"001000011",
+					"password":"1234567"
+				}
+		}
+		"""
 	When bill购买jobs的商品
 		"""
 		{
@@ -692,201 +903,93 @@ Scenario:7 用11张微众卡共同支付
 
 	#查询微众卡余额
 		#001000001
-		When bill进行微众卡余额查询
+		Then bill能获得微众卡'001000001'的详情信息
 			"""
 			{
-				"id":"001000001",
-				"password":"1234567"
-			}
-			"""
-		Then bill获得微众卡余额查询结果
-			"""
-			{
-				"card_remaining":1.00
+				"card_remain_value":1.00
+
 			}
 			"""
 		#001000002
-		When bill进行微众卡余额查询
+		Then bill能获得微众卡'001000002'的详情信息
 			"""
 			{
-				"id":"001000002",
-				"password":"1234567"
-			}
-			"""
-		Then bill获得微众卡余额查询结果
-			"""
-			{
-				"card_remaining":1.00
+				"card_remain_value":1.00
+
 			}
 			"""
 		#001000003
-		When bill进行微众卡余额查询
+		Then bill能获得微众卡'001000003'的详情信息
 			"""
 			{
-				"id":"001000003",
-				"password":"1234567"
-			}
-			"""
-		Then bill获得微众卡余额查询结果
-			"""
-			{
-				"card_remaining":1.00
+				"card_remain_value":1.00
+
 			}
 			"""
 		#001000004
-		When bill进行微众卡余额查询
+		Then bill能获得微众卡'001000004'的详情信息
 			"""
 			{
-				"id":"001000004",
-				"password":"1234567"
-			}
-			"""
-		Then bill获得微众卡余额查询结果
-			"""
-			{
-				"card_remaining":1.00
+				"card_remain_value":1.00
+
 			}
 			"""
 		#001000005
-		When bill进行微众卡余额查询
+		Then bill能获得微众卡'001000005'的详情信息
 			"""
 			{
-				"id":"001000005",
-				"password":"1234567"
-			}
-			"""
-		Then bill获得微众卡余额查询结果
-			"""
-			{
-				"card_remaining":1.00
+				"card_remain_value":1.00
+
 			}
 			"""
 		#001000006
-		When bill进行微众卡余额查询
+		Then bill能获得微众卡'001000006'的详情信息
 			"""
 			{
-				"id":"001000006",
-				"password":"1234567"
-			}
-			"""
-		Then bill获得微众卡余额查询结果
-			"""
-			{
-				"card_remaining":1.00
+				"card_remain_value":1.00
+
 			}
 			"""
 		#001000007
-		When bill进行微众卡余额查询
+		Then bill能获得微众卡'001000007'的详情信息
 			"""
 			{
-				"id":"001000007",
-				"password":"1234567"
-			}
-			"""
-		Then bill获得微众卡余额查询结果
-			"""
-			{
-				"card_remaining":1.00
+				"card_remain_value":1.00
+
 			}
 			"""
 		#001000008
-		When bill进行微众卡余额查询
+		Then bill能获得微众卡'001000008'的详情信息
 			"""
 			{
-				"id":"001000008",
-				"password":"1234567"
-			}
-			"""
-		Then bill获得微众卡余额查询结果
-			"""
-			{
-				"card_remaining":1.00
+				"card_remain_value":1.00
+
 			}
 			"""
 		#001000009
-		When bill进行微众卡余额查询
+		Then bill能获得微众卡'001000009'的详情信息
 			"""
 			{
-				"id":"001000009",
-				"password":"1234567"
-			}
-			"""
-		Then bill获得微众卡余额查询结果
-			"""
-			{
-				"card_remaining":1.00
+				"card_remain_value":1.00
+
 			}
 			"""
 		#001000010
-		When bill进行微众卡余额查询
+		Then bill能获得微众卡'001000010'的详情信息
 			"""
 			{
-				"id":"001000010",
-				"password":"1234567"
-			}
-			"""
-		Then bill获得微众卡余额查询结果
-			"""
-			{
-				"card_remaining":1.00
+				"card_remain_value":1.00
+
 			}
 			"""
 		#001000011
-		When bill进行微众卡余额查询
+		Then bill能获得微众卡'001000011'的详情信息
 			"""
 			{
-				"id":"001000011",
-				"password":"1234567"
+				"card_remain_value":1.00
+
 			}
 			"""
-		Then bill获得微众卡余额查询结果
-			"""
-			{
-				"card_remaining":1.00
-			}
-			"""
-
-@mall3 @mall2 @mall.pay_weizoom_card @victor @weizoom_card
-#购买流程.编辑订单.微众卡使用
-Scenario:8 用微众卡购买商品时，输入两张同样的卡号密码
-	bill用微众卡购买jobs的商品时,输入错误的卡号密码
-	1.创建订单失败，错误提示"该微众卡已经添加"
-	2.微众卡金额,状态不变
-
-	When bill访问jobs的webapp
-	When bill购买jobs的商品
-		"""
-		{
-			"products":[{
-				"name":"商品1",
-				"price":50.00,
-				"count":1
-			}],
-			"weizoom_card":[{
-				"card_name":"100000001",
-				"card_pass":"1234567"
-			},{
-				"card_name":"100000001",
-				"card_pass":"1234567"
-			}]
-		}
-		"""
-
-	Then bill获得创建订单失败的信息'该微众卡已经添加'
-
-	When bill进行微众卡余额查询
-		"""
-		{
-			"id":"100000001",
-			"password":"1234567"
-		}
-		"""
-	Then bill获得微众卡余额查询结果
-		"""
-		{
-			"card_remaining":100.00
-		}
-		"""
 
 @mall3 @mall2 @mall @mall.pay_weizoom_card @victor @weizoom_card
 #购买流程.编辑订单.微众卡使用
@@ -896,6 +999,30 @@ Scenario:9 用两张微众卡购买，第一张卡的金额大于商品金额
 	3.第二张微众卡还有余额
 
 	When bill访问jobs的webapp
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"100000001",
+					"password":"1234567"
+				}
+		}
+		"""
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"030000001",
+					"password":"1234567"
+				}
+		}
+		"""
 	When bill购买jobs的商品
 		"""
 		{
@@ -929,30 +1056,18 @@ Scenario:9 用两张微众卡购买，第一张卡的金额大于商品金额
 		}
 		"""
 
-	When bill进行微众卡余额查询
+	Then bill能获得微众卡'100000001'的详情信息
 		"""
 		{
-			"id":"100000001",
-			"password":"1234567"
+			"card_remain_value":50.00
+
 		}
 		"""
-	Then bill获得微众卡余额查询结果
+	Then bill能获得微众卡'030000001'的详情信息
 		"""
 		{
-			"card_remaining":50.00
-		}
-		"""
-	When bill进行微众卡余额查询
-		"""
-		{
-			"id":"030000001",
-			"password":"1234567"
-		}
-		"""
-	Then bill获得微众卡余额查询结果
-		"""
-		{
-			"card_remaining":30.00
+			"card_remain_value":30.00
+
 		}
 		"""
 
@@ -965,6 +1080,30 @@ Scenario:10 用两张微众卡购买，第二张卡的金额大于商品金额
 	3.第二张微众卡还有余额
 
 	When bill访问jobs的webapp
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"030000001",
+					"password":"1234567"
+				}
+		}
+		"""
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"100000001",
+					"password":"1234567"
+				}
+		}
+		"""
 	When bill购买jobs的商品
 		"""
 		{
@@ -1000,30 +1139,18 @@ Scenario:10 用两张微众卡购买，第二张卡的金额大于商品金额
 		}
 		"""
 
-	When bill进行微众卡余额查询
+	Then bill能获得微众卡'030000001'的详情信息
 		"""
 		{
-			"id":"030000001",
-			"password":"1234567"
+			"card_remain_value":0.00
+
 		}
 		"""
-	Then bill获得微众卡余额查询结果
+	Then bill能获得微众卡'100000001'的详情信息
 		"""
 		{
-			"card_remaining":0.00
-		}
-		"""
-	When bill进行微众卡余额查询
-		"""
-		{
-			"id":"100000001",
-			"password":"1234567"
-		}
-		"""
-	Then bill获得微众卡余额查询结果
-		"""
-		{
-			"card_remaining":80.00
+			"card_remain_value":80.00
+
 		}
 		"""
 
@@ -1031,30 +1158,18 @@ Scenario:10 用两张微众卡购买，第二张卡的金额大于商品金额
 	When jobs'取消'订单'001'::weapp
 
 	When bill访问jobs的webapp
-	When bill进行微众卡余额查询
+	Then bill能获得微众卡'030000001'的详情信息
 		"""
 		{
-			"id":"030000001",
-			"password":"1234567"
+			"card_remain_value":30.00
+
 		}
 		"""
-	Then bill获得微众卡余额查询结果
+	Then bill能获得微众卡'100000001'的详情信息
 		"""
 		{
-			"card_remaining":30.00
-		}
-		"""
-	When bill进行微众卡余额查询
-		"""
-		{
-			"id":"100000001",
-			"password":"1234567"
-		}
-		"""
-	Then bill获得微众卡余额查询结果
-		"""
-		{
-			"card_remaining":100.00
+			"card_remain_value":100.00
+
 		}
 		"""
 
@@ -1065,6 +1180,30 @@ Scenario:11 用两张微众卡购买，2张卡小于商品金额,购买待支付
 	1.使用两张微众卡进行购买，bill取消订单
 
 	When bill访问jobs的webapp
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"001000001",
+					"password":"1234567"
+				}
+		}
+		"""
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"030000001",
+					"password":"1234567"
+				}
+		}
+		"""
 	When bill购买jobs的商品
 		"""
 		{
@@ -1100,59 +1239,35 @@ Scenario:11 用两张微众卡购买，2张卡小于商品金额,购买待支付
 		}
 		"""
 
-	When bill进行微众卡余额查询
+	Then bill能获得微众卡'030000001'的详情信息
 		"""
 		{
-			"id":"001000001",
-			"password":"1234567"
+			"card_remain_value":0.00
+
 		}
 		"""
-	Then bill获得微众卡余额查询结果
+	Then bill能获得微众卡'001000001'的详情信息
 		"""
 		{
-			"card_remaining":0.00
-		}
-		"""
-	When bill进行微众卡余额查询
-		"""
-		{
-			"id":"030000001",
-			"password":"1234567"
-		}
-		"""
-	Then bill获得微众卡余额查询结果
-		"""
-		{
-			"card_remaining":0.00
+			"card_remain_value":0.00
+
 		}
 		"""
 
 	When bill取消订单'001'
 
-	When bill进行微众卡余额查询
+	Then bill能获得微众卡'030000001'的详情信息
 		"""
 		{
-			"id":"001000001",
-			"password":"1234567"
+			"card_remain_value":30.00
+
 		}
 		"""
-	Then bill获得微众卡余额查询结果
+	Then bill能获得微众卡'001000001'的详情信息
 		"""
 		{
-			"card_remaining":1.00
-		}
-		"""
-	When bill进行微众卡余额查询
-		"""
-		{
-			"id":"030000001",
-			"password":"1234567"
-		}
-		"""
-	Then bill获得微众卡余额查询结果
-		"""
-		{
-			"card_remaining":30.00
+			"card_remain_value":1.00
+
 		}
 		"""
 

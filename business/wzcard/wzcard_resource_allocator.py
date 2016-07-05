@@ -73,6 +73,26 @@ class WZCardResourceAllocator(business_model.Service):
 		# 	}
 		# 	return False, [reason], None
 
+		# 检查是否有重复
+
+		if len(card_numbers) > 10:
+			reason = {
+				"is_success": False,
+				"type": 'wzcard:exceeded',
+				"msg": '微众卡只能使用十张',
+				"short_msg": '微众卡只能使用十张'
+			}
+			return False, [reason], None
+
+		if len(card_numbers) != len(set(card_numbers)):
+			reason = {
+				"is_success": False,
+				"type": 'wzcard:wzcard:duplicated',
+				"msg": '',
+				"short_msg": ''
+			}
+			return False, [reason], None
+
 		usable_wzcard_info = WZCard.get_by_card_numbers(
 			{'webapp_user': self.__webapp_user, 'card_numbers': card_numbers})
 

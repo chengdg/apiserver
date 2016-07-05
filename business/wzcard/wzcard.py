@@ -111,7 +111,7 @@ class WZCard(business_model.Model):
 		else:
 			can_use = False
 			msg = u'系统繁忙'
-			data['type'] = 'wzcard:call_service_error'
+			data['type'] = 'common:wtf'
 
 		if can_use:
 			mall_models.OrderCardInfo.create(

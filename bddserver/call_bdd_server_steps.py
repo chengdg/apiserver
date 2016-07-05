@@ -14,21 +14,23 @@ from behave import *
 
 
 def full_stack():
-    import traceback, sys
-    exc = sys.exc_info()[0]
-    stack = traceback.extract_stack()[:-1]  # last one would be full_stack()
-    if not exc is None:  # i.e. if an exception is present
-        del stack[-1]       # remove call of full_stack, the printed exception
-        # will contain the caught exception caller instead
-    trc = 'Traceback (most recent call last, REVERSED CALL ORDER):\n'
-    stackstr = trc + ''.join(reversed(traceback.format_list(stack)))
-    if not exc is None:
-        stackstr += '  ' + traceback.format_exc().lstrip(trc)
+	import traceback, sys
+	exc = sys.exc_info()[0]
+	stack = traceback.extract_stack()[:-1]  # last one would be full_stack()
+	if not exc is None:  # i.e. if an exception is present
+		del stack[-1]  # remove call of full_stack, the printed exception
+		# will contain the caught exception caller instead
+	trc = 'Traceback (most recent call last, REVERSED CALL ORDER):\n'
+	stackstr = trc + ''.join(reversed(traceback.format_list(stack)))
+	if not exc is None:
+		stackstr += '  ' + traceback.format_exc().lstrip(trc)
 
-    return stackstr
+	return stackstr
+
 
 def unicode_full_stack():
-    return full_stack().decode('utf-8')
+	return full_stack().decode('utf-8')
+
 
 try:
 	import settings
@@ -39,9 +41,9 @@ except:
 
 # BDD_SERVER2PORT = settings.BDD_SERVER2PORT
 BDD_SERVER2PORT = {
-    'weapp': 8170,
-    'weizoom_card': 8171,
-    'apiserver': 8172
+	'weapp': 8170,
+	'weizoom_card': 8171,
+	'apiserver': 8172
 }
 
 _ignore_keys = ['scenario', 'tags', 'text', 'table', 'log_capture', 'client']
@@ -101,7 +103,15 @@ def _run_bdd_server_step(step, context, bdd_server_name):
 	try:
 		resp_data = json.loads(base64.b64decode(response.text.encode('utf-8')).decode('utf-8'))
 
-		assert resp_data['bdd_server_name'].lower() == bdd_server_name.lower(), "Lv chun bu dui ma zui ERROR,call {},but get {}".format(bdd_server_name,resp_data['bdd_server_name'])
+		assert resp_data[
+			       'bdd_server_name'].lower() == bdd_server_name.lower(), "Lv chun bu dui ma zui ERROR,call {},but get {}".format(
+			bdd_server_name, resp_data['bdd_server_name'])
+
+		buffs = resp_data['buffs']
+
+		print('************print in {}_bdd_server *************begin'.format(bdd_server_name))
+		print(''.join(buffs))
+		print('************print in {}_bdd_server *************end'.format(bdd_server_name))
 
 		result = int(resp_data['result'])
 		# 一切正常

@@ -385,7 +385,7 @@ class WZCard(business_model.Model):
 
 		member_has_cards = wzcard_models.MemberHasWeizoomCard.select().dj_where(member_id=member_id, id=card_id)
 		# 卡详情和卡的购物信息
-		card_detail = []
+		card_detail = {}
 		weizoom_card_orders_list = []
 		# 卡详情和卡的购物信息
 		if member_has_cards:
@@ -410,7 +410,7 @@ class WZCard(business_model.Model):
 			if resp:
 				card_infos = resp['data']['card_infos']
 				card_has_orders = card_infos[0][card_numbers_passwords[0]['card_number']]['orders']
-				card_has_orders.reverse()
+				# card_has_orders.reverse()
 
 				if card_has_orders:
 					order_nums = [co['order_id'] for co in card_has_orders]
@@ -432,5 +432,7 @@ class WZCard(business_model.Model):
 							'order_id': card_has_order['order_id'],
 							"nickname": nickname
 						})
+			card_detail['use_details'] = weizoom_card_orders_list
 
-		return card_detail, weizoom_card_orders_list
+
+		return card_detail

@@ -25,7 +25,7 @@ Background:
 	Given 重置'weizoom_card'的bdd环境
 	#自营平台jobs的数据
 	Given 设置jobs为自营平台账号::weapp
-	Given 添加jobs店铺名称为'jobs商家'::weapp
+	Given 添加jobs公众号名称为'jobs商家'::weapp
 	Given jobs登录系统::weapp
 	And jobs已添加供货商::weapp
 		"""
@@ -80,7 +80,7 @@ Background:
 		}]
 		"""
 	#普通商家nokia
-	Given 添加nokia店铺名称为'nokia商家'::weapp
+	Given 添加nokia公众号名称为'nokia商家'::weapp
 	Given nokia登录系统::weapp
 	And nokia已添加支付方式::weapp
 		"""
@@ -184,7 +184,7 @@ Background:
 		}
 		"""
 
-@weizoom_card @weizoon_card_detail 
+@weizoom_card @weizoon_card_detail
 Scenario:1 查看可用微众卡详情,使用详情记录为空
 	When bill访问jobs的webapp
 	Then bill能获得微众卡'101000001'的详情信息
@@ -193,8 +193,8 @@ Scenario:1 查看可用微众卡详情,使用详情记录为空
 			"id":"101000001",
 			"password":"1234567",
 			"card_end_date":"2026-06-16",
-			"card_remain_value":10.00,
-			"use_info":[]
+			"card_remain_value":15.00,
+			"use_details":[]
 		}
 		"""
 
@@ -205,8 +205,8 @@ Scenario:1 查看可用微众卡详情,使用详情记录为空
 			"id":"101000001",
 			"password":"1234567",
 			"card_end_date":"2026-06-16",
-			"card_remain_value":10.00,
-			"use_info":[]
+			"card_remain_value":15.00,
+			"use_details":[]
 		}
 		"""
 
@@ -217,17 +217,17 @@ Scenario:1 查看可用微众卡详情,使用详情记录为空
 			"id":"101000001",
 			"password":"1234567",
 			"card_end_date":"2026-06-16",
-			"card_remain_value":10.00,
-			"use_info":[]
+			"card_remain_value":15.00,
+			"use_details":[]
 		}
 		"""
 
-@weizoom_card @weizoon_card_detail 
+@weizoom_card @weizoon_card_detail
 Scenario:2 查看可用微众卡详情,使用详情记录非空
 	#微众卡消费记录
 	#001-下单（-10.00）-取消（+10.00）
 		When bill访问jobs的webapp
-		When bill购买jobs的商品
+		When bill购买jobs的商品::weapp
 			"""
 			{
 				"order_id":"001",
@@ -244,11 +244,11 @@ Scenario:2 查看可用微众卡详情,使用详情记录非空
 				}]
 			}
 			"""
-		Given jobs登录系统
-		When jobs'取消'订单'001'于'2016-06-11 10:00:00'
+		Given jobs登录系统::weapp
+		When jobs'取消'订单'001-供货商a'于2016-06-11 10:00:00::weapp
 	#002-下单（-10.00）
 		When tom访问jobs的webapp
-		When tom购买jobs的商品
+		When tom购买jobs的商品::weapp
 			"""
 			{
 				"order_id":"002",
@@ -266,8 +266,8 @@ Scenario:2 查看可用微众卡详情,使用详情记录非空
 			}
 			"""
 	#003-下单（-5.00）-退款完成（+5.00）
-		When bill访问nokia的webapp
-		When bill购买nokia的商品
+		When bill访问nokia的webapp::weapp
+		When bill购买nokia的商品::weapp
 			"""
 			{
 				"order_id":"003",
@@ -284,10 +284,10 @@ Scenario:2 查看可用微众卡详情,使用详情记录非空
 				}]
 			}
 			"""
-		When bill使用支付方式'微信支付'进行支付订单'003'于'2016-06-13 10:00:00'
-		Given nokia登录系统
-		When nokia'申请退款'订单'003'于'2016-06-13 10:10:00'
-		When nokia通过财务审核'退款成功'订单'003'于'2016-06-13 10:20:00'
+		When bill使用支付方式'微信支付'进行支付订单'003'
+		Given nokia登录系统::weapp
+		When nokia'申请退款'订单'003'于'2016-06-13 10:10:00'::weapp
+		When nokia通过财务审核'退款成功'订单'003'于'2016-06-13 10:20:00'::weapp
 
 	#查看微众卡101000001的详情
 	When bill访问jobs的webapp

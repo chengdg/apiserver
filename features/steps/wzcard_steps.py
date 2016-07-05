@@ -109,3 +109,28 @@ def step_impl(context, user):
 		a['status'] = STATUS2TEXT[a['status']]
 
 	bdd_util.assert_dict(expected, actual)
+
+
+@then(u"{user}获得微众卡'{card_num}'的详情信息")
+def step_impl(context, user, card_num):
+	"""
+	"""
+	member_card_id = wzcard_models.MemberHasWeizoomCard.get(card_number=card_num).id
+	url = '/wzcard/detail'
+	response = context.client.get(url,{'card_id':member_card_id})
+	resp = response.body
+
+	actual = resp['data']['weizoom_card']
+
+	actual_dict ={}
+	print "actual>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",actual
+	actual_dict['id'] = actual['card_number']
+	actual_dict['password'] = actual['card_password']
+	actual_dict['card_end_date'] = actual['valid_time_to'].split(" ")[0]
+	actual_dict['card_remain_value'] = float(actual['face_value'])
+	actual_dict['use_details'] =  actual['use_details']
+
+	expected = json.loads(context.text)
+	expected['card_remain_value'] = float(expected['card_remain_value'])
+	bdd_util.assert_dict(expected, actual_dict)
+

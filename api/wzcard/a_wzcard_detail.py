@@ -27,10 +27,10 @@ class ACardDetail(api_resource.ApiResource):
 		# webapp_owner = args['webapp_owner']
 		# webapp_user = args['webapp_user']
 		# card_id = args['card_id']
-		card_detail,weizoom_card_orders_list = WZCard.from_card_id(args)
+		card_detail = WZCard.from_member_card_id(args)
 
 
 		return {
 		"weizoom_card":card_detail,
-		"card_orders":weizoom_card_orders_list
+
 		}

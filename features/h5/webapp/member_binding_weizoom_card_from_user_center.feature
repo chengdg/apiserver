@@ -19,6 +19,19 @@ Feature:会员绑定微众卡
 			微众卡未激活！
 			该专属卡不能在此商家使用！
 			已锁定，一人一天最多可输错10次密码
+		8、特别备注：以下steps中的'binding_date'和'binding_shop'这两个字段是不进行校验的，为了方便feature能看懂所以才保留了这两个字段
+			When bill绑定微众卡
+				"""
+				{
+					"binding_date":"2016-06-16",
+					"binding_shop":"jobs",
+					"weizoom_card_info":
+						{
+							"id":"101000001",
+							"password":"1234567"
+						}
+				}
+				"""
 	"""
 
 Background:

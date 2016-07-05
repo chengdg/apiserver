@@ -369,19 +369,19 @@ class WZCard(business_model.Model):
 		return is_success
 
 	@staticmethod
-	@param_required(['webapp_user', 'webapp_owner', 'card_id'])
-	def from_member_card_id(args):
+	@param_required(['webapp_user', 'webapp_owner', 'card_num'])
+	def from_member_card_num(args):
 		"""
 		MemberHasWeizoomCard models的id 
-		通过card_id获取微众卡的卡详情
+		通过card_num获取微众卡的卡详情
 		"""
 
 		webapp_owner = args['webapp_owner']
 		webapp_user = args['webapp_user']
 		member_id = webapp_user.member.id
-		card_id = args['card_id']
+		card_num = args['card_num']
 
-		member_has_cards = wzcard_models.MemberHasWeizoomCard.select().dj_where(member_id=member_id, id=card_id)
+		member_has_cards = wzcard_models.MemberHasWeizoomCard.select().dj_where(member_id=member_id, card_number=card_num)
 		# 卡详情和卡的购物信息
 		card_detail = {}
 		weizoom_card_orders_list = []

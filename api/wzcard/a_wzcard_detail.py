@@ -19,7 +19,7 @@ class ACardDetail(api_resource.ApiResource):
 	resource = 'detail'
 	
 
-	@param_required(['card_id'])
+	@param_required(['card_num'])
 	def get(args):
 		"""
 		获取虚拟卡列表
@@ -27,7 +27,7 @@ class ACardDetail(api_resource.ApiResource):
 		# webapp_owner = args['webapp_owner']
 		# webapp_user = args['webapp_user']
 		# card_id = args['card_id']
-		card_detail = WZCard.from_member_card_id(args)
+		card_detail = WZCard.from_member_card_num(args)
 
 
 		return {

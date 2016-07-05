@@ -109,7 +109,7 @@ Background:
 
 	Given bill关注jobs的公众号
 
-@buy @compileOrder @use_weizoom_card
+@buy @compileOrder @use_weizoom_card @weizoom_card
 Scenario:1 编辑订单页使用微众卡-绑定卡
 	#会员在使用微众卡时绑定微众，在使用微众卡列表立即可以看到此卡
 		#绑定卡
@@ -140,7 +140,7 @@ Scenario:1 编辑订单页使用微众卡-绑定卡
 			}]
 			"""
 
-@buy @compileOrder @use_weizoom_card
+@buy @compileOrder @use_weizoom_card @weizoom_card
 Scenario:2 使用卡列表
 	#按照微众卡的绑定顺序的倒叙排列
 	#不显示，不可用的卡（已过期、已用完、已冻结）

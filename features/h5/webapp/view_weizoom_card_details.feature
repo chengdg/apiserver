@@ -227,7 +227,7 @@ Scenario:2 查看可用微众卡详情,使用详情记录非空
 	#微众卡消费记录
 	#001-下单（-10.00）-取消（+10.00）
 		When bill访问jobs的webapp
-		When bill购买jobs的商品::weapp
+		When bill购买jobs的商品
 			"""
 			{
 				"order_id":"001",
@@ -248,7 +248,7 @@ Scenario:2 查看可用微众卡详情,使用详情记录非空
 		When jobs'取消'订单'001-供货商a'::weapp
 	#002-下单（-10.00）
 		When tom访问jobs的webapp
-		When tom购买jobs的商品::weapp
+		When tom购买jobs的商品
 			"""
 			{
 				"order_id":"002",
@@ -266,8 +266,8 @@ Scenario:2 查看可用微众卡详情,使用详情记录非空
 			}
 			"""
 	#003-下单（-5.00）-退款完成（+5.00）
-		When bill访问nokia的webapp::weapp
-		When bill购买nokia的商品::weapp
+		When bill访问nokia的webapp
+		When bill购买nokia的商品
 			"""
 			{
 				"order_id":"003",

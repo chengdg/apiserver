@@ -161,7 +161,7 @@ Background:
 	Given tom1关注jobs的公众号
 	Given tom2关注jobs的公众号
 
-@mall3 @group_t @weizoom_card @0705
+@mall3 @group_t @weizoom_card
 Scenario:1 订单列表只有团购订单-团购进行中
 	1 同一个会员参与同一个团购活动的不同团-未成团
 	2 同一个会员参与不同团购活动的团-未成团

@@ -108,10 +108,13 @@ def step_impl(context, user):
 		a['valid_time_from'] = a['valid_time_from'][:16]
 		a['status'] = STATUS2TEXT[a['status']]
 
+	print('----------------expected',expected)
+	print('-----------------actual',actual)
+
 	bdd_util.assert_dict(expected, actual)
 
 
-@then(u"{user}获得微众卡'{card_num}'的详情信息")
+@then(u"{user}能获得微众卡'{card_num}'的详情信息")
 def step_impl(context, user, card_num):
 	"""
 	"""
@@ -127,7 +130,7 @@ def step_impl(context, user, card_num):
 	actual_dict['id'] = actual['card_number']
 	actual_dict['password'] = actual['card_password']
 	actual_dict['card_end_date'] = actual['valid_time_to'].split(" ")[0]
-	actual_dict['card_remain_value'] = float(actual['face_value'])
+	actual_dict['card_remain_value'] = float(actual['balance'])
 	actual_dict['use_details'] =  actual['use_details']
 
 	expected = json.loads(context.text)

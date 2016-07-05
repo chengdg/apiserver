@@ -139,28 +139,13 @@ Background:
 
 	And bill关注jobs的公众号
 
-@mall3 @mall2 @wip.bpuc1 @mall.pay_weizoom_card @victor @ztqb
+@mall3 @mall2 @wip.bpuc1 @mall.pay_weizoom_card @victor
 #购买流程.编辑订单.微众卡使用
 Scenario:1 微众卡金额大于订单金额时进行支付
 	bill用微众卡购买jobs的商品时,微众卡金额大于订单金额
 	1.自动扣除微众卡金额
 	2.创建订单成功，订单状态为“等待发货”，支付方式为“微众卡支付”
 	3.微众卡金额减少,状态为“已使用”
-
-	When bill访问jobs的webapp
-#	When bill进行微众卡余额查询
-#		"""
-#		{
-#			"id":"100000001",
-#			"password":"1234567"
-#		}
-#		"""
-#	Then bill获得微众卡余额查询结果
-#		"""
-#		{
-#			"card_remaining":100.00
-#		}
-#		"""
 
 	When bill访问jobs的webapp
 	When bill绑定微众卡
@@ -175,6 +160,13 @@ Scenario:1 微众卡金额大于订单金额时进行支付
 			}
 	}
 	"""
+	Then bill能获得微众卡'100000001'的详情信息
+		"""
+		{
+			"card_remain_value":100.00
+
+		}
+		"""
 	Then bill获得绑定微众卡提示信息'恭喜您 绑定成功'
 	When bill购买jobs的商品
 		"""
@@ -205,17 +197,11 @@ Scenario:1 微众卡金额大于订单金额时进行支付
 			}]
 		}
 		"""
-	When bill进行微众卡余额查询
+	Then bill能获得微众卡'100000001'的详情信息
 		"""
 		{
-			"id":"100000001",
-			"password":"1234567"
-		}
-		"""
-	Then bill获得微众卡余额查询结果
-		"""
-		{
-			"card_remaining":50.00
+			"card_remain_value":50.00
+
 		}
 		"""
 

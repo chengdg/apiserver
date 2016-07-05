@@ -92,7 +92,6 @@ class WZCard(business_model.Model):
 			'customer_id': args['webapp_user'].member.id,
 			'customer_type': customer_type
 		}
-		print('-----------in use ',params)
 		resp = Resource.use('card_apiserver').post({
 			'resource': 'card.trade',
 			'data': params
@@ -280,7 +279,7 @@ class WZCard(business_model.Model):
 			return True, [], []
 
 		card_number2models = {a.card_number: a for a in member_has_cards}
-		card_numbers_passwords = [{'card_number': a.card_number, 'card_password': a.card_password} for a in
+		card_numbers_passwords = [{'card_number': a.card_number, 'card_password': WZCard.__decrypt_password(a.card_password)} for a in
 		                          member_has_cards]
 
 		resp = WZCard.get_card_infos({
@@ -320,7 +319,6 @@ class WZCard(business_model.Model):
 			unusable_cards.extend(_cards)
 
 			return True, usable_cards, unusable_cards
-
 
 		else:
 			return False, None, None

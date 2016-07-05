@@ -191,7 +191,7 @@ Background:
 	When test批量激活订单'0002'的卡::weizoom_card
 	When test批量激活订单'0003'的卡::weizoom_card
 
-@binding_weizoon_card @mall3
+@mall3 @binding_weizoon_card @ztq
 Scenario:1 微众卡绑定-输入有效的微众卡号和密码
 	When bill访问jobs的webapp
 	When bill绑定微众卡
@@ -251,10 +251,22 @@ Scenario:1 微众卡绑定-输入有效的微众卡号和密码
 		"""
 	Then bill获得绑定微众卡提示信息'恭喜您 绑定成功'
 
-@binding_weizoon_card @mall3
+@mall3 @binding_weizoon_card @ztq
 Scenario:2 微众卡绑定-输入无效的微众卡号和密码
 	#该微众卡余额为0！
 		When bill访问nokia的webapp
+		When bill绑定微众卡
+			"""
+			{
+				"binding_date":"2016-06-16",
+				"binding_shop":"nokia",
+				"weizoom_card_info":
+					{
+						"id":"101000001",
+						"password":"1234567"
+					}
+			}
+			"""
 		When bill购买nokia的商品
 			"""
 			{
@@ -271,8 +283,8 @@ Scenario:2 微众卡绑定-输入无效的微众卡号和密码
 				}]
 			}
 			"""
-		When bill访问jobs的webapp
-		When bill绑定微众卡
+		When tom访问jobs的webapp
+		When tom绑定微众卡
 			"""
 			{
 				"binding_date":"2016-06-16",
@@ -284,7 +296,7 @@ Scenario:2 微众卡绑定-输入无效的微众卡号和密码
 					}
 			}
 			"""
-		Then bill获得绑定微众卡提示信息'该微众卡余额为0！'
+		Then tom获得绑定微众卡提示信息'该微众卡余额为0！'
 	#该微众卡已经添加！
 		When bill访问jobs的webapp
 		When bill绑定微众卡

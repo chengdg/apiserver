@@ -136,7 +136,7 @@ Background:
 	#激活微众卡
 	When test批量激活订单'0001'的卡::weizoom_card
 
-@weizoon_card @weizoon_card_list @mall3
+@mall3 @weizoon_card @weizoon_card_list @ztq
 Scenario:1 查看我的卡包-微众卡包可用卡列表
 	#我的卡包-微众卡包数据为空
 		When bill访问jobs的webapp
@@ -263,7 +263,7 @@ Scenario:1 查看我的卡包-微众卡包可用卡列表
 			}
 			"""
 
-@weizoon_card @weizoon_card_list
+@mall3 @weizoon_card @weizoon_card_list @ztq
 Scenario:2 查看我的卡包-微众卡包不可用卡列表
 		When bill访问jobs的webapp
 		#bill在jobs绑卡101000001
@@ -450,18 +450,18 @@ Scenario:2 查看我的卡包-微众卡包不可用卡列表
 						},{
 							"valid_time_from":"2016-06-16 00:00",
 							"valid_time_to":"2026-06-16 00:00",
-							"balance":10.00,
-							"face_value":10.00,
+							"balance":"10.00",
+							"face_value":"10.00",
 							"card_number":"101000001",
 							"binding_date":"2016-06-16",
 							"source":"绑定卡",
 							"actions":["详情"],
-							"status":"已用完"
+							"status":"未激活"
 						},{
 							"valid_time_from":"2016-06-16 00:00",
 							"valid_time_to":"2026-06-16 00:00",
-							"balance":10.00,
-							"face_value":10.00,
+							"balance":"0.00",
+							"face_value":"10.00",
 							"card_number":"101000003",
 							"binding_date":"2016-06-16",
 							"source":"绑定卡",

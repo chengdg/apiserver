@@ -76,20 +76,13 @@ class WZCardResourceAllocator(business_model.Service):
 		usable_wzcard_info = WZCard.get_by_card_numbers(
 			{'webapp_user': self.__webapp_user, 'card_numbers': card_numbers})
 
-
-		try:
-			can_use, msg, data = WZCard.use({
-				'wzcard_info': usable_wzcard_info,
-				'money': order.final_price,
-				'order_id': order.order_id,
-				'webapp_user': self.__webapp_user,
-				'webapp_owner': self.__webapp_owner
-			})
-		except:
-			from eaglet.core.exceptionutil import unicode_full_stack
-			print('__________________________________________')
-			print(unicode_full_stack())
-			print('__________________________________________')
+		can_use, msg, data = WZCard.use({
+			'wzcard_info': usable_wzcard_info,
+			'money': order.final_price,
+			'order_id': order.order_id,
+			'webapp_user': self.__webapp_user,
+			'webapp_owner': self.__webapp_owner
+		})
 
 		if can_use:
 			paid_money = float(data['paid_money'])

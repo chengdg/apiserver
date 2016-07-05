@@ -225,6 +225,19 @@ Background:
 		When bill使用支付方式'微信支付'进行支付
 	#00102-待支付（有用微众卡,tom参团'团购活动1'）
 		When tom访问jobs的webapp
+		#绑定微众卡
+		When tom绑定微众卡
+			"""
+			{
+				"binding_date":"2016-06-16",
+				"binding_shop":"jobs",
+				"weizoom_card_info":
+					{
+						"id":"100000001",
+						"password":"1234567"
+					}
+			}
+			"""
 		When tom参加bill的团购活动"团购活动1"::weapp
 			"""
 			{
@@ -259,6 +272,19 @@ Background:
 			"""
 	#00103-待发货（团购中，现金+微众卡支付，bill1参团'团购活动1'）
 		When bill1访问jobs的webapp
+		#绑定微众卡
+		When bill1绑定微众卡
+			"""
+			{
+				"binding_date":"2016-06-16",
+				"binding_shop":"jobs",
+				"weizoom_card_info":
+					{
+						"id":"100000002",
+						"password":"1234567"
+					}
+			}
+			"""
 		When bill1参加bill的团购活动"团购活动1"::weapp
 			"""
 			{
@@ -294,6 +320,19 @@ Background:
 		When bill1使用支付方式'微信支付'进行支付
 	#00104-待发货（团购中，全额微众卡支付，bill2参团'团购活动1'）
 		When bill2访问jobs的webapp
+		#绑定微众卡
+		When tom绑定微众卡
+			"""
+			{
+				"binding_date":"2016-06-16",
+				"binding_shop":"jobs",
+				"weizoom_card_info":
+					{
+						"id":"200000001",
+						"password":"1234567"
+					}
+			}
+			"""
 		When bill2参加bill的团购活动"团购活动1"::weapp
 			"""
 			{
@@ -463,6 +502,19 @@ Background:
 		When bill2使用支付方式'微信支付'进行支付
 	#00205-待发货（团购成功,bill3参团'团购活动2'）
 		When bill3访问jobs的webapp
+		#绑定微众卡
+		When tom绑定微众卡
+			"""
+			{
+				"binding_date":"2016-06-16",
+				"binding_shop":"jobs",
+				"weizoom_card_info":
+					{
+						"id":"300000001",
+						"password":"1234567"
+					}
+			}
+			"""
 		When bill3参加tom的团购活动"团购活动2"::weapp
 			"""
 			{
@@ -495,7 +547,7 @@ Background:
 			}
 			"""
 
-@mall3 @order @eugene
+@mall3 @order @eugene  @weizoom_card
 Scenario:1 所有订单-查看团购订单
 	#待支付和团购中的'待发货'订单在订单列表中不显示
 	#团购成功的订单,订单列表页不能进行【申请退款】和【取消订单】操作
@@ -870,7 +922,7 @@ Scenario:1 所有订单-查看团购订单
 			}]
 			"""
 
-@mall3 @order @eugene
+@mall3 @order @eugene @weizoom_card
 Scenario:2 所有订单-团购订单查询
 	When jobs根据给定条件查询订单::weapp
 		"""
@@ -963,7 +1015,7 @@ Scenario:2 所有订单-团购订单查询
 		}]
 		"""
 
-@mall3 @order @eugene @tgyc
+@mall3 @order @eugene @weizoom_card
 Scenario:3 查看团购失败的订单
 	#所有订单-显示团购失败的'退款中'（退款成功）和优惠抵扣方式的'已取消'订单
 	#财务审核-团购失败的'退款中'（退款成功）的订单只显示在"团购退款"选项卡中

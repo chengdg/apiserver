@@ -140,9 +140,10 @@ def step_impl(context, user, card_num):
 
 	expected = json.loads(context.text)
 	expected['card_remain_value'] = float(expected['card_remain_value'])
-	for use_item in expected['use_details']:
-		use_item.pop("time")
-		use_item["detail"] = float(use_item["detail"])
+	if expected.has_key('use_details'):
+		for use_item in expected['use_details']:
+			use_item.pop("time")
+			use_item["detail"] = float(use_item["detail"])
 
 
 	print "expected>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",expected

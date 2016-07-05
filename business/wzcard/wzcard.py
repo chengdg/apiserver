@@ -418,7 +418,7 @@ class WZCard(business_model.Model):
 					for card_has_order in card_has_orders:
 						webapp_id = order_id2webapp_id.get(card_has_order['order_id'])
 
-						webapp_id = order.webapp_id
+						#webapp_id = order.webapp_id
 						if webapp_id:
 							key = "webapp_id2nickname_%s" % webapp_id
 							nickname = cache_util.get_from_cache(key, get_nickname_from_webapp_id(key, webapp_id))

@@ -245,7 +245,7 @@ Scenario:2 查看可用微众卡详情,使用详情记录非空
 			}
 			"""
 		Given jobs登录系统::weapp
-		When jobs'取消'订单'001-供货商a'::weapp
+		When jobs'取消'订单'001'::weapp
 	#002-下单（-10.00）
 		When tom访问jobs的webapp
 		When tom购买jobs的商品
@@ -420,7 +420,7 @@ Scenario:3 查看不可用微众卡详情
 				"use_details":
 					[{
 						"time":"2016-06-11 00:20:00",
-						"detail":"+15.00",
+						"detail":"-15.00",
 						"order_info":"jobs商家,001"
 					}]
 			}

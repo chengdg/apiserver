@@ -132,8 +132,19 @@ def step_impl(context, user, card_num):
 	actual_dict['card_end_date'] = actual['valid_time_to'].split(" ")[0]
 	actual_dict['card_remain_value'] = float(actual['balance'])
 	actual_dict['use_details'] =  actual['use_details']
+	for actual_order_item in actual_dict['use_details']:
+		actual_order_item['detail'] = -float(actual_order_item['money'])
+		actual_order_item['order_info'] = "{},{}".format(actual_order_item['nickname'],actual_order_item['order_id'])
+	print "actual_dict>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",actual_dict
+
 
 	expected = json.loads(context.text)
 	expected['card_remain_value'] = float(expected['card_remain_value'])
+	for use_item in expected['use_details']:
+		use_item.pop("time")
+		use_item["detail"] = float(use_item["detail"])
+
+
+	print "expected>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",expected
 	bdd_util.assert_dict(expected, actual_dict)
 

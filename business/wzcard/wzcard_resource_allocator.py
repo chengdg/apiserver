@@ -53,7 +53,7 @@ class WZCardResourceAllocator(business_model.Service):
 		"""
 		logging.info("type of `order`: {}".format(type(order)))
 
-		should_use_card = purchase_info.wzcard_info and order.final_price > 0
+		should_use_card = len(purchase_info.wzcard_info) > 0 and order.final_price > 0
 		if not should_use_card:
 			return True, [], None
 

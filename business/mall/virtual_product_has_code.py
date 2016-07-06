@@ -70,6 +70,8 @@ class VirtualProductHasCode(business_model.Model):
 
 	@classmethod
 	def __decrypt_password(cls, encrypt_password):
+		if not encrypt_password:
+			return ''
 		return crypt.DecryptMsg(encrypt_password)[1]
 
 

@@ -220,6 +220,8 @@ class WZCard(business_model.Model):
 			if code == 500:
 
 				r.incr(times_key)
+				if not r.ttl(times_key) > 0:
+					r.expire(times_key, 86400)
 				return False, data['type'], None
 			else:
 
@@ -227,11 +229,15 @@ class WZCard(business_model.Model):
 				if wzcard_models.MemberHasWeizoomCard.select().dj_where(member_id=member_id,
 				                                                        card_number=card_number).count() > 0:
 					r.incr(times_key)
+					if not r.ttl(times_key) > 0:
+						r.expire(times_key, 86400)
 					return False, 'wzcard:has_bound', None
 
 				# 判断余额是否为0
 				if float(data['balance']) == 0:
 					r.incr(times_key)
+					if not r.ttl(times_key) > 0:
+						r.expire(times_key, 86400)
 					return False, 'wzcard:exhausted', None
 
 
@@ -248,10 +254,10 @@ class WZCard(business_model.Model):
 						'card_infos': [{'card_number': card_number, 'card_password': card_password}]
 					})
 
-					# 获得有效期
 					if not get_card_infos_resp:
 						return False, 'common:wtf', None
 
+					# 获得详细数据
 					card_info = get_card_infos_resp['data']['card_infos'][0].values()[0]
 
 					data['valid_time_from'] = card_info['valid_time_from']

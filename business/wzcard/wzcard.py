@@ -218,26 +218,26 @@ class WZCard(business_model.Model):
 			data = resp['data']
 
 			if code == 500:
-
-				r.incr(times_key)
-				if not r.ttl(times_key) > 0:
-					r.expire(times_key, 86400)
+				if data['type'] in ('wzcard:nosuch', 'wzcard:wrongpass'):
+					r.incr(times_key)
+					if not r.ttl(times_key) > 0:
+						r.expire(times_key, 86400)
 				return False, data['type'], None
 			else:
 
 				# 判断是否绑定过
 				if wzcard_models.MemberHasWeizoomCard.select().dj_where(member_id=member_id,
 				                                                        card_number=card_number).count() > 0:
-					r.incr(times_key)
-					if not r.ttl(times_key) > 0:
-						r.expire(times_key, 86400)
+					# r.incr(times_key)
+					# if not r.ttl(times_key) > 0:
+					# 	r.expire(times_key, 86400)
 					return False, 'wzcard:has_bound', None
 
 				# 判断余额是否为0
 				if float(data['balance']) == 0:
-					r.incr(times_key)
-					if not r.ttl(times_key) > 0:
-						r.expire(times_key, 86400)
+					# r.incr(times_key)
+					# if not r.ttl(times_key) > 0:
+					# 	r.expire(times_key, 86400)
 					return False, 'wzcard:exhausted', None
 
 
@@ -285,8 +285,9 @@ class WZCard(business_model.Model):
 			return True, [], []
 
 		card_number2models = {a.card_number: a for a in member_has_cards}
-		card_numbers_passwords = [{'card_number': a.card_number, 'card_password': WZCard.__decrypt_password(a.card_password)} for a in
-		                          member_has_cards]
+		card_numbers_passwords = [
+			{'card_number': a.card_number, 'card_password': WZCard.__decrypt_password(a.card_password)} for a in
+			member_has_cards]
 
 		resp = WZCard.get_card_infos({
 			'card_infos': card_numbers_passwords
@@ -342,8 +343,9 @@ class WZCard(business_model.Model):
 		member_has_cards = sorted(member_has_cards, key=lambda x: card_index[x.card_number])
 
 		# usable_wzcard_info = [{a.card_number: a.card_password} for a in member_has_cards]
-		usable_wzcard_info = [{'card_number': a.card_number, 'card_password': WZCard.__decrypt_password(a.card_password)} for a in
-		                      member_has_cards]
+		usable_wzcard_info = [
+			{'card_number': a.card_number, 'card_password': WZCard.__decrypt_password(a.card_password)} for a in
+			member_has_cards]
 
 		return usable_wzcard_info
 
@@ -387,14 +389,16 @@ class WZCard(business_model.Model):
 		member_id = webapp_user.member.id
 		card_num = args['card_num']
 
-		member_has_cards = wzcard_models.MemberHasWeizoomCard.select().dj_where(member_id=member_id, card_number=card_num)
+		member_has_cards = wzcard_models.MemberHasWeizoomCard.select().dj_where(member_id=member_id,
+		                                                                        card_number=card_num)
 		# 卡详情和卡的购物信息
 		card_detail = {}
 		weizoom_card_orders_list = []
 		# 卡详情和卡的购物信息
 		if member_has_cards:
-			card_numbers_passwords = [{'card_number': a.card_number, 'card_password': WZCard.__decrypt_password(a.card_password)} for a in
-			                          member_has_cards]
+			card_numbers_passwords = [
+				{'card_number': a.card_number, 'card_password': WZCard.__decrypt_password(a.card_password)} for a in
+				member_has_cards]
 
 			resp = WZCard.get_card_infos({
 				'card_infos': card_numbers_passwords
@@ -419,12 +423,12 @@ class WZCard(business_model.Model):
 				if card_has_orders:
 					order_nums = [co['order_id'] for co in card_has_orders]
 					orders = mall_models.Order.select().dj_where(order_id__in=order_nums)
-					order_id2webapp_id = dict([(order.order_id,order.webapp_id) for order in orders])
+					order_id2webapp_id = dict([(order.order_id, order.webapp_id) for order in orders])
 
 					for card_has_order in card_has_orders:
 						webapp_id = order_id2webapp_id.get(card_has_order['order_id'])
 
-						#webapp_id = order.webapp_id
+						# webapp_id = order.webapp_id
 						if webapp_id:
 							key = "webapp_id2nickname_%s" % webapp_id
 							nickname = cache_util.get_from_cache(key, get_nickname_from_webapp_id(key, webapp_id))
@@ -437,6 +441,5 @@ class WZCard(business_model.Model):
 							"nickname": nickname
 						})
 			card_detail['use_details'] = weizoom_card_orders_list
-
 
 		return card_detail

@@ -134,7 +134,11 @@ class PurchaseInfo(business_model.Model):
 
         @return 微众卡信息的list
         """
-        card_names = request_args.get('card_name', '').split(',')
+        card_names = request_args.get('card_name', '')
+        if card_names:
+            self.wzcard_info = request_args.get('card_name', '').split(',')
+        else:
+            self.wzcard_info = []
         # card_passwords = request_args.get('card_pass', '').split(',')
         wzcard_info = []
         # if len(card_names) == len(card_passwords):
@@ -146,7 +150,6 @@ class PurchaseInfo(business_model.Model):
         #                     "card_password": card_passwords[i],
         #                 })
 
-        self.wzcard_info = card_names
 
 
     def __parse_pay_interface(self, request_args):

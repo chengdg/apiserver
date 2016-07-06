@@ -18,8 +18,11 @@ from eaglet.core import watchdog
 from business import model as business_model
 from business.mall.product import Product as business_product
 import settings
+from util import msg_crypt
 
 
+crypt = msg_crypt.MsgCrypt(settings.WZCARD_ENCRYPT_INFO['token'], settings.WZCARD_ENCRYPT_INFO['encodingAESKey'],
+                           settings.WZCARD_ENCRYPT_INFO['id'])
 class VirtualProductHasCode(business_model.Model):
 	"""
 	福利卡券活动关联的卡券码
@@ -65,6 +68,9 @@ class VirtualProductHasCode(business_model.Model):
 	# 	a = model_product.to_dict()
 	# 	return model_product
 
+	@classmethod
+	def __decrypt_password(cls, encrypt_password):
+		return crypt.DecryptMsg(encrypt_password)[1]
 
 
 	@staticmethod
@@ -109,7 +115,7 @@ class VirtualProductHasCode(business_model.Model):
 			if not card.product.type == 'virtual':
 				continue
 			card_details_dic['card_id'] = card.code
-			card_details_dic['password'] = card.password
+			card_details_dic['password'] = VirtualProductHasCode.__decrypt_password(card.password)
 			card_details_dic['time'] = card.get_time.strftime('%Y-%m-%d')
 			card_details_dic['product_id'] = card.product.id
 			card_details_dic['name'] = card.product.name

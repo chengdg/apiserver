@@ -108,9 +108,6 @@ def step_impl(context, user):
 		a['valid_time_from'] = a['valid_time_from'][:16]
 		a['status'] = STATUS2TEXT[a['status']]
 
-	print('----------------expected',expected)
-	print('-----------------actual',actual)
-
 	bdd_util.assert_dict(expected, actual)
 
 
@@ -126,7 +123,7 @@ def step_impl(context, user, card_num):
 	actual = resp['data']['weizoom_card']
 
 	actual_dict ={}
-	print "actual>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",actual
+
 	actual_dict['id'] = actual['card_number']
 	actual_dict['password'] = actual['card_password']
 	actual_dict['card_end_date'] = actual['valid_time_to'].split(" ")[0]
@@ -135,7 +132,6 @@ def step_impl(context, user, card_num):
 	for actual_order_item in actual_dict['use_details']:
 		actual_order_item['detail'] = -float(actual_order_item['money'])
 		actual_order_item['order_info'] = "{},{}".format(actual_order_item['nickname'],actual_order_item['order_id'])
-	print "actual_dict>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",actual_dict
 
 
 	expected = json.loads(context.text)
@@ -145,7 +141,5 @@ def step_impl(context, user, card_num):
 			use_item.pop("time")
 			use_item["detail"] = float(use_item["detail"])
 
-
-	print "expected>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",expected
 	bdd_util.assert_dict(expected, actual_dict)
 

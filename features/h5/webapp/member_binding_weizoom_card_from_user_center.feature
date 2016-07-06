@@ -19,7 +19,7 @@ Feature:会员绑定微众卡
 			微众卡未激活！
 			该专属卡不能在此商家使用！
 			已锁定，一人一天最多可输错10次密码
-			卡号密码不能为空
+			卡号密码不能为空（卡号和密码为空时校验提示该信息）
 		8、特别备注：以下steps中的'binding_date'和'binding_shop'这两个字段是不进行校验的，为了方便feature能看懂所以才保留了这两个字段
 			When bill绑定微众卡
 				"""
@@ -267,51 +267,6 @@ Scenario:1 微众卡绑定-输入有效的微众卡号和密码
 
 @mall3 @binding_weizoon_card @weizoom_card @ztq
 Scenario:2 微众卡绑定-输入无效的微众卡号和密码
-	#卡号密码不能为空
-		When tom访问jobs的webapp
-		When tom绑定微众卡
-			"""
-			{
-				"binding_date":"2016-06-16",
-				"binding_shop":"jobs",
-				"weizoom_card_info":
-					{
-						"id":"",
-						"password":""
-					}
-			}
-			"""
-		Then tom获得绑定微众卡提示信息'卡号密码不能为空'
-
-		When tom访问jobs的webapp
-		When tom绑定微众卡
-			"""
-			{
-				"binding_date":"2016-06-16",
-				"binding_shop":"jobs",
-				"weizoom_card_info":
-					{
-						"id":"101000002",
-						"password":""
-					}
-			}
-			"""
-		Then tom获得绑定微众卡提示信息'卡号密码不能为空'
-
-		When tom访问jobs的webapp
-		When tom绑定微众卡
-			"""
-			{
-				"binding_date":"2016-06-16",
-				"binding_shop":"jobs",
-				"weizoom_card_info":
-					{
-						"id":"",
-						"password":"1234567"
-					}
-			}
-			"""
-		Then tom获得绑定微众卡提示信息'卡号密码不能为空'
 	#该微众卡余额为0！
 		When bill访问nokia的webapp
 		When bill绑定微众卡

@@ -390,7 +390,7 @@ class VirtualProductHasCode(models.Model):
 	owner = models.ForeignKey(User)
 	virtual_product = models.ForeignKey(VirtualProduct)
 	code = models.CharField(max_length=128) #卡号
-	password = models.CharField(max_length=128) #密码
+	password = models.CharField(max_length=512) #密码
 	start_time = models.DateTimeField() #有效期起始时间
 	end_time = models.DateTimeField()#有效期结束时间
 	status = models.IntegerField(default=CODE_STATUS_NOT_GET) #状态

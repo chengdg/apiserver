@@ -134,6 +134,7 @@ def step_impl(context, user, mp_user_name):
 	context.client = client
 	context.webapp_user = client.webapp_user
 
+
 	if hasattr(context, 'fmt'):
 		if hasattr(context, 'o_fmt') and context.o_fmt:
 			pass

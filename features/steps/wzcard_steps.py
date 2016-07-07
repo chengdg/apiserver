@@ -115,11 +115,11 @@ def step_impl(context, user):
 def step_impl(context, user, card_num):
 	"""
 	"""
-	member_card_id = wzcard_models.MemberHasWeizoomCard.get(card_number=card_num).id
-	url = '/wzcard/detail'
-	response = context.client.get(url,{'card_id':member_card_id})
-	resp = response.body
+	url = '/wzcard/detail/?_method=get'
+	response = context.client.get(url,{'card_num':card_num})
 
+	resp = response.body
+	logging.error("zcard#######>>>>>>>2>>>>%s" % resp)
 	actual = resp['data']['weizoom_card']
 
 	actual_dict ={}

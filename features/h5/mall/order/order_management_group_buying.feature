@@ -1022,47 +1022,26 @@ Scenario:3 查看团购失败的订单
 
 	#团购失败前,查看微众卡余额
 		When tom访问jobs的webapp
-		When tom进行微众卡余额查询
+		Then tom能获得微众卡'100000001'的详情信息
 			"""
 			{
-				"id":"100000001",
-				"password":"1234567"
-			}
-			"""
-		Then tom获得微众卡余额查询结果
-			"""
-			{
-				"card_remaining":0.00
+				"card_remain_value":0.00
 			}
 			"""
 
 		When bill1访问jobs的webapp
-		When bill1进行微众卡余额查询
+		Then bill1能获得微众卡'100000002'的详情信息
 			"""
 			{
-				"id":"100000002",
-				"password":"1234567"
-			}
-			"""
-		Then bill1获得微众卡余额查询结果
-			"""
-			{
-				"card_remaining":0.00
+				"card_remain_value":0.00
 			}
 			"""
 
 		When bill2访问jobs的webapp
-		When bill2进行微众卡余额查询
+		Then bill2能获得微众卡'200000001'的详情信息
 			"""
 			{
-				"id":"200000001",
-				"password":"1234567"
-			}
-			"""
-		Then bill2获得微众卡余额查询结果
-			"""
-			{
-				"card_remaining":10.00
+				"card_remain_value":10.00
 			}
 			"""
 
@@ -1257,34 +1236,21 @@ Scenario:3 查看团购失败的订单
 	#团购失败后，查看微众卡余额
 		#待支付->已取消（订单取消后，微众卡的钱退回）
 			When tom访问jobs的webapp
-			When tom进行微众卡余额查询
+			Then tom能获得微众卡'100000001'的详情信息
 				"""
 				{
-					"id":"100000001",
-					"password":"1234567"
-				}
-				"""
-			Then tom获得微众卡余额查询结果
-				"""
-				{
-					"card_remaining":50.00
+					"card_remain_value":50.00
 				}
 				"""
 		#待发货->已取消（订单取消后，微众卡的钱退回）
 			When bill2访问jobs的webapp
-			When bill2进行微众卡余额查询
+			Then bill2能获得微众卡'200000001'的详情信息
 				"""
 				{
-					"id":"200000001",
-					"password":"1234567"
+					"card_remain_value":100.00
 				}
 				"""
-			Then bill2获得微众卡余额查询结果
-				"""
-				{
-					"card_remaining":100.00
-				}
-				"""
+
 
 	#微信自动退款,订单状态自动标记为'退款成功'(因无法实现steps，所以注释掉)
 		# When 微信'退款成功'订单'00103'::weapp

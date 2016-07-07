@@ -369,7 +369,10 @@ class RequestFactory(object):
 
         path = self.__fill_query_string(path)
         parsed = urlparse(path)
+
         query_string = urlencode(data, doseq=True) or force_str(parsed[4])
+        if urlencode(data, doseq=True):
+            query_string = force_str(parsed[4]) + '&' +query_string
         if six.PY3:
             query_string = query_string.encode('utf-8').decode('iso-8859-1')
 

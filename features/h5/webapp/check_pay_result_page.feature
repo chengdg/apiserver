@@ -406,6 +406,18 @@ Scenario:7 支付结果页面支付方式为'优惠抵扣'，使用微众卡和�
 		}]
 		"""
 	When bill访问jobs的webapp
+	When bill绑定微众卡
+	"""
+	{
+		"binding_date":"2016-06-16",
+		"binding_shop":"jobs",
+		"weizoom_card_info":
+			{
+				"id":"050000001",
+				"password":"1234567"
+			}
+	}
+	"""
 	When bill购买jobs的商品
 		"""
 		{
@@ -475,6 +487,18 @@ Scenario:8 支付结果页面支付方式为'优惠抵扣'，使用微众卡和�
 		"""
 	When bill访问jobs的webapp
 	When bill获得jobs的200会员积分
+	When bill绑定微众卡
+	"""
+	{
+		"binding_date":"2016-06-16",
+		"binding_shop":"jobs",
+		"weizoom_card_info":
+			{
+				"id":"100000002",
+				"password":"1234567"
+			}
+	}
+	"""
 	When bill购买jobs的商品
 		"""
 		{

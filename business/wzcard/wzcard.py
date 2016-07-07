@@ -388,9 +388,7 @@ class WZCard(business_model.Model):
 		webapp_user = args['webapp_user']
 		member_id = webapp_user.member.id
 		card_num = args['card_num']
-
-		member_has_cards = wzcard_models.MemberHasWeizoomCard.select().dj_where(member_id=member_id,
-		                                                                        card_number=card_num)
+		member_has_cards = wzcard_models.MemberHasWeizoomCard.select().dj_where(member_id=member_id, card_number=card_num)
 		# 卡详情和卡的购物信息
 		card_detail = {}
 		weizoom_card_orders_list = []
@@ -417,29 +415,30 @@ class WZCard(business_model.Model):
 
 			if resp:
 				card_infos = resp['data']['card_infos']
-				card_has_orders = card_infos[0][card_numbers_passwords[0]['card_number']]['orders']
+				if card_infos:
+					card_has_orders = card_infos[0][card_numbers_passwords[0]['card_number']]['orders']
 				# card_has_orders.reverse()
 
-				if card_has_orders:
-					order_nums = [co['order_id'] for co in card_has_orders]
-					orders = mall_models.Order.select().dj_where(order_id__in=order_nums)
-					order_id2webapp_id = dict([(order.order_id, order.webapp_id) for order in orders])
+					if card_has_orders:
+						order_nums = [co['order_id'] for co in card_has_orders]
+						orders = mall_models.Order.select().dj_where(order_id__in=order_nums)
+						order_id2webapp_id = dict([(order.order_id,order.webapp_id) for order in orders])
 
-					for card_has_order in card_has_orders:
-						webapp_id = order_id2webapp_id.get(card_has_order['order_id'])
+						for card_has_order in card_has_orders:
+							webapp_id = order_id2webapp_id.get(card_has_order['order_id'])
 
-						# webapp_id = order.webapp_id
-						if webapp_id:
-							key = "webapp_id2nickname_%s" % webapp_id
-							nickname = cache_util.get_from_cache(key, get_nickname_from_webapp_id(key, webapp_id))
-						else:
-							nickname = ""
-						weizoom_card_orders_list.append({
-							'created_at': card_has_order['created_at'],
-							'money': card_has_order['money'],
-							'order_id': card_has_order['order_id'],
-							"nickname": nickname
-						})
+							#webapp_id = order.webapp_id
+							if webapp_id:
+								key = "webapp_id2nickname_%s" % webapp_id
+								nickname = cache_util.get_from_cache(key, get_nickname_from_webapp_id(key, webapp_id))
+							else:
+								nickname = ""
+							weizoom_card_orders_list.append({
+								'created_at': card_has_order['created_at'],
+								'money': card_has_order['money'],
+								'order_id': card_has_order['order_id'],
+								"nickname": nickname
+							})
 			card_detail['use_details'] = weizoom_card_orders_list
 
 		return card_detail

@@ -85,7 +85,8 @@ def step_impl(context, user, mp_user_name):
 
 	webapp_owner = account_models.User.get(username=mp_user_name)
 	profile = account_models.UserProfile.get(user=webapp_owner.id)
-	client = bdd_util.login(user, None, context=context)
+	client = bdd_util.login(user)
+	#context.client = bdd_util.login(user)
 	
 	#获得访问mp_user_name数据的access token
 	#修改授权方式
@@ -98,9 +99,7 @@ def step_impl(context, user, mp_user_name):
 	result = http.request(url, data, 'post')
 
 	code = result['data']['code']
-	logging.info(">>>>>>>>>>>>>>:::@@#@:")
-	logging.info(code)
-	logging.info(">>>>>>>>>>>>>>:::@@#@:2")
+	
 	#get accesstoken
 	url = "http://api.weapp.com/member_service/oauth/access_token/?_method=post"
 	data = {
@@ -108,6 +107,9 @@ def step_impl(context, user, mp_user_name):
 		'code': code
 	}
 	result = http.request(url, data, 'post')
+	openid = '%s_%s' % (user, mp_user_name)
+	# access_token = account_models.AccessToken.get(openid=openid).access_token
+	# client.webapp_user.access_token = access_token
 	client.webapp_user.access_token = result['data']['access_token']
 	# response = client.put('/user/access_token/', {
 	# 	'woid': webapp_owner.id,
@@ -121,11 +123,18 @@ def step_impl(context, user, mp_user_name):
 	context.webapp_owner = webapp_owner
 	context.webapp_id = profile.webapp_id
 
+
+	logging.info(">>>>>>>>>>>>>>:::@@#@:")
+	logging.info(client.webapp_user.access_token)
+	logging.info(">>>>>>>>>>>>>>:::@@#@:2")
 	#获取数据库中的webapp_user
 	member = bdd_util.get_member_for(user, context.webapp_id)
 	db_webapp_user = member_models.WebAppUser.get(member_id=member.id)
 	client.webapp_user.id = db_webapp_user.id
+	context.client = client
 	context.webapp_user = client.webapp_user
+
+
 	if hasattr(context, 'fmt'):
 		if hasattr(context, 'o_fmt') and context.o_fmt:
 			pass

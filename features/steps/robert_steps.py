@@ -244,7 +244,7 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 		"card_name": '',
 		"card_pass": '',
 		"xa-choseInterfaces": PAYNAME2ID.get(args.get("pay_type", u"微信支付"),-1),
-		# 'bdd_order_id': args.get('order_id')
+		'bdd_order_id': args.get('order_id', '')
 	}
 
 	if hasattr(context, 'shared_url'):

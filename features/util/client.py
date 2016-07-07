@@ -368,16 +368,11 @@ class RequestFactory(object):
         "Construct a GET request."
 
         path = self.__fill_query_string(path)
-        logging.error(">>>>>>>dddd1>>>>>>>>>>{}".format(path))
         parsed = urlparse(path)
-        logging.error(">>>>>>dddd2>>>>>>>>>>parsed{}".format(parsed))
 
         query_string = urlencode(data, doseq=True) or force_str(parsed[4])
         if urlencode(data, doseq=True):
             query_string = force_str(parsed[4]) + '&' +query_string
-        logging.error(">>>>>>>>dddd3>>>>>>>>>>query_string {}".format( query_string ))
-        logging.error(">>>>>>dddd3.1>>>>>>>>>>urlencode(data, doseq=True) {}".format( urlencode(data, doseq=True) ))
-        logging.error(">>>>>>>>dddd3.2>>>>>>>>>>urlencode(data, doseq=True) {}".format(force_str(parsed[4])))
         if six.PY3:
             query_string = query_string.encode('utf-8').decode('iso-8859-1')
 
@@ -386,9 +381,7 @@ class RequestFactory(object):
             'QUERY_STRING':    query_string,
             'REQUEST_METHOD':  str('GET'),
         }
-        logging.error(">>>>>>>dddd4>>>>>>>>>>r:{}".format(r))
         r.update(extra)
-        logging.error(">>>>>>>>dddd5>>>>>>>>>>r:{}".format(r))
         return self.request(**r)
 
     def post(self, path, data={}, content_type=MULTIPART_CONTENT,

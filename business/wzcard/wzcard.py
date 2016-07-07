@@ -388,9 +388,6 @@ class WZCard(business_model.Model):
 		webapp_user = args['webapp_user']
 		member_id = webapp_user.member.id
 		card_num = args['card_num']
-		print ">>>>>"*10
-		print "webapp_user.openid:wzcard",webapp_user.openid
-		print ">>>>>"*10
 		member_has_cards = wzcard_models.MemberHasWeizoomCard.select().dj_where(member_id=member_id, card_number=card_num)
 		# 卡详情和卡的购物信息
 		card_detail = {}

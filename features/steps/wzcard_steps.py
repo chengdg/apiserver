@@ -43,35 +43,35 @@ def step_impl(context, user):
 	}
 	context.response = context.client.post(url, data)
 
-	@then(u"{user}获得绑定微众卡提示信息'{msg}'")
-	def step_impl(context, user, msg):
-		"""
-		@type context: behave.runner.Context
-		"""
-		actual = context.response.body
-		code = actual['code']
-		data = actual['data']
-		type = data.get('type')
+@then(u"{user}获得绑定微众卡提示信息'{msg}'")
+def step_impl(context, user, msg):
+	"""
+	@type context: behave.runner.Context
+	"""
+	actual = context.response.body
+	code = actual['code']
+	data = actual['data']
+	type = data.get('type')
 
-		if msg == u'恭喜您 绑定成功':
-			assert code == 200
+	if msg == u'恭喜您 绑定成功':
+		assert code == 200
+	else:
+		assert code == 500
+		if msg == u'卡号或密码错误！':
+			assert type in ('wzcard:nosuch', 'wzcard:wrongpass')
+		elif msg == u'该微众卡余额为0！':
+			assert type in ('wzcard:exhausted')
+		elif msg == u'该微众卡已经添加！':
+			assert type in ('wzcard:has_bound')
+		elif msg == u'微众卡未激活！':
+			assert type in ('wzcard:inactive')
+		elif msg == u'微众卡已过期！':
+			assert type in ('wzcard:expired')
+		elif msg == u'该专属卡不能在此商家使用！':
+			assert type in ('wzcard:banned')
+
 		else:
-			assert code == 500
-			if msg == u'卡号或密码错误！':
-				assert type in ('wzcard:nosuch', 'wzcard:wrongpass')
-			elif msg == u'该微众卡余额为0！':
-				assert type in ('wzcard:exhausted')
-			elif msg == u'该微众卡已经添加！':
-				assert type in ('wzcard:has_bound')
-			elif msg == u'微众卡未激活！':
-				assert type in ('wzcard:inactive')
-			elif msg == u'微众卡已过期！':
-				assert type in ('wzcard:expired')
-			elif msg == u'该专属卡不能在此商家使用！':
-				assert type in ('wzcard:banned')
-
-			else:
-				raise NotImplementedError
+			raise NotImplementedError
 
 
 @then(u"{user}获得微众卡包列表")

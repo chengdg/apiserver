@@ -101,6 +101,8 @@ REDIS_HOST = 'redis.weapp.com'
 REDIS_PORT = 6379
 REDIS_CACHES_DB = 1
 
+REDIS_COMMON_DB = 4
+
 # BDD_SERVER相关配置
 BDD_SERVER2PORT = {
     'weapp': 8170,
@@ -151,6 +153,12 @@ CTYPT_INFO = {
     'id': 'weizoom_h5',
     'token': '2950d602ffb613f47d7ec17d0a802b',
     'encodingAESKey': 'BPQSp7DFZSs1lz3EBEoIGe6RVCJCFTnGim2mzJw5W4I'
+}
+
+WZCARD_ENCRYPT_INFO = {
+    'id': 'wzcard',
+    'token': '23d0d602ffb6k3f47d7ec49d0a80k9',
+    'encodingAESKey': 'BPQSp7DFZSs1lz7EBToIGe6RVC8CFTnGZm2mzJw5W4I'
 }
 
 if MODE == 'test':
@@ -208,4 +216,8 @@ REGISTERED_LOCK_NAMES = {
 	'wz_card_lock': 'wc:',
 	'wapi_lock': 'wapi:',
 }
+
+
+
+COMMON_SERVICE_ERROR_TYPE = 'common:wtf'
 

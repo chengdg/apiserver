@@ -148,6 +148,7 @@ class APurchasing(api_resource.ApiResource):
 			'is_enable_bill': order.is_enable_bill,
 			'is_delivery': order.is_delivery # 是否勾选配送时间,发货时间判断字段
 		}
+		usable_cards = [card.to_dict() for card in webapp_user.wzcard_package.usable_cards]
 
 		return {
 			'order': order_info,
@@ -159,6 +160,7 @@ class APurchasing(api_resource.ApiResource):
 			'use_ceiling': use_ceiling,
 			'postage_factor': postage_factor,
 			'group_id': group_id,
+			'usable_cards': usable_cards,
 			'mall_type': webapp_owner.user_profile.webapp_type
 		}
 

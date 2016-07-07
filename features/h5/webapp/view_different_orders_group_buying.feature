@@ -161,7 +161,7 @@ Background:
 	Given tom1关注jobs的公众号
 	Given tom2关注jobs的公众号
 
-@mall3 @group_t
+@mall3 @group_t @weizoom_card
 Scenario:1 订单列表只有团购订单-团购进行中
 	1 同一个会员参与同一个团购活动的不同团-未成团
 	2 同一个会员参与不同团购活动的团-未成团
@@ -371,6 +371,18 @@ Scenario:1 订单列表只有团购订单-团购进行中
 
 	#bill参团"tom作为团长"购买：微众卡支付的订单，实付金额为0
 		When bill访问jobs的webapp
+		When bill绑定微众卡
+			"""
+			{
+				"binding_date":"2016-06-16",
+				"binding_shop":"jobs",
+				"weizoom_card_info":
+					{
+						"id":"100000001",
+						"password":"1234567"
+					}
+			}
+			"""
 		When bill参加tom的团购活动"团购活动1"::weapp
 			"""
 			{
@@ -556,6 +568,18 @@ Scenario:1 订单列表只有团购订单-团购进行中
 
 	#tom参团"bill作为团长"购买：微众卡支付部分订单金额
 		When tom访问jobs的webapp
+		When tom绑定微众卡
+			"""
+			{
+				"binding_date":"2016-06-16",
+				"binding_shop":"jobs",
+				"weizoom_card_info":
+					{
+						"id":"020000001",
+						"password":"1234567"
+					}
+			}
+			"""
 		When tom参加bill的团购活动"团购活动2"::weapp
 			"""
 			{

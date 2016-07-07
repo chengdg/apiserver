@@ -288,9 +288,21 @@ Scenario:2 下单失败后，校验会员的积分变化
 		}
 		"""
 
-@mall3 @duhao @order
+@mall3 @duhao @order @weizoom_card
 Scenario:3 下单失败后，校验优惠券和微众卡的变化
 	When bill访问jobs的webapp
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"今天",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"100000001",
+					"password":"1234567"
+				}
+		}
+		"""
 	When bill购买jobs的商品
 		"""
 		{
@@ -317,6 +329,7 @@ Scenario:3 下单失败后，校验优惠券和微众卡的变化
 			}]
 		}
 		"""
+
 	Given jobs登录系统::weapp
 	Then jobs能获取商品'商品3'
 		"""
@@ -353,16 +366,10 @@ Scenario:3 下单失败后，校验优惠券和微众卡的变化
 		"""
 
 	When bill访问jobs的webapp
-	When bill进行微众卡余额查询
+	Then bill能获得微众卡'100000001'的详情信息
 		"""
 		{
-			"id":"100000001",
-			"password":"1234567"
+			"card_remain_value":100.00
 		}
 		"""
-	Then bill获得微众卡余额查询结果
-		"""
-		{
-			"card_remaining":100.00
-		}
-		"""
+

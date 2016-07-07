@@ -358,3 +358,47 @@ class RedEnvelopeToOrder(models.Model):
 		db_table = 'mall_red_envelope_to_order'
 		verbose_name = '红包关联订单记录'
 		verbose_name_plural = '红包关联订单记录'
+class VirtualProduct(models.Model):
+	"""
+	福利卡券活动
+	"""
+	owner = models.ForeignKey(User)
+	name = models.CharField(max_length=128) #活动名称
+	product = models.ForeignKey(mall_models.Product)  #活动关联的商品
+	is_finished = models.BooleanField(default=False)  #活动是否结束
+	created_at = models.DateTimeField(auto_now_add=True)  #创建时间
+
+	class Meta(object):
+		db_table = 'mallpromotion_virtual_product'
+
+
+CODE_STATUS_NOT_GET = 0 #未领取
+CODE_STATUS_GET = 1 #已领取
+CODE_STATUS_OVERDUE = 2 #已过期
+CODE_STATUS_EXPIRED = 3 #已失效
+CODE2TEXT = {
+	CODE_STATUS_NOT_GET: u'未领取',
+	CODE_STATUS_GET: u'已领取',  #已领取的就不判断是否过期，即使过期了数据库里依然是已领取状态，但是用户卡包里显示已过期
+	CODE_STATUS_OVERDUE: u'已过期',  #已过期的一定是没有被领取过的
+	CODE_STATUS_EXPIRED: u'已失效'
+}
+
+class VirtualProductHasCode(models.Model):
+	"""
+	福利卡券活动关联的卡券码
+	"""
+	owner = models.ForeignKey(User)
+	virtual_product = models.ForeignKey(VirtualProduct)
+	code = models.CharField(max_length=128) #卡号
+	password = models.CharField(max_length=512) #密码
+	start_time = models.DateTimeField() #有效期起始时间
+	end_time = models.DateTimeField()#有效期结束时间
+	status = models.IntegerField(default=CODE_STATUS_NOT_GET) #状态
+	get_time = models.DateTimeField(null=True) #领取/发放时间
+	member_id = models.CharField(max_length=20, default='') #会员id
+	oid = models.CharField(max_length=20, default='') #订单id
+	order_id = models.CharField(max_length=35, default='') #订单order_id
+	created_at = models.DateTimeField(auto_now_add=True)  #创建时间
+
+	class Meta(object):
+		db_table = 'mallpromotion_virtual_product_has_code'

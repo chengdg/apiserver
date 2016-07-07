@@ -12,6 +12,7 @@ from datetime import datetime
 from eaglet.decorator import param_required
 #from wapi import wapi_utils
 from eaglet.core.cache import utils as cache_util
+
 from core.exceptionutil import unicode_full_stack
 from db.mall import models as mall_models
 from db.mall import promotion_models
@@ -27,6 +28,7 @@ from business.decorator import cached_context_property
 from util import regional_util
 from business.account.member_order_info import MemberOrderInfo
 from business.account.social_account import SocialAccount
+from business.wzcard.wzcard_package import WZCardPackage
 
 from business.mall.coupon.coupon import Coupon
 
@@ -649,3 +651,9 @@ class WebAppUser(business_model.Model):
 				member.grade = new_grade
 				member.save()
 				break
+
+
+	@cached_context_property
+	def wzcard_package(self):
+
+		return WZCardPackage.from_webapp_user({'webapp_user': self})

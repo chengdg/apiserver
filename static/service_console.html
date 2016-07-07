@@ -135,7 +135,7 @@
 				var data = dataCodeMirror.getValue();
 				data = eval(data.replace(/'/g, '\''));
 				var resource = $('#resource').val();
-				var url = '/' + resource.replace(/\./g, '/');
+				var url = '/default/' + resource.replace(/\./g, '/');
 
 				resultViewer.set('fetching...');
 				__displayQueries([]);

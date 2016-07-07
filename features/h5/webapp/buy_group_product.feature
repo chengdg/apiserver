@@ -719,7 +719,7 @@ Scenario: 3 会员开团后团购活动成功
 		[]
 		"""
 
-@mall3 @nj_group
+@mall3 @nj_group @weizoom_card
 Scenario: 4 会员开团后团购活动失败
 	会员开团后
 	1.没有在期限内达到人数，团购活动失败
@@ -728,6 +728,19 @@ Scenario: 4 会员开团后团购活动失败
 	4.库存恢复
 
 	When bill访问jobs的webapp
+	#绑定微众卡
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"100000001",
+					"password":"1234567"
+				}
+		}
+		"""
 	When bill参加jobs的团购活动"团购2"进行开团::weapp
 		"""
 		{
@@ -760,17 +773,11 @@ Scenario: 4 会员开团后团购活动失败
 		}
 		"""
 
-	When bill进行微众卡余额查询
+	Then bill能获得微众卡'100000001'的详情信息
 		"""
 		{
-			"id":"100000001",
-			"password":"1234567"
-		}
-		"""
-	Then bill获得微众卡余额查询结果
-		"""
-		{
-			"card_remaining":79.00
+			"card_remain_value":79.00
+
 		}
 		"""
 
@@ -790,17 +797,11 @@ Scenario: 4 会员开团后团购活动失败
 	When jobs关闭团购活动'团购2'::weapp
 
 	When bill访问jobs的webapp
-	When bill进行微众卡余额查询
+	Then bill能获得微众卡'100000001'的详情信息
 		"""
 		{
-			"id":"100000001",
-			"password":"1234567"
-		}
-		"""
-	Then bill获得微众卡余额查询结果
-		"""
-		{
-			"card_remaining":100.00
+			"card_remain_value":100.00
+
 		}
 		"""
 

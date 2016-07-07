@@ -6,5 +6,4 @@ set a=%a::= %
 title %a%
 
 
-
 behave -k --no-capture --no-capture-stderr -t @bdd_server

@@ -1,6 +1,5 @@
 # watcher: fengxuejing@weizoom.com,benchi@weizoom.com
 #author: 冯雪静
-
 Feature:jobs管理系统里待支付的订单，用户可以在手机端直接取消
 	"""
 	手机端能取消订单
@@ -177,6 +176,30 @@ Background:
 				"count": 2
 			}],
 			"coupon": "coupon1_id_2"
+		}
+		"""
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"100000001",
+					"password":"1234567"
+				}
+		}
+		"""
+	When bill绑定微众卡
+		"""
+		{
+			"binding_date":"2016-06-16",
+			"binding_shop":"jobs",
+			"weizoom_card_info":
+				{
+					"id":"100000002",
+					"password":"1234567"
+				}
 		}
 		"""
 	And bill购买jobs的商品
@@ -436,7 +459,7 @@ Scenario:6 bill能取消使用了优惠券的待支付订单
 		}
 		"""
 
-@mall3 @wip.cbb @wip.cbb7
+@mall3 @wip.cbb @wip.cbb7 @weizoom_card
 Scenario:7 bill不能取消使用了微众卡的待发货订单
 	bill不能取消订单'007'
 	1. bill手机端订单状态为'待发货'
@@ -468,22 +491,16 @@ Scenario:7 bill不能取消使用了微众卡的待发货订单
 			"stocks": 2
 		}
 		"""
+	When bill访问jobs的webapp
+	Then bill能获得微众卡'100000001'的详情信息
+		"""
+		{
+			"card_remain_value":0.00
 
-	When bill进行微众卡余额查询
-		"""
-		{
-			"id":"100000001",
-			"password":"1234567"
-		}
-		"""
-	Then bill获得微众卡余额查询结果
-		"""
-		{
-			"card_remaining":0.00
 		}
 		"""
 
-@mall3 @wip.cbb @wip.cbb8
+@mall3 @wip.cbb @wip.cbb8 @weizoom_card
 Scenario:8 bill能取消使用了微众卡的待支付订单
 	bill能取消订单'008'
 	1. bill手机端订单状态为'待支付'
@@ -518,17 +535,11 @@ Scenario:8 bill能取消使用了微众卡的待支付订单
 		"""
 
 	When bill访问jobs的webapp
-	When bill进行微众卡余额查询
+	Then bill能获得微众卡'100000002'的详情信息
 		"""
 		{
-			"id":"100000002",
-			"password":"1234567"
-		}
-		"""
-	Then bill获得微众卡余额查询结果
-		"""
-		{
-			"card_remaining":100.00
+			"card_remain_value":100.00
+
 		}
 		"""
 

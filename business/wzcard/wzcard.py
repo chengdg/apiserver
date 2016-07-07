@@ -1,109 +1,97 @@
-# coding: utf8
-"""@package business.wzcard.wzcard_checker
-微众卡检查器
-
-判断微众卡是否能用、是否有效、是否激活等各种情况。
-"""
+# -*- coding: utf-8 -*-
 import json
 
-import db.mall.models as mall_models
-
+from eaglet.core import watchdog
+from eaglet.core.cache import utils as cache_util
+from eaglet.decorator import param_required
 from eaglet.utils.resource_client import Resource
 
+from business import model as business_model
+from db.mall import models as mall_models
+from db.wzcard import models as wzcard_models
+import datetime
+
+import settings
+import redis
+from util.webapp_id2nickname import get_nickname_from_webapp_id
+from util import msg_crypt
+
+r = redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_COMMON_DB)
+
+crypt = msg_crypt.MsgCrypt(settings.WZCARD_ENCRYPT_INFO['token'], settings.WZCARD_ENCRYPT_INFO['encodingAESKey'],
+                           settings.WZCARD_ENCRYPT_INFO['id'])
 
 
-class WZCard(object):
-	"""
-	微众卡操作业务模型
-	"""
+class WZCard(business_model.Model):
+	__slots__ = (
+		'card_number',
+		'card_password',
+		'source',
 
-	def __init__(self, webapp_user, webapp_owner):
-		self.webapp_user = webapp_user
-		self.webapp_owner = webapp_owner
+		'valid_time_from',
+		'valid_time_to',
+		'face_value',
+		'balance',  # 'used', 'unused','empty', 'inactive', 'expired'
+		'bound_at',
+		'status'
 
-	def __get_webapp_user_info(self):
-		"""
-		微众卡相关的用户信息
-		@return:
-		"""
-		# customer_type 使用者类型(普通会员：0、会员首单：1、非会员：2)
-		if self.webapp_user.member.is_subscribed:
-			if mall_models.Order.select().dj_where(webapp_user_id=self.webapp_user.id).count() > 0:
+	)
+
+	def __init__(self, member_has_card_model, card_detail):
+		business_model.Model.__init__(self)
+
+		self.card_number = card_detail['card_number']
+		self.card_password = card_detail['card_password']
+		self.face_value = card_detail['face_value']
+		self.valid_time_from = card_detail['valid_time_from']
+		self.valid_time_to = card_detail['valid_time_to']
+		self.balance = "%.2f" % float(card_detail['balance'])
+		# self.status_text = card_detail['status_text']
+		self.status = card_detail.get('internal_status', '11')
+
+		if member_has_card_model:
+			self.source = member_has_card_model.source
+			self.bound_at = member_has_card_model.id
+
+		# self.context['webapp_user'] = webapp_user
+		# self.context['webapp_owner'] = webapp_owner
+
+	@classmethod
+	def __encrypt_password(cls, raw_password):
+		password = str(raw_password)
+		return crypt.EncryptMsg(password)
+
+	@classmethod
+	def __decrypt_password(cls, encrypt_password):
+		return crypt.DecryptMsg(encrypt_password)[1]
+
+	@staticmethod
+	@param_required(['wzcard_info', 'money', 'order_id', 'webapp_user', 'webapp_owner'])
+	def use(args):
+		wzcard_info = args['wzcard_info']
+
+		webapp_owner = args['webapp_owner']
+		order_id = args['order_id']
+		webapp_user = args['webapp_user']
+
+		if webapp_user.member.is_subscribed:
+			if mall_models.Order.select().dj_where(webapp_user_id=webapp_user.id).count() > 0:
 				customer_type = 0
 			else:
 				customer_type = 1
 		else:
 			customer_type = 2
 
-		return {
-			'customer_type': customer_type,
-			'customer_id': self.webapp_user.member.id,
-		}
-
-	def __get_webapp_owner_info(self):
-		"""
-		微众卡相关的商户信息
-		@return:
-		"""
-		return {
-			'shop_id': self.webapp_owner.id,
-			'shop_name': self.webapp_owner.user_profile.store_name,
-		}
-
-	def check(self, args):
-		"""
-		检查微众卡，编辑订单页接口使用
-		@type args: h5请求参数
-		"""
-		params = {
-			'card_number': args['card_number'],
-			'card_password': args['card_password'],
-			'exist_cards': json.dumps(args['exist_cards']),
-			'valid_money': args['valid_money'],  # 商品原价+运费
-		}
-
-		params.update(self.__get_webapp_owner_info())
-		params.update(self.__get_webapp_user_info())
-
-		# url = "http://" + settings.CARD_SERVER_DOMAIN + '/card/checked_card'
-
-		# is_success, resp = microservice_consume2(url=url, data=data, method='post')
-
-		# resource = APIResourceClient(host=settings.CARD_SERVER_DOMAIN, resource='card.checked_card')
-		#
-		# is_success, code, data = resource.post(params=params)
-
-		resp = Resource.use("card_apiserver").post({
-			"resource":"card.checked_card",
-			"data":params
-		})
-
-		return resp
-
-	def use(self, wzcard_info, money, valid_money, order_id):
-		"""
-		使用微众卡，下单接口使用
-		@param wzcard_info:
-		@param money:
-		@param valid_money:
-		@param order_id:
-		@return:
-		"""
 		params = {
 			'card_infos': json.dumps(wzcard_info),
-			'money': money,
-			'valid_money': valid_money,
-			'order_id': order_id
+			'money': args['money'],
+			'valid_money': -1,
+			'order_id': order_id,
+			'shop_id': webapp_owner.id,
+			'shop_name': webapp_owner.user_profile.store_name,
+			'customer_id': args['webapp_user'].member.id,
+			'customer_type': customer_type
 		}
-
-		params.update(self.__get_webapp_owner_info())
-		params.update(self.__get_webapp_user_info())
-
-		# url = "http://" + settings.CARD_SERVER_DOMAIN + '/card/trade'
-		# is_success, resp = microservice_consume2(url=url, data=data, method='post')
-
-		# resource = APIResourceClient(host=settings.CARD_SERVER_DOMAIN, resource='card.trade')
-
 		resp = Resource.use('card_apiserver').post({
 			'resource': 'card.trade',
 			'data': params
@@ -123,65 +111,259 @@ class WZCard(object):
 		else:
 			can_use = False
 			msg = u'系统繁忙'
-			data['type'] = 'wzcard:call_service_error'
-
-		# is_success, code, data = resource.post(params=params)
-		#
-		# if not is_success:
-		# 	can_use = False
-		# 	msg = u'系统繁忙'
-		# 	data['type'] = 'wzcard:call_service_error'
-		# else:
-		# 	if code == 200:
-		# 		can_use = True
-		# 		msg = ''
-		# 	else:
-		# 		can_use = False
-		# 		msg = data['reason']
+			data['type'] = 'common:wtf'
 
 		if can_use:
-			self.__record(order_id, data)
+			mall_models.OrderCardInfo.create(
+				order_id=order_id,
+				trade_id=data['trade_id'],
+				used_card=data['used_cards']
+			)
 
 		return can_use, msg, data
 
+	@staticmethod
+	@param_required(['webapp_user', 'webapp_owner', 'card_number', 'card_password'])
+	def check(args):
+		"""
+		检查微众卡，编辑订单页接口使用
+		@type args: h5请求参数
+		"""
+		webapp_owner = args['webapp_owner']
+		webapp_user = args['webapp_user']
 
-	def boring_check(self, card_numbers):
-		"""
-		1. 检查重复使用
-		2. 一个订单只能有10张微众卡
-		@param card_numbers: 卡号列表
-		@return:
-		"""
-		if len(card_numbers) > 10:
-			return False, "微众卡只能使用十张"
-		elif len(card_numbers) > len(set(card_numbers)):
-			return False, "该微众卡已经添加"
+		if webapp_user.member.is_subscribed:
+			if mall_models.Order.select().dj_where(webapp_user_id=webapp_user.id).count() > 0:
+				customer_type = 0
+			else:
+				customer_type = 1
 		else:
-			return True, ""
+			customer_type = 2
 
-	def refund(self, order_id, trade_id):
+		params = {
+			'card_number': args['card_number'],
+			'card_password': args['card_password'],
+
+			# webapp_owner_info
+			'shop_id': webapp_owner.id,
+			'shop_name': webapp_owner.user_profile.store_name,
+
+			# webapp_user_info
+			'customer_id': args['webapp_user'].member.id,
+
+			# boring_info
+			'exist_cards': json.dumps([]),
+			'valid_money': -1,  # 商品原价+运费
+			'customer_type': customer_type
+		}
+
+		resp = Resource.use('card_apiserver').post({
+			'resource': 'card.checked_card',
+			'data': params
+		})
+
+		return resp
+
+	@staticmethod
+	@param_required(['card_infos'])
+	def get_card_infos(args):
+		"""
+		检查微众卡，编辑订单页接口使用
+		@type args: h5请求参数
+		"""
+
+		params = {
+			'card_infos': json.dumps(args['card_infos'])
+		}
+
+		resp = Resource.use('card_apiserver').post({
+			'resource': 'card.get_cards',
+			'data': params
+		})
+
+		return resp
+
+	@staticmethod
+	@param_required(['webapp_user', 'webapp_owner', 'card_number', 'card_password'])
+	def bind(args):
+		webapp_owner = args['webapp_owner']
+		webapp_user = args['webapp_user']
+		member_id = webapp_user.member.id
+
+		card_number = args['card_number']
+		card_password = args['card_password']
+
+		# 一人一自然天最多可输错10次密码
+		today = str(datetime.datetime.today().date())
+
+		times_key = 'bind_card_error_times_{}:{}'.format(today, str(webapp_user.id))
+
+		times_value = r.get(times_key)
+
+		error_times = int(times_value) if times_value else 0
+
+		if error_times >= 10:
+			return False, 'wzcard:ten_times_error', None
+
+		# 向card服务检查
+		resp = WZCard.check({
+			'card_number': card_number,
+			'card_password': card_password,
+			'webapp_user': webapp_user,
+			'webapp_owner': webapp_owner
+		})
+
+		if resp:
+			code = resp['code']
+			data = resp['data']
+
+			if code == 500:
+				if data['type'] in ('wzcard:nosuch', 'wzcard:wrongpass'):
+					r.incr(times_key)
+					if not r.ttl(times_key) > 0:
+						r.expire(times_key, 86400)
+				return False, data['type'], None
+			else:
+
+				# 判断是否绑定过
+				if wzcard_models.MemberHasWeizoomCard.select().dj_where(member_id=member_id,
+				                                                        card_number=card_number).count() > 0:
+					# r.incr(times_key)
+					# if not r.ttl(times_key) > 0:
+					# 	r.expire(times_key, 86400)
+					return False, 'wzcard:has_bound', None
+
+				# 判断余额是否为0
+				if float(data['balance']) == 0:
+					# r.incr(times_key)
+					# if not r.ttl(times_key) > 0:
+					# 	r.expire(times_key, 86400)
+					return False, 'wzcard:exhausted', None
+
+
+				else:
+					# 绑卡
+					wzcard_models.MemberHasWeizoomCard.create(
+						member_id=member_id, member_name='',
+						card_number=card_number, card_password=WZCard.__encrypt_password(card_password),
+						relation_id='',
+						source=wzcard_models.WEIZOOM_CARD_SOURCE_BIND
+					)
+
+					get_card_infos_resp = WZCard.get_card_infos({
+						'card_infos': [{'card_number': card_number, 'card_password': card_password}]
+					})
+
+					if not get_card_infos_resp:
+						return False, 'common:wtf', None
+
+					# 获得详细数据
+					card_info = get_card_infos_resp['data']['card_infos'][0].values()[0]
+
+					data['valid_time_from'] = card_info['valid_time_from']
+					data['valid_time_to'] = card_info['valid_time_to']
+					data['face_value'] = card_info['face_value']
+
+					data['resource'] = wzcard_models.WEIZOOM_CARD_SOURCE_BIND
+					return True, '', data
+
+
+		else:
+			# card微服务失败
+			return False, 'common:wtf'
+
+	@staticmethod
+	@param_required(['member_has_cards'])
+	def from_member_has_cards(args):
+		"""
+		member_has_cards:MemberHasWeizoomCard models
+
+		"""
+		member_has_cards = list(args['member_has_cards'])
+
+		if len(member_has_cards) == 0:
+			return True, [], []
+
+		card_number2models = {a.card_number: a for a in member_has_cards}
+		card_numbers_passwords = [
+			{'card_number': a.card_number, 'card_password': WZCard.__decrypt_password(a.card_password)} for a in
+			member_has_cards]
+
+		resp = WZCard.get_card_infos({
+			'card_infos': card_numbers_passwords
+		})
+
+		if resp:
+
+			card_infos = resp['data']['card_infos']
+			cards = []
+			for card in card_infos:
+				card_detail = card.values()[0]
+
+				card_number = card.keys()[0]
+				member_has_card_model = card_number2models[card_number]
+
+				cards.append(WZCard(member_has_card_model, card_detail))
+
+			cards = sorted(cards, key=lambda x: -x.bound_at)
+
+			usable_cards = []
+			unusable_cards = []
+			_cards = []
+			for card in cards:
+				if card.status in ('used', 'unused'):
+					usable_cards.append(card)
+				elif card.status in ('empty', 'expired'):
+					_cards.append(card)
+				elif card.status == 'inactive':
+					unusable_cards.append(card)
+				else:
+					watchdog.alert({
+						'description': u'Error card status',
+						'card_number': card.card_number,
+						'card_status': card.status
+					})
+			unusable_cards.extend(_cards)
+
+			return True, usable_cards, unusable_cards
+
+		else:
+			return False, None, None
+
+	@staticmethod
+	@param_required(['card_numbers', 'webapp_user'])
+	def get_by_card_numbers(args):
+		card_numbers = args['card_numbers']
+
+		member_id = args['webapp_user'].member.id
+		member_has_cards = wzcard_models.MemberHasWeizoomCard.select().dj_where(member_id=member_id,
+		                                                                        card_number__in=card_numbers)
+		# 保证顺序
+		card_index = {card_number: index for index, card_number in enumerate(card_numbers)}
+		member_has_cards = sorted(member_has_cards, key=lambda x: card_index[x.card_number])
+
+		# usable_wzcard_info = [{a.card_number: a.card_password} for a in member_has_cards]
+		usable_wzcard_info = [
+			{'card_number': a.card_number, 'card_password': WZCard.__decrypt_password(a.card_password)} for a in
+			member_has_cards]
+
+		return usable_wzcard_info
+
+	@staticmethod
+	@param_required(['order_id', 'trade_id'])
+	def refund(args):
 		"""
 		微众卡退款，取消订单或者下单失败时使用
-		@param order_id:
-		@param trade_id:
-		@return:
 		"""
 		# 交易类型（支付失败退款：0、普通退款：1）
-		if mall_models.Order.select().dj_where(order_id=order_id).first():
+		if mall_models.Order.select().dj_where(order_id=args['order_id']).first():
 			trade_type = 1
 		else:
 			trade_type = 0
 		data = {
-			'trade_id': trade_id,
+			'trade_id': args['trade_id'],
 			'trade_type': trade_type
 		}
-
-		# url = "http://" + settings.CARD_SERVER_DOMAIN + '/card/trade'
-		# is_success, code, data = microservice_consume2(url=url, data=data, method='delete')
-
-		# resource = APIResourceClient(host=settings.CARD_SERVER_DOMAIN, resource='card.trade')
-		#
-		# is_success, code, data = resource.delete(params=data)
 
 		resp = Resource.use('card_apiserver').delete(
 			{
@@ -194,244 +376,70 @@ class WZCard(object):
 
 		return is_success
 
-	# def __record(self, order_id, data):
-	# 	trade_id = data['trade_id']
-	# 	for card_code in json.loads(data['used_cards']):
-	# 		wzcard_models.WeizoomCardHasOrder.create(
-	# 			owner_id=-1,
-	# 			order_id=order_id,
-	# 			card_id=-1,
-	# 			money=-1,
-	# 			event_type=wzcard_models.WEIZOOM_CARD_LOG_TYPE_BUY_USE,
-	# 			trade_id=trade_id,
-	# 			card_code=card_code
-	# 		)
+	@staticmethod
+	@param_required(['webapp_user', 'webapp_owner', 'card_num'])
+	def from_member_card_num(args):
+		"""
+		MemberHasWeizoomCard models的id 
+		通过card_num获取微众卡的卡详情
+		"""
 
-	def __record(self, order_id, data):
-		mall_models.OrderCardInfo.create(
-			order_id=order_id,
-			trade_id=data['trade_id'],
-			used_card=data['used_cards']
-		)
+		webapp_owner = args['webapp_owner']
+		webapp_user = args['webapp_user']
+		member_id = webapp_user.member.id
+		card_num = args['card_num']
 
+		member_has_cards = wzcard_models.MemberHasWeizoomCard.select().dj_where(member_id=member_id,
+		                                                                        card_number=card_num)
+		# 卡详情和卡的购物信息
+		card_detail = {}
+		weizoom_card_orders_list = []
+		# 卡详情和卡的购物信息
+		if member_has_cards:
+			card_numbers_passwords = [
+				{'card_number': a.card_number, 'card_password': WZCard.__decrypt_password(a.card_password)} for a in
+				member_has_cards]
 
-		# @staticmethod
-		# def check_not_duplicated(wzcard_info_list):
-		# 	"""
-		# 	检查微众卡号是否重复
-		# 	"""
-		#
-		# 	if len(wzcard_info_list) == 0:
-		# 		return True, {}
-		#
-		# 	# SELECT count(*) FROM weapp.market_tool_weizoom_card as card join market_tool_weizoom_card_rule as rule on (card.weizoom_card_rule_id=rule.id) where card.weizoom_card_id in ('0000001','0000002','0000021') and rule.valid_restrictions >0;
-		# 	wzcard_id_ids = [wzcard_info['card_name'] for wzcard_info in wzcard_info_list]
-		# 	valid_restrictions_card_count = wzcard_models.WeizoomCard.select().join(wzcard_models.WeizoomCardRule).where(wzcard_models.WeizoomCard.weizoom_card_id.in_(wzcard_id_ids),wzcard_models.WeizoomCardRule.valid_restrictions >0).count()
-		# 	if valid_restrictions_card_count > 1:
-		# 		return False, {
-		# 				"is_success": False,
-		# 				"type": 'coupon',
-		# 				"msg": '只可使用一张满额使用卡',
-		# 				"short_msg": u'已添加'
-		# 			}
-		#
-		# 	id_set = set()
-		# 	for wzcard_info in wzcard_info_list:
-		# 		wzcard_id = wzcard_info['card_name']
-		# 		if wzcard_id in id_set:
-		# 			reason = u'该微众卡已经添加'
-		# 			logging.error("{}, wzcard_info: {}".format(reason, wzcard_info))
-		# 			return False, {
-		# 				"is_success": False,
-		# 				"type": 'wzcard:duplicated',
-		# 				"msg": reason,
-		# 				"short_msg": u'已添加'
-		# 			}
-		# 		id_set.add(wzcard_id)
-		# 	return True, {}
-		#
-		# def check(self, wzcard_id, password, wzcard, webapp_owner, webapp_user,wzcard_check_money):
-		# 	"""
-		# 	检查微众卡是否可用
-		#
-		# 	@return 返回二元组：是否可用(True/False), reason。
-		#
-		# 	其中reason格式：
-		# 		{
-		# 			"is_success": False,
-		# 			"type": 'wzcard:duplicated',
-		# 			"msg": reason,
-		# 			"short_msg": u'已添加'
-		# 		}
-		#
-		# 	@see `wezoom_card/module_api.py`中的`check_weizoom_card`
-		# 	"""
-		# 	if wzcard_id in self.checked_wzcard:
-		# 		reason = u'该微众卡已经添加'
-		# 		logging.error("{}, wzcard: {}".format(reason, wzcard))
-		# 		return False, {
-		# 			"is_success": False,
-		# 			"type": 'wzcard:duplicated',
-		# 			"msg": reason,
-		# 			"short_msg": u'已添加'
-		# 		}
-		#
-		# 	self.checked_wzcard[wzcard_id] = wzcard
-		#
-		# 	member = webapp_user.member
-		# 	owner_id =webapp_owner.id
-		# 	msg = ''
-		#
-		# 	if wzcard:
-		# 		weizoom_card_rule = wzcard_models.WeizoomCardRule.select().dj_where(id=wzcard.weizoom_card_rule_id).first()
-		# 		rule_id = weizoom_card_rule.id
-		# 	else:
-		# 		weizoom_card_rule =None
-		# 		rule_id = None
-		#
-		# 	if not wzcard:
-		# 		# 无此微众卡
-		# 		reason = u'卡号或密码错误'
-		# 		logging.error("{}, wzcard: {}".format(reason, wzcard))
-		# 		return False, {
-		# 			"is_success": False,
-		# 			"type": 'wzcard:nosuch',
-		# 			"msg": reason,
-		# 			"short_msg": u'无此卡'
-		# 		}
-		# 	elif not wzcard.check_password(password):
-		# 		# 密码错误
-		# 		reason = u'卡号或密码错误'
-		# 		logging.error("{}, wzcard: {}".format(reason, wzcard))
-		# 		return False, {
-		# 			"is_success": False,
-		# 			"type": 'wzcard:wrongpass',
-		# 			"msg": reason,
-		# 			"short_msg": u'密码错误'
-		# 		}
-		# 	elif wzcard.is_expired:
-		# 		# 密码错误
-		# 		reason = u'微众卡已过期'
-		# 		logging.error("{}, wzcard: {}".format(reason, wzcard))
-		# 		return False, {
-		# 			"is_success": False,
-		# 			"type": 'wzcard:expired',
-		# 			"msg": reason,
-		# 			"short_msg": u'微众卡已过期'
-		# 		}
-		# 	elif not wzcard.is_activated:
-		# 		reason = u'微众卡未激活'
-		# 		logging.error("{}, wzcard: {}".format(reason, wzcard))
-		# 		return False, {
-		# 			"is_success": False,
-		# 			"type": 'wzcard:inactive',
-		# 			"msg": reason,
-		# 			"short_msg": u'卡未激活'
-		# 		}
-		# 	elif weizoom_card_rule.valid_restrictions > 0:
-		# 		if Decimal(wzcard_check_money) < weizoom_card_rule.valid_restrictions:
-		# 			msg = u'订单未满足该卡使用条件'
-		# 	elif weizoom_card_rule.card_attr:
-		# 		#专属卡
-		# 		#是否为新会员专属卡
-		# 		#多专属商家id
-		# 		shop_limit_list = str(weizoom_card_rule.shop_limit_list).split(',')
-		# 		#多黑名单商家id
-		# 		shop_black_list = str(weizoom_card_rule.shop_black_list).split(',')
-		#
-		# 		if weizoom_card_rule.is_new_member_special:
-		# 			if member and member.is_subscribed:
-		# 				# 防止循环引用
-		# 				from business.mall.order import Order
-		# 				orders = Order.get_orders_for_webapp_user({'webapp_owner': webapp_owner, 'webapp_user': webapp_user})
-		# 				has_order = len(orders)
-		# 				#判断是否首次下单
-		# 				if has_order:
-		# 					order_ids = [order.order_id for order in orders]
-		# 					#不是首次下单，判断该卡是否用过
-		# 					has_use_card = wzcard_models.WeizoomCardHasOrder.select().dj_where(card_id=wzcard.id, order_id__in=order_ids).count()>0
-		# 					if not has_use_card:
-		# 						msg = u'该卡为新会员专属卡'
-		#
-		# 				if str(owner_id) in shop_limit_list:
-		# 					if str(owner_id) in shop_black_list:
-		# 						msg = u'该卡不能在此商家使用'
-		#
-		# 				else:
-		# 					msg = u'该专属卡不能在此商家使用'
-		# 			else:
-		# 				if str(owner_id) in shop_black_list:
-		# 					msg = u'该卡不能在此商家使用'
-		# 				else:
-		# 					msg = u'该卡为新会员专属卡'
-		#
-		# 		else:
-		# 			if str(owner_id) in shop_limit_list:
-		# 				if str(owner_id) in shop_black_list:
-		# 					msg = u'该卡不能在此商家使用'
-		# 			else:
-		# 				msg = u'该专属卡不能在此商家使用'
-		#
-		# 	elif owner_id and not weizoom_card_rule.card_attr:
-		# 		#不是专属卡，但有黑名单
-		# 		shop_black_list = str(weizoom_card_rule.shop_black_list).split(',')
-		# 		if str(owner_id) in shop_black_list:
-		# 			msg = u'该卡不能在此商家使用'
-		#
-		# 	elif owner_id and rule_id in [23, 36] and owner_id != 157:
-		# 		if '吉祥大药房' in wzcard.weizoom_card_rule.name:
-		# 			msg = u'抱歉，该卡仅可在吉祥大药房微站使用！'
-		# 	elif owner_id and rule_id in [99,] and owner_id != 474:
-		# 		if '爱伲' in wzcard.weizoom_card_rule.name:
-		# 			msg = u'抱歉，该卡仅可在爱伲咖啡微站使用！'
-		#
-		# 	if msg:
-		# 		return False, {
-		# 			"is_success": False,
-		# 			"type": 'wzcard:banned',
-		# 			"msg": msg,
-		# 			"short_msg": u'规则禁用的微众卡'
-		# 		}
-		#
-		# 	return True, {}
+			resp = WZCard.get_card_infos({
+				'card_infos': card_numbers_passwords
+			})
 
+			if resp:
+				card_infos = resp['data']['card_infos']
+				for card in card_infos:
+					card_detail = card.values()[0]
 
+			param = {'card_infos': json.dumps(card_numbers_passwords)}
+			resp = Resource.use('card_apiserver').post({
+				'resource': 'card.get_cards_use_info',
+				'data': param
+			})
 
-		#
-		#
-		# elif owner_id and weizoom_card_rule.card_attr:
-		# 	#专属卡
-		# 	#是否为新会员专属卡
-		# 	mpuser_name = u''
-		# 	authed_appid = ComponentAuthedAppidInfo.objects.filter(auth_appid__user_id=weizoom_card_rule.belong_to_owner)
-		# 	if authed_appid.count()>0:
-		# 		if authed_appid[0].nick_name:
-		# 			mpuser_name = authed_appid[0].nick_name
-		# 	if weizoom_card_rule.is_new_member_special:
-		# 		if member and member.is_subscribed:
-		# 			orders = belong_to(webapp_id)
-		# 			orders = orders.filter(webapp_id=webapp_id,webapp_user_id=webapp_user.id).exclude(status=ORDER_STATUS_CANCEL)
-		# 			has_order = orders.count() >0
-		# 			#判断是否首次下单
-		# 			if has_order:
-		# 				order_ids = [order.order_id for order in orders]
-		# 				#不是首次下单，判断该卡是否用过
-		# 				has_use_card = WeizoomCardHasOrder.objects.filter(card_id=weizoom_card.id,order_id__in=order_ids).count()>0
-		# 				if not has_use_card:
-		# 					msg = u'该卡为新会员专属卡'
-		# 			if owner_id != weizoom_card_rule.belong_to_owner:
-		# 				msg = u'该卡为'+mpuser_name+'商家专属卡'
-		# 		else:
-		# 			msg = u'该卡为新会员专属卡'
-		# 	else:
-		# 		if owner_id != weizoom_card_rule.belong_to_owner:
-		# 			msg = u'该卡为'+mpuser_name+'商家专属卡'
-		# elif owner_id and rule_id in [23, 36] and owner_id != 157:
-		# 	WeizoomCardRule.objects.get(id=rule_id)
-		# 	if '吉祥大药房' in weizoom_card.weizoom_card_rule.name:
-		# 		msg = u'抱歉，该卡仅可在吉祥大药房微站使用！'
-		# elif owner_id and rule_id in [99,] and owner_id != 474:
-		# 	WeizoomCardRule.objects.get(id=rule_id)
-		# 	if '爱伲' in weizoom_card.weizoom_card_rule.name:
-		# 		msg = u'抱歉，该卡仅可在爱伲咖啡微站使用！'
-		# # else:
+			if resp:
+				card_infos = resp['data']['card_infos']
+				card_has_orders = card_infos[0][card_numbers_passwords[0]['card_number']]['orders']
+				# card_has_orders.reverse()
+
+				if card_has_orders:
+					order_nums = [co['order_id'] for co in card_has_orders]
+					orders = mall_models.Order.select().dj_where(order_id__in=order_nums)
+					order_id2webapp_id = dict([(order.order_id, order.webapp_id) for order in orders])
+
+					for card_has_order in card_has_orders:
+						webapp_id = order_id2webapp_id.get(card_has_order['order_id'])
+
+						# webapp_id = order.webapp_id
+						if webapp_id:
+							key = "webapp_id2nickname_%s" % webapp_id
+							nickname = cache_util.get_from_cache(key, get_nickname_from_webapp_id(key, webapp_id))
+						else:
+							nickname = ""
+						weizoom_card_orders_list.append({
+							'created_at': card_has_order['created_at'],
+							'money': card_has_order['money'],
+							'order_id': card_has_order['order_id'],
+							"nickname": nickname
+						})
+			card_detail['use_details'] = weizoom_card_orders_list
+
+		return card_detail

@@ -209,6 +209,66 @@ paths:
         200:
           description: OK
 
+  /wzcard/binding_cards/:
+    get:
+      summary:"微众卡列表"
+    description:
+        'unused', #未使用
+        'used', #已被使用
+        'empty', #已用完
+        'inactive' #未激活
+        'expired'已过期
+    parameters:
+    responses:
+      200:
+        schema:
+          properties:
+            code:
+              required: true
+              type: number （200， 500）
+            data:
+              properties:
+                usable_cards:
+                   required: true
+                   type: "array"
+                unusable_cards:
+                   required: true
+                   type: "array"
+        examples:
+          {
+            "data": {
+              "unusable_cards": [],
+              "usable_cards": [
+                {
+                  "bound_at": "2016-06-30 15:02:46",
+                  "status": "可用",
+                  "status_text": null,
+                  "card_password": "1234567",
+                  "source": 3,
+                  "valid_time_from": "2016-06-16 00:00:00",
+                  "balance": "10.00",
+                  "face_value": "10.00",
+                  "card_number": "101000001",
+                  "valid_time_to": "2026-06-16 00:00:00"
+                },
+                {
+                  "bound_at": "2016-06-30 15:02:46",
+                  "status": "可用",
+                  "status_text": null,
+                  "card_password": "1234567",
+                  "source": 3,
+                  "valid_time_from": "2016-06-16 00:00:00",
+                  "balance": "10.00",
+                  "face_value": "10.00",
+                  "card_number": "101000002",
+                  "valid_time_to": "2026-06-16 00:00:00"
+                }
+              ]
+            },
+            "code": 200,
+            "innerErrMsg": "",
+            "errMsg": ""
+          }
 
 
 

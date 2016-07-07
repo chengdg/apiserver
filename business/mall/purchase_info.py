@@ -136,7 +136,7 @@ class PurchaseInfo(business_model.Model):
         """
         card_names = request_args.get('card_name', '')
         if card_names:
-            self.wzcard_info = request_args.get('card_name', '').split(',')
+            self.wzcard_info = filter(lambda x: x,request_args.get('card_name', '').split(','))
         else:
             self.wzcard_info = []
         # card_passwords = request_args.get('card_pass', '').split(',')

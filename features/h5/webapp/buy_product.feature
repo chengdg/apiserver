@@ -141,7 +141,7 @@ Scenario:1 购买单个商品
 		}
 		"""
 
-@mall3 @mall.webapp @zy_bp02
+@mall3 @mall.webapp @zy_bp02 @test_aaa
 Scenario:2 购买商品时，使用订单备注
 	bill在购买jobs添加的商品时
 	1. 添加了"订单备注"，则jobs能在管理系统中看到该"订单备注"

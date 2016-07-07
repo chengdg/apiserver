@@ -58,6 +58,9 @@ class WebAppAccountMiddleware(object):
 			woid = account_info['webapp_owner'].id
 			req.context['webapp_owner'] = account_info['webapp_owner']
 			req.context['webapp_user'] = account_info['system_account'].webapp_user
+
+			logging.info( 'webapp_user:openid:>>>>>>>>>>>>>%s' %  account_info['system_account'].webapp_user.openid)
+			logging.info( 'req_url:>>>>>>>>>>>>>%s' %  req.url)
 			return 
 
 		elif settings.MODE == "develop" or settings.MODE == "test":

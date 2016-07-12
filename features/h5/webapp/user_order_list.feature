@@ -112,7 +112,7 @@ Background:
 	@person @appallOrder
 	Scenario: 1 手机端“全部”订单列表
 		When bill访问jobs的webapp
-		And bill设置分页查询参数
+		And bill设置订单列表分页查询参数
 			"""
 			{
 				"count_per_page":2
@@ -136,7 +136,7 @@ Background:
 				}]
 			}]
 			"""
-		When bill浏览下一页
+		When bill浏览订单列表下一页
 		Then bill查看个人中心'全部'订单列表
 			"""
 			[{
@@ -178,7 +178,7 @@ Background:
 				}]
 			}]
 			"""
-		When bill浏览上一页
+		When bill浏览订单列表上一页
 		Then bill查看个人中心'全部'订单列表
 			"""
 			[{
@@ -205,7 +205,7 @@ Background:
 	@person @appallOrder
 	Scenario: 2 手机端“待支付”订单列表
 		When bill访问jobs的webapp
-		And bill设置分页查询参数
+		And bill设置订单列表分页查询参数
 			"""
 			{
 				"count_per_page":2
@@ -229,7 +229,7 @@ Background:
 				}]
 			}]
 			"""
-		When bill浏览下一页
+		When bill浏览订单列表下一页
 		Then bill查看个人中心'全部'订单列表
 			"""
 			[{
@@ -262,7 +262,7 @@ Background:
 				}]
 			}]
 			"""
-		When bill浏览上一页
+		When bill浏览订单列表上一页
 		Then bill查看个人中心'全部'订单列表
 			"""
 			[{
@@ -293,7 +293,7 @@ Background:
 		When bill使用支付方式'支付宝'进行支付订单'0003'
 		When bill使用支付方式'微信支付'进行支付订单'0005'
 
-		When bill设置分页查询参数
+		When bill设置订单列表分页查询参数
 			"""
 			{
 				"count_per_page":2
@@ -319,7 +319,7 @@ Background:
 				}]
 			}]
 			"""
-		When bill浏览下一页
+		When bill浏览订单列表下一页
 		Then bill查看个人中心'全部'订单列表
 			"""
 			[{
@@ -352,7 +352,7 @@ Background:
 				}]
 			}]
 			"""
-		When bill浏览上一页
+		When bill浏览订单列表上一页
 		Then bill查看个人中心'全部'订单列表
 			"""
 			[{
@@ -384,8 +384,8 @@ Background:
 		When bill使用支付方式'微信支付'进行支付订单'0005'
 
 		#对订单进行发货
-		Given jobs登录系统:weapp
-		When jobs对订单进行发货:weapp
+		Given jobs登录系统::weapp
+		When jobs对订单进行发货::weapp
 			"""
 			{
 				"order_no": "0005",
@@ -394,7 +394,7 @@ Background:
 				"shipper": "jobs"
 			}
 			"""
-		When jobs对订单进行发货:weapp
+		When jobs对订单进行发货::weapp
 			"""
 			{
 				"order_no": "0004",
@@ -403,7 +403,7 @@ Background:
 				"shipper": "jobs"
 			}
 			"""
-		When jobs对订单进行发货:weapp
+		When jobs对订单进行发货::weapp
 			"""
 			{
 				"order_no": "0003",
@@ -412,7 +412,7 @@ Background:
 				"shipper": "jobs"
 			}
 			"""
-		When jobs对订单进行发货:weapp
+		When jobs对订单进行发货::weapp
 			"""
 			{
 				"order_no": "0002",
@@ -420,7 +420,7 @@ Background:
 				"shipper": ""
 			}
 			"""
-		When jobs对订单进行发货:weapp
+		When jobs对订单进行发货::weapp
 			"""
 			{
 				"order_no": "0001",
@@ -431,7 +431,7 @@ Background:
 
 
 		When bill访问jobs的webapp
-		When bill设置分页查询参数
+		When bill设置订单列表分页查询参数
 			"""
 			{
 				"count_per_page":2
@@ -457,7 +457,7 @@ Background:
 				}]
 			}]
 			"""
-		When bill浏览下一页
+		When bill浏览订单列表下一页
 		Then bill查看个人中心'全部'订单列表
 			"""
 			[{
@@ -490,7 +490,7 @@ Background:
 				}]
 			}]
 			"""
-		When bill浏览上一页
+		When bill浏览订单列表上一页
 		Then bill查看个人中心'全部'订单列表
 			"""
 			[{

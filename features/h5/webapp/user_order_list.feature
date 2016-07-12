@@ -1,0 +1,513 @@
+# watcher: wangli@weizoom.com,enchi@weizoom.com
+#editor:wangli 2016.07.12
+
+Feature: 用户手机端订单列表分页
+
+Background:
+	Given 重置'weapp'的bdd环境
+	Given jobs登录系统::weapp
+	And jobs已添加商品::weapp
+		"""
+		[{
+			"name": "商品1",
+			"price": 10.00
+		},{
+			"name": "商品2",
+			"price": 20.00
+		},{
+			"name": "商品3",
+			"price": 30.00
+		}]
+		"""
+	#支付方式
+	Given jobs已添加支付方式::weapp
+		"""
+		[{
+			"type": "微信支付",
+			"is_active": "启用"
+		},{
+			"type": "货到付款",
+			"is_active": "启用"
+		},{
+			"type": "支付宝",
+			"is_active": "启用"
+		}]
+		"""
+	And bill关注jobs的公众号
+
+	When bill访问jobs的webapp
+	When bill购买jobs的商品
+		"""
+		{
+			"order_id":"0001",
+			"pay_type":"微信支付",
+			"products": [{
+				"name": "商品1",
+				"count": 2
+			}]
+		}
+		"""
+	When bill购买jobs的商品
+		"""
+		{
+			"order_id":"0002",
+			"pay_type":"支付宝",
+			"products": [{
+				"name": "商品2",
+				"count": 1
+			}]
+		}
+		"""
+	When bill购买jobs的商品
+		"""
+		{
+			"order_id":"0003",
+			"pay_type":"支付宝",
+			"products": [{
+				"name": "商品1",
+				"count": 1
+			},{
+				"name": "商品2",
+				"count": 1
+			}]
+		}
+		"""
+	When bill购买jobs的商品
+		"""
+		{
+			"order_id":"0004",
+			"pay_type":"货到付款",
+			"products": [{
+				"name": "商品1",
+				"count": 2
+			},{
+				"name": "商品2",
+				"count": 2
+			}]
+		}
+		"""
+	When bill购买jobs的商品
+		"""
+		{
+			"order_id":"0005",
+			"pay_type":"微信支付",
+			"products": [{
+				"name": "商品1",
+				"count": 1
+			}]
+		}
+		"""
+	When bill购买jobs的商品
+		"""
+		{
+			"order_id":"0006",
+			"pay_type":"支付宝",
+			"products": [{
+				"name": "商品1",
+				"count": 1
+			}]
+		}
+		"""
+
+	@person @appallOrder
+	Scenario: 1 手机端“全部”订单列表
+		When bill访问jobs的webapp
+		And bill设置分页查询参数
+			"""
+			{
+				"count_per_page":2
+			}
+			"""
+		Then bill查看个人中心'全部'订单列表
+			"""
+			[{
+				"order_no":"0006",
+				"status": "待支付",
+				"final_price": 10.00,
+				"products": [{
+					"name": "商品1"
+				}]
+			},{
+				"order_no":"0005",
+				"status": "待支付",
+				"final_price": 10.00,
+				"products": [{
+					"name": "商品1"
+				}]
+			}]
+			"""
+		When bill浏览下一页
+		Then bill查看个人中心'全部'订单列表
+			"""
+			[{
+				"order_no":"0004",
+				"status": "待发货",
+				"final_price": 60.00,
+				"products": [{
+					"name": "商品1"
+				},{
+					"name": "商品2"
+				}]
+			},{
+				"order_no":"0003",
+				"status": "待支付",
+				"final_price": 30.00,
+				"products": [{
+					"name": "商品1"
+				},{
+					"name": "商品2"
+				}]
+			}]
+			"""
+		Then bill浏览'个人中心全部订单列表'第'3'页
+		Then bill查看个人中心'全部'订单列表
+			"""
+			[{
+				"order_no":"0002",
+				"status": "待支付",
+				"final_price": 20.00,
+				"products": [{
+					"name": "商品2"
+				}]
+			},{
+				"order_no":"0001",
+				"status": "待支付",
+				"final_price": 20.00,
+				"products": [{
+					"name": "商品1"
+				}]
+			}]
+			"""
+		When bill浏览上一页
+		Then bill查看个人中心'全部'订单列表
+			"""
+			[{
+				"order_no":"0004",
+				"status": "待发货",
+				"final_price": 60.00,
+				"products": [{
+					"name": "商品1"
+				},{
+					"name": "商品2"
+				}]
+			},{
+				"order_no":"0003",
+				"status": "待支付",
+				"final_price": 30.00,
+				"products": [{
+					"name": "商品1"
+				},{
+					"name": "商品2"
+				}]
+			}]
+			"""
+
+	@person @appallOrder
+	Scenario: 2 手机端“待支付”订单列表
+		When bill访问jobs的webapp
+		And bill设置分页查询参数
+			"""
+			{
+				"count_per_page":2
+			}
+			"""
+		Then bill查看个人中心'全部'订单列表
+			"""
+			[{
+				"order_no":"0006",
+				"status": "待支付",
+				"final_price": 10.00,
+				"products": [{
+					"name": "商品1"
+				}]
+			},{
+				"order_no":"0005",
+				"status": "待支付",
+				"final_price": 10.00,
+				"products": [{
+					"name": "商品1"
+				}]
+			}]
+			"""
+		When bill浏览下一页
+		Then bill查看个人中心'全部'订单列表
+			"""
+			[{
+				"order_no":"0003",
+				"status": "待支付",
+				"final_price": 30.00,
+				"products": [{
+					"name": "商品1"
+				},{
+					"name": "商品2"
+				}]
+			},{
+				"order_no":"0002",
+				"status": "待支付",
+				"final_price": 20.00,
+				"products": [{
+					"name": "商品2"
+				}]
+			}]
+			"""
+		Then bill浏览'个人中心全部订单列表'第'3'页
+		Then bill查看个人中心'全部'订单列表
+			"""
+			[{
+				"order_no":"0001",
+				"status": "待支付",
+				"final_price": 20.00,
+				"products": [{
+					"name": "商品1"
+				}]
+			}]
+			"""
+		When bill浏览上一页
+		Then bill查看个人中心'全部'订单列表
+			"""
+			[{
+				"order_no":"0003",
+				"status": "待支付",
+				"final_price": 30.00,
+				"products": [{
+					"name": "商品1"
+				},{
+					"name": "商品2"
+				}]
+			},{
+				"order_no":"0002",
+				"status": "待支付",
+				"final_price": 20.00,
+				"products": [{
+					"name": "商品2"
+				}]
+			}]
+			"""
+
+	@person @appallOrder
+	Scenario: 3 手机端“待发货”订单列表
+		When bill访问jobs的webapp
+		#支付订单：
+		When bill使用支付方式'微信支付'进行支付订单'0001'
+		When bill使用支付方式'支付宝'进行支付订单'0002'
+		When bill使用支付方式'支付宝'进行支付订单'0003'
+		When bill使用支付方式'微信支付'进行支付订单'0005'
+
+		When bill设置分页查询参数
+			"""
+			{
+				"count_per_page":2
+			}
+			"""
+		Then bill查看个人中心'全部'订单列表
+			"""
+			[{
+				"order_no":"0005",
+				"status": "待发货",
+				"final_price": 10.00,
+				"products": [{
+					"name": "商品1"
+				}]
+			},{
+				"order_no":"0004",
+				"status": "待发货",
+				"final_price": 60.00,
+				"products": [{
+					"name": "商品1"
+				},{
+					"name": "商品2"
+				}]
+			}]
+			"""
+		When bill浏览下一页
+		Then bill查看个人中心'全部'订单列表
+			"""
+			[{
+				"order_no":"0003",
+				"status": "待发货",
+				"final_price": 30.00,
+				"products": [{
+					"name": "商品1"
+				},{
+					"name": "商品2"
+				}]
+			},{
+				"order_no":"0002",
+				"status": "待发货",
+				"final_price": 20.00,
+				"products": [{
+					"name": "商品2"
+				}]
+			}]
+			"""
+		Then bill浏览'个人中心全部订单列表'第'3'页
+		Then bill查看个人中心'全部'订单列表
+			"""
+			[{
+				"order_no":"0001",
+				"status": "待发货",
+				"final_price": 20.00,
+				"products": [{
+					"name": "商品1"
+				}]
+			}]
+			"""
+		When bill浏览上一页
+		Then bill查看个人中心'全部'订单列表
+			"""
+			[{
+				"order_no":"0003",
+				"status": "待发货",
+				"final_price": 30.00,
+				"products": [{
+					"name": "商品1"
+				},{
+					"name": "商品2"
+				}]
+			},{
+				"order_no":"0002",
+				"status": "待发货",
+				"final_price": 20.00,
+				"products": [{
+					"name": "商品2"
+				}]
+			}]
+			"""
+
+	@person @appallOrder
+	Scenario: 4 手机端“待收货”订单列表
+		When bill访问jobs的webapp
+		#支付订单：
+		When bill使用支付方式'微信支付'进行支付订单'0001'
+		When bill使用支付方式'支付宝'进行支付订单'0002'
+		When bill使用支付方式'支付宝'进行支付订单'0003'
+		When bill使用支付方式'微信支付'进行支付订单'0005'
+
+		#对订单进行发货
+		Given jobs登录系统:weapp
+		When jobs对订单进行发货:weapp
+			"""
+			{
+				"order_no": "0005",
+				"logistics": "申通快递",
+				"number": "229388967650",
+				"shipper": "jobs"
+			}
+			"""
+		When jobs对订单进行发货:weapp
+			"""
+			{
+				"order_no": "0004",
+				"logistics": "圆通快递",
+				"number": "229388967650",
+				"shipper": "jobs"
+			}
+			"""
+		When jobs对订单进行发货:weapp
+			"""
+			{
+				"order_no": "0003",
+				"logistics": "顺丰速运",
+				"number": "229388967650",
+				"shipper": "jobs"
+			}
+			"""
+		When jobs对订单进行发货:weapp
+			"""
+			{
+				"order_no": "0002",
+				"logistics": "off",
+				"shipper": ""
+			}
+			"""
+		When jobs对订单进行发货:weapp
+			"""
+			{
+				"order_no": "0001",
+				"logistics": "off",
+				"shipper": ""
+			}
+			"""
+
+
+		When bill访问jobs的webapp
+		When bill设置分页查询参数
+			"""
+			{
+				"count_per_page":2
+			}
+			"""
+		Then bill查看个人中心'全部'订单列表
+			"""
+			[{
+				"order_no":"0005",
+				"status": "待收货",
+				"final_price": 10.00,
+				"products": [{
+					"name": "商品1"
+				}]
+			},{
+				"order_no":"0004",
+				"status": "待收货",
+				"final_price": 60.00,
+				"products": [{
+					"name": "商品1"
+				},{
+					"name": "商品2"
+				}]
+			}]
+			"""
+		When bill浏览下一页
+		Then bill查看个人中心'全部'订单列表
+			"""
+			[{
+				"order_no":"0003",
+				"status": "待收货",
+				"final_price": 30.00,
+				"products": [{
+					"name": "商品1"
+				},{
+					"name": "商品2"
+				}]
+			},{
+				"order_no":"0002",
+				"status": "待收货",
+				"final_price": 20.00,
+				"products": [{
+					"name": "商品2"
+				}]
+			}]
+			"""
+		Then bill浏览'个人中心全部订单列表'第'3'页
+		Then bill查看个人中心'全部'订单列表
+			"""
+			[{
+				"order_no":"0001",
+				"status": "待收货",
+				"final_price": 20.00,
+				"products": [{
+					"name": "商品1"
+				}]
+			}]
+			"""
+		When bill浏览上一页
+		Then bill查看个人中心'全部'订单列表
+			"""
+			[{
+				"order_no":"0003",
+				"status": "待收货",
+				"final_price": 30.00,
+				"products": [{
+					"name": "商品1"
+				},{
+					"name": "商品2"
+				}]
+			},{
+				"order_no":"0002",
+				"status": "待收货",
+				"final_price": 20.00,
+				"products": [{
+					"name": "商品2"
+				}]
+			}]
+			"""

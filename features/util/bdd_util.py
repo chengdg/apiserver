@@ -209,6 +209,78 @@ def assert_dict(expected, actual):
 				raise e
 
 
+
+def diff(local, other):
+	""" Calculates the difference between two JSON documents.
+		All resulting changes are relative to @a local.
+
+		Returns diff formatted in form of extended JSON Patch (see IETF draft).
+	"""
+
+	def _recursive_diff(l, r, res, path='/'):
+		if type(l) != type(r):
+			res.append({
+				'replace': path,
+				'actual': r,
+				'details': 'type',
+				'expected': l
+			})
+			return
+
+		delim = '/' if path != '/' else ''
+
+		if isinstance(l, dict):
+			for k, v in l.iteritems():
+				new_path = delim.join([path, k])
+				if k not in r:
+					res.append({'remove': new_path, 'expected': v})
+				else:
+					_recursive_diff(v, r[k], res, new_path)
+			for k, v in r.iteritems():
+				if k in l:
+					continue
+				# res.append({
+				# 	'add': delim.join([path, k]),
+				# 	'value': v
+				# })
+		elif isinstance(l, list):
+			ll = len(l)
+			lr = len(r)
+			if ll > lr:
+				for i, item in enumerate(l[lr:], start=lr):
+					res.append({
+						'remove': delim.join([path, str(i)]),
+						'expected': item,
+						'details': 'array-item'
+					})
+			elif lr > ll:
+				for i, item in enumerate(r[ll:], start=ll):
+					res.append({
+						'add': delim.join([path, str(i)]),
+						'actual': item,
+						'details': 'array-item'
+					})
+			minl = min(ll, lr)
+			if minl > 0:
+				for i, item in enumerate(l[:minl]):
+					_recursive_diff(item, r[i], res, delim.join([path, str(i)]))
+		else:  # both items are atomic
+			if l != r:
+				res.append({
+					'replace': path,
+					'actual': r,
+					'expected': l
+				})
+
+	result = []
+	_recursive_diff(local, other, result)
+	return result
+
+def assert_dict2(expected, actual):
+	diff_result = diff(expected,actual)
+	assert len(diff_result) == 0,"ERROR MESSAGE:\n{}".format(str(diff_result))
+
+
 ###########################################################################
 # assert_list: 验证expected中的数据都出现在了actual中
 ###########################################################################

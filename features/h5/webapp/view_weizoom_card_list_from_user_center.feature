@@ -263,7 +263,7 @@ Scenario:1 查看我的卡包-微众卡包可用卡列表
 			}
 			"""
 
-@mall3 @weizoon_card @weizoon_card_list @ztq
+@mall3 @weizoon_card @weizoon_card_list @ztq @ztqb
 Scenario:2 查看我的卡包-微众卡包不可用卡列表
 		When bill访问jobs的webapp
 		#bill在jobs绑卡101000001
@@ -406,7 +406,7 @@ Scenario:2 查看我的卡包-微众卡包不可用卡列表
 							"valid_time_from":"2016-06-16 00:00",
 							"valid_time_to":"2026-06-16 00:00",
 							"balance":"10.00",
-							"face_value":"10.00",
+							"face_value":"12.00",
 							"card_number":"101000001",
 							"binding_date":"2016-06-16",
 							"source":"绑定卡",

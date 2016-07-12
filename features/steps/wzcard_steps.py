@@ -108,8 +108,8 @@ def step_impl(context, user):
 		a['valid_time_from'] = a['valid_time_from'][:16]
 		a['status'] = STATUS2TEXT[a['status']]
 
-	bdd_util.assert_dict(expected, actual)
-
+	# bdd_util.assert_dict(expected, actual)
+	bdd_util.assert_dict2(expected,actual)
 
 @then(u"{user}能获得微众卡'{card_num}'的详情信息")
 def step_impl(context, user, card_num):

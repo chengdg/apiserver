@@ -19,7 +19,7 @@ from business.mall.review.waiting_review_order import WaitingReviewOrder
 from eaglet.utils.resource_client import Resource
 from eaglet.core import paginator
 
-DEFAULT_COUNT_PER_PAGE = 4
+DEFAULT_COUNT_PER_PAGE = 8
 
 
 class AOrderList(api_resource.ApiResource):
@@ -38,7 +38,6 @@ class AOrderList(api_resource.ApiResource):
 		"""
 		webapp_user = args['webapp_user']
 		webapp_owner = args['webapp_owner']
-
 		count_per_page = int(args.get('count_per_page', DEFAULT_COUNT_PER_PAGE))
 		cur_page = int(args['cur_page'])
 		order_type = int(args['order_type'])

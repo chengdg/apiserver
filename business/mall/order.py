@@ -158,6 +158,32 @@ class Order(business_model.Model):
 
 		return orders
 
+	@staticmethod
+	@param_required(['order_type'])
+	def get_for_list_page(args):
+		"""工厂方法，获取适用于订单列表页的webapp_user对应的Order对象集合
+
+		@return Order对象列表
+		"""
+		webapp_owner = args['webapp_owner']
+		webapp_user = args['webapp_user']
+		order_type = args['order_type']
+		if order_type != -1:    # 表示全部订单
+			order_models = list(mall_models.Order.select().dj_where(webapp_user_id=webapp_user.id, type=args['order_type']))
+		else:
+			order_models = list(mall_models.Order.select().dj_where(webapp_user_id=webapp_user.id))
+		order_models.sort(lambda x, y: cmp(y.id, x.id))
+
+		orders = []
+		for order_model in order_models:
+			order = Order(webapp_owner, webapp_user, None)
+			order.context['order'] = order_model
+			order._init_slot_from_model(order_model)
+			order.context['is_valid'] = True
+			orders.append(order)
+
+		return orders
+
 
 	@staticmethod
 	@param_required(['webapp_owner', 'webapp_user'])

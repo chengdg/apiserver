@@ -136,49 +136,7 @@ Background:
 				}]
 			}]
 			"""
-		When bill浏览订单列表下一页
-		Then bill查看个人中心'全部'订单列表
-			"""
-			[{
-				"order_no":"0004",
-				"status": "待发货",
-				"final_price": 60.00,
-				"products": [{
-					"name": "商品1"
-				},{
-					"name": "商品2"
-				}]
-			},{
-				"order_no":"0003",
-				"status": "待支付",
-				"final_price": 30.00,
-				"products": [{
-					"name": "商品1"
-				},{
-					"name": "商品2"
-				}]
-			}]
-			"""
-		Then bill浏览'个人中心全部订单列表'第'3'页
-		Then bill查看个人中心'全部'订单列表
-			"""
-			[{
-				"order_no":"0002",
-				"status": "待支付",
-				"final_price": 20.00,
-				"products": [{
-					"name": "商品2"
-				}]
-			},{
-				"order_no":"0001",
-				"status": "待支付",
-				"final_price": 20.00,
-				"products": [{
-					"name": "商品1"
-				}]
-			}]
-			"""
-		When bill浏览订单列表上一页
+		When bill浏览'全部'订单列表'第'2'页
 		Then bill查看个人中心'全部'订单列表
 			"""
 			[{
@@ -211,7 +169,7 @@ Background:
 				"count_per_page":2
 			}
 			"""
-		Then bill查看个人中心'全部'订单列表
+		Then bill查看个人中心'待支付'订单列表
 			"""
 			[{
 				"order_no":"0006",
@@ -229,41 +187,8 @@ Background:
 				}]
 			}]
 			"""
-		When bill浏览订单列表下一页
-		Then bill查看个人中心'全部'订单列表
-			"""
-			[{
-				"order_no":"0003",
-				"status": "待支付",
-				"final_price": 30.00,
-				"products": [{
-					"name": "商品1"
-				},{
-					"name": "商品2"
-				}]
-			},{
-				"order_no":"0002",
-				"status": "待支付",
-				"final_price": 20.00,
-				"products": [{
-					"name": "商品2"
-				}]
-			}]
-			"""
-		Then bill浏览'个人中心全部订单列表'第'3'页
-		Then bill查看个人中心'全部'订单列表
-			"""
-			[{
-				"order_no":"0001",
-				"status": "待支付",
-				"final_price": 20.00,
-				"products": [{
-					"name": "商品1"
-				}]
-			}]
-			"""
-		When bill浏览订单列表上一页
-		Then bill查看个人中心'全部'订单列表
+		When bill浏览'待支付'订单列表'第'2'页
+		Then bill查看个人中心'待支付'订单列表
 			"""
 			[{
 				"order_no":"0003",
@@ -299,7 +224,7 @@ Background:
 				"count_per_page":2
 			}
 			"""
-		Then bill查看个人中心'全部'订单列表
+		Then bill查看个人中心'待发货'订单列表
 			"""
 			[{
 				"order_no":"0005",
@@ -319,41 +244,8 @@ Background:
 				}]
 			}]
 			"""
-		When bill浏览订单列表下一页
-		Then bill查看个人中心'全部'订单列表
-			"""
-			[{
-				"order_no":"0003",
-				"status": "待发货",
-				"final_price": 30.00,
-				"products": [{
-					"name": "商品1"
-				},{
-					"name": "商品2"
-				}]
-			},{
-				"order_no":"0002",
-				"status": "待发货",
-				"final_price": 20.00,
-				"products": [{
-					"name": "商品2"
-				}]
-			}]
-			"""
-		Then bill浏览'个人中心全部订单列表'第'3'页
-		Then bill查看个人中心'全部'订单列表
-			"""
-			[{
-				"order_no":"0001",
-				"status": "待发货",
-				"final_price": 20.00,
-				"products": [{
-					"name": "商品1"
-				}]
-			}]
-			"""
-		When bill浏览订单列表上一页
-		Then bill查看个人中心'全部'订单列表
+		When bill浏览'待发货'订单列表'第'2'页
+		Then bill查看个人中心'待发货'订单列表
 			"""
 			[{
 				"order_no":"0003",
@@ -437,7 +329,7 @@ Background:
 				"count_per_page":2
 			}
 			"""
-		Then bill查看个人中心'全部'订单列表
+		Then bill查看个人中心'待收货'订单列表
 			"""
 			[{
 				"order_no":"0005",
@@ -457,41 +349,8 @@ Background:
 				}]
 			}]
 			"""
-		When bill浏览订单列表下一页
-		Then bill查看个人中心'全部'订单列表
-			"""
-			[{
-				"order_no":"0003",
-				"status": "待收货",
-				"final_price": 30.00,
-				"products": [{
-					"name": "商品1"
-				},{
-					"name": "商品2"
-				}]
-			},{
-				"order_no":"0002",
-				"status": "待收货",
-				"final_price": 20.00,
-				"products": [{
-					"name": "商品2"
-				}]
-			}]
-			"""
-		Then bill浏览'个人中心全部订单列表'第'3'页
-		Then bill查看个人中心'全部'订单列表
-			"""
-			[{
-				"order_no":"0001",
-				"status": "待收货",
-				"final_price": 20.00,
-				"products": [{
-					"name": "商品1"
-				}]
-			}]
-			"""
-		When bill浏览订单列表上一页
-		Then bill查看个人中心'全部'订单列表
+		When bill浏览'待收货'订单列表'第'2'页
+		Then bill查看个人中心'待收货'订单列表
 			"""
 			[{
 				"order_no":"0003",

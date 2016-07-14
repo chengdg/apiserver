@@ -328,7 +328,7 @@ class WZCard(business_model.Model):
 			return True, usable_cards, unusable_cards
 
 		else:
-			return False, None, None
+			return False, [], []
 
 	@staticmethod
 	@param_required(['card_numbers', 'webapp_user'])

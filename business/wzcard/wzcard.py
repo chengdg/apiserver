@@ -224,7 +224,7 @@ class WZCard(business_model.Model):
 						r.expire(times_key, 86400)
 
 				# 如果是过期，则取过期时间
-				if data['type'] == 'wzcard:expire':
+				if data['type'] == 'wzcard:expired':
 					get_card_infos_resp = WZCard.get_card_infos({
 						'card_infos': [{'card_number': card_number, 'card_password': card_password}]
 					})

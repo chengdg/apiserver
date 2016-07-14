@@ -222,7 +222,7 @@ class WZCard(business_model.Model):
 					r.incr(times_key)
 					if not r.ttl(times_key) > 0:
 						r.expire(times_key, 86400)
-				return False, data['type'], None
+				return False, data['type'], data
 			else:
 
 				# 判断是否绑定过

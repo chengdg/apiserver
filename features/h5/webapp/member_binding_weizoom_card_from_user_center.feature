@@ -1,5 +1,6 @@
 #watcher: zhangsanxiang@weizoom.com,benchi@weizoom.com
 #_author_: "张三香" 2016.06.28
+#_editor_: "张三香" 2016.07.14
 
 Feature:会员绑定微众卡
 	"""
@@ -15,7 +16,7 @@ Feature:会员绑定微众卡
 			卡号或密码错误！
 			该微众卡已经添加！
 			该微众卡余额为0！
-			微众卡已过期！
+			微众卡已过期！--修改为'该卡已于xxxx年xx月xx日过期'
 			微众卡未激活！
 			该专属卡不能在此商家使用！
 			已锁定，一人一天最多可输错10次密码
@@ -265,7 +266,7 @@ Scenario:1 微众卡绑定-输入有效的微众卡号和密码
 		"""
 	Then bill获得绑定微众卡提示信息'恭喜您 绑定成功'
 
-@mall3 @binding_weizoon_card @weizoom_card @ztq
+@binding_weizoon_card @weizoom_card @ztq
 Scenario:2 微众卡绑定-输入无效的微众卡号和密码
 	#该微众卡余额为0！
 		When bill访问nokia的webapp
@@ -355,7 +356,7 @@ Scenario:2 微众卡绑定-输入无效的微众卡号和密码
 			}
 			"""
 		Then bill获得绑定微众卡提示信息'微众卡未激活！'
-	#微众卡已过期！
+	#'微众卡已过期！'改为'该卡已于xxxx年xx月xx日过期'
 		When bill访问jobs的webapp
 		When bill绑定微众卡
 			"""
@@ -369,7 +370,7 @@ Scenario:2 微众卡绑定-输入无效的微众卡号和密码
 					}
 			}
 			"""
-		Then bill获得绑定微众卡提示信息'微众卡已过期！'
+		Then bill获得绑定微众卡提示信息'该卡已于2016年06月16日过期'
 	#该专属卡不能在此商家使用！
 		When bill访问jobs的webapp
 		When bill绑定微众卡

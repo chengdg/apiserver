@@ -10,11 +10,11 @@ import itertools
 from operator import attrgetter
 
 from eaglet.decorator import param_required
-#from wapi import wapi_utils
+# from wapi import wapi_utils
 from eaglet.core.cache import utils as cache_util
 from db.mall import models as mall_models
 from eaglet.core import watchdog
-from business import model as business_model 
+from business import model as business_model
 import settings
 from business.mall.product import Product
 
@@ -103,6 +103,8 @@ class SimpleProducts(business_model.Model):
 
 			products = products_not_0 + products_is_0
 
+			print('---------x',str([p['name'] for p in products]).decode('unicode-escape'))
+
 		product_sales = mall_models.ProductSales.select().dj_where(product__in=[p['id'] for p in products])
 		product_id2sales = {t.product_id: t.sales for t in product_sales}
 
@@ -110,7 +112,6 @@ class SimpleProducts(business_model.Model):
 			p['sales'] = product_id2sales.get(p['id'], 0)   # warning,没产生销量的商品没有创建ProductSales记录
 
 		return category, products, data['categories']
-
 
 	def __get_from_db(self, webapp_owner):
 		"""
@@ -261,6 +262,7 @@ class SimpleProducts(business_model.Model):
 		# 		conditions['name__contains'] = query
 		# 		products = products.filter(**conditions)
 		return products
+
 	# jz 2015-11-26
 	# def __get_product_ids_in_weizoom_mall(self, webapp_id):
 	# 	return [weizoom_mall_other_mall_product.product_id for weizoom_mall_other_mall_product in mall_models.WeizoomMallHasOtherMallProduct.select().dj_where(webapp_id=webapp_id)]
@@ -291,3 +293,153 @@ class SimpleProducts(business_model.Model):
 	# 	else:
 	# 		return None, None
 
+	@staticmethod
+	@param_required(['webapp_owner', 'category_id', 'product_name','cur_page','count_per_page'])
+	def get_for_list(args):
+
+		webapp_owner = args['webapp_owner']
+		category_id = int(args['category_id'])
+		product_name = args['product_name']
+		cur_page = int(args['cur_page'])
+		count_per_page = int(args['count_per_page'])
+
+		# 获得所有分类信息
+		categories = SimpleProducts.__get_categories({'webapp_owner': webapp_owner})
+
+		if category_id == 0:
+			return [], categories
+		else:
+			print('---------------------------1')
+
+			# 获得当前分类信息
+			id2category = dict([(c["id"], c) for c in categories])
+			if category_id in id2category:
+				category_dict = id2category[category_id]
+				category = mall_models.ProductCategory()
+				category.id = category_dict['id']
+				category.name = category_dict['name']
+				category.is_deleted = False
+			else:
+				category = mall_models.ProductCategory()
+				category.is_deleted = True
+				category.name = u'已删除分类'
+
+			category_has_products = list(mall_models.CategoryHasProduct.select().dj_where(category_id=category_id))
+
+			all_product_ids = [p.id for p in category_has_products]
+
+
+
+			category_has_products = list(mall_models.CategoryHasProduct.select().dj_where(category_id=category_id,display_index__gt=0).order_by('display_index').paginate(cur_page, count_per_page))
+			print('-----category_id',category_id, len(category_has_products))
+
+			product2categories = dict()
+			for relation in category_has_products:
+				produchet2categories.setdefault(relation.product_id, set()).add(relation.category_id)
+
+			product_ids = [p.product_id for p in category_has_products]
+
+			index_product_models = list(mall_models.Product.select().dj_where(
+				id__in=product_ids,
+				# owner = webapp_owner.id,
+				shelve_type = mall_models.PRODUCT_SHELVE_TYPE_ON,
+				is_deleted = False,
+				type__not = mall_models.PRODUCT_DELIVERY_PLAN_TYPE).order_by(mall_models.Product.display_index, -mall_models.Product.id))
+
+			if(len(product_ids)) < count_per_page:
+				extend_length = count_per_page -len(product_ids)
+
+				# list(set(b).difference(set(a)))  # 取差集，b中有而a中没有的
+				extend_product_ids = list(set(product_ids))
+				product_models = list(mall_models.Product.select().dj_where()
+					id__in=product_ids,
+					# owner = webapp_owner.id,
+					shelve_type=mall_models.PRODUCT_SHELVE_TYPE_ON,
+					is_deleted=False,
+					type__not=mall_models.PRODUCT_DELIVERY_PLAN_TYPE).order_by(-mall_models.Product.id).limit(extend_length))
+
+				product_models.extend(product_models)
+
+			products = Product.from_models({
+				'webapp_owner': webapp_owner,
+				'models': product_models,
+				'fill_options': {
+					"with_price": True,
+					"with_product_promotion": True,
+					"with_selected_category": True
+				}
+			})
+
+			product_datas = []
+			for product in products:
+				product_datas.append({
+					"id": product.id,
+					"name": product.name,
+					"is_member_product": product.is_member_product,
+					"display_price": product.price_info['display_price'],
+					"promotion_js": json.dumps(product.promotion.to_dict()) if product.promotion else json.dumps(None),
+					"thumbnails_url": product.thumbnails_url
+				})
+
+			for product_data in product_datas:
+				product_data['categories'] = list(product2categories.get(product_data['id'], []))
+
+			return product_datas, category, categories
+
+
+
+
+
+
+	@staticmethod
+	@param_required(['webapp_owner'])
+	def __get_categories(args):
+		webapp_owner_id = args['webapp_owner'].id
+		categories = mall_models.ProductCategory.select().dj_where(owner=webapp_owner_id)
+
+		categories = [{"id": category.id, "name": category.name} for category in categories]
+
+		return categories
+
+
+	# def __get_products_data(self, webapp_owner,product_models):
+	# 	"""
+	# 	get_products: 获得product集合
+	#
+	# 	最后修改：闫钊
+	# 	"""
+	# 	products = Product.from_models({
+	# 		'webapp_owner': webapp_owner,
+	# 		'models': product_models,
+	# 		'fill_options': {
+	# 			"with_price": True,
+	# 			"with_product_promotion": True,
+	# 			"with_selected_category": True
+	# 		}
+	# 	})
+	# 	# for product_model in product_models:
+	# 	# 	product = Product.from_model({
+	# 	# 		'webapp_owner': webapp_owner,
+	# 	# 		'model': product_model,
+	# 	# 		'fill_options': {
+	# 	# 			"with_price": True,
+	# 	# 			"with_product_promotion": True,
+	# 	# 			"with_selected_category": True
+	# 	# 		}
+	# 	# 	})
+	# 	#
+	# 	product_datas =[]
+	# 	for product in products:
+	# 		product_datas.append({
+	# 			"id": product.id,
+	# 			"name": product.name,
+	# 			"is_member_product": product.is_member_product,
+	# 			"display_price": product.price_info['display_price'],
+	# 			"promotion_js": json.dumps(product.promotion.to_dict()) if product.promotion else json.dumps(None),
+	# 			"thumbnails_url": product.thumbnails_url
+	# 		})
+	#
+	# 	for product_data in product_datas:
+	# 		product_data['categories'] = list(product2categories.get(product_data['id'], []))
+	#
+	# 	return product_datas

@@ -12,7 +12,7 @@ class AProducts(api_resource.ApiResource):
 	app = 'mall'
 	resource = 'products_coupon'
 
-	@param_required(['category_id', 'coupon_rule_id'])
+	@param_required(['coupon_rule_id'])
 	def get(args):
 		"""
 		获取多商品券下的商品
@@ -23,22 +23,35 @@ class AProducts(api_resource.ApiResource):
 			'products': simple_products.products,
 			'category': category_dict}
 		"""
-		category_id = args['category_id']
 		webapp_owner = args['webapp_owner']
+		cur_page = args['cur_page']
+		count_per_page = args['count_per_page']
+
 		coupon_rule_id = int(args['coupon_rule_id'])
 		coupon_rule = CouponRule.from_id({
 			'id': coupon_rule_id
 			})
 		product_ids = map(lambda x: int(x), coupon_rule.limit_product_id.split(',')) #多商品券下的商品id
-		simple_products = SimpleProducts.get({
+
+		page_info,products_data, category, categories,  = SimpleProducts.get_for_coupon({
 			"webapp_owner": webapp_owner,
-			"category_id": category_id,
+			'product_ids': product_ids,
+			'cur_page': cur_page,
+			'count_per_page': count_per_page
 		})
-		products = [product for product in simple_products.products if product['id'] in product_ids]
-		category_dict = simple_products.category.to_dict('is_deleted')
+
+
+		# simple_products = SimpleProducts.get({
+		# 	"webapp_owner": webapp_owner,
+		# 	"category_id": category_id,
+		# })
+		# products = [product for product in simple_products.products if product['id'] in product_ids]
+		# category_dict = category.to_dict('is_deleted')
 		return {
 			'coupon_rule_name': coupon_rule.name,
-			'categories': simple_products.categories,
-			'products': products,
-			'category': category_dict
+			'products': products_data,
+			'page_info':page_info.to_dict(),
+			# 'category': category_dict,
+			# 'categories': categories,
+
 		}

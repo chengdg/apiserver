@@ -236,7 +236,6 @@ class Product(business_model.Model):
 
 		products = []
 
-		print("type:", type(models[0]))
 
 		for model in models:
 			products.append(Product(model))
@@ -518,6 +517,8 @@ class Product(business_model.Model):
 		"""填充商品规格相关细节
 		向product中添加is_use_custom_model, models, used_system_model_properties三个属性
 		"""
+		if len(products) == 0:
+			return
 		if products[0].models:
 			#已经完成过填充，再次进入，跳过填充
 			return
@@ -612,7 +613,7 @@ class Product(business_model.Model):
 		for product in products:
 			product.sales = 0
 
-		for sales in ProductSales.select().dj_where(product_id__in=product_ids):
+		for sales in mall_models.ProductSales.select().dj_where(product_id__in=product_ids):
 			product_id = sales.product_id
 			if id2product.has_key(product_id):
 				id2product[product_id].sales = sales.sales

@@ -73,10 +73,7 @@ class AProducts(api_resource.ApiResource):
 		count_per_page = args['count_per_page']
 		product_name = args.get('product_name', None)
 
-
-		print('---------------args',args)
-
-		products, category, categories = SimpleProducts.get_for_list({
+		page_info, products = SimpleProducts.get_for_list({
 			"webapp_owner": webapp_owner,
 			"category_id": category_id,
 			'product_name': product_name,
@@ -93,12 +90,13 @@ class AProducts(api_resource.ApiResource):
 		# 		"webapp_user": webapp_user
 		# 	})
 		# 	products = searcher.filter_products({'products': products, 'product_name': product_name})
+		categories, category = SimpleProducts.get_categories({'webapp_owner': webapp_owner,'category_id':category_id})
 
-		category_dict = category.to_dict('is_deleted')
 		return {
 			'categories': categories,
 			'products': products,
-			'category': category_dict,
+			'category': category,
 			'mall_config': webapp_owner.mall_config,
+			'page_info': page_info.to_dict()
 
 		}

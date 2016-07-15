@@ -16,7 +16,7 @@ from business.account.webapp_owner import WebAppOwner
 
 from eaglet.core.cache import utils as cache_util
 import logging
-
+import datetime
 SOURCE2TEXT = {
 	wzcard_models.WEIZOOM_CARD_SOURCE_REBATE: u'返利活动',
 	wzcard_models.WEIZOOM_CARD_SOURCE_VIRTUAL: u'福利卡券',
@@ -52,6 +52,7 @@ def step_impl(context, user, msg):
 	code = actual['code']
 	data = actual['data']
 	type = data.get('type')
+	valid_time_to = data.get('valid_time_to')
 
 	if msg == u'恭喜您 绑定成功':
 		assert code == 200
@@ -65,8 +66,15 @@ def step_impl(context, user, msg):
 			assert type in ('wzcard:has_bound')
 		elif msg == u'微众卡未激活！':
 			assert type in ('wzcard:inactive')
-		elif msg == u'微众卡已过期！':
+		# elif msg == u'微众卡已过期！':
+		# 	assert type in ('wzcard:expired')
+		elif msg.endswith('过期'):
 			assert type in ('wzcard:expired')
+
+			valid_time_to = datetime.datetime.strptime(valid_time_to.split(' ')[0],'%Y-%m-%d')
+			_msg = '该卡已于{}年{}月{}日过期'.format(valid_time_to.year, str(valid_time_to.month).zfill(2), valid_time_to.day)
+			assert _msg==msg,'e:{},a:{}'.format(msg,_msg)
+
 		elif msg == u'该专属卡不能在此商家使用！':
 			assert type in ('wzcard:banned')
 

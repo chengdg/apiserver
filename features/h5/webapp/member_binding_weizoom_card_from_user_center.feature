@@ -266,7 +266,7 @@ Scenario:1 微众卡绑定-输入有效的微众卡号和密码
 		"""
 	Then bill获得绑定微众卡提示信息'恭喜您 绑定成功'
 
-@binding_weizoon_card @weizoom_card @ztq
+@mall3 @binding_weizoon_card @weizoom_card @ztq
 Scenario:2 微众卡绑定-输入无效的微众卡号和密码
 	#该微众卡余额为0！
 		When bill访问nokia的webapp

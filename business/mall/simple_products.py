@@ -109,7 +109,7 @@ class SimpleProducts(business_model.Model):
 			mall_models.Product.name.contains(product_name)
 		)
 
-		page_info, product_models = query_paginate(product_models, cur_page, count_per_page)
+		page_info, product_models = query_paginator.paginate(product_models, cur_page, count_per_page)
 
 		products_data = SimpleProducts.__get_product_data({
 			'product_models': product_models,

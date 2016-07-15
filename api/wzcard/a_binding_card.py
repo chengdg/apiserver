@@ -30,12 +30,18 @@ class ABindingCard(api_resource.ApiResource):
 				'face_value': _data['face_value'],
 				'balance': _data['balance'],
 				'valid_time_from': _data['valid_time_from'],
-				'valid_time_to':	_data['valid_time_to']
+				'valid_time_to': _data['valid_time_to']
 
 			}
 		else:
 			# card_apiserver产生：wzcard:duplicated(卡号重复),nosuch(卡不存在),wrongpass(卡密错误),expired(卡已过期),inactive(卡未激活),banned(商户禁止使用),exceeded(超过一次使用张数),other(其它原因)，见https://git2.weizzz.com:84/weizoom_card/card_apiserver/blob/master/card_api.yaml
 			# apiserver产生：'common:wtf'（系统繁忙）、'wzcard:has_bound'（已绑定过）、wzcard:exhausted（余额为0）、wzcard:ten_times_error（已经输入错误10次）
+			if _data and 'valid_time_to' in _data:
+				valid_time_to = _data['valid_time_to']
+			else:
+				valid_time_to = ''
 			return 500, {
-				'type': error_type
+
+				'type': error_type,
+				'valid_time_to': valid_time_to
 			}

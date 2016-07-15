@@ -12,12 +12,14 @@ from operator import attrgetter
 from eaglet.decorator import param_required
 # from wapi import wapi_utils
 from eaglet.core.cache import utils as cache_util
+
+from business.mall.product_search import ProductSearch
 from db.mall import models as mall_models
 from eaglet.core import watchdog
 from business import model as business_model
 import settings
 from business.mall.product import Product
-from eaglet.core.query_paginator import query_paginate
+from eaglet.core import  query_paginator
 
 
 class SimpleProducts(business_model.Model):
@@ -43,7 +45,7 @@ class SimpleProducts(business_model.Model):
 			is_deleted=False,
 			id__in=product_ids
 		)
-		page_info, product_models = query_paginate(product_models, cur_page, count_per_page)
+		page_info, product_models = query_paginator.paginate(product_models, cur_page, count_per_page)
 
 		product_data = SimpleProducts.__get_product_data(
 			{'product_models': product_models, 'webapp_owner': args['webapp_owner']})
@@ -67,7 +69,7 @@ class SimpleProducts(business_model.Model):
 			).order_by(mall_models.Product.display_index,
 			           -mall_models.Product.id)
 
-			page_info, product_models = query_paginate(product_models, cur_page, count_per_page)
+			page_info, product_models = query_paginator.paginate(product_models, cur_page, count_per_page)
 
 		else:
 			category_has_products = mall_models.CategoryHasProduct.select().join(mall_models.Product).where(
@@ -77,7 +79,7 @@ class SimpleProducts(business_model.Model):
 				mall_models.Product.is_deleted == False
 			).order_by('display_index', 'created_at')
 
-			page_info, category_has_products = query_paginate(category_has_products, cur_page, count_per_page)
+			page_info, category_has_products = query_paginator.paginate(category_has_products, cur_page, count_per_page)
 
 			product_ids = [p.product_id for p in category_has_products]
 
@@ -89,6 +91,40 @@ class SimpleProducts(business_model.Model):
 		})
 
 		return page_info, products_data
+
+
+	@staticmethod
+	@param_required(['webapp_owner', 'category_id', 'cur_page', 'count_per_page','product_name'])
+	def get_for_search(args):
+
+		webapp_owner = args['webapp_owner']
+		cur_page = int(args['cur_page'])
+		count_per_page = int(args['count_per_page'])
+		product_name = args['product_name']
+
+		product_models = mall_models.Product.select().where(
+			mall_models.Product.owner==webapp_owner.id,
+			mall_models.Product.shelve_type==mall_models.PRODUCT_SHELVE_TYPE_ON,
+			mall_models.Product.is_deleted==False,
+			mall_models.Product.name.contains(product_name)
+		)
+
+		page_info, product_models = query_paginate(product_models, cur_page, count_per_page)
+
+		products_data = SimpleProducts.__get_product_data({
+			'product_models': product_models,
+			'webapp_owner': args['webapp_owner']
+		})
+
+		ProductSearch.log_record({
+			'webapp_user_id':args['webapp_user'].id,
+			'webapp_owner_id':webapp_owner.id,
+			'product_name':product_name
+
+		})
+
+		return page_info, products_data
+
 
 	@staticmethod
 	@param_required(['webapp_owner', 'category_id'])

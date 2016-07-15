@@ -73,13 +73,21 @@ class AProducts(api_resource.ApiResource):
 		count_per_page = args['count_per_page']
 		product_name = args.get('product_name', None)
 
-		page_info, products = SimpleProducts.get_for_list({
-			"webapp_owner": webapp_owner,
-			"category_id": category_id,
-			'product_name': product_name,
-			'cur_page': cur_page,
-			'count_per_page': count_per_page
-		})
+		if product_name:
+			page_info, products = SimpleProducts.get_for_search({
+				"webapp_owner": webapp_owner,
+				'webapp_user_id':webapp_user.id,
+				'product_name': product_name,
+				'cur_page': cur_page,
+				'count_per_page': count_per_page
+			})
+		else:
+			page_info, products = SimpleProducts.get_for_list({
+				"webapp_owner": webapp_owner,
+				"category_id": category_id,
+				'cur_page': cur_page,
+				'count_per_page': count_per_page
+			})
 
 		# products = simple_products.products
 

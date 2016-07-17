@@ -128,8 +128,11 @@ class CachedProduct(object):
 
 		try:
 			product = CachedProduct.__get_from_cache(webapp_owner_id, product_id, member_grade_id)
-			if product.owner_id != webapp_owner_id:
+			if not CachedProduct.webapp_owner.mall_type and product.owner_id != webapp_owner_id:
 				product.is_deleted = True
+			elif product.owner_id != webapp_owner_id and mall_models.ProductPool.select().dj_where(woid=webapp_owner_id, status=mall_models.PP_STATUS_ON).count() == 0:
+				product.is_deleted = True
+
 		except:
 			if settings.DEBUG and not settings.IS_UNDER_BDD:
 				raise

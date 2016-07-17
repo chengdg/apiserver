@@ -41,26 +41,27 @@ class AProduct(api_resource.ApiResource):
 		param_data = {'pid': product_id, 'woid': webapp_owner.id, 'member_id': webapp_user.member.id}
 
 
-		resp = Resource.use('marketapp_apiserver').get({
-			'resource':GroupBuyOPENAPI['group_buy_product'],
-			'data':param_data
-		})
+		# resp = Resource.use('marketapp_apiserver').get({
+		# 	'resource':GroupBuyOPENAPI['group_buy_product'],
+		# 	'data':param_data
+		# })
 
 
-		if resp and resp['code'] == 200:
-			data = resp['data']
+		# if resp and resp['code'] == 200:
+		# 	data = resp['data']
 
-			if data['is_in_group_buy']:
-				return {
-					'is_in_group_buy': True,
-					'activity_url': 'http://' + settings.WEAPP_DOMAIN + data['activity_url']
-				}
+		# 	if data['is_in_group_buy']:
+		# 		return {
+		# 			'is_in_group_buy': True,
+		# 			'activity_url': 'http://' + settings.WEAPP_DOMAIN + data['activity_url']
+		# 		}
 
 		product = Product.from_id({
 			'webapp_owner': webapp_owner,
 			# 'member': member,
 			'product_id': args['product_id']
 		})
+		print product.is_deleted,">>>>>>>>!!!!!!!111111111",product.to_dict()
 		if product.is_deleted:
 			return {'is_deleted': True}
 		else:
@@ -75,16 +76,16 @@ class AProduct(api_resource.ApiResource):
 
 			param_data = {'woid':webapp_owner.id, 'product_id':product_id}
 			reviews = []
-			resp = Resource.use('marketapp_apiserver').get({
-				'resource': 'evaluate.get_product_evaluates',
-				'data': param_data
-			})
+			# resp = Resource.use('marketapp_apiserver').get({
+			# 	'resource': 'evaluate.get_product_evaluates',
+			# 	'data': param_data
+			# })
 
-			if resp:
-				code = resp["code"]
-				if code == 200:
+			# if resp:
+			# 	code = resp["code"]
+			# 	if code == 200:
 
-					reviews = resp["data"]['product_reviews']
+			# 		reviews = resp["data"]['product_reviews']
 
 			result = product.to_dict(extras=['hint'])
 
@@ -94,7 +95,7 @@ class AProduct(api_resource.ApiResource):
 			result['product_reviews'] = reviews
 		result['is_in_group_buy'] = False
 		result['activity_url'] = ''
-
+		print ">>2"*18
 		import uuid
 		message = {
 			"_log_type": "test",

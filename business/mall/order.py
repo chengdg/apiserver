@@ -480,11 +480,11 @@ class Order(business_model.Model):
 	@cached_context_property
 	def latest_express_detail(self):
 		"""
-		[property] 订单的最新物流详情
+		[property] 订单的最新物流详情,物流信息倒序排列，所以取第一条
 		"""
 		details = self.express_details
 		if details:
-			return details[-1].to_dict()
+			return details[0].to_dict()
 		return None
 
 	@cached_context_property

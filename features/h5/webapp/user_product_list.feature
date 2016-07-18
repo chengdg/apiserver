@@ -44,7 +44,7 @@ Background:
 		| 商品2   | 2015-07-01 08:00 |  0            |
 		| 商品1   | 2015-06-01 08:00 |  0            |
 
-@productlist
+@app @buy @productList
 Scenario:1 手机端商品列表分页-全部商品
 	When bill访问jobs的webapp
 	And bill浏览jobs的webapp的'全部'商品列表页
@@ -236,7 +236,7 @@ Scenario:1 手机端商品列表分页-全部商品
 			[]
 			"""
 
-@productlist
+@app @buy @productList
 Scenario:2 手机端商品列表分页-分类商品
 	When bill访问jobs的webapp
 	And bill浏览jobs的webapp的'分类1'商品列表页

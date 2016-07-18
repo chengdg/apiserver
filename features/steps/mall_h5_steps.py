@@ -33,9 +33,10 @@ def step_impl(context, webapp_user):
 			context.category_id = 0
 		else:
 			context.category_id = mall_models.ProductCategory.select().dj_where(name=category_name).first().id
-		print('---------p',category_name,context.category_id)
 
-	# context.category_id = args['count_per_page']
+	searching_product_name = args.get('searching_product_name')
+	if searching_product_name:
+		context.searching_product_name = searching_product_name
 
 
 @then(u"{webapp_user_name}获得webapp商品列表")
@@ -77,30 +78,9 @@ def step_impl(context, webapp_user_name):
 	url = '/mall/products/?woid={}&category_id={}&product_name={}&cur_page={}&count_per_page={}'.format(context.webapp_owner_id, category_id, searching_product_name,cur_page,count_per_page)
 
 	response = context.client.get(bdd_util.nginx(url), follow=True)
-
-
-
 	actual = response.data['products']
-	print('---------------ac',actual)
+
 	for product in actual:
 		product['price'] = float('%.2f' % float(product['display_price']))
 
-	print('---e:',expected)
-	print('---a:',actual)
 	bdd_util.assert_list(expected, actual)
-
-
-	# for product in actual:
-	# 	product['price'] = float('%.2f' % float(product['display_price']))
-	#
-	# if hasattr(context, 'searching_product_name') and context.searching_product_name:
-	# 	searching_product_name = context.searching_product_name
-	# 	url = '/mall/products/?woid=%s&category_id=%s&product_name=%s' % (context.webapp_owner_id, 0,searching_product_name)
-	# 	response = context.client.get(bdd_util.nginx(url), follow=True)
-	# 	actual = response.data['products']
-	# 	context.searching_product_name = None
-	# else:
-	# 	actual = context.response.data['products']
-	# for product in actual:
-	# 	product['price'] = float('%.2f' % float(product['display_price']))
-	# bdd_util.assert_list(expected, actual)

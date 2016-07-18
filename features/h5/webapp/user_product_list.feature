@@ -200,7 +200,7 @@ Scenario:1 手机端商品列表分页-全部商品
 			}]
 			"""
 
-@app @buy @productList @ztqb
+@mall3 @app @buy @productList @ztq
 Scenario:2 手机端商品列表分页-分类商品
 	When bill访问jobs的webapp
 	And bill设置商品列表分页查询参数

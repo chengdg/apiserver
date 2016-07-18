@@ -511,7 +511,7 @@ class Order(business_model.Model):
 		@see Weapp的`weapp/mall/models.py`中的`get_express_details()`
 		"""
 		# 为了兼容有order.id的方式
-		db_details = express_models.ExpressDetail.select().dj_where(order_id=self.id).order_by(-express_models.ExpressDetail.display_index)
+		db_details = express_models.ExpressDetail.select().dj_where(order_id=self.id).order_by(-express_models.ExpressDetail.time)
 		if db_details.count() > 0:
 			details = [ExpressDetail(detail) for detail in db_details]
 			#return list(details)
@@ -529,7 +529,7 @@ class Order(business_model.Model):
 		try:
 			express = expresses[0]
 			logging.info("express: {}".format(express.id))
-			db_details = express_models.ExpressDetail.select().dj_where(express_id=express.id).order_by(-express_models.ExpressDetail.display_index)
+			db_details = express_models.ExpressDetail.select().dj_where(express_id=express.id).order_by(-express_models.ExpressDetail.time)
 			details = [ExpressDetail(detail) for detail in db_details]
 		except Exception as e:
 			logging.error(u'获取快递详情失败，order_id={}, case:{}'.format(self.id, str(e)))

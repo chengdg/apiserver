@@ -95,7 +95,8 @@ Scenario:1 手机端商品列表分页-全部商品
 			"""
 			{
 				"count_per_page":2,
-				"cur_page":1
+				"cur_page":1,
+				"categories":"全部"
 			}
 			"""
 		Then bill获得webapp商品列表
@@ -112,7 +113,8 @@ Scenario:1 手机端商品列表分页-全部商品
 			"""
 			{
 				"count_per_page":2,
-				"cur_page":2
+				"cur_page":2,
+				"categories":"全部"
 			}
 			"""
 		Then bill获得webapp商品列表

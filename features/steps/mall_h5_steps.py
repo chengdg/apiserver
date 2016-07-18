@@ -57,7 +57,6 @@ def step_impl(context, webapp_user_name):
 
 	if hasattr(context, 'category_id'):
 		category_id = context.category_id
-		print('---------category_id',category_id)
 		del context.category_id
 
 	else:
@@ -85,6 +84,9 @@ def step_impl(context, webapp_user_name):
 	print('---------------ac',actual)
 	for product in actual:
 		product['price'] = float('%.2f' % float(product['display_price']))
+
+	print('---e:',expected)
+	print('---a:',actual)
 	bdd_util.assert_list(expected, actual)
 
 

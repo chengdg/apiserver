@@ -44,10 +44,9 @@ Background:
 #		| 商品2   | 2015-07-01 08:00 |  0            |
 #		| 商品1   | 2015-06-01 08:00 |  0            |
 
-@app @buy @productList @ztqb
+@mall3 @app @buy @productList @ztq
 Scenario:1 手机端商品列表分页-全部商品
 	When bill访问jobs的webapp
-	And bill浏览jobs的webapp的'全部'商品列表页
 	And bill设置商品列表分页查询参数
 		"""
 		{
@@ -90,7 +89,6 @@ Scenario:1 手机端商品列表分页-全部商品
 #			| 商品3   | 2015-08-01 08:00 |  0            |
 #			| 商品2   | 2015-07-01 08:00 |  0            |
 		When bill访问jobs的webapp
-		And bill浏览jobs的webapp的'全部'商品列表页
 		And bill设置商品列表分页查询参数
 			"""
 			{
@@ -128,7 +126,6 @@ Scenario:1 手机端商品列表分页-全部商品
 		Given jobs登录系统::weapp
 		When jobs'下架'商品'商品3'::weapp
 		When bill访问jobs的webapp
-		And bill浏览jobs的webapp的'全部'商品列表页
 		And bill设置商品列表分页查询参数
 			"""
 			{
@@ -148,24 +145,23 @@ Scenario:1 手机端商品列表分页-全部商品
 				"price":20.00
 			}]
 			"""
-		When bill设置商品列表分页查询参数
-			"""
-			{
-
-				"count_per_page":2,
-				"cur_page":1,
-				"categories":"全部"
-			}
-			"""
-		Then bill获得webapp商品列表
-			"""
-			[]
-			"""
+#		When bill设置商品列表分页查询参数
+#			"""
+#			{
+#
+#				"count_per_page":2,
+#				"cur_page":1,
+#				"categories":"全部"
+#			}
+#			"""
+#		Then bill获得webapp商品列表
+#			"""
+#			[]
+#			"""
 	#对商品进行'上架'操作
 		Given jobs登录系统::weapp
 		When jobs'上架'商品'商品3'::weapp
 		When bill访问jobs的webapp
-		And bill浏览jobs的webapp的'全部'商品列表页
 		And bill设置商品列表分页查询参数
 			"""
 			{
@@ -182,7 +178,7 @@ Scenario:1 手机端商品列表分页-全部商品
 				"price":10.00
 			},{
 				"name":"商品3",
-				"price"30.00
+				"price":30.00
 			}]
 			"""
 		When bill设置商品列表分页查询参数
@@ -190,7 +186,7 @@ Scenario:1 手机端商品列表分页-全部商品
 			{
 
 				"count_per_page":2,
-				"cur_page":1,
+				"cur_page":2,
 				"categories":"全部"
 			}
 			"""
@@ -205,7 +201,6 @@ Scenario:1 手机端商品列表分页-全部商品
 		Given jobs登录系统::weapp
 		When jobs'永久删除'商品'商品3'::weapp
 		When bill访问jobs的webapp
-		And bill浏览jobs的webapp的'全部'商品列表页
 		And bill设置商品列表分页查询参数
 			"""
 			{
@@ -222,27 +217,26 @@ Scenario:1 手机端商品列表分页-全部商品
 				"price":10.00
 			},{
 				"name":"商品2",
-				"price"20.00
+				"price":20.00
 			}]
 			"""
-		When bill设置商品列表分页查询参数
-			"""
-			{
+#		When bill设置商品列表分页查询参数
+#			"""
+#			{
+#
+#				"count_per_page":2,
+#				"cur_page":1,
+#				"categories":"全部"
+#			}
+#			"""
+#		Then bill获得webapp商品列表
+#			"""
+#			[]
+#			"""
 
-				"count_per_page":2,
-				"cur_page":1,
-				"categories":"全部"
-			}
-			"""
-		Then bill获得webapp商品列表
-			"""
-			[]
-			"""
-
-@app @buy @productList
+@app @buy @productList @ztqb
 Scenario:2 手机端商品列表分页-分类商品
 	When bill访问jobs的webapp
-	And bill浏览jobs的webapp的'分类1'商品列表页
 	And bill设置商品列表分页查询参数
 		"""
 		{
@@ -276,13 +270,12 @@ Scenario:2 手机端商品列表分页-分类商品
 	#修改商品排序后，查看手机端商品列表
 		Given jobs登录系统::weapp
 		When jobs更新'商品1'商品排序1::weapp
-		Then jobs能获取商品列表::weapp
-			| name    | created_at       | display_index |
-			| 商品1   | 2015-06-01 08:00 |  1            |
-			| 商品3   | 2015-08-01 08:00 |  0            |
-			| 商品2   | 2015-07-01 08:00 |  0            |
+#		Then jobs能获取商品列表::weapp
+#			| name    | created_at       | display_index |
+#			| 商品1   | 2015-06-01 08:00 |  1            |
+#			| 商品3   | 2015-08-01 08:00 |  0            |
+#			| 商品2   | 2015-07-01 08:00 |  0            |
 		When bill访问jobs的webapp
-		And bill浏览jobs的webapp的'分类1'商品列表页
 		And bill设置商品列表分页查询参数
 			"""
 			{

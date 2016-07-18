@@ -69,6 +69,8 @@ class SimpleProducts(business_model.Model):
 			).order_by(mall_models.Product.display_index,
 			           -mall_models.Product.id)
 
+			print('----------------------iii',[(p.id,p.display_index) for p in product_models])
+
 			page_info, product_models = paginator.paginate(product_models, cur_page, count_per_page)
 
 		else:
@@ -77,7 +79,7 @@ class SimpleProducts(business_model.Model):
 				mall_models.CategoryHasProduct.display_index > 0,
 				mall_models.Product.shelve_type == mall_models.PRODUCT_SHELVE_TYPE_ON,
 				mall_models.Product.is_deleted == False
-			).order_by('display_index', 'created_at')
+			).order_by(mall_models.CategoryHasProduct.display_index, -mall_models.CategoryHasProduct.id)
 
 			page_info, category_has_products = paginator.paginate(category_has_products, cur_page, count_per_page)
 
@@ -147,9 +149,7 @@ class SimpleProducts(business_model.Model):
 				category.id = category_dict['id']
 				category.name = category_dict['name']
 				category.is_deleted = False
-				print('--------------x0',category)
 			else:
-				print('----------x1')
 				category = mall_models.ProductCategory()
 				category.is_deleted = True
 				category.name = u'已删除分类'

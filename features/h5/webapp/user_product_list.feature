@@ -37,12 +37,7 @@ Background:
 		}]
 		"""
 	When bill关注jobs的公众号
-	Given jobs登录系统::weapp
-#	Then jobs能获取商品列表::weapp
-#		| name    | created_at       | display_index |
-#		| 商品3   | 2015-08-01 08:00 |  0            |
-#		| 商品2   | 2015-07-01 08:00 |  0            |
-#		| 商品1   | 2015-06-01 08:00 |  0            |
+
 
 @mall3 @app @buy @productList @ztq
 Scenario:1 手机端商品列表分页-全部商品
@@ -83,11 +78,7 @@ Scenario:1 手机端商品列表分页-全部商品
 	#修改商品排序后，查看手机端商品列表
 		Given jobs登录系统::weapp
 		When jobs更新'商品1'商品排序1::weapp
-#		Then jobs能获取商品列表::weapp
-#			| name    | created_at       | display_index |
-#			| 商品1   | 2015-06-01 08:00 |  1            |
-#			| 商品3   | 2015-08-01 08:00 |  0            |
-#			| 商品2   | 2015-07-01 08:00 |  0            |
+
 		When bill访问jobs的webapp
 		And bill设置商品列表分页查询参数
 			"""
@@ -145,19 +136,7 @@ Scenario:1 手机端商品列表分页-全部商品
 				"price":20.00
 			}]
 			"""
-#		When bill设置商品列表分页查询参数
-#			"""
-#			{
-#
-#				"count_per_page":2,
-#				"cur_page":1,
-#				"categories":"全部"
-#			}
-#			"""
-#		Then bill获得webapp商品列表
-#			"""
-#			[]
-#			"""
+
 	#对商品进行'上架'操作
 		Given jobs登录系统::weapp
 		When jobs'上架'商品'商品3'::weapp
@@ -220,19 +199,6 @@ Scenario:1 手机端商品列表分页-全部商品
 				"price":20.00
 			}]
 			"""
-#		When bill设置商品列表分页查询参数
-#			"""
-#			{
-#
-#				"count_per_page":2,
-#				"cur_page":1,
-#				"categories":"全部"
-#			}
-#			"""
-#		Then bill获得webapp商品列表
-#			"""
-#			[]
-#			"""
 
 @app @buy @productList @ztqb
 Scenario:2 手机端商品列表分页-分类商品
@@ -269,12 +235,8 @@ Scenario:2 手机端商品列表分页-分类商品
 		"""
 	#修改商品排序后，查看手机端商品列表
 		Given jobs登录系统::weapp
-		When jobs更新'商品1'商品排序1::weapp
-#		Then jobs能获取商品列表::weapp
-#			| name    | created_at       | display_index |
-#			| 商品1   | 2015-06-01 08:00 |  1            |
-#			| 商品3   | 2015-08-01 08:00 |  0            |
-#			| 商品2   | 2015-07-01 08:00 |  0            |
+		When jobs更新分类'分类1'中商品'商品1'商品排序1::weapp
+
 		When bill访问jobs的webapp
 		And bill设置商品列表分页查询参数
 			"""

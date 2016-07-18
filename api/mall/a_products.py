@@ -78,14 +78,14 @@ class AProducts(api_resource.ApiResource):
 		if product_name:
 			page_info, products = SimpleProducts.get_for_search({
 				"webapp_owner": webapp_owner,
-				'webapp_user_id':webapp_user.id,
+				'webapp_user_id': webapp_user.id,
 				'product_name': product_name,
 				'cur_page': cur_page,
 				'count_per_page': count_per_page
 			})
 		elif coupon_rule_id:
 			coupon_rule = CouponRule.from_id({
-				'id': coupon_rule_id
+				'id': int(coupon_rule_id)
 			})
 			product_ids = map(lambda x: int(x), coupon_rule.limit_product_id.split(','))  # 多商品券下的商品id
 
@@ -98,7 +98,7 @@ class AProducts(api_resource.ApiResource):
 		else:
 			page_info, products = SimpleProducts.get_for_list({
 				"webapp_owner": webapp_owner,
-				"category_id": category_id,
+				"category_id": int(category_id),
 				'cur_page': cur_page,
 				'count_per_page': count_per_page
 			})

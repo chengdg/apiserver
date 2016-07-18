@@ -130,7 +130,7 @@ class SimpleProducts(business_model.Model):
 	@param_required(['webapp_owner', 'category_id'])
 	def get_categories(args):
 		webapp_owner_id = args['webapp_owner'].id
-		category_id = args['category_id']
+		category_id = int(args['category_id'])
 		categories = mall_models.ProductCategory.select().dj_where(owner=webapp_owner_id)
 
 		categories = [{"id": category.id, "name": category.name} for category in categories]
@@ -147,7 +147,9 @@ class SimpleProducts(business_model.Model):
 				category.id = category_dict['id']
 				category.name = category_dict['name']
 				category.is_deleted = False
+				print('--------------x0',category)
 			else:
+				print('----------x1')
 				category = mall_models.ProductCategory()
 				category.is_deleted = True
 				category.name = u'已删除分类'

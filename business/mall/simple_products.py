@@ -19,7 +19,7 @@ from eaglet.core import watchdog
 from business import model as business_model
 import settings
 from business.mall.product import Product
-from eaglet.core import  query_paginator
+from eaglet.core import paginator
 
 
 class SimpleProducts(business_model.Model):
@@ -45,7 +45,7 @@ class SimpleProducts(business_model.Model):
 			is_deleted=False,
 			id__in=product_ids
 		)
-		page_info, product_models = query_paginator.paginate(product_models, cur_page, count_per_page)
+		page_info, product_models = paginator.paginate(product_models, cur_page, count_per_page)
 
 		product_data = SimpleProducts.__get_product_data(
 			{'product_models': product_models, 'webapp_owner': args['webapp_owner']})
@@ -69,7 +69,7 @@ class SimpleProducts(business_model.Model):
 			).order_by(mall_models.Product.display_index,
 			           -mall_models.Product.id)
 
-			page_info, product_models = query_paginator.paginate(product_models, cur_page, count_per_page)
+			page_info, product_models = paginator.paginate(product_models, cur_page, count_per_page)
 
 		else:
 			category_has_products = mall_models.CategoryHasProduct.select().join(mall_models.Product).where(
@@ -79,7 +79,7 @@ class SimpleProducts(business_model.Model):
 				mall_models.Product.is_deleted == False
 			).order_by('display_index', 'created_at')
 
-			page_info, category_has_products = query_paginator.paginate(category_has_products, cur_page, count_per_page)
+			page_info, category_has_products = paginator.paginate(category_has_products, cur_page, count_per_page)
 
 			product_ids = [p.product_id for p in category_has_products]
 
@@ -109,7 +109,7 @@ class SimpleProducts(business_model.Model):
 			mall_models.Product.name.contains(product_name)
 		)
 
-		page_info, product_models = query_paginator.paginate(product_models, cur_page, count_per_page)
+		page_info, product_models = paginator.paginate(product_models, cur_page, count_per_page)
 
 		products_data = SimpleProducts.__get_product_data({
 			'product_models': product_models,

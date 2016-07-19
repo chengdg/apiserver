@@ -1,6 +1,6 @@
 # watcher: wangli@weizoom.com,enchi@weizoom.com
 #editor:wangli 2016.07.12
-
+@wll
 Feature: 用户手机端订单列表分页
 
 Background:
@@ -501,7 +501,35 @@ Scenario: 2 手机端“待支付”订单列表
 	Then bill查看个人中心'待支付'订单列表
 		"""
 		[{
+			"order_no":"00026",
+			"status": "待支付",
+			"final_price": 10.00,
+			"products": [{
+				"name": "商品1"
+			}]
+		},{
+			"order_no":"00016",
+			"status": "待支付",
+			"final_price": 10.00,
+			"products": [{
+				"name": "商品1"
+			}]
+		},{
 			"order_no":"0006",
+			"status": "待支付",
+			"final_price": 10.00,
+			"products": [{
+				"name": "商品1"
+			}]
+		},{
+			"order_no":"00025",
+			"status": "待支付",
+			"final_price": 10.00,
+			"products": [{
+				"name": "商品1"
+			}]
+		},{
+			"order_no":"00015",
 			"status": "待支付",
 			"final_price": 10.00,
 			"products": [{
@@ -516,22 +544,55 @@ Scenario: 2 手机端“待支付”订单列表
 			}]
 		}]
 		"""
+
 	When bill设置订单列表分页查询参数
 		"""
 		{
-			"count_per_page":2,
+			"count_per_page":6,
 			"cur_page":2
 		}
 		"""
 	Then bill查看个人中心'待支付'订单列表
 		"""
 		[{
+			"order_no":"00023",
+			"status": "待支付",
+			"final_price": 30.00,
+			"products": [{
+				"name": "商品1"
+			},{
+				"name": "商品2"
+			}]
+		},{
+			"order_no":"00013",
+			"status": "待支付",
+			"final_price": 30.00,
+			"products": [{
+				"name": "商品1"
+			},{
+				"name": "商品2"
+			}]
+		},{
 			"order_no":"0003",
 			"status": "待支付",
 			"final_price": 30.00,
 			"products": [{
 				"name": "商品1"
 			},{
+				"name": "商品2"
+			}]
+		},{
+			"order_no":"00022",
+			"status": "待支付",
+			"final_price": 20.00,
+			"products": [{
+				"name": "商品2"
+			}]
+		},{
+			"order_no":"00012",
+			"status": "待支付",
+			"final_price": 20.00,
+			"products": [{
 				"name": "商品2"
 			}]
 		},{
@@ -544,7 +605,7 @@ Scenario: 2 手机端“待支付”订单列表
 		}]
 		"""
 
-@person @appallOrder @ztqb
+@mall3 @person @appallOrder @ztqb
 Scenario: 3 手机端“待发货”订单列表
 	When bill访问jobs的webapp
 	#支付订单：
@@ -556,7 +617,7 @@ Scenario: 3 手机端“待发货”订单列表
 	When bill设置订单列表分页查询参数
 		"""
 		{
-			"count_per_page":2,
+			"count_per_page":6,
 			"cur_page":1
 		}
 		"""
@@ -570,6 +631,24 @@ Scenario: 3 手机端“待发货”订单列表
 				"name": "商品1"
 			}]
 		},{
+			"order_no":"00024",
+			"status": "待发货",
+			"final_price": 60.00,
+			"products": [{
+				"name": "商品1"
+			},{
+				"name": "商品2"
+			}]
+		},{
+			"order_no":"00014",
+			"status": "待发货",
+			"final_price": 60.00,
+			"products": [{
+				"name": "商品1"
+			},{
+				"name": "商品2"
+			}]
+		},{
 			"order_no":"0004",
 			"status": "待发货",
 			"final_price": 60.00,
@@ -578,18 +657,7 @@ Scenario: 3 手机端“待发货”订单列表
 			},{
 				"name": "商品2"
 			}]
-		}]
-		"""
-	When bill设置订单列表分页查询参数
-		"""
-		{
-			"count_per_page":2,
-			"cur_page":2
-		}
-		"""
-	Then bill查看个人中心'待发货'订单列表
-		"""
-		[{
+		},{
 			"order_no":"0003",
 			"status": "待发货",
 			"final_price": 30.00,
@@ -604,6 +672,24 @@ Scenario: 3 手机端“待发货”订单列表
 			"final_price": 20.00,
 			"products": [{
 				"name": "商品2"
+			}]
+		}]
+		"""
+	When bill设置订单列表分页查询参数
+		"""
+		{
+			"count_per_page":6,
+			"cur_page":2
+		}
+		"""
+	Then bill查看个人中心'待发货'订单列表
+		"""
+		[{
+			"order_no":"0001",
+			"status": "待发货",
+			"final_price": 20.00,
+			"products": [{
+				"name": "商品1"
 			}]
 		}]
 		"""

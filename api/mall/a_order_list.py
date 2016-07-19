@@ -15,7 +15,7 @@ from business.mall.order import Order
 from business.mall.order_products import OrderProducts
 from business.mall.order_config import OrderConfig
 from business.mall.review.waiting_review_order import WaitingReviewOrder
-
+from eaglet.core import paginator
 from eaglet.utils.resource_client import Resource
 
 DEFAULT_COUNT_PER_PAGE = 8
@@ -45,8 +45,8 @@ class AOrderList(api_resource.ApiResource):
 			'order_type': order_type,
 			'webapp_owner': webapp_owner,
 			'webapp_user': webapp_user,
-			'cur_page': cur_page,
-			'count_per_page': count_per_page
+			# 'cur_page': cur_page,
+			# 'count_per_page': count_per_page
 		})
 
 		# finished 1.团购
@@ -61,6 +61,9 @@ class AOrderList(api_resource.ApiResource):
 		orders = filter(lambda order: not (order_id2group_info[
 			                                   order.order_id] and order.status == mall_models.ORDER_STATUS_CANCEL) or order.pay_interface_type == mall_models.PAY_INTERFACE_PREFERENCE,
 		                orders)
+
+		pageinfo, orders = paginator.paginate(orders, cur_page, count_per_page)
+
 		param_data = {'woid': args['webapp_owner'].id, 'member_id': args['webapp_user'].member.id}
 		get_order_review_json = []
 

@@ -605,7 +605,7 @@ Scenario: 2 手机端“待支付”订单列表
 		}]
 		"""
 
-@mall3 @person @appallOrder @ztqb
+@mall3 @person @appallOrder
 Scenario: 3 手机端“待发货”订单列表
 	When bill访问jobs的webapp
 	#支付订单：

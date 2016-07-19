@@ -76,7 +76,7 @@ class PromotionRepository(business_model.Model):
 			integral_sale.calculate_discount()
 
 	@staticmethod
-	def __fill_premium_products_details(premium_sales):
+	def __fill_premium_products_details(premium_sales, webapp_owner):
 		"""
 		填充与限时抢购相关的`促销商品详情`
 		"""
@@ -88,9 +88,16 @@ class PromotionRepository(business_model.Model):
 			premium_sale_ids.append(prenium_sale_detail_id)
 			id2sale[prenium_sale_detail_id] = premium_sale
 
-		premium_sale_products = list(promotion_models.PremiumSaleProduct.select().dj_where(premium_sale_id__in=premium_sale_ids))
+		premium_sale_products = promotion_models.PremiumSaleProduct.select().dj_where(owner_id=webapp_owner.id,premium_sale_id__in=premium_sale_ids)
 		product_ids = [premium_sale_product.product_id for premium_sale_product in premium_sale_products]
+		
 		products = mall_models.Product.select().dj_where(id__in=product_ids)
+		
+		if webapp_owner.mall_type:
+			pool_product_list = [p.product_id for p in  mall_models.ProductPool.select().dj_where(woid=webapp_owner.id, status=mall_models.PP_STATUS_ON)]
+		else:
+			pool_product_list = []
+
 		id2product = dict([(product.id, product) for product in products])
 
 		for premium_sale_product in premium_sale_products:
@@ -108,6 +115,12 @@ class PromotionRepository(business_model.Model):
 			realtime_stock_dict = realtime_stock.model2stock.values()[0]
 
 			product = id2product[product_id]
+
+			if pool_product_list and product_id in pool_product_list:
+				shelve_type = mall_models.PRODUCT_SHELVE_TYPE_ON
+			else:
+				shelve_type = product.shelve_type
+
 			data = {
 				'id': product.id,
 				'name': product.name,
@@ -119,13 +132,13 @@ class PromotionRepository(business_model.Model):
 				'supplier': main_product.supplier,
 				'stock_type': realtime_stock_dict['stock_type'],
 				'stocks': realtime_stock_dict['stocks'],
-				'shelve_type': product.shelve_type,
+				'shelve_type': shelve_type,
 				'is_deleted': product.is_deleted
 			}
 			id2sale[premium_sale_id].premium_products.append(data)
 
 	@staticmethod
-	def __fill_specific_details(promotions):
+	def __fill_specific_details(promotions, webapp_owner):
 		"""
 		为促销填充促销特定数据
 
@@ -153,15 +166,17 @@ class PromotionRepository(business_model.Model):
 					promotion.fill_specific_detail(detail_model)
 
 				if promotion_type == promotion_models.PROMOTION_TYPE_PREMIUM_SALE:
-					PromotionRepository.__fill_premium_products_details(promotions)
+					PromotionRepository.__fill_premium_products_details(promotions, webapp_owner)
 				elif promotion_type == promotion_models.PROMOTION_TYPE_INTEGRAL_SALE:
 					PromotionRepository.__fill_integral_sale_rule_details(promotions)
 			else:
 				raise ValueError('DetailClass(None) is not valid')
 
 	@staticmethod
-	@param_required(['products'])
+	@param_required(['products','webapp_owner'])
 	def fill_for_products(args):
+		webapp_owner = args['webapp_owner']
+		webapp_owner_id = webapp_owner.id
 		products = args['products']
 		today = datetime.today()
 		product_ids = []
@@ -171,19 +186,31 @@ class PromotionRepository(business_model.Model):
 			id2product[product.id] = product
 
 		#创建promotions业务对象集合
-		product_promotion_relations = list(promotion_models.ProductHasPromotion.select().dj_where(product_id__in=product_ids))
+		#update by bert
+
+		#product_promotion_relations = list(promotion_models.ProductHasPromotion.select().dj_where(product_id__in=product_ids))
+
+		product_promotion_relations = promotion_models.ProductHasPromotion.select().dj_where(product_id__in=product_ids)
+
 		promotion_ids = list()
 		promotion2product = dict()
 		for relation in product_promotion_relations:
 			promotion_ids.append(relation.promotion_id)
 			promotion2product[relation.promotion_id] = relation.product_id
 		# todo 写法优化
-		promotion_db_models = list(promotion_models.Promotion.select().dj_where(id__in=promotion_ids).where(
-			promotion_models.Promotion.type != promotion_models.PROMOTION_TYPE_COUPON))
+		#promotion_db_models = list(promotion_models.Promotion.select().dj_where(id__in=promotion_ids).where(
+		#	promotion_models.Promotion.type != promotion_models.PROMOTION_TYPE_COUPON))
+		promotion_db_models = promotion_models.Promotion.select().dj_where(id__in=promotion_ids).where(
+			promotion_models.Promotion.type != promotion_models.PROMOTION_TYPE_COUPON)
 		promotions = []
 		for promotion_db_model in promotion_db_models:
 			if (promotion_db_model.status != promotion_models.PROMOTION_STATUS_STARTED) and (promotion_db_model.status != promotion_models.PROMOTION_STATUS_NOT_START):
 				#跳过已结束、已删除的促销活动
+				continue
+
+			#自营平台商品池商品 参加活动不是当前平台 by bert 
+			#TODO bert 优化
+			if promotion_db_model.owner_id != webapp_owner_id:
 				continue
 
 			if promotion_db_model.type == promotion_models.PROMOTION_TYPE_FLASH_SALE:
@@ -195,7 +222,7 @@ class PromotionRepository(business_model.Model):
 			if promotion.is_active():
 				promotions.append(promotion)
 
-		PromotionRepository.__fill_specific_details(promotions)
+		PromotionRepository.__fill_specific_details(promotions, webapp_owner)
 
 		#为所有的product设置product.promotion
 		for promotion in promotions:
@@ -212,24 +239,25 @@ class PromotionRepository(business_model.Model):
 			else:
 				product.promotion = promotion
 
-	@staticmethod
-	def from_id(promotion_id):
-		if promotion_id <= 0:
-			return None
+	# 目前没人使用～～～～ bert
+	# @staticmethod
+	# def from_id(promotion_id):
+	# 	if promotion_id <= 0:
+	# 		return None
 			
-		promotion_db_model = promotion_models.Promotion.get(id=promotion_id)
-		if promotion_db_model.type == promotion_models.PROMOTION_TYPE_FLASH_SALE:
-			promotion = FlashSale(promotion_db_model)
-		if promotion_db_model.type == promotion_models.PROMOTION_TYPE_PREMIUM_SALE:
-			promotion = PremiumSale(promotion_db_model)
-		if promotion_db_model.type == promotion_models.PROMOTION_TYPE_INTEGRAL_SALE:
-			promotion = IntegralSale(promotion_db_model)
-		if not promotion.is_active():
-			return None
+	# 	promotion_db_model = promotion_models.Promotion.get(id=promotion_id)
+	# 	if promotion_db_model.type == promotion_models.PROMOTION_TYPE_FLASH_SALE:
+	# 		promotion = FlashSale(promotion_db_model)
+	# 	if promotion_db_model.type == promotion_models.PROMOTION_TYPE_PREMIUM_SALE:
+	# 		promotion = PremiumSale(promotion_db_model)
+	# 	if promotion_db_model.type == promotion_models.PROMOTION_TYPE_INTEGRAL_SALE:
+	# 		promotion = IntegralSale(promotion_db_model)
+	# 	if not promotion.is_active():
+	# 		return None
 
-		PromotionRepository.__fill_specific_details([promotion])
+	# 	PromotionRepository.__fill_specific_details([promotion])
 
-		return promotion
+	# 	return promotion
 
 	@staticmethod
 	def get_promotion_from_dict_data(data):

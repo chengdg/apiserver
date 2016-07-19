@@ -39,6 +39,7 @@ class RealtimeStock(business_model.Model):
 		"""
 		product_id = args['product_id']
 		models = mall_models.ProductModel.select().dj_where(product=product_id, is_deleted=False)
+		print ">>>>>>>modelsmodelsmodelsmodelsmodels:",models[0].to_dict()
 		realtime_stock = RealtimeStock()
 		realtime_stock.init(models)
 

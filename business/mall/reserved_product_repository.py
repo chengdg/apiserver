@@ -108,7 +108,7 @@ class ReservedProductRepository(business_model.Model):
 				"webapp_user": webapp_user,
 				"product_info": product_info
 			})
-
+			print ">>>>>D>D>F>D>>>>>>>>>>>",reversed_product.shelve_type
 			if purchase_info.group_id:
 				params = {'group_id': purchase_info.group_id, 'woid': self.context['webapp_owner'].id}
 

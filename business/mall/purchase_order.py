@@ -71,7 +71,6 @@ class PurchaseOrder(business_model.Model):
 			'webapp_user': webapp_user
 		})
 		self.products = reserved_product_repository.get_reserved_products_from_purchase_info(purchase_info)
-
 		# 积分订单
 		temp_product = self.products[0]
 		if temp_product.type == mall_models.PRODUCT_INTEGRAL_TYPE:
@@ -125,6 +124,7 @@ class PurchaseOrder(business_model.Model):
 		#添加判断是否需要配送时间(是否勾选配送时间)
 		self.is_delivery = False
 		for product in self.products:
+			print "adfasdfasdfasdf>>>.dddddddd>>>>>s.d.s.>>>>", product.shelve_type
 			if product.is_delivery == True:
 				self.is_delivery = True
 				break

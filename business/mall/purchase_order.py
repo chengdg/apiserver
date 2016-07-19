@@ -124,7 +124,6 @@ class PurchaseOrder(business_model.Model):
 		#添加判断是否需要配送时间(是否勾选配送时间)
 		self.is_delivery = False
 		for product in self.products:
-			print "adfasdfasdfasdf>>>.dddddddd>>>>>s.d.s.>>>>", product.shelve_type
 			if product.is_delivery == True:
 				self.is_delivery = True
 				break

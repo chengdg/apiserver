@@ -87,7 +87,6 @@ class PromotionProductGroup(business_model.Model):
 		执行促销活动
 		"""
 		if self.promotion:
-			print "adfsasdfasdfasdfasdfadsf>>>>>>>>"
 			self.can_use_promotion = self.promotion.can_apply_promotion(self)
 			if not self.can_use_promotion:
 				# self.promotion = None

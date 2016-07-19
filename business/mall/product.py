@@ -144,7 +144,6 @@ class CachedProduct(object):
 
 			elif product.owner_id != webapp_owner_id:
 				product.is_deleted = True
-			print product.id,"woca>>>>>>>>>>>>>>>>",product.shelve_type 
 		except:
 			if settings.DEBUG and not settings.IS_UNDER_BDD:
 				raise

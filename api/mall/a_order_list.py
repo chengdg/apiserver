@@ -66,6 +66,7 @@ class AOrderList(api_resource.ApiResource):
 			                                   order.order_id] and order.status == mall_models.ORDER_STATUS_CANCEL) or order.pay_interface_type == mall_models.PAY_INTERFACE_PREFERENCE,
 		                orders)
 
+		# 注意：所有排序、过滤操作需要在分页之前
 		pageinfo, orders = paginator.paginate(orders, cur_page, count_per_page)
 
 		print('---------2',len(orders))

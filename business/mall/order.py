@@ -57,6 +57,7 @@ from business.mall.pay_interface import PayInterface
 from decimal import Decimal
 from business.mall.allocator.allocate_price_related_resource_service import AllocatePriceRelatedResourceService
 
+from eaglet.core import paginator
 
 
 ORDER_STATUS2NOTIFY_STATUS = {
@@ -168,11 +169,15 @@ class Order(business_model.Model):
 		webapp_owner = args['webapp_owner']
 		webapp_user = args['webapp_user']
 		order_type = args['order_type']
-		if order_type != -1:    # 表示全部订单
-			order_models = list(mall_models.Order.select().dj_where(webapp_user_id=webapp_user.id, status=args['order_type']))
-		else:
-			order_models = list(mall_models.Order.select().dj_where(webapp_user_id=webapp_user.id))
-		order_models.sort(lambda x, y: cmp(y.id, x.id))
+		cur_page = args['cur_page']
+		count_per_page = args['count_per_page']
+
+		order_models = mall_models.Order.select().where(mall_models.Order.webapp_user_id == webapp_user.id).order_by(-mall_models.Order.id)
+
+		if order_type != -1:  # 表示全部订单
+			order_models = order_models.where(mall_models.Order.status == args['order_type'])
+
+		order_models = paginator.paginate(order_models, cur_page, count_per_page)
 
 		orders = []
 		for order_model in order_models:

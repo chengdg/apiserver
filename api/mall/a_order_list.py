@@ -17,7 +17,6 @@ from business.mall.order_config import OrderConfig
 from business.mall.review.waiting_review_order import WaitingReviewOrder
 
 from eaglet.utils.resource_client import Resource
-from eaglet.core import paginator
 
 DEFAULT_COUNT_PER_PAGE = 8
 
@@ -45,10 +44,10 @@ class AOrderList(api_resource.ApiResource):
 		orders = Order.get_for_list_page({
 			'order_type': order_type,
 			'webapp_owner': webapp_owner,
-			'webapp_user': webapp_user
+			'webapp_user': webapp_user,
+			'cur_page': cur_page,
+			'count_per_page': count_per_page
 		})
-
-		pageinfo, orders = paginator.paginate(orders, cur_page, count_per_page)
 
 		# finished 1.团购
 		# finished 2.订单循环

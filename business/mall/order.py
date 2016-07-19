@@ -172,7 +172,7 @@ class Order(business_model.Model):
 		# cur_page = args['cur_page']
 		# count_per_page = args['count_per_page']
 
-		order_models = mall_models.Order.select().where(mall_models.Order.webapp_user_id == webapp_user.id).order_by(-mall_models.Order.id)
+		order_models = mall_models.Order.select().where(mall_models.Order.webapp_user_id == webapp_user.id, mall_models.Order.origin_order_id>0).order_by(-mall_models.Order.id)
 
 		if order_type != -1:  # 表示全部订单
 			order_models = order_models.where(mall_models.Order.status == args['order_type'])

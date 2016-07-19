@@ -89,10 +89,6 @@ class AOrderList(api_resource.ApiResource):
 
 		order_datas = []
 		for order in orders:
-			# 子订单不显示在订单列表中
-			if order.origin_order_id > 0:
-				continue
-
 			if order_id2review.has_key(order.id):
 				review_is_finished = order_id2review[order.id]
 			else:

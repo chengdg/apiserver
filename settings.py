@@ -49,7 +49,7 @@ MIDDLEWARES = [
     
     # 'middleware.debug_middleware.SqlMonitorMiddleware',
     'eaglet.middlewares.zipkin_middleware.ZipkinMiddleware',
-    'middleware.debug_middleware.RedisMiddleware',
+    # 'middleware.debug_middleware.RedisMiddleware',
     #账号信息中间件
     'middleware.webapp_account_middleware.WebAppAccountMiddleware',
 ]

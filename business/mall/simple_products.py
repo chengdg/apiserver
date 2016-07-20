@@ -63,7 +63,12 @@ class SimpleProducts(business_model.Model):
 		# jz 2015-11-26
 		# webapp_user = self.context['webapp_user']
 		key = 'webapp_products_categories_{wo:%s}' % webapp_owner.id
-		data = cache_util.get_from_cache(key, self.__get_from_db(webapp_owner))
+		# data = cache_util.get_from_cache(key, self.__get_from_db(webapp_owner))
+		def __raise():
+			print('----------------------on miss')
+			# raise BaseException(u"woid:{},商品列表缓存未命中".format(webapp_owner.id))
+		data = cache_util.get_from_cache(key, __raise())
+		print('-----------data',data)
 		products = data['products']
 
 		if category_id == 0:

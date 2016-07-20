@@ -63,10 +63,9 @@ class SystemAccount(business_model.Model):
 			social_account = member_models.SocialAccount.get(webapp_id=webapp_id, openid=openid)
 			member = member_models.Member.get(id=member_models.MemberHasSocialAccount.select().dj_where(account=social_account)[0].member.id)
 			if member_models.WebAppUser.select().dj_where(webapp_id=webapp_id, member_id=member.id, father_id=0).count() == 0:
-				webapp_user = member_models.WebAppUser.select().dj_where(webapp_id=webapp_id, member_id=member.id, father_id=0, token=member.id)
+				webapp_user = member_models.WebAppUser.select().dj_where(webapp_id=webapp_id, member_id=member.id, father_id=0, token=member.id).first()
 			else:
 				webapp_user = member_models.WebAppUser.select().dj_where(webapp_id=webapp_id, member_id=member.id, father_id=0)[0]
-
 			today = datetime.today()
 			date_str = datetime.today().strftime('%Y-%m-%d') 
 			return {

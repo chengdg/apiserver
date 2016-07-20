@@ -65,10 +65,13 @@ class SimpleProducts(business_model.Model):
 		key = 'webapp_products_categories_{wo:%s}' % webapp_owner.id
 		# data = cache_util.get_from_cache(key, self.__get_from_db(webapp_owner))
 		def __raise():
-			print('----------------------on miss')
-			# raise BaseException(u"woid:{},商品列表缓存未命中".format(webapp_owner.id))
+			def inner():
+				print('----------------------on miss')
+				# raise BaseException(u"woid:{},商品列表缓存未命中".format(webapp_owner.id))
+			return inner()
+
 		data = cache_util.get_from_cache(key, __raise())
-		print('-----------data',data)
+
 		products = data['products']
 
 		if category_id == 0:

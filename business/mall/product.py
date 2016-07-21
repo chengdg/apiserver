@@ -217,6 +217,9 @@ class Product(business_model.Model):
 		'is_delivery', # 是否勾选配送时间
 		# 'supplier_name' # 供货商名称
 		'purchase_price',
+		'price',
+		'weight',
+		'stock_type'
 	)
 
 

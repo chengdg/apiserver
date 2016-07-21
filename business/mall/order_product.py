@@ -19,6 +19,7 @@ from eaglet.decorator import param_required
 #from eaglet.core.cache import utils as cache_util
 from db.mall import models as mall_models
 #import resource
+from eaglet.core import watchdog
 #from eaglet.core import watchdog
 from business import model as business_model 
 from business.mall.product import Product
@@ -140,13 +141,21 @@ class OrderProduct(business_model.Model):
 		self.supplier_user_id = product.supplier_user_id
 
 		model = product.get_specific_model(product_info['model_name'])
-		self.original_price = model.price
-		self.weight = model.weight
-		self.stock_type = model.stock_type
-		if not hasattr(product, 'min_limit'):
-			self.min_limit = model.stocks
-		self.stocks = model.stocks
-		
+		if model:
+			self.original_price = model.price
+			self.weight = model.weight
+			self.stock_type = model.stock_type
+			if not hasattr(product, 'min_limit'):
+				self.min_limit = model.stocks
+			self.stocks = model.stocks
+		else:
+			self.original_price = product.price
+			self.weight = product.weight
+			self.stock_type = product.stock_type
+			if not hasattr(product, 'min_limit'):
+				self.min_limit = 1
+			self.stocks = 0
+			watchdog.error("none model product id %s" % product.id)
 		self.model = model
 
 

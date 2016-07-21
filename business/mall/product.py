@@ -150,7 +150,7 @@ class CachedProduct(object):
 			else:
 				#记录日志
 				alert_message = u"获取商品记录失败,商品id: {} cause:\n{}".format(product_id, unicode_full_stack())
-				watchdog.alert(alert_message, type='WEB')
+				watchdog.alert(alert_message)
 				#返回"被删除"商品
 				product = Product()
 				product.is_deleted = True

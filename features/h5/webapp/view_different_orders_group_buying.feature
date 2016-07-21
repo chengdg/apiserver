@@ -790,7 +790,7 @@ Scenario:2 订单列表只有团购订单-团购未成团(退款成功，微信�
 			}]
 			"""
 
-@mall3 @group_t @gyct12
+@mall3 @group_t @gyct12 @test_aaa
 Scenario:3 订单列表只有团购订单-团购成团订单发货、完成订单
 	#团购成功的订单进行发货和完成订单
 
@@ -924,6 +924,8 @@ Scenario:3 订单列表只有团购订单-团购成团订单发货、完成订�
 
 	#非会员参团购买
 	#tom3参团"bill作为团长"购买
+		Given tom3关注jobs的公众号
+		When tom3取消关注jobs的公众号
 		When tom3访问jobs的webapp
 		When tom3参加bill的团购活动"团购活动1"::weapp
 			"""

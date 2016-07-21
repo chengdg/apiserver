@@ -149,7 +149,7 @@ class OrderProduct(business_model.Model):
 				self.min_limit = model.stocks
 			self.stocks = model.stocks
 		else:
-			watchdog.error("none model product id %s" % product.id)
+			watchdog.error("none model product id {},model_name:{},woid:{}".format(product, product_info['model_name'], self.context['webapp_owner'].id))
 			self.original_price = product.price
 			self.weight = product.weight
 			self.stock_type = product.stock_type

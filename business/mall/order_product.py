@@ -149,13 +149,13 @@ class OrderProduct(business_model.Model):
 				self.min_limit = model.stocks
 			self.stocks = model.stocks
 		else:
+			watchdog.error("none model product id %s" % product.id)
 			self.original_price = product.price
 			self.weight = product.weight
 			self.stock_type = product.stock_type
 			if not hasattr(product, 'min_limit'):
 				self.min_limit = 1
 			self.stocks = 0
-			watchdog.error("none model product id %s" % product.id)
 		self.model = model
 
 

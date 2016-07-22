@@ -118,7 +118,7 @@ class SimpleProducts(business_model.Model):
 		"""
 		def inner_func():
 			webapp_owner_id = webapp_owner.id
-			watchdog.alert({
+			watchdog.warning({
 				'uuid': 'product_list_cahce',
 				'hint': '商品列表页未命中缓存',
 				'woid': webapp_owner_id

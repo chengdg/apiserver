@@ -33,7 +33,6 @@ class AProductStocks(api_resource.ApiResource):
 				realtime_stock = RealtimeStock.from_product_id({
 					'product_id': product_id
 				})
-
 				if realtime_stock:
 					merged_stock_info = {
 						'stock_type': mall_models.PRODUCT_STOCK_TYPE_LIMIT,

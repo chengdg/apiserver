@@ -108,7 +108,6 @@ class ReservedProductRepository(business_model.Model):
 				"webapp_user": webapp_user,
 				"product_info": product_info
 			})
-
 			if purchase_info.group_id:
 				params = {'group_id': purchase_info.group_id, 'woid': self.context['webapp_owner'].id}
 

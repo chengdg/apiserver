@@ -140,7 +140,6 @@ class APurchasing(api_resource.ApiResource):
 			product_group_datas = supplier_product_groups
 		else:
 			product_group_datas = [group.to_dict(with_price_factor=True, with_coupon_info=True) for group in order.promotion_product_groups]
-
 		order_info = {
 			'type': order.type,
 			'pay_interfaces': order.pay_interfaces,

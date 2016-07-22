@@ -270,5 +270,12 @@ class WebAppOwner(business_model.Model):
 		"""
 		return self.__webapp_owner_info.mp_nick_name
 
+	@property
+	def mall_type(self):
+		"""
+		[property] mall_type
+		"""
+		return self.user_profile.webapp_type
+
 
 

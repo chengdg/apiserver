@@ -157,7 +157,6 @@ class SimpleProducts(business_model.Model):
 				# 		}
 				# 	})
 				#
-
 				for product in products:
 					product_datas.append({
 						"id": product.id,
@@ -165,11 +164,13 @@ class SimpleProducts(business_model.Model):
 						"is_member_product": product.is_member_product,
 						"display_price": product.price_info['display_price'],
 						"promotion_js": json.dumps(product.promotion.to_dict()) if product.promotion else json.dumps(None),
-						"thumbnails_url": product.thumbnails_url
+						"thumbnails_url": product.thumbnails_url,
+						"categories": list(product2categories.get(product.id, []))
 					})
 
-				for product_data in product_datas:
-					product_data['categories'] = list(product2categories.get(product_data['id'], []))
+				# delete by bert at 2016715
+				# for product_data in product_datas:
+				# 	product_data['categories'] = list(product2categories.get(product_data['id'], []))
 
 				return {
 					'value': {
@@ -193,22 +194,44 @@ class SimpleProducts(business_model.Model):
 		#获得category和product集合
 		category = None
 		products = None
-		if category_id == 0:
-			products = mall_models.Product.select().dj_where(
-				owner = webapp_owner_id, 
-				shelve_type = mall_models.PRODUCT_SHELVE_TYPE_ON, 
-				is_deleted = False,
-				type__not = mall_models.PRODUCT_DELIVERY_PLAN_TYPE).order_by(mall_models.Product.display_index, -mall_models.Product.id)
-			# jz 2015-11-26
-			# if not is_access_weizoom_mall:
-			# 	# 非微众商城
-			# 	product_ids_in_weizoom_mall = self.__get_product_ids_in_weizoom_mall(webapp_id)
-			# 	products.dj_where(id__notin = product_ids_in_weizoom_mall)
 
-			products_0 = products.dj_where(display_index=0)
-			products_not_0 = products.dj_where(display_index__not=0)
-			# TODO: need to be optimized
-			products = list(itertools.chain(products_not_0, products_0))
+		mall_type = self.context['webapp_owner'].mall_type
+		if category_id == 0:
+			if mall_type:
+				pool_products = mall_models.ProductPool.select().dj_where(woid=webapp_owner_id, status=mall_models.PP_STATUS_ON)
+				pool_product2display_index = dict([(p.product_id, p.display_index) for p in pool_products])
+				if pool_product2display_index:
+					products = mall_models.Product.select().where((mall_models.Product.id << pool_product2display_index.keys())|
+						( (mall_models.Product.owner == webapp_owner_id) & (mall_models.Product.shelve_type == mall_models.PRODUCT_SHELVE_TYPE_ON) & (mall_models.Product.is_deleted == False) & (mall_models.Product.type.not_in([mall_models.PRODUCT_DELIVERY_PLAN_TYPE])))).order_by(mall_models.Product.display_index, -mall_models.Product.id)
+					#处理排序 TODO bert 优化
+					product_list = []
+					for product in products:
+						if product.id in pool_product2display_index.keys():
+							product.display_index = pool_product2display_index[product.id]
+						if product.display_index == 0:
+							product.display_index = 99999999
+						product_list.append(product)
+					product_list.sort(lambda x,y: cmp(x.display_index, y.display_index))
+
+					products = product_list
+
+			if products is None:
+				products = mall_models.Product.select().dj_where(
+					owner = webapp_owner_id, 
+					shelve_type = mall_models.PRODUCT_SHELVE_TYPE_ON, 
+					is_deleted = False,
+					type__not = mall_models.PRODUCT_DELIVERY_PLAN_TYPE).order_by(mall_models.Product.display_index, -mall_models.Product.id)
+				# jz 2015-11-26
+				# if not is_access_weizoom_mall:
+				# 	# 非微众商城
+				# 	product_ids_in_weizoom_mall = self.__get_product_ids_in_weizoom_mall(webapp_id)
+				# 	products.dj_where(id__notin = product_ids_in_weizoom_mall)
+
+				products_0 = products.dj_where(display_index=0)
+
+				products_not_0 = products.dj_where(display_index__not=0)
+				# TODO: need to be optimized
+				products = list(itertools.chain(products_not_0, products_0))
 
 			category = mall_models.ProductCategory()
 			category.name = u'全部'

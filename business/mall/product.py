@@ -128,7 +128,21 @@ class CachedProduct(object):
 
 		try:
 			product = CachedProduct.__get_from_cache(webapp_owner_id, product_id, member_grade_id)
-			if product.owner_id != webapp_owner_id:
+
+			if CachedProduct.webapp_owner.mall_type:
+				is_pool_product = mall_models.ProductPool.select().dj_where(woid=webapp_owner_id, product_id=product_id).count() > 0
+				if  product.owner_id != webapp_owner_id and (not is_pool_product):
+					product.is_deleted = True
+				elif product.owner_id != webapp_owner_id and is_pool_product:
+					pool_product = mall_models.ProductPool.select().dj_where(woid=webapp_owner_id, product_id=product_id).first()
+					if pool_product.status == mall_models.PP_STATUS_ON:
+						product.shelve_type = mall_models.PRODUCT_SHELVE_TYPE_ON
+					elif pool_product.status == mall_models.PP_STATUS_OFF:
+						product.shelve_type = mall_models.PRODUCT_SHELVE_TYPE_OFF
+					else:
+						product.is_deleted = True
+
+			elif product.owner_id != webapp_owner_id:
 				product.is_deleted = True
 		except:
 			if settings.DEBUG and not settings.IS_UNDER_BDD:
@@ -136,7 +150,7 @@ class CachedProduct(object):
 			else:
 				#记录日志
 				alert_message = u"获取商品记录失败,商品id: {} cause:\n{}".format(product_id, unicode_full_stack())
-				watchdog.alert(alert_message, type='WEB')
+				watchdog.alert(alert_message)
 				#返回"被删除"商品
 				product = Product()
 				product.is_deleted = True
@@ -203,6 +217,9 @@ class Product(business_model.Model):
 		'is_delivery', # 是否勾选配送时间
 		# 'supplier_name' # 供货商名称
 		'purchase_price',
+		'price',
+		'weight',
+		'stock_type'
 	)
 
 
@@ -214,7 +231,7 @@ class Product(business_model.Model):
 		fill_options = args.get('fill_options', {})
 
 		product = Product(model)
-		Product.__fill_details(webapp_owner.id, [product], fill_options)
+		Product.__fill_details(webapp_owner, [product], fill_options)
 		product.__set_image_to_lazy_load()
 		product.context['webapp_owner'] = webapp_owner
 
@@ -241,7 +258,7 @@ class Product(business_model.Model):
 		for model in models:
 			products.append(Product(model))
 
-		Product.__fill_details(webapp_owner.id, products, fill_options)
+		Product.__fill_details(webapp_owner, products, fill_options)
 
 		return products
 
@@ -514,7 +531,7 @@ class Product(business_model.Model):
 					}
 
 	@staticmethod
-	def __fill_model_detail(webapp_owner_id, products, is_enable_model_property_info=False):
+	def __fill_model_detail(webapp_owner, products, is_enable_model_property_info=False):
 		"""填充商品规格相关细节
 		向product中添加is_use_custom_model, models, used_system_model_properties三个属性
 		"""
@@ -523,6 +540,7 @@ class Product(business_model.Model):
 			return
 
 		#TODO2: 因为这里是静态方法，所以目前无法使用product.context['webapp_owner']，构造基于Object的临时解决方案，需要优化
+		webapp_owner_id = webapp_owner.id
 		from core.cache.utils import Object
 		webapp_owner = Object('fake_webapp_owner')
 		webapp_owner.id = webapp_owner_id
@@ -532,7 +550,7 @@ class Product(business_model.Model):
 		product_model_generator.fill_models_for_products(products, is_enable_model_property_info)
 
 	@staticmethod
-	def __fill_image_detail(webapp_owner_id, products, product_ids):
+	def __fill_image_detail(webapp_owner, products, product_ids):
 		"""填充商品轮播图相关细节
 		"""
 		for product in products:
@@ -545,7 +563,7 @@ class Product(business_model.Model):
 			} for img in mall_models.ProductSwipeImage.select().dj_where(product_id=product.id)]
 
 	@staticmethod
-	def __fill_property_detail(webapp_owner_id, products, product_ids):
+	def __fill_property_detail(webapp_owner, products, product_ids):
 		"""填充商品属性相关细节
 		"""
 		for product in products:
@@ -556,9 +574,10 @@ class Product(business_model.Model):
 			} for property in mall_models.ProductProperty.select().dj_where(product_id=product.id)]
 
 	@staticmethod
-	def __fill_category_detail(webapp_owner_id, products, product_ids, only_selected_category=False):
+	def __fill_category_detail(webapp_owner, products, product_ids, only_selected_category=False):
 		"""填充商品分类信息相关细节
 		"""
+		webapp_owner_id = webapp_owner.id
 		categories = list(mall_models.ProductCategory.select().dj_where(owner=webapp_owner_id).order_by('id'))
 
 		# 获取product关联的category集合
@@ -601,11 +620,12 @@ class Product(business_model.Model):
 		"""填充商品促销相关细节
 		"""
 		PromotionRepository.fill_for_products({
-			'products': products
+			'products': products,
+			'webapp_owner': webapp_owner
 		})
 
 	@staticmethod
-	def __fill_sales_detail(webapp_owner_id, products, product_ids):
+	def __fill_sales_detail(webapp_owner, products, product_ids):
 		"""填充商品销售情况相关细节
 		"""
 		id2product = dict([(product.id, product) for product in products])
@@ -618,7 +638,7 @@ class Product(business_model.Model):
 				id2product[product_id].sales = sales.sales
 
 	@staticmethod
-	def __fill_details(webapp_owner_id, products, options):
+	def __fill_details(webapp_owner, products, options):
 		"""填充各种细节信息
 
 		此方法会根据options中的各种填充选项，填充相应的细节信息
@@ -643,42 +663,42 @@ class Product(business_model.Model):
 		if options.get('with_price', False):
 			#price需要商品规格信息
 			Product.__fill_model_detail(
-				webapp_owner_id,
+				webapp_owner,
 				products,
 				is_enable_model_property_info)
 			Product.__fill_display_price(products)
 
 		if options.get('with_product_model', False):
 			Product.__fill_model_detail(
-				webapp_owner_id,
+				webapp_owner,
 				products,
 				is_enable_model_property_info)
 
 		if options.get('with_product_promotion', False):
-			Product.__fill_promotion_detail(webapp_owner_id, products, product_ids)
+			Product.__fill_promotion_detail(webapp_owner, products, product_ids)
 
 		if options.get('with_image', False):
-			Product.__fill_image_detail(webapp_owner_id, products, product_ids)
+			Product.__fill_image_detail(webapp_owner, products, product_ids)
 
 		if options.get('with_property', False):
-			Product.__fill_property_detail(webapp_owner_id, products, product_ids)
+			Product.__fill_property_detail(webapp_owner, products, product_ids)
 
 		if options.get('with_selected_category', False):
 			Product.__fill_category_detail(
-				webapp_owner_id,
+				webapp_owner,
 				products,
 				product_ids,
 				True)
 
 		if options.get('with_all_category', False):
 			Product.__fill_category_detail(
-				webapp_owner_id,
+				webapp_owner,
 				products,
 				product_ids,
 				False)
 
 		if options.get('with_sales', False):
-			Product.__fill_sales_detail(webapp_owner_id, products, product_ids)
+			Product.__fill_sales_detail(webapp_owner, products, product_ids)
 
 		# if options.get('with_promotion', False):
 		# 	Product.__fill_promotion_detail(webapp_owner_id, products, product_ids)

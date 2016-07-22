@@ -222,7 +222,23 @@ class WZCard(business_model.Model):
 					r.incr(times_key)
 					if not r.ttl(times_key) > 0:
 						r.expire(times_key, 86400)
-				return False, data['type'], None
+
+				# 如果是过期，则取过期时间
+				if data['type'] == 'wzcard:expired':
+					get_card_infos_resp = WZCard.get_card_infos({
+						'card_infos': [{'card_number': card_number, 'card_password': card_password}]
+					})
+
+					if not get_card_infos_resp:
+						return False, 'common:wtf', None
+
+					# 获得详细数据
+					card_info = get_card_infos_resp['data']['card_infos'][0].values()[0]
+
+					data['valid_time_from'] = card_info['valid_time_from']
+					data['valid_time_to'] = card_info['valid_time_to']
+
+				return False, data['type'], data
 			else:
 
 				# 判断是否绑定过
@@ -328,7 +344,7 @@ class WZCard(business_model.Model):
 			return True, usable_cards, unusable_cards
 
 		else:
-			return False, None, None
+			return False, [], []
 
 	@staticmethod
 	@param_required(['card_numbers', 'webapp_user'])

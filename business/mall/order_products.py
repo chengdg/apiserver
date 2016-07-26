@@ -194,7 +194,5 @@ class OrderProducts(business_model.Model):
 					premium_order_product.promotion = {
 						'type_name': 'premium_sale:premium_product'
 					}
-					premium_order_product.supplier = premium_product.get('supplier', 0)
-					premium_order_product.supplier_user_id = premium_product.get('supplier_user_id', 0)
 
 					self.products.append(premium_order_product)

@@ -14,7 +14,7 @@ class AShoppingCart(api_resource.ApiResource):
 	"""
 	app = 'mall'
 	resource = 'shopping_cart'
-	
+
 	@param_required([])
 	def get(args):
 		"""
@@ -72,7 +72,7 @@ class AShoppingCart(api_resource.ApiResource):
 			group_for_weizoom(supplier_user_id2product_datas, supplier_user_id2max_shopping_cart_id, others, '')
 
 			#按supplier_user_id2max_shopping_cart_id从大到小排序
-			sorted_items = sorted(supplier_user_id2max_shopping_cart_id.iteritems(), key=lambda d:d[1], reverse=True)
+			sorted_items = sorted(supplier_user_id2max_shopping_cart_id.iteritems(), key=lambda d:d[0], reverse=True)
 			product_groups = []
 			for item in sorted_items:
 				product_groups.append(supplier_user_id2product_datas[item[0]])

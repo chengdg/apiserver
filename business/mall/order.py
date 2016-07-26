@@ -301,7 +301,7 @@ class Order(business_model.Model):
 
 			self.context['products'] = products
 
-		products = sorted(products, key = lambda product: "%d-%d" % (product.supplier, product.supplier_user_id), reverse=True)
+		products = sorted(products, key = lambda product: "%d-%d" % (product.supplier, product.supplier_user_id))
 		return products
 
 	@products.setter

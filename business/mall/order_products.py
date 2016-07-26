@@ -16,8 +16,8 @@ from eaglet.decorator import param_required
 from eaglet.core.cache import utils as cache_util
 from db.mall import models as mall_models
 from eaglet.core import watchdog
-from business import model as business_model 
-from business.mall.order_product import OrderProduct 
+from business import model as business_model
+from business.mall.order_product import OrderProduct
 from business.mall.forbidden_coupon_product_ids import ForbiddenCouponProductIds
 from business.mall.promotion.promotion import Promotion
 import settings
@@ -95,7 +95,7 @@ class OrderProducts(business_model.Model):
 	# 			"webapp_user": webapp_user,
 	# 			"product_info": product_info
 	# 		}))
-		
+
 	# 	#TODO2：目前对商品是否可使用优惠券的设置放在了order_products中，主要是出于目前批量处理的考虑，后续应该将r_forbidden_coupon_product_ids资源进行优化，将判断逻辑放入到order_product中
 	# 	forbidden_coupon_product_ids = ForbiddenCouponProductIds.get_for_webapp_owner({
 	# 		'webapp_owner': webapp_owner
@@ -114,7 +114,7 @@ class OrderProducts(business_model.Model):
 
 		id2promotion = dict([(r.promotion_id, r) for r in mall_models.OrderHasPromotion.select().dj_where(order=order.id)])
 
-		order_product_infos = []	
+		order_product_infos = []
 		for r in mall_models.OrderHasProduct.select().dj_where(order=order.id, origin_order_id=0):
 			promotion = id2promotion.get(r.promotion_id, None)
 			if promotion:
@@ -137,7 +137,7 @@ class OrderProducts(business_model.Model):
 				'integral_sale_id': r.integral_sale_id
 			})
 		order_product_infos.sort(lambda x,y: cmp(x['rid'], y['rid']))
-	
+
 		#按商品id收集购买商品集合{id1: [product1_model1, product1_model2, ...], id2: []}
 		id2products = {}
 		index = 0
@@ -190,10 +190,11 @@ class OrderProducts(business_model.Model):
 						premium_order_product.purchase_count = premium_product['count']
 						premium_order_product.thumbnails_url = '%s%s' % (settings.IMAGE_HOST, premium_product['thumbnails_url']) if premium_product['thumbnails_url'].find('http') == -1 else premium_product['thumbnails_url']
 					premium_order_product.id = premium_product['id']
-					premium_order_product.price = 0	
+					premium_order_product.price = 0
 					premium_order_product.promotion = {
 						'type_name': 'premium_sale:premium_product'
 					}
-					premium_order_product.supplier = premium_product.get('supplier', None)
+					premium_order_product.supplier = premium_product.get('supplier', 0)
+					premium_order_product.supplier_user_id = premium_product.get('supplier_user_id', 0)
 
 					self.products.append(premium_order_product)

@@ -542,8 +542,8 @@ class Product(business_model.Model):
 		#TODO2: 因为这里是静态方法，所以目前无法使用product.context['webapp_owner']，构造基于Object的临时解决方案，需要优化
 		webapp_owner_id = webapp_owner.id
 		from core.cache.utils import Object
-		webapp_owner = Object('fake_webapp_owner')
-		webapp_owner.id = webapp_owner_id
+		# webapp_owner = Object('fake_webapp_owner')
+		# webapp_owner.id = webapp_owner_id
 		product_model_generator = ProductModelGenerator.get({
 			'webapp_owner': webapp_owner
 		})

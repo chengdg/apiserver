@@ -56,12 +56,14 @@ class ProductModelGenerator(business_model.Model):
 		id2property = dict([(str(property.id), property)
 						   for property in properties])
 		# 兼容商品池
-		pool_weapp_account = mall_models.UserProfile.select().dj_where(webapp_type=2).first()
-		if pool_weapp_account:
-			pool_properties = mall_models.ProductModelProperty.select().dj_where(owner_id=pool_weapp_account.user_id)
-			property_ids += [pool_property.id for pool_property in pool_properties]
-			id2property.update(dict([(str(property.id), property)
-									 for property in pool_properties]))
+		mall_type = self.context['webapp_owner'].mall_type
+		if mall_type:
+			pool_weapp_account = mall_models.UserProfile.select().dj_where(webapp_type=2).first()
+			if pool_weapp_account:
+				pool_properties = mall_models.ProductModelProperty.select().dj_where(owner_id=pool_weapp_account.user_id)
+				property_ids += [pool_property.id for pool_property in pool_properties]
+				id2property.update(dict([(str(property.id), property)
+										 for property in pool_properties]))
 		id2propertyvalue = {}
 		for value in mall_models.ProductModelPropertyValue.select().dj_where(property__in=property_ids):
 			id = '%d:%d' % (value.property_id, value.id)

@@ -222,6 +222,7 @@ class CouponRule(models.Model):
 	get_person_count = models.IntegerField(default=0) #领取人数
 	get_count = models.IntegerField(default=0) #领取次数
 	use_count = models.IntegerField(default=0) #使用次数
+	receive_rule = models.BooleanField(default=False) #领取规则，仅未下单用户可领取
 
 	class Meta(object):
 		db_table = 'market_tool_coupon_rule'

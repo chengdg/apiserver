@@ -157,6 +157,8 @@ class ReservedProduct(business_model.Model):
 		self.stock_type = model.stock_type
 		self.stocks = model.stocks
 		self.model = model
+		if model.name != 'standard' and model.purchase_price > 0:
+			self.purchase_price = model.purchase_price
 		self.total_price = self.original_price * int(self.purchase_count)
 
 		#获取商品当前的promotion

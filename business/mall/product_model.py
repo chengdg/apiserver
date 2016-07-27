@@ -29,6 +29,7 @@ class ProductModel(business_model.Model):
 		'name',
 		'weight',
 		'price',
+		'purchase_price',
 		'original_price',
 		'market_price',
 		'user_code',

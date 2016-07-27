@@ -115,6 +115,7 @@ class SimpleProducts(business_model.Model):
 	def __get_from_db(self, webapp_owner):
 		"""
 		从数据库中获取需要存储到缓存中的数据
+		@warning 如修改此处,务必同步修改weapp中的cache/webapp_cache.py update_product_list_cache()
 		"""
 		def inner_func():
 			webapp_owner_id = webapp_owner.id

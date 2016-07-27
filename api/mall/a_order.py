@@ -253,8 +253,9 @@ class AOrder(api_resource.ApiResource):
 			'webapp_user': args['webapp_user'],
 			'order_id': order_id
 		})
-
 		order_data = AOrder.to_dict(order)
+		if order_data['order'].has_key('sub_orders'):
+			order_data['order']['sub_orders'] = sorted(order_data['order']['sub_orders'], key=lambda order:"%d-%d" % (order['supplier'], order['supplier_user_id']))
 		order_data.update({'mall_type': args['webapp_owner'].user_profile.webapp_type})
 
 		return order_data

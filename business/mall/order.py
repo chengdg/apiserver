@@ -804,7 +804,7 @@ class Order(business_model.Model):
 				new_order.weizoom_card_money = 0
 				new_order.supplier = supplier
 				new_order.total_purchase_price = sum(map(lambda product:product.purchase_price * product.purchase_count, supplier2products[supplier]))
-				
+
 				#weshop
 				if len(supplier2products[supplier]) > 0:
 					product = supplier2products[supplier][0]
@@ -823,7 +823,7 @@ class Order(business_model.Model):
 				else:
 					is_virtual = False
 					is_wzcard = False
-					
+
 				new_order.save()
 				new_order_ids.append(new_order.order_id)
 
@@ -884,7 +884,7 @@ class Order(business_model.Model):
 				else:
 					is_virtual = False
 					is_wzcard = False
-					
+
 				new_order.save()
 				new_order_ids.append(new_order.order_id)
 

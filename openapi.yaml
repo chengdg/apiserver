@@ -211,67 +211,95 @@ paths:
 
   /wzcard/binding_cards/:
     get:
-      summary:"微众卡列表"
-    description:
-        'unused', #未使用
-        'used', #已被使用
-        'empty', #已用完
-        'inactive' #未激活
-        'expired'已过期
-    parameters:
-    responses:
-      200:
-        schema:
-          properties:
-            code:
-              required: true
-              type: number （200， 500）
-            data:
-              properties:
-                usable_cards:
-                   required: true
-                   type: "array"
-                unusable_cards:
-                   required: true
-                   type: "array"
-        examples:
-          {
-            "data": {
-              "unusable_cards": [],
-              "usable_cards": [
-                {
-                  "bound_at": "2016-06-30 15:02:46",
-                  "status": "可用",
-                  "status_text": null,
-                  "card_password": "1234567",
-                  "source": 3,
-                  "valid_time_from": "2016-06-16 00:00:00",
-                  "balance": "10.00",
-                  "face_value": "10.00",
-                  "card_number": "101000001",
-                  "valid_time_to": "2026-06-16 00:00:00"
-                },
-                {
-                  "bound_at": "2016-06-30 15:02:46",
-                  "status": "可用",
-                  "status_text": null,
-                  "card_password": "1234567",
-                  "source": 3,
-                  "valid_time_from": "2016-06-16 00:00:00",
-                  "balance": "10.00",
-                  "face_value": "10.00",
-                  "card_number": "101000002",
-                  "valid_time_to": "2026-06-16 00:00:00"
-                }
-              ]
-            },
-            "code": 200,
-            "innerErrMsg": "",
-            "errMsg": ""
-          }
+      summary: "微众卡列表"
+      description: 'unused'-未使用，'used'-已被使用，'empty'-已用完，'inactive'-未激活，'expired'-已过期
+      parameters:
+      responses:
+        200:
+          schema:
+            properties:
+              code:
+                required: true
+                type: number （200， 500）
+              data:
+                properties:
+                  usable_cards:
+                     required: true
+                     type: "array"
+                  unusable_cards:
+                     required: true
+                     type: "array"
+          examples:
+            {
+              "data": {
+                "unusable_cards": [],
+                "usable_cards": [
+                  {
+                    "bound_at": "2016-06-30 15:02:46",
+                    "status": "可用",
+                    "status_text": null,
+                    "card_password": "1234567",
+                    "source": 3,
+                    "valid_time_from": "2016-06-16 00:00:00",
+                    "balance": "10.00",
+                    "face_value": "10.00",
+                    "card_number": "101000001",
+                    "valid_time_to": "2026-06-16 00:00:00"
+                  },
+                  {
+                    "bound_at": "2016-06-30 15:02:46",
+                    "status": "可用",
+                    "status_text": null,
+                    "card_password": "1234567",
+                    "source": 3,
+                    "valid_time_from": "2016-06-16 00:00:00",
+                    "balance": "10.00",
+                    "face_value": "10.00",
+                    "card_number": "101000002",
+                    "valid_time_to": "2026-06-16 00:00:00"
+                  }
+                ]
+              },
+              "code": 200,
+              "innerErrMsg": "",
+              "errMsg": ""
+            }
 
+  /mall/order_list:
+    get:
+      summary: "订单列表"
+      parameters:
+      - name: order_type
+        required: true
+        description:
+                    """
+      全部： -1
+      ORDER_STATUS_NOT = 0  # 待支付
+      ORDER_STATUS_CANCEL = 1  # 已取消
+      ORDER_STATUS_PAYED_SUCCESSED = 2  # 已支付
+      ORDER_STATUS_PAYED_NOT_SHIP = 3  # 待发货
+      ORDER_STATUS_PAYED_SHIPED = 4  # 已发货
+      ORDER_STATUS_SUCCESSED = 5  # 已完成
+      ORDER_STATUS_REFUNDING = 6  # 退款中
+      ORDER_STATUS_REFUNDED = 7  # 退款完成
+      ORDER_STATUS_GROUP_REFUNDING = 8 #团购退款（没有退款完成按钮）
+      ORDER_STATUS_GROUP_REFUNDED = 9 #团购退款完成
+            """
+      - name: count_per_page
+        required: false
+      - nmae: cur_page
+        required: true
 
-
+      responses:
+        '200':
+            schema:
+            #$ref: "#/definitions/Coupons"
+            title: coupon response
+            type: "object"
+            properties:
+              orders:
+              order_config:
+              page_info:
 
 
 definitions:

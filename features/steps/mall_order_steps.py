@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
-
+from db.mall import models as mall_models
 from behave import *
 
 from features.util import bdd_util
@@ -145,3 +145,76 @@ def step_impl(context, webapp_user_name, action, order_id):
 		})
 
 	context.tc.assertTrue(200 != response.body['code'])
+
+
+@step(u"{webapp_user}设置订单列表分页查询参数")
+def step_impl(context, webapp_user):
+	"""
+	@type context: behave.runner.Context
+	"""
+	context.count_per_page = json.loads(context.text)['count_per_page']
+	context.cur_page = json.loads(context.text)['cur_page']
+
+
+@then(u"{webapp_user_name}查看个人中心'{order_type}'订单列表")
+def step_visit_personal_orders(context, webapp_user_name, order_type):
+	if order_type == u'全部':
+		status = -1
+	elif order_type == u'待支付':
+		status = 0
+	elif order_type == u'待发货':
+		status = 3
+	elif order_type == u'待收货':
+		status = 4
+	else:
+		status = -1
+
+	expected = json.loads(context.text)
+	actual = []
+
+	if hasattr(context, 'count_per_page'):
+		count_per_page = context.count_per_page
+		del context.count_per_page
+
+	else:
+		count_per_page = 100
+
+	if hasattr(context, 'cur_page'):
+		cur_page = context.cur_page
+		del context.cur_page
+	else:
+		cur_page = 1
+
+	url = '/mall/order_list/?woid={}&order_type={}&cur_page={}&count_per_page={}'.format(context.webapp_owner_id, status,cur_page,count_per_page)
+	response = context.client.get(bdd_util.nginx(url), follow=True)
+
+	orders = response.data['orders']
+	import datetime
+	for actual_order in orders:
+		if actual_order['status'] != status and status != -1:
+			continue
+		order = {}
+		order['final_price'] = actual_order['final_price']
+		order['products'] = []
+		order['counts'] = actual_order['product_count']
+		order['status'] = mall_models.ORDERSTATUS2MOBILETEXT[actual_order['status']]
+		order['pay_interface'] = mall_models.PAYTYPE2NAME[actual_order['pay_interface_type']]
+		order['created_at'] = actual_order['created_at']
+		order['pay_info'] = actual_order['pay_info']
+		order['order_no'] = actual_order['order_id']
+		order['order_id'] = actual_order['order_id']
+		order['is_group_buying'] = 'true' if  actual_order['is_group_buy'] else 'false'
+
+		# BBD中购买的时间再未指定购买时间的情况下只能为今天
+		created_at = datetime.datetime.strptime(actual_order['created_at'], '%Y.%m.%d %H:%M')
+		if created_at.date() == datetime.date.today():
+			order['created_at'] = u'今天'
+
+		for i, product in enumerate(actual_order['products']):
+			# 列表页面最多显示3个商品
+			a_product = {}
+			a_product['name'] = product['name']
+			# a_product['price'] = product.total_price
+			order['products'].append(a_product)
+		actual.append(order)
+	bdd_util.assert_list(expected, actual)

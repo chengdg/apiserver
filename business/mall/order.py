@@ -57,6 +57,7 @@ from business.mall.pay_interface import PayInterface
 from decimal import Decimal
 from business.mall.allocator.allocate_price_related_resource_service import AllocatePriceRelatedResourceService
 
+from eaglet.core import paginator
 
 
 ORDER_STATUS2NOTIFY_STATUS = {
@@ -153,6 +154,35 @@ class Order(business_model.Model):
 			order._init_slot_from_model(order_model)
 			#TODO2: this is ugly, need moved into __init__
 			# order.ship_area = regional_util.get_str_value_by_string_ids(order_model.area)
+			order.context['is_valid'] = True
+			orders.append(order)
+
+		return orders
+
+	@staticmethod
+	@param_required(['order_type'])
+	def get_for_list_page(args):
+		"""工厂方法，获取适用于订单列表页的webapp_user对应的Order对象集合
+
+		@return Order对象列表
+		"""
+		webapp_owner = args['webapp_owner']
+		webapp_user = args['webapp_user']
+		order_type = args['order_type']
+		# cur_page = args['cur_page']
+		# count_per_page = args['count_per_page']
+
+		order_models = mall_models.Order.select().where(mall_models.Order.webapp_user_id == webapp_user.id, mall_models.Order.origin_order_id<=0).order_by(-mall_models.Order.id)
+
+		if order_type != -1:  # 表示全部订单
+			order_models = order_models.where(mall_models.Order.status == args['order_type'])
+		# pageinfo, order_models = paginator.paginate(order_models, cur_page, count_per_page)
+
+		orders = []
+		for order_model in order_models:
+			order = Order(webapp_owner, webapp_user, None)
+			order.context['order'] = order_model
+			order._init_slot_from_model(order_model)
 			order.context['is_valid'] = True
 			orders.append(order)
 

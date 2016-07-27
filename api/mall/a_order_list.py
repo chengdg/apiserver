@@ -8,15 +8,18 @@ from eaglet.decorator import param_required
 from db.mall import models as mall_models
 from db.mall import promotion_models
 from util import dateutil as utils_dateutil
-#import resource
+# import resource
 from api.mall.a_purchasing import APurchasing as PurchasingApiResource
 from eaglet.core.cache import utils as cache_utils
 from business.mall.order import Order
 from business.mall.order_products import OrderProducts
 from business.mall.order_config import OrderConfig
 from business.mall.review.waiting_review_order import WaitingReviewOrder
-
+from eaglet.core import paginator
 from eaglet.utils.resource_client import Resource
+
+DEFAULT_COUNT_PER_PAGE = 8
+
 
 class AOrderList(api_resource.ApiResource):
 	"""
@@ -25,7 +28,7 @@ class AOrderList(api_resource.ApiResource):
 	app = 'mall'
 	resource = 'order_list'
 
-	@param_required(['type'])
+	@param_required(['order_type', 'cur_page'])
 	def get(args):
 		"""
 		会员订单列表
@@ -34,10 +37,16 @@ class AOrderList(api_resource.ApiResource):
 		"""
 		webapp_user = args['webapp_user']
 		webapp_owner = args['webapp_owner']
+		count_per_page = int(args.get('count_per_page', DEFAULT_COUNT_PER_PAGE))
+		cur_page = int(args['cur_page'])
+		order_type = int(args['order_type'])
 
-		orders = Order.get_orders_for_webapp_user({
+		orders = Order.get_for_list_page({
+			'order_type': order_type,
 			'webapp_owner': webapp_owner,
-			'webapp_user': webapp_user
+			'webapp_user': webapp_user,
+			# 'cur_page': cur_page,
+			# 'count_per_page': count_per_page
 		})
 
 		# finished 1.团购
@@ -47,16 +56,28 @@ class AOrderList(api_resource.ApiResource):
 
 		order_id2group_info = Order.get_group_infos_for_orders({'orders': orders, 'woid': webapp_owner.id})
 
+		print('--------------begin')
+		print('---------------------args',args)
+		print('--------1',len(orders))
+
 		# 过滤已取消的团购订单,但优惠抵扣的显示
 		# orders = filter(lambda order: not(order.is_group_buy and order.status == mall_models.ORDER_STATUS_CANCEL) or order.pay_interface_type ==  mall_models.PAY_INTERFACE_PREFERENCE ,orders)
-		orders = filter(lambda order: not(order_id2group_info[order.order_id] and order.status == mall_models.ORDER_STATUS_CANCEL) or order.pay_interface_type == mall_models.PAY_INTERFACE_PREFERENCE, orders)
-		param_data = {'woid':args['webapp_owner'].id, 'member_id':args['webapp_user'].member.id }
+		orders = filter(lambda order: not (order_id2group_info[
+			                                   order.order_id] and order.status == mall_models.ORDER_STATUS_CANCEL) or order.pay_interface_type == mall_models.PAY_INTERFACE_PREFERENCE,
+		                orders)
+
+		# 注意：所有排序、过滤操作需要在分页之前
+		pageinfo, orders = paginator.paginate(orders, cur_page, count_per_page)
+
+		print('---------2',len(orders))
+
+		param_data = {'woid': args['webapp_owner'].id, 'member_id': args['webapp_user'].member.id}
 		get_order_review_json = []
 
 		resp = Resource.use('marketapp_apiserver').get({
-				'resource': 'evaluate.get_order_evaluates',
-				'data': param_data
-			})
+			'resource': 'evaluate.get_order_evaluates',
+			'data': param_data
+		})
 		if resp:
 			code = resp["code"]
 			if code == 200:
@@ -64,15 +85,11 @@ class AOrderList(api_resource.ApiResource):
 		order_id2review = {}
 		if get_order_review_json:
 			for order_review in get_order_review_json:
-				order_id2review[int(order_review["order_id"])]=order_review["order_is_reviewed"]
-				#order_id指的是order.id
+				order_id2review[int(order_review["order_id"])] = order_review["order_is_reviewed"]
+			# order_id指的是order.id
 
 		order_datas = []
 		for order in orders:
-			#子订单不显示在订单列表中
-			if order.origin_order_id > 0:
-				continue
-
 			if order_id2review.has_key(order.id):
 				review_is_finished = order_id2review[order.id]
 			else:
@@ -119,9 +136,10 @@ class AOrderList(api_resource.ApiResource):
 			order_datas.append(data)
 
 		order_config = OrderConfig.get_order_config({'webapp_owner': webapp_owner})
+		print('----------3',len(order_datas))
+		print('----------------------end')
 		return {
 			'orders': order_datas,
-			'order_config': order_config
+			'order_config': order_config,
+			'page_info': pageinfo.to_dict()
 		}
-
-

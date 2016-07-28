@@ -135,7 +135,7 @@ class APurchasing(api_resource.ApiResource):
 		#自营平台和商家分开处理
 		if webapp_owner.user_profile.webapp_type:
 			supplier_product_groups = []
-			for key, value in order.promotion_product_groups.items():
+			for key, value in sorted(order.promotion_product_groups.iteritems(), key=lambda d:d[0]):
 				supplier_product_groups.append([group.to_dict(with_price_factor=True, with_coupon_info=True) for group in order.promotion_product_groups[key]])
 			product_group_datas = supplier_product_groups
 		else:

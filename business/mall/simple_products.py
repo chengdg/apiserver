@@ -115,6 +115,7 @@ class SimpleProducts(business_model.Model):
 	def __get_from_db(self, webapp_owner):
 		"""
 		从数据库中获取需要存储到缓存中的数据
+		@warning 如修改此处,务必同步修改weapp中的cache/webapp_cache.py update_product_list_cache()
 		"""
 		def inner_func():
 			webapp_owner_id = webapp_owner.id
@@ -193,7 +194,7 @@ class SimpleProducts(business_model.Model):
 	def __get_products(self, webapp_owner_id, category_id):
 		"""
 		get_products: 获得product集合
-
+		@warning 如修改此处,务必同步修改weapp中的cache/webapp_cache.py update_product_list_cache()
 		最后修改：闫钊
 		"""
 		#获得category和product集合

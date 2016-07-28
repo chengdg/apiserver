@@ -374,7 +374,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 		When bill绑定微众卡
 			"""
 			{
-				"binding_date":"2016-06-16",
+				"binding_date":"2015-06-16",
 				"binding_shop":"jobs",
 				"weizoom_card_info":
 					{
@@ -408,7 +408,6 @@ Scenario:1 订单列表只有团购订单-团购进行中
 				"ship_tel": "13811223344",
 				"ship_area": "北京市 北京市 海淀区",
 				"ship_address": "泰兴大厦",
-				"pay_type":"微信支付",
 				"weizoom_card":[{
 					"card_name":"100000001",
 					"card_pass":"1234567"
@@ -571,7 +570,7 @@ Scenario:1 订单列表只有团购订单-团购进行中
 		When tom绑定微众卡
 			"""
 			{
-				"binding_date":"2016-06-16",
+				"binding_date":"2015-06-16",
 				"binding_shop":"jobs",
 				"weizoom_card_info":
 					{
@@ -1460,4 +1459,323 @@ Scenario:6 订单列表团购订单-手机端参团未支付订单
 		Then tom查看个人中心'全部'订单列表
 			"""
 			[]
+			"""
+
+@mall3 @group_t @weizoom_card @ztq
+Scenario:7 团购订单和普通订单同时存在，在订单列表分页显示
+	#普通订单-待支付
+		When bill访问jobs的webapp
+		When bill购买jobs的商品
+			"""
+			{
+				"order_id":"0001",
+				"date": "2015-08-01 00:00:00",
+				"pay_type":"微信支付",
+				"products": [{
+					"name": "商品1",
+					"count": 2
+				}]
+			}
+			"""
+
+	#普通订单-已取消
+		When bill访问jobs的webapp
+		When bill购买jobs的商品
+			"""
+			{
+				"order_id":"0002",
+				"date": "2015-08-02 00:00:00",
+				"pay_type":"微信支付",
+				"products": [{
+					"name": "商品2",
+					"count": 1
+				}]
+			}
+			"""
+		When bill取消订单'0002'
+
+	#团购订单-待发货
+		When bill访问jobs的webapp
+		When bill参加jobs的团购活动"团购活动1"进行开团::weapp
+			"""
+			{
+				"group_name": "团购活动1",
+				"group_leader": "bill",
+				"group_dict":
+					{
+						"group_type":5,
+						"group_days":1,
+						"group_price":80.00
+					},
+				"products": {
+					"name": "商品1"
+				}
+			}
+			"""
+		When bill提交团购订单
+			"""
+			{
+				"order_id": "0003",
+				"date": "2015-08-03 00:00:00",
+				"ship_name": "bill",
+				"ship_tel": "13811223344",
+				"ship_area": "北京市 北京市 海淀区",
+				"ship_address": "泰兴大厦",
+				"pay_type":"微信支付"
+			}
+			"""
+		When bill使用支付方式'微信支付'进行支付
+
+	#团购订单-待发货（微众卡支付）
+		When bill访问jobs的webapp
+		When bill绑定微众卡
+			"""
+			{
+				"binding_date":"2015-06-16",
+				"binding_shop":"jobs",
+				"weizoom_card_info":
+					{
+						"id":"100000001",
+						"password":"1234567"
+					}
+			}
+			"""
+		When bill参加jobs的团购活动"团购活动2"进行开团::weapp
+			"""
+			{
+				"group_name": "团购活动2",
+				"group_leader": "bill",
+				"group_dict":
+					{
+						"group_type":5,
+						"group_days":1,
+						"group_price":40.00
+					},
+				"products": {
+					"name": "商品2"
+				}
+			}
+			"""
+		When bill提交团购订单
+			"""
+			{
+				"order_id": "0004",
+				"date": "2015-08-04 00:00:00",
+				"ship_name": "bill",
+				"ship_tel": "13811223344",
+				"ship_area": "北京市 北京市 海淀区",
+				"ship_address": "泰兴大厦",
+				"weizoom_card":[{
+					"card_name":"100000001",
+					"card_pass":"1234567"
+				}]
+			}
+			"""
+
+	#团购订单-待支付
+		When tom访问jobs的webapp
+		When tom参加jobs的团购活动"团购活动1"进行开团::weapp
+			"""
+			{
+				"group_name": "团购活动1",
+				"group_leader": "tom",
+				"group_dict":
+					{
+						"group_type":5,
+						"group_days":1,
+						"group_price":80.00
+					},
+				"products": {
+					"name": "商品1"
+				}
+			}
+			"""
+		When tom提交团购订单
+			"""
+			{
+				"order_id": "0005",
+				"date": "2015-08-05 00:00:00",
+				"ship_name": "tom",
+				"ship_tel": "13811223344",
+				"ship_area": "北京市 北京市 海淀区",
+				"ship_address": "泰兴大厦",
+				"pay_type":"微信支付"
+			}
+			"""
+		When tom使用支付方式'微信支付'进行支付
+
+		When bill访问jobs的webapp
+		When bill参加tom的团购活动"团购活动1"::weapp
+			"""
+			{
+				"group_name": "团购活动1",
+				"group_leader": "tom",
+				"group_dict":
+					{
+						"group_type":5,
+						"group_days":1,
+						"group_price":80.00
+					},
+				"products": {
+					"name": "商品1"
+				}
+			}
+			"""
+		When bill提交团购订单
+			"""
+			{
+				"order_id": "0005",
+				"date": "2015-08-05 00:00:00",
+				"ship_name": "bill",
+				"ship_tel": "13811223344",
+				"ship_area": "北京市 北京市 海淀区",
+				"ship_address": "泰兴大厦",
+				"pay_type":"微信支付"
+			}
+			"""
+
+	#团购活动进行中的订单列表
+		When bill访问jobs的webapp
+		And bill设置订单列表分页查询参数
+			"""
+			{
+				"count_per_page":3,
+				"cur_page":1
+			}
+			"""
+		Then bill查看个人中心'全部'订单列表
+			"""
+			[{
+				"order_no": "0005",
+				"is_group_buying": "true",
+				"status": "待支付",
+				"created_at": "2015.08.05 00:00",
+				"products": [{
+					"name": "商品1"
+				}],
+				"counts": 1,
+				"final_price": 80.00
+			},{
+				"order_no": "0004",
+				"is_group_buying": "true",
+				"status": "待发货",
+				"created_at": "2015.08.04 00:00",
+				"products": [{
+					"name": "商品2"
+				}],
+				"counts": 1,
+				"final_price": 0.0
+			},{
+				"order_no": "0003",
+				"is_group_buying": "true",
+				"status": "待发货",
+				"created_at": "2015.08.03 00:00",
+				"products": [{
+					"name": "商品1"
+				}],
+				"counts": 1,
+				"final_price": 80.00
+			}]
+			"""
+
+		And bill设置订单列表分页查询参数
+			"""
+			{
+				"count_per_page":3,
+				"cur_page":2
+			}
+			"""
+		Then bill查看个人中心'全部'订单列表
+			"""
+			[{
+				"order_no": "0002",
+				"is_group_buying": "false",
+				"status": "已取消",
+				"created_at": "2015.08.02 00:00",
+				"products": [{
+					"name": "商品2"
+				}],
+				"counts": 1,
+				"final_price": 50.00
+			},{
+				"order_no": "0001",
+				"is_group_buying": "false",
+				"status": "待支付",
+				"created_at": "2015.08.01 00:00",
+				"products": [{
+					"name": "商品1"
+				}],
+				"counts": 2,
+				"final_price": 210.00
+			}]
+			"""
+
+	#团购活动结束，隐藏取消的未支付团购订单
+		Given jobs登录系统::weapp
+		When jobs关闭团购活动'团购活动1'::weapp
+		When jobs关闭团购活动'团购活动2'::weapp
+
+		When bill访问jobs的webapp
+		And bill设置订单列表分页查询参数
+			"""
+			{
+				"count_per_page":3,
+				"cur_page":1
+			}
+			"""
+		Then bill查看个人中心'全部'订单列表
+			"""
+			[{
+				"order_no": "0004",
+				"is_group_buying": "true",
+				"status": "已取消",
+				"created_at": "2015.08.04 00:00",
+				"products": [{
+					"name": "商品2"
+				}],
+				"counts": 1,
+				"final_price": 0.00
+			},{
+				"order_no": "0003",
+				"is_group_buying": "true",
+				"status": "退款中",
+				"created_at": "2015.08.03 00:00",
+				"products": [{
+					"name": "商品1"
+				}],
+				"counts": 1,
+				"final_price": 80.00
+			},{
+				"order_no": "0002",
+				"is_group_buying": "false",
+				"status": "已取消",
+				"created_at": "2015.08.02 00:00",
+				"products": [{
+					"name": "商品2"
+				}],
+				"counts": 1,
+				"final_price": 50.00
+			}]
+			"""
+
+		And bill设置订单列表分页查询参数
+			"""
+			{
+				"count_per_page":3,
+				"cur_page":2
+			}
+			"""
+		Then bill查看个人中心'全部'订单列表
+			"""
+			[{
+				"order_no": "0001",
+				"is_group_buying": "false",
+				"status": "待支付",
+				"created_at": "2015.08.01 00:00",
+				"products": [{
+					"name": "商品1"
+				}],
+				"counts": 2,
+				"final_price": 210.00
+			}]
 			"""

@@ -66,6 +66,14 @@ class SimpleProducts(business_model.Model):
 		data = cache_util.get_from_cache(key, self.__get_from_db(webapp_owner))
 		products = data['products']
 
+		msg = {
+			'location': 1,
+			'msg_id': 'SimpleProducts_from_db',
+			'woid': webapp_owner.id,
+			'products': products
+		}
+		watchdog.info(msg)
+
 		if category_id == 0:
 			category = mall_models.ProductCategory()
 			category.name = u'全部'
@@ -105,6 +113,14 @@ class SimpleProducts(business_model.Model):
 
 		product_sales = mall_models.ProductSales.select().dj_where(product__in=[p['id'] for p in products])
 		product_id2sales = {t.product_id: t.sales for t in product_sales}
+
+		msg = {
+			'location': 2,
+			'msg_id': 'SimpleProducts_from_db',
+			'woid': webapp_owner.id,
+			'products': products
+		}
+		watchdog.info(msg)
 
 		for p in products:
 			p['sales'] = product_id2sales.get(p['id'], 0)   # warning,没产生销量的商品没有创建ProductSales记录

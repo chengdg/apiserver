@@ -68,7 +68,7 @@ class SimpleProducts(business_model.Model):
 
 		msg = {
 			'location': 1,
-			'msg_id': 'SimpleProducts_from_db',
+			'msg_id': 'spdb123',
 			'woid': webapp_owner.id,
 			'products': products
 		}
@@ -116,7 +116,7 @@ class SimpleProducts(business_model.Model):
 
 		msg = {
 			'location': 2,
-			'msg_id': 'SimpleProducts_from_db',
+			'msg_id': 'spdb123',
 			'woid': webapp_owner.id,
 			'products': products
 		}
@@ -205,7 +205,7 @@ class SimpleProducts(business_model.Model):
 				msg = {
 					'traceback': unicode_full_stack(),
 					'hint': u'获取商品列表mysql数据失败',
-					'msg_id': 'SimpleProducts_from_db',
+					'msg_id': 'spdb123',
 					'woid': webapp_owner_id
 				}
 				watchdog.alert(msg)

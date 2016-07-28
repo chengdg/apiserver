@@ -185,6 +185,14 @@ class SimpleProducts(business_model.Model):
 					}
 				}
 			except:
+				from eaglet.core.exceptionutil import unicode_full_stack
+				msg = {
+					'traceback': unicode_full_stack(),
+					'hint': u'获取商品列表mysql数据失败',
+					'msg_id': 'SimpleProducts_from_db',
+					'woid': webapp_owner_id
+				}
+				watchdog.alert(msg)
 				if settings.DEBUG:
 					raise
 				else:

@@ -68,7 +68,7 @@ class SimpleProducts(business_model.Model):
 
 		msg = {
 			'data': data,
-			'type_data': type(data),
+			'type_data': str(type(data)),
 			'location': 1,
 			'msg_id': 'spdb123',
 			'woid': webapp_owner.id,

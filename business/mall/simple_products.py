@@ -66,21 +66,21 @@ class SimpleProducts(business_model.Model):
 		data = cache_util.get_from_cache(key, self.__get_from_db(webapp_owner))
 		products = data['products']
 
-		# todo 针对Bug10603,临时解决方案
-		if not products:
-			msg = {
-				'data': data,
-				'type_data': str(type(data)),
-				'location': 0,
-				'msg_id': 'spdb123',
-				'woid': webapp_owner.id,
-				'products': products
-			}
-			watchdog.info(msg)
-
-			cache_util.delete_cache(key)
-			data = cache_util.get_from_cache(key, self.__get_from_db(webapp_owner))
-			products = data['products']
+		# # todo 针对Bug10603,临时解决方案
+		# if not products:
+		# 	msg = {
+		# 		'data': data,
+		# 		'type_data': str(type(data)),
+		# 		'location': 0,
+		# 		'msg_id': 'spdb123',
+		# 		'woid': webapp_owner.id,
+		# 		'products': products
+		# 	}
+		# 	watchdog.info(msg)
+        #
+		# 	cache_util.delete_cache(key)
+		# 	data = cache_util.get_from_cache(key, self.__get_from_db(webapp_owner))
+		# 	products = data['products']
 
 		msg = {
 			'data': data,

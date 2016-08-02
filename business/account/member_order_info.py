@@ -92,6 +92,7 @@ class MemberOrderInfo(business_model.Model):
 			#except:
 			#return None
 		return inner_func
+
 	def __get_review_count(self, stats):
 		order_has_product_list_ids = stats['order_has_product_list_ids']
 		reviewed_count = 0
@@ -110,13 +111,36 @@ class MemberOrderInfo(business_model.Model):
 		review_count = len(order_has_product_list_ids) - int(reviewed_count)
 		return review_count
 
+
+	def __get_stats(self):
+		webapp_user_id = self.context['webapp_user'].id
+		stats = {
+			"total_count": mall_models.Order.select().dj_where(webapp_user_id=webapp_user_id,
+															   origin_order_id__lte=0).count(),
+			"not_paid": mall_models.Order.select().dj_where(webapp_user_id=webapp_user_id,
+															status=mall_models.ORDER_STATUS_NOT,
+															origin_order_id__lte=0).count(),
+			"not_ship_count": mall_models.Order.select().dj_where(webapp_user_id=webapp_user_id,
+																  status=mall_models.ORDER_STATUS_PAYED_NOT_SHIP,
+																  origin_order_id__lte=0).count(),
+			"shiped_count": mall_models.Order.select().dj_where(webapp_user_id=webapp_user_id,
+																status=mall_models.ORDER_STATUS_PAYED_SHIPED,
+																origin_order_id__lte=0).count(),
+			"finished_count": mall_models.Order.select().dj_where(webapp_user_id=webapp_user_id,
+																  status=mall_models.ORDER_STATUS_SUCCESSED,
+																  origin_order_id__lte=0).count(),
+			"order_has_product_list_ids": self.__get_order_has_product_list_ids(webapp_user_id)
+		}
+
+		return stats
+
 	def __fill_detail(self):
 		"""
 		获取会员订单信息的详情
 		"""
-		webapp_user = self.context['webapp_user']
-		key = "webapp_order_stats_{wu:%d}" % (webapp_user.id)
-		stats = cache_util.get_from_cache(key, self.__get_order_stats_from_db(key, webapp_user.id))
+		# webapp_user = self.context['webapp_user']
+		# key = "webapp_order_stats_{wu:%d}" % (webapp_user.id)
+		stats = self.__get_stats()
 
 		self.history_order_count = stats['total_count']
 		self.not_payed_order_count = stats['not_paid']

@@ -1442,3 +1442,97 @@ Scenario:16 使用未被领取的优惠券购买，后台取消订单后查看�
 			}
 		}
 		"""
+
+#补充: wangli 2016.07.28
+#新需求，仅未下单用户可使用的优惠券
+@mall3 @meberGrade @coupon
+Scenario:17 用户使用'仅限未下单用户使用'的优惠券
+	Given marry关注jobs的公众号::weapp
+	Given jobs登录系统::weapp
+	And jobs已添加了优惠券规则::weapp
+		"""
+		[{
+			"name": "未下单用户单品券",
+			"money": 100.00,
+			"each_limit": "不限",
+			"limit_counts": 5,
+			"is_no_order_user":"true",
+			"start_date": "今天",
+			"end_date": "1天后",
+			"coupon_id_prefix": "coupon8_id_",
+			"coupon_product": "商品2"
+		}]
+		"""
+	
+	When jobs创建优惠券发放规则发放优惠券::weapp
+		"""
+		{
+			"name": "未下单用户单品券",
+			"count": 2,
+			"members": ["marry"],
+			"coupon_ids": ["coupon8_id_1","coupon8_id_2"]
+		}
+		"""
+	When marry访问jobs的webapp
+	Then marry能获得webapp优惠券列表::weapp
+		"""
+		[{
+			"coupon_id": "coupon8_id_1",
+			"money": 100.00,
+			"status": "未使用"
+		},{
+			"coupon_id": "coupon8_id_2",
+			"money": 100.00,
+			"status": "未使用"
+		}]
+		"""
+
+	#只要领用的优惠券，在使用的时候不限制
+		When marry购买jobs的商品
+			"""
+			{
+				"pay_type": "货到付款",
+				"order_id": "0001",
+				"coupon": "coupon8_id_1",
+				"products": [{
+					"name": "商品2",
+					"count": 1
+				}]
+				
+			}
+			"""
+		Then marry成功创建订单
+			"""
+			{
+				"order_no":"0001",
+				"status": "待发货",
+				"final_price": 100.00,
+				"product_price": 200.00,
+				"coupon_money": 100.00
+			}
+			"""
+
+		#marry有待发货订单，仍然可以使用手中的'仅限未下单用户使用'优惠券进行下单
+		When marry访问jobs的webapp
+		When marry购买jobs的商品
+			"""
+			{
+				"order_id": "0002",
+				"pay_type": "货到付款",
+				"products": [{
+					"name": "商品2",
+					"count": 1
+				}],
+				"coupon": "coupon8_id_2"
+			}
+			"""
+		Then marry成功创建订单
+			"""
+			{
+				"order_no":"0002",
+				"status": "待发货",
+				"final_price": 100.00,
+				"product_price": 200.00,
+				"coupon_money": 100.00
+			}
+			"""

@@ -1443,6 +1443,8 @@ Scenario:16 使用未被领取的优惠券购买，后台取消订单后查看�
 		}
 		"""
 
+#补充: wangli 2016.07.28
+#新需求，仅未下单用户可使用的优惠券
 @mall3 @meberGrade @coupon
 Scenario:17 用户使用'仅限未下单用户使用'的优惠券
 	Given marry关注jobs的公众号::weapp

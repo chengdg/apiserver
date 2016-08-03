@@ -29,6 +29,7 @@ class AProducts(api_resource.ApiResource):
 		webapp_user = args['webapp_user']
 
 		product_name = args.get('product_name', None)
+		product_ids = args.get('product_ids', None)
 
 		simple_products = SimpleProducts.get({
 			"webapp_owner": webapp_owner,
@@ -44,6 +45,10 @@ class AProducts(api_resource.ApiResource):
 				"webapp_user": webapp_user
 			})
 			products = searcher.filter_products({'products': products, 'product_name': product_name})
+
+		if product_ids:
+			product_ids = map(lambda x: int(x), product_ids.split(','))
+			products = filter(lambda x: x['id'] in product_ids, products)
 
 		category_dict = simple_products.category.to_dict('is_deleted')
 		return {

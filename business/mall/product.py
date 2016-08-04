@@ -435,7 +435,14 @@ class Product(business_model.Model):
 		注意，这里返回的有可能是被删除的规格，使用者应该通过product_model.is_deleted来判断
 		"""
 		models = self.models
-
+		if not models:
+			watchdog.info({
+				'msg': u'商品models为空！',
+				'product_id': self.id,
+				'product_detail': self.to_dict()
+			})
+			Product.__fill_model_detail(self.context['webapp_owner'], [self], True)
+			models = self.models
 		candidate_models = filter(lambda m: m.name == model_name if m else False, models)
 		if len(candidate_models) > 0:
 			model = candidate_models[0]

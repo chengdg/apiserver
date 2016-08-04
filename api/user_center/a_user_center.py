@@ -16,6 +16,7 @@ from eaglet.decorator import param_required
 #from business.mall.purchase_info import PurchaseInfo
 #from business.mall.pay_interface import PayInterface
 from business.mall.shopping_cart import ShoppingCart
+from business.channel_qrcode.channel_distribution_qrcode import ChannelDistributionQrcodeSettings
 from services.update_member_from_weixin.task import update_member_info
 from eaglet.core import watchdog
 import uuid
@@ -36,7 +37,6 @@ class AUserCenter(api_resource.ApiResource):
 		webapp_user = args['webapp_user']
 		webapp_owner = args['webapp_owner']
 		member = webapp_user.member
-
 		today_str = datetime.today().strftime('%Y-%m-%d')
 		if member.update_time.strftime("%Y-%m-%d") != today_str:
 			update_member_info.delay(webapp_user.id, webapp_owner.id)
@@ -52,6 +52,17 @@ class AUserCenter(api_resource.ApiResource):
 			phone = webapp_user.phone
 		else:
 			phone = ''
+		member_bind_channel_qrcode = ChannelDistributionQrcodeSettings.get_for_webapp_user({
+			'webapp_user': args['webapp_user'],
+			'webapp_owner': args['webapp_owner'],
+		})
+		if member_bind_channel_qrcode:
+			is_bind_channel_qrcode = True
+			total_reward = member_bind_channel_qrcode.will_return_reward
+		else:
+			is_bind_channel_qrcode = False
+			total_reward = 0
+
 		member_data = {
 			'user_icon': webapp_user.user_icon,
 			'is_binded': is_binded,
@@ -66,7 +77,9 @@ class AUserCenter(api_resource.ApiResource):
 			'wishlist_product_count': webapp_user.collected_product_count,
 			'market_tools': member.market_tools,
 			'shopping_cart_product_count': shopping_cart_product_count,
-			'phone': phone
+			'phone': phone,
+			'is_bind_channel_qrcode': is_bind_channel_qrcode,
+			'total_reward': total_reward
 		}
 
 		return member_data

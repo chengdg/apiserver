@@ -2006,6 +2006,24 @@ class Supplier(models.Model):
 		db_table = "mall_supplier"
 
 
+########################################################################
+# SupplierPostageConfig:供货商邮费配置
+########################################################################
+class SupplierPostageConfig(models.Model):
+	supplier_id = models.IntegerField(default=0)
+	product_id = models.IntegerField(default=0)
+	condition_type = models.CharField(
+		max_length=25,
+		default='money')  # 免邮条件类型, 共有'count', 'money'两种
+	condition_money = models.DecimalField(max_digits=65, decimal_places=2, null=True) #免邮的消费金额
+	condition_count = models.CharField(max_length=25)  # 免邮商品数量
+	postage = models.DecimalField(max_digits=65, decimal_places=2, null=True) #邮费
+	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间
+
+	class Meta(object):
+		db_table = 'mall_supplier_postage_config'
+		verbose_name = '供货商邮费配置'
+		verbose_name_plural = '供货商邮费配置'
 
 
 

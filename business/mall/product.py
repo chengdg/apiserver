@@ -759,7 +759,8 @@ class Product(business_model.Model):
 			'unified_postage_money': self.unified_postage_money,
 			'is_delivery': self.is_delivery,
 			'purchase_price': self.purchase_price,
-			'supplier_user_id': self.supplier_user_id
+			'supplier_user_id': self.supplier_user_id,
+			'supplier_postage_config': self.supplier_postage_config
 		}
 		if 'extras' in kwargs:
 			for extra in kwargs['extras']:
@@ -806,6 +807,23 @@ class Product(business_model.Model):
 		except:
 			watchdog.alert(unicode_full_stack())
 			return ''
+
+	@cached_context_property
+	def supplier_postage_config(self):
+		if not self.supplier:
+			return {}
+		supplier_postage_config_model = mall_models.SupplierPostageConfig.select().dj_where(
+				supplier_id=self.supplier
+			).first()
+		if supplier_postage_config_model:
+			return {
+				'condition_type': supplier_postage_config_model.condition_type,
+				'condition_money': supplier_postage_config_model.condition_money,
+				'postage': supplier_postage_config_model.postage
+			}
+		else:
+			return {}
+
 
 	# @cached_context_property
 	# def supplier_user_id(self):

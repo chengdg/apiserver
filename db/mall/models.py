@@ -1996,8 +1996,6 @@ class Supplier(models.Model):
 	responsible_person = models.CharField(max_length=100) # 供货商负责人
 	supplier_tel = models.CharField(max_length=100) # 供货商电话
 	supplier_address = models.CharField(max_length=256) # 供货商地址
-	free_freight_money = models.DecimalField(max_digits=65, decimal_places=2, null=True) #免邮的消费金额
-	need_freight_money = models.DecimalField(max_digits=65, decimal_places=2, null=True) #运费金额
 	remark = models.CharField(max_length=256) # 备注
 	is_delete = models.BooleanField(default=False)  # 是否已经删除
 	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间

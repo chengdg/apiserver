@@ -2004,6 +2004,7 @@ class Supplier(models.Model):
 	supplier_address = models.CharField(max_length=256) # 供货商地址
 	remark = models.CharField(max_length=256) # 备注
 	is_delete = models.BooleanField(default=False)  # 是否已经删除
+	type = models.IntegerField(default=-1)# 是否55分  0 55分成
 	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间
 
 	class Meta(object):

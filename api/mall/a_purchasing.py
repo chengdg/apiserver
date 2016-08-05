@@ -12,7 +12,7 @@ from util import dateutil as utils_dateutil
 from business.mall.purchase_info import PurchaseInfo
 from business.mall.purchase_order import PurchaseOrder
 from business.mall.forbidden_coupon_product_ids import ForbiddenCouponProductIds
-
+from business.mall.supplier_postage_config import SupplierPostageConfig
 
 class APurchasing(api_resource.ApiResource):
 	"""
@@ -132,12 +132,15 @@ class APurchasing(api_resource.ApiResource):
 		mall_config = webapp_owner.mall_config
 		use_ceiling = webapp_owner.integral_strategy_settings.use_ceiling
 
+		product_supplier_ids = [product.supplier for product in order.products]
+		product_supplier_configs = None
 		#自营平台和商家分开处理
 		if webapp_owner.user_profile.webapp_type:
 			supplier_product_groups = []
 			for key, value in sorted(order.promotion_product_groups.iteritems(), key=lambda d:d[0]):
 				supplier_product_groups.append([group.to_dict(with_price_factor=True, with_coupon_info=True) for group in order.promotion_product_groups[key]])
 			product_group_datas = supplier_product_groups
+			product_supplier_configs = SupplierPostageConfig.get_supplier_postage_config_by_supplier({'supplier_ids': product_supplier_ids})
 		else:
 			product_group_datas = [group.to_dict(with_price_factor=True, with_coupon_info=True) for group in order.promotion_product_groups]
 		order_info = {
@@ -160,6 +163,7 @@ class APurchasing(api_resource.ApiResource):
 			'postage_factor': postage_factor,
 			'group_id': group_id,
 			'usable_cards': usable_cards,
-			'mall_type': webapp_owner.user_profile.webapp_type
+			'mall_type': webapp_owner.user_profile.webapp_type,
+			'product_supplier_configs': product_supplier_configs
 		}
 

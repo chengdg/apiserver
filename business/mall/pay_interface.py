@@ -167,6 +167,20 @@ class PayInterface(business_model.Model):
 			# 	webapp_owner_id,
 			# 	order.order_id,
 			# 	interface['id'])
+		elif mall_models.PAY_INTERFACE_KANGOU == interface_type:
+			return {
+				'type': 'kangou_pay',
+				'woid': webapp_owner_id,
+				'order_id': order.order_id,
+				'pay_id': interface['id'],
+				'showwxpaytitle': 1,
+				'is_active': interface['is_active']
+
+			}
+			# return '/wapi/mall/wxpay/?woid={}&order_id={}&pay_id={}&showwxpaytitle=1'.format(
+			# 	webapp_owner_id,
+			# 	order.order_id,
+			# 	interface['id'])
 		else:
 			return ''
 
@@ -217,6 +231,10 @@ class PayInterface(business_model.Model):
 				'merchant_pwd': pay_config['merchant_pwd'],
 				'key': pay_config['key']
 
+			}
+		elif mall_models.PAY_INTERFACE_KANGOU== interface_type:
+			return {
+				'sign_key': '05ff6c259dee0c6d80a2cfe0df846c36'
 			}
 		else:
 			return {}

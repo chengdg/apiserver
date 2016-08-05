@@ -813,7 +813,8 @@ class Product(business_model.Model):
 		if not self.supplier:
 			return {}
 		supplier_postage_config_model = mall_models.SupplierPostageConfig.select().dj_where(
-				supplier_id=self.supplier
+				supplier_id=self.supplier，
+				status=True
 			).first()
 		if supplier_postage_config_model:
 			return {

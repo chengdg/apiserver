@@ -2016,8 +2016,9 @@ class SupplierPostageConfig(models.Model):
 		max_length=25,
 		default='money')  # 免邮条件类型, 共有'count', 'money'两种
 	condition_money = models.DecimalField(max_digits=65, decimal_places=2, null=True) #免邮的消费金额
-	condition_count = models.CharField(max_length=25)  # 免邮商品数量
+	condition_count = models.IntegerField(default=0)  # 免邮商品数量
 	postage = models.DecimalField(max_digits=65, decimal_places=2, null=True) #邮费
+	status = models.BooleanField(default=True) # 是否启用邮费配置
 	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间
 
 	class Meta(object):

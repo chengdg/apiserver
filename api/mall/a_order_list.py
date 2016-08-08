@@ -56,10 +56,6 @@ class AOrderList(api_resource.ApiResource):
 
 		order_id2group_info = Order.get_group_infos_for_orders({'orders': orders, 'woid': webapp_owner.id})
 
-		print('--------------begin')
-		print('---------------------args',args)
-		print('--------1',len(orders))
-
 		# 过滤已取消的团购订单,但优惠抵扣的显示
 		# orders = filter(lambda order: not(order.is_group_buy and order.status == mall_models.ORDER_STATUS_CANCEL) or order.pay_interface_type ==  mall_models.PAY_INTERFACE_PREFERENCE ,orders)
 		orders = filter(lambda order: not (order_id2group_info[
@@ -68,8 +64,6 @@ class AOrderList(api_resource.ApiResource):
 
 		# 注意：所有排序、过滤操作需要在分页之前
 		pageinfo, orders = paginator.paginate(orders, cur_page, count_per_page)
-
-		print('---------2',len(orders))
 
 		param_data = {'woid': args['webapp_owner'].id, 'member_id': args['webapp_user'].member.id}
 		get_order_review_json = []

@@ -48,6 +48,7 @@ class PurchaseInfo(business_model.Model):
         'group_id',
         'activity_id',
         'bdd_order_id',  # bdd时候用的order_id
+        'postage' # 邮费方便后面传递参数
     )
 
     @staticmethod

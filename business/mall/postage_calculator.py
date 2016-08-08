@@ -80,6 +80,36 @@ class PostageCalculator(object):
 	        return area.split('_')[0]
 	    return 0
 
+	def get_supplier_postage(self, products, purchase_info):
+		"""
+		计算自营平台的运费 by Eugene
+		"""
+		total_postage = 0
+		supplier2product_total_price = {}
+		for product in products:
+			if product.supplier > 0:
+				if supplier2product_total_price.has_key(product.supplier):
+					supplier2product_total_price[product.supplier] += product.price
+				else:
+					supplier2product_total_price[product.supplier] = product.price
+		supplier_ids = supplier2product_total_price.keys()
+		supplier_postage_config_models = mall_models.SupplierPostageConfig.select().dj_where(supplier_id__in=supplier_ids)
+		supplier2config = dict([(model.supplier_id, model) for model in supplier_postage_config_models])
+		supplier2postage = {}
+		for supplier in supplier_ids:
+			if not supplier2config.has_key(supplier):
+				supplier2postage[supplier] = 0
+				continue
+			total_price = supplier2product_total_price[supplier]
+			condition_money = supplier2config[supplier].condition_money
+			if total_price < condition_money:
+				supplier2postage[supplier] = supplier2config[supplier].postage
+				total_postage += supplier2config[supplier].postage
+			else:
+				supplier2postage[supplier] = 0
+		purchase_info.postage = supplier2postage
+		return float(total_postage)
+
 	def get_postage(self, products, purchase_info):
 		"""
 		计算运费

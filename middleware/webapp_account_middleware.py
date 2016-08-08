@@ -27,7 +27,7 @@ class WebAppAccountMiddleware(object):
 			logging.info("skipped in WebAppAccountMiddleware. req.path: {}".format(req.path))
 			return
 
-		if '/user/webapp_owner_info' in req.path:
+		if '/user/webapp_owner_info' in req.path or 'no_webapp_user' in req.path:
 			woid = req.params.get('woid', None)
 			if woid:
 				webapp_owner = WebAppOwner.get({
@@ -35,6 +35,7 @@ class WebAppAccountMiddleware(object):
 				})
 				if webapp_owner:
 					req.context['webapp_owner'] = webapp_owner
+					req.context['webapp_user'] = None
 					return
 				else:
 					raise ValueError("error woid")

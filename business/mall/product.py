@@ -816,7 +816,7 @@ class Product(business_model.Model):
 				supplier_id=self.supplier,
 				status=True
 			).first()
-		if supplier_postage_config_model:
+		if supplier_postage_config_model and supplier_postage_config_model.postage:
 			return {
 				'condition_type': supplier_postage_config_model.condition_type,
 				'condition_money': supplier_postage_config_model.condition_money,

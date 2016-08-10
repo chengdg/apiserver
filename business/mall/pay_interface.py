@@ -234,7 +234,8 @@ class PayInterface(business_model.Model):
 			}
 		elif mall_models.PAY_INTERFACE_KANGOU== interface_type:
 			return {
-				'sign_key': '05ff6c259dee0c6d80a2cfe0df846c36'
+				# 这个来回传输可能会不安全，这种定制的支付方式都在pay里面直接写死，不通过参数传递了 duhao 20160810
+				# 'sign_key': '05ff6c259dee0c6d80a2cfe0df846c36'
 			}
 		else:
 			return {}

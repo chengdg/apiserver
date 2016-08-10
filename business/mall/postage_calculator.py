@@ -89,9 +89,9 @@ class PostageCalculator(object):
 		for product in products:
 			if product.supplier > 0:
 				if supplier2product_total_price.has_key(product.supplier):
-					supplier2product_total_price[product.supplier] += product.price
+					supplier2product_total_price[product.supplier] += product.price * product.count
 				else:
-					supplier2product_total_price[product.supplier] = product.price
+					supplier2product_total_price[product.supplier] = product.price * product.count
 		supplier_ids = supplier2product_total_price.keys()
 		supplier_postage_config_models = mall_models.SupplierPostageConfig.select().dj_where(supplier_id__in=supplier_ids)
 		supplier2config = dict([(model.supplier_id, model) for model in supplier_postage_config_models])

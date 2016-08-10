@@ -102,7 +102,7 @@ class PostageCalculator(object):
 				continue
 			total_price = supplier2product_total_price[supplier]
 			condition_money = supplier2config[supplier].condition_money
-			if total_price < condition_money:
+			if total_price < condition_money or condition_money == 0:
 				supplier2postage[supplier] = supplier2config[supplier].postage
 				total_postage += supplier2config[supplier].postage
 			else:

@@ -130,8 +130,7 @@ class AOrderList(api_resource.ApiResource):
 			order_datas.append(data)
 
 		order_config = OrderConfig.get_order_config({'webapp_owner': webapp_owner})
-		print('----------3',len(order_datas))
-		print('----------------------end')
+
 		return {
 			'orders': order_datas,
 			'order_config': order_config,

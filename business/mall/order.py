@@ -1090,6 +1090,11 @@ class Order(business_model.Model):
 			if not self.is_group_buy:
 				# 团购订单不发送模板消息
 				self.__send_template_message()
+		else:
+			reason = u'非待支付订单,状态为{}'.format(str(self.order_id))
+			self.__log_pay_result(False, reason, raw_type, pay_interface_type)
+			return False, reason
+
 		return pay_result, ''
 
 

@@ -829,6 +829,8 @@ class Order(business_model.Model):
 				except:
 					# 如果是团购就会抛出异常
 					pass
+				#团购订单运费为0，供货商没有配置运费purchase_info.postage中没有对应的数据
+				new_order.postage = purchase_info.postage[supplier] if (not purchase_info.group_id) and purchase_info.postage and purchase_info.postage.has_key(supplier) else 0
 				new_order.coupon_money = 0
 				new_order.integral_money = 0
 				new_order.weizoom_card_money = 0

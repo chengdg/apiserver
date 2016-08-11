@@ -120,7 +120,10 @@ class PackageOrderService(business_model.Service):
 		else:
 			postage_config = self.context['webapp_owner'].system_postage_config
 			calculator = postage_calculator.PostageCalculator(postage_config)
-			order.postage = calculator.get_postage(order.products, purchase_info)
+			if self.context['webapp_owner'].user_profile.webapp_type:
+				order.postage = calculator.get_supplier_postage(order.products, purchase_info)
+			else:
+				order.postage = calculator.get_postage(order.products, purchase_info)
 		final_price += order.postage
 		logging.info("`final_price` in __process_postage(): {}".format(final_price))
 		return final_price
@@ -209,6 +212,6 @@ class PackageOrderService(business_model.Service):
 			order = self.__adjust_order_price(order, price_related_resources, purchase_info)
 
 			order.final_price = round(order.final_price, 2)
-	
+
 		logging.info("order.final_price={}".format(order.final_price))
 		return order, is_success, reason, price_related_resources

@@ -829,7 +829,7 @@ class Order(business_model.Model):
 				except:
 					# 如果是团购就会抛出异常
 					pass
-				new_order.postage = purchase_info.postage[supplier]
+				new_order.postage = purchase_info.postage.get(supplier, 0)
 				new_order.coupon_money = 0
 				new_order.integral_money = 0
 				new_order.weizoom_card_money = 0

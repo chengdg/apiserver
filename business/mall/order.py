@@ -764,8 +764,12 @@ class Order(business_model.Model):
 			db_model.origin_order_id = -1
 			self.origin_order_id = -1
 		else:
-			db_model.origin_order_id = 0
-			self.origin_order_id = 0
+			if supplier_ids:
+				db_model.origin_order_id = -1
+				self.origin_order_id = -1
+			else:
+				db_model.origin_order_id = 0
+				self.origin_order_id = 0
 
 		# 母订单供货商都为0
 		self.supplier_user_id = 0
@@ -797,7 +801,7 @@ class Order(business_model.Model):
 				purchase_price=product.purchase_price
 			)
 
-			if webapp_type:
+			if webapp_type or supplier_ids:
 				if not supplier_user_id2products.get(product.supplier_user_id):
 					supplier_user_id2products[product.supplier_user_id] = []
 					supplier_user_id2products[product.supplier_user_id].append(product)
@@ -811,7 +815,7 @@ class Order(business_model.Model):
 					supplier2products[product.supplier].append(product)
 
 		new_order_ids = []
-		if webapp_type:
+		if webapp_type or supplier_ids:
 			# 进行拆单，生成子订单
 			is_virtual = True  #标记母订单是否为虚拟类型  weshop定制功能
 			is_wzcard = True  #标记母订单是否为微众卡类型  weshop定制功能

@@ -11,6 +11,7 @@ from bs4 import BeautifulSoup
 import math
 from datetime import datetime
 
+from business.mall.realtime_stock import RealtimeStock
 from business.mall.supplier import Supplier
 from core.exceptionutil import unicode_full_stack
 from eaglet.decorator import param_required
@@ -340,14 +341,34 @@ class Product(business_model.Model):
 				return context['total_stocks']
 			is_dict = (type(models[0]) == dict)
 
+			# for model in models:
+			# 	stock_type = model['stock_type'] if is_dict else model.stock_type
+			# 	stocks = model['stocks'] if is_dict else model.stocks
+			# 	if stock_type == mall_models.PRODUCT_STOCK_TYPE_UNLIMIT:
+			# 		context['total_stocks'] = u'无限'
+			# 		return context['total_stocks']
+			# 	else:
+			# 		context['total_stocks'] = context['total_stocks'] + stocks
+
+			# 有无限的规格
+			has_unlimited_model = False
 			for model in models:
 				stock_type = model['stock_type'] if is_dict else model.stock_type
-				stocks = model['stocks'] if is_dict else model.stocks
 				if stock_type == mall_models.PRODUCT_STOCK_TYPE_UNLIMIT:
-					context['total_stocks'] = u'无限'
-					return context['total_stocks']
-				else:
-					context['total_stocks'] = context['total_stocks'] + stocks
+					has_unlimited_model = True
+					break
+			if has_unlimited_model:
+				context['total_stocks'] = u'无限'
+				return context['total_stocks']
+			else:
+				realtime_stock = RealtimeStock.from_product_id({
+					'product_id': self.id
+				}).model2stock
+				stock_dicts = realtime_stock.values()
+				# stock_dicts:[{'stock_type': 1, 'stocks': 1}, {'stock_type': 1, 'stocks': 2}, {'stock_type': 1, 'stocks': 3}]
+				for s in stock_dicts:
+					context['total_stocks'] = context['total_stocks'] + s['stocks']
+
 		return context['total_stocks']
 
 	@total_stocks.setter

@@ -94,22 +94,5 @@ class AProduct(api_resource.ApiResource):
 			result['product_reviews'] = reviews
 		result['is_in_group_buy'] = False
 		result['activity_url'] = ''
-		print ">>2"*18
-		import uuid
-		message = {
-			"_log_type": "test",
-			"_uuid": "view_product",
-			"_type_0": "product",
-			"woid": webapp_owner.id,
-			"webapp_user_id": webapp_user.id,
-			"r": str(uuid.uuid4()),
-			"product_id": product_id,
-			"review_count": len(reviews),
-			"is_in_group_buy": result['is_in_group_buy']
-		}
-
-		watchdog.info(json.dumps(message))
-
-
 
 		return result

@@ -12,6 +12,7 @@ integral_log_id	| 数值	| 积分记录ID(待确认)
 """
 
 import logging
+import decimal
 #import json
 #from bs4 import BeautifulSoup
 #import math
@@ -89,11 +90,12 @@ class IntegralResource(business_model.Resource):
 
 			if count_per_yuan == 0:
 				logging.error("ERROR: count_per_yuan SHOULD NOT be ZERO!")
-				integral_money = round(float(self.integral), 2)
+				integral_money = float(self.integral)
 			else:
-				integral_money = round(float(float(self.integral)/count_per_yuan), 2)
-			
-			return integral_money
+				integral_money = float(float(self.integral)/count_per_yuan)
+			integral_money = decimal.Decimal(integral_money).quantize(decimal.Decimal('.01'), rounding=decimal.ROUND_DOWN)
+
+			return float(integral_money)
 
 	@money.setter
 	def money(self, money):

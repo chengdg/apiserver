@@ -205,6 +205,7 @@ class SimpleProducts(business_model.Model):
 						"display_price": product.price_info['display_price'],
 						"promotion_js": json.dumps(product.promotion.to_dict()) if product.promotion else json.dumps(None),
 						"thumbnails_url": product.thumbnails_url,
+						"supplier": product.supplier,
 						"categories": list(product2categories.get(product.id, []))
 					})
 

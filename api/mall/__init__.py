@@ -24,3 +24,4 @@ import a_coupons
 import a_express_details
 import a_image
 import a_product_search_records
+import a_supplier_products

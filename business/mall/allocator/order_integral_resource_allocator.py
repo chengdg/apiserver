@@ -16,7 +16,7 @@ from eaglet.core.cache import utils as cache_util
 from db.mall import models as mall_models
 #import resource
 from eaglet.core import watchdog
-from business import model as business_model 
+from business import model as business_model
 from business.mall.product import Product
 from business.mall.allocator.integral_resource_allocator import IntegralResourceAllocator
 import settings
@@ -166,7 +166,7 @@ class OrderIntegralResourceAllocator(business_model.Service):
 
 			use_integral = int(integral_info['integral'])
 			integral_money = round(float(integral_info['money']), 2)
-			
+
 			# 校验前台输入：积分金额不能大于使用上限、积分值不能小于积分金额对应积分值
 			# 根据用户会员与否返回对应的商品价格
 			product_price = sum([product.price * product.purchase_count for product in promotion_product_group.products])
@@ -202,7 +202,7 @@ class OrderIntegralResourceAllocator(business_model.Service):
 
 	def allocate_resource(self, order, purchase_info):
 		"""
-		
+
 		@return is_success, reasons, resource
 		@note 返回值中reasons为list
 		"""
@@ -236,7 +236,7 @@ class OrderIntegralResourceAllocator(business_model.Service):
 				return False, [reason], None
 			total_money = 0.0
 			for group_uid, integral_info in purchase_info.group2integralinfo.items():
-				
+
 				max_integral_price = use_integral_info[group_uid]['max_integral_price']
 				total_money += max_integral_price
 				total_integral += int(use_integral_info[group_uid]['use_integral'])

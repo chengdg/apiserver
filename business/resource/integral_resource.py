@@ -12,6 +12,7 @@ integral_log_id	| 数值	| 积分记录ID(待确认)
 """
 
 import logging
+import decimal
 #import json
 #from bs4 import BeautifulSoup
 #import math
@@ -24,7 +25,7 @@ from eaglet.decorator import param_required
 from db.mall import models as mall_models
 #import resource
 from eaglet.core import watchdog
-from business import model as business_model 
+from business import model as business_model
 #from business.mall.product import Product
 #import settings
 from business.decorator import cached_context_property
@@ -49,7 +50,7 @@ class IntegralResource(business_model.Resource):
 		@return IntegralResource对象
 		"""
 		integral_resource = IntegralResource(args['webapp_owner'], args['webapp_user'], args['type'])
-		
+
 		return integral_resource
 
 	def __init__(self, webapp_owner, webapp_user, type):
@@ -82,18 +83,19 @@ class IntegralResource(business_model.Resource):
 	@property
 	def money(self):
 		if self.context['money']:
-			return self.context['money'] 
+			return self.context['money']
 		else:
 			webapp_owner = self.context['webapp_owner']
 			count_per_yuan = webapp_owner.integral_strategy_settings.integral_each_yuan
 
 			if count_per_yuan == 0:
 				logging.error("ERROR: count_per_yuan SHOULD NOT be ZERO!")
-				integral_money = round(float(self.integral), 2)
+				integral_money = float(self.integral)
 			else:
-				integral_money = round(float(float(self.integral)/count_per_yuan), 2)
-			
-			return integral_money
+				integral_money = float(float(self.integral)/count_per_yuan)
+			integral_money = decimal.Decimal(integral_money).quantize(decimal.Decimal('.01'), rounding=decimal.ROUND_05UP)
+
+			return float(integral_money)
 
 	@money.setter
 	def money(self, money):

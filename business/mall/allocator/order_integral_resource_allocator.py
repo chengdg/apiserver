@@ -4,7 +4,6 @@
 
 """
 import logging
-import decimal
 import json
 from bs4 import BeautifulSoup
 import math
@@ -89,8 +88,7 @@ class OrderIntegralResourceAllocator(business_model.Service):
 
 		count_per_yuan = webapp_owner.integral_strategy_settings.integral_each_yuan
 		total_integral = purchase_info.order_integral_info['integral']
-		#integral_money = round(float(purchase_info.order_integral_info['money']), 2)
-		integral_money = float(decimal.Decimal(float(purchase_info.order_integral_info['money'])).quantize(decimal.Decimal('.01'), rounding=decimal.ROUND_DOWN))
+		integral_money = round(float(purchase_info.order_integral_info['money']), 2)
 
 		product_price = sum([product.price * product.purchase_count for product in order.products])
 		if (integral_money - 1) > round(product_price * use_ceiling / 100, 2)\
@@ -167,8 +165,7 @@ class OrderIntegralResourceAllocator(business_model.Service):
 				return False, reason, None
 
 			use_integral = int(integral_info['integral'])
-			#integral_money = round(float(integral_info['money']), 2)
-			integral_money = float(decimal.Decimal(float(integral_info['money'])).quantize(decimal.Decimal('.01'), rounding=decimal.ROUND_DOWN))
+			integral_money = round(float(integral_info['money']), 2)
 
 			# 校验前台输入：积分金额不能大于使用上限、积分值不能小于积分金额对应积分值
 			# 根据用户会员与否返回对应的商品价格

@@ -12,6 +12,8 @@
 #import time
 #import random
 #from db.mall import models as mall_models
+import decimal
+
 from business import model as business_model
 from business.resource.coupon_resource import CouponResource
 from business.resource.integral_resource import IntegralResource
@@ -101,7 +103,8 @@ class PackageOrderService(business_model.Service):
 			use_ceiling = webapp_owner.integral_strategy_settings.use_ceiling
 			if use_ceiling > 0:
 				if integral_resource.money > round(order.product_price * use_ceiling / 100, 2):
-					order.integral_money =  round(order.product_price * use_ceiling / 100, 2)
+					#order.integral_money = round(order.product_price * use_ceiling / 100, 2)
+					order.integral_money = float(decimal.Decimal(order.product_price * use_ceiling / 100).quantize(decimal.Decimal('.01'), rounding=decimal.ROUND_DOWN))
 
 			final_price -= order.integral_money
 		logging.info("`final_price` in __process_integral(): {}".format(final_price))

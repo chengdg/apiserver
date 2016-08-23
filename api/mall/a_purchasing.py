@@ -133,7 +133,7 @@ class APurchasing(api_resource.ApiResource):
 		use_ceiling = webapp_owner.integral_strategy_settings.use_ceiling
 
 		product_supplier_ids = [product.supplier for product in order.products]
-		product_supplier_configs = None
+		product_supplier_configs = None #供货商运费配置信息
 		#自营平台和商家分开处理
 		if webapp_owner.user_profile.webapp_type:
 			supplier_product_groups = []
@@ -141,6 +141,7 @@ class APurchasing(api_resource.ApiResource):
 				supplier_product_groups.append([group.to_dict(with_price_factor=True, with_coupon_info=True) for group in order.promotion_product_groups[key]])
 			product_group_datas = supplier_product_groups
 			product_supplier_configs = SupplierPostageConfig.get_supplier_postage_config_by_supplier({'supplier_ids': product_supplier_ids})
+			product_group_datas = SupplierPostageConfig.product_group_use_supplier_postage({'product_groups': product_group_datas, 'supplier_ids': product_supplier_ids})
 		else:
 			product_group_datas = [group.to_dict(with_price_factor=True, with_coupon_info=True) for group in order.promotion_product_groups]
 		order_info = {

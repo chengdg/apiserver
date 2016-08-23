@@ -6,6 +6,7 @@ from eaglet.decorator import param_required
 
 from business import model as business_model
 from db.mall import models as mall_models
+from db.account import models as account_models
 
 class SupplierPostageConfig(business_model.Model):
     """供货商
@@ -50,3 +51,26 @@ class SupplierPostageConfig(business_model.Model):
                 'condition_money': config.condition_money,
                 'postage': config.postage
             }] for config in configs)
+
+    @staticmethod
+    @param_required(['product_groups', 'supplier_ids'])
+    def product_group_use_supplier_postage(args):
+        product_groups = args['product_groups']
+        supplier_ids = args['supplier_ids']
+        supplier_models = mall_models.Supplier.select().dj_where(id__in=supplier_ids, name=u'自营')
+        tmp_user_ids = [model.owner_id for model in supplier_models]
+        user_ids = [profile.user_id for profile in account_models.UserProfile.select().dj_where(user_id__in=tmp_user_ids, webapp_type=3)]
+        not_use_supplier_postage_supplier_id = [model.id for model in supplier_models if model.owner_id in user_ids]
+
+        for group in product_groups:
+            for data in group:
+                try:
+                    if data['products'][0]['supplier'] in not_use_supplier_postage_supplier_id:
+                        data['use_supplier_postage'] = False
+                    else:
+                        data['use_supplier_postage'] = True
+                except:
+
+                    data['use_supplier_postage'] = True
+
+        return product_groups

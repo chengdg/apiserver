@@ -85,7 +85,7 @@ class PostageCalculator(object):
 		"""
 		计算自营平台的运费 by Eugene
 		"""
-		total_postage = 0
+		total_postage = 0.0
 		supplier2product_total_price = {}
 		for product in products:
 			if product.supplier > 0:
@@ -116,11 +116,11 @@ class PostageCalculator(object):
 			condition_money = supplier2config[supplier].condition_money
 			if total_price < condition_money or condition_money == 0:
 				supplier2postage[supplier] = supplier2config[supplier].postage
-				total_postage += supplier2config[supplier].postage
+				total_postage += float(supplier2config[supplier].postage)
 			else:
 				supplier2postage[supplier] = 0
 		purchase_info.postage = supplier2postage
-		return float(total_postage)
+		return total_postage
 
 	def get_postage(self, products, purchase_info):
 		"""

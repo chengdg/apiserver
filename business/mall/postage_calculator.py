@@ -11,6 +11,7 @@
 import math
 
 from db.mall import models as mall_models
+from db.account import models as account_models
 
 
 class PostageCalculator(object):
@@ -96,7 +97,18 @@ class PostageCalculator(object):
 		supplier_postage_config_models = mall_models.SupplierPostageConfig.select().dj_where(supplier_id__in=supplier_ids)
 		supplier2config = dict([(model.supplier_id, model) for model in supplier_postage_config_models])
 		supplier2postage = {}
+
+		# 满足供货商可以使用weapp运费模板
+		supplier_models = mall_models.Supplier.select().dj_where(id__in=supplier_ids, name=u'自营')
+		tmp_user_ids = [model.owner_id for model in supplier_models]
+		user_ids = [profile.user_id for profile in account_models.UserProfile.select().dj_where(user_id__in=tmp_user_ids, webapp_type=3)]
+		not_use_supplier_postage_supplier_id = [model.id for model in supplier_models if model.owner_id in user_ids]
+
 		for supplier in supplier_ids:
+			if supplier in not_use_supplier_postage_supplier_id:
+				supplier2postage[supplier] = self.get_postage(filter(lambda p:p.supplier == supplier, products), purchase_info)
+				total_postage += supplier2postage[supplier]
+				continue
 			if not supplier2config.has_key(supplier):
 				supplier2postage[supplier] = 0
 				continue

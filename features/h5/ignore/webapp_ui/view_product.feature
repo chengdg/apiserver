@@ -953,7 +953,7 @@ Scenario:6 有禁售/仅售限制的商品详情页
 			}]
 		}
 		"""
-
+	When bill访问jobs的webapp
 	When bill浏览jobs的webapp的'仅售商品多地区商品'商品页
 	Then webapp页面标题为'仅售商品多地区商品'
 	And bill获得webapp商品
@@ -996,7 +996,7 @@ Scenario:6 有禁售/仅售限制的商品详情页
 			}]
 		}
 		"""
-
+	When bill访问jobs的webapp
 	When bill浏览jobs的webapp的'仅售商品地区商品'商品页
 	Then webapp页面标题为'仅售商品地区商品'
 	And bill获得webapp商品
@@ -1024,3 +1024,79 @@ Scenario:6 有禁售/仅售限制的商品详情页
 			}]
 		}
 		"""
+
+#后台修改禁售地区限定区域配置
+
+	Given jobs登录系统
+	When jobs修改'禁售地区'限定区域配置
+		"""
+		{
+			"name": "禁售商品地区",
+			"limit_area": [{
+				"area": "直辖市",
+				"province": ["上海市"]
+			},{
+				"area": "其他",
+				"province": ["香港","澳门"]
+			}]
+		}
+		"""
+
+	When bill访问jobs的webapp
+	When bill浏览jobs的webapp的'禁售地区商品'商品页
+	Then webapp页面标题为'禁售地区商品'
+	And bill获得webapp商品
+		"""
+		{
+			"name": "禁售地区商品",
+			"category": "",
+			"detail": "商品的详情",
+			"status": "在售",
+			"model": {
+				"models": {
+					"standard": {
+						"price": 12.00,
+						"stocks": 3
+					}
+				}
+			}
+		}
+		"""
+	And bill获得商品'禁售地区商品'限定区域
+		"""
+		{
+			"limit_area": [{
+				"province": ["上海市"]
+			},{
+				"province": ["香港","澳门"]
+			}]
+		}
+		"""
+
+
+#后台删除仅售地区限定区域配置
+
+	Given jobs登录系统
+	When jobs删除'仅售商品地区'限定区域配置
+
+	When bill访问jobs的webapp
+	When bill浏览jobs的webapp的'仅售商品地区商品'商品页
+	Then webapp页面标题为'仅售商品地区商品'
+	And bill获得webapp商品
+		"""
+		{
+			"name": "仅售商品地区商品",
+			"category": "",
+			"detail": "商品的详情",
+			"status": "在售",
+			"model": {
+				"models": {
+					"standard": {
+						"price": 12.00,
+						"stocks": 3
+					}
+				}
+			}
+		}
+		"""
+

@@ -112,14 +112,5 @@ class ProductLimitZoneTemplate(business_model.Model):
                     'cityName': city.name
                 })
             provinces.append(province_has_city)
-            if PROVINCE_ID2ZONE[id] not in zone_names:
-                zone_names.append(PROVINCE_ID2ZONE[id])
-        zones = []
-        for zone_name in zone_names:
-            zones.append({
-                'zoneName': zone_name,
-                'provinces': filter(lambda province: PROVINCE_ID2ZONE[province['provinceId']] == zone_name,
-                                    provinces)
-            })
 
-        return zones
+        return provinces

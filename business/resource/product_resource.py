@@ -152,8 +152,8 @@ class ProductResource(business_model.Resource):
 				return False, {
 						'is_successed': False,
 						'type': 'product:out_limit_zone',
-						'msg': u'无法配送',
-						'short_msg': u'无法配送'
+						'msg': u'超出范围',
+						'short_msg': u'超出范围'
 					}
 		elif limit_zone_type == 2:
 			print province_id,
@@ -164,8 +164,8 @@ class ProductResource(business_model.Resource):
 				return False, {
 						'is_successed': False,
 						'type': 'product:out_limit_zone',
-						'msg': u'无法配送',
-						'short_msg': u'无法配送'
+						'msg': u'超出范围',
+						'short_msg': u'超出范围'
 					}
 
 		return True, {

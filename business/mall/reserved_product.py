@@ -80,7 +80,9 @@ class ReservedProduct(business_model.Model):
 		'is_enable_bill',
 		'is_delivery', # 是否勾选配送时间,
 		'purchase_price',
-		'discount_money_coupon_exist' #判断会员价商品使用单品劵的情况
+		'discount_money_coupon_exist', #判断会员价商品使用单品劵的情况
+		'limit_zone_type',
+		'limit_zone'
 	)
 
 	@staticmethod
@@ -170,6 +172,8 @@ class ReservedProduct(business_model.Model):
 			self.promotion = None
 			self.used_promotion_id = 0
 		self.promotion_saved_money = 0.0
+		self.limit_zone_type = product.limit_zone_type
+		self.limit_zone = product.limit_zone
 
 		#获取促销
 		# promotion_id = product_info.get('promotion_id', 0)

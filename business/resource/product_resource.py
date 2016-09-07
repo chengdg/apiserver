@@ -16,7 +16,7 @@ from eaglet.core.cache import utils as cache_util
 from db.mall import models as mall_models
 #import resource
 from eaglet.core import watchdog
-from business import model as business_model 
+from business import model as business_model
 from business.mall.product import Product
 import settings
 from business.decorator import cached_context_property
@@ -42,7 +42,7 @@ class ProductResource(business_model.Resource):
 		@return ProductResource对象
 		"""
 		product_resource = ProductResource(args['type'])
-		
+
 		return product_resource
 
 	def __init__(self, type):
@@ -55,7 +55,7 @@ class ProductResource(business_model.Resource):
 		return self.type
 
 	@deprecated
-	def get_resources(self, product):
+	def get_resources(self, product, purchase_info):
 		"""
 		@todo 需要将这段代码迁移到ProductResourceAllocator中
 		"""
@@ -66,14 +66,17 @@ class ProductResource(business_model.Resource):
 			logging.info("reason in `ProductResource.get_resources(): {}".format(reason))
 			return False, reason
 
+		if product.limit_zone_type:
+			is_succeeded, reason = self.checkout_sale_zone(product, purchase_info)
+			if not is_succeeded:
+				logging.info("reason in `ProductResource.get_resources(): {}".format(reason))
+				return False, reason
 		is_succeeded, reason = self.consume_stocks(product)
 		if not is_succeeded:
 			logging.info("reason in `ProductResource.get_resources(): {}".format(reason))
 			return False, reason
 
 		return True, reason
-
-
 
 	def consume_stocks(self, product):
 		"""
@@ -130,4 +133,41 @@ class ProductResource(business_model.Resource):
 		return True, {
 			'is_successed': True,
 			'count': product.purchase_count
+		}
+
+	def checkout_sale_zone(self, product, purchase_info):
+		"""
+		校验商品是否在销售区域
+		"""
+		area = purchase_info.ship_info['area']
+		province_id = area.split('_')[0]
+		city_id = area.split('_')[1]
+		limit_zone_type = product.limit_zone_type
+		limit_zone_template = mall_models.ProductLimitZoneTemplate.select().dj_where(id=product.limit_zone).first()
+		limit_provinces = limit_zone_template.provinces
+		limit_cities = limit_zone_template.cities
+
+		if limit_zone_type == 1:
+			if province_id in limit_provinces.split(',') or city_id in limit_cities.split(','):
+				return False, {
+						'is_successed': False,
+						'type': 'product:out_limit_zone',
+						'msg': u'超出范围',
+						'short_msg': u'超出范围'
+					}
+		elif limit_zone_type == 2:
+			print province_id,
+			print limit_provinces.split(',')
+			print city_id
+			print limit_cities.split(',')
+			if province_id not in limit_provinces.split(',') or (limit_zone_template.cities and (city_id not in limit_cities.split(','))):
+				return False, {
+						'is_successed': False,
+						'type': 'product:out_limit_zone',
+						'msg': u'超出范围',
+						'short_msg': u'超出范围'
+					}
+
+		return True, {
+			'is_successed': True
 		}

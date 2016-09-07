@@ -220,7 +220,9 @@ class Product(business_model.Model):
 		'purchase_price',
 		'price',
 		'weight',
-		'stock_type'
+		'stock_type',
+		'limit_zone_type',
+		'limit_zone'
 	)
 
 
@@ -782,7 +784,9 @@ class Product(business_model.Model):
 			'purchase_price': self.purchase_price,
 			'supplier_user_id': self.supplier_user_id,
 			'supplier_postage_config': self.supplier_postage_config,
-			'use_supplier_postage': self.use_supplier_postage
+			'use_supplier_postage': self.use_supplier_postage,
+			'limit_zone_type': self.limit_zone_type,
+			'limit_zone': self.limit_zone
 		}
 		if 'extras' in kwargs:
 			for extra in kwargs['extras']:

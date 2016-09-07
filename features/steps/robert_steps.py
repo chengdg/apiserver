@@ -143,7 +143,7 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 		for product in products:
 			product_counts.append(str(product['count']))
 			product_name = product['name']
-			product_obj = mall_models.Product.get(owner=webapp_owner_id, name=product_name)
+			product_obj = mall_models.Product.get(name=product_name)
 
 			product_obj = business_product.from_model({
 				'webapp_owner': webapp_owner,
@@ -340,7 +340,7 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 			db_order.save()
 			if db_order.origin_order_id <0:
 				for order in mall_models.Order.select().dj_where(origin_order_id=db_order.id):
-					order.order_id = '%s^%s' % (args['order_id'], order.supplier)
+					order.order_id = '%s^%ss' % (args['order_id'], order.supplier)
 					order.save()
 			context.created_order_id = args['order_id']
 

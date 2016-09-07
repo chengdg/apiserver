@@ -148,7 +148,7 @@ class ProductResource(business_model.Resource):
 		limit_cities = limit_zone_template.cities
 
 		if limit_zone_type == 1:
-			if province_id in limit_provinces.split(',') or city_id in limit_cities.split(','):
+			if province_id in limit_provinces.split(',') and (not limit_zone_template.cities or city_id in limit_cities.split(',')):
 				return False, {
 						'is_successed': False,
 						'type': 'product:out_limit_zone',
@@ -156,11 +156,7 @@ class ProductResource(business_model.Resource):
 						'short_msg': u'超出范围'
 					}
 		elif limit_zone_type == 2:
-			print province_id,
-			print limit_provinces.split(',')
-			print city_id
-			print limit_cities.split(',')
-			if province_id not in limit_provinces.split(',') or (limit_zone_template.cities and (city_id not in limit_cities.split(','))):
+			if province_id not in limit_provinces.split(',') and (not limit_zone_template.cities or (city_id not in limit_cities.split(','))):
 				return False, {
 						'is_successed': False,
 						'type': 'product:out_limit_zone',

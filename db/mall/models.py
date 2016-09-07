@@ -1489,7 +1489,6 @@ class Order(models.Model):
 	is_first_order = models.BooleanField(default=False) # 是否是用户的首单
 	supplier_user_id = models.IntegerField(default=0) # 订单供货商user的id，用于系列拆单
 	total_purchase_price = models.FloatField(default=0)  # 总订单采购价格
-	refund_money = models.FloatField(default=-1)  # 订单的退款金额
 
 	class Meta(object):
 		db_table = 'mall_order'

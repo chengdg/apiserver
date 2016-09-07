@@ -163,12 +163,13 @@ class ProductResource(business_model.Resource):
 						# 排除直辖市和其他
 						if province_id not in city_of_province_ids:
 							# 全选
-							return False, {
-									'is_successed': False,
-									'type': 'product:out_limit_zone',
-									'msg': u'超出范围',
-									'short_msg': u'超出范围'
-								}
+							if province_id in limit_provinces.split(','):
+								return False, {
+										'is_successed': False,
+										'type': 'product:out_limit_zone',
+										'msg': u'超出范围',
+										'short_msg': u'超出范围'
+									}
 					else:
 						if province_id in limit_provinces.split(','):
 							return False, {

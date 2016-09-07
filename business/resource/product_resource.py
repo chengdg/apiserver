@@ -148,21 +148,50 @@ class ProductResource(business_model.Resource):
 		limit_cities = limit_zone_template.cities
 
 		if limit_zone_type == 1:
-			if province_id in limit_provinces.split(',') and (not limit_zone_template.cities or city_id in limit_cities.split(',')):
-				return False, {
+			if limit_zone_template.cities:
+				if city_id in limit_cities.split(','):
+					return False, {
+						'is_successed': False,
+						'type': 'product:out_limit_zone',
+						'msg': u'超出范围',
+						'short_msg': u'超出范围'
+					}
+				elif province_id in limit_provinces.split(','):
+					return False, {
+						'is_successed': False,
+						'type': 'product:out_limit_zone',
+						'msg': u'超出范围',
+						'short_msg': u'超出范围'
+					}
+			else:
+				if province_id in limit_provinces.split(','):
+					return False, {
 						'is_successed': False,
 						'type': 'product:out_limit_zone',
 						'msg': u'超出范围',
 						'short_msg': u'超出范围'
 					}
 		elif limit_zone_type == 2:
-			if province_id not in limit_provinces.split(',') or (limit_zone_template.cities and (city_id not in limit_cities.split(','))):
-				return False, {
-						'is_successed': False,
-						'type': 'product:out_limit_zone',
-						'msg': u'超出范围',
-						'short_msg': u'超出范围'
-					}
+			if limit_zone_template.cities:
+				city_of_province_ids = [model.province_id for model in mall_models.ProductLimitZoneTemplate.select().dj_where(id__in=limit_cities.split(','))]
+				if province_id not in limit_provinces.split(','):
+					if city_id not in limit_cities.split(','):
+						if province_id in city_of_province_ids:
+							return False, {
+								'is_successed': False,
+								'type': 'product:out_limit_zone',
+								'msg': u'超出范围',
+								'short_msg': u'超出范围'
+							}
+			else:
+				if province_id not in limit_provinces.split(','):
+					return False, {
+								'is_successed': False,
+								'type': 'product:out_limit_zone',
+								'msg': u'超出范围',
+								'short_msg': u'超出范围'
+							}
+
 
 		return True, {
 			'is_successed': True

@@ -101,7 +101,7 @@ Background:
 		"""
 	And bill关注jobs的公众号
 
-@eugene @product_limit_area
+@mall3 @eugene @product_limit_area
 Scenario:1 购买1个商品地区不支持配送，提交订单错误提示
 	bill购买一个商品地区是禁售地区，不支持配送
 	1.提交订单不成功，提示错误信息
@@ -132,7 +132,7 @@ Scenario:1 购买1个商品地区不支持配送，提交订单错误提示
 		}
 		"""
 
-@eugene @product_limit_area
+@mall3 @eugene @product_limit_area @eugeneTMP
 Scenario:2 购买多个商品地区不支持配送，提交订单错误提示
 	1.bill购买多个商品其中一个商品地区是禁售地区，不支持配送
 	2.bill购买多个商品其中多个商品地区是禁售地区，不支持配送
@@ -296,7 +296,7 @@ Scenario:2 购买多个商品地区不支持配送，提交订单错误提示
 		}
 		"""
 
-@eugene @product_limit_area
+@mall3 @eugene @product_limit_area
 Scenario:3 购买商品配置了禁售地区，后台修改限定区域模板
 	1.bill购买商品配置了禁售地区，jobs修改限定区域模板后，bill成功下单
 	2.bill购买商品配置了禁售地区,jobs删除限定区域模板后，bill成功下单

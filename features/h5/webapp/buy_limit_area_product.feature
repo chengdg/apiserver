@@ -132,7 +132,7 @@ Scenario:1 购买1个商品地区不支持配送，提交订单错误提示
 		}
 		"""
 
-@mall3 @eugene @product_limit_area @eugeneTMP
+@mall3 @eugene @product_limit_area
 Scenario:2 购买多个商品地区不支持配送，提交订单错误提示
 	1.bill购买多个商品其中一个商品地区是禁售地区，不支持配送
 	2.bill购买多个商品其中多个商品地区是禁售地区，不支持配送

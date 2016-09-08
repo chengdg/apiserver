@@ -148,6 +148,7 @@ class ProductResource(business_model.Resource):
 		limit_cities = limit_zone_template.cities
 		cities = mall_models.City.select().dj_where(id__in=limit_cities.split(',')) if limit_cities else []
 
+		# 构建省id和对应城市id的字典，如果对应是空说明整个省市都有限制
 		province_id2city_ids = {}
 		for city in cities:
 			if str(city.province_id) in province_id2city_ids:
@@ -159,7 +160,7 @@ class ProductResource(business_model.Resource):
 				province_id2city_ids[province_id] = []
 
 		if limit_zone_type == 1:
-			if user_province_id in province_id2city_ids and (not province_id2city_ids[province_id] or user_city_id in province_id2city_ids[province_id]):
+			if user_province_id in province_id2city_ids and (not province_id2city_ids[user_province_id] or user_city_id in province_id2city_ids[user_province_id]):
 				return False, {
 					'is_successed': False,
 					'type': 'product:out_limit_zone',
@@ -167,7 +168,7 @@ class ProductResource(business_model.Resource):
 					'short_msg': u'超出范围'
 				}
 		elif limit_zone_type == 2:
-			if user_province_id not in province_id2city_ids or (province_id2city_ids[province_id] and user_city_id not in province_id2city_ids[province_id]):
+			if user_province_id not in province_id2city_ids or (province_id2city_ids[user_province_id] and user_city_id not in province_id2city_ids[user_province_id]):
 				return False, {
 					'is_successed': False,
 					'type': 'product:out_limit_zone',
@@ -225,10 +226,3 @@ class ProductResource(business_model.Resource):
 		# 	return True, {
 		# 		'is_successed': True
 		# 	}
-
-		owner_id2products = {}
-		for product in products:
-			if product.owner_id in owner_id2products:
-				owner_id2products[product.owner_id].append(product)
-			else:
-				owner_id2products[product.owner_id] = [product]

@@ -363,7 +363,7 @@ Scenario: 1 浏览商品
 					}
 				}
 			}
-		} 
+		}
 		"""
 	When tom浏览jobs的webapp的'商品3'商品页
 	Then webapp页面标题为'商品3'
@@ -533,7 +533,7 @@ Scenario:4 查看商品详情页（买赠和会员价同时，买赠优先）
 			"end_date": "1天后",
 			"member_grade": "铜牌会员",
 			"product_name": "买赠和会员价1",
-			"premium_products": 
+			"premium_products":
 			[{
 				"name": "赠品1",
 				"count": 1
@@ -547,7 +547,7 @@ Scenario:4 查看商品详情页（买赠和会员价同时，买赠优先）
 			"end_date": "1天后",
 			"member_grade": "全部会员",
 			"product_name": "买赠和会员价2",
-			"premium_products": 
+			"premium_products":
 			[{
 				"name": "赠品1",
 				"count": 1

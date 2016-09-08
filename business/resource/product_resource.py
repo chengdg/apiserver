@@ -155,7 +155,7 @@ class ProductResource(business_model.Resource):
 					return False, {
 							'is_successed': False,
 							'type': 'product:out_limit_zone',
-							'msg': u'超出范围',
+							'msg': u'该订单内商品状态发生变化',
 							'short_msg': u'超出范围'
 						}
 				else:
@@ -167,7 +167,7 @@ class ProductResource(business_model.Resource):
 								return False, {
 										'is_successed': False,
 										'type': 'product:out_limit_zone',
-										'msg': u'超出范围',
+										'msg': u'该订单内商品状态发生变化',
 										'short_msg': u'超出范围'
 									}
 					else:
@@ -175,7 +175,7 @@ class ProductResource(business_model.Resource):
 							return False, {
 										'is_successed': False,
 										'type': 'product:out_limit_zone',
-										'msg': u'超出范围',
+										'msg': u'该订单内商品状态发生变化',
 										'short_msg': u'超出范围'
 									}
 			else:
@@ -184,7 +184,7 @@ class ProductResource(business_model.Resource):
 					return False, {
 						'is_successed': False,
 						'type': 'product:out_limit_zone',
-						'msg': u'超出范围',
+						'msg': u'该订单内商品状态发生变化',
 						'short_msg': u'超出范围'
 					}
 		elif limit_zone_type == 2:
@@ -196,7 +196,7 @@ class ProductResource(business_model.Resource):
 						return False, {
 								'is_successed': False,
 								'type': 'product:out_limit_zone',
-								'msg': u'超出范围',
+								'msg': u'该订单内商品状态发生变化',
 								'short_msg': u'超出范围'
 							}
 				else:
@@ -205,7 +205,7 @@ class ProductResource(business_model.Resource):
 						return False, {
 									'is_successed': False,
 									'type': 'product:out_limit_zone',
-									'msg': u'超出范围',
+									'msg': u'该订单内商品状态发生变化',
 									'short_msg': u'超出范围'
 								}
 			else:
@@ -213,7 +213,7 @@ class ProductResource(business_model.Resource):
 					return False, {
 								'is_successed': False,
 								'type': 'product:out_limit_zone',
-								'msg': u'超出范围',
+								'msg': u'该订单内商品状态发生变化',
 								'short_msg': u'超出范围'
 							}
 

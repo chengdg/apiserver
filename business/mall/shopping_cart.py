@@ -3,7 +3,7 @@
 购物车业务对象
 
 """
-
+from time import time
 from business.mall.allocator.order_group_buy_resource_allocator import GroupBuyOPENAPI
 from eaglet.decorator import param_required
 from eaglet.utils.resource_client import Resource
@@ -16,6 +16,7 @@ import settings
 from business.decorator import cached_context_property
 from business.mall.reserved_product_repository import ReservedProductRepository
 from business.mall.group_reserved_product_service import GroupReservedProductService
+from eaglet.core import watchdog
 
 class ShoppingCart(business_model.Model):
 	__slots__ = [
@@ -112,11 +113,18 @@ class ShoppingCart(business_model.Model):
 				'woid': self.context['webapp_owner'].id,
 			}
 
+			start = time()
 			resp = Resource.use('marketapp_apiserver').get({
 				'resource': GroupBuyOPENAPI['group_buy_products'],
 				'data': params
 			})
-
+			stop = time()
+			duration = stop - start
+			watchdog.info({
+				'uuid': 'get_marketapp_apiserver',
+				'duration': duration,
+				'hint': u'apiserver访问marketapp_apiserver.group.group_buy_products时间'
+			})
 			# 团购商品放入禁用商品列表
 			if resp and resp['code'] == 200:
 				group_buy_product_ids = [p['pid'] for p in filter(lambda x: x['pid'] if x['is_in_group_buy'] else False, resp['data']['pid2is_in_group_buy'])]

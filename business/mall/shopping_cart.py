@@ -123,6 +123,7 @@ class ShoppingCart(business_model.Model):
 			watchdog.info({
 				'uuid': 'get_marketapp_apiserver',
 				'duration': duration,
+				'params': params,
 				'hint': u'apiserver访问marketapp_apiserver.group.group_buy_products时间'
 			})
 			# 团购商品放入禁用商品列表

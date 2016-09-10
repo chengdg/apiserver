@@ -1,0 +1,1 @@
+import cache_mall_product_list_service

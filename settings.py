@@ -49,7 +49,7 @@ MIDDLEWARES = [
     
     # 'middleware.debug_middleware.SqlMonitorMiddleware',
     'eaglet.middlewares.zipkin_middleware.ZipkinMiddleware',
-    'middleware.debug_middleware.RedisMiddleware',
+    #'middleware.debug_middleware.RedisMiddleware',
     #账号信息中间件
     'middleware.webapp_account_middleware.WebAppAccountMiddleware',
 ]
@@ -99,7 +99,7 @@ else:
 #缓存相关配置
 REDIS_HOST = 'redis.weapp.com'
 REDIS_PORT = 6379
-REDIS_CACHES_DB = 1
+REDIS_CACHES_DB = 0
 
 REDIS_COMMON_DB = 4
 

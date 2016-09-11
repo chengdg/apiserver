@@ -608,7 +608,7 @@ class Product(business_model.Model):
 		"""填充商品分类信息相关细节
 		"""
 		webapp_owner_id = webapp_owner.id
-		categories = list(mall_models.ProductCategory.select().dj_where(owner=webapp_owner_id).order_by('id'))
+		categories = mall_models.ProductCategory.select().dj_where(owner=webapp_owner_id).order_by('id')
 
 		# 获取product关联的category集合
 		id2product = dict([(product.id, product) for product in products])
@@ -626,8 +626,11 @@ class Product(business_model.Model):
 					product.categories.append(category_data)
 					product.id2category[category.id] = category_data
 
-		category_ids = [category.id for category in categories]
+		#update by bert
+		#category_ids = [category.id for category in categories]
 		id2category = dict([(category.id, category) for category in categories])
+		category_ids = id2category.keys()
+		
 		for relation in mall_models.CategoryHasProduct.select().dj_where(product_id__in=product_ids).order_by('id'):
 			category_id = relation.category_id
 			product_id = relation.product_id

@@ -96,8 +96,10 @@ class MallData(business_model.Model):
 				mall_config = mall_models.MallConfig.get(owner=webapp_owner_id)
 			except:
 				mall_config = mall_models.MallConfig.create(owner=webapp_owner_id)
+			dict_data = mall_config.to_dict()
+			dict_data['created_at'] = dict_data['created_at'].strftime('%Y-%m-%d %H:%M:%S')
 			return {
-				'value': mall_config.to_dict()
+				'value': dict_data
 			}
 
 		return inner_func

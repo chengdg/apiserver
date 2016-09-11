@@ -17,7 +17,7 @@ from eaglet.core import watchdog
 from business import model as business_model 
 import settings
 from business.mall.product import Product
-
+from business.mall.product_category import ProductCategory
 
 class SimpleProducts(business_model.Model):
 	"""
@@ -93,14 +93,16 @@ class SimpleProducts(business_model.Model):
 		watchdog.info(msg)
 
 		if category_id == 0:
-			category = mall_models.ProductCategory()
+			#category = mall_models.ProductCategory()
+			category = ProductCategory()
 			category.name = u'全部'
 			category.id = 0
 		else:
 			id2category = dict([(c["id"], c) for c in data['categories']])
 			if category_id in id2category:
 				category_dict = id2category[category_id]
-				category = mall_models.ProductCategory()
+				#category = mall_models.ProductCategory()
+				category = ProductCategory()
 				category.id = category_dict['id']
 				category.name = category_dict['name']
 				category.is_deleted = False
@@ -203,7 +205,7 @@ class SimpleProducts(business_model.Model):
 						"name": product.name,
 						"is_member_product": product.is_member_product,
 						"display_price": product.price_info['display_price'],
-						"promotion_js": json.dumps(product.promotion.to_dict()) if product.promotion else json.dumps(None),
+						"promotion_js": product.promotion.to_dict() if product.promotion else "",
 						"thumbnails_url": product.thumbnails_url,
 						"supplier": product.supplier,
 						"categories": list(product2categories.get(product.id, []))

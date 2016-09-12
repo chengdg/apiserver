@@ -204,6 +204,8 @@ def step_visit_personal_orders(context, webapp_user_name, order_type):
 		order['order_no'] = actual_order['order_id']
 		order['order_id'] = actual_order['order_id']
 		order['is_group_buying'] = 'true' if  actual_order['is_group_buy'] else 'false'
+		#order['order_time'] = actual_order['created_at']
+		order['products_count'] = actual_order['product_count']
 
 		# BBD中购买的时间再未指定购买时间的情况下只能为今天
 		created_at = datetime.datetime.strptime(actual_order['created_at'], '%Y.%m.%d %H:%M')

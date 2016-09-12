@@ -467,7 +467,6 @@ def step_impl(context, webapp_usr_name, order_id):
 	response = context.client.get(bdd_util.nginx(url), follow=True)
 
 	actual = response.data['order']
-
 	has_sub_order = actual['has_sub_order']
 	actual['order_no'] = actual['order_id']
 	actual['order_time'] = (str(actual['created_at']))
@@ -485,7 +484,7 @@ def step_impl(context, webapp_usr_name, order_id):
 		"type": bill_type,
 		"value": actual['bill']
 	}
-	if has_sub_order:
+	if actual['has_multi_sub_order']:
 		products = []
 		orders = actual['sub_orders']
 		for i, order in enumerate(orders):
@@ -498,7 +497,7 @@ def step_impl(context, webapp_usr_name, order_id):
 
 		actual['products'] = products
 	else:
-		products = __fix_field_for(actual['products'])
+		actual['products'] = __fix_field_for(actual['products'])
 	actual["distribution_time"] = actual.get("delivery_time","")
 
 	expected = json.loads(context.text)
@@ -994,7 +993,6 @@ def step_impl(context, webapp_user_name, pay_interface_name):
 		'out_trade_no': context.created_order_id
 	}
 	context.response = context.client.post(pay_url, data)
-
 	if hasattr(context, 'order_payment_time'):
 		mall_models.Order.update(payment_time=context.order_payment_time).dj_where(order_id=context.created_order_id).execute()
 		delattr(context, 'order_payment_time')

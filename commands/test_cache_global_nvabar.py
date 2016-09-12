@@ -14,16 +14,15 @@ import settings
 
 zipkin_client.zipkinClient = zipkin_client.ZipkinClient(settings.SERVICE_NAME, 1, 1, 1)
 
-from commands.service.cache_mall_product_list_service import cache_product_list_service
+from commands.service.cache_global_navbar_service import cache_global_navbar_service
 
 class Command(BaseCommand):
-    help = "python manage.py test_cache_product_list woid category"
+    help = "python manage.py test_cache_global_nvabar woid "
     args = ''
     
-    def handle(self, woid, category_id, **options):
-        cache_product_list_service({
-            "woid":woid,
-            "category_id":category_id
+    def handle(self, woid, **options):
+        cache_global_navbar_service({
+            "woid":woid
             })
 
         #result = cache_util.get("w_%s_c_%s" % (woid, category_id))

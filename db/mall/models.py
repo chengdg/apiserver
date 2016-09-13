@@ -1832,7 +1832,7 @@ class OrderHasRefund(models.Model):
 	coupon_money = models.FloatField(default=0)  # 优惠券金额
 	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间
 	total = models.FloatField(default=0)  # 积分
-
+	finished = models.BooleanField(default=False)  # 是否退款完成
 
 	class Meta(object):
 		db_table = 'mall_order_has_refund'

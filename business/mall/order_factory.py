@@ -348,8 +348,13 @@ class OrderFactory(business_model.Model):
 
 		# 删除Order相关数据库记录
 		if order and order.id:
+			sub_order_ids = [o.id for o in mall_models.Order.select().dj_where(origin_order_id=order.id)]
 			mall_models.OrderHasPromotion.delete().dj_where(order_id=order.id).execute()
 			mall_models.OrderHasProduct.delete().dj_where(order_id=order.id).execute()
+
+			if sub_order_ids:
+				mall_models.OrderHasProduct.delete().dj_where(order_id__in=sub_order_ids).execute()
+
 			mall_models.Order.delete().dj_where(origin_order_id=order.id).execute()
 			mall_models.Order.delete().dj_where(id=order.id).execute()
 

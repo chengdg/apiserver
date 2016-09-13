@@ -11,6 +11,7 @@ Feature: 在webapp中浏览商品
 	3.浏览商品分类
 	4.限时抢购优先于会员价
 	5.买赠活动优先于会员价
+	6.浏览仅售禁售商品 【2016-09-01需求新增】
 	"""
 
 Background:
@@ -362,7 +363,7 @@ Scenario: 1 浏览商品
 					}
 				}
 			}
-		} 
+		}
 		"""
 	When tom浏览jobs的webapp的'商品3'商品页
 	Then webapp页面标题为'商品3'
@@ -532,7 +533,7 @@ Scenario:4 查看商品详情页（买赠和会员价同时，买赠优先）
 			"end_date": "1天后",
 			"member_grade": "铜牌会员",
 			"product_name": "买赠和会员价1",
-			"premium_products": 
+			"premium_products":
 			[{
 				"name": "赠品1",
 				"count": 1
@@ -546,7 +547,7 @@ Scenario:4 查看商品详情页（买赠和会员价同时，买赠优先）
 			"end_date": "1天后",
 			"member_grade": "全部会员",
 			"product_name": "买赠和会员价2",
-			"premium_products": 
+			"premium_products":
 			[{
 				"name": "赠品1",
 				"count": 1
@@ -783,3 +784,319 @@ Scenario:5 参与积分活动的商品详情页
 			}
 		}
 		"""
+
+
+
+#补充：田丰敏 2016.09.01
+#2016-09-01 新增浏览有禁售/仅售限制的商品详情页
+#	1、仅售或禁售地区配置数量等于或大于5个时：
+
+#		（1）商品配置仅售限制时，商品详情页面可以看到提示信息：此商品只在部分地区销售；
+#		（2）商品配置禁售限制时，商品详情页面可以看到提示信息：此商品部分地区不派送
+#		（3）可点击提示信息后方的“查看详情”弹出查看地区的弹窗，浏览仅售或禁售地区，展示省和市，其中如果省全选则的话只展示省
+
+#	2、仅售或禁售地区配置数量小于5个时：
+#		（1）商品配置仅售或禁售限制时，商品详情页面直接粗体字显示地区，不显示“查看详情”
+#		（2）当一个省都选择的时候，显示一级的省，不显示市，当选择了部分二级的市时，显示第二级的市
+
+
+Scenario:6 有禁售/仅售限制的商品详情页
+	Given jobs登录系统
+	When jobs添加限定区域配置
+		"""
+		{
+			"name": "禁售商品地区",
+			"limit_area": [{
+				"area": "直辖市",
+				"province": ["上海市"]
+			},{
+				"area": "华北-东北",
+				"province": "河北省",
+				"city": ["石家庄市","唐山市","沧州市"]
+			},{
+				"area": "其他",
+				"province": ["香港","澳门"]
+			}]
+		}
+		"""
+	When jobs添加限定区域配置
+		"""
+		{
+			"name": "仅售商品地区",
+			"limit_area": [{
+				"area": "直辖市",
+				"province": ["北京市","天津市"]
+			}]
+		}
+		"""
+	When jobs添加限定区域配置
+		"""
+		{
+			"name": "仅售商品多地区",
+			"limit_area": [{
+				"area": "直辖市",
+				"province": ["北京市","天津市"]
+			},{
+				"area": "华北-东北",
+				"province": "河北省",
+				"city": ["石家庄市","唐山市","沧州市"]
+			},{
+				"area": "华北-东北",
+				"province": "山西省",
+				"city": ["太原市","大同市","阳泉市","长治市","晋城市","朔州市","晋中市","运城市","忻州市","临汾市","吕梁市"]
+			},{
+				"area": "华东地区",
+				"province": "江苏省",
+				"city": ["苏州市"]
+			},{
+				"area": "西北-西南",
+				"province": "陕西省",
+				"city": ["西安市"]
+			},{
+				"area": "其他",
+				"province": ["香港","澳门"]
+			}]
+		}
+		"""
+	And jobs已添加商品
+		"""
+		[{
+			"name": "禁售地区商品",
+			"category": "",
+			"detail": "商品的详情",
+			"status": "在售",
+			"limit_zone_type": {
+				"禁售地区": {
+					"limit_zone": "禁售商品地区"
+				}
+			},
+			"model": {
+					"models": {
+						"standard": {
+							"price": 12.00,
+							"stock_type": "有限",
+							"stocks": 3
+						}
+					}
+				}
+		}, {
+			"name": "仅售商品多地区商品",
+			"category": "",
+			"detail": "商品的详情",
+			"status": "在售",
+			"limit_zone_type": {
+				"仅售地区": {
+					"limit_zone": "仅售商品多地区"
+				}
+			},
+			"model": {
+					"models": {
+						"standard": {
+							"price": 12.00,
+							"stock_type": "有限",
+							"stocks": 3
+						}
+					}
+				}
+		}, {
+			"name": "仅售商品地区商品",
+			"category": "",
+			"detail": "商品的详情",
+			"status": "在售",
+			"limit_zone_type": {
+				"仅售地区": {
+					"limit_zone": "仅售商品地区"
+				}
+			},
+			"model": {
+					"models": {
+						"standard": {
+							"price": 12.00,
+							"stock_type": "有限",
+							"stocks": 3
+						}
+					}
+				}
+		}]
+		"""
+	When bill访问jobs的webapp
+	When bill浏览jobs的webapp的'禁售地区商品'商品页
+	Then webapp页面标题为'禁售地区商品'
+	And bill获得webapp商品
+		"""
+		{
+			"name": "禁售地区商品",
+			"category": "",
+			"detail": "商品的详情",
+			"status": "在售",
+			"model": {
+				"models": {
+					"standard": {
+						"price": 12.00,
+						"stocks": 3,
+						"提示信息": "此商品部分地区不派送"
+					}
+				}
+			}
+		}
+		"""
+	And bill获得商品'禁售地区商品'限定区域
+		"""
+		{
+			"limit_area": [{
+				"province": ["上海市"]
+			},{
+				"province": "河北省",
+				"city": ["石家庄市","唐山市","沧州市"]
+			},{
+				"province": ["香港","澳门"]
+			}]
+		}
+		"""
+	When bill访问jobs的webapp
+	When bill浏览jobs的webapp的'仅售商品多地区商品'商品页
+	Then webapp页面标题为'仅售商品多地区商品'
+	And bill获得webapp商品
+		"""
+		{
+			"name": "仅售商品多地区商品",
+			"category": "",
+			"detail": "商品的详情",
+			"status": "在售",
+			"model": {
+				"models": {
+					"standard": {
+						"price": 12.00,
+						"stocks": 3,
+						"提示信息": "此商品只在部分地区销售"
+					}
+				}
+			}
+		}
+		"""
+	And bill获得商品'仅售商品多地区商品'限定区域
+		"""
+		{
+			"limit_area": [{
+				"province": ["北京市","天津市"]
+			},{
+				"province": "河北省",
+				"city": ["石家庄市","唐山市","沧州市"]
+			},{
+				"province": "山西省"
+			},{
+				"province": "江苏省",
+				"city": ["苏州市"]
+			},{
+				"province": "陕西省",
+				"city": ["西安市"]
+			},{
+				"area": "其他",
+				"province": ["香港","澳门"]
+			}]
+		}
+		"""
+	When bill访问jobs的webapp
+	When bill浏览jobs的webapp的'仅售商品地区商品'商品页
+	Then webapp页面标题为'仅售商品地区商品'
+	And bill获得webapp商品
+		"""
+		{
+			"name": "仅售商品地区商品",
+			"category": "",
+			"detail": "商品的详情",
+			"status": "在售",
+			"model": {
+				"models": {
+					"standard": {
+						"price": 12.00,
+						"stocks": 3
+					}
+				}
+			}
+		}
+		"""
+	And bill获得商品'仅售商品地区商品'限定区域
+		"""
+		{
+			"limit_area": [{
+				"province": ["北京市","天津市"]
+			}]
+		}
+		"""
+
+#后台修改禁售地区限定区域配置
+
+	Given jobs登录系统
+	When jobs修改'禁售地区'限定区域配置
+		"""
+		{
+			"name": "禁售商品地区",
+			"limit_area": [{
+				"area": "直辖市",
+				"province": ["上海市"]
+			},{
+				"area": "其他",
+				"province": ["香港","澳门"]
+			}]
+		}
+		"""
+
+	When bill访问jobs的webapp
+	When bill浏览jobs的webapp的'禁售地区商品'商品页
+	Then webapp页面标题为'禁售地区商品'
+	And bill获得webapp商品
+		"""
+		{
+			"name": "禁售地区商品",
+			"category": "",
+			"detail": "商品的详情",
+			"status": "在售",
+			"model": {
+				"models": {
+					"standard": {
+						"price": 12.00,
+						"stocks": 3
+					}
+				}
+			}
+		}
+		"""
+	And bill获得商品'禁售地区商品'限定区域
+		"""
+		{
+			"limit_area": [{
+				"province": ["上海市"]
+			},{
+				"province": ["香港","澳门"]
+			}]
+		}
+		"""
+
+
+#后台删除仅售地区限定区域配置
+
+	Given jobs登录系统
+	When jobs删除'仅售商品地区'限定区域配置
+
+	When bill访问jobs的webapp
+	When bill浏览jobs的webapp的'仅售商品地区商品'商品页
+	Then webapp页面标题为'仅售商品地区商品'
+	And bill获得webapp商品
+		"""
+		{
+			"name": "仅售商品地区商品",
+			"category": "",
+			"detail": "商品的详情",
+			"status": "在售",
+			"model": {
+				"models": {
+					"standard": {
+						"price": 12.00,
+						"stocks": 3
+					}
+				}
+			}
+		}
+		"""
+

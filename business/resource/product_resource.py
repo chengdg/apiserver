@@ -16,7 +16,7 @@ from eaglet.core.cache import utils as cache_util
 from db.mall import models as mall_models
 #import resource
 from eaglet.core import watchdog
-from business import model as business_model 
+from business import model as business_model
 from business.mall.product import Product
 import settings
 from business.decorator import cached_context_property
@@ -42,7 +42,7 @@ class ProductResource(business_model.Resource):
 		@return ProductResource对象
 		"""
 		product_resource = ProductResource(args['type'])
-		
+
 		return product_resource
 
 	def __init__(self, type):
@@ -55,7 +55,7 @@ class ProductResource(business_model.Resource):
 		return self.type
 
 	@deprecated
-	def get_resources(self, product):
+	def get_resources(self, product, purchase_info):
 		"""
 		@todo 需要将这段代码迁移到ProductResourceAllocator中
 		"""
@@ -66,14 +66,17 @@ class ProductResource(business_model.Resource):
 			logging.info("reason in `ProductResource.get_resources(): {}".format(reason))
 			return False, reason
 
+		if product.limit_zone_type:
+			is_succeeded, reason = self.checkout_sale_zone(product, purchase_info)
+			if not is_succeeded:
+				logging.info("reason in `ProductResource.get_resources(): {}".format(reason))
+				return False, reason
 		is_succeeded, reason = self.consume_stocks(product)
 		if not is_succeeded:
 			logging.info("reason in `ProductResource.get_resources(): {}".format(reason))
 			return False, reason
 
 		return True, reason
-
-
 
 	def consume_stocks(self, product):
 		"""
@@ -131,3 +134,95 @@ class ProductResource(business_model.Resource):
 			'is_successed': True,
 			'count': product.purchase_count
 		}
+
+	def checkout_sale_zone(self, product, purchase_info):
+		"""
+		校验商品是否在销售区域
+		"""
+		area = purchase_info.ship_info['area']
+		user_province_id = area.split('_')[0]
+		user_city_id = area.split('_')[1]
+		limit_zone_type = product.limit_zone_type
+		limit_zone_template = mall_models.ProductLimitZoneTemplate.select().dj_where(id=product.limit_zone).first()
+		limit_provinces = limit_zone_template.provinces
+		limit_cities = limit_zone_template.cities
+		cities = mall_models.City.select().dj_where(id__in=limit_cities.split(',')) if limit_cities else []
+
+		# 构建省id和对应城市id的字典，如果对应是空说明整个省市都有限制
+		province_id2city_ids = {}
+		for city in cities:
+			if str(city.province_id) in province_id2city_ids:
+				province_id2city_ids[str(city.province_id)].append(str(city.id))
+			else:
+				province_id2city_ids[str(city.province_id)] = [str(city.id)]
+		for province_id in limit_provinces.split(','):
+			if province_id not in province_id2city_ids:
+				province_id2city_ids[province_id] = []
+
+		if limit_zone_type == 1:
+			if user_province_id in province_id2city_ids and (not province_id2city_ids[user_province_id] or user_city_id in province_id2city_ids[user_province_id]):
+				return False, {
+					'is_successed': False,
+					'type': 'product:out_limit_zone',
+					'msg': u'该订单内商品状态发生变化',
+					'short_msg': u'超出范围'
+				}
+		elif limit_zone_type == 2:
+			if user_province_id not in province_id2city_ids or (province_id2city_ids[user_province_id] and user_city_id not in province_id2city_ids[user_province_id]):
+				return False, {
+					'is_successed': False,
+					'type': 'product:out_limit_zone',
+					'msg': u'该订单内商品状态发生变化',
+					'short_msg': u'超出范围'
+				}
+		return True, {
+			'is_successed': True
+		}
+		# flag = False
+		# if limit_zone_type == 1:
+		# 	if limit_zone_template.cities:
+		# 		#  有城市
+		# 		city_of_province_ids = [str(model.province_id) for model in mall_models.City.select().dj_where(id__in=limit_cities.split(','))]
+		# 		if user_city_id in limit_cities.split(','):
+		# 			flag = True
+		# 		else:
+		# 			if province_id not in ['1', '2', '9', '22', '32', '33', '34']:
+		# 				# 排除直辖市和其他
+		# 				if province_id not in city_of_province_ids:
+		# 					# 全选
+		# 					if province_id in limit_provinces.split(','):
+		# 						flag = True
+		# 			else:
+		# 				if province_id in limit_provinces.split(','):
+		# 					flag = True
+		# 	else:
+		# 		# 全部是全选，判断省
+		# 		if province_id in limit_provinces.split(','):
+		# 			flag = True
+		# elif limit_zone_type == 2:
+		# 	if limit_zone_template.cities:
+		# 		city_of_province_ids = [str(model.province_id) for model in mall_models.City.select().dj_where(id__in=limit_cities.split(','))]
+		# 		if province_id in city_of_province_ids:
+		# 			# 仅售单个城市
+		# 			if user_city_id not in limit_cities.split(','):
+		# 				flag = True
+		# 		else:
+		# 			# 城市被全选
+		# 			if province_id not in limit_provinces.split(','):
+		# 				flag = True
+		# 	else:
+		# 		if province_id not in limit_provinces.split(','):
+		# 			flag = True
+
+
+		# if flag:
+		# 	return False, {
+		# 			'is_successed': False,
+		# 			'type': 'product:out_limit_zone',
+		# 			'msg': u'该订单内商品状态发生变化',
+		# 			'short_msg': u'超出范围'
+		# 		}
+		# else:
+		# 	return True, {
+		# 		'is_successed': True
+		# 	}

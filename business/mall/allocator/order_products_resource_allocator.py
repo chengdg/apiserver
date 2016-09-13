@@ -136,7 +136,7 @@ class OrderProductsResourceAllocator(business_model.Service):
 		for product in products:
 			logging.info(u"try to allocate product: {}({})".format(product.name, product.id))
 			product_resource_allocator = ProductResourceAllocator.get()
-			successed_once, reason, resource = product_resource_allocator.allocate_resource(product)
+			successed_once, reason, resource = product_resource_allocator.allocate_resource(product, purchase_info)
 			logging.info(u"success: {}, reason: {}, resource: {}".format(successed_once, reason, resource))
 
 			if not successed_once:

@@ -472,6 +472,7 @@ def step_impl(context, webapp_usr_name, order_id):
 	actual['order_time'] = (str(actual['created_at']))
 	actual['methods_of_payment'] = actual['pay_interface_name']
 	#actual.member = actual.buyer_name
+	actual['refund_money'] = actual['refund_info']['total_cash']
 	actual['status'] = mall_models.ORDERSTATUS2MOBILETEXT[actual['status']]
 	actual['ship_area'] = actual['ship_area']
 	if actual['bill_type'] == 0:

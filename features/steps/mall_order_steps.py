@@ -189,6 +189,7 @@ def step_visit_personal_orders(context, webapp_user_name, order_type):
 	response = context.client.get(bdd_util.nginx(url), follow=True)
 
 	orders = response.data['orders']
+	print('=============orders=============',orders)
 	import datetime
 	for actual_order in orders:
 		if actual_order['status'] != status and status != -1:

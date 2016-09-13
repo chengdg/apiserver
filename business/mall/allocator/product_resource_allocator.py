@@ -48,13 +48,13 @@ class ProductResourceAllocator(business_model.Service):
 		return
 
 
-	def allocate_resource(self, product):
+	def allocate_resource(self, product, purchase_info):
 	 	product_resource = ProductResource.get({
 				'type': self.resource_type
 			})
 
 	 	# TODO: 将ProductResource.get_resources()迁移到ProductResourceAllocator中
-		successed, reason = product_resource.get_resources(product)
+		successed, reason = product_resource.get_resources(product, purchase_info)
 		if not successed:
 			return False, reason, None
 		else:

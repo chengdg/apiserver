@@ -8,6 +8,7 @@ from db.mall import models as mall_models
 from util import dateutil as utils_dateutil
 #import resource
 from business.mall.product import Product
+from business.mall.product_limit_zone_template import ProductLimitZoneTemplate
 from business.mall.review.product_reviews import ProductReviews
 
 from eaglet.utils.resource_client import Resource
@@ -94,5 +95,8 @@ class AProduct(api_resource.ApiResource):
 			result['product_reviews'] = reviews
 		result['is_in_group_buy'] = False
 		result['activity_url'] = ''
+		if result['limit_zone_type']:
+			template = ProductLimitZoneTemplate.from_id({'id': result['limit_zone']})
+			result['limit_zone_detail'] = template.limit_zone_detail()
 
 		return result

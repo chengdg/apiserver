@@ -218,6 +218,11 @@ REGISTERED_LOCK_NAMES = {
 }
 
 
+import simplejson 
+f = open("common-conf/mns-conf/mns_conf.json", "r")
+MSN_CONF = f.read()
+f.close()
+MSN_CONF = simplejson.loads(MSN_CONF)
 
 COMMON_SERVICE_ERROR_TYPE = 'common:wtf'
 

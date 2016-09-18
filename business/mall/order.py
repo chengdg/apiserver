@@ -305,7 +305,7 @@ class Order(business_model.Model):
 			has_refund = mall_models.OrderHasRefund.select().dj_where(origin_order_id=self.id, finished=True).count() > 0
 			if has_refund:
 				total_cash = sum(
-					[o.cash for o in mall_models.OrderHasRefund.select().dj_where(origin_order_id=self.id)])
+					[o.cash for o in mall_models.OrderHasRefund.select().dj_where(origin_order_id=self.id, finished=True)])
 
 			return {
 				'has_refund': has_refund,

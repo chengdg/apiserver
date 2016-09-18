@@ -218,11 +218,17 @@ REGISTERED_LOCK_NAMES = {
 }
 
 
-# import simplejson
-# f = open("common-conf/mns-conf/mns_conf.json", "r")
-# MSN_CONF = f.read()
-# f.close()
-# MSN_CONF = simplejson.loads(MSN_CONF)
+import simplejson
+try:
+    #TODO 可遍历所以配置文件
+    file = open("common-conf/mns-conf/mns_conf.json", "r")
+    MNS_CONF = file.read()
+    file.close()
+    MNS_CONF = simplejson.loads(MNS_CONF)
+except Exception, e:
+    logging.error("--------ERROR MNS CONF------------")
+    logging.error(e)
+
 
 COMMON_SERVICE_ERROR_TYPE = 'common:wtf'
 

@@ -1824,6 +1824,23 @@ class OrderHasPromotion(models.Model):
 		return data
 
 
+class OrderHasRefund(models.Model):
+	origin_order_id = models.IntegerField(default=0)  # 原始订单id，用于微众精选拆单
+	delivery_item_id = models.IntegerField(default=0)  # 对应子订单主键id
+	cash = models.FloatField(default=0.0)
+	weizoom_card_money = models.FloatField(default=0.0)  # 微众卡抵扣金额
+	integral = models.IntegerField(default=0)  # 积分
+	integral_money = models.FloatField(default=0) # 积分对应金额,退款当时的
+	coupon_money = models.FloatField(default=0)  # 优惠券金额
+	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间
+	total = models.FloatField(default=0)  # 积分
+	finished = models.BooleanField(default=False)  # 是否退款完成
+
+	class Meta(object):
+		db_table = 'mall_order_has_refund'
+		verbose_name = '子订单退款信息'
+		verbose_name_plural = '子订单退款信息'
+
 class OrderCardInfo(models.Model):
 	"""
 	订单的微众卡信息

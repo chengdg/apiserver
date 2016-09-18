@@ -908,7 +908,7 @@ Scenario:1 支付后的订单，添加首单标记-会员订单
 			}]
 			"""
 
-@mall3 @order @setOrder @eugene
+@mall3 @order @setOrder @eugene @chengdg
 Scenario:2 支付后的订单，添加首单标记-非会员订单
 	#用户支付的订单，按照【付款时间】付款时间最早的标记为“首单”
 	#非会员购买的订单，【买家】修改成“非会员”，关注之后显示成会员名称

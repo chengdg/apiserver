@@ -1,6 +1,6 @@
 {
     "QUEUE": {
-        "notfiy": {
+        "notify": {
             "MNS_ACCESS_KEY_ID": "eJ8LylRwQERRqOot",
             "MNS_ACCESS_KEY_SECRET": "xxPrfGcUlnsL7IPweJRqVekHTCu6Ad",
             "MNS_ENDPOINT":"http://1615750970594173.mns.cn-hangzhou-internal.aliyuncs.com/",

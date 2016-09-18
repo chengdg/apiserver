@@ -301,19 +301,24 @@ class Order(business_model.Model):
 	@cached_context_property
 	def refund_info(self):
 		total_cash = 0
+		total_weizoom_card_money = 0
 		if self.context['webapp_owner'].user_profile.webapp_type:
 			has_refund = mall_models.OrderHasRefund.select().dj_where(origin_order_id=self.id, finished=True).count() > 0
+
 			if has_refund:
-				total_cash = sum(
-					[o.cash for o in mall_models.OrderHasRefund.select().dj_where(origin_order_id=self.id, finished=True)])
+				for o in mall_models.OrderHasRefund.select().dj_where(origin_order_id=self.id, finished=True):
+					total_cash += o.cash
+					total_weizoom_card_money += o.weizoom_card_money
 
 			return {
 				'has_refund': has_refund,
-				'total_cash': total_cash
+				'total_cash': total_cash,
+				'total_weizoom_card_money': total_weizoom_card_money
 			}
 		else:
 			return {'has_refund': False,
-			        'total_cash': total_cash}
+			        'total_cash': total_cash,
+			        'total_weizoom_card_money':total_weizoom_card_money}
 
 	def get_sub_order_ids(self):
 		if self.real_has_sub_order:

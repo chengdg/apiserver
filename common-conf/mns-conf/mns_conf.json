@@ -17,7 +17,13 @@
             "MNS_ACCESS_KEY_SECRET": "bPKU71c0cfrui4bWgGPO96tLiOJ0PZ",
             "MNS_ENDPOINT":"http://1615750970594173.mns.cn-hangzhou.aliyuncs.com/",
             "MNS_SECURITY_TOKEN":""
-        } 
+        },
+        "test-ding-talk": {
+            "MNS_ACCESS_KEY_ID": "LTAICKQ4rQBofAhF",
+            "MNS_ACCESS_KEY_SECRET": "bPKU71c0cfrui4bWgGPO96tLiOJ0PZ",
+            "MNS_ENDPOINT":"http://1615750970594173.mns.cn-hangzhou.aliyuncs.com/",
+            "MNS_SECURITY_TOKEN":""
+        }
     },
     "TOPIC": {
     }

@@ -816,7 +816,8 @@ class Order(business_model.Model):
 				# grade_discounted_money= product.discount_money,
 				integral_sale_id=product.integral_sale.id if product.integral_sale else 0,
 				origin_order_id=0,
-				purchase_price=product.purchase_price
+				purchase_price=product.purchase_price,
+				original_price=product.original_price
 			)
 
 			if webapp_type:
@@ -897,7 +898,8 @@ class Order(business_model.Model):
 						# grade_discounted_money=product.discount_money,
 						integral_sale_id=product.integral_sale.id if product.integral_sale else 0,
 						origin_order_id=self.id,  # 原始(母)订单id，用于微众精选拆单
-						purchase_price=product.purchase_price
+						purchase_price=product.purchase_price,
+						original_price=product.original_price
 					)
 
 			for supplier_user_id in supplier_user_ids:
@@ -958,7 +960,8 @@ class Order(business_model.Model):
 						# grade_discounted_money=product.discount_money,
 						integral_sale_id=product.integral_sale.id if product.integral_sale else 0,
 						origin_order_id=self.id,  # 原始(母)订单id，用于微众精选拆单
-						purchase_price=product.purchase_price
+						purchase_price=product.purchase_price,
+						original_price=product.original_price
 					)
 
 			#duhao 20160527  weshop定制功能  更新母订单的类型

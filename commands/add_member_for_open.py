@@ -44,11 +44,5 @@ class Command(BaseCommand):
 				"openid": openid,
 				"for_oauth": 0
 				}).save()
-			webapp_user = WebAppUserFactory.create({
-				'webapp_owner': webapp_owner,
-				'member_id': member.id
-				}).save()
-
-
 		access_token = BusinessAccessToken(woid, openid).put_access_token()
 		print ("access_token:%s" % access_token)

@@ -206,7 +206,7 @@ class WebAppOwnerInfo(business_model.Model):
 					# 	'owner_id': global_navbar.owner_id,
 					# 	'is_enable': global_navbar.is_enable
 					# },
-					'global_navbar': global_navbar.to_dict(),
+					'global_navbar': global_navbar.to_dict() if global_navbar else {},
 					'auth_appid_info': auth_appid_info.to_dict(),
 					'default_member_tag': default_member_tag.to_dict()
 				}

@@ -628,7 +628,10 @@ class Order(business_model.Model):
 		except:
 			area = self.ship_area
 
-		buyer_address = area + u" " + self.ship_address
+		if area:
+			buyer_address = area + u" " + self.ship_address
+		else:
+			buyer_address = self.ship_address
 		order_status = self.status_text
 
 		email_notify_status = ORDER_STATUS2NOTIFY_STATUS.get(self.status,-1)
@@ -1485,3 +1488,80 @@ class Order(business_model.Model):
 				order_id2group_info[order.order_id] = {}
 
 		return order_id2group_info
+
+	def refund(self):
+		'''
+		openapi退款
+		openapi更新订单状态,将已支付的订单状态更新为已退款完成
+		#1、返回库存
+		#2、修改主订单状态，final_price 0
+		#3、修改子订单状态
+		#4、记录订单操作日志
+		#5、记录订单状态日志
+		#6、记录orderhasrefund日志
+		'''
+		# if order.status in (mall_models.ORDER_STATUS_NOT, mall_models.ORDER_STATUS_PAYED_NOT_SHIP):
+		if order.status == mall_models.ORDER_STATUS_NOT and order.origin_order_id == -1:
+			order.cancel()
+		elif order.status == mall_models.ORDER_STATUS_PAYED_NOT_SHIP and order.origin_order_id == mall_models.ORIGIN_ORDER:
+			final_price = self.final_price
+			
+			self.__release_order_resources()
+
+			# 更新订单状态
+			self.raw_status = self.status
+			self.status = mall_models.ORDER_STATUS_REFUNDED
+			
+			mall_models.Order.update(status=mall_models.ORDER_STATUS_REFUNDED, final_price=0).dj_where(id=self.id).execute()
+			mall_models.Order.update(status=mall_models.ORDER_STATUS_REFUNDED).dj_where(origin_order_id=self.id).execute()
+			self.__after_update_status('refunded')
+
+			for sub_order in self.sub_orders:
+				product_price = 0.0
+				product_price += self.sub_orders.postage
+				#.select().dj_where(webapp_user_id=webapp_user.id)
+				for product in mall_models.OrderHasProduct.select().dj_where(order_id=sub_order.id):
+					product_price += product.price * product.number
+				mall_models.OrderHasRefund.objects.create(
+					origin_order_id=self.id,
+					delivery_item_id=sub_order.id,
+					cash=product_price,
+					finished=True,
+					)
+
+				mall_models.OrderHasProduct.select().dj_where(order_id=sub_order.id)#xiaoliang 
+
+		if self.is_sub_order and self.status = mall_models.ORDER_STATUS_PAYED_SUCCESSED:
+
+			# mall_models.OrderHasRefund.objects.create(
+			# 	origin_order_id=args['origin_order_id'],
+			# 	delivery_item_id=args['delivery_item_id'],
+			# 	cash=args['cash'],
+			# 	weizoom_card_money=args['weizoom_card_money'],
+			# 	integral=args['integral'],
+			# 	integral_money=args['integral_money'],
+			# 	coupon_money=args['coupon_money'],
+			# 	total=args['total'],
+			# 	finished=args['finished'],
+			# 	)
+			
+			# mall_models.Order.update(status=mall_models.ORDER_STATUS_GROUP_REFUNDED).dj_where(id=self.id).execute()
+			
+			
+			'''
+			子订单（子订单状态为待发货）
+			1、返还库存
+			3\修改子订单状态，子订单都是退款完成的情况下，修改主订单状态
+				如果其他子订单都退款完成，修改主订单状态为退款完成
+				如果其他子订单都是已完成，修改主订单状态为已完成
+				如果其他子订单的状态都相同,并且和主订单的状态不一致，修改主订单的状态
+
+			子订单
+			1、修改子订单状态
+			2、记录订单状态日志
+			3、记录订单操作日志
+			4、更新库存
+			4、如果其他子订单的状态相同，更新主订单的状态为其他子订单的状态并记录日志
+			5、orderhasrefund
+
+			'''

@@ -22,7 +22,7 @@ class SupplierPostageConfig(business_model.Model):
         'status'
     )
 
-    def __init__(self, model):
+    def __init__(self, model=None):
         business_model.Model.__init__(self)
 
         if model:
@@ -32,13 +32,19 @@ class SupplierPostageConfig(business_model.Model):
     @param_required(['supplier_id'])
     def from_suppler_id(args):
         supplier_id = args['supplier_id']
-        supplier_postage_configs = SupplierPostageConfig.from_suppler_ids({'supplier_ids': [supplier_id]})
+        supplier_postage_configs = SupplierPostageConfig().__get_supplier_postage_configs([supplier_id])
         return supplier_postage_configs[supplier_id]
 
     @staticmethod
     @param_required(['supplier_ids'])
     def from_suppler_ids(args):
         supplier_ids = args['supplier_ids']
+        supplier_postage_configs = SupplierPostageConfig().__get_supplier_postage_configs(supplier_ids)
+        for supplier_id in supplier_postage_configs:
+            supplier_postage_configs[supplier_id] = supplier_postage_configs[supplier_id]['factor']
+        return supplier_postage_configs
+
+    def __get_supplier_postage_configs(self, supplier_ids):
         postage_configs = mall_models.PostageConfig.select().dj_where(supplier_id__in=supplier_ids)
         supplier_postage_configs = {}
         for postage_config in postage_configs:

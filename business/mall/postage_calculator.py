@@ -69,7 +69,7 @@ class PostageCalculator(object):
 		# 	else:
 		# 		added_count += 1
 
-		added_count = math.ceil(weight/added_weight)
+		added_count = math.ceil(round(weight/added_weight, 2))
 		added_price = added_count * factor['addedWeightPrice']
 		return price + added_price
 

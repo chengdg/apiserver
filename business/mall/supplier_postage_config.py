@@ -33,7 +33,7 @@ class SupplierPostageConfig(business_model.Model):
     def from_suppler_ids(args):
         supplier_ids = args['supplier_ids']
         postage_configs = mall_models.PostageConfig.select().dj_where(supplier_id__in=supplier_ids)
-        supplier_postage_configs = []
+        supplier_postage_configs = {}
         for postage_config in postage_configs:
             factor = {
                 'firstWeight': postage_config.first_weight,
@@ -78,7 +78,7 @@ class SupplierPostageConfig(business_model.Model):
             factor['free_factor'] = free_factor
 
             postage_config.factor = factor
-            supplier_postage_configs.append({postage_config.supplier_id: postage_config.to_dict('factor')})
+            supplier_postage_configs[postage_config.supplier_id] = postage_config.to_dict('factor')
         return supplier_postage_configs
 
     @staticmethod

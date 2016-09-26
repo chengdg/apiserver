@@ -33,6 +33,7 @@ from db.mall import models as mall_models
 #from eaglet.core import watchdog
 from business import model as business_model
 from business.mall.product import Product
+from business.mall.supplier_postage_config import SupplierPostageConfig
 #import settings
 from business.decorator import cached_context_property
 
@@ -216,7 +217,10 @@ class ReservedProduct(business_model.Model):
 				"factor": None
 			}
 		else:
-			return webapp_owner.system_postage_config
+			if webapp_owner.user_profile.webapp_type and product.supplier:
+				return SupplierPostageConfig.from_suppler_id({'supplier_id': product.supplier})
+			else:
+				return webapp_owner.system_postage_config
 
 	def disable_integral_sale(self):
 		"""

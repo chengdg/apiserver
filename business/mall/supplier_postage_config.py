@@ -29,6 +29,13 @@ class SupplierPostageConfig(business_model.Model):
             self._init_slot_from_model(model)
 
     @staticmethod
+    @param_required(['supplier_id'])
+    def from_suppler_id(args):
+        supplier_id = args['supplier_id']
+        supplier_postage_configs = SupplierPostageConfig.from_suppler_ids({'supplier_ids': [supplier_id]})
+        return supplier_postage_configs[supplier_id]
+
+    @staticmethod
     @param_required(['supplier_ids'])
     def from_suppler_ids(args):
         supplier_ids = args['supplier_ids']

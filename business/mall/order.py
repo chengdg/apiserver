@@ -1505,7 +1505,7 @@ class Order(business_model.Model):
 		子订单（子订单状态为待发货）
 		
 		子订单
-		0、更新库存
+		0、更新库存(更新和库存放在子订单商品中)
 		1、修改子订单状态
 		2、记录子订单状态日志
 		3、记录订单操作日志
@@ -1514,6 +1514,7 @@ class Order(business_model.Model):
 		6、修改主订单的final_price
 		7、修改主订单的状态(如果主订单状态不等于 去掉当前子订单的子订单集合中的最小状态)
 
+		__release_order_resources只针对主订单,原因 order_has_product查询的时origin_order_id=0
 		'''
 
 
@@ -1523,8 +1524,12 @@ class Order(business_model.Model):
 		if self.status == mall_models.ORDER_STATUS_NOT and self.origin_order_id == -1:
 			self.cancel()
 		elif self.status == mall_models.ORDER_STATUS_PAYED_NOT_SHIP and self.origin_order_id == mall_models.ORIGIN_ORDER:
-			final_price = self.final_price
-			
+			orders = mall_models.Order.select().dj_where(origin_order_id=self.id)
+			sub_order_status = [order.status for order in orders]
+			if len(set(sub_order_status)) != 1:
+				msg = u'有子订单的状态不是待发货,不能取消订单'
+				return msg, False
+
 			self.__release_order_resources()
 
 			# 更新订单状态
@@ -1561,7 +1566,7 @@ class Order(business_model.Model):
 
 		elif self.is_sub_order and self.status == mall_models.ORDER_STATUS_PAYED_NOT_SHIP:
 
-			# self.__release_order_resources()
+
 			# 更新订单状态
 			self.raw_status = self.status
 			self.status = mall_models.ORDER_STATUS_REFUNDED

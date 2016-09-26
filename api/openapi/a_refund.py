@@ -44,14 +44,14 @@ class ARefund(api_resource.ApiResource):
 		"""
 		order_id = args['order_id']
 
+		msg = ''
 		try:
 			order = Order.from_id({
 				'webapp_user': args['webapp_user'],
 				'webapp_owner': args['webapp_owner'],
 				'order_id': order_id
 			})
-
-			success, msg = order.refund()
+			msg, success = order.refund()
 
 			info = u"openapi apiserver中修改订单状态失败, order_id:{}, cause:\n{}".format(args['order_id'],  msg)
 			watchdog.info(info)
@@ -63,4 +63,4 @@ class ARefund(api_resource.ApiResource):
 		except:
 			notify_message = u"openapi apiserver中修改订单状态失败, order_id:{}, cause:\n{}".format(args['order_id'],  unicode_full_stack())
 			watchdog.alert(notify_message)
-			return 500, ''
+			return 500, {'msg': msg, 'success': False}

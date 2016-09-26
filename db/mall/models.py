@@ -112,6 +112,7 @@ class PostageConfig(models.Model):
 	is_enable_special_config = models.BooleanField(default=True)  # 是否启用续重机制
 	is_enable_free_config = models.BooleanField(default=True)  # 是否启用包邮机制
 	is_deleted = models.BooleanField(default=False) #是否删除
+	supplier_id = models.IntegerField(default=0)  # 供货商的id
 
 	class Meta(object):
 		db_table = 'mall_postage_config'

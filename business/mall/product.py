@@ -783,8 +783,6 @@ class Product(business_model.Model):
 			'is_delivery': self.is_delivery,
 			'purchase_price': self.purchase_price,
 			'supplier_user_id': self.supplier_user_id,
-			'supplier_postage_config': self.supplier_postage_config,
-			'use_supplier_postage': self.use_supplier_postage,
 			'limit_zone_type': self.limit_zone_type,
 			'limit_zone': self.limit_zone
 		}
@@ -834,34 +832,34 @@ class Product(business_model.Model):
 			watchdog.alert(unicode_full_stack())
 			return ''
 
-	@cached_context_property
-	def supplier_postage_config(self):
-		if not self.supplier:
-			return {}
-
-		supplier_postage_config_model = mall_models.SupplierPostageConfig.select().dj_where(
-				supplier_id=self.supplier,
-				status=True
-			).first()
-		if supplier_postage_config_model and supplier_postage_config_model.postage:
-			return {
-				'condition_type': supplier_postage_config_model.condition_type,
-				'condition_money': supplier_postage_config_model.condition_money,
-				'postage': supplier_postage_config_model.postage
-			}
-		else:
-			return {}
-
-	@cached_context_property
-	def use_supplier_postage(self):
-		if not self.supplier:
-			return False
-		supplier_model = mall_models.Supplier.select().dj_where(id=self.supplier).first()
-		user_profile = account_model.UserProfile.select().dj_where(user_id=supplier_model.owner_id).first()
-		if supplier_model.name == u'自营' and user_profile.webapp_type == 3:
-			return False
-		else:
-			return True
+	# @cached_context_property
+	# def supplier_postage_config(self):
+	# 	if not self.supplier:
+	# 		return {}
+	#
+	# 	supplier_postage_config_model = mall_models.SupplierPostageConfig.select().dj_where(
+	# 			supplier_id=self.supplier,
+	# 			status=True
+	# 		).first()
+	# 	if supplier_postage_config_model and supplier_postage_config_model.postage:
+	# 		return {
+	# 			'condition_type': supplier_postage_config_model.condition_type,
+	# 			'condition_money': supplier_postage_config_model.condition_money,
+	# 			'postage': supplier_postage_config_model.postage
+	# 		}
+	# 	else:
+	# 		return {}
+	#
+	# @cached_context_property
+	# def use_supplier_postage(self):
+	# 	if not self.supplier:
+	# 		return False
+	# 	supplier_model = mall_models.Supplier.select().dj_where(id=self.supplier).first()
+	# 	user_profile = account_model.UserProfile.select().dj_where(user_id=supplier_model.owner_id).first()
+	# 	if supplier_model.name == u'自营' and user_profile.webapp_type == 3:
+	# 		return False
+	# 	else:
+	# 		return True
 	# @cached_context_property
 	# def supplier_user_id(self):
 	# 	try:

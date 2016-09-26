@@ -93,9 +93,9 @@ class PostageCalculator(object):
 		supplier2postage = {}
 
 		for supplier in supplier_ids:
-				supplier2postage[supplier] = self.get_postage(supplier2products[supplier], purchase_info)
-				total_postage += supplier2postage[supplier]
-
+			self.postage_config = supplier2products[supplier][0].postage_config
+			supplier2postage[supplier] = self.get_postage(supplier2products[supplier], purchase_info)
+			total_postage += supplier2postage[supplier]
 		purchase_info.postage = supplier2postage
 		return total_postage
 

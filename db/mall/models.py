@@ -1769,6 +1769,7 @@ class OrderHasProduct(models.Model):
 	integral_sale_id = models.IntegerField(default=0) #使用的积分应用的id
 	origin_order_id = models.IntegerField(default=0) # 原始(母)订单id，用于微众精选拆单
 	purchase_price = models.FloatField(default=0)  # 采购单价
+	original_price = models.FloatField(default=0)  # 商品原价 add by bert 请勿随意赋值
 
 	class Meta(object):
 		db_table = 'mall_order_has_product'

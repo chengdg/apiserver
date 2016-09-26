@@ -1430,7 +1430,8 @@ ACTION2MSG = {
 	'pay': '支付',
 	'cancel': '取消订单',
 	'finish': '完成',
-	'buy': '下单'
+	'buy': '下单',
+	'refunded': '退款完成'
 }
 
 ORIGIN_ORDER = -1

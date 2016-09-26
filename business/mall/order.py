@@ -58,7 +58,7 @@ from decimal import Decimal
 from business.mall.allocator.allocate_price_related_resource_service import AllocatePriceRelatedResourceService
 
 from eaglet.core import paginator
-
+from services.update_product_sale_service.task import update_product_sale
 
 ORDER_STATUS2NOTIFY_STATUS = {
 	mall_models.ORDER_STATUS_NOT: accout_models.PLACE_ORDER,
@@ -1233,6 +1233,7 @@ class Order(business_model.Model):
 		* finish 完成
 		* cancel 取消订单
 		* buy 购买
+		* refunded 退款完成(for openapi)
 
 		## 功能列表：
 		### 共同功能
@@ -1499,11 +1500,29 @@ class Order(business_model.Model):
 		#4、记录订单操作日志
 		#5、记录订单状态日志
 		#6、记录orderhasrefund日志
+		#7、销量
+
+		子订单（子订单状态为待发货）
+		
+		子订单
+		0、更新库存
+		1、修改子订单状态
+		2、记录子订单状态日志
+		3、记录订单操作日志
+		4、如果其他子订单的状态相同，更新主订单的状态为其他子订单的状态并记录日志
+		5、orderhasrefund
+		6、修改主订单的final_price
+		7、修改主订单的状态(如果主订单状态不等于 去掉当前子订单的子订单集合中的最小状态)
+
 		'''
+
+
+
 		# if order.status in (mall_models.ORDER_STATUS_NOT, mall_models.ORDER_STATUS_PAYED_NOT_SHIP):
-		if order.status == mall_models.ORDER_STATUS_NOT and order.origin_order_id == -1:
-			order.cancel()
-		elif order.status == mall_models.ORDER_STATUS_PAYED_NOT_SHIP and order.origin_order_id == mall_models.ORIGIN_ORDER:
+		msg = ''
+		if self.status == mall_models.ORDER_STATUS_NOT and self.origin_order_id == -1:
+			self.cancel()
+		elif self.status == mall_models.ORDER_STATUS_PAYED_NOT_SHIP and self.origin_order_id == mall_models.ORIGIN_ORDER:
 			final_price = self.final_price
 			
 			self.__release_order_resources()
@@ -1515,53 +1534,97 @@ class Order(business_model.Model):
 			mall_models.Order.update(status=mall_models.ORDER_STATUS_REFUNDED, final_price=0).dj_where(id=self.id).execute()
 			mall_models.Order.update(status=mall_models.ORDER_STATUS_REFUNDED).dj_where(origin_order_id=self.id).execute()
 			self.__after_update_status('refunded')
+			product_sale_infos = []
 
 			for sub_order in self.sub_orders:
 				product_price = 0.0
-				product_price += self.sub_orders.postage
+				cash = sub_order['postage']
+				# product_price += self.sub_order.postage
 				#.select().dj_where(webapp_user_id=webapp_user.id)
-				for product in mall_models.OrderHasProduct.select().dj_where(order_id=sub_order.id):
-					product_price += product.price * product.number
-				mall_models.OrderHasRefund.objects.create(
+				for product in mall_models.OrderHasProduct.select().dj_where(order_id=sub_order['id']):
+					product_price += product.original_price * product.number
+					product_sale_infos.append({
+						"product_id": product.product_id,
+						'purchase_count': -product.number
+						})
+				cash += product_price
+				mall_models.OrderHasRefund.create(
 					origin_order_id=self.id,
-					delivery_item_id=sub_order.id,
-					cash=product_price,
+					delivery_item_id=sub_order['id'],
+					cash=cash,
+					total=cash,
 					finished=True,
 					)
 
-				mall_models.OrderHasProduct.select().dj_where(order_id=sub_order.id)#xiaoliang 
+			#更新销量
+			update_product_sale.delay(product_sale_infos)
 
-		if self.is_sub_order and self.status = mall_models.ORDER_STATUS_PAYED_SUCCESSED:
+		elif self.is_sub_order and self.status == mall_models.ORDER_STATUS_PAYED_NOT_SHIP:
 
-			# mall_models.OrderHasRefund.objects.create(
-			# 	origin_order_id=args['origin_order_id'],
-			# 	delivery_item_id=args['delivery_item_id'],
-			# 	cash=args['cash'],
-			# 	weizoom_card_money=args['weizoom_card_money'],
-			# 	integral=args['integral'],
-			# 	integral_money=args['integral_money'],
-			# 	coupon_money=args['coupon_money'],
-			# 	total=args['total'],
-			# 	finished=args['finished'],
-			# 	)
+			# self.__release_order_resources()
+			# 更新订单状态
+			self.raw_status = self.status
+			self.status = mall_models.ORDER_STATUS_REFUNDED
 			
-			# mall_models.Order.update(status=mall_models.ORDER_STATUS_GROUP_REFUNDED).dj_where(id=self.id).execute()
+			mall_models.Order.update(status=mall_models.ORDER_STATUS_REFUNDED).dj_where(id=self.id).execute()
 			
-			
-			'''
-			子订单（子订单状态为待发货）
-			1、返还库存
-			3\修改子订单状态，子订单都是退款完成的情况下，修改主订单状态
-				如果其他子订单都退款完成，修改主订单状态为退款完成
-				如果其他子订单都是已完成，修改主订单状态为已完成
-				如果其他子订单的状态都相同,并且和主订单的状态不一致，修改主订单的状态
+			# self.__after_update_status('refunded')
+					#更新与webapp user对应的订单信息缓存数据
+			self.context['webapp_user'].cleanup_order_info_cache()
 
-			子订单
-			1、修改子订单状态
-			2、记录订单状态日志
-			3、记录订单操作日志
-			4、更新库存
-			4、如果其他子订单的状态相同，更新主订单的状态为其他子订单的状态并记录日志
-			5、orderhasrefund
+			# 记录日志
+			LogOperator.record_operation_log(self, u'客户', mall_models.ACTION2MSG['refunded'])
+			record_order_status_log.delay(self.order_id, u'客户', self.raw_status, self.status)
 
-			'''
+			self.__send_notify_mail()
+
+
+
+			product_price = 0.0
+			cash = self.postage
+			product_sale_infos = []
+			for product in mall_models.OrderHasProduct.select().dj_where(order_id=self.id):
+				#更新库存
+				mall_models.ProductModel.update(stocks=mall_models.ProductModel.stocks+product.number).dj_where(product_id=product.product_id, name=product.product_model_name).execute()
+
+				product_price += product.original_price * product.number
+				product_sale_infos.append({
+						"product_id": product.product_id,
+						'purchase_count': -product.number
+						})
+			cash += product_price
+			mall_models.OrderHasRefund.create(
+				origin_order_id=self.origin_order_id,
+				delivery_item_id=self.id,
+				cash=cash,
+				total=cash,
+				finished=True,
+				)
+
+			update_product_sale.delay(product_sale_infos)
+			#更新金额
+
+			mall_models.Order.update(final_price=mall_models.Order.final_price-cash).dj_where(id=self.origin_order_id).execute()
+
+
+			#主订单 修改主订单的状态(如果主订单状态不等于 去掉当前子订单的子订单集合中的最小状态)
+			sub_order_status = []
+			#所有子订单
+			orders = mall_models.Order.select().dj_where(origin_order_id=self.origin_order_id)
+			sub_order_status = [order.status for order in orders if order.id != self.id]
+			order_target_status = min(sub_order_status)
+			origin_order = mall_models.Order.select().dj_where(id=self.origin_order_id).first()
+			if order_target_status != origin_order.status:
+				mall_models.Order.update(status=order_target_status).dj_where(id=self.origin_order_id).execute()
+				record_order_status_log.delay(origin_order.order_id, u'客户', origin_order.status, order_target_status)
+
+		else:
+			msg = '订单不存在或订单的状态错误,status:{}'.format(self.status)
+		if msg:
+			return msg, False
+		else:
+			return msg, True
+
+
+
+

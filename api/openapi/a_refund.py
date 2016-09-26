@@ -20,7 +20,6 @@ from business.mall.order_factory import OrderFactory, OrderResourcesException
 from business.mall.purchase_info import PurchaseInfo
 from business.mall.pay_interface import PayInterface
 from business.mall.order import Order
-from business.mall.order_has_refund import OrderHasRefund
 from eaglet.core import watchdog
 from business.spread.member_spread import MemberSpread
 import logging
@@ -40,8 +39,7 @@ class ARefund(api_resource.ApiResource):
 		openapi 取消订单操作(退款)
 
 		@param id 商品ID
-		"""
-				"""
+
 		更改订单状态
 		"""
 		order_id = args['order_id']
@@ -53,21 +51,16 @@ class ARefund(api_resource.ApiResource):
 				'order_id': order_id
 			})
 
-			order.refund()
+			success, msg = order.refund()
 
+			info = u"openapi apiserver中修改订单状态失败, order_id:{}, cause:\n{}".format(args['order_id'],  msg)
+			watchdog.info(info)
 
-
-			msg = u"apiserver中修改订单状态失败, order_id:{}, action:{}, cause:\n{}".format(args['order_id'], args['action'], reason)
-			watchdog.info(msg)
-
-			if not validate_result:
-				return 500, {'msg': reason}
-
-			if action == 'cancel':
-				order.cancel()
-			elif action == 'finish':
-				order.finish()
+			if msg:
+				return 500, {'msg': msg, 'success': False}
+			else:
+				return 200, {'msg': msg, 'success': True}
 		except:
-			notify_message = u"apiserver中修改订单状态失败, order_id:{}, action:{}, cause:\n{}".format(args['order_id'], args['action'], unicode_full_stack())
+			notify_message = u"openapi apiserver中修改订单状态失败, order_id:{}, cause:\n{}".format(args['order_id'],  unicode_full_stack())
 			watchdog.alert(notify_message)
 			return 500, ''

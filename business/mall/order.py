@@ -42,6 +42,8 @@ from business.mall.red_envelope import RedEnvelope
 from business.spread.member_spread import MemberSpread
 from business.decorator import cached_context_property
 from util import regional_util
+from util.send_mns_message import send_mns_message
+
 from business.resource.order_resource_extractor import OrderResourceExtractor
 
 from core.decorator import deprecated
@@ -696,6 +698,10 @@ class Order(business_model.Model):
 		if 'products' in result:
 			result['products'] = [product.to_dict() for product in result['products']]
 
+		result['created_at'] = self.created_at.strftime('%Y-%m-%d %H:%M:%S') if self.created_at else ""
+		result['payment_time'] = self.payment_time.strftime('%Y-%m-%d %H:%M:%S') if self.payment_time else ""
+		result['update_at'] = self.payment_time.strftime('%Y-%m-%d %H:%M:%S') if self.update_at else ""
+
 		return result
 
 
@@ -1117,6 +1123,11 @@ class Order(business_model.Model):
 			if not self.is_group_buy:
 				# 团购订单不发送模板消息
 				self.__send_template_message()
+			try:
+				send_mns_message(settings.TOPIC_PAID_ORDER, "paid-order", self.to_dict("products"))
+			except:
+				msg = unicode_full_stack()
+				watchdog.alert(msg)
 		else:
 			reason = u'非待支付订单,状态为{}'.format(str(self.status))
 			self.__log_pay_result(False, reason, raw_type, pay_interface_type)

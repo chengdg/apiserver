@@ -45,7 +45,7 @@ class SupplierPostageConfig(business_model.Model):
         return supplier_postage_configs
 
     def __get_supplier_postage_configs(self, supplier_ids):
-        postage_configs = mall_models.PostageConfig.select().dj_where(supplier_id__in=supplier_ids)
+        postage_configs = mall_models.PostageConfig.select().dj_where(supplier_id__in=supplier_ids, is_used=True)
         supplier_postage_configs = {}
         for postage_config in postage_configs:
             factor = {

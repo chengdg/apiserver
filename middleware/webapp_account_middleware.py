@@ -23,7 +23,7 @@ class WebAppAccountMiddleware(object):
 	@note 获取access_token时，如果无openid（会员创建时无openid）,使用notopenid 进行授权取得会员openid后重新发起授权
 	"""
 	def process_request(sel, req, resp):
-		if '/user/access_token' in req.path or '/console/' in req.path:
+		if '/user/access_token' in req.path or '/console/' in req.path or '/user/token' in req.path:
 			logging.info("skipped in WebAppAccountMiddleware. req.path: {}".format(req.path))
 			return
 

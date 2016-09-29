@@ -7,3 +7,4 @@ import user_center
 import user
 import wzcard
 import news
+import openapi

@@ -113,14 +113,16 @@ class AccessToken(business_model.Model):
 		if self.access_token:
 			return self.access_token
 		try:
-			db_model = account_models.AccessToken.get(woid=self.woid, openid=self.openid, access_token__ne='')
+			#db_model = account_models.AccessToken.get(woid=self.woid, openid=self.openid, access_token__ne='')
+			db_model = account_models.AccessToken.get(woid=self.woid, openid=self.openid)
 		except:
 			db_model = None
 
 		if db_model:
-			access_token = auth_util.encrypt_access_token(self.woid, self.openid)
-			db_model.access_token = access_token
-			db_model.save()
+			if db_model.access_token == "":
+				access_token = auth_util.encrypt_access_token(self.woid, self.openid)
+				db_model.access_token = access_token
+				db_model.save()
 			# self.access_token = access_token
 
 			self.access_token = db_model.access_token

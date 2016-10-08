@@ -216,13 +216,29 @@ REGISTERED_LOCK_NAMES = {
 	'wz_card_lock': 'wc:',
 	'wapi_lock': 'wapi:',
 }
+if 'deploy' == MODE:
+    MNS_ACCESS_KEY_ID = 'eJ8LylRwQERRqOot'
+    MNS_ACCESS_KEY_SECRET = 'xxPrfGcUlnsL7IPweJRqVekHTCu6Ad'
+    MNS_ENDPOINT = 'http://1615750970594173.mns.cn-hangzhou-internal.aliyuncs.com/'
+    MNS_SECURITY_TOKEN = ''
+    TOPIC_PAID_ORDER = "paid-order"
+else:
+    MNS_ACCESS_KEY_ID = 'eJ8LylRwQERRqOot'
+    MNS_ACCESS_KEY_SECRET = 'xxPrfGcUlnsL7IPweJRqVekHTCu6Ad'
+    MNS_ENDPOINT = 'http://1615750970594173.mns.cn-hangzhou.aliyuncs.com/'
+    MNS_SECURITY_TOKEN = ''
+    TOPIC_PAID_ORDER = "paid-order-test"
+# import simplejson
+# try:
+#     #TODO 可遍历所以配置文件
+#     file = open("common-conf/mns-conf/mns_conf.json", "r")
+#     MNS_CONF = file.read()
+#     file.close()
+#     MNS_CONF = simplejson.loads(MNS_CONF)
+# except Exception, e:
+#     logging.error("--------ERROR MNS CONF------------")
+#     logging.error(e)
 
-
-import simplejson 
-f = open("common-conf/mns-conf/mns_conf.json", "r")
-MSN_CONF = f.read()
-f.close()
-MSN_CONF = simplejson.loads(MSN_CONF)
 
 COMMON_SERVICE_ERROR_TYPE = 'common:wtf'
 

@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from eaglet.core import api_resource
-from eaglet.decorator import param_required
-#from api.wapi_utils import create_json_response
+"""为开放平台账号增加默认账号
+"""
+
+__author__ = 'bert'
+from util.command import BaseCommand
+
 from business.account.member_factory import MemberFactory
 from business.account.webapp_user_factory import WebAppUserFactory
 from business.account.webapp_owner import WebAppOwner
@@ -10,20 +13,14 @@ from business.account.access_token import AccessToken as BusinessAccessToken
 
 from db.account import models as account_models
 from db.member import models as member_models
+from eaglet.core.zipkin import zipkin_client
+zipkin_client.zipkinClient = None
 
-class Token(api_resource.ApiResource):
-	"""
-	商品
-	"""
-	app = 'user'
-	resource = 'token'
-
-	@param_required(['woid'])
-	def put(args):
-		"""
-		创建商品
-		"""
-		woid = args["woid"]
+class Command(BaseCommand):
+	help = "python manage.py add_member_for_open [woid]"
+	args = ''
+	
+	def handle(self, woid, **options):
 		webapp_owner = WebAppOwner.get({
 				'woid': woid
 			})
@@ -48,6 +45,4 @@ class Token(api_resource.ApiResource):
 				"for_oauth": 0
 				}).save()
 		access_token = BusinessAccessToken(woid, openid).put_access_token()
-		return {
-			"access_token": access_token
-		}
+		print ("access_token:%s" % access_token)

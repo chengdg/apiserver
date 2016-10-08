@@ -343,20 +343,35 @@ class OrderFactory(business_model.Model):
 		2. price_related_resources
 		3. Order、OrderHasProduct、OrderHasPromotion表
 		"""
+
+		# 删除前记录
+		watchdog.info({
+			'uuid': 'delete order',
+			'order_id': order.order_id,
+			'id': order.id
+		})
+
 		if price_free_resources:
 			self.__release_price_free_resources(price_free_resources)
 
-		# 删除Order相关数据库记录
+		# # 删除Order相关数据库记录
+		# if order and order.id:
+		# 	sub_order_ids = [o.id for o in mall_models.Order.select().dj_where(origin_order_id=order.id)]
+		# 	mall_models.OrderHasPromotion.delete().dj_where(order_id=order.id).execute()
+		# 	mall_models.OrderHasProduct.delete().dj_where(order_id=order.id).execute()
+		#
+		# 	if sub_order_ids:
+		# 		mall_models.OrderHasProduct.delete().dj_where(order_id__in=sub_order_ids).execute()
+		#
+		# 	mall_models.Order.delete().dj_where(origin_order_id=order.id).execute()
+		# 	mall_models.Order.delete().dj_where(id=order.id).execute()
+
 		if order and order.id:
-			sub_order_ids = [o.id for o in mall_models.Order.select().dj_where(origin_order_id=order.id)]
-			mall_models.OrderHasPromotion.delete().dj_where(order_id=order.id).execute()
-			mall_models.OrderHasProduct.delete().dj_where(order_id=order.id).execute()
+			# sub_order_ids = [o.id for o in mall_models.Order.select().dj_where(origin_order_id=order.id)]
 
-			if sub_order_ids:
-				mall_models.OrderHasProduct.delete().dj_where(order_id__in=sub_order_ids).execute()
-
-			mall_models.Order.delete().dj_where(origin_order_id=order.id).execute()
-			mall_models.Order.delete().dj_where(id=order.id).execute()
+			new_webapp_user_id = - order.webapp_user_id
+			mall_models.Order.update(webapp_user_id=new_webapp_user_id).dj_where(origin_order_id=order.id).execute()
+			mall_models.Order.update(webapp_user_id=new_webapp_user_id).dj_where(id=order.id).execute()
 
 		if price_related_resources:
 			self.__release_price_related_resources(price_related_resources)

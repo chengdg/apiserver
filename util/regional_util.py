@@ -3,7 +3,7 @@
 from db.mall import models as mall_models
 
 def get_str_value_by_string_ids(str_ids):
-	if str_ids != '' and str_ids:
+	if str_ids != '' and str_ids and str_ids != ' ':
 		#cache = get_cache('mem')
 		#ship_address = cache.get(str_ids)
 		#TODO: 重新加入缓存

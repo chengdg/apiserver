@@ -48,7 +48,8 @@ class PurchaseInfo(business_model.Model):
         'group_id',
         'activity_id',
         'bdd_order_id',  # bdd时候用的order_id
-        'postage' # 邮费方便后面传递参数
+        'postage', # 邮费方便后面传递参数
+        'lock'
     )
 
     @staticmethod
@@ -82,6 +83,7 @@ class PurchaseInfo(business_model.Model):
         self.promotion_ids = result['promotion_ids']
         self.product_counts = result['product_counts']
         self.product_model_names = result['product_model_names']
+        self.lock = False if request_args.get('lock', True) in ['False', False, 0] else True
 
         self.__parse_ship_info(request_args)
         self.__parse_bill_info(request_args)

@@ -65,8 +65,8 @@ class ProductResource(business_model.Resource):
 		if not is_succeeded:
 			logging.info("reason in `ProductResource.get_resources(): {}".format(reason))
 			return False, reason
-
-		if product.limit_zone_type:
+		# purchase_info.lock wapi锁,根据它判断是否是openapi发起的下单，如果lock为False就不校验了.lock为False代表未被wapi锁，说明是openapi的下单
+		if product.limit_zone_type and purchase_info.lock:
 			is_succeeded, reason = self.checkout_sale_zone(product, purchase_info)
 			if not is_succeeded:
 				logging.info("reason in `ProductResource.get_resources(): {}".format(reason))

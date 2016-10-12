@@ -93,10 +93,13 @@ class PromotionRepository(business_model.Model):
 		
 		products = mall_models.Product.select().dj_where(id__in=product_ids)
 		
-		if webapp_owner.mall_type:
-			pool_product_list = [p.product_id for p in  mall_models.ProductPool.select().dj_where(woid=webapp_owner.id, status=mall_models.PP_STATUS_ON)]
-		else:
-			pool_product_list = []
+		# if webapp_owner.mall_type:
+		# 	pool_product_list = [p.product_id for p in  mall_models.ProductPool.select().dj_where(woid=webapp_owner.id, status=mall_models.PP_STATUS_ON)]
+		# else:
+		# 	pool_product_list = []
+
+		pool_product_list = [p.product_id for p in mall_models.ProductPool.select().dj_where(woid=webapp_owner.id,
+		                                                                                     status=mall_models.PP_STATUS_ON)]
 
 		id2product = dict([(product.id, product) for product in products])
 
@@ -116,10 +119,14 @@ class PromotionRepository(business_model.Model):
 
 			product = id2product[product_id]
 
-			if pool_product_list and product_id in pool_product_list:
+			# if pool_product_list and product_id in pool_product_list:
+			# 	shelve_type = mall_models.PRODUCT_SHELVE_TYPE_ON
+			# else:z
+			# 	shelve_type = product.shelve_type
+			if product_id in pool_product_list:
 				shelve_type = mall_models.PRODUCT_SHELVE_TYPE_ON
 			else:
-				shelve_type = product.shelve_type
+				shelve_type = mall_models.PRODUCT_SHELVE_TYPE_OFF
 
 			data = {
 				'id': product.id,

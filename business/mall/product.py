@@ -256,8 +256,6 @@ class Product(business_model.Model):
 
 		products = []
 
-		print("type:", type(models[0]))
-
 		for model in models:
 			products.append(Product(model))
 

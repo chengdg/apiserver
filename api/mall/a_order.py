@@ -10,7 +10,7 @@ from datetime import datetime
 from eaglet.core import api_resource
 from core.exceptionutil import unicode_full_stack
 import settings
-from eaglet.utils.lock import wapi_lock
+from eaglet.utils.lock import RedisLock
 from eaglet.decorator import param_required
 from db.mall import models as mall_models
 from db.mall import promotion_models
@@ -25,6 +25,48 @@ from business.mall.order import Order
 from eaglet.core import watchdog
 from business.spread.member_spread import MemberSpread
 import logging
+
+from settings import REGISTERED_LOCK_NAMES
+def wapi_lock():
+	"""
+	wapi接口锁装饰器，锁定一个用户同时只能访问一个接口一次
+	Examples:
+		class AOrder(api_resource.ApiResource):
+			app = 'mall'
+			resource = 'order'
+
+			@param_required(['ship_name', 'ship_address', 'ship_tel', 'order_type', 'xa-choseInterfaces'])
+			@wapi_lock()
+			def put(args):
+				...
+	"""
+	def decorator_func(func):
+		redis_lock = RedisLock()
+
+		def wrapper_func(*args, **kwargs):
+			# 申请锁
+			lock = args[0].get('lock', True)
+			if lock not in ['False', False, 0]:
+				if not redis_lock.lock({
+					'name': REGISTERED_LOCK_NAMES['wapi_lock'],
+					'resource': args[0]['wapi_id'] + str(args[0]['webapp_user'].id)
+				}, lock_timeout=3):
+					reason_dict = {
+						"is_success": False,
+						"msg": u'请勿连续点击',
+						"type": "coupon"  # 兼容性type
+					}
+					return 500, {'detail': [reason_dict]}
+
+			retval = func(*args, **kwargs)
+			# 释放锁
+			redis_lock.unlock()
+
+			return retval
+
+		return wrapper_func
+
+	return decorator_func
 
 class AOrder(api_resource.ApiResource):
 	"""

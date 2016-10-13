@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""@package apimall.a_order
+"""@package api.product.a_product_catalog
 订单API
 
 """
@@ -36,15 +36,9 @@ class AProductCatalog(api_resource.ApiResource):
 
 		product_catalogs = ProductCatalog.get_product_catalogs()
 		data = []
-		for catalog in product_catalogs:
-			data.append(AProductCatalog.category_to_dict(catalog)) 
-		return data
-
-	@param_required(['product_id'])
-	def get(args):
-		"""
-		openapi 获取商品详情里面的所属的分类信息
-		"""
-		pass
-		# product_catalogs = ProductCatalog.get_product_catalogs()
-		# return product_catalogs
+		if product_catalogs:
+			for catalog in product_catalogs:
+				data.append(AProductCatalog.catalog_to_dict(catalog)) 
+			return data
+		else:
+			return False

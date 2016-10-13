@@ -10,6 +10,7 @@ from util import dateutil as utils_dateutil
 from business.mall.product import Product
 from business.mall.product_limit_zone_template import ProductLimitZoneTemplate
 from business.mall.review.product_reviews import ProductReviews
+from business.mall.product_catalog import ProductCatalog
 
 from eaglet.utils.resource_client import Resource
 from eaglet.core import watchdog
@@ -99,4 +100,10 @@ class AProduct(api_resource.ApiResource):
 			template = ProductLimitZoneTemplate.from_id({'id': result['limit_zone']})
 			result['limit_zone_detail'] = template.limit_zone_detail()
 
+		#获取商品分类ID   product_catalog_id为0时，表示无分类信息
+		flag, resp_data= ProductCatalog.fill_product_catalog_id({'product_id':args['product_id']})
+		if flag:
+			result['product_catalog_id'] = resp_data
+		else:
+			result['product_catalog_id'] = resp_data
 		return result

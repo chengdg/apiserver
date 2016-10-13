@@ -130,40 +130,21 @@ class CachedProduct(object):
 		try:
 			product = CachedProduct.__get_from_cache(webapp_owner_id, product_id, member_grade_id)
 
-			# if CachedProduct.webapp_owner.mall_type:
-			# 	is_pool_product = mall_models.ProductPool.select().dj_where(woid=webapp_owner_id, product_id=product_id).count() > 0
-			# 	if  product.owner_id != webapp_owner_id and (not is_pool_product):
-			# 		product.is_deleted = True
-			# 	elif product.owner_id != webapp_owner_id and is_pool_product:
-			# 		pool_product = mall_models.ProductPool.select().dj_where(woid=webapp_owner_id, product_id=product_id).first()
-			# 		if pool_product.status == mall_models.PP_STATUS_ON:
-			# 			product.shelve_type = mall_models.PRODUCT_SHELVE_TYPE_ON
-			# 		elif pool_product.status == mall_models.PP_STATUS_OFF:
-			# 			product.shelve_type = mall_models.PRODUCT_SHELVE_TYPE_OFF
-			# 		else:
-			# 			product.is_deleted = True
-			#
-			# elif product.owner_id != webapp_owner_id:
-			# 	product.is_deleted = True
-
-			# 处理shelve_type,is_deleted
-			pool_info = mall_models.ProductPool.select().dj_where(woid=webapp_owner_id, product_id=product_id).first()
-			# 商品在该商品池里
-			if pool_info:
-				if pool_info.status == mall_models.PP_STATUS_ON:
-					product.is_deleted = False
-					product.shelve_type = mall_models.PRODUCT_SHELVE_TYPE_ON
-				elif pool_info.status == mall_models.PP_STATUS_OFF:
-					product.is_deleted = False
-					product.shelve_type = mall_models.PRODUCT_SHELVE_TYPE_OFF
-				else:
+			if CachedProduct.webapp_owner.mall_type:
+				is_pool_product = mall_models.ProductPool.select().dj_where(woid=webapp_owner_id, product_id=product_id).count() > 0
+				if  product.owner_id != webapp_owner_id and (not is_pool_product):
 					product.is_deleted = True
-					product.shelve_type = mall_models.PRODUCT_SHELVE_TYPE_OFF
-			else:
+				elif product.owner_id != webapp_owner_id and is_pool_product:
+					pool_product = mall_models.ProductPool.select().dj_where(woid=webapp_owner_id, product_id=product_id).first()
+					if pool_product.status == mall_models.PP_STATUS_ON:
+						product.shelve_type = mall_models.PRODUCT_SHELVE_TYPE_ON
+					elif pool_product.status == mall_models.PP_STATUS_OFF:
+						product.shelve_type = mall_models.PRODUCT_SHELVE_TYPE_OFF
+					else:
+						product.is_deleted = True
+
+			elif product.owner_id != webapp_owner_id:
 				product.is_deleted = True
-				product.shelve_type = mall_models.PRODUCT_SHELVE_TYPE_OFF
-
-
 		except:
 			if settings.DEBUG and not settings.IS_UNDER_BDD:
 				raise

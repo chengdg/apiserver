@@ -106,7 +106,7 @@ class SupplierPostageConfig(business_model.Model):
     def product_group_use_supplier_postage(args):
         product_groups = args['product_groups']
         supplier_ids = args['supplier_ids']
-        supplier_models = mall_models.Supplier.select().dj_where(id__in=supplier_ids, name=u'自营')
+        supplier_models = mall_models.Supplier.select().dj_where(id__in=supplier_ids)
         tmp_user_ids = [model.owner_id for model in supplier_models]
         user_ids = [profile.user_id for profile in account_models.UserProfile.select().dj_where(user_id__in=tmp_user_ids, webapp_type=3)]
         not_use_supplier_postage_supplier_id = [model.id for model in supplier_models if model.owner_id in user_ids]

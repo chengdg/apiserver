@@ -18,7 +18,7 @@ class AProductClassification(api_resource.ApiResource):
 	商品分类信息
 	"""
 	app = 'product'
-	resource = 'product_classifications'
+	resource = 'product_classification'
 
 	@staticmethod
 	def classification_to_dict(classification):
@@ -37,8 +37,6 @@ class AProductClassification(api_resource.ApiResource):
 		product_classifications = ProductClassification.get_product_classifications()
 		data = []
 		if product_classifications:
-			for classification in product_classifications:
-				data.append(AProductClassification.classification_to_dict(classification)) 
-			return {'data':data}
+			return product_classifications
 		else:
-			return {'data':''}
+			return ''

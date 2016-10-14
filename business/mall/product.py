@@ -677,7 +677,7 @@ class Product(business_model.Model):
 		for product in products:
 			product_classification = mall_models.ClassificationHasProduct.select().dj_where(product_id=product.id).first()
 			if product_classification:
-				product.classification_id = product_classification.id
+				product.classification_id = product_classification.classification_id
 			else:
 				product.classification_id = 0
 
@@ -749,8 +749,8 @@ class Product(business_model.Model):
 			Product.__fill_classification_detail(
 				webapp_owner,
 				products,
-				product_ids,
-				False)
+				product_ids
+				)
 
 		# if options.get('with_promotion', False):
 		# 	Product.__fill_promotion_detail(webapp_owner_id, products, product_ids)

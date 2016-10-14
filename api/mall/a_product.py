@@ -10,7 +10,6 @@ from util import dateutil as utils_dateutil
 from business.mall.product import Product
 from business.mall.product_limit_zone_template import ProductLimitZoneTemplate
 from business.mall.review.product_reviews import ProductReviews
-from business.mall.product_catalog import ProductCatalog
 
 from eaglet.utils.resource_client import Resource
 from eaglet.core import watchdog
@@ -99,5 +98,4 @@ class AProduct(api_resource.ApiResource):
 		if result['limit_zone_type']:
 			template = ProductLimitZoneTemplate.from_id({'id': result['limit_zone']})
 			result['limit_zone_detail'] = template.limit_zone_detail()
-		
 		return result

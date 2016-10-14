@@ -30,12 +30,13 @@ class ProductClassification(business_model.Model):
 
 	def __init__(self, model=None):
 		business_model.Model.__init__(self)
+		self._init_slot_from_model(model)
 
 	@staticmethod
 	def get_product_classifications():
 		try:
 			product_classifications = mall_models.Classification.select().dj_where(status=1)
-			product_classifications = [ProductClassification(classification) for classification in product_classifications]
+			product_classifications = [ProductClassification(classification).to_dict() for classification in product_classifications]
 			return product_classifications
 		except:
 			watchdog.alert(unicode_full_stack())

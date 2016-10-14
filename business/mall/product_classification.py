@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""@package business.product_catalog
+"""@package business.product_classification
 商品分类信息
 """
 
@@ -17,7 +17,7 @@ from business import model as business_model
 
 
 
-class ProductCatalog(business_model.Model):
+class ProductClassification(business_model.Model):
 	"""
 	商品分类信息
 	"""
@@ -32,20 +32,12 @@ class ProductCatalog(business_model.Model):
 		business_model.Model.__init__(self)
 
 	@staticmethod
-	def get_product_catalogs():
+	def get_product_classifications():
 		try:
-			product_catalogs = mall_models.Classification.select()
-			return product_catalogs
+			product_classifications = mall_models.Classification.select().dj_where(status=1)
+			product_classifications = [ProductClassification(classification) for classification in product_classifications]
+			return product_classifications
 		except:
 			watchdog.alert(unicode_full_stack())
 			return False
-
-	@staticmethod
-	@param_required(['product_id'])
-	def fill_product_catalog_id(args):
-		product_catalog_id = mall_models.ClassificationHasProduct.select().dj_where(product_id=args['product_id']).first()
-		if product_catalog_id:
-			return True, product_catalog_id.classification_id
-		else:
-			return False, 0
 

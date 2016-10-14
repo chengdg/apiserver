@@ -99,11 +99,5 @@ class AProduct(api_resource.ApiResource):
 		if result['limit_zone_type']:
 			template = ProductLimitZoneTemplate.from_id({'id': result['limit_zone']})
 			result['limit_zone_detail'] = template.limit_zone_detail()
-
-		#获取商品分类ID   product_catalog_id为0时，表示无分类信息
-		flag, resp_data= ProductCatalog.fill_product_catalog_id({'product_id':args['product_id']})
-		if flag:
-			result['product_catalog_id'] = resp_data
-		else:
-			result['product_catalog_id'] = resp_data
+		
 		return result

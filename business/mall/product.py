@@ -58,7 +58,8 @@ class CachedProduct(object):
 					"with_model_property_info": True,
 					"with_image": True,
 					"with_property": True,
-					"with_product_promotion": True
+					"with_product_promotion": True,
+					"with_product_classification": True
 				}
 			})
 
@@ -222,7 +223,8 @@ class Product(business_model.Model):
 		'weight',
 		'stock_type',
 		'limit_zone_type',
-		'limit_zone'
+		'limit_zone',
+		'classification_id'
 	)
 
 
@@ -668,6 +670,18 @@ class Product(business_model.Model):
 				id2product[product_id].sales = sales.sales
 
 	@staticmethod
+	def __fill_classification_detail(webapp_owner, products, product_ids):
+		"""填充商品分类信息
+		"""
+		#获取商品分类ID   product_classification为None时，表示无分类信息
+		for product in products:
+			product_classification = mall_models.ClassificationHasProduct.select().dj_where(product_id=product.id).first()
+			if product_classification:
+				product.classification_id = product_classification.id
+			else:
+				product.classification_id = 0
+
+	@staticmethod
 	def __fill_details(webapp_owner, products, options):
 		"""填充各种细节信息
 
@@ -683,6 +697,7 @@ class Product(business_model.Model):
 			with_selected_category: 填充选中的分类信息
 			with_all_category: 填充所有商品分类详情
 			with_sales: 填充商品销售详情
+			with_product_classification:填充商品的分类信息
 		"""
 		is_enable_model_property_info = options.get('with_model_property_info',False)
 		product_ids = [product.id for product in products]
@@ -729,6 +744,13 @@ class Product(business_model.Model):
 
 		if options.get('with_sales', False):
 			Product.__fill_sales_detail(webapp_owner, products, product_ids)
+
+		if options.get('with_product_classification', False):
+			Product.__fill_classification_detail(
+				webapp_owner,
+				products,
+				product_ids,
+				False)
 
 		# if options.get('with_promotion', False):
 		# 	Product.__fill_promotion_detail(webapp_owner_id, products, product_ids)
@@ -786,7 +808,8 @@ class Product(business_model.Model):
 			'supplier_postage_config': self.supplier_postage_config,
 			'use_supplier_postage': self.use_supplier_postage,
 			'limit_zone_type': self.limit_zone_type,
-			'limit_zone': self.limit_zone
+			'limit_zone': self.limit_zone,
+			'classification_id': self.classification_id
 		}
 		if 'extras' in kwargs:
 			for extra in kwargs['extras']:

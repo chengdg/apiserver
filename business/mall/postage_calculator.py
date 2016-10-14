@@ -69,7 +69,7 @@ class PostageCalculator(object):
 		# 	else:
 		# 		added_count += 1
 
-		added_count = math.ceil(weight/added_weight)
+		added_count = math.ceil(round(weight/added_weight, 2))
 		added_price = added_count * factor['addedWeightPrice']
 		return price + added_price
 
@@ -86,39 +86,16 @@ class PostageCalculator(object):
 		计算自营平台的运费 by Eugene
 		"""
 		total_postage = 0.0
-		supplier2product_total_price = {}
+		supplier2products = {}
 		for product in products:
-			if product.supplier > 0:
-				if supplier2product_total_price.has_key(product.supplier):
-					supplier2product_total_price[product.supplier] += product.original_price * product.purchase_count
-				else:
-					supplier2product_total_price[product.supplier] = product.original_price * product.purchase_count
-		supplier_ids = supplier2product_total_price.keys()
-		supplier_postage_config_models = mall_models.SupplierPostageConfig.select().dj_where(supplier_id__in=supplier_ids)
-		supplier2config = dict([(model.supplier_id, model) for model in supplier_postage_config_models])
+			supplier2products.setdefault(product.supplier, []).append(product)
+		supplier_ids = supplier2products.keys()
 		supplier2postage = {}
 
-		# 满足供货商可以使用weapp运费模板
-		supplier_models = mall_models.Supplier.select().dj_where(id__in=supplier_ids, name=u'自营')
-		tmp_user_ids = [model.owner_id for model in supplier_models]
-		user_ids = [profile.user_id for profile in account_models.UserProfile.select().dj_where(user_id__in=tmp_user_ids, webapp_type=3)]
-		not_use_supplier_postage_supplier_id = [model.id for model in supplier_models if model.owner_id in user_ids]
-
 		for supplier in supplier_ids:
-			if supplier in not_use_supplier_postage_supplier_id:
-				supplier2postage[supplier] = self.get_postage(filter(lambda p:p.supplier == supplier, products), purchase_info)
-				total_postage += supplier2postage[supplier]
-				continue
-			if not supplier2config.has_key(supplier):
-				supplier2postage[supplier] = 0
-				continue
-			total_price = supplier2product_total_price[supplier]
-			condition_money = supplier2config[supplier].condition_money
-			if total_price < condition_money or condition_money == 0:
-				supplier2postage[supplier] = supplier2config[supplier].postage
-				total_postage += float(supplier2config[supplier].postage)
-			else:
-				supplier2postage[supplier] = 0
+			self.postage_config = supplier2products[supplier][0].postage_config
+			supplier2postage[supplier] = self.get_postage(supplier2products[supplier], purchase_info)
+			total_postage += supplier2postage[supplier]
 		purchase_info.postage = supplier2postage
 		return total_postage
 

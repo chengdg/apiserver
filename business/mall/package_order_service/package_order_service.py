@@ -114,8 +114,8 @@ class PackageOrderService(business_model.Service):
 
 		@return final_price 调整后的订单价格
 		"""
-		if purchase_info.group_id:
-			# 团购订单不计运费
+		if purchase_info.group_id and self.context['webapp_owner'].user_profile.webapp_type == 0:
+			# 普通商家团购订单不计运费,自营平台要运费.(update by Eugene)
 			order.postage = 0
 		else:
 			postage_config = self.context['webapp_owner'].system_postage_config

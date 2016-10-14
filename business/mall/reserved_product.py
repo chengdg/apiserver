@@ -217,7 +217,7 @@ class ReservedProduct(business_model.Model):
 				"factor": None
 			}
 		else:
-			if webapp_owner.user_profile.webapp_type and product.supplier:
+			if webapp_owner.user_profile.webapp_type == 1 and product.supplier:
 				return SupplierPostageConfig.from_suppler_id({'supplier_id': product.supplier})
 			else:
 				return webapp_owner.system_postage_config

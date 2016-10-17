@@ -98,5 +98,4 @@ class AProduct(api_resource.ApiResource):
 		if result['limit_zone_type']:
 			template = ProductLimitZoneTemplate.from_id({'id': result['limit_zone']})
 			result['limit_zone_detail'] = template.limit_zone_detail()
-
 		return result

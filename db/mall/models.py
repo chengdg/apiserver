@@ -2253,3 +2253,46 @@ class ProductLimitZoneTemplate(models.Model):
 		verbose_name = "商品仅售和禁售的模板"
 		verbose_name_plural = "商品仅售和禁售的模板"
 		db_table = "mall_product_limit_zone_template"
+
+
+
+# 一级分类
+FIRST_CLASSIFICATION = 1
+# 二级分类
+SECONDARY_CLASSIFICATION = 2
+# 分类上线（类似于未删除）
+CLASSIFICATION_ONLINE = 1
+# 分类下线（类似于删除）
+CLASSIFICATION_OFFLINE = 0
+
+
+class Classification(models.Model):
+	"""
+	商品分类
+	"""
+	name = models.CharField(max_length=1024) #分类名
+	level = models.IntegerField(default=FIRST_CLASSIFICATION) #分类等级
+	status = models.IntegerField(default=CLASSIFICATION_ONLINE)
+	father_id = models.IntegerField(default=-1) #父级分类id
+	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间
+
+	class Meta(object):
+		verbose_name = "商品分类"
+		verbose_name_plural = "商品分类"
+		db_table = "mall_classification"
+
+
+class ClassificationHasProduct(models.Model):
+	"""
+	商品分类拥有商品的关系表
+	"""
+	classification = models.ForeignKey(Classification)
+	product_id = models.IntegerField(default=-1)
+	woid = models.IntegerField(default=-1)
+	display_index = models.IntegerField(default=-1)
+	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间
+
+	class Meta(object):
+		verbose_name = "商品分类与商品的关系"
+		verbose_name_plural = "商品分类与商品的关系"
+		db_table = "mall_classification_has_product"

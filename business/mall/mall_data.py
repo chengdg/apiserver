@@ -158,6 +158,7 @@ class MallData(business_model.Model):
 
 				try:
 					del postage_config_dict['created_at']
+					del postage_config_dict['update_time']
 				except:
 					pass
 				values.append(postage_config_dict)

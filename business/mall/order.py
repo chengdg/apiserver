@@ -691,6 +691,14 @@ class Order(business_model.Model):
 				if sub_order['status'] < order_status_info:
 					order_status_info = sub_order['status']
 
+				#处理时间对象 
+				try:
+					sub_order['created_at'] = sub_order['created_at'].strftime('%Y-%m-%d %H:%M:%S') if sub_order['created_at'] else ""
+					sub_order['payment_time'] = sub_order['payment_time'].strftime('%Y-%m-%d %H:%M:%S') if sub_order['payment_time'] else ""
+					sub_order['update_at'] = sub_order['update_at'].strftime('%Y-%m-%d %H:%M:%S') if sub_order['update_at'] else ""
+				except:
+					pass
+				
 				# sub_order['has_promotion_saved_money'] = sub_order['promotion_saved_money > 0
 				# sub_order['order_status_info'] = mall_models.STATUS2TEXT[sub_order['status']]
 

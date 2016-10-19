@@ -154,7 +154,13 @@ class MallData(business_model.Model):
 				factor['free_factor'] = free_factor
 
 				postage_config.factor = factor
-				values.append(postage_config.to_dict('factor'))
+				postage_config_dict = postage_config.to_dict('factor')
+
+				try:
+					del postage_config_dict['created_at']
+				except:
+					pass
+				values.append(postage_config_dict)
 
 			return {
 				'value': values

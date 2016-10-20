@@ -90,8 +90,16 @@ class SupplierPostageConfig(business_model.Model):
                         free_factor.setdefault('province_{}'.format(province_id), []).append(data)
             factor['free_factor'] = free_factor
 
+
             postage_config.factor = factor
-            supplier_postage_configs[postage_config.supplier_id] = postage_config.to_dict('factor')
+            postage_config_dict = postage_config.to_dict('factor')
+            try:
+                del postage_config_dict["created_at"]
+                del postage_config_dict["update_time"]
+            except:
+                pass
+
+            supplier_postage_configs[postage_config.supplier_id] = postage_config_dict
         return supplier_postage_configs
 
     @staticmethod

@@ -82,7 +82,6 @@ class PurchaseInfo(business_model.Model):
         self.promotion_ids = result['promotion_ids']
         self.product_counts = result['product_counts']
         self.product_model_names = result['product_model_names']
-        self.lock = False if request_args.get('lock', True) in ['False', False, 0] else True
 
         self.__parse_ship_info(request_args)
         self.__parse_bill_info(request_args)

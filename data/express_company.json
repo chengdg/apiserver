@@ -90,6 +90,12 @@
 		"name": "优速物流",
 		"value": "youshuwuliu",
 		"kdniao_value": "UC"
+	},
+	{
+		"id": "00019",
+		"name": "安能物流",
+		"value": "annengwuliu",
+		"kdniao_value": "ANE"
 	}
 ]
 

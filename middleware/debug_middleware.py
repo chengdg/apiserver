@@ -33,7 +33,8 @@ class SqlMonitorMiddleware(object):
 
 class RedisMiddleware(object):
 	def process_request(self, request, response):
-		if request.params.get('__nocache', None):
+		# if request.params.get('__nocache', None):
+		if True:
 			access_token_keys = cache.utils.get_keys('access_token*')
 			access_token_dict = {}
 

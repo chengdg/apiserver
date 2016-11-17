@@ -13,6 +13,7 @@ integral_log_id	| 数值	| 积分记录ID(待确认)
 
 import logging
 import decimal
+import math
 #import json
 #from bs4 import BeautifulSoup
 #import math
@@ -93,9 +94,10 @@ class IntegralResource(business_model.Resource):
 				integral_money = float(self.integral)
 			else:
 				integral_money = float(float(self.integral)/count_per_yuan)
-			integral_money = decimal.Decimal(integral_money).quantize(decimal.Decimal('.01'), rounding=decimal.ROUND_05UP)
 
-			return float(integral_money)
+			integral_money = round(math.floor(integral_money*100)/100, 2) 
+			#integral_money = decimal.Decimal(integral_money).quantize(decimal.Decimal('.01'), rounding=decimal.ROUND_05UP)
+			return integral_money
 
 	@money.setter
 	def money(self, money):

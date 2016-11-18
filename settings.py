@@ -194,14 +194,17 @@ if MODE == 'test':
     OAUTHSERVER_HOST = 'http://api.mall3.weizzz.com/'
     H5_DOMAIN = 'h5.mall3.weizzz.com'
     WEAPP_DOMAIN = 'docker.test.weizzz.com'
+    MARKETAPP_DOMAIN = 'm_marketapp.weapp.weizzz.com'
 elif MODE == 'develop':
     OAUTHSERVER_HOST = 'http://api.weizoom.com/'
     H5_DOMAIN = 'mall.weizoom.com'
     WEAPP_DOMAIN = 'dev.weapp.com'
+    MARKETAPP_DOMAIN = 'm_marketapp.weapp.com'
 else:
     OAUTHSERVER_HOST = 'http://api.weizoom.com/'
     H5_DOMAIN = 'mall.weizoom.com'
     WEAPP_DOMAIN = 'weapp.weizoom.com'
+    MARKETAPP_DOMAIN = 'm_marketapp.weapp.weizoom.com'
 
 
 DEV_SERVER_MULTITHREADING = False

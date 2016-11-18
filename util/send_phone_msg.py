@@ -53,7 +53,13 @@ def send_phone_captcha(phone_number, captcha, company_name):
 		"sms_code": "SMS_25960084",
 		"sign_name": u"验证码"
 	}
-	msgutil.send_message('notify', 'phone', data)
+	try:
+		msgutil.send_message('notify', 'phone', data)
+		return True
+	except:
+		return False
+	
+
 
 
 def send_captcha(phone_number, company_name=u'微众传媒'):

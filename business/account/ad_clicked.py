@@ -51,3 +51,11 @@ class AdClicked(business_model.Model):
 				"model": model
 				})
 		return None
+
+	@staticmethod
+	@param_required(['member_id'])
+	def add_ad_clicked(args):
+		model = member_models.AdClicked.create(member_id=args['member_id'])
+		return AdClicked.from_model({
+			"model": model
+			})

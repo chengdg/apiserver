@@ -387,3 +387,45 @@ class ChannelDistributionQrcodeSettings(models.Model):
 
 	class Meta:
 		db_table = 'market_tool_channel_distribution_qrcode_setting'
+
+
+MEMBER_YEAR_CARD = 1
+MEMBER_STU_CARD = 2
+class MemberCard(models.Model):
+	"""
+	会员卡
+	"""
+	owner_id = models.IntegerField() #会员id
+	member_id = models.IntegerField() #会员id
+	#member_name = models.CharField(max_length=1024) #会员名称
+	card_number = models.CharField(max_length=50) #微众卡卡号
+	card_password = models.CharField(max_length=512) #微众卡密码
+	type = models.IntegerField(default=MEMBER_YEAR_CARD) #卡类型 1:会员年卡 2:学生卡
+	card_name = models.CharField(max_length=512) #微众卡名字
+	created_at = models.DateTimeField(auto_now_add=True) #发放时间
+
+	class Meta(object):
+		db_table = 'member_card'
+
+class MemberCardLog(models.Model):
+	"""
+	会员卡记录，仅交易记录  下单 和 取消订单
+	"""
+	member_card = models.ForeignKey(MemberCard)  #member card id
+	price = models.FloatField(default=0.0)  # 浮动金额
+	reason = models.CharField(max_length=512)  # 原因
+	created_at = models.DateTimeField(auto_now_add=True) #时间
+	
+	class Meta(object):
+		db_table = 'member_card_log'
+
+class AdClicked(models.Model):
+	"""
+	广告点击
+	"""
+	member_id = models.IntegerField() #会员id
+	created_at = models.DateTimeField(auto_now_add=True) #时间
+	
+	class Meta(object):
+		db_table = 'ad_clicked'
+

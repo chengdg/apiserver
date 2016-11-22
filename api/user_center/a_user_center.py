@@ -17,6 +17,8 @@ from eaglet.decorator import param_required
 #from business.mall.pay_interface import PayInterface
 from business.mall.shopping_cart import ShoppingCart
 from business.channel_qrcode.channel_distribution_qrcode import ChannelDistributionQrcodeSettings
+from business.account.ad_clicked import AdClicked
+from business.account.member_card import MemberCard
 from services.update_member_from_weixin.task import update_member_info
 from eaglet.core import watchdog
 import uuid
@@ -63,6 +65,23 @@ class AUserCenter(api_resource.ApiResource):
 			is_bind_channel_qrcode = False
 			total_reward = 0
 
+		is_weizoom_mall = True if webapp_owner.mall_type == 1 else False
+		if is_weizoom_mall:
+			#ad  click 
+			ad_clicked = AdClicked.from_member_id({
+				"member_id":member.id
+				})
+
+			is_ad_clicked = True if ad_clicked else False
+
+			member_card = MemberCard.from_member_id({
+				"member_id": member.id
+			})
+			is_vip = True if member_card else False
+		else:
+			is_ad_clicked = False
+			is_vip = False
+
 		member_data = {
 			'user_icon': webapp_user.user_icon,
 			'is_binded': is_binded,
@@ -79,7 +98,10 @@ class AUserCenter(api_resource.ApiResource):
 			'shopping_cart_product_count': shopping_cart_product_count,
 			'phone': phone,
 			'is_bind_channel_qrcode': is_bind_channel_qrcode,
-			'total_reward': total_reward
+			'total_reward': total_reward,
+			'is_ad_clicked': is_ad_clicked,
+			'is_vip': is_vip,
+			'is_weizoom_mall': is_weizoom_mall
 		}
 
 		return member_data

@@ -32,6 +32,7 @@ from business.wzcard.wzcard_package import WZCardPackage
 
 from business.mall.coupon.coupon import Coupon
 
+from business.account.member_card import MemberCard
 
 class WebAppUser(business_model.Model):
 	"""
@@ -657,3 +658,13 @@ class WebAppUser(business_model.Model):
 	def wzcard_package(self):
 
 		return WZCardPackage.from_webapp_user({'webapp_user': self})
+
+
+	@cached_context_property
+	def member_card(self):
+		return MemberCard.from_member_id({'member_id': self.member.id, 
+			'fill_options': {
+				'with_price': True
+			}})
+
+

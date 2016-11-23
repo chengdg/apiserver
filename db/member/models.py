@@ -397,7 +397,7 @@ class MemberCard(models.Model):
 	"""
 	owner_id = models.IntegerField() #会员id
 	member_id = models.IntegerField() #会员id
-	#member_name = models.CharField(max_length=1024) #会员名称
+	batch_id = models.CharField(max_length=50, default="") #微众卡批次id alter table member_card  add column batch_id varchar(50) default '';
 	card_number = models.CharField(max_length=50) #微众卡卡号
 	card_password = models.CharField(max_length=512) #微众卡密码
 	type = models.IntegerField(default=MEMBER_YEAR_CARD) #卡类型 1:会员年卡 2:学生卡

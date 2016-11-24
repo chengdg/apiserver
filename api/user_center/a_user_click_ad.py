@@ -28,14 +28,14 @@ class AUserClickAd(api_resource.ApiResource):
 
 		return {}
 
-	# @param_required([])
-	# def post(args):
-	# 	webapp_user = args['webapp_user']
-	# 	webapp_owner = args['webapp_owner']
-	# 	member_id = webapp_user.member.id
+	@param_required([])
+	def post(args):
+		webapp_user = args['webapp_user']
+		webapp_owner = args['webapp_owner']
+		member_id = webapp_user.member.id
 
-	# 	AdClicked.add_ad_clicked({
-	# 		"member_id": member_id
-	# 		})
+		AdClicked.add_ad_clicked({
+			"member_id": member_id
+			})
 
-	# 	return {}
+		return {}

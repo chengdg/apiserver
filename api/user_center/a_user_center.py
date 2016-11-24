@@ -18,7 +18,7 @@ from eaglet.decorator import param_required
 from business.mall.shopping_cart import ShoppingCart
 from business.channel_qrcode.channel_distribution_qrcode import ChannelDistributionQrcodeSettings
 from business.account.ad_clicked import AdClicked
-from business.account.member_card import MemberCard
+from business.member_card.member_card import MemberCard
 from services.update_member_from_weixin.task import update_member_info
 from eaglet.core import watchdog
 import uuid

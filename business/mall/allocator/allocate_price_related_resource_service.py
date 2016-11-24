@@ -7,6 +7,7 @@
 #import logging
 from allocate_resource_service_base import AllocateResourceServiceBase
 from business.wzcard.wzcard_resource_allocator import WZCardResourceAllocator
+from business.member_card.member_card_resource_allocator import MemberCardResourceAllocator
 
 class AllocatePriceRelatedResourceService(AllocateResourceServiceBase):
 	"""
@@ -15,5 +16,5 @@ class AllocatePriceRelatedResourceService(AllocateResourceServiceBase):
 
 	def __init__(self, webapp_owner, webapp_user):
 		AllocateResourceServiceBase.__init__(self, webapp_owner, webapp_user)
-
+		self.register_allocator(MemberCardResourceAllocator(webapp_owner, webapp_user))
 		self.register_allocator(WZCardResourceAllocator(webapp_owner, webapp_user))

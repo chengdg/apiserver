@@ -413,6 +413,8 @@ class MemberCardLog(models.Model):
 	"""
 	member_card = models.ForeignKey(MemberCard)  #member card id
 	price = models.FloatField(default=0.0)  # 浮动金额
+	trade_id = models.CharField(max_length=50, default="") #支付流水号alter table member_card_log  add column trade_id varchar(50) default '';
+	order_id = models.CharField(max_length=200, default="") #订单号 alter table member_card_log  add column order_id varchar(200) default '';
 	reason = models.CharField(max_length=512)  # 原因
 	created_at = models.DateTimeField(auto_now_add=True) #时间
 	

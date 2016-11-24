@@ -32,7 +32,7 @@ from business.wzcard.wzcard_package import WZCardPackage
 
 from business.mall.coupon.coupon import Coupon
 
-from business.account.member_card import MemberCard
+from business.member_card.member_card import MemberCard
 
 class WebAppUser(business_model.Model):
 	"""

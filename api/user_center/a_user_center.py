@@ -77,10 +77,8 @@ class AUserCenter(api_resource.ApiResource):
 			member_card = MemberCard.from_member_id({
 				"member_id": member.id
 			})
-			is_vip = True if member_card else False
 		else:
 			is_ad_clicked = False
-			is_vip = False
 
 		member_data = {
 			'user_icon': webapp_user.user_icon,
@@ -100,7 +98,7 @@ class AUserCenter(api_resource.ApiResource):
 			'is_bind_channel_qrcode': is_bind_channel_qrcode,
 			'total_reward': total_reward,
 			'is_ad_clicked': is_ad_clicked,
-			'is_vip': is_vip,
+			'is_vip': webapp_user.is_vip,
 			'is_weizoom_mall': is_weizoom_mall
 		}
 

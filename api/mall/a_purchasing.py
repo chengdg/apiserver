@@ -149,6 +149,7 @@ class APurchasing(api_resource.ApiResource):
 					'member_card_balance': member_card.balance,
 					'is_vip': True
 				}
+				print member_card,"<<<<<<<<<<<<<<<<<<<<<<<<<<<SSSSS"
 			else:
 				member_card = {
 					'member_card_balance': 0,

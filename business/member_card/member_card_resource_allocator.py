@@ -53,14 +53,11 @@ class MemberCardResourceAllocator(business_model.Service):
 		"""
 		logging.info("type of `order`: {}".format(type(order)))
 		should_use_member_card = purchase_info.member_card_price > 0 and order.final_price > 0 and order.final_price > purchase_info.member_card_price
-		print ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>1"
 		if not should_use_member_card or not self.__webapp_user.member_card:
 			return True, [], None
-		print ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>2"
 		valid_money = order.postage + sum(
 			[product.original_price * product.purchase_count for product in order.products])
 
-		print ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>3"
 		# usable_member_card_info =  [
 		# 	{'card_number': self.__webapp_user.member_card.card_number, 'card_password': MemberCard.decrypt_password(self.__webapp_user.member_card.card_password)} ]
 		usable_member_card_info =  [
@@ -89,8 +86,8 @@ class MemberCardResourceAllocator(business_model.Service):
 			reason = {
 				"is_success": False,
 				"type": data['type'],
-				"msg": msg,
-				"short_msg": msg
+				"msg": u"会员卡无法使用",
+				"short_msg": u"会员卡无法使用"
 			}
 			return False, [reason], None
 

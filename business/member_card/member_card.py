@@ -32,6 +32,7 @@ class MemberCard(business_model.Model):
 		'card_name',
 		'created_at',
 		'balance'
+		'status'
 	)
 
 	def __init__(self, model):
@@ -78,37 +79,41 @@ class MemberCard(business_model.Model):
 	def fill_options(member_card, fill_options):
 		if fill_options:
 			with_price = fill_options.get("with_price", False)
-			member_card.balance = 100
-			# if with_price:
-			# 	#访问微众卡service
-			# 	wzcard_info = [{
-			# 		"card_number": member_card.card_number,
-			# 		"card_password": member_card.card_password
-			# 	}]
-			# 	params = {
-			# 		'card_infos': json.dumps(wzcard_info),
+			#member_card.balance = 100
+			if with_price:
+				member_card.balance = 0
+				member_card.internal_status = ''
+				member_card.status = u'不可用'
+				#访问微众卡service
+				wzcard_info = [{
+					"card_number": member_card.card_number,
+					"card_password": member_card.card_password
+				}]
+				params = {
+					'card_infos': json.dumps(wzcard_info),
 					
-			# 	}
-			# 	resp = Resource.use('card_apiserver').post({
-			# 		'resource': 'card.get_cards',
-			# 		'data': params
-			# 	})
+				}
+				resp = Resource.use('card_apiserver').post({
+					'resource': 'card.get_cards',
+					'data': params
+				})
 
-			# 	data = {}
+				data = {}
 
-			# 	if resp:
-			# 		code = resp['code']
-			# 		data = resp['data']
-			# 		if code == 200:
-			# 			card_infos = resp['data']['card_infos']
-			# 			if len(card_infos) == 1:
-			# 				member_card.balance = card_infos[0]['balance']
-			# 			else:
-			# 				member_card.balance = 0
-			# 		else:
-			# 			watchdog.error(resp)
-			# 	else:
-			# 		member_card.balance = 0
+				if resp:
+					code = resp['code']
+					data = resp['data']
+					if code == 200:
+						card_infos = resp['data']['card_infos']
+						print ">>>>>>>>>>>>resp>>>>>>>",resp
+						print ">>>>>>>>>>>>>>>card_infos>>>>>>>>>>",card_infos
+						if len(card_infos) == 1:
+							member_card.internal_status = card_infos[0][member_card.card_number]['internal_status']
+							member_card.status = card_infos[0][member_card.card_number]['internal_status']
+							member_card.balance = card_infos[0][member_card.card_number]['balance']
+					else:
+						watchdog.error(resp)
+				
 
 	@staticmethod
 	@param_required(['wzcard_info', 'money', 'order_id', 'webapp_user', 'webapp_owner'])

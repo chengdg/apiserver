@@ -66,6 +66,7 @@ class AUserCenter(api_resource.ApiResource):
 			total_reward = 0
 
 		is_weizoom_mall = True if webapp_owner.mall_type == 1 else False
+		is_vip = False
 		if is_weizoom_mall:
 			#ad  click 
 			ad_clicked = AdClicked.from_member_id({
@@ -77,6 +78,8 @@ class AUserCenter(api_resource.ApiResource):
 			member_card = MemberCard.from_member_id({
 				"member_id": member.id
 			})
+			if member_card:
+				is_vip = True
 		else:
 			is_ad_clicked = False
 
@@ -98,7 +101,7 @@ class AUserCenter(api_resource.ApiResource):
 			'is_bind_channel_qrcode': is_bind_channel_qrcode,
 			'total_reward': total_reward,
 			'is_ad_clicked': is_ad_clicked,
-			'is_vip': webapp_user.is_vip,
+			'is_vip': is_vip,
 			'is_weizoom_mall': is_weizoom_mall
 		}
 

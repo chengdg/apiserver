@@ -660,27 +660,9 @@ class WebAppUser(business_model.Model):
 		return WZCardPackage.from_webapp_user({'webapp_user': self})
 
 
-	@cached_context_property
+	@property
 	def member_card(self):
 		return MemberCard.from_member_id({'member_id': self.member.id, 
 			'fill_options': {
-				'with_price': True
+				'with_price': True  #这个值一定要为True duhao
 			}})
-
-	@cached_context_property
-	def is_vip(self):
-		webapp_owner = self.context['webapp_owner']
-		if webapp_owner.mall_type == 1:
-			member_card = MemberCard.from_member_id({'member_id': self.member.id, 
-				'fill_options': {
-					'with_price': False
-				}})
-
-			if  member_card:
-				return True
-			else:
-				return False
-		else:
-			return False
-
-

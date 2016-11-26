@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""@package business.account.member_card
+"""@package business.member_card.member_card
 会员卡
 """
 import json
@@ -18,6 +18,7 @@ from util import msg_crypt
 
 crypt = msg_crypt.MsgCrypt(settings.WZCARD_ENCRYPT_INFO['token'], settings.WZCARD_ENCRYPT_INFO['encodingAESKey'],
                            settings.WZCARD_ENCRYPT_INFO['id'])
+CAN_USE_TEXT = u'可用'  #card_apiserver中定义的微众卡可用状态的文本
 
 class MemberCard(business_model.Model):
 	"""
@@ -31,8 +32,9 @@ class MemberCard(business_model.Model):
 		'type',
 		'card_name',
 		'created_at',
-		'balance'
-		'status'
+		'balance',
+		'is_active',  #会员卡状态
+		'remained_backcash_times'   #剩余返现次数
 	)
 
 	def __init__(self, model):
@@ -58,6 +60,8 @@ class MemberCard(business_model.Model):
 		member_card = MemberCard(model)
 		member_card._init_slot_from_model(model)
 		member_card.balance = 0
+		member_card.is_active = False
+		member_card.remained_backcash_times = 0
 		MemberCard.fill_options(member_card, fill_options)
 
 		return member_card
@@ -82,8 +86,6 @@ class MemberCard(business_model.Model):
 			#member_card.balance = 100
 			if with_price:
 				member_card.balance = 0
-				member_card.internal_status = ''
-				member_card.status = u'不可用'
 				#访问微众卡service
 				wzcard_info = [{
 					"card_number": member_card.card_number,
@@ -108,8 +110,14 @@ class MemberCard(business_model.Model):
 						print ">>>>>>>>>>>>resp>>>>>>>",resp
 						print ">>>>>>>>>>>>>>>card_infos>>>>>>>>>>",card_infos
 						if len(card_infos) == 1:
-							member_card.internal_status = card_infos[0][member_card.card_number]['internal_status']
-							member_card.status = card_infos[0][member_card.card_number]['internal_status']
+							#判断微众卡状态是否可用 duhao
+							card_status_text = card_infos[0][member_card.card_number]['status_text']
+							if card_status_text == CAN_USE_TEXT:
+								member_card.is_active = True
+							#剩余返现次数
+							remained_backcash_times = card_infos[0][member_card.card_number]['membership_to_recharge_times']
+							member_card.remained_backcash_times = remained_backcash_times
+
 							member_card.balance = card_infos[0][member_card.card_number]['balance']
 					else:
 						watchdog.error(resp)

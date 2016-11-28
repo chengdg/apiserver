@@ -15,7 +15,7 @@ class APayment(api_resource.ApiResource):
 	个人中心-VIP会员-支付
 	"""
 	app = 'member_card'
-	resource = 'member_card'
+	resource = 'payment'
 
 	@param_required(['batch_id'])
 	def get(args):
@@ -116,9 +116,9 @@ def get_batch_info(batch_id):
 		data = resp['data']
 		if code == 200:
 			batch_info = {
-				'batch_id' = data['id']
-				'price' = data['open_pay_money']
-				'name' = data['membership_name']
+				'batch_id' : data['id'],
+				'price' : data['open_pay_money'],
+				'name' : data['membership_name']
 			}
 		else:
 			watchdog.error(resp)

@@ -39,7 +39,7 @@ class APayResult(api_resource.ApiResource):
 			msg = u'订单({})不存在'.format(order_id)
 			error_msg = u'weixin pay, stage:[get_pay_result], result:{}, exception:\n{}'.format(msg, msg)
 			watchdog.alert(error_msg)
-			return 500, {'mag': error_msg}
+			return 500, {'msg': error_msg}
 
 		is_show_red_envelope = False
 		red_envelope_rule_id = 0
@@ -77,19 +77,29 @@ class APayResult(api_resource.ApiResource):
 		webapp_owner = args['webapp_owner']
 
 		order_id = args['order_id'].split('-')[0]
-		pay_interface_type = int(args['pay_interface_type'])
-		order = Order.from_id({
-			'webapp_owner': webapp_owner,
-			'webapp_user': webapp_user,
-			'order_id': order_id
-		})
+		if order_id.startswith('vip_'):  #如果是会员卡的订单，则特殊处理
+			order = MemberCardPayOrder.from_order_id({
+				'webapp_owner': args['webapp_owner'],
+				'webapp_user': args['webapp_user'],
+				'order_id': order_id
+			})
+			order.pay()
+			is_success = True
+			msg = ''
+		else:  #普通商城订单
+			pay_interface_type = int(args['pay_interface_type'])
+			order = Order.from_id({
+				'webapp_owner': webapp_owner,
+				'webapp_user': webapp_user,
+				'order_id': order_id
+			})
 
-		try:
-			is_success, msg = order.pay(pay_interface_type=pay_interface_type)
-		except:
-			is_success = False
-			msg = unicode_full_stack()
-			watchdog.alert(msg)
+			try:
+				is_success, msg = order.pay(pay_interface_type=pay_interface_type)
+			except:
+				is_success = False
+				msg = unicode_full_stack()
+				watchdog.alert(msg)
 
 		return {
 			'order_id': args['order_id'],

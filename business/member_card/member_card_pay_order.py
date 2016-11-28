@@ -3,13 +3,14 @@
 会员卡支付订单
 """
 import json
+from datetime import datetime
+
 from eaglet.utils.resource_client import Resource
 from eaglet.decorator import param_required
+from eaglet.core import watchdog
 
 from business import model as business_model
 from db.member import models as member_models
-
-from eaglet.core import watchdog
 
 class MemberCardPayOrder(business_model.Model):
 	"""
@@ -107,3 +108,8 @@ class MemberCardPayOrder(business_model.Model):
 				'is_status_not': False,
 				'woid': self.context['webapp_owner'].id
 			}
+
+	def pay(self):
+		if not self.is_paid:
+			now = datetime.now()
+			member_models.MemberCardPayOrder.update(is_paid=True, paid_at=now).dj_where(order_id=self.order_id).execute()

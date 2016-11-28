@@ -49,7 +49,10 @@ class AMemberCardList(api_resource.ApiResource):
 			'member_name': member_name,
 			'user_icon': user_icon
 		}
-		resp = Resource.use('card_apiserver').get()
+		resp = Resource.use('card_apiserver').get({
+					'resource': 'card.membership_batches',
+					'data': {}
+				})
 		if resp:
 			code = resp['code']
 			r_data = resp['data']

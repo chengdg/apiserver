@@ -125,7 +125,7 @@ class Order(business_model.Model):
 		'is_first_order',
 		'supplier_user_id',
 		'total_purchase_price',
-		'member_card_price'
+		'member_card_money'
 	)
 
 	@staticmethod
@@ -248,6 +248,7 @@ class Order(business_model.Model):
 			self.context['order'] = mall_models.Order()
 			# 初始化数据应该为db model默认值，不应为none
 			self._init_slot_from_model(self.context['order'])
+
 
 
 	@cached_context_property
@@ -713,7 +714,6 @@ class Order(business_model.Model):
 		result['created_at'] = self.created_at.strftime('%Y-%m-%d %H:%M:%S') if self.created_at else ""
 		result['payment_time'] = self.payment_time.strftime('%Y-%m-%d %H:%M:%S') if self.payment_time else ""
 		result['update_at'] = self.payment_time.strftime('%Y-%m-%d %H:%M:%S') if self.update_at else ""
-
 		return result
 
 
@@ -771,8 +771,13 @@ class Order(business_model.Model):
 		db_model.product_price = self.product_price
 		db_model.final_price = self.final_price
 
+		# 会员价抵扣金额
+		db_model.member_card_money = self.member_card_money
+
 		# 微众卡抵扣金额
 		db_model.weizoom_card_money = self.weizoom_card_money
+
+
 
 		logging.info("Order db_model: {}".format(db_model))
 

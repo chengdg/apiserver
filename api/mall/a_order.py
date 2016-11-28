@@ -228,7 +228,7 @@ class AOrder(api_resource.ApiResource):
 
 	@staticmethod
 	def to_dict(order):
-		order_dict = order.to_dict('latest_express_detail', 'products', 'is_group_buy', 'order_group_info', 'refund_info')
+		order_dict = order.to_dict('latest_express_detail', 'products', 'is_group_buy', 'order_group_info', 'refund_info', 'member_card_money')
 		api_keys = [
 			"buyer_name",
 			"coupon_money",
@@ -275,7 +275,8 @@ class AOrder(api_resource.ApiResource):
 			"delivery_time",
 			"is_group_buy",
 			"order_group_info",
-			"refund_info"
+			"refund_info",
+			"member_card_money"
 		]
 
 		data = {}
@@ -300,5 +301,4 @@ class AOrder(api_resource.ApiResource):
 		if order_data['order'].has_key('sub_orders'):
 			order_data['order']['sub_orders'] = sorted(order_data['order']['sub_orders'], key=lambda order:"%d-%d" % (order['supplier'], order['supplier_user_id']))
 		order_data.update({'mall_type': args['webapp_owner'].user_profile.webapp_type})
-
 		return order_data

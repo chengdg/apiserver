@@ -70,12 +70,11 @@ class MemberCardResourceAllocator(business_model.Service):
 			'webapp_user': self.__webapp_user,
 			'webapp_owner': self.__webapp_owner
 		})
-
 		if can_use:
 			paid_money = float(data['paid_money'])
 			# todo 优化到package_order_service
 			order.final_price -= paid_money
-			order.weizoom_card_money = paid_money
+			order.member_card_money = paid_money
 			member_card_resource = MemberCardResource(self.resource_type, order.order_id, data['trade_id'], self.__webapp_user.member_card.id, paid_money)
 			return True, [], member_card_resource
 		else:

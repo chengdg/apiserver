@@ -34,7 +34,8 @@ class MemberCard(business_model.Model):
 		'created_at',
 		'balance',
 		'is_active',  #会员卡状态
-		'remained_backcash_times'   #剩余返现次数
+		'remained_backcash_times',   #剩余返现次数
+		'valid_time_to'
 	)
 
 	def __init__(self, model):
@@ -117,7 +118,7 @@ class MemberCard(business_model.Model):
 							# #剩余返现次数
 							# remained_backcash_times = card_infos[0][member_card.card_number]['membership_to_recharge_times']
 							# member_card.remained_backcash_times = remained_backcash_times
-
+							member_card.valid_time_to = card_infos[0][member_card.card_number]['valid_time_to']
 							member_card.balance = card_infos[0][member_card.card_number]['balance']
 					else:
 						watchdog.error(resp)

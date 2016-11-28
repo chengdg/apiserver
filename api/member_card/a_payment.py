@@ -15,7 +15,7 @@ class APayment(api_resource.ApiResource):
 	个人中心-VIP会员-支付
 	"""
 	app = 'member_card'
-	resource = 'member_card'
+	resource = 'payment'
 
 	@param_required(['batch_id'])
 	def get(args):

@@ -105,8 +105,7 @@ class PurchaseInfo(business_model.Model):
         self.__parse_bdd_order_id(request_args)
 
         #会员卡使用新型
-        self.member_card_price = request_args.get('member_card_price', 1)
-        print ">>>>>>>>>>>>>>>>>>>>>>>>member_card_price>>>",self.member_card_price
+        self.member_card_price = float(request_args.get('member_card_price', 0))
 
     def __parse_ship_info(self, request_args):
         """

@@ -70,7 +70,6 @@ class MemberCardResourceAllocator(business_model.Service):
 			'webapp_user': self.__webapp_user,
 			'webapp_owner': self.__webapp_owner
 		})
-
 		if can_use:
 			paid_money = float(data['paid_money'])
 			# todo 优化到package_order_service

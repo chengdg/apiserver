@@ -250,6 +250,7 @@ class Order(business_model.Model):
 			self._init_slot_from_model(self.context['order'])
 
 
+
 	@cached_context_property
 	def product_outlines(self):
 		"""订单中的商品概况，只包含最基本的商品信息
@@ -713,7 +714,6 @@ class Order(business_model.Model):
 		result['created_at'] = self.created_at.strftime('%Y-%m-%d %H:%M:%S') if self.created_at else ""
 		result['payment_time'] = self.payment_time.strftime('%Y-%m-%d %H:%M:%S') if self.payment_time else ""
 		result['update_at'] = self.payment_time.strftime('%Y-%m-%d %H:%M:%S') if self.update_at else ""
-
 		return result
 
 
@@ -771,8 +771,13 @@ class Order(business_model.Model):
 		db_model.product_price = self.product_price
 		db_model.final_price = self.final_price
 
+		# 会员价抵扣金额
+		db_model.member_card_money = self.member_card_money
+
 		# 微众卡抵扣金额
 		db_model.weizoom_card_money = self.weizoom_card_money
+
+
 
 		logging.info("Order db_model: {}".format(db_model))
 

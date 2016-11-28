@@ -431,3 +431,20 @@ class AdClicked(models.Model):
 	class Meta(object):
 		db_table = 'ad_clicked'
 
+
+class MemberCardPayLog(models.Model):
+	"""
+	会员卡支付记录 duhao
+	"""
+	owner_id = models.IntegerField() #商家id
+	member_id = models.IntegerField() #会员id
+	batch_id = models.CharField(max_length=50, default="") #微众卡批次id
+	order_id = models.CharField(max_length=50) #支付订单id
+	batch_name = models.CharField(max_length=200) #会员卡名称
+	price = models.FloatField(default=0.0)  #支付金额
+	is_paid = models.BooleanField(default=False)  #是否支付成功
+	created_at = models.DateTimeField(auto_now_add=True) #创建时间
+	paid_at = models.DateTimeField(default="") #支付时间
+	
+	class Meta(object):
+		db_table = 'member_card_pay_log'

@@ -41,24 +41,14 @@ class APayment(api_resource.ApiResource):
 				'is_vip': True
 			}
 
+		batch_id = args['batch_id']
+		batch_info = get_batch_info(batch_id)
 		data = {
 			'is_binded': True,
-			'is_vip': False
+			'is_vip': False,
+			'price': batch_info['price'],
+			'name': batch_info['name']
 		}
-		batch_id = args['batch_id']
-		resp = Resource.use('card_apiserver').get({
-					'resource': 'card.membership_batch',
-					'data': {'batch_id': batch_id}
-				})
-		if resp:
-			code = resp['code']
-			member_card = resp['data']
-			if code == 200:
-				data['id'] = member_card['id']
-				data['price'] = member_card['open_pay_money']
-				data['name'] = member_card['membership_name']
-			else:
-				watchdog.error(resp)
 
 		return data
 
@@ -116,9 +106,9 @@ def get_batch_info(batch_id):
 		data = resp['data']
 		if code == 200:
 			batch_info = {
-				'batch_id' : data['id'],
-				'price' : data['open_pay_money'],
-				'name' : data['membership_name']
+				'batch_id': data['id'],
+				'price': data['open_pay_money'],
+				'name': data['membership_name']
 			}
 		else:
 			watchdog.error(resp)

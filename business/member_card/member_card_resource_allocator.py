@@ -52,7 +52,7 @@ class MemberCardResourceAllocator(business_model.Service):
 		@todo 应该先抽取微众卡资源，然后判断是否有效，再执行扣资源的操作
 		"""
 		logging.info("type of `order`: {}".format(type(order)))
-		should_use_member_card = purchase_info.member_card_price > 0 and order.final_price > 0 and order.final_price > purchase_info.member_card_price
+		should_use_member_card = purchase_info.member_card_price > 0 and order.final_price > 0
 		if not should_use_member_card or not self.__webapp_user.member_card:
 			return True, [], None
 		valid_money = order.postage + sum(

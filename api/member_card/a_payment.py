@@ -46,6 +46,7 @@ class APayment(api_resource.ApiResource):
 		data = {
 			'is_binded': True,
 			'is_vip': False,
+			'id': batch_id,
 			'price': batch_info['price'],
 			'name': batch_info['name']
 		}

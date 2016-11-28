@@ -114,9 +114,9 @@ def get_batch_info(batch_id):
 		data = resp['data']
 		if code == 200:
 			batch_info = {
-				'batch_id' = data['id']
-				'price' = data['open_pay_money']
-				'name' = data['membership_name']
+				'batch_id' : data['id'],
+				'price' : data['open_pay_money'],
+				'name' : data['membership_name']
 			}
 		else:
 			watchdog.error(resp)

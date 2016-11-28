@@ -94,7 +94,9 @@ class APayment(api_resource.ApiResource):
 			'type': 'wxpay',
 			'woid': owner_id,
 			'order_id': order_id,
-			# 'pay_id': interface['id'],
+			'name': batch_name,
+			'price': price,
+			'pay_id': 0,  #这个参数没有实际用处，但支付那边需要，暂时先写成0
 			'showwxpaytitle': 1,
 		}
 

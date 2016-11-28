@@ -51,10 +51,10 @@ class AMemberCard(api_resource.ApiResource):
 			data['is_vip'] = True
 			data['user_icon'] = webapp_user.user_icon
 			data['username_for_html'] = webapp_user.username_for_html
+			data['valid_time_to'] = member_card.valid_time_to
 		else:
 			data = {
 				'is_binded': is_binded,
 				'is_vip': False
 			}
-
 		return data

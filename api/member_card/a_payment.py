@@ -8,6 +8,7 @@ from eaglet.decorator import param_required
 from eaglet.utils.resource_client import Resource
 
 from db.member import models as member_models
+from business.member_card.member_card_pay_order import MemberCardPayOrder
 
 
 class APayment(api_resource.ApiResource):
@@ -72,7 +73,7 @@ class APayment(api_resource.ApiResource):
 		price = batch_info['price']
 		order_id = 'vip_%d_%d' % (owner_id, member_id)
 
-		pay_log = member_card_pay_log.get_member_card_pay_log({
+		pay_order = MemberCardPayOrder.get_member_card_pay_order({
 						'owner_id': owner_id, 
 						'member_id': member_id, 
 						'batch_id': batch_id,

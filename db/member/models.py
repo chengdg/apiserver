@@ -432,9 +432,9 @@ class AdClicked(models.Model):
 		db_table = 'ad_clicked'
 
 
-class MemberCardPayLog(models.Model):
+class MemberCardPayOrder(models.Model):
 	"""
-	会员卡支付记录 duhao
+	会员卡支付订单 duhao
 	"""
 	owner_id = models.IntegerField() #商家id
 	member_id = models.IntegerField() #会员id
@@ -447,4 +447,4 @@ class MemberCardPayLog(models.Model):
 	paid_at = models.DateTimeField(default="") #支付时间
 	
 	class Meta(object):
-		db_table = 'member_card_pay_log'
+		db_table = 'member_card_pay_order'

@@ -105,7 +105,7 @@ def get_batch_info(batch_id):
 			})
 	if resp:
 		code = resp['code']
-		data = resp['data']
+		data = resp['data']['card_info']
 		if code == 200:
 			batch_info = {
 				'batch_id': data['id'],

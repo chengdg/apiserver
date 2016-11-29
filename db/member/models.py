@@ -389,8 +389,6 @@ class ChannelDistributionQrcodeSettings(models.Model):
 		db_table = 'market_tool_channel_distribution_qrcode_setting'
 
 
-MEMBER_YEAR_CARD = 1
-MEMBER_STU_CARD = 2
 class MemberCard(models.Model):
 	"""
 	会员卡

@@ -5,6 +5,7 @@
 from eaglet.core import api_resource
 from eaglet.decorator import param_required
 
+from business.member_card.member_card_pay_order import MemberCardPayOrder
 from a_payment import get_batch_info
 
 class APayResult(api_resource.ApiResource):
@@ -14,7 +15,7 @@ class APayResult(api_resource.ApiResource):
 	app = 'member_card'
 	resource = 'pay_result'
 
-	@param_required(['batch_id'])
+	@param_required(['order_id'])
 	def get(args):
 		"""
 		通过 个人中心-VIP会员 入口进入会员页面。通常情况下，只有绑定了手机号并且已经开通了的会员会进入到这个页面，
@@ -35,7 +36,10 @@ class APayResult(api_resource.ApiResource):
 				'is_vip': False
 			}
 
-		batch_info = get_batch_info(args['batch_id'])
+		order_id = args['order_id']
+		pay_order = MemberCardPayOrder.from_order_id(order_id)
+		batch_id = pay_order.batch_id
+		batch_info = get_batch_info(batch_id)
 		if member_card: #支付成功页面
 			data = {
 				'is_binded': is_binded,

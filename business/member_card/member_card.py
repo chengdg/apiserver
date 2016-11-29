@@ -27,6 +27,7 @@ class MemberCard(business_model.Model):
 	__slots__ = (
 		'id',
 		'member_id',
+		'batch_id',
 		'card_number',
 		'card_password',
 		'card_name',

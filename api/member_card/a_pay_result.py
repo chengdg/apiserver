@@ -37,7 +37,11 @@ class APayResult(api_resource.ApiResource):
 			}
 
 		order_id = args['order_id']
-		pay_order = MemberCardPayOrder.from_order_id(order_id)
+		pay_order = MemberCardPayOrder.from_order_id({
+				'order_id': order_id,
+				'webapp_user': webapp_user,
+				'webapp_owner': args['webapp_owner']
+			})
 		batch_id = pay_order.batch_id
 		batch_info = get_batch_info(batch_id)
 		if member_card: #支付成功页面

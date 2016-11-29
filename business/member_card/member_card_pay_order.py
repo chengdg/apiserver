@@ -49,15 +49,13 @@ class MemberCardPayOrder(business_model.Model):
 		order_id = args['order_id']
 		webapp_owner = args['webapp_owner']
 		webapp_user = args['webapp_user']
-		self.context['webapp_owner'] = webapp_owner
-		self.context['webapp_user'] = webapp_user
 
-		model = member_models.MemberCardPayOrder.select().dj_where(owner_id=webapp_owner.id, member_id=webapp_user.member.id, order_id=order_id)
+		model = member_models.MemberCardPayOrder.select().dj_where(owner_id=webapp_owner.id, member_id=webapp_user.member.id, order_id=order_id).first()
 		pay_order = MemberCardPayOrder(model)
 		return pay_order
 
 	@staticmethod
-	@param_required(['owner_id', 'member_id', 'batch_id', 'order_id', 'batch_name', 'price', 'is_paid'])
+	@param_required(['owner_id', 'member_id', 'batch_id', 'order_id', 'batch_name', 'price'])
 	def get_member_card_pay_order(args):
 		"""
 		工厂对象，根据MemberCard model获取MemberCard业务对象

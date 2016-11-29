@@ -101,7 +101,7 @@ def get_batch_info(batch_id):
 	batch_info = None
 	resp = Resource.use('card_apiserver').get({
 				'resource': 'card.membership_batch',
-				'data': {'batch_id': batch_id}
+				'data': {'membership_batch_id': batch_id}
 			})
 	if resp:
 		code = resp['code']

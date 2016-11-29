@@ -29,7 +29,6 @@ class MemberCard(business_model.Model):
 		'member_id',
 		'card_number',
 		'card_password',
-		'type',
 		'card_name',
 		'created_at',
 		'balance',
@@ -78,6 +77,22 @@ class MemberCard(business_model.Model):
 				"fill_options": fill_options
 				})
 		return None
+
+	@staticmethod
+	@param_required(['webapp_owner', 'webapp_user', 'batch_id', 'card_number', 'card_password', 'card_name'])
+	def create(args):
+		webapp_owner = args['webapp_owner']
+		webapp_user = args['webapp_user']
+		member_id = webapp_user.member.id
+		if member_models.MemberCard.select().dj_where(owner_id=webapp_owner.id, member_id=member_id, is_active=True).count() == 0:
+			member_models.MemberCard.create(
+				owner_id=webapp_owner.id,
+				member_id=member_id,
+				batch_id=args['batch_id'],
+				card_number=args['card_number'],
+				card_password=args['card_password'],
+				card_name=args['card_name']
+			)
 
 
 	@staticmethod

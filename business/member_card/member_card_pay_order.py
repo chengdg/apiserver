@@ -11,6 +11,7 @@ from eaglet.core import watchdog
 
 from business import model as business_model
 from db.member import models as member_models
+from member_card import MemberCard
 
 class MemberCardPayOrder(business_model.Model):
 	"""
@@ -113,3 +114,33 @@ class MemberCardPayOrder(business_model.Model):
 		if not self.is_paid:
 			now = datetime.now()
 			member_models.MemberCardPayOrder.update(is_paid=True, paid_at=now).dj_where(order_id=self.order_id).execute()
+
+			params = {
+				'weizoom_card_batch_id': self.batch_id,
+				'sold_time': args['money'],
+				'member_id': self.member_id,
+				'phone_num': self.context['webapp_user'].phone_number
+			}
+			resp = Resource.use('card_apiserver').get({
+				'resource': 'card.membership_card',
+				'data': {'card_infos': json.dumps(params)}
+			})
+
+			if resp:
+				code = resp['code']
+				data = resp['data']
+				if code == 200:
+					card_number = data['card_number']
+					card_password = data['card_password']
+
+					args = {
+						'webapp_owner': self.context['webapp_owner'],
+						'webapp_user': self.context['webapp_user'],
+						'batch_id': self.batch_id,
+						'card_number': card_number,
+						'card_password': card_password,
+						'card_name': self.batch_name
+					}
+					MemberCard.create(args)
+				else:
+					watchdog.error(resp)

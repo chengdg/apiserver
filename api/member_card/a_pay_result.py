@@ -48,16 +48,16 @@ class APayResult(api_resource.ApiResource):
 			data = {
 				'is_binded': is_binded,
 				'is_vip': True,  #如果is_vip是True，说明支付成功
-				'price': batch_info['price'],
-				'remained_backcash_times': batch_info['membership_to_recharge_times']
+				'price': batch_info['open_pay_money'],
+				'remained_backcash_times': batch_info['back_times']
 			}
 		else:  #支付失败页面
 			data = {
 				'is_binded': is_binded,
 				'is_vip': False,  #如果is_vip是False，说明支付失败
-				'batch_id': batch_info['batch_id'],
-				'price': batch_info['price'],
-				'name': batch_info['name']
+				'batch_id': batch_info['id'],
+				'price': batch_info['open_pay_money'],
+				'name': batch_info['membership_name']
 			}
 
 		return data

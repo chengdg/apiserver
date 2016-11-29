@@ -68,7 +68,7 @@ class APayment(api_resource.ApiResource):
 		batch_info = get_batch_info(batch_id)
 
 		owner_id = webapp_owner.id
-		member_id = webapp_user.member.id, 
+		member_id = webapp_user.member.id
 		batch_name = batch_info['name']
 		price = batch_info['price']
 		order_id = 'vip_%d_%d' % (owner_id, member_id)

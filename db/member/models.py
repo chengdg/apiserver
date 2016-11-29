@@ -442,7 +442,7 @@ class MemberCardPayOrder(models.Model):
 	price = models.FloatField(default=0.0)  #支付金额
 	is_paid = models.BooleanField(default=False)  #是否支付成功
 	created_at = models.DateTimeField(auto_now_add=True) #创建时间
-	paid_at = models.DateTimeField(default="") #支付时间
+	paid_at = models.DateTimeField(null=True) #支付时间
 	
 	class Meta(object):
 		db_table = 'member_card_pay_order'

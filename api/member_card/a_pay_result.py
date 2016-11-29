@@ -5,6 +5,7 @@
 from eaglet.core import api_resource
 from eaglet.decorator import param_required
 
+from a_payment import get_batch_info
 
 class APayResult(api_resource.ApiResource):
 	"""
@@ -13,7 +14,7 @@ class APayResult(api_resource.ApiResource):
 	app = 'member_card'
 	resource = 'pay_result'
 
-	@param_required([])
+	@param_required(['batch_id'])
 	def get(args):
 		"""
 		通过 个人中心-VIP会员 入口进入会员页面。通常情况下，只有绑定了手机号并且已经开通了的会员会进入到这个页面，
@@ -28,15 +29,27 @@ class APayResult(api_resource.ApiResource):
 		member_card = webapp_user.member_card
 		is_binded = webapp_user.is_binded
 
-		data = {}
-		if is_binded and member_card:
-			data = member_card.to_dict()
-			data['is_binded'] = is_binded
-			data['is_vip'] = True
-		else:
-			data = {
+		if not is_binded:
+			return {
 				'is_binded': is_binded,
 				'is_vip': False
+			}
+
+		batch_info = get_batch_info(args['batch_id'])
+		if member_card: #支付成功页面
+			data = {
+				'is_binded': is_binded,
+				'is_vip': True,  #如果is_vip是True，说明支付成功
+				'price': batch_info['price'],
+				'remained_backcash_times': batch_info['membership_to_recharge_times']
+			}
+		else:  #支付失败页面
+			data = {
+				'is_binded': is_binded,
+				'is_vip': False,  #如果is_vip是False，说明支付失败
+				'batch_id': batch_info['batch_id'],
+				'price': batch_info['price'],
+				'name': batch_info['name']
 			}
 
 		return data

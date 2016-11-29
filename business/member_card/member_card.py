@@ -127,12 +127,12 @@ class MemberCard(business_model.Model):
 						print ">>>>>>>>>>>>>>>card_infos>>>>>>>>>>",card_infos
 						if len(card_infos) == 1:
 							#判断微众卡状态是否可用 duhao
-							# card_status_text = card_infos[0][member_card.card_number]['status']
-							# if card_status_text == CAN_USE_TEXT:
-							# 	member_card.is_active = True
-							# #剩余返现次数
-							# remained_backcash_times = card_infos[0][member_card.card_number]['membership_to_recharge_times']
-							# member_card.remained_backcash_times = remained_backcash_times
+							card_status_text = card_infos[0][member_card.card_number]['status']
+							if card_status_text == CAN_USE_TEXT:
+								member_card.is_active = True
+							#剩余返现次数
+							remained_backcash_times = card_infos[0][member_card.card_number]['membership_to_recharge_times']
+							member_card.remained_backcash_times = remained_backcash_times
 							member_card.valid_time_to = card_infos[0][member_card.card_number]['valid_time_to']
 							member_card.balance = card_infos[0][member_card.card_number]['balance']
 					else:

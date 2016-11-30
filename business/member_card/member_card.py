@@ -27,9 +27,9 @@ class MemberCard(business_model.Model):
 	__slots__ = (
 		'id',
 		'member_id',
+		'batch_id',
 		'card_number',
 		'card_password',
-		'type',
 		'card_name',
 		'created_at',
 		'balance',
@@ -79,6 +79,22 @@ class MemberCard(business_model.Model):
 				})
 		return None
 
+	@staticmethod
+	@param_required(['webapp_owner', 'webapp_user', 'batch_id', 'card_number', 'card_password', 'card_name'])
+	def create(args):
+		webapp_owner = args['webapp_owner']
+		webapp_user = args['webapp_user']
+		member_id = webapp_user.member.id
+		if member_models.MemberCard.select().dj_where(owner_id=webapp_owner.id, member_id=member_id, is_active=True).count() == 0:
+			member_models.MemberCard.create(
+				owner_id=webapp_owner.id,
+				member_id=member_id,
+				batch_id=args['batch_id'],
+				card_number=args['card_number'],
+				card_password=args['card_password'],
+				card_name=args['card_name']
+			)
+
 
 	@staticmethod
 	def fill_options(member_card, fill_options):
@@ -112,12 +128,12 @@ class MemberCard(business_model.Model):
 						print ">>>>>>>>>>>>>>>card_infos>>>>>>>>>>",card_infos
 						if len(card_infos) == 1:
 							#判断微众卡状态是否可用 duhao
-							# card_status_text = card_infos[0][member_card.card_number]['status']
-							# if card_status_text == CAN_USE_TEXT:
-							# 	member_card.is_active = True
-							# #剩余返现次数
-							# remained_backcash_times = card_infos[0][member_card.card_number]['membership_to_recharge_times']
-							# member_card.remained_backcash_times = remained_backcash_times
+							card_status_text = card_infos[0][member_card.card_number]['status']
+							if card_status_text == CAN_USE_TEXT:
+								member_card.is_active = True
+							#剩余返现次数
+							remained_backcash_times = card_infos[0][member_card.card_number]['membership_to_recharge_times']
+							member_card.remained_backcash_times = remained_backcash_times
 							member_card.valid_time_to = card_infos[0][member_card.card_number]['valid_time_to']
 							member_card.balance = card_infos[0][member_card.card_number]['balance']
 					else:

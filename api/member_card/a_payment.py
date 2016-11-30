@@ -32,7 +32,7 @@ class APayment(api_resource.ApiResource):
 		webapp_user = args['webapp_user']
 		is_binded = webapp_user.is_binded
 
-		if not binded:  #如果没绑定手机则直接返回
+		if not is_binded:  #如果没绑定手机则直接返回
 			return {'is_binded': False}
 
 		member_card = webapp_user.member_card
@@ -47,9 +47,9 @@ class APayment(api_resource.ApiResource):
 		data = {
 			'is_binded': True,
 			'is_vip': False,
-			'id': batch_id,
-			'price': batch_info['price'],
-			'name': batch_info['name']
+			'batch_id': batch_id,
+			'price': batch_info['open_pay_money'],
+			'name': batch_info['membership_name']
 		}
 
 		return data
@@ -68,9 +68,9 @@ class APayment(api_resource.ApiResource):
 		batch_info = get_batch_info(batch_id)
 
 		owner_id = webapp_owner.id
-		member_id = webapp_user.member.id, 
-		batch_name = batch_info['name']
-		price = batch_info['price']
+		member_id = webapp_user.member.id
+		batch_name = batch_info['membership_name']
+		price = batch_info['open_pay_money']
 		order_id = 'vip_%d_%d' % (owner_id, member_id)
 
 		pay_order = MemberCardPayOrder.get_member_card_pay_order({
@@ -101,17 +101,13 @@ def get_batch_info(batch_id):
 	batch_info = None
 	resp = Resource.use('card_apiserver').get({
 				'resource': 'card.membership_batch',
-				'data': {'batch_id': batch_id}
+				'data': {'membership_batch_id': batch_id}
 			})
 	if resp:
 		code = resp['code']
-		data = resp['data']
+		data = resp['data']['card_info']
 		if code == 200:
-			batch_info = {
-				'batch_id': data['id'],
-				'price': data['open_pay_money'],
-				'name': data['membership_name']
-			}
+			batch_info = data
 		else:
 			watchdog.error(resp)
 

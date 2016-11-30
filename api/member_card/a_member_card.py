@@ -5,9 +5,6 @@
 from eaglet.core import api_resource
 from eaglet.decorator import param_required
 
-from business.member_card.member_card import MemberCard
-
-
 class AMemberCard(api_resource.ApiResource):
 	"""
 	个人中心-VIP会员
@@ -31,16 +28,9 @@ class AMemberCard(api_resource.ApiResource):
 
 		webapp_user = args['webapp_user']
 		member_id = webapp_user.member.id
-
-		member_card = MemberCard.from_member_id({
-				"member_id": member_id,
-				"fill_options": {
-					"with_price": True
-				}
-			})
+		member_card = webapp_user.member_card
 		
 		if is_binded and member_card:
-			member_card = member_card
 			data = {}
 			data['card_number'] = member_card.card_number
 			data['is_active'] = member_card.is_active

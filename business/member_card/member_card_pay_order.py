@@ -11,6 +11,7 @@ from eaglet.core import watchdog
 
 from business import model as business_model
 from db.member import models as member_models
+from member_card import MemberCard
 
 class MemberCardPayOrder(business_model.Model):
 	"""
@@ -48,15 +49,13 @@ class MemberCardPayOrder(business_model.Model):
 		order_id = args['order_id']
 		webapp_owner = args['webapp_owner']
 		webapp_user = args['webapp_user']
-		self.context['webapp_owner'] = webapp_owner
-		self.context['webapp_user'] = webapp_user
 
-		model = member_models.MemberCardPayOrder.select().dj_where(owner_id=webapp_owner.id, member_id=webapp_user.member.id, order_id=order_id)
+		model = member_models.MemberCardPayOrder.select().dj_where(owner_id=webapp_owner.id, member_id=webapp_user.member.id, order_id=order_id).first()
 		pay_order = MemberCardPayOrder(model)
 		return pay_order
 
 	@staticmethod
-	@param_required(['owner_id', 'member_id', 'batch_id', 'order_id', 'batch_name', 'price', 'is_paid'])
+	@param_required(['owner_id', 'member_id', 'batch_id', 'order_id', 'batch_name', 'price'])
 	def get_member_card_pay_order(args):
 		"""
 		工厂对象，根据MemberCard model获取MemberCard业务对象
@@ -113,3 +112,33 @@ class MemberCardPayOrder(business_model.Model):
 		if not self.is_paid:
 			now = datetime.now()
 			member_models.MemberCardPayOrder.update(is_paid=True, paid_at=now).dj_where(order_id=self.order_id).execute()
+
+			params = {
+				'weizoom_card_batch_id': self.batch_id,
+				'sold_time': args['money'],
+				'member_id': self.member_id,
+				'phone_num': self.context['webapp_user'].phone_number
+			}
+			resp = Resource.use('card_apiserver').get({
+				'resource': 'card.membership_card',
+				'data': {'card_infos': json.dumps(params)}
+			})
+
+			if resp:
+				code = resp['code']
+				data = resp['data']
+				if code == 200:
+					card_number = data['card_number']
+					card_password = data['card_password']
+
+					args = {
+						'webapp_owner': self.context['webapp_owner'],
+						'webapp_user': self.context['webapp_user'],
+						'batch_id': self.batch_id,
+						'card_number': card_number,
+						'card_password': card_password,
+						'card_name': self.batch_name
+					}
+					MemberCard.create(args)
+				else:
+					watchdog.error(resp)

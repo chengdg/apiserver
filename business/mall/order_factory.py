@@ -328,6 +328,7 @@ class OrderFactory(business_model.Model):
 			pass
 		except:
 			msg = unicode_full_stack()
+			print ">>>>>>>>>>!!!!!!>>>>>>",msg
 			watchdog.alert(msg)
 			self.__release_order(order, price_free_resources, price_related_resources)
 			raise OrderFailureException

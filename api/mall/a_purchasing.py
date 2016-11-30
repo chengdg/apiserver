@@ -142,8 +142,26 @@ class APurchasing(api_resource.ApiResource):
 			product_group_datas = supplier_product_groups
 			product_supplier_configs = SupplierPostageConfig.get_supplier_postage_config_by_supplier({'supplier_ids': product_supplier_ids})
 			product_group_datas = SupplierPostageConfig.product_group_use_supplier_postage({'product_groups': product_group_datas, 'supplier_ids': product_supplier_ids})
+			#会员卡
+			member_card = webapp_user.member_card
+			if member_card:
+				member_card = {
+					'member_card_balance': member_card.balance,
+					'is_vip': True
+				}
+				print member_card,"<<<<<<<<<<<<<<<<<<<<<<<<<<<SSSSS"
+			else:
+				member_card = {
+					'member_card_balance': 0,
+					'is_vip': False
+				}
 		else:
 			product_group_datas = [group.to_dict(with_price_factor=True, with_coupon_info=True) for group in order.promotion_product_groups]
+			member_card = {
+					'member_card_balance': 0,
+					'is_vip': False
+				}
+
 		order_info = {
 			'type': order.type,
 			'pay_interfaces': order.pay_interfaces,
@@ -152,7 +170,6 @@ class APurchasing(api_resource.ApiResource):
 			'is_delivery': order.is_delivery # 是否勾选配送时间,发货时间判断字段
 		}
 		usable_cards = [card.to_dict() for card in webapp_user.wzcard_package.usable_cards]
-
 		return {
 			'order': order_info,
 			'enable_wzcard': webapp_owner.has_wzcard_permission,
@@ -165,6 +182,7 @@ class APurchasing(api_resource.ApiResource):
 			'group_id': group_id,
 			'usable_cards': usable_cards,
 			'mall_type': webapp_owner.user_profile.webapp_type,
-			'product_supplier_configs': product_supplier_configs
+			'product_supplier_configs': product_supplier_configs,
+			'member_card': member_card
 		}
 

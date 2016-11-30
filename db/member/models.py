@@ -387,3 +387,62 @@ class ChannelDistributionQrcodeSettings(models.Model):
 
 	class Meta:
 		db_table = 'market_tool_channel_distribution_qrcode_setting'
+
+
+class MemberCard(models.Model):
+	"""
+	会员卡
+	"""
+	owner_id = models.IntegerField() #会员id
+	member_id = models.IntegerField() #会员id
+	batch_id = models.CharField(max_length=50, default="") #微众卡批次id alter table member_card  add column batch_id varchar(50) default '';
+	card_number = models.CharField(max_length=50) #微众卡卡号
+	card_password = models.CharField(max_length=512) #微众卡密码
+	card_name = models.CharField(max_length=512) #微众卡名字
+	is_active = models.BooleanField(default=True) #会员身份是否有效 以后扩展的备用字段
+	created_at = models.DateTimeField(auto_now_add=True) #发放时间
+
+	class Meta(object):
+		db_table = 'member_card'
+
+class MemberCardLog(models.Model):
+	"""
+	会员卡记录，仅交易记录  下单 和 取消订单
+	"""
+	member_card = models.ForeignKey(MemberCard)  #member card id
+	price = models.FloatField(default=0.0)  # 浮动金额
+	trade_id = models.CharField(max_length=50, default="") #支付流水号alter table member_card_log  add column trade_id varchar(50) default '';
+	order_id = models.CharField(max_length=200, default="") #订单号 alter table member_card_log  add column order_id varchar(200) default '';
+	reason = models.CharField(max_length=512)  # 原因
+	created_at = models.DateTimeField(auto_now_add=True) #时间
+	
+	class Meta(object):
+		db_table = 'member_card_log'
+
+class AdClicked(models.Model):
+	"""
+	广告点击
+	"""
+	member_id = models.IntegerField() #会员id
+	created_at = models.DateTimeField(auto_now_add=True) #时间
+	
+	class Meta(object):
+		db_table = 'ad_clicked'
+
+
+class MemberCardPayOrder(models.Model):
+	"""
+	会员卡支付订单 duhao
+	"""
+	owner_id = models.IntegerField() #商家id
+	member_id = models.IntegerField() #会员id
+	batch_id = models.CharField(max_length=50, default="") #微众卡批次id
+	order_id = models.CharField(max_length=50) #支付订单id
+	batch_name = models.CharField(max_length=200) #会员卡名称
+	price = models.FloatField(default=0.0)  #支付金额
+	is_paid = models.BooleanField(default=False)  #是否支付成功
+	created_at = models.DateTimeField(auto_now_add=True) #创建时间
+	paid_at = models.DateTimeField(null=True) #支付时间
+	
+	class Meta(object):
+		db_table = 'member_card_pay_order'

@@ -8,3 +8,4 @@ import user
 import wzcard
 import news
 import openapi
+import member_card

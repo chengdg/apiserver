@@ -1448,7 +1448,7 @@ class Order(business_model.Model):
 		if order_has_group:
 			order_group_info = order_has_group.to_dict()
 			if self.status == mall_models.ORDER_STATUS_NOT:
-				activity_url = 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/m_group/?webapp_owner_id=' + str(self.context['webapp_owner'].id) + '&id=' + order_group_info['activity_id']
+				activity_url = 'http://' + settings.MARKETAPP_DOMAIN + '/m/apps/group/m_group/?webapp_owner_id=' + str(self.context['webapp_owner'].id) + '&id=' + order_group_info['activity_id']
 			else:
 				params = {
 					'woid': self.context['webapp_owner'].id,
@@ -1462,7 +1462,7 @@ class Order(business_model.Model):
 
 				if resp and resp['code'] == 200:
 					group_url_info = resp['data']
-					activity_url = 'http://' + settings.WEAPP_DOMAIN + group_url_info['group_url']
+					activity_url = group_url_info['group_url']
 
 			order_group_info['activity_url'] = activity_url
 			return order_group_info
@@ -1491,7 +1491,7 @@ class Order(business_model.Model):
 				activity_url = ''
 				order_group_info = order_id2order_has_group[order.order_id].to_dict()
 				if order.status == mall_models.ORDER_STATUS_NOT:
-					activity_url = 'http://' + settings.WEAPP_DOMAIN + '/m/apps/group/m_group/?webapp_owner_id=' + str(
+					activity_url = 'http://' + settings.MARKETAPP_DOMAIN + '/m/apps/group/m_group/?webapp_owner_id=' + str(
 						order.context['webapp_owner'].id) + '&id=' + order_group_info['activity_id']
 				else:
 
@@ -1507,7 +1507,7 @@ class Order(business_model.Model):
 
 					if resp and resp['code'] == 200:
 						group_url_info = resp['data']
-						activity_url = 'http://' + settings.WEAPP_DOMAIN + group_url_info['group_url']
+						activity_url = group_url_info['group_url']
 				order_group_info['activity_url'] = activity_url
 				order_id2group_info[order.order_id] = order_group_info
 			else:

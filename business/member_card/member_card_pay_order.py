@@ -9,8 +9,10 @@ from eaglet.utils.resource_client import Resource
 from eaglet.decorator import param_required
 from eaglet.core import watchdog
 
+from business.mall.pay_interface import PayInterface
 from business import model as business_model
 from db.member import models as member_models
+from db.mall import models as mall_models
 from member_card import MemberCard
 
 class MemberCardPayOrder(business_model.Model):
@@ -30,11 +32,15 @@ class MemberCardPayOrder(business_model.Model):
 		'paid_at'
 	)
 
-	def __init__(self, model):
+	def __init__(self, model, webapp_owner=None, webapp_user=None):
 		business_model.Model.__init__(self)
 
 		if model:
 			self._init_slot_from_model(model)
+		if webapp_owner:
+			self.context['webapp_owner'] = webapp_owner
+		if webapp_user:
+			self.context['webapp_user'] = webapp_user
 
 	@staticmethod
 	@param_required(['order_id'])
@@ -51,7 +57,7 @@ class MemberCardPayOrder(business_model.Model):
 		webapp_user = args['webapp_user']
 
 		model = member_models.MemberCardPayOrder.select().dj_where(owner_id=webapp_owner.id, member_id=webapp_user.member.id, order_id=order_id).first()
-		pay_order = MemberCardPayOrder(model)
+		pay_order = MemberCardPayOrder(model, webapp_owner, webapp_user)
 		return pay_order
 
 	@staticmethod
@@ -107,6 +113,25 @@ class MemberCardPayOrder(business_model.Model):
 				'is_status_not': False,
 				'woid': self.context['webapp_owner'].id
 			}
+
+	def wx_package_for_pay_module(self,config):
+		wx_package_info ={}
+		wx_package_info['woid'] = self.context['webapp_owner'].id
+
+		# if not config:
+		# 	wx_package_info['product_names'] = self.__get_product_names_for_pay_module()
+		# 	wx_package_info['total_fee'] = int(Decimal(str(self.final_price)) * 100)
+
+		pay_interface = PayInterface.from_type({
+			"webapp_owner": self.context['webapp_owner'],
+			"pay_interface_type": mall_models.PAY_INTERFACE_WEIXIN_PAY
+		})
+
+		wx_package = pay_interface.wx_package_for_pay_module()
+
+		wx_package_info.update(wx_package)
+		return wx_package_info
+
 
 	def pay(self):
 		if not self.is_paid:

@@ -63,5 +63,4 @@ class AMemberCardList(api_resource.ApiResource):
 				data['card_infos'] = card_infos
 			else:
 				watchdog.error(resp)
-
 		return data

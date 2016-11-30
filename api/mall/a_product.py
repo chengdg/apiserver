@@ -55,7 +55,7 @@ class AProduct(api_resource.ApiResource):
 			if data['is_in_group_buy']:
 				return {
 					'is_in_group_buy': True,
-					'activity_url': 'http://' + settings.WEAPP_DOMAIN + data['activity_url']
+					'activity_url': data['activity_url']
 				}
 
 		product = Product.from_id({

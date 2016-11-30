@@ -28,7 +28,13 @@ class AMemberCard(api_resource.ApiResource):
 
 		webapp_user = args['webapp_user']
 		member_id = webapp_user.member.id
-		member_card = webapp_user.member_card
+
+		member_card = MemberCard.from_member_id({
+			"member_id": member_id,
+			"fill_options": {
+				"with_price": True
+						}
+		})
 		
 		if is_binded and member_card:
 			data = {}

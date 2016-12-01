@@ -143,7 +143,7 @@ class MemberCard(business_model.Model):
 						watchdog.error(resp)
 
 				batch_info = get_batch_info(member_card.batch_id)
-				member_card.interval_days = batch_info['vip_back_via_day']
+				member_card.interval_days = int(batch_info['vip_back_via_day'])
 				
 
 	@staticmethod

@@ -57,7 +57,7 @@ class APayResult(api_resource.ApiResource):
 				'is_vip': False,  #如果is_vip是False，说明支付失败
 				'batch_id': batch_info['id'],
 				'price': batch_info['open_pay_money'],
-				'name': batch_info['membership_name']
+				'name': batch_info['name']
 			}
 
 		return data

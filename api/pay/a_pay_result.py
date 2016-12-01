@@ -7,6 +7,7 @@ from eaglet.decorator import param_required
 from business.mall.order import Order
 from business.mall.order_config import OrderConfig
 from business.mall.red_envelope import RedEnvelope
+from business.member_card.member_card_pay_order import MemberCardPayOrder
 from core.exceptionutil import unicode_full_stack
 
 

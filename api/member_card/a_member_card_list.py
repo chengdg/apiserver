@@ -26,6 +26,7 @@ class AMemberCardList(api_resource.ApiResource):
 		@return member_card dict
 		"""
 		webapp_user = args['webapp_user']
+		webapp_owner = args['webapp_owner']
 		is_binded = webapp_user.is_binded
 
 		if not is_binded:  #如果没绑定手机则直接返回
@@ -51,7 +52,7 @@ class AMemberCardList(api_resource.ApiResource):
 		}
 		resp = Resource.use('card_apiserver').get({
 					'resource': 'card.membership_batches',
-					'data': {}
+					'data': {'woid': webapp_owner.id}
 				})
 		if resp:
 			code = resp['code']

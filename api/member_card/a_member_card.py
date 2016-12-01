@@ -4,6 +4,7 @@
 """
 from eaglet.core import api_resource
 from eaglet.decorator import param_required
+from business.member_card.member_card import MemberCard
 
 class AMemberCard(api_resource.ApiResource):
 	"""

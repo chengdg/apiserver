@@ -49,7 +49,7 @@ class APayment(api_resource.ApiResource):
 			'is_vip': False,
 			'batch_id': batch_id,
 			'price': batch_info['open_pay_money'],
-			'name': batch_info['membership_name']
+			'name': batch_info['name']
 		}
 
 		return data
@@ -69,9 +69,9 @@ class APayment(api_resource.ApiResource):
 
 		owner_id = webapp_owner.id
 		member_id = webapp_user.member.id
-		batch_name = batch_info['membership_name']
+		batch_name = batch_info['name']
 		price = batch_info['open_pay_money']
-		order_id = 'vip_%d_%d' % (owner_id, member_id)
+		order_id = 'vip_%d_%d_%s' % (owner_id, member_id, batch_id)
 
 		pay_order = MemberCardPayOrder.get_member_card_pay_order({
 						'owner_id': owner_id, 

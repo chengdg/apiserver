@@ -4,6 +4,7 @@
 """
 import json
 from datetime import datetime
+from decimal import Decimal
 
 from eaglet.utils.resource_client import Resource
 from eaglet.decorator import param_required
@@ -118,9 +119,9 @@ class MemberCardPayOrder(business_model.Model):
 		wx_package_info ={}
 		wx_package_info['woid'] = self.context['webapp_owner'].id
 
-		# if not config:
-		# 	wx_package_info['product_names'] = self.__get_product_names_for_pay_module()
-		# 	wx_package_info['total_fee'] = int(Decimal(str(self.final_price)) * 100)
+		if not config:
+			wx_package_info['product_names'] = self.batch_name
+			wx_package_info['total_fee'] = int(Decimal(str(self.price)) * 100)
 
 		pay_interface = PayInterface.from_type({
 			"webapp_owner": self.context['webapp_owner'],
@@ -140,13 +141,13 @@ class MemberCardPayOrder(business_model.Model):
 
 			params = {
 				'weizoom_card_batch_id': self.batch_id,
-				'sold_time': args['money'],
+				'sold_time': now.strftime('%Y-%m-%d %H:%M:%S'),
 				'member_id': self.member_id,
 				'phone_num': self.context['webapp_user'].phone_number
 			}
 			resp = Resource.use('card_apiserver').get({
 				'resource': 'card.membership_card',
-				'data': {'card_infos': json.dumps(params)}
+				'data': {'card_condition': json.dumps(params)}
 			})
 
 			if resp:

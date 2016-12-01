@@ -181,7 +181,7 @@ class OrderResourceExtractor(business_model.Model):
 		info = member_models.MemberCardLog.select().dj_where(order_id=order.order_id).first()
 		if info:
 			trade_id = info.trade_id
-			resource = MemberCardResource(resource_type, order.order_id, trade_id, info.member_card.card_number, info.price)
+			resource = MemberCardResource(resource_type, order.order_id, trade_id, info.member_card.id, info.price)
 		else:
 			resource = None
 		return resource

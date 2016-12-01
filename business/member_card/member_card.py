@@ -36,7 +36,8 @@ class MemberCard(business_model.Model):
 		'is_active',  #会员卡状态
 		'remained_backcash_times',   #剩余返现次数
 		'valid_time_to',
-		'interval_days'  #返款间隔天数
+		'interval_days',  #返款间隔天数
+		'next_clear_time'  #本期余额下次清空时间
 	)
 
 	def __init__(self, model):
@@ -65,6 +66,7 @@ class MemberCard(business_model.Model):
 		member_card.is_active = False
 		member_card.remained_backcash_times = 0
 		member_card.interval_days = 0
+		member_card.next_clear_time = ''
 		MemberCard.fill_options(member_card, fill_options)
 
 		return member_card
@@ -138,6 +140,7 @@ class MemberCard(business_model.Model):
 							member_card.remained_backcash_times = remained_backcash_times
 							member_card.valid_time_to = card_infos[0][member_card.card_number]['valid_time_to']
 							member_card.balance = card_infos[0][member_card.card_number]['balance']
+							member_card.next_clear_time = card_infos[0][member_card.card_number]['next_clear_time']
 					else:
 						watchdog.error(resp)
 

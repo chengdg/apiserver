@@ -3,6 +3,8 @@
 会员卡
 """
 import json
+from decimal import Decimal
+
 from eaglet.utils.resource_client import Resource
 from eaglet.decorator import param_required
 from db.member import models as member_models
@@ -143,8 +145,7 @@ class MemberCard(business_model.Model):
 						watchdog.error(resp)
 
 				batch_info = get_batch_info(member_card.batch_id)
-				member_card.interval_days = int(batch_info['vip_back_via_day'])
-				
+				member_card.interval_days = int(Decimal(batch_info['vip_back_via_day']))
 
 	@staticmethod
 	@param_required(['wzcard_info', 'money', 'order_id', 'webapp_user', 'webapp_owner'])

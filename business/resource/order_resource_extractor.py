@@ -13,7 +13,9 @@
 
 
 import logging
-from business import model as business_model 
+from business import model as business_model
+from business.member_card.member_card_resource import MemberCardResource
+from business.member_card.member_card_resource_allocator import MemberCardResourceAllocator
 
 from business.resource.integral_resource import IntegralResource
 from business.mall.allocator.integral_resource_allocator import IntegralResourceAllocator
@@ -29,6 +31,7 @@ from business.wzcard.wzcard_resource_allocator import WZCardResourceAllocator
 from business.mall.log_operator import LogOperator
 from business.wzcard.wzcard_resource import WZCardResource
 from db.mall import models as mall_models
+from db.member import models as member_models
 import db.wzcard.models as wzcard_models
 
 class OrderResourceExtractor(business_model.Model):
@@ -169,7 +172,19 @@ class OrderResourceExtractor(business_model.Model):
 			resource = None
 		return resource
 
+	def __extract_member_card_resource(self, order):
 
+		webapp_owner = self.context['webapp_owner']
+		webapp_user = self.context['webapp_user']
+
+		resource_type = MemberCardResourceAllocator(webapp_owner, webapp_user).resource_type
+		info = member_models.MemberCardLog.select().dj_where(order_id=order.order_id).first()
+		if info:
+			trade_id = info.trade_id
+			resource = MemberCardResource(resource_type, order.order_id, trade_id, info.member_card.card_number, info.price)
+		else:
+			resource = None
+		return resource
 
 	def extract(self, order):
 		"""
@@ -197,9 +212,14 @@ class OrderResourceExtractor(business_model.Model):
 			resources.extend(extracted_resources)
 
 		# 抽取微众卡资源
-		extracted_resource = self.__extract_wzcard_resource(order)
-		if extracted_resource:
-			resources.append(extracted_resource)
+		weizoom_card_resource = self.__extract_wzcard_resource(order)
+		if weizoom_card_resource:
+			resources.append(weizoom_card_resource)
+
+		# 抽取会员卡资源
+		member_card_resource = self.__extract_member_card_resource(order)
+		if member_card_resource:
+			resources.append(member_card_resource)
 
 		logging.info(u"extracted {} resources".format(len(resources)))
 		return resources

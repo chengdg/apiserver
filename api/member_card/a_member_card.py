@@ -49,6 +49,8 @@ class AMemberCard(api_resource.ApiResource):
 			data['user_icon'] = webapp_user.user_icon
 			data['username_for_html'] = webapp_user.username_for_html
 			data['valid_time_to'] = member_card.valid_time_to
+			data['interval_days'] = member_card.interval_days
+			data['next_clear_time'] = member_card.next_clear_time
 		else:
 			data = {
 				'is_binded': is_binded,

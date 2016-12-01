@@ -128,8 +128,6 @@ class MemberCard(business_model.Model):
 					data = resp['data']
 					if code == 200:
 						card_infos = resp['data']['card_infos']
-						print ">>>>>>>>>>>>resp>>>>>>>",resp
-						print ">>>>>>>>>>>>>>>card_infos>>>>>>>>>>",card_infos
 						if len(card_infos) == 1:
 							#判断微众卡状态是否可用 duhao
 							card_status_text = card_infos[0][member_card.card_number]['status']

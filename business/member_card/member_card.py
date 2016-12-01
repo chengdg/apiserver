@@ -35,7 +35,8 @@ class MemberCard(business_model.Model):
 		'balance',
 		'is_active',  #会员卡状态
 		'remained_backcash_times',   #剩余返现次数
-		'valid_time_to'
+		'valid_time_to',
+		'interval_days'  #返款间隔天数
 	)
 
 	def __init__(self, model):
@@ -63,6 +64,7 @@ class MemberCard(business_model.Model):
 		member_card.balance = 0
 		member_card.is_active = False
 		member_card.remained_backcash_times = 0
+		member_card.interval_days = 0
 		MemberCard.fill_options(member_card, fill_options)
 
 		return member_card
@@ -138,6 +140,9 @@ class MemberCard(business_model.Model):
 							member_card.balance = card_infos[0][member_card.card_number]['balance']
 					else:
 						watchdog.error(resp)
+
+				batch_info = get_batch_info(member_card.batch_id)
+				member_card.interval_days = batch_info['vip_back_via_day']
 				
 
 	@staticmethod
@@ -242,3 +247,23 @@ class MemberCard(business_model.Model):
 	@classmethod
 	def decrypt_password(cls, encrypt_password):
 		return crypt.DecryptMsg(encrypt_password)[1]
+
+
+def get_batch_info(batch_id):
+	"""
+	根据batch_id获取单个批次卡的详细信息
+	"""
+	batch_info = None
+	resp = Resource.use('card_apiserver').get({
+				'resource': 'card.membership_batch',
+				'data': {'membership_batch_id': batch_id}
+			})
+	if resp:
+		code = resp['code']
+		data = resp['data']['card_info']
+		if code == 200:
+			batch_info = data
+		else:
+			watchdog.error(resp)
+
+	return batch_info

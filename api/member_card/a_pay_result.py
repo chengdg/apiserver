@@ -6,7 +6,7 @@ from eaglet.core import api_resource
 from eaglet.decorator import param_required
 
 from business.member_card.member_card_pay_order import MemberCardPayOrder
-from a_payment import get_batch_info
+from business.member_card.member_card import get_batch_info
 
 class APayResult(api_resource.ApiResource):
 	"""

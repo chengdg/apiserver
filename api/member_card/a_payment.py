@@ -9,6 +9,7 @@ from eaglet.utils.resource_client import Resource
 
 from db.member import models as member_models
 from business.member_card.member_card_pay_order import MemberCardPayOrder
+from business.member_card.member_card import get_batch_info
 
 
 class APayment(api_resource.ApiResource):
@@ -94,21 +95,3 @@ class APayment(api_resource.ApiResource):
 
 
 
-def get_batch_info(batch_id):
-	"""
-	根据batch_id获取单个批次卡的详细信息
-	"""
-	batch_info = None
-	resp = Resource.use('card_apiserver').get({
-				'resource': 'card.membership_batch',
-				'data': {'membership_batch_id': batch_id}
-			})
-	if resp:
-		code = resp['code']
-		data = resp['data']['card_info']
-		if code == 200:
-			batch_info = data
-		else:
-			watchdog.error(resp)
-
-	return batch_info

@@ -103,7 +103,7 @@ class MemberCardResourceAllocator(business_model.Service):
 		order_id = resource.order_id
 		trade_id = resource.trade_id
 
-		is_success = MemberCard.refund({'order_id': order_id, 'trade_id': trade_id, 'member_card_id': resource.member_card.id, 'price': resource.price})
+		is_success = MemberCard.refund({'order_id': order_id, 'trade_id': trade_id, 'member_card_id': resource.member_card_id, 'price': resource.price})
 		# TODO: 如果退款失败怎么办？
 		return is_success
 

@@ -1,13 +1,26 @@
 #!/bin/bash
-DIR=`dirname $0`
-cd $DIR
+PORT=${1:-8001}
 
-cleanup() {
-  exit 1	
-}
+# prepare service
+CAN_START_SERVICE=`python <<END
+import servicecli
+servicecli.prepare_service(${PORT})
+END`
 
-trap cleanup 2
+if [ "${CAN_START_SERVICE}" == "false" ]; then
+	exit 2
+fi
 
-while true; do
- python manage.py runserver 0.0.0.0 8001
-done
+# start service
+if [ "$_WEIZOOM_PRODUCTION" == "1" ]; then
+	uwsgi service.ini
+else
+	python manage.py runserver 0.0.0.0 $PORT
+fi
+
+
+
+#trap cleanup 2
+#while true; do
+# python manage.py runserver 0.0.0.0 8001
+#done

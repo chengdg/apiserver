@@ -32,14 +32,18 @@ class AMyCoupon(api_resource.ApiResource):
 		expired_coupons = []
 
 		for c in coupons:
+			#个人中心的优惠券列表加入使用说明的展示 duhao 20161206
+			data = c.to_dict()
+			data['remark'] = c.coupon_rule.remark
+
 			if c.status == promotion_models.COUPON_STATUS_USED:
-				used_coupons.append(c.to_dict())
+				used_coupons.append(data)
 
 			if c.status == promotion_models.COUPON_STATUS_UNUSED:
-				unused_coupons.append(c.to_dict())
+				unused_coupons.append(data)
 
 			if c.status == promotion_models.COUPON_STATUS_EXPIRED:
-				expired_coupons.append(c.to_dict())
+				expired_coupons.append(data)
 
 		return {
 			'used_coupons': used_coupons,

@@ -1,0 +1,13 @@
+{
+	"server_name": "",
+	"hosts": [],
+	"locations": [{
+		"path": "/static",
+		"root": "."
+	}],
+	"proxy_locations": [{
+		"service": "api-gateway",
+		"path": "/default/",
+		"type": "api_proxy"
+	}]
+}

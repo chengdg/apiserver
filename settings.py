@@ -8,7 +8,7 @@ SERVICE_NAME = "apiserver"
 DEBUG = True
 PROJECT_HOME = os.path.dirname(os.path.abspath(__file__))
 
-MODE = 'develop'
+MODE = os.environ.get('MODE', 'develop')
 
 if MODE == 'develop':
     OPERATION_DB = 'weapp'
@@ -19,6 +19,7 @@ else:
     OPERATION_USER = 'operation'
     OPERATION_HOST = 'db.operation.com'
 
+DB_HOST = os.environ.get('DB_HOST', None) or 'db.dev.com'
 
 DATABASES = {
     'default': {
@@ -26,7 +27,7 @@ DATABASES = {
         'NAME': 'weapp',
         'USER': 'weapp',                      # Not used with sqlite3.
         'PASSWORD': 'weizoom',                  # Not used with sqlite3.
-        'HOST': 'db.weapp.com',
+        'HOST': DB_HOST,
         'PORT': '',
         'CONN_MAX_AGE': 100
     },
@@ -97,7 +98,7 @@ else:
 
 
 #缓存相关配置
-REDIS_HOST = 'redis.weapp.com'
+REDIS_HOST = os.environ.get('_REDIS_HOST', 'redis.weapp.com')
 REDIS_PORT = 6379
 REDIS_CACHES_DB = 1
 

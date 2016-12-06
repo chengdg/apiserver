@@ -1,4 +1,31 @@
 {
 	"name": "apiserver",
-	"type": "python-service"
+	"type": "python-service",
+	"default_port": 8001,
+	"envs": {
+		"production": [
+			"_SERVICE_HOST_PORT",
+			"DB_HOST",
+			"_USE_WSGI_PROTOCAL",
+			"MODE"
+		],
+		"dev": [
+			"_IS_WEIZOOM_DEV_VM",
+			"_SERVICE_HOST_PORT"
+		]
+	},
+	"hosts": {
+		"always": [
+			"etcd.weizoom.com"
+		],
+		"dev": [
+			"db.dev.com"
+		],
+		"production": [
+		]
+	},
+	"dev": {
+		"rebuild": "no",
+		"init": "no"
+	}
 }

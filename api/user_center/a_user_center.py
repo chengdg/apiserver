@@ -23,6 +23,7 @@ from services.update_member_from_weixin.task import update_member_info
 from eaglet.core import watchdog
 import uuid
 
+AD_CLICKED_TYPE = 1
 
 class AUserCenter(api_resource.ApiResource):
 	"""
@@ -70,7 +71,8 @@ class AUserCenter(api_resource.ApiResource):
 		if is_weizoom_mall:
 			#ad  click 
 			ad_clicked = AdClicked.from_member_id({
-				"member_id":member.id
+				"member_id": member.id,
+				"type": AD_CLICKED_TYPE
 				})
 
 			is_ad_clicked = True if ad_clicked else False

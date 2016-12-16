@@ -419,11 +419,15 @@ class MemberCardLog(models.Model):
 	class Meta(object):
 		db_table = 'member_card_log'
 
+
+VIP_PAGE = 1  #VIP会员首页
+WANT_TO_BUY = 2  #VIP会员我想买页面
 class AdClicked(models.Model):
 	"""
 	广告点击
 	"""
 	member_id = models.IntegerField() #会员id
+	type = models.IntegerField(default=VIP_PAGE)  #页面
 	created_at = models.DateTimeField(auto_now_add=True) #时间
 	
 	class Meta(object):
@@ -446,3 +450,54 @@ class MemberCardPayOrder(models.Model):
 	
 	class Meta(object):
 		db_table = 'member_card_pay_order'
+
+
+SOURCE_JD = 1  #京东
+SOURCE_TMALL = 2  #天猫
+SOURCE2NAME = {
+	SOURCE_JD: u'京东',
+	SOURCE_TMALL: u'天猫'
+}
+
+STATUS_NOT_REACH = 1
+STATUS_REACH = 2
+STATUS_PURCHASE = 3
+STATUS_SHELVES_ON = 4
+STATUS2TEXT = {
+	STATUS_NOT_REACH: u'未达标',
+	STATUS_REACH: u'人气达标，采购中',
+	STATUS_PURCHASE: u'采购完成，等待上架',
+	STATUS_SHELVES_ON: u'上架完成'
+}
+class WantToBuy(models.Model):
+	"""
+	我想买
+	"""
+	owner_id = models.IntegerField() #商家id
+	member = models.ForeignKey(Member)
+	source = models.IntegerField(default=SOURCE_JD)  #来源
+	product_id = models.IntegerField(default=0) #上架后的商品id，预留字段
+	product_name = models.CharField(max_length=128) #商品名称
+	status = models.IntegerField(default=STATUS_NOT_REACH)  #状态
+	support_num = models.IntegerField(default=0)  #支持人数
+	pics = models.CharField(max_length=1024) #图片
+	is_accept_other_brand = models.BooleanField(default=True)  #是否接受同类其他品牌
+	reach_num_at = models.DateTimeField(null=True) #人气达标时间
+	purchase_completed_at = models.DateTimeField(null=True) #采购完成时间
+	shelves_on_at = models.DateTimeField(null=True) #上架时间
+	created_at = models.DateTimeField(auto_now_add=True) #创建时间
+
+	class Meta(object):
+		db_table = 'member_want_to_buy'
+
+class WantToBuySupport(models.Model):
+	"""
+	我想买支持记录
+	"""
+	want_to_buy = models.ForeignKey(WantToBuy)
+	member = models.ForeignKey(Member)
+	content = models.CharField(max_length=512) #支持内容
+	created_at = models.DateTimeField(auto_now_add=True) #创建时间
+
+	class Meta(object):
+		db_table = 'member_want_to_buy_support'

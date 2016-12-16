@@ -18,6 +18,7 @@ class AdClicked(business_model.Model):
 	__slots__ = (
 		'id',
 		'member_id',
+		'type',
 		'created_at'
 	)
 
@@ -38,14 +39,14 @@ class AdClicked(business_model.Model):
 		"""
 		model = args['model']
 
-		integral = AdClicked(model)
-		integral._init_slot_from_model(model)
-		return integral
+		ad_clicked = AdClicked(model)
+		ad_clicked._init_slot_from_model(model)
+		return ad_clicked
 
 	@staticmethod
-	@param_required(['member_id'])
+	@param_required(['member_id', 'type'])
 	def from_member_id(args):
-		model = member_models.AdClicked.select().dj_where(member_id=args['member_id']).first()
+		model = member_models.AdClicked.select().dj_where(member_id=args['member_id'], type=args['type']).first()
 		if model:
 			return AdClicked.from_model({
 				"model": model
@@ -53,9 +54,9 @@ class AdClicked(business_model.Model):
 		return None
 
 	@staticmethod
-	@param_required(['member_id'])
+	@param_required(['member_id', 'type'])
 	def add_ad_clicked(args):
-		model = member_models.AdClicked.create(member_id=args['member_id'])
+		model = member_models.AdClicked.create(member_id=args['member_id'], type=args['type'])
 		return AdClicked.from_model({
 			"model": model
 			})

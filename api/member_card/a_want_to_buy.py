@@ -43,7 +43,7 @@ class AWantToBuy(api_resource.ApiResource):
 					"webapp_owner": webapp_owner
 				})
 
-			if is_binded and is_vip and not want_to_buy.has_supported(member_id) and item.member_id != member_id:
+			if is_binded and is_vip and not want_to_buy.has_supported(member_id) and want_to_buy.member_id != member_id:
 				is_can_support = True
 
 			if is_binded and is_vip and want_to_buy.is_success:
@@ -75,7 +75,7 @@ class AWantToBuy(api_resource.ApiResource):
 					'source': args['source'],
 					'product_name': args.get('product_name', ''),
 					'pics': args['pics'],
-					'is_accept_other_brand': args['is_accept_other_brand']
+					'is_accept_other_brand': int(args['is_accept_other_brand'])
 				})
 
 		return result

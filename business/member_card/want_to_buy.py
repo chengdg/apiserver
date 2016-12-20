@@ -157,7 +157,7 @@ class WantToBuy(business_model.Model):
 		member_id = args['member_id']
 		items = member_models.WantToBuy.select().dj_where(
 				member_id=member_id, 
-				status__in=[member_models.STATUS_NOT_REACH, member_models.STATUS_REACH, member_models.STATUS_PURCHASE]
+				# status__in=[member_models.STATUS_NOT_REACH, member_models.STATUS_REACH, member_models.STATUS_PURCHASE]
 			).order_by(-member_models.WantToBuy.created_at)
 
 		datas = []
@@ -192,7 +192,7 @@ class WantToBuy(business_model.Model):
 		member_id = args['member_id']
 		items = member_models.WantToBuySupport.select().dj_where(
 				member_id=member_id, 
-				want_to_buy__status__in=[member_models.STATUS_NOT_REACH, member_models.STATUS_REACH, member_models.STATUS_PURCHASE]
+				# want_to_buy__status__in=[member_models.STATUS_NOT_REACH, member_models.STATUS_REACH, member_models.STATUS_PURCHASE]
 			).order_by(-member_models.WantToBuySupport.created_at)
 
 		datas = []

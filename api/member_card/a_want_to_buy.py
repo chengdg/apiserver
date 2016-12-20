@@ -52,8 +52,8 @@ class AWantToBuy(api_resource.ApiResource):
 			supports = want_to_buy.get_supports()
 
 		return {
-			'user_icon': webapp_user.user_icon,
-			'user_name':webapp_user.username_for_html,
+			'user_icon': want_to_buy.member_icon if want_to_buy else '',
+			'user_name':want_to_buy.member_name if want_to_buy else '',
 			'is_binded': is_binded,
 			'is_vip': is_vip,
 			'is_can_support': is_can_support,

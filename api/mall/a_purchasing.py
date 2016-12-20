@@ -144,12 +144,11 @@ class APurchasing(api_resource.ApiResource):
 			product_group_datas = SupplierPostageConfig.product_group_use_supplier_postage({'product_groups': product_group_datas, 'supplier_ids': product_supplier_ids})
 			#会员卡
 			member_card = webapp_user.member_card
-			if member_card:
+			if member_card and member_card.is_active:
 				member_card = {
 					'member_card_balance': member_card.balance,
 					'is_vip': True
 				}
-				print member_card,"<<<<<<<<<<<<<<<<<<<<<<<<<<<SSSSS"
 			else:
 				member_card = {
 					'member_card_balance': 0,

@@ -158,7 +158,7 @@ class WebAppOwnerInfo(business_model.Model):
 
 			try:
 				if account_models.OperationSettings.select().dj_where(owner_id=webapp_owner_id).count() == 0:
-					operation_settings = account_models.OperationSettings.create(owner_id=webapp_owner_id)
+					operation_settings = account_models.OperationSettings.create(owner=webapp_owner_id)
 				else:
 					operation_settings = account_models.OperationSettings.select().dj_where(owner_id=webapp_owner_id).first()
 			except:

@@ -3,7 +3,9 @@
 会员卡
 """
 import json
+import operator
 from decimal import Decimal
+from datetime import datetime
 
 from eaglet.utils.resource_client import Resource
 from eaglet.decorator import param_required
@@ -84,6 +86,82 @@ class MemberCard(business_model.Model):
 				"fill_options": fill_options
 				})
 		return None
+
+	def get_bill_info(self):
+		"""
+		获取会员卡的账单信息
+		"""
+		bill_info = []
+		#会员卡的消费和待支付订单变为已取消订单时的退款记录
+		order_related_records = member_models.MemberCardLog.select().dj_where(member_card_id=self.id)
+		for record in order_related_records:
+			#todo 把行为转换成便于在手机端显示的描述
+			action = ''
+			price = record.price
+			if record.reason == u'下单':
+				action = u'支付订单：%s' % record.order_id
+				price = 0 - record.price  #消费的金额使用负数显示
+			if record.reason == u'取消下单或下单失败':
+				action = u'订单退款:%s' % record.order_id
+
+			bill_info.append({
+				'action': action,
+				'money': price,
+				'created_at': record.created_at.strftime('%Y-%m-%d %H:%M:%S')
+			})
+		
+		#从微众卡系统获取充值和清零记录
+		resp = Resource.use('card_apiserver').get({
+				'resource': 'card.recharge_infos',
+				'data': {'card_number': self.card_number}
+			})
+		if resp:
+			code = resp['code']
+			recharge_infos = resp['data']['recharge_infos']
+			if code == 200:
+				for info in recharge_infos:
+					money = info['recharge_money']
+					is_auto = info['is_auto']
+					action = ''
+					if is_auto == 1:
+						if money > 0:
+							action = u'会员卡第%s期系统充值' % info['phase']
+						if money < 0:
+							action = u'会员卡第%s期余额到期' % info['phase']
+					else:
+						action = u'人工充值'
+
+					bill_info.append({
+						'action': action,
+						'money': money,
+						'created_at': info['created_at']
+					})
+			else:
+				watchdog.error(resp)
+
+		#按时间倒序
+		bill_info.sort(key=operator.itemgetter('created_at'),reverse=True)
+
+		#按月份分组
+		current_month = []
+		last_month = []
+		earlier_month = []
+		current_month_str = datetime.now().strftime("%Y-%m")
+		last_month_str = get_last_month_str()
+		for item in bill_info:
+			if current_month_str in item['created_at']:
+				current_month.append(item)
+			elif last_month_str in item['created_at']:
+				last_month.append(item)
+			else:
+				earlier_month.append(item)
+
+		return {
+			'current_month': current_month,
+			'last_month': last_month,
+			'earlier_month': earlier_month
+		}
+		
 
 	@staticmethod
 	@param_required(['webapp_owner', 'webapp_user', 'batch_id', 'card_number', 'card_password', 'card_name'])
@@ -269,3 +347,16 @@ def get_batch_info(batch_id):
 			watchdog.error(resp)
 
 	return batch_info
+
+
+def get_last_month_str():
+	today = datetime.today()
+	year = today.year
+	month = today.month
+	if month == 1:
+		month = 12
+		year -= 1
+	else:
+		month -= 1
+
+	return datetime(year, month, 1).strftime("%Y-%m")

@@ -279,7 +279,8 @@ class MemberCard(business_model.Model):
 				trade_id=data['trade_id'],
 				order_id=order_id,
 				reason=u"下单",
-				price=float(args['money'])
+				# price=float(args['money'])
+				price=float(data['paid_money'])
 			)
 
 		return can_use, msg, data

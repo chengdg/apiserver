@@ -102,7 +102,7 @@ class MemberCard(business_model.Model):
 				action = u'支付订单：%s' % record.order_id
 				price = 0 - record.price  #消费的金额使用负数显示
 			if record.reason == u'取消下单或下单失败':
-				action = u'订单退款:%s' % record.order_id
+				action = u'订单退款：%s' % record.order_id
 
 			bill_info.append({
 				'action': action,

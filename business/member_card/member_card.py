@@ -121,6 +121,8 @@ class MemberCard(business_model.Model):
 			if code == 200:
 				for info in recharge_infos:
 					money = info['recharge_money']
+					if money == 0:
+						continue
 					is_auto = info['is_auto']
 					action = ''
 					if is_auto == 1:

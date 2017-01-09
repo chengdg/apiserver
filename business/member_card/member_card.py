@@ -96,7 +96,7 @@ class MemberCard(business_model.Model):
 		order_related_records = member_models.MemberCardLog.select().dj_where(member_card_id=self.id)
 		for record in order_related_records:
 			#todo 把行为转换成便于在手机端显示的描述
-			action = record.action
+			action = record.reason
 			price = record.price
 			if record.reason == u'下单':
 				action = u'支付订单：%s' % record.order_id

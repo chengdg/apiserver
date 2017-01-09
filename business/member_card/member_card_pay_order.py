@@ -14,7 +14,7 @@ from business.mall.pay_interface import PayInterface
 from business import model as business_model
 from db.member import models as member_models
 from db.mall import models as mall_models
-from member_card import MemberCard
+from member_card import MemberCard, get_batch_info
 
 class MemberCardPayOrder(business_model.Model):
 	"""
@@ -165,6 +165,13 @@ class MemberCardPayOrder(business_model.Model):
 						'card_password': card_password,
 						'card_name': self.batch_name
 					}
-					MemberCard.create(args)
+					member_card = MemberCard.create(args)
+
+					batch_info = get_batch_info(self.batch_id)
+					member_models.MemberCardLog.create(
+						member_card=member_card.id,
+						reason=u"开通会员卡充值",
+						price=batch_info['first_money']
+					)
 				else:
 					watchdog.error(resp)

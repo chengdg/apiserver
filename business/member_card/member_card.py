@@ -96,7 +96,7 @@ class MemberCard(business_model.Model):
 		order_related_records = member_models.MemberCardLog.select().dj_where(member_card_id=self.id)
 		for record in order_related_records:
 			#todo 把行为转换成便于在手机端显示的描述
-			action = ''
+			action = record.action
 			price = record.price
 			if record.reason == u'下单':
 				action = u'支付订单：%s' % record.order_id
@@ -170,7 +170,7 @@ class MemberCard(business_model.Model):
 		webapp_user = args['webapp_user']
 		member_id = webapp_user.member.id
 		if member_models.MemberCard.select().dj_where(owner_id=webapp_owner.id, member_id=member_id, is_active=True).count() == 0:
-			member_models.MemberCard.create(
+			return member_models.MemberCard.create(
 				owner_id=webapp_owner.id,
 				member_id=member_id,
 				batch_id=args['batch_id'],
@@ -310,22 +310,20 @@ class MemberCard(business_model.Model):
 		)
 
 		is_success = resp and resp['code'] == 200
-
-		price = args['price']
-		try:
-			log = member_models.MemberCardLog.select().dj_where(order_id=args['order_id'],reason=u'下单').first()
-			price = log.price
-		except Exception, e:
-			watchdog.error(u'会员卡自动退款时获取下单时的扣除金额失败,member_card_id:%s,order_id:%s' % (args['member_card_id'], args['order_id']))
-			watchdog.error(e)
-		
-		member_models.MemberCardLog.create(
-				member_card=args['member_card_id'],
-				trade_id=args['trade_id'],
-				order_id=args['order_id'],
-				reason=u"取消下单或下单失败",
-				price=price
-			)
+		if is_success:
+			try:
+				log = member_models.MemberCardLog.select().dj_where(order_id=args['order_id'],reason=u'下单').first()
+				member_models.MemberCardLog.create(
+					member_card=args['member_card_id'],
+					trade_id=args['trade_id'],
+					order_id=args['order_id'],
+					reason=u"取消下单或下单失败",
+					price=log.price
+				)
+			except Exception, e:
+				watchdog.error(u'会员卡自动退款时获取下单时的扣除金额失败,member_card_id:%s,order_id:%s' % (args['member_card_id'], args['order_id']))
+				watchdog.error(e)
+			
 		return is_success
 
 	@classmethod

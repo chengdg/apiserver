@@ -5,10 +5,12 @@
 import json
 from datetime import datetime
 from decimal import Decimal
+from util import dateutil
 
 from eaglet.utils.resource_client import Resource
 from eaglet.decorator import param_required
 from eaglet.core import watchdog
+from bdem import msgutil
 
 from business.mall.pay_interface import PayInterface
 from business import model as business_model
@@ -138,6 +140,8 @@ class MemberCardPayOrder(business_model.Model):
 		if not self.is_paid:
 			now = datetime.now()
 			member_models.MemberCardPayOrder.update(is_paid=True, paid_at=now).dj_where(order_id=self.order_id).execute()
+			webapp_owner = self.context['webapp_owner']
+			webapp_user = self.context['webapp_user']
 
 			params = {
 				'weizoom_card_batch_id': self.batch_id,
@@ -158,8 +162,8 @@ class MemberCardPayOrder(business_model.Model):
 					card_password = data['card_password']
 
 					args = {
-						'webapp_owner': self.context['webapp_owner'],
-						'webapp_user': self.context['webapp_user'],
+						'webapp_owner': webapp_owner,
+						'webapp_user': webapp_user,
 						'batch_id': self.batch_id,
 						'card_number': card_number,
 						'card_password': card_password,
@@ -173,5 +177,18 @@ class MemberCardPayOrder(business_model.Model):
 						reason=u"开通会员卡充值",
 						price=batch_info['first_money']
 					)
+
+					#发送模板消息
+					msgutil.send_message('deploy-weixin-topic', 'template_msg', {
+							'test_env': 'docker',
+							'user_id': webapp_owner.id,
+							'member_id': webapp_user.member.id,
+							'name': u'开通成功通知',
+							'url': 'http://mall.weizoom.com/user_center/vip_card/?woid=%d' % webapp_owner.id,
+							'items': {
+								'keyword1': card_number,
+								'keyword2': dateutil.get_current_datetime()
+							}
+						})
 				else:
 					watchdog.error(resp)

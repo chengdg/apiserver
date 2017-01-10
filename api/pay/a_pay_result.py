@@ -3,14 +3,12 @@
 from eaglet.core import api_resource
 from eaglet.core import watchdog
 from eaglet.decorator import param_required
-from bdem import msgutil
 
 from business.mall.order import Order
 from business.mall.order_config import OrderConfig
 from business.mall.red_envelope import RedEnvelope
 from business.member_card.member_card_pay_order import MemberCardPayOrder
 from core.exceptionutil import unicode_full_stack
-from util import dateutil
 
 
 class APayResult(api_resource.ApiResource):
@@ -89,19 +87,6 @@ class APayResult(api_resource.ApiResource):
 			order.pay()
 			is_success = True
 			msg = ''
-
-			#发送模板消息
-			msgutil.send_message('deploy-weixin-topic', 'template_msg', {
-					'test_env': 'docker',
-					'user_id': webapp_owner.id,
-					'member_id': webapp_user.member.id,
-					'name': u'开通成功通知',
-					'url': 'http://mall.weizoom.com/user_center/vip_card/?woid=%d' % webapp_owner.id,
-					'items': {
-						'keyword1': webapp_user.member_card.card_number,
-						'keyword2': dateutil.get_current_datetime()
-					}
-				})
 		else:  #普通商城订单
 			pay_interface_type = int(args['pay_interface_type'])
 			order = Order.from_id({

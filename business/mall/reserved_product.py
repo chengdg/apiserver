@@ -83,7 +83,8 @@ class ReservedProduct(business_model.Model):
 		'purchase_price',
 		'discount_money_coupon_exist', #判断会员价商品使用单品劵的情况
 		'limit_zone_type',
-		'limit_zone'
+		'limit_zone',
+		'product_model_name_texts'  # 规格的名称
 	)
 
 	@staticmethod
@@ -162,6 +163,15 @@ class ReservedProduct(business_model.Model):
 		self.model = model
 		if model.name != 'standard' and model.purchase_price > 0:
 			self.purchase_price = model.purchase_price
+
+		self.product_model_name_texts = []
+
+		for p in model.property_values if model.property_values else []:
+			self.product_model_name_texts.append(p['name'])
+
+		print('oooooooo',self.product_model_name_texts)
+
+		self.product_model_name_texts = ''
 		self.total_price = self.original_price * int(self.purchase_count)
 
 		#获取商品当前的promotion

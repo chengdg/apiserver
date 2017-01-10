@@ -94,8 +94,15 @@ class MemberCard(business_model.Model):
 		bill_info = []
 		#会员卡的消费和待支付订单变为已取消订单时的退款记录
 		order_related_records = member_models.MemberCardLog.select().dj_where(member_card_id=self.id)
+		order_ids = [r.order_id for r in order_related_records]
+		#获取由于系统自身原因导致下单失败的订单列表
+		failed_orders = mall_models.Order.select().dj_where(webapp_user_id__lt=0, order_id__in=order_ids)
+		failed_order_ids = [o.order_id for o in failed_orders]
 		for record in order_related_records:
-			#todo 把行为转换成便于在手机端显示的描述
+			#如果由于系统自身原因导致下单失败，则不显示跟这个订单号相关的日志
+			if record.order_id in failed_order_ids:
+				continue
+
 			action = record.reason
 			price = record.price
 			if record.reason == u'下单':

@@ -169,6 +169,7 @@ class ReservedProduct(business_model.Model):
 		for p in model.property_values if model.property_values else []:
 			self.product_model_name_texts.append(p['name'])
 
+		print('oooooooo',self.product_model_name_texts)
 
 		self.product_model_name_texts = ''
 		self.total_price = self.original_price * int(self.purchase_count)

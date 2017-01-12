@@ -3,7 +3,9 @@
 会员卡
 """
 import json
+import operator
 from decimal import Decimal
+from datetime import datetime
 
 from eaglet.utils.resource_client import Resource
 from eaglet.decorator import param_required
@@ -85,6 +87,91 @@ class MemberCard(business_model.Model):
 				})
 		return None
 
+	def get_bill_info(self):
+		"""
+		获取会员卡的账单信息
+		"""
+		bill_info = []
+		#会员卡的消费和待支付订单变为已取消订单时的退款记录
+		order_related_records = member_models.MemberCardLog.select().dj_where(member_card_id=self.id)
+		order_ids = [r.order_id for r in order_related_records]
+		#获取由于系统自身原因导致下单失败的订单列表
+		failed_orders = mall_models.Order.select().dj_where(webapp_user_id__lt=0, order_id__in=order_ids)
+		failed_order_ids = [o.order_id for o in failed_orders]
+		for record in order_related_records:
+			#如果由于系统自身原因导致下单失败，则不显示跟这个订单号相关的日志
+			if record.order_id in failed_order_ids:
+				continue
+
+			action = record.reason
+			price = record.price
+			if record.reason == u'下单':
+				action = u'支付订单：%s' % record.order_id
+				price = 0 - record.price  #消费的金额使用负数显示
+			if record.reason == u'取消下单或下单失败':
+				action = u'订单退款：%s' % record.order_id
+
+			bill_info.append({
+				'action': action,
+				'money': price,
+				'created_at': record.created_at.strftime('%Y-%m-%d %H:%M:%S')
+			})
+		
+		#从微众卡系统获取充值和清零记录
+		resp = Resource.use('card_apiserver').get({
+				'resource': 'card.recharge_infos',
+				'data': {'card_number': self.card_number}
+			})
+		if resp:
+			code = resp['code']
+			recharge_infos = resp['data']['recharge_infos']
+			if code == 200:
+				for info in recharge_infos:
+					money = info['recharge_money']
+					if money == 0:
+						continue
+					is_auto = info['is_auto']
+					action = ''
+					if is_auto == 1:
+						if money > 0:
+							action = u'会员卡第%s期系统充值' % info['phase']
+						if money < 0:
+							action = u'会员卡第%s期余额到期' % info['phase']
+					else:
+						action = u'人工充值'
+
+					bill_info.append({
+						'action': action,
+						'money': money,
+						'created_at': info['created_at']
+					})
+			else:
+				watchdog.error(resp)
+
+		#按时间倒序
+		bill_info.sort(key=operator.itemgetter('created_at'),reverse=True)
+
+		#按月份分组
+		current_month = []
+		last_month = []
+		earlier_month = []
+		current_month_str = datetime.now().strftime("%Y-%m")
+		last_month_str = get_last_month_str()
+		for item in bill_info:
+			if current_month_str in item['created_at']:
+				current_month.append(item)
+			elif last_month_str in item['created_at']:
+				last_month.append(item)
+			else:
+				earlier_month.append(item)
+
+		return {
+			'current_month': current_month,
+			'last_month': last_month,
+			'earlier_month': earlier_month
+		}
+		
+
 	@staticmethod
 	@param_required(['webapp_owner', 'webapp_user', 'batch_id', 'card_number', 'card_password', 'card_name'])
 	def create(args):
@@ -92,7 +179,7 @@ class MemberCard(business_model.Model):
 		webapp_user = args['webapp_user']
 		member_id = webapp_user.member.id
 		if member_models.MemberCard.select().dj_where(owner_id=webapp_owner.id, member_id=member_id, is_active=True).count() == 0:
-			member_models.MemberCard.create(
+			return member_models.MemberCard.create(
 				owner_id=webapp_owner.id,
 				member_id=member_id,
 				batch_id=args['batch_id'],
@@ -201,7 +288,8 @@ class MemberCard(business_model.Model):
 				trade_id=data['trade_id'],
 				order_id=order_id,
 				reason=u"下单",
-				price=float(args['money'])
+				# price=float(args['money'])
+				price=float(data['paid_money'])
 			)
 
 		return can_use, msg, data
@@ -231,14 +319,20 @@ class MemberCard(business_model.Model):
 		)
 
 		is_success = resp and resp['code'] == 200
-
-		member_models.MemberCardLog.create(
-				member_card=args['member_card_id'],
-				trade_id=args['trade_id'],
-				order_id=args['order_id'],
-				reason=u"取消下单或下单失败",
-				price=args['price']
-			)
+		if is_success:
+			try:
+				log = member_models.MemberCardLog.select().dj_where(order_id=args['order_id'],reason=u'下单').first()
+				member_models.MemberCardLog.create(
+					member_card=args['member_card_id'],
+					trade_id=args['trade_id'],
+					order_id=args['order_id'],
+					reason=u"取消下单或下单失败",
+					price=log.price
+				)
+			except Exception, e:
+				watchdog.error(u'会员卡自动退款时获取下单时的扣除金额失败,member_card_id:%s,order_id:%s' % (args['member_card_id'], args['order_id']))
+				watchdog.error(e)
+			
 		return is_success
 
 	@classmethod
@@ -269,3 +363,16 @@ def get_batch_info(batch_id):
 			watchdog.error(resp)
 
 	return batch_info
+
+
+def get_last_month_str():
+	today = datetime.today()
+	year = today.year
+	month = today.month
+	if month == 1:
+		month = 12
+		year -= 1
+	else:
+		month -= 1
+
+	return datetime(year, month, 1).strftime("%Y-%m")

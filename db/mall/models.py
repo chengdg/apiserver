@@ -1777,6 +1777,8 @@ class OrderHasProduct(models.Model):
 	thumbnail_url = models.CharField(max_length=1024, default='')  # 商品图片
 	weight = models.FloatField(default=0)
 	product_model_name_texts = models.CharField(max_length=1024, default='[]')  # 规格名称的值
+	product_model_id = models.IntegerField(default=0) # 规格ID
+	product_is_deleted = models.BooleanField(default=False) # 商品是否删除
 
 
 	class Meta(object):

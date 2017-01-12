@@ -842,9 +842,11 @@ class Order(business_model.Model):
 				purchase_price=product.purchase_price,
 				original_price=product.original_price,
 
-				thumbnail_url=product.thumbnail_url,
+				thumbnail_url=product.thumbnails_url,
 				weight=product.weight,
-				product_model_name_texts=json.dumps(product.product_model_name_texts)
+				product_model_name_texts=json.dumps(product.product_model_name_texts),
+				product_model_id=product.model.id,
+				product_is_deleted=product.is_deleted
 			)
 
 			if webapp_type:

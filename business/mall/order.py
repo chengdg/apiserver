@@ -845,8 +845,7 @@ class Order(business_model.Model):
 				thumbnail_url=product.thumbnails_url,
 				weight=product.weight,
 				product_model_name_texts=json.dumps(product.product_model_name_texts),
-				product_model_id=product.model.id,
-				product_is_deleted=product.is_deleted
+				product_model_id=product.model.id
 			)
 
 			if webapp_type:
@@ -932,8 +931,7 @@ class Order(business_model.Model):
 						thumbnail_url=product.thumbnails_url,
 						weight=product.weight,
 						product_model_name_texts=json.dumps(product.product_model_name_texts),
-						product_model_id=product.model.id,
-						product_is_deleted=product.is_deleted
+						product_model_id=product.model.id
 					)
 
 			for supplier_user_id in supplier_user_ids:
@@ -999,8 +997,7 @@ class Order(business_model.Model):
 						thumbnail_url=product.thumbnails_url,
 						weight=product.weight,
 						product_model_name_texts=json.dumps(product.product_model_name_texts),
-						product_model_id=product.model.id,
-						product_is_deleted=product.is_deleted
+						product_model_id=product.model.id
 					)
 
 			#duhao 20160527  weshop定制功能  更新母订单的类型

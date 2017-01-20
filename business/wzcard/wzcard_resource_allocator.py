@@ -13,7 +13,7 @@ from db.mall import models as mall_models
 # 每单用微众卡数量
 from business.wzcard.wzcard_resource import WZCardResource
 
-MAX_WZCARD_PER_ORDER = 10
+MAX_WZCARD_PER_ORDER = 5
 
 
 class WZCardResourceAllocator(business_model.Service):
@@ -56,9 +56,6 @@ class WZCardResourceAllocator(business_model.Service):
 		if not should_use_card:
 			return True, [], None
 
-		valid_money = order.postage + sum(
-			[product.original_price * product.purchase_count for product in order.products])
-
 		# card_numbers = [x['card_number'] for x in purchase_info.wzcard_info]
 		card_numbers = purchase_info.wzcard_info
 
@@ -73,12 +70,12 @@ class WZCardResourceAllocator(business_model.Service):
 		# 	return False, [reason], None
 
 		# 检查是否有重复
-		if len(card_numbers) > 10:
+		if len(card_numbers) > MAX_WZCARD_PER_ORDER:
 			reason = {
 				"is_success": False,
 				"type": 'wzcard:exceeded',
-				"msg": '微众卡只能使用十张',
-				"short_msg": '微众卡只能使用十张'
+				"msg": '微众卡只能使用5张',
+				"short_msg": '微众卡只能使用5张'
 			}
 			return False, [reason], None
 

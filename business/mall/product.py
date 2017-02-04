@@ -445,7 +445,7 @@ class Product(business_model.Model):
 
 	@cached_context_property
 	def __deleted_models(self):
-		return list(mall_models.ProductModel.select().dj_where(product_id=self.id, is_deleted=True))
+		return [ProductModel(model) for model in mall_models.ProductModel.select().dj_where(product_id=self.id, is_deleted=True)]
 
 	def get_specific_model(self, model_name):
 		"""

@@ -5,9 +5,13 @@
 	"envs": {
 		"production": [
 			"_SERVICE_HOST_PORT",
-			"DB_HOST",
 			"_USE_WSGI_PROTOCAL",
-			"MODE"
+			"_SERVICE_MODE",
+			"_REGISTER_SERVICE",
+			"_DB_HOST",
+			"_DB_PORT",
+			"_REDIS_HOST",
+			"_MONGO_HOST"
 		],
 		"dev": [
 			"_IS_WEIZOOM_DEV_VM",
@@ -27,5 +31,18 @@
 	"dev": {
 		"rebuild": "no",
 		"init": "no"
+	},
+
+	"register": {
+		"locations": [{
+			"path": "/static",
+			"root": ".",
+			"type": "root"
+		}],
+		"proxy_locations": [{
+			"service": "api-gateway",
+			"path": "/default/",
+			"type": "service_redirect"
+		}]
 	}
 }

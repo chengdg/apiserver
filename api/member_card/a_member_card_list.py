@@ -29,8 +29,8 @@ class AMemberCardList(api_resource.ApiResource):
 		webapp_owner = args['webapp_owner']
 		is_binded = webapp_user.is_binded
 
-		if not is_binded:  #如果没绑定手机则直接返回
-			return {'is_binded': False}
+		# if not is_binded:  #如果没绑定手机则直接返回
+		# 	return {'is_binded': False}
 
 		member_card = webapp_user.member_card
 		if member_card:  #如果已经是会员了则直接返回
@@ -59,8 +59,6 @@ class AMemberCardList(api_resource.ApiResource):
 			r_data = resp['data']
 			if code == 200:
 				card_infos = r_data['card_infos']
-				print ">>>>>>>>>>>>resp>>>>>>>",resp
-				print ">>>>>>>>>>>>>>>card_infos>>>>>>>>>>",card_infos
 				data['card_infos'] = card_infos
 			else:
 				watchdog.error(resp)

@@ -43,12 +43,16 @@ class ACoupons(api_resource.ApiResource):
 		used_coupons = []
 		expired_coupons = []
 		for coupon in webapp_user.all_coupons:
+			#个人中心的优惠券列表加入使用说明的展示 duhao 20161206
+			data = coupon.to_dict('coupon_rule_id')
+			data['remark'] = coupon.coupon_rule.remark
+			
 			if coupon.is_can_use_by_webapp_user(webapp_user):
-				unused_coupons.append(coupon.to_dict('coupon_rule_id'))
+				unused_coupons.append(data)
 			elif coupon.is_expired():
-				expired_coupons.append(coupon.to_dict('coupon_rule_id'))
+				expired_coupons.append(data)
 			else:
-				used_coupons.append(coupon.to_dict('coupon_rule_id'))
+				used_coupons.append(data)
 
 		return {
 			'unused_coupons': unused_coupons,

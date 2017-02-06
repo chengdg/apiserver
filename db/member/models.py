@@ -53,10 +53,10 @@ class SocialAccount(models.Model):
 	platform = models.IntegerField(default=SOCIAL_PLATFORM_WEIXIN, verbose_name='社会化平台')
 	webapp_id = models.CharField(max_length=16)
 	token = models.CharField(max_length=64)
-	access_token = models.CharField(max_length=64)
+	access_token = models.CharField(max_length=64, default='')
 	is_for_test = models.BooleanField(default=False)
 	openid = models.CharField(max_length=64)
-	uuid = models.CharField(max_length=255)
+	uuid = models.CharField(max_length=255, default='')
 	created_at = models.DateTimeField(auto_now_add=True, verbose_name='加入日期')
 
 
@@ -110,13 +110,13 @@ class Member(models.Model):
 	token = models.CharField(max_length=255)
 	webapp_id = models.CharField(max_length=16)
 	username_hexstr = models.CharField(max_length=2048, verbose_name='会员名称的hex str')
-	user_icon = models.CharField(max_length=1024, verbose_name='会员头像')
+	user_icon = models.CharField(max_length=1024, verbose_name='会员头像', default='')
 	integral = models.IntegerField(default=0, verbose_name='积分')
 	created_at = models.DateTimeField(auto_now_add=True)
 	grade = models.ForeignKey(MemberGrade)
 	experience = models.IntegerField(default=0, verbose_name='经验值')
-	remarks_name = models.CharField(max_length=32, verbose_name='备注名')
-	remarks_extra = models.TextField(verbose_name='备注信息')
+	remarks_name = models.CharField(max_length=32, verbose_name='备注名', default='')
+	remarks_extra = models.TextField(verbose_name='备注信息', default='')
 	last_visit_time = models.DateTimeField(auto_now_add=True)
 	last_message_id = models.IntegerField(default=-1, verbose_name="最近一条消息id")
 	session_id = models.IntegerField(default=-1, verbose_name="会话id")
@@ -359,6 +359,22 @@ class MemberBrowseRecord(models.Model):
 		verbose_name = '会员浏览记录'
 		verbose_name_plural = '会员浏览记录'
 
+
+class MemberBrowseProductRecord(models.Model):
+	member = models.ForeignKey(Member)
+	owner_id = models.IntegerField(default=0)  #商家id
+	product_id = models.IntegerField(default=0)  #商品id
+	referer = models.CharField(max_length=256, default='') #从哪个页面过来的
+	title = models.CharField(max_length=256, default='') #页面标题
+	url = models.TextField()
+	created_at = models.DateTimeField(auto_now_add=True)
+
+	class Meta(object):
+		db_table = 'member_browse_product_record'
+		verbose_name = '会员浏览商品详情记录'
+		verbose_name_plural = '会员浏览商品详情记录'
+
+
 class ChannelDistributionQrcodeSettings(models.Model):
 	"""
 	渠道分销二维码
@@ -419,11 +435,15 @@ class MemberCardLog(models.Model):
 	class Meta(object):
 		db_table = 'member_card_log'
 
+
+VIP_PAGE = 1  #VIP会员首页
+WANT_TO_BUY = 2  #VIP会员我想买页面
 class AdClicked(models.Model):
 	"""
 	广告点击
 	"""
 	member_id = models.IntegerField() #会员id
+	type = models.IntegerField(default=VIP_PAGE)  #页面
 	created_at = models.DateTimeField(auto_now_add=True) #时间
 	
 	class Meta(object):
@@ -446,3 +466,54 @@ class MemberCardPayOrder(models.Model):
 	
 	class Meta(object):
 		db_table = 'member_card_pay_order'
+
+
+SOURCE_JD = 1  #京东
+SOURCE_TMALL = 2  #天猫
+SOURCE2NAME = {
+	SOURCE_JD: u'京东',
+	SOURCE_TMALL: u'天猫'
+}
+
+STATUS_NOT_REACH = 1
+STATUS_REACH = 2
+STATUS_PURCHASE = 3
+STATUS_SHELVES_ON = 4
+STATUS2TEXT = {
+	STATUS_NOT_REACH: u'未达标',
+	STATUS_REACH: u'人气达标，采购中',
+	STATUS_PURCHASE: u'采购完成，等待上架',
+	STATUS_SHELVES_ON: u'上架完成'
+}
+class WantToBuy(models.Model):
+	"""
+	我想买
+	"""
+	owner_id = models.IntegerField() #商家id
+	member = models.ForeignKey(Member)
+	source = models.IntegerField(default=SOURCE_JD)  #来源
+	product_id = models.IntegerField(default=0) #上架后的商品id，预留字段
+	product_name = models.CharField(max_length=128) #商品名称
+	status = models.IntegerField(default=STATUS_NOT_REACH)  #状态
+	support_num = models.IntegerField(default=0)  #支持人数
+	pics = models.CharField(max_length=1024) #图片
+	is_accept_other_brand = models.BooleanField(default=True)  #是否接受同类其他品牌
+	reach_num_at = models.DateTimeField(null=True) #人气达标时间
+	purchase_completed_at = models.DateTimeField(null=True) #采购完成时间
+	shelves_on_at = models.DateTimeField(null=True) #上架时间
+	created_at = models.DateTimeField(auto_now_add=True) #创建时间
+
+	class Meta(object):
+		db_table = 'member_want_to_buy'
+
+class WantToBuySupport(models.Model):
+	"""
+	我想买支持记录
+	"""
+	want_to_buy = models.ForeignKey(WantToBuy)
+	member = models.ForeignKey(Member)
+	content = models.CharField(max_length=512) #支持内容
+	created_at = models.DateTimeField(auto_now_add=True) #创建时间
+
+	class Meta(object):
+		db_table = 'member_want_to_buy_support'

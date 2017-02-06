@@ -29,7 +29,7 @@ class PostageCalculator(object):
 			total_ount += product.purchase_count
 
 		#包邮条件
-		if self.postage_config['factor']['free_factor']:
+		if self.postage_config['factor'] and self.postage_config['factor']['free_factor']:
 			free_factors = self.postage_config['factor']['free_factor'].get(province_id, None)
 			if free_factors:
 				for free_factor in free_factors:
@@ -93,7 +93,11 @@ class PostageCalculator(object):
 		supplier2postage = {}
 
 		for supplier in supplier_ids:
-			self.postage_config = supplier2products[supplier][0].postage_config
+			# self.postage_config = supplier2products[supplier][0].postage_config
+			for _product in supplier2products[supplier]:
+				if _product.postage_config['factor']:
+					self.postage_config = _product.postage_config
+					break
 			supplier2postage[supplier] = self.get_postage(supplier2products[supplier], purchase_info)
 			total_postage += supplier2postage[supplier]
 		purchase_info.postage = supplier2postage
@@ -127,7 +131,9 @@ class PostageCalculator(object):
 				weight += product.weight * product.purchase_count
 
 		if (len(products_use_template) > 0) and (not self.__is_satisfy_free_postage_condition(products_use_template, province_id)):
-			special_postage_factor = self.postage_config['factor']['special_factor'].get(province_id, None)
+			special_postage_factor = None
+			if self.postage_config['factor'] and self.postage_config['factor']['special_factor']:
+				special_postage_factor = self.postage_config['factor']['special_factor'].get(province_id, None)
 			if special_postage_factor:
 				postage_template_money = self.__get_postage_for_weight(weight, special_postage_factor)
 			else:

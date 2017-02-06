@@ -38,22 +38,25 @@ class AMemberCard(api_resource.ApiResource):
 		})
 		
 		if is_binded and member_card:
-			data = {}
-			data['card_number'] = member_card.card_number
-			data['is_active'] = member_card.is_active
-			data['remained_backcash_times'] = member_card.remained_backcash_times
-			data['balance'] = member_card.balance
-			data['card_name'] = member_card.card_name
-			data['is_binded'] = is_binded
-			data['is_vip'] = True
-			data['user_icon'] = webapp_user.user_icon
-			data['username_for_html'] = webapp_user.username_for_html
-			data['valid_time_to'] = member_card.valid_time_to
-			data['interval_days'] = member_card.interval_days
-			data['next_clear_time'] = member_card.next_clear_time
+			data = {
+				'card_number': member_card.card_number,
+				'is_active': member_card.is_active,
+				'remained_backcash_times': member_card.remained_backcash_times,
+				'balance': member_card.balance,
+				'card_name': member_card.card_name,
+				'is_binded': is_binded,
+				'is_vip': True,
+				'user_icon': webapp_user.user_icon,
+				'username_for_html': webapp_user.username_for_html,
+				'valid_time_to': member_card.valid_time_to,
+				'interval_days': member_card.interval_days,
+				'next_clear_time': member_card.next_clear_time,
+				'bill_info': member_card.get_bill_info()
+			}
 		else:
 			data = {
 				'is_binded': is_binded,
 				'is_vip': False
 			}
+			
 		return data

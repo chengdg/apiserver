@@ -50,7 +50,8 @@ class APayment(api_resource.ApiResource):
 			'is_vip': False,
 			'batch_id': batch_id,
 			'price': batch_info['open_pay_money'],
-			'name': batch_info['name']
+			'name': batch_info['name'],
+			'activated_stock': batch_info['activated_stock']
 		}
 
 		return data
@@ -67,6 +68,8 @@ class APayment(api_resource.ApiResource):
 		webapp_owner = args['webapp_owner']
 		batch_id = args['batch_id']
 		batch_info = get_batch_info(batch_id)
+		if batch_info['activated_stock'] <= 0:
+			return 500, u'库存不足'
 
 		owner_id = webapp_owner.id
 		member_id = webapp_user.member.id

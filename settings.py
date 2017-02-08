@@ -19,7 +19,7 @@ else:
     OPERATION_USER = 'operation'
     OPERATION_HOST = 'db.operation.com'
 
-DB_HOST = os.environ.get('DB_HOST', None) or 'db.dev.com'
+DB_HOST = os.environ.get('_DB_HOST', None) or 'db.dev.com'
 
 DATABASES = {
     'default': {

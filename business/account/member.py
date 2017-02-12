@@ -323,7 +323,7 @@ class Member(business_model.Model):
 		[property] 会员参与的营销工具集合
 		"""
 		#TODO2: 实现营销工具集合
-		print u'TODO2: 实现营销工具集合'
+		print u'TODO2: 实现营销工具集合'.encode('utf-8')
 		return []
 
 	@staticmethod

@@ -102,3 +102,15 @@ class ProductModel(business_model.Model):
 
 		self.property_values = property_values
 		self.property2value = property2value
+		
+	@property
+	def product_profit(self):
+		pass
+	
+	@property
+	def product_profit_ratio(self):
+		pass
+	
+	@property
+	def account_purchase_price(self):
+		pass

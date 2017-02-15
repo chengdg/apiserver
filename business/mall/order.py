@@ -754,6 +754,10 @@ class Order(business_model.Model):
 		db_model.customer_message = customer_message
 
 		db_model.type = self.type
+		if purchase_info.group_id:
+			db_model.type = 'group'
+			self.type = 'group'
+
 		db_model.pay_interface_type = self.pay_interface_type
 		db_model.order_id = self.order_id
 		db_model.delivery_time = self.delivery_time

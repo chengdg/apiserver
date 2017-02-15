@@ -162,3 +162,24 @@ class UserOrderNotifySettings(models.Model):
 	class Meta(object):
 		db_table = 'user_order_notify_setting'
 
+
+# 固定返点
+ACCOUNT_DIVIDE_TYPE_RETAIL = 1
+# 毛利分成
+ACCOUNT_DIVIDE_TYPE_PROFIT = 2
+# 固定底价
+ACCOUNT_DIVIDE_TYPE_FIXED = 3
+
+class AccountDivideInfo(models.Model):
+	"""
+	社群分成信息
+	"""
+	user_id = models.IntegerField(default=0, unique=True)
+	settlement_type = models.IntegerField(default=ACCOUNT_DIVIDE_TYPE_RETAIL)  # 结算类型
+	# corp_account = models.CharField(max_length=32)  # 收款账户
+	divide_rebate = models.FloatField(default=0)  # 扣点比例 /分成比例/同时批量加价
+	risk_money = models.FloatField(default=0)  # 风险金额
+	remark = models.TextField(null=True)  # 备注
+
+	class Meta(object):
+		db_table = 'account_divide_rebate_info'

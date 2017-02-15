@@ -1780,12 +1780,12 @@ class OrderHasProduct(models.Model):
 	product_model_id = models.IntegerField(default=0) # 规格ID
 
 	# 商品毛利润
-	product_profit = models.DecimalField(max_digits=65, decimal_places=2, )
+	product_profit = models.FloatField(default=0)
 	# 商品毛利率
-	product_profit_ratio = models.DecimalField(max_digits=65, decimal_places=2)
+	product_profit_ratio = models.FloatField(default=0)
 	
 	# 社群计算价(即和社群结算的时候应该结算多少钱)
-	account_purchase_price = models.DecimalField(max_digits=65, decimal_places=2)
+	webapp_purchase_price = models.FloatField(default=0)
 
 	class Meta(object):
 		db_table = 'mall_order_has_product'
@@ -2311,3 +2311,36 @@ class ClassificationHasProduct(models.Model):
 		verbose_name = "商品分类与商品的关系"
 		verbose_name_plural = "商品分类与商品的关系"
 		db_table = "mall_classification_has_product"
+
+
+PROMOTING = 1  # 推广中
+PROMOTE_OVER = 2  # 推广结束
+
+
+class PromoteDetail(models.Model):  # 推广明细
+	product_id = models.IntegerField()  # weapp product id
+	promote_status = models.IntegerField(default=PROMOTING)  # 推广状态 （未推广，推广中，已结束）   推广设置中展示：未推广，已结束。推广明细中：推广中，已结束
+	promote_money = models.FloatField(default=0)  # 推广费用/件
+	promote_stock = models.IntegerField(default=1)  # 推广库存
+	promote_time_from = models.DateTimeField(default=datetime.now())  # 开始时间
+	promote_time_to = models.DateTimeField(default=datetime.now())  # 结束时间
+	promote_sale_count = models.IntegerField(default=0)  # 推广销量
+	promote_total_money = models.FloatField(default=0)  # 推广费用总费用
+	is_new = models.BooleanField(default=True)  # 是否已读
+	created_at = models.DateTimeField(auto_now_add=True)  # 创建时间
+	
+	class Meta(object):
+		db_table = 'mall_promote_detail'
+
+
+class ProductCustomizedPrice(models.Model):
+	"""
+	 社群在固定低价合作模式下,会在加价基础上再修改售价
+	"""
+	corp_id = models.IntegerField(default=-1) #corp id
+	product_id = models.IntegerField(default=-1)#product id
+	product_model_id = models.IntegerField(default=-1) #ProductModel id
+	price = models.FloatField(default=0.0)
+
+	class Meta(object):
+		db_table = 'mall_product_customized_price'

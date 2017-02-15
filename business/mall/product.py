@@ -28,6 +28,7 @@ from business.mall.product_model_generator import ProductModelGenerator
 from business.mall.product_model import ProductModel
 from business.mall.promotion.promotion_repository import PromotionRepository
 from business.decorator import cached_context_property
+from business.mall.promotion.cps_promote_detail import CPSPromotionDetail
 
 
 class CachedProduct(object):

@@ -777,8 +777,6 @@ class Order(business_model.Model):
 		# 微众卡抵扣金额
 		db_model.weizoom_card_money = self.weizoom_card_money
 
-
-
 		logging.info("Order db_model: {}".format(db_model))
 
 		# 处理拆带相关字段
@@ -845,7 +843,10 @@ class Order(business_model.Model):
 				thumbnail_url=product.thumbnails_url,
 				weight=product.weight,
 				product_model_name_texts=json.dumps(product.product_model_name_texts),
-				product_model_id=product.model.id
+				product_model_id=product.model.id,
+				product_profit=product.gross_profit,
+				product_profit_ratio=product.gross_profit_rate,
+				webapp_purchase_price=product.webapp_purchase_price,
 			)
 
 			if webapp_type:
@@ -931,7 +932,10 @@ class Order(business_model.Model):
 						thumbnail_url=product.thumbnails_url,
 						weight=product.weight,
 						product_model_name_texts=json.dumps(product.product_model_name_texts),
-						product_model_id=product.model.id
+						product_model_id=product.model.id,
+						product_profit=product.gross_profit,
+						product_profit_ratio=product.gross_profit_rate,
+						webapp_purchase_price=product.webapp_purchase_price,
 					)
 
 			for supplier_user_id in supplier_user_ids:

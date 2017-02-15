@@ -84,7 +84,12 @@ class ReservedProduct(business_model.Model):
 		'discount_money_coupon_exist', #判断会员价商品使用单品劵的情况
 		'limit_zone_type',
 		'limit_zone',
-		'product_model_name_texts'  # 规格的名称
+		'product_model_name_texts',  # 规格的名称
+		
+		# 利润相关
+		'gross_profit',
+		'gross_profit_rate',
+		'webapp_purchase_price',
 	)
 
 	@staticmethod
@@ -161,6 +166,9 @@ class ReservedProduct(business_model.Model):
 		self.stock_type = model.stock_type
 		self.stocks = model.stocks
 		self.model = model
+		self.gross_profit = model.gross_profit
+		self.gross_profit_rate = model.gross_profit_rate
+		self.webapp_purchase_price = model.webapp_purchase_price
 		if model.name != 'standard' and model.purchase_price > 0:
 			self.purchase_price = model.purchase_price
 

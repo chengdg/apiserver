@@ -117,10 +117,10 @@ class ProductModelGenerator(business_model.Model):
 		product2deleted_models = {}
 		for db_model in mall_models.ProductModel.select().dj_where(product_id__in=product_ids):
 			if db_model.is_deleted:
-				product_model = ProductModel(db_model, id2property, id2propertyvalue)
+				product_model = ProductModel(db_model, id2property, id2propertyvalue, webapp_owner)
 				product2deleted_models.setdefault(db_model.product_id, []).append(product_model)
 			else:
-				product_model = ProductModel(db_model, id2property, id2propertyvalue)
+				product_model = ProductModel(db_model, id2property, id2propertyvalue, webapp_owner)
 				product2models.setdefault(db_model.product_id, []).append(product_model)
 
 		for product_id, product_models in product2models.items():

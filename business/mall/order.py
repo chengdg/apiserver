@@ -866,10 +866,13 @@ class Order(business_model.Model):
 					supplier2products[product.supplier].append(product)
 
 		new_order_ids = []
+		new_order_finance_infos = []
+		
 		if webapp_type:
 			# 进行拆单，生成子订单
 			is_virtual = True  #标记母订单是否为虚拟类型  weshop定制功能
 			is_wzcard = True  #标记母订单是否为微众卡类型  weshop定制功能
+			supplier_2_finance_product_info = {}
 			for supplier in supplier_ids:
 				new_order = copy.deepcopy(self.db_model)
 				new_order.id = None
@@ -891,7 +894,9 @@ class Order(business_model.Model):
 				new_order.weizoom_card_money = 0
 				new_order.supplier = supplier
 				new_order.total_purchase_price = sum(map(lambda product:product.purchase_price * product.purchase_count, supplier2products[supplier]))
-
+				
+				new_order.products = supplier2products[supplier]
+				
 				#weshop
 				if len(supplier2products[supplier]) > 0:
 					product = supplier2products[supplier][0]
@@ -937,7 +942,23 @@ class Order(business_model.Model):
 						product_model_name_texts=json.dumps(product.product_model_name_texts),
 						product_model_id=product.model.id
 					)
-
+					# cps推广中的该商品库存
+					cps_promotion_info = product.cps_promotion_info
+					cps_number = 0
+					if cps_promotion_info:
+						if cps_promotion_info.promotion_stock <= product.purchase_count:
+							cps_number = cps_promotion_info.promotion_stock
+						else:
+							cps_number = product.purchase_count
+					supplier_2_finance_product_info.setdefault(supplier, []).append({
+						'id': product.id,
+						'purchase_price': product.purchase_price,
+						'price': product.price,
+						'cps_info': cps_promotion_info.to_dict() if cps_promotion_info else None,
+						# 该出货单中有几个件是cps中
+						'cps_number': cps_number
+					})
+					
 			for supplier_user_id in supplier_user_ids:
 				new_order = copy.deepcopy(self.db_model)
 				new_order.id = None
@@ -979,7 +1000,18 @@ class Order(business_model.Model):
 
 				new_order.save()
 				new_order_ids.append(new_order.order_id)
-
+				# 处理子单的数据发送财务接口
+				
+				new_order_finance_info = {
+					'id': new_order.id,
+					'order_id': new_order.order_id,
+					'origin_order_id': self.id,
+					'account_divide_info': self.context['webapp_user'].account_divide_info,
+					'products': supplier_2_finance_product_info.get(supplier),
+					# 平台id
+					'owner_id': db_model.owner_id
+				}
+				new_order_finance_infos.append(new_order_finance_info)
 				# 为同步供货商的子订单复制对应OrderHasProduct
 				for product in supplier_user_id2products[supplier_user_id]:
 					mall_models.OrderHasProduct.create(

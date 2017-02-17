@@ -26,6 +26,7 @@ from db.account import weixin_models as weixin_user_models
 import settings
 from core.decorator import deprecated
 import logging
+from business.account.account_divide_info import AccountDivideInfo
 
 
 class WebAppOwner(business_model.Model):
@@ -75,6 +76,13 @@ class WebAppOwner(business_model.Model):
 		return WebAppOwnerInfo.get({
 			'woid': self.id
 		})
+
+	@cached_context_property
+	def account_divide_info(self):
+		"""
+		社群分成信息
+		"""
+		return AccountDivideInfo(None).get_by_owner_id(self.id)
 
 	@property
 	def mall_config(self):

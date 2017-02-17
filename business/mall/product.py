@@ -28,6 +28,7 @@ from business.mall.product_model_generator import ProductModelGenerator
 from business.mall.product_model import ProductModel
 from business.mall.promotion.promotion_repository import PromotionRepository
 from business.decorator import cached_context_property
+from business.mall.promotion.cps_promotion_detail import CPSPromotionDetail
 
 
 class CachedProduct(object):
@@ -59,7 +60,8 @@ class CachedProduct(object):
 					"with_image": True,
 					"with_property": True,
 					"with_product_promotion": True,
-					"with_product_classification": True
+					"with_product_classification": True,
+					"with_product_cps_promotion": True,
 				}
 			})
 
@@ -224,7 +226,10 @@ class Product(business_model.Model):
 		'stock_type',
 		'limit_zone_type',
 		'limit_zone',
-		'classification_id'
+		'classification_id',
+		
+		# cps推广信息(推广中)
+		'cps_promotion_info'
 	)
 
 
@@ -653,6 +658,15 @@ class Product(business_model.Model):
 			'products': products,
 			'webapp_owner': webapp_owner
 		})
+	
+	@staticmethod
+	def __fill_cps_promotion_detail(webapp_owner, products, product_ids):
+		"""填充商品cps推广中的推广信息
+		"""
+		for product in products:
+			promotion_info = CPSPromotionDetail.get_promoting_detail_by_product_id(product.id)
+			# TODO 注意这里,如果gaia要上线mall_cache那个清理商品详情的缓存要加上这个.不然就一直没有cps信息了
+			product.cps_promotion_info = promotion_info
 
 	@staticmethod
 	def __fill_sales_detail(webapp_owner, products, product_ids):
@@ -696,6 +710,7 @@ class Product(business_model.Model):
 			with_all_category: 填充所有商品分类详情
 			with_sales: 填充商品销售详情
 			with_product_classification:填充商品的分类信息
+			with_product_cps_promotion:填充商品的cps推广信息
 		"""
 		is_enable_model_property_info = options.get('with_model_property_info',False)
 		product_ids = [product.id for product in products]
@@ -750,8 +765,8 @@ class Product(business_model.Model):
 				product_ids
 				)
 
-		# if options.get('with_promotion', False):
-		# 	Product.__fill_promotion_detail(webapp_owner_id, products, product_ids)
+		if options.get('with_product_cps_promotion', False):
+			Product.__fill_cps_promotion_detail(webapp_owner, products, product_ids)
 
 	def to_dict(self, **kwargs):
 		self.product_promotion_title = self.promotion_title

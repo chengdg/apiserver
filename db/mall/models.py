@@ -1994,6 +1994,7 @@ class OrderOperationLog(models.Model):
 	action = models.CharField(max_length=50)
 	operator = models.CharField(max_length=50)
 	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间
+	remark = models.CharField(max_length=50)  #备注 add by duhao 20170215
 
 	class Meta(object):
 		db_table = 'mall_order_operation_log'

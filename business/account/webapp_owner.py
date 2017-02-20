@@ -277,5 +277,12 @@ class WebAppOwner(business_model.Model):
 		"""
 		return self.user_profile.webapp_type
 
+	@property
+	def kefu_url(self):
+		"""
+		[property] kefu_url
+		"""
+		return self.user_profile.kefu_url
+
 
 

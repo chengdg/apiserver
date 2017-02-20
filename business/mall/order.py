@@ -394,15 +394,6 @@ class Order(business_model.Model):
 		return self.origin_order_id == -1
 
 
-
-	@cached_context_property
-	def has_multi_sub_order(self):
-		"""
-		[property] 该订单是否有超过一个子订单
-		"""
-		return self.has_sub_order and len(self.get_sub_order_ids()) > 1
-
-
 	@property
 	def is_sub_order(self):
 		"""
@@ -680,9 +671,36 @@ class Order(business_model.Model):
 				express_number=express_number
 				)
 
+	@property
+	def order_remind_info(self):
+		"""
+		催单数据
+		"""
+		logs = mall_models.OrderOperationLog.select().dj_where(order_id=self.order_id, action=u'催单')
+		return {
+			'can_remind': False,  #是否可以催单
+			'has_reminded': False,  #是否催过单
+			'remind_history': ['02-09 15:31', '02-11 21:09'],  #催单历史记录
+			'hours_to_remind': 3  #剩余几小时可再次催单
+		}
+
+	@cached_context_property
+	def kefu_url(self):
+		return self.context['webapp_owner'].kefu_url
 
 	def to_dict(self, *extras):
-		properties = ['has_sub_order', 'sub_orders', 'pay_interface_name', 'status_text', 'red_envelope', 'red_envelope_created', 'pay_info', 'has_multi_sub_order']
+		properties = [
+			'has_sub_order', 
+			'sub_orders', 
+			'pay_interface_name', 
+			'status_text', 
+			'red_envelope', 
+			'red_envelope_created', 
+			'pay_info', 
+			'has_multi_sub_order', 
+			'order_remind_info',
+			'kefu_url'
+		]
 		if extras:
 			properties.extend(extras)
 

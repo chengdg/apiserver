@@ -323,7 +323,9 @@ def step_impl(context, webapp_user_name, webapp_owner_name):
 
 	if context.created_order_id != -1:
 		if 'date' in args:
-			mall_models.Order.update(created_at=bdd_util.get_datetime_str(args['date'])).dj_where(order_id=context.created_order_id).execute()
+			# mall_models.Order.update(created_at=bdd_util.get_datetime_str(args['date'])).dj_where(order_id=context.created_order_id).execute()
+			mall_models.Order.update(created_at=bdd_util.get_datetime_str(args['date'])).dj_where(order_id__icontains=context.created_order_id).execute()
+			mall_models.OrderOperationLog.update(created_at=bdd_util.get_datetime_str(args['date'])).dj_where(order_id__icontains=context.created_order_id, action=u"下单").execute()
 		if 'order_id' in args:
 			context.response.data['order_id'] = args['order_id']
 			db_order = mall_models.Order.get(order_id=context.created_order_id)

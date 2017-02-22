@@ -19,6 +19,7 @@ from business.mall.shopping_cart import ShoppingCart
 from business.channel_qrcode.channel_distribution_qrcode import ChannelDistributionQrcodeSettings
 from business.account.ad_clicked import AdClicked
 from business.member_card.member_card import MemberCard
+from business.tengyi_member.tengyi_member import TengyiMember
 from services.update_member_from_weixin.task import update_member_info
 from eaglet.core import watchdog
 import uuid
@@ -66,6 +67,14 @@ class AUserCenter(api_resource.ApiResource):
 			is_bind_channel_qrcode = False
 			total_reward = 0
 
+		#腾易微众定制需求
+		tengyi_member_level = 0
+		if webapp_owner.user_profile.user.username == 'kftengyi':
+			member_id = webapp_user.member.id
+			tengyi_member = TengyiMember.get(member_id)
+			if tengyi_member:
+				tengyi_member_level = tengyi_member.level
+
 		is_weizoom_mall = True if webapp_owner.mall_type == 1 else False
 		is_vip = False
 		if is_weizoom_mall:
@@ -104,7 +113,8 @@ class AUserCenter(api_resource.ApiResource):
 			'total_reward': total_reward,
 			'is_ad_clicked': is_ad_clicked,
 			'is_vip': is_vip,
-			'is_weizoom_mall': is_weizoom_mall
+			'is_weizoom_mall': is_weizoom_mall,
+			'tengyi_member_level': tengyi_member_level
 		}
 
 		return member_data

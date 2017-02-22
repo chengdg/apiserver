@@ -517,3 +517,32 @@ class WantToBuySupport(models.Model):
 
 	class Meta(object):
 		db_table = 'member_want_to_buy_support'
+
+
+class TengyiMember(models.Model):
+	"""
+	腾易微众星级会员表
+	"""
+	member_id = models.IntegerField(default=0)
+	recommend_by_member_id = models.IntegerField(default=0) #推荐人id
+	level = models.IntegerField(default=1) #星级
+	card_number = models.CharField(default='', max_length=50) #绑定会员卡id
+	created_at = models.DateTimeField(auto_now_add=True)  # 成为会员的时间
+
+	class Meta(object):
+		db_table = 'tengyi_member'
+
+class TengyiRebateLog(models.Model):
+	"""
+	腾易微众星级会员返利记录表
+	"""
+	member_id = models.IntegerField(default=0)
+	is_self_order = models.BooleanField(default=False) #是否自己的订单返利
+	supply_member_id = models.IntegerField(default=0) #返利会员id
+	is_exchanged = models.BooleanField(default=False) #是否已返利
+	exchanged_at = models.DateTimeField(default=datetime.strptime('2000-01-01', '%Y-%m-%d')) #返利时间
+	rebate_money = models.FloatField(default=0) #返利金额
+	created_at = models.DateTimeField(auto_now_add=True)
+
+	class Meta(object):
+		db_table = 'tengyi_rebate_log'

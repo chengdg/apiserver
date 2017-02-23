@@ -168,27 +168,27 @@ class MemberSpread(business_model.Model):
 					}).update()
 
 			#为点击增加积分
-			if followed_member.is_subscribed:
-				if webapp_owner.integral_strategy_settings:
-					try:
-						integral = Integral.from_model({
-							'webapp_owner': webapp_owner, 
-							'model': webapp_owner.integral_strategy_settings
-							})
-					except:
-						integral = Integral.from_webapp_id({
-							'webapp_owner': webapp_owner, 
-							})
-				else:
-					integral = Integral.from_webapp_id({
-						'webapp_owner': webapp_owner, 
-						})
-				if integral:
-					Integral.increase_click_shared_url_count({
-						'member': followed_member,
-						'follower_member': member,
-						'click_shared_url_increase_count': integral.click_shared_url_increase_count
-						})
+			# if followed_member.is_subscribed:
+			# 	if webapp_owner.integral_strategy_settings:
+			# 		try:
+			# 			integral = Integral.from_model({
+			# 				'webapp_owner': webapp_owner, 
+			# 				'model': webapp_owner.integral_strategy_settings
+			# 				})
+			# 		except:
+			# 			integral = Integral.from_webapp_id({
+			# 				'webapp_owner': webapp_owner, 
+			# 				})
+			# 	else:
+			# 		integral = Integral.from_webapp_id({
+			# 			'webapp_owner': webapp_owner, 
+			# 			})
+			# 	if integral:
+			# 		Integral.increase_click_shared_url_count({
+			# 			'member': followed_member,
+			# 			'follower_member': member,
+			# 			'click_shared_url_increase_count': integral.click_shared_url_increase_count
+			# 			})
 
 
 

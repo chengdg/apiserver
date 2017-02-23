@@ -30,10 +30,8 @@ class Integral(business_model.Model):
 	"""
 	__slots__ = (
 		'id',
-		'click_shared_url_increase_count',
 		'be_member_increase_count',
 		'buy_award_count_for_buyer',
-		'buy_via_shared_url_increase_count_for_author',
 		'buy_via_offline_increase_count_for_author',
 		'review_increase',
 		'order_money_percentage_for_each_buy',
@@ -89,12 +87,12 @@ class Integral(business_model.Model):
 		self.context['webapp_owner'] = webapp_owner
 		self.context['db_model'] = model
 
-	@staticmethod
-	@param_required(['member', 'follower_member', 'click_shared_url_increase_count'])
-	def increase_click_shared_url_count(args):
-		args['event_type'] = member_models.FOLLOWER_CLICK_SHARED_URL
-		args['integral_increase_count'] = args['click_shared_url_increase_count']
-		Integral.increase_member_integral(args)
+	# @staticmethod
+	# @param_required(['member', 'follower_member', 'click_shared_url_increase_count'])
+	# def increase_click_shared_url_count(args):
+	# 	args['event_type'] = member_models.FOLLOWER_CLICK_SHARED_URL
+	# 	args['integral_increase_count'] = args['click_shared_url_increase_count']
+	# 	Integral.increase_member_integral(args)
 
 	@staticmethod
 	def increase_member_integral(args):
@@ -224,22 +222,22 @@ class Integral(business_model.Model):
 			#print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.46fmt:',integral_strategy
 			if integral_strategy:
 				#print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.7:'
-				increase_count = integral_strategy.buy_via_shared_url_increase_count_for_author
+				# increase_count = integral_strategy.buy_via_shared_url_increase_count_for_author
 				#给好友奖励（分享链接购买）
 
-				if increase_count > 0 and followed_member:
+				# if increase_count > 0 and followed_member:
 
-					followed_webapp_user = WebAppUser.from_member_id({
-						'webapp_owner': webapp_owner,
-						'member_id': followed_member.id
-						})
+				# 	followed_webapp_user = WebAppUser.from_member_id({
+				# 		'webapp_owner': webapp_owner,
+				# 		'member_id': followed_member.id
+				# 		})
 
-					Integral.increase_member_integral({
-						'integral_increase_count': increase_count,
-						'webapp_user': followed_webapp_user,
-						'member': followed_member,
-						'event_type':  member_models.FOLLOWER_BUYED_VIA_SHARED_URL
-						})
+				# 	Integral.increase_member_integral({
+				# 		'integral_increase_count': increase_count,
+				# 		'webapp_user': followed_webapp_user,
+				# 		'member': followed_member,
+				# 		'event_type':  member_models.FOLLOWER_BUYED_VIA_SHARED_URL
+				# 		})
 
 					#self.increase_member_integral(followed_member, \
 					#		increase_count, FOLLOWER_BUYED_VIA_SHARED_URL, None)

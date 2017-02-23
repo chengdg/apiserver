@@ -12,6 +12,7 @@ from eaglet.decorator import param_required
 from db.member import models as member_models
 
 from business import model as business_model
+from business.tengyi_member.tengyi_rebate_details import TengyiRebateDetails
 from db.mall import models as mall_models
 import settings
 
@@ -152,6 +153,81 @@ class MemberCard(business_model.Model):
 		bill_info.sort(key=operator.itemgetter('created_at'),reverse=True)
 
 		#按月份分组
+		current_month = []
+		last_month = []
+		earlier_month = []
+		current_month_str = datetime.now().strftime("%Y-%m")
+		last_month_str = get_last_month_str()
+		for item in bill_info:
+			if current_month_str in item['created_at']:
+				current_month.append(item)
+			elif last_month_str in item['created_at']:
+				last_month.append(item)
+			else:
+				earlier_month.append(item)
+
+		return {
+			'current_month': current_month,
+			'last_month': last_month,
+			'earlier_month': earlier_month
+		}
+
+	def get_tengyi_bill_info(self):
+		"""
+		获取腾易会员卡的账单信息
+		"""
+		bill_info = []
+		# 会员卡的消费和待支付订单变为已取消订单时的退款记录
+		order_related_records = member_models.MemberCardLog.select().dj_where(member_card_id=self.id)
+		order_ids = [r.order_id for r in order_related_records]
+		# 获取由于系统自身原因导致下单失败的订单列表
+		failed_orders = mall_models.Order.select().dj_where(webapp_user_id__lt=0, order_id__in=order_ids)
+		failed_order_ids = [o.order_id for o in failed_orders]
+		for record in order_related_records:
+			# 如果由于系统自身原因导致下单失败，则不显示跟这个订单号相关的日志
+			if record.order_id in failed_order_ids:
+				continue
+
+			action = record.reason
+			price = record.price
+			if record.reason == u'下单':
+				action = u'支付订单：%s' % record.order_id
+				price = 0 - record.price  # 消费的金额使用负数显示
+			if record.reason == u'取消下单或下单失败':
+				action = u'订单退款：%s' % record.order_id
+
+			bill_info.append({
+				'action': action,
+				'money': price,
+				'created_at': record.created_at.strftime('%Y-%m-%d %H:%M:%S')
+			})
+
+		# 从微众卡系统获取返利充值记录
+		resp = Resource.use('card_apiserver').get({
+			'resource': 'card.recharge_infos',
+			'data': {'card_number': self.card_number}
+		})
+		if resp:
+			code = resp['code']
+			recharge_infos = resp['data']['recharge_infos']
+			if code == 200:
+				for info in recharge_infos:
+					money = info['recharge_money']
+					if money <= 0 or info['is_auto'] == 1:
+						continue
+
+					bill_info.append({
+						'action': info['remark'],
+						'money': money,
+						'created_at': info['created_at']
+					})
+			else:
+				watchdog.error(resp)
+
+		# 按时间倒序
+		bill_info.sort(key=operator.itemgetter('created_at'), reverse=True)
+
+		# 按月份分组
 		current_month = []
 		last_month = []
 		earlier_month = []

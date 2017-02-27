@@ -161,7 +161,7 @@ class ReservedProduct(business_model.Model):
 		self.stock_type = model.stock_type
 		self.stocks = model.stocks
 		self.model = model
-		if model.name != 'standard' and model.purchase_price > 0:
+		if model.purchase_price > 0:
 			self.purchase_price = model.purchase_price
 
 		self.product_model_name_texts = []

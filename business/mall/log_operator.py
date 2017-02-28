@@ -22,13 +22,16 @@ class LogOperator(business_model.Model):
 		创建订单操作日志
 		"""
 		logging.info("to create an OrderOperationLog...")
+		remark = ''
 		if order.origin_order_id > 0 and order.supplier > 0:  #add by duhao 如果是子订单，则加入供应商信息
-			action = '%s - %s' % (action, Supplier.get_supplier_name(order.supplier))
+			# action = '%s - %s' % (action, Supplier.get_supplier_name(order.supplier))
+			remark = Supplier.get_supplier_name(order.supplier)
 
 		order_operation_log = mall_models.OrderOperationLog.create(
 			order_id = order.order_id,
 			action = action,
-			operator = operator
+			operator = operator,
+			remark=remark
 		)
 
 		# 记录子订单日志
@@ -37,7 +40,8 @@ class LogOperator(business_model.Model):
 				order_operation_log = mall_models.OrderOperationLog.create(
 					order_id=order_id,
 					action=action,
-					operator=operator
+					operator=operator,
+					remark=remark
 				)
 
 		return order_operation_log

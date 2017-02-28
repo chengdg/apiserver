@@ -88,6 +88,8 @@ class UserProfile(models.Model):
 	#wepage
 	is_use_wepage = models.BooleanField(default=False) #是否启用wepage
 	store_name = models.CharField(max_length=64, default="") #店铺名称
+	#add by duhao 20170215
+	kefu_url = models.CharField(max_length=256, default="") #客服url
 	class Meta(object):
 		db_table = 'account_user_profile'
 

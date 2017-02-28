@@ -276,7 +276,9 @@ class AOrder(api_resource.ApiResource):
 			"is_group_buy",
 			"order_group_info",
 			"refund_info",
-			"member_card_money"
+			"member_card_money",
+			"order_remind_info",
+			"kefu_url"
 		]
 
 		data = {}

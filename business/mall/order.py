@@ -676,12 +676,46 @@ class Order(business_model.Model):
 		"""
 		催单数据
 		"""
-		logs = mall_models.OrderOperationLog.select().dj_where(order_id=self.order_id, action=u'催单')
+		can_remind = False
+		has_reminded = False
+		remind_history = []
+		hours_to_remind = -1
+		if self.status in [mall_models.ORDER_STATUS_NOT, mall_models.ORDER_STATUS_CANCEL]:
+			pass
+		else:
+			now = datetime.now()
+			if self.status == mall_models.ORDER_STATUS_PAYED_NOT_SHIP:
+				delta_hour = (now - self.created_at).days * 24 + (now - self.created_at).seconds / 60 / 60 #下单到现在的小时数
+				if delta_hour >= 48:  #下单48小时后可催单
+					can_remind = True
+			
+			logs = mall_models.OrderOperationLog.select().dj_where(order_id=self.order_id, action=u'催单')
+			last_remind_time = None  #最近一次催单的时间
+			for log in logs:
+				last_remind_time = log.created_at
+				created_at = log.created_at.strftime('%m-%d %H:%M')
+				remind_history.append(created_at)
+
+			remind_times = len(remind_history)
+			if remind_times > 0:
+				has_reminded = True
+				delta_hour = (now - last_remind_time).days * 24 + (now - last_remind_time).seconds / 60 / 60 #上次催单到现在的小时数
+				if remind_times == 1:  #第一次催单12小时后可允许操作第二次催单
+					if delta_hour < 12:
+						can_remind = False
+						hours_to_remind = 12 - delta_hour
+				elif remind_times == 2:  #第二次催单6小时后可允许第三次催单
+					if delta_hour < 6:
+						can_remind = False
+						hours_to_remind = 6 - delta_hour
+				elif remind_times >= 3:  #催单不能超过三次
+					can_remind = False
+
 		return {
-			'can_remind': False,  #是否可以催单
-			'has_reminded': False,  #是否催过单
-			'remind_history': ['02-09 15:31', '02-11 21:09'],  #催单历史记录
-			'hours_to_remind': 3  #剩余几小时可再次催单
+			'can_remind': can_remind,  #是否可以催单
+			'has_reminded': has_reminded,  #是否催过单
+			'remind_history': remind_history,  #催单历史记录
+			'hours_to_remind': hours_to_remind  #剩余几小时可再次催单
 		}
 
 	@cached_context_property

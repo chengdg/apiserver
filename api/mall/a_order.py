@@ -277,7 +277,7 @@ class AOrder(api_resource.ApiResource):
 			"order_group_info",
 			"refund_info",
 			"member_card_money",
-			"order_remind_info"
+			"order_remind_info",
 			"kefu_url"
 		]
 

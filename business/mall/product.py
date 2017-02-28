@@ -224,7 +224,8 @@ class Product(business_model.Model):
 		'stock_type',
 		'limit_zone_type',
 		'limit_zone',
-		'classification_id'
+		'classification_id',
+		'kefu_url'  #平台的客服url duhao 20170222
 	)
 
 
@@ -805,7 +806,8 @@ class Product(business_model.Model):
 			'supplier_user_id': self.supplier_user_id,
 			'limit_zone_type': self.limit_zone_type,
 			'limit_zone': self.limit_zone,
-			'classification_id': self.classification_id
+			'classification_id': self.classification_id,
+			'kefu_url': self.context['webapp_owner'].kefu_url
 		}
 		if 'extras' in kwargs:
 			for extra in kwargs['extras']:

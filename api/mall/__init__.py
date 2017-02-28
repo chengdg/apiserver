@@ -26,3 +26,4 @@ import a_image
 import a_product_search_records
 import a_supplier_products
 import a_product_limit_zone
+import a_order_remind

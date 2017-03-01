@@ -14,9 +14,11 @@ from eaglet.decorator import param_required
 from eaglet.core.cache import utils as cache_util
 from db.mall import models as mall_models
 from eaglet.core import watchdog
+from eaglet.core import paginator
 from business import model as business_model 
 import settings
 from business.mall.product import Product
+from util import redis_util
 
 
 class SimpleProducts(business_model.Model):
@@ -30,32 +32,34 @@ class SimpleProducts(business_model.Model):
 	)
 
 	@staticmethod
-	@param_required(['webapp_owner', 'category_id'])
+	@param_required(['webapp_owner', 'category_id', "cur_page"])
 	def get(args):
 		"""
 		工厂方法，获得与category_id对应的SimpleProducts业务对象
 
 		@param[in] webapp_owner
 		@param[in] category_id: 商品分类的id
+		@param[in] cur_page: 第几页码数据
 
 		@return SimpleProducts业务对象
 		"""
 		webapp_owner = args['webapp_owner']
 		category_id = int(args['category_id'])
+		cur_page = int(args['cur_page'])
 		
-		products = SimpleProducts(webapp_owner, category_id)
+		products = SimpleProducts(webapp_owner, category_id, cur_page)
 		return products
 
-	def __init__(self, webapp_owner, category_id):
+	def __init__(self, webapp_owner, category_id, cur_page):
 		business_model.Model.__init__(self)
 
 		self.context['webapp_owner'] = webapp_owner
 		# jz 2015-11-26
 		# self.context['webapp_user'] = webapp_user
 
-		self.category, self.products, self.categories = self.__get_from_cache(category_id)
+		self.category, self.products, self.categories = self.__get_from_cache(category_id, cur_page)
 
-	def __get_from_cache(self, category_id):
+	def __get_from_cache(self, category_id, cur_page):
 		"""
 		从缓存中获取数据
 		"""
@@ -64,30 +68,14 @@ class SimpleProducts(business_model.Model):
 		# webapp_user = self.context['webapp_user']
 		key = 'webapp_products_categories_{wo:%s}' % webapp_owner.id
 		data = cache_util.get_from_cache(key, self.__get_from_db(webapp_owner))
-		products = data['products']
-
-		# # todo 针对Bug10603,临时解决方案
-		# if not products:
-		# 	msg = {
-		# 		'data': data,
-		# 		'type_data': str(type(data)),
-		# 		'location': 0,
-		# 		'msg_id': 'spdb123',
-		# 		'woid': webapp_owner.id,
-		# 		'products': products
-		# 	}
-		# 	watchdog.info(msg)
-        #
-		# 	cache_util.delete_cache(key)
-		# 	data = cache_util.get_from_cache(key, self.__get_from_db(webapp_owner))
-		# 	products = data['products']
-
+		page_info, products = self.__get_products_by_category(category_id, webapp_owner.id, cur_page)
+		categories = self.__get_categories(corp_id=webapp_owner.id)
 		if category_id == 0:
 			category = mall_models.ProductCategory()
 			category.name = u'全部'
 			category.id = 0
 		else:
-			id2category = dict([(c["id"], c) for c in data['categories']])
+			id2category = dict([(c["id"], c) for c in categories])
 			if category_id in id2category:
 				category_dict = id2category[category_id]
 				category = mall_models.ProductCategory()
@@ -98,34 +86,8 @@ class SimpleProducts(business_model.Model):
 				category = mall_models.ProductCategory()
 				category.is_deleted = True
 				category.name = u'已删除分类'
-		# jz 2015-11-26
-		#products = mall_models.Product.from_list(data['products'])
-		# if category_id != 0:
-			products = [product for product in products if category_id in product['categories']]
 
-			# 分组商品排序
-			products_id = map(lambda p: p['id'], products)
-			chp_list = mall_models.CategoryHasProduct.select().dj_where(category_id=category_id, product__in=products_id)
-			product_id2chp = dict(map(lambda chp: (chp.product_id, chp), chp_list))
-			for product in products:
-				product['display_index'] = product_id2chp[product['id']].display_index
-				product['join_category_time'] = product_id2chp[product['id']].created_at
-
-			# 1.shelve_type, 2.display_index, 3.id
-			products_is_0 = filter(lambda p: p['display_index'] == 0, products)
-			products_not_0 = filter(lambda p: p['display_index'] != 0, products)
-			products_is_0 = sorted(products_is_0, key=lambda x: x['join_category_time'], reverse=True)
-			products_not_0 = sorted(products_not_0, key=lambda x: x['display_index'])
-
-			products = products_not_0 + products_is_0
-
-		product_sales = mall_models.ProductSales.select().dj_where(product__in=[p['id'] for p in products])
-		product_id2sales = {t.product_id: t.sales for t in product_sales}
-
-		for p in products:
-			p['sales'] = product_id2sales.get(p['id'], 0)   # warning,没产生销量的商品没有创建ProductSales记录
-
-		return category, products, data['categories']
+		return category, products, categories
 
 
 	def __get_from_db(self, webapp_owner):
@@ -345,3 +307,41 @@ class SimpleProducts(business_model.Model):
 	# 	else:
 	# 		return None, None
 
+	def __get_products_by_category(self, category_id, corp_id, cur_page):
+		"""
+		
+		根据商品分类获取商品简单信息
+		"""
+		key = '{wo:%s}_{co:%s}_products' % (corp_id, category_id)
+		if not cache_util.exists_key(key):
+			# 发送消息让manager_cache缓存分组数据
+			return None, None
+		if not cache_util.exists_key('all_simple_products'):
+			
+			# TODO发送消息让manager_cache缓存所有简单商品数据
+			return None, None
+				
+		product_ids = redis_util.get_cache(key)
+	
+		# 获取分页信息
+		page_info, page_product_ids = paginator.paginate(product_ids, cur_page, 6)
+	
+		# 获取对应的简单商品数据
+		# {
+		# 	"id": product.id,
+		# 	"name": name,
+		# 	"display_price": display_price,
+		# 	"thumbnails_url": thumbnails_url,
+		# }
+			
+		simple_product_info = [json.loads(v) for k, v in redis_util.hmget('all_simple_products', page_product_ids).items()]
+		
+		result = sorted(simple_product_info, key=lambda key: page_product_ids.index(key.get('id')))
+		return page_info, result
+
+	def __get_categories(self, corp_id):
+		key = 'categories_%s' % corp_id
+		categories = redis_util.hgetall(key)
+		return [dict(id=k,
+					 name=v) for k, v in categories.items]
+	

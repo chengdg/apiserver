@@ -27,12 +27,15 @@ class AProducts(api_resource.ApiResource):
 		category_id = args['category_id']
 		webapp_owner = args['webapp_owner']
 		webapp_user = args['webapp_user']
+		cur_page = args.get('cur_page', 1)
+		count_per_page = args.get('count_per_page', 6)
 
 		product_name = args.get('product_name', None)
 
 		simple_products = SimpleProducts.get({
 			"webapp_owner": webapp_owner,
 			"category_id": category_id,
+			"cur_page": cur_page
 		})
 
 		products = simple_products.products

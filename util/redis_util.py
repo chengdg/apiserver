@@ -36,4 +36,13 @@ def get_trans_pipeline():
 	return r.pipeline()
 
 
+def lrange(key_name, start, end):
+	return r.lrange(key_name, start, end)
 
+
+def smemebers(key_name):
+	return r.smembers(key_name)
+
+
+def mget(keys):
+	return r.mget(keys)

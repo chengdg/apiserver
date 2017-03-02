@@ -23,7 +23,7 @@ from business.mall.product import Product
 from util import redis_util
 
 
-class SimpleProducts(business_model.Model):
+class NewSimpleProducts(business_model.Model):
 	"""
 	携带基础商品信息的商品集合
 	"""
@@ -50,7 +50,7 @@ class SimpleProducts(business_model.Model):
 		category_id = int(args['category_id'])
 		cur_page = int(args['cur_page'])
 		
-		products = SimpleProducts(webapp_owner, category_id, cur_page)
+		products = NewSimpleProducts(webapp_owner, category_id, cur_page)
 		return products
 
 	def __init__(self, webapp_owner, category_id, cur_page):
@@ -327,23 +327,23 @@ class SimpleProducts(business_model.Model):
 			}
 			msgutil.send_message(topic_name, msg_name, data)
 		
-		if not cache_util.exists_key('all_simple_effective_products'):
-			
-			# TODO发送消息让manager_cache缓存所有简单商品数据
-			topic_name = settings.TOPIC_NAME
-			msg_name = 'refresh_all_simple_products'
-			
-			msgutil.send_message(topic_name, msg_name, {})
-			cache_no_data = True
+		# if not cache_util.exists_key('all_simple_effective_products'):
+		#
+		# 	# TODO发送消息让manager_cache缓存所有简单商品数据
+		# 	topic_name = settings.TOPIC_NAME
+		# 	msg_name = 'refresh_all_simple_products'
+		#
+		# 	msgutil.send_message(topic_name, msg_name, {})
+		# 	cache_no_data = True
 				
 		product_ids = list(redis_util.smemebers(key))
 		
 		# 获取分页信息
 		page_info, page_product_ids = paginator.paginate(product_ids, cur_page, 6)
-		
+		if not page_product_ids:
+			return page_info, []
 		keys = ['product_detail_{pid:%s}' % product_id for product_id in page_product_ids]
-		if not keys:
-			return None, None
+		
 		redis_products = redis_util.mget(keys)
 		# 缓存没有此商品详情的key,故需mall_cache_manager缓存数据
 		no_redis_product_ids = [product_ids[index] for index, r in enumerate(redis_products) if r is None]

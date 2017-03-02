@@ -11,6 +11,7 @@ from operator import attrgetter
 
 from eaglet.decorator import param_required
 #from wapi import wapi_utils
+from bdem import msgutil
 from eaglet.core.cache import utils as cache_util
 from db.mall import models as mall_models
 from eaglet.core import watchdog
@@ -67,7 +68,7 @@ class SimpleProducts(business_model.Model):
 		# jz 2015-11-26
 		# webapp_user = self.context['webapp_user']
 		key = 'webapp_products_categories_{wo:%s}' % webapp_owner.id
-		data = cache_util.get_from_cache(key, self.__get_from_db(webapp_owner))
+		# data = cache_util.get_from_cache(key, self.__get_from_db(webapp_owner))
 		page_info, products = self.__get_products_by_category(category_id, webapp_owner.id, cur_page)
 		categories = self.__get_categories(corp_id=webapp_owner.id)
 		if category_id == 0:
@@ -88,7 +89,6 @@ class SimpleProducts(business_model.Model):
 				category.name = u'已删除分类'
 
 		return category, products, categories
-
 
 	def __get_from_db(self, webapp_owner):
 		"""
@@ -315,10 +315,21 @@ class SimpleProducts(business_model.Model):
 		key = '{wo:%s}_{co:%s}_products' % (corp_id, category_id)
 		if not cache_util.exists_key(key):
 			# 发送消息让manager_cache缓存分组数据
+			topic_name = settings.TOPIC_NAME
+			msg_name = 'refresh_category_product'
+			data = {
+				"corp_id": corp_id,
+				"product_ids": category_id
+			}
+			msgutil.send_message(topic_name, msg_name, data)
 			return None, None
 		if not cache_util.exists_key('all_simple_products'):
 			
 			# TODO发送消息让manager_cache缓存所有简单商品数据
+			topic_name = settings.TOPIC_NAME
+			msg_name = 'refresh_all_simple_products'
+			
+			msgutil.send_message(topic_name, msg_name, {})
 			return None, None
 				
 		product_ids = redis_util.get_cache(key)
@@ -343,5 +354,5 @@ class SimpleProducts(business_model.Model):
 		key = 'categories_%s' % corp_id
 		categories = redis_util.hgetall(key)
 		return [dict(id=k,
-					 name=v) for k, v in categories.items]
+					 name=v) for k, v in categories.items()]
 	

@@ -2,7 +2,6 @@
 import redis
 import settings
 
-from ..exceptionutil import unicode_full_stack
 from eaglet.utils.stack_util import get_trace_back
 
 from eaglet.core.zipkin import zipkin_client
@@ -36,6 +35,5 @@ def get_no_trans_pipeline():
 def get_trans_pipeline():
 	return r.pipeline()
 
-r.exists()
 
 

@@ -40,9 +40,5 @@ class AProduct(api_resource.ApiResource):
 		# param_data = {'pid': product_id, 'woid': webapp_owner.id, 'member_id': webapp_user.member.id}
 
 		product = SimpleProduct(None).from_id(webapp_owner, product_id)
-		if product.is_deleted:
-			return {'is_deleted': True}
-		else:
-			result = ''
-			pass
-		return result
+		
+		return product

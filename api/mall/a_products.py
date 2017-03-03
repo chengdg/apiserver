@@ -86,7 +86,10 @@ class AProducts(api_resource.ApiResource):
 				products = searcher.filter_products({'products': products, 'product_name': product_name})
 			
 			category_dict = simple_products.category.to_dict('is_deleted')
-			page_info, products = paginator.paginate(products, cur_page, 6)
+			if products:
+				page_info, products = paginator.paginate(products, cur_page, 6)
+			else:
+				page_info, products = paginator.paginate([], cur_page, 6)
 			return {
 				'categories': simple_products.categories,
 				'products': products,

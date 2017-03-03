@@ -24,11 +24,11 @@ class NewProductSearch(business_model.Model):
 	__slots__ = (
 	)
 
-	def __init__(self, webapp_owner, webapp_user):
+	def __init__(self, webapp_owner, webapp_user, cur_page):
 		business_model.Model.__init__(self)
 		self.context['webapp_owner'] = webapp_owner
 		self.context['webapp_user'] = webapp_user
-		self.context['cur_page'] = webapp_user
+		self.context['cur_page'] = cur_page
 
 	@staticmethod
 	@param_required(['webapp_owner', 'webapp_user', 'cur_page'])
@@ -96,13 +96,14 @@ class NewProductSearch(business_model.Model):
 			msg = unicode_full_stack()
 			watchdog.alert(msg)
 		no_cache_data = False
-		category_products_key = '{wo:%s}_{co:%s}_products' % (self.webapp_owner.id, category_id)
+		webapp_owner = self.context['webapp_owner']
+		category_products_key = '{wo:%s}_{co:%s}_products' % (webapp_owner.id, category_id)
 		if not cache_util.exists_key(category_products_key):
 			# 发送消息让manager_cache缓存分组数据
 			topic_name = settings.TOPIC_NAME
 			msg_name = 'refresh_category_product'
 			data = {
-				"corp_id": corp_id,
+				"corp_id": webapp_owner.id,
 				"product_ids": category_id
 			}
 			msgutil.send_message(topic_name, msg_name, data)
@@ -121,7 +122,7 @@ class NewProductSearch(business_model.Model):
 		
 		# 搜索结果id
 		product_ids = []
-		for product_id, product_name in all_simple_products.iterms():
+		for product_id, product_name in all_simple_products.items():
 			
 			if search_name in product_name and product_id in category_product_ids:
 				product_ids.append(product_id)
@@ -132,7 +133,7 @@ class NewProductSearch(business_model.Model):
 			return page_info, []
 		# TODO 可抽取公用方法
 		keys = ['product_detail_{pid:%s}' % product_id for product_id in page_product_ids]
-		
+		cache_no_data = False
 		redis_products = redis_util.mget(keys)
 		# 缓存没有此商品详情的key,故需mall_cache_manager缓存数据
 		no_redis_product_ids = [product_ids[index] for index, r in enumerate(redis_products) if r is None]
@@ -147,7 +148,8 @@ class NewProductSearch(business_model.Model):
 			}
 			msgutil.send_message(topic_name, msg_name, data)
 		if cache_no_data:
-			return None, None
+			page_info, page_product_ids = paginator.paginate([], cur_page, 6)
+			return page_info, None
 		products = [pickle.loads(product) for product in redis_products]
 		result = sorted(products, key=lambda k: page_product_ids.index(str(k.get('id'))))
 		return page_info, result

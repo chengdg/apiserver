@@ -351,7 +351,7 @@ class NewSimpleProducts(business_model.Model):
 		
 		redis_products = redis_util.mget(keys)
 		# 缓存没有此商品详情的key,故需mall_cache_manager缓存数据
-		no_redis_product_ids = [product_ids[index] for index, r in enumerate(redis_products) if r is None]
+		no_redis_product_ids = [page_product_ids[index] for index, r in enumerate(redis_products) if r is None]
 		if no_redis_product_ids:
 			cache_no_data = True
 			# 发送消息让manager_cache缓存分组数据

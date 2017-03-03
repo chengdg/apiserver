@@ -72,6 +72,7 @@ class NewSimpleProducts(business_model.Model):
 		key = 'webapp_products_categories_{wo:%s}' % webapp_owner.id
 		# data = cache_util.get_from_cache(key, self.__get_from_db(webapp_owner))
 		page_info, products = self.__get_products_by_category(category_id, webapp_owner.id, cur_page)
+		# print '===========>', products
 		categories = self.__get_categories(corp_id=webapp_owner.id)
 		if category_id == 0:
 			category = mall_models.ProductCategory()
@@ -340,8 +341,12 @@ class NewSimpleProducts(business_model.Model):
 		
 		# 获取分页信息
 		page_info, page_product_ids = paginator.paginate(product_ids, cur_page, 6)
-		if not page_product_ids:
+		# 有缓存缓存但是缓存里没有数据
+		if not page_product_ids and not cache_no_data:
 			return page_info, []
+		if cache_no_data:
+			# 缓存key都不在,
+			return page_info, None
 		keys = ['product_detail_{pid:%s}' % product_id for product_id in page_product_ids]
 		
 		redis_products = redis_util.mget(keys)
@@ -358,7 +363,9 @@ class NewSimpleProducts(business_model.Model):
 			}
 			msgutil.send_message(topic_name, msg_name, data)
 		if cache_no_data:
-			return None, None
+			# products is Nond 的时候要显示缓存无数据所以这里是返回None
+			page_info, page_product_ids = paginator.paginate([], cur_page, 6)
+			return page_info, None
 		products = [pickle.loads(product) for product in redis_products]
 		result = sorted(products, key=lambda k: page_product_ids.index(str(k.get('id'))))
 		

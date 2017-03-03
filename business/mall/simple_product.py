@@ -42,7 +42,7 @@ class CachedSimpleProduct(object):
 	
 	@staticmethod
 	def __get_from_cache(product_id):
-		key = 'product_simple_detail_info_{%s}' % product_id
+		key = 'product_simple_detail_{pid:%s}_{wo:%s}' % (product_id, CachedSimpleProduct.webapp_owner.id)
 		# 此方法都经过pickle处理过
 		product = cache_util.get_cache(key)
 		if not product:
@@ -56,11 +56,11 @@ class CachedSimpleProduct(object):
 		if not db_product:
 			return None
 		db_images = mall_models.ProductSwipeImage.select().dj_where(product_id=product_id)
-		
+		is_deleted = CachedSimpleProduct.product_is_deleted(db_product)
 		data = {
 			'id': db_product.id,
 			'name': db_product.name,
-			'is_deleted': db_product.id,
+			'is_deleted': is_deleted,
 			'swipe_images': [{
 						'id': img.id,
 						'url': '%s%s' % (settings.IMAGE_HOST, img.url) if img.url.find('http') == -1 else img.url,
@@ -70,7 +70,7 @@ class CachedSimpleProduct(object):
 						} for img in db_images],
 		}
 		# TODO 发消息
-		key = 'product_simple_detail_info_{%s}' % product_id
+		key = 'product_simple_detail_{pid:%s}_{wo:%s}' % (product_id, CachedSimpleProduct.webapp_owner.id)
 		cache_util.set_cache(key, data)
 		return data
 		
@@ -82,8 +82,8 @@ class CachedSimpleProduct(object):
 			if mall_models.ProductPool.select().dj_where(product_id=product.id,
 													  woid=CachedSimpleProduct.webapp_owner.id,
 													  status=mall_models.PP_STATUS_ON) > 0:
-				return True
-			return False
+				return False
+			return True
 		else:
 			if product.is_deleted:
 				return True

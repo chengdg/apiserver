@@ -42,10 +42,11 @@ class AProducts(api_resource.ApiResource):
 			})
 	
 			products = simple_products.products
-			if products is None or simple_products.page_info is None:
+			
+			if products is None:
 				return {
 					'categories': simple_products.categories,
-					'products': products,
+					'products': [],
 					'category': {},
 					'mall_config': webapp_owner.mall_config,
 					"is_cache_pending": True,

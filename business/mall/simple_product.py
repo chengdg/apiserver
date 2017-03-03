@@ -42,7 +42,7 @@ class CachedSimpleProduct(object):
 	
 	@staticmethod
 	def __get_from_cache(product_id):
-		key = 'product_simple_detail_{pid:%s}_{wo:%s}' % (product_id, CachedSimpleProduct.webapp_owner.id)
+		key = 'product_simple_detail_{pid:%s}' % product_id
 		# 此方法都经过pickle处理过
 		product = cache_util.get_cache(key)
 		if not product:
@@ -70,7 +70,7 @@ class CachedSimpleProduct(object):
 						} for img in db_images],
 		}
 		# TODO 发消息
-		key = 'product_simple_detail_{pid:%s}_{wo:%s}' % (product_id, CachedSimpleProduct.webapp_owner.id)
+		key = 'product_simple_detail_{pid:%s}' % product_id
 		cache_util.set_cache(key, data)
 		return data
 		

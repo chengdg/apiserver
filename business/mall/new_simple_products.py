@@ -347,7 +347,7 @@ class NewSimpleProducts(business_model.Model):
 		if cache_no_data:
 			# 缓存key都不在,
 			return page_info, None
-		keys = ['product_detail_{pid:%s}' % product_id for product_id in page_product_ids]
+		keys = [':1:apiproduct_simple_detail_{pid:%s}' % product_id for product_id in page_product_ids]
 		
 		redis_products = redis_util.mget(keys)
 		# 缓存没有此商品详情的key,故需mall_cache_manager缓存数据

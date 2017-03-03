@@ -2,6 +2,7 @@
 
 from eaglet.core import api_resource
 from eaglet.decorator import param_required
+from eaglet.core import paginator
 #import resource
 from business.mall.product_search import ProductSearch
 from business.mall.simple_products import SimpleProducts
@@ -30,7 +31,6 @@ class AProducts(api_resource.ApiResource):
 		webapp_owner = args['webapp_owner']
 		webapp_user = args['webapp_user']
 		cur_page = args.get('cur_page', 1)
-		count_per_page = args.get('count_per_page', 6)
 		webapp_type = webapp_owner.user_profile.webapp_type
 		product_name = args.get('product_name', None)
 		if webapp_type == 1:
@@ -46,9 +46,10 @@ class AProducts(api_resource.ApiResource):
 				return {
 					'categories': simple_products.categories,
 					'products': products,
-					'category': category_dict,
+					'category': {},
 					'mall_config': webapp_owner.mall_config,
-					"no_cache": True
+					"is_cache_pending": True,
+					'page_info': simple_products.page_info.to_dict()
 				}
 			if product_name:
 				# 商品搜索
@@ -65,7 +66,8 @@ class AProducts(api_resource.ApiResource):
 				'products': products,
 				'category': category_dict,
 				'mall_config': webapp_owner.mall_config,
-				"no_cache": False
+				"is_cache_pending": False,
+				'page_info': simple_products.page_info.to_dict()
 			}
 		else:
 			simple_products = SimpleProducts.get({
@@ -74,13 +76,7 @@ class AProducts(api_resource.ApiResource):
 			})
 			
 			products = simple_products.products
-			if products is None or simple_products.page_info is None:
-				return {
-					'categories': simple_products.categories,
-					'products': products,
-					'category': category_dict,
-					'mall_config': webapp_owner.mall_config,
-				}
+			
 			if product_name:
 				# 商品搜索
 				searcher = ProductSearch.get({
@@ -90,11 +86,13 @@ class AProducts(api_resource.ApiResource):
 				products = searcher.filter_products({'products': products, 'product_name': product_name})
 			
 			category_dict = simple_products.category.to_dict('is_deleted')
+			page_info, products = paginator.paginate(products, cur_page, 6)
 			return {
 				'categories': simple_products.categories,
 				'products': products,
 				'category': category_dict,
 				'mall_config': webapp_owner.mall_config,
-				
+				# 老版本
+				"is_cache_pending": False,
+				'page_info': page_info.to_dict()
 			}
-

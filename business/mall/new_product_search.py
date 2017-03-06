@@ -95,9 +95,9 @@ class NewProductSearch(business_model.Model):
 		except:
 			msg = unicode_full_stack()
 			watchdog.alert(msg)
-		no_cache_data = False
+		cache_no_data = False
 		webapp_owner = self.context['webapp_owner']
-		category_products_key = '{wo:%s}_{co:%s}_products' % (webapp_owner.id, category_id)
+		category_products_key = '{wo:%s}_{co:%s}_pids' % (webapp_owner.id, category_id)
 		if not cache_util.exists_key(category_products_key):
 			# 发送消息让manager_cache缓存分组数据
 			topic_name = settings.TOPIC_NAME
@@ -107,18 +107,18 @@ class NewProductSearch(business_model.Model):
 				"product_ids": category_id
 			}
 			msgutil.send_message(topic_name, msg_name, data)
-			no_cache_data = True
+			cache_no_data = True
 		if not cache_util.exists_key('all_simple_effective_products'):
 			# TODO发送消息让manager_cache缓存所有简单商品数据
 			topic_name = settings.TOPIC_NAME
 			msg_name = 'all_simple_effective_products'
 			
 			msgutil.send_message(topic_name, msg_name, {})
-			no_cache_data = True
+			cache_no_data = True
 		# 用于搜索的额所有有效商品数据
 		all_simple_products = redis_util.hgetall('all_simple_effective_products')
 		#  分类所拥有的商品id
-		category_product_ids = list(redis_util.smemebers(category_products_key))
+		category_product_ids = list(redis_util.lrange(category_products_key, 0, -1))
 		
 		# 搜索结果id
 		product_ids = []
@@ -133,7 +133,6 @@ class NewProductSearch(business_model.Model):
 			return page_info, []
 		# TODO 可抽取公用方法
 		keys = ['product_detail_{pid:%s}' % product_id for product_id in page_product_ids]
-		cache_no_data = False
 		redis_products = redis_util.mget(keys)
 		# 缓存没有此商品详情的key,故需mall_cache_manager缓存数据
 		no_redis_product_ids = [product_ids[index] for index, r in enumerate(redis_products) if r is None]
@@ -143,7 +142,7 @@ class NewProductSearch(business_model.Model):
 			topic_name = settings.TOPIC_NAME
 			msg_name = 'refresh_product_detail'
 			data = {
-				"corp_id": corp_id,
+				"corp_id": webapp_owner.id,
 				"product_ids": no_redis_product_ids
 			}
 			msgutil.send_message(topic_name, msg_name, data)

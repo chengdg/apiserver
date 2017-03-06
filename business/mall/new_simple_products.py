@@ -315,7 +315,7 @@ class NewSimpleProducts(business_model.Model):
 		
 		根据商品分类获取商品简单信息
 		"""
-		key = '{wo:%s}_{co:%s}_products' % (corp_id, category_id)
+		key = '{wo:%s}_{co:%s}_pids' % (corp_id, category_id)
 		cache_no_data = False
 		if not cache_util.exists_key(key):
 			cache_no_data = True
@@ -337,7 +337,7 @@ class NewSimpleProducts(business_model.Model):
 		# 	msgutil.send_message(topic_name, msg_name, {})
 		# 	cache_no_data = True
 				
-		product_ids = list(redis_util.smemebers(key))
+		product_ids = list(redis_util.lrange(key, 0, -1))
 		
 		# 获取分页信息
 		page_info, page_product_ids = paginator.paginate(product_ids, cur_page, 6)

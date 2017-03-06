@@ -36,5 +36,5 @@ class ProductSales(business_model.Model):
 
 	def get_product_sales_by_ids(self, product_ids):
 		db_models = mall_models.ProductSales.select().dj_where(product_id__in=product_ids)
-		return [ProductSales[model] for model in db_models]
+		return [ProductSales(model) for model in db_models]
 		

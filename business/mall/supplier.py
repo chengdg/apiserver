@@ -63,6 +63,9 @@ class Supplier(business_model.Model):
 		page_info, page_product_ids = paginator.paginate(product_ids, cur_page, cur_page_count)
 		keys = [':1:apiproduct_simple_detail_{pid:%s}' % product_id for product_id in page_product_ids]
 		print keys, '--------------------------------jdkf'
+		if not keys:
+			page_info, page_product_ids = paginator.paginate([], cur_page, cur_page_count)
+			return [], True, page_info
 		redis_products = redis_util.mget(keys)
 		# 缓存没有此商品详情的key,故需mall_cache_manager缓存数据
 		no_redis_product_ids = [page_product_ids[index] for index, r in enumerate(redis_products) if r is None]

@@ -59,7 +59,7 @@ class Supplier(business_model.Model):
 		all_product_ids = redis_util.lrange(all_product_key, 0, -1)
 		all_product_ids = [] if all_product_ids is None else all_product_ids
 		# 该平台该供货商所有商品id
-		product_ids = list(set(product_ids) - set(all_product_ids))
+		product_ids = list(set(product_ids).intersection(set(all_product_ids)))
 		page_info, page_product_ids = paginator.paginate(product_ids, cur_page, cur_page_count)
 		keys = [':1:apiproduct_simple_detail_{pid:%s}' % product_id for product_id in page_product_ids]
 		print keys, '--------------------------------jdkf'

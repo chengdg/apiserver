@@ -44,5 +44,9 @@ def smemebers(key_name):
 	return r.smembers(key_name)
 
 
+def sadd(key_name, *values):
+	r.sadd(key_name, *values)
+
+
 def mget(keys):
 	return r.mget(keys)

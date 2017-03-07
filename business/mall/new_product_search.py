@@ -132,7 +132,7 @@ class NewProductSearch(business_model.Model):
 		if not page_product_ids:
 			return page_info, []
 		# TODO 可抽取公用方法
-		keys = ['product_detail_{pid:%s}' % product_id for product_id in page_product_ids]
+		keys = [':1:apiproduct_simple_detail_{pid:%s}' % product_id for product_id in page_product_ids]
 		redis_products = redis_util.mget(keys)
 		# 缓存没有此商品详情的key,故需mall_cache_manager缓存数据
 		no_redis_product_ids = [product_ids[index] for index, r in enumerate(redis_products) if r is None]

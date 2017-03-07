@@ -60,7 +60,7 @@ class AProducts(api_resource.ApiResource):
 					"cur_page": cur_page
 				})
 				page_info, products = searcher.search_products(category_id, cur_page, product_name)
-	
+			# TODO 拆分出来
 			category_dict = simple_products.category.to_dict('is_deleted')
 			return {
 				'categories': simple_products.categories,

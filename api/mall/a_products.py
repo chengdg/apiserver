@@ -61,6 +61,10 @@ class AProducts(api_resource.ApiResource):
 				})
 				page_info, products = searcher.search_products(category_id, cur_page, product_name)
 				page_info = page_info.to_dict()
+				from eaglet.core import watchdog
+				print '>>>>>>>>>>>>>>>>>>>>>>>>>>'
+				watchdog.info(page_info)
+				print '>>>>>>>>>>>>>>>>>>>>>>>>>>'
 			# TODO 拆分出来
 			category_dict = simple_products.category.to_dict('is_deleted')
 			return {

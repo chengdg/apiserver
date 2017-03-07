@@ -132,6 +132,9 @@ class NewProductSearch(business_model.Model):
 		# 获取分页信息
 		page_info, page_product_ids = paginator.paginate(product_ids, cur_page, 6)
 		watchdog.info(page_product_ids)
+		print '=======================1'
+		watchdog.info(page_info.to_dict())
+		print '=======================2'
 		watchdog.info('----------------------------!2')
 		if not page_product_ids:
 			return page_info, []

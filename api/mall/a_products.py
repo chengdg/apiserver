@@ -42,7 +42,7 @@ class AProducts(api_resource.ApiResource):
 			})
 	
 			products = simple_products.products
-			
+			page_info = simple_products.page_info.to_dict()
 			if products is None:
 				return {
 					'categories': simple_products.categories,
@@ -50,7 +50,7 @@ class AProducts(api_resource.ApiResource):
 					'category': {},
 					'mall_config': webapp_owner.mall_config,
 					"is_cache_pending": True,
-					'page_info': simple_products.page_info.to_dict()
+					'page_info': page_info
 				}
 			if product_name:
 				# 商品搜索
@@ -60,6 +60,7 @@ class AProducts(api_resource.ApiResource):
 					"cur_page": cur_page
 				})
 				page_info, products = searcher.search_products(category_id, cur_page, product_name)
+				page_info = page_info.to_dict()
 			# TODO 拆分出来
 			category_dict = simple_products.category.to_dict('is_deleted')
 			return {
@@ -68,7 +69,7 @@ class AProducts(api_resource.ApiResource):
 				'category': category_dict,
 				'mall_config': webapp_owner.mall_config,
 				"is_cache_pending": False,
-				'page_info': simple_products.page_info.to_dict()
+				'page_info': page_info
 			}
 		else:
 			simple_products = SimpleProducts.get({

@@ -65,6 +65,15 @@ class AProducts(api_resource.ApiResource):
 				print '>>>>>>>>>>>>>>>>>>>>>>>>>>'
 				watchdog.info(page_info)
 				print '>>>>>>>>>>>>>>>>>>>>>>>>>>'
+				if products is None:
+					return {
+						'categories': simple_products.categories,
+						'products': [],
+						'category': {},
+						'mall_config': webapp_owner.mall_config,
+						"is_cache_pending": True,
+						'page_info': page_info
+					}
 			# TODO 拆分出来
 			category_dict = simple_products.category.to_dict('is_deleted')
 			return {

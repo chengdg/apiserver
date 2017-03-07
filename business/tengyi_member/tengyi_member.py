@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from business import model as business_model
+from business.account.member import Member
 from db.member import models as member_models
 
 class TengyiMember(business_model.Model):
@@ -13,7 +14,9 @@ class TengyiMember(business_model.Model):
         'recommend_by_member_id',
         'level',
         'card_number',
-        'created_at'
+        'created_at',
+        'member_info',
+        'rebate_info'
     )
 
     def __init__(self, model):
@@ -31,3 +34,44 @@ class TengyiMember(business_model.Model):
             return TengyiMember(model)
         else:
             return None
+
+    def get_referees(self, webapp_owner, fill_info=None):
+        models = member_models.TengyiMember.select().dj_where(
+            recommend_by_member_id = self.member_id,
+        )
+        members = [TengyiMember(model) for model in models]
+        if fill_info:
+            if fill_info.get('fill_member_info'):
+                TengyiMember.__fill_member_info(webapp_owner, members)
+        return members
+
+    def get_rebated_details(self, webapp_owner):
+        rebate_logs = member_models.TengyiRebateLog.select().dj_where(member_id=self.member_id,
+                                                                      is_exchanged=True)
+        member_ids = [r.supply_member_id for r in rebate_logs]
+        member_ids.append(self.member_id)
+
+        account_members = Member.from_ids(webapp_owner, member_ids)
+        member_id2info = {m.id: m for m in account_members}
+
+        for log in rebate_logs:
+            self.rebate_info = {
+                'is_self_rebate': log.is_self_order,
+                'supplier_id': self.member_id if log.is_self_order else log.supply_member_id,
+                'supplier_name': member_id2info.get(self.member_id if log.is_self_order else log.supply_member_id, u'未知'),
+                'rebate_time': log.exchanged_at.strftime('%Y-%m-%d %H:%M:%S'),
+                'rebate_money': '%.2f' % log.rebate_money
+            }
+        return self.rebate_info
+
+    @staticmethod
+    def __fill_member_info(webapp_owner, members):
+        member_ids = [m.member_id for m in members]
+        account_members = Member.from_ids(webapp_owner, member_ids)
+        member_id2info = {m.id: m for m in account_members}
+
+        for member in members:
+            member_id = member.member_id
+            member.member_info = {
+                'member_name': member_id2info[member_id].username_for_html
+            }

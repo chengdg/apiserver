@@ -94,6 +94,17 @@ class Member(business_model.Model):
 			return None
 
 	@staticmethod
+	@param_required(['webapp_owner', 'member_id'])
+	def from_ids(args):
+		webapp_owner = args['webapp_owner']
+		member_ids = args['member_ids']
+		db_models = member_models.Member.select().dj_where(id__in=member_ids)
+		return [Member.from_model({
+			'webapp_owner': webapp_owner,
+			'model': model
+		}) for model in db_models]
+
+	@staticmethod
 	@param_required(['webapp_owner', 'token'])
 	def from_tokens(args):
 		webapp_owner = args['webapp_owner']

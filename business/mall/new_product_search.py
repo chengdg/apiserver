@@ -126,7 +126,10 @@ class NewProductSearch(business_model.Model):
 			
 			if search_name in product_name and product_id in category_product_ids:
 				product_ids.append(product_id)
-		
+		watchdog.info('----------------------------!')
+		watchdog.info(product_ids)
+		watchdog.info(page_product_ids)
+		watchdog.info('----------------------------!2')
 		# 获取分页信息
 		page_info, page_product_ids = paginator.paginate(product_ids, cur_page, 6)
 		if not page_product_ids:

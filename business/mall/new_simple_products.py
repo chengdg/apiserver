@@ -79,17 +79,14 @@ class NewSimpleProducts(business_model.Model):
 			category.name = u'全部'
 			category.id = 0
 		else:
-			id2category = dict([(c["id"], c) for c in categories])
-			if category_id in id2category:
-				category_dict = id2category[category_id]
+			# TODO 发消息方式
+			category = mall_models.ProductCategory.select().dj_where(id=category_id).first()
+			if not category:
 				category = mall_models.ProductCategory()
-				category.id = category_dict['id']
-				category.name = category_dict['name']
-				category.is_deleted = False
-			else:
-				category = mall_models.ProductCategory()
-				category.is_deleted = True
 				category.name = u'已删除分类'
+				category.is_deleted = True
+				category.id = category_id
+				
 
 		return category, products, categories, page_info
 

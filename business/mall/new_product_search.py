@@ -142,7 +142,8 @@ class NewProductSearch(business_model.Model):
 		keys = [':1:apiproduct_simple_detail_{pid:%s}' % product_id for product_id in page_product_ids]
 		redis_products = redis_util.mget(keys)
 		# 缓存没有此商品详情的key,故需mall_cache_manager缓存数据
-		no_redis_product_ids = [product_ids[index] for index, r in enumerate(redis_products) if r is None]
+		# 这里使用page_product_ids  严重注意这个问题,屌丝!
+		no_redis_product_ids = [page_product_ids[index] for index, r in enumerate(redis_products) if r is None]
 		if no_redis_product_ids:
 			cache_no_data = True
 			# 发送消息让manager_cache缓存分组数据

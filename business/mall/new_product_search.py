@@ -104,7 +104,7 @@ class NewProductSearch(business_model.Model):
 			msg_name = 'refresh_category_product'
 			data = {
 				"corp_id": webapp_owner.id,
-				"product_ids": category_id
+				"category_id": category_id
 			}
 			msgutil.send_message(topic_name, msg_name, data)
 			cache_no_data = True

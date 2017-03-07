@@ -128,10 +128,11 @@ class NewProductSearch(business_model.Model):
 				product_ids.append(product_id)
 		watchdog.info('----------------------------!')
 		watchdog.info(product_ids)
-		watchdog.info(page_product_ids)
-		watchdog.info('----------------------------!2')
+		
 		# 获取分页信息
 		page_info, page_product_ids = paginator.paginate(product_ids, cur_page, 6)
+		watchdog.info(page_product_ids)
+		watchdog.info('----------------------------!2')
 		if not page_product_ids:
 			return page_info, []
 		# TODO 可抽取公用方法

@@ -119,23 +119,22 @@ class NewProductSearch(business_model.Model):
 		all_simple_products = redis_util.hgetall('all_simple_effective_products')
 		#  分类所拥有的商品id
 		category_product_ids = list(redis_util.lrange(category_products_key, 0, -1))
-		
+		if category_product_ids and category_product_ids[0] == 'NONE':
+			# 说明分组无商品
+			page_info, page_product_ids = paginator.paginate([], cur_page, 6)
+			
+			return page_info, []
 		# 搜索结果id
 		product_ids = []
 		for product_id, product_name in all_simple_products.items():
 			
 			if search_name in product_name and product_id in category_product_ids:
 				product_ids.append(product_id)
-		watchdog.info('----------------------------!')
-		watchdog.info(product_ids)
+		
 		
 		# 获取分页信息
 		page_info, page_product_ids = paginator.paginate(product_ids, cur_page, 6)
-		watchdog.info(page_product_ids)
-		print '=======================1'
-		watchdog.info(page_info.to_dict())
-		print '=======================2'
-		watchdog.info('----------------------------!2')
+		
 		if not page_product_ids:
 			return page_info, []
 		# TODO 可抽取公用方法

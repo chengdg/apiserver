@@ -29,8 +29,9 @@ class AMemberReferees(api_resource.ApiResource):
 			details.append({
 				'member_id': referee.member_id,
 				'member_name': referee.member_info['member_name'],
+				'member_icon': referee.member_info['user_icon'],
 				'level': referee.level,
-					'created_at': referee.created_at.strftime('%Y/%m/%d')
+				'created_at': referee.created_at.strftime('%Y/%m/%d')
 			})
 		return {
 			'member_info': {

@@ -55,10 +55,13 @@ class TengyiMember(business_model.Model):
         member_id2info = {m.id: m for m in account_members}
 
         for log in rebate_logs:
+            supplier_id = self.member_id if log.is_self_order else log.supply_member_id
+            member_info = member_id2info[supplier_id]
             self.rebate_info = {
                 'is_self_rebate': log.is_self_order,
-                'supplier_id': self.member_id if log.is_self_order else log.supply_member_id,
-                'supplier_name': member_id2info.get(self.member_id if log.is_self_order else log.supply_member_id, u'未知'),
+                'supplier_id': supplier_id,
+                'supplier_name': member_info.username_for_html,
+                'supplier_icon': member_info.user_icon,
                 'rebate_time': log.exchanged_at.strftime('%Y-%m-%d %H:%M:%S'),
                 'rebate_money': '%.2f' % log.rebate_money
             }
@@ -72,6 +75,8 @@ class TengyiMember(business_model.Model):
 
         for member in members:
             member_id = member.member_id
+            member_info = member_id2info[member_id]
             member.member_info = {
-                'member_name': member_id2info[member_id].username_for_html
+                'member_name': member_info.username_for_html,
+                'user_icon': member_info.user_icon
             }

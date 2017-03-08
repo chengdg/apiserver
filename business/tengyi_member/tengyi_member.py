@@ -51,7 +51,10 @@ class TengyiMember(business_model.Model):
         member_ids = [r.supply_member_id for r in rebate_logs]
         member_ids.append(self.member_id)
 
-        account_members = Member.from_ids(webapp_owner, member_ids)
+        account_members = Member.from_ids({
+            'webapp_owner': webapp_owner,
+            'member_ids': member_ids
+        })
         member_id2info = {m.id: m for m in account_members}
 
         for log in rebate_logs:

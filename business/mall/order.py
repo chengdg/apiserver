@@ -680,6 +680,14 @@ class Order(business_model.Model):
 		has_reminded = False
 		remind_history = []
 		hours_to_remind = -1
+		if not self.context['webapp_owner'].mall_type:
+			#非自营账号不能催单
+			return {
+				'can_remind': False,  #是否可以催单
+				'has_reminded': False,  #是否催过单
+				'remind_history': remind_history,  #催单历史记录
+				'hours_to_remind': hours_to_remind  #剩余几小时可再次催单
+			}
 		if self.status in [mall_models.ORDER_STATUS_NOT, mall_models.ORDER_STATUS_CANCEL]:
 			pass
 		else:

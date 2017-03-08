@@ -21,6 +21,7 @@ class TengyiMember(business_model.Model):
 
     def __init__(self, model):
         business_model.Model.__init__(self)
+        self.rebate_info = []
 
         if model:
             self._init_slot_from_model(model)
@@ -57,17 +58,19 @@ class TengyiMember(business_model.Model):
         })
         member_id2info = {m.id: m for m in account_members}
 
+
+
         for log in rebate_logs:
             supplier_id = self.member_id if log.is_self_order else log.supply_member_id
             member_info = member_id2info[supplier_id]
-            self.rebate_info = {
+            self.rebate_info.append({
                 'is_self_rebate': log.is_self_order,
                 'supplier_id': supplier_id,
                 'supplier_name': member_info.username_for_html,
                 'supplier_icon': member_info.user_icon,
                 'rebate_time': log.exchanged_at.strftime('%Y-%m-%d %H:%M:%S'),
                 'rebate_money': '%.2f' % log.rebate_money
-            }
+            })
         return self.rebate_info
 
     @staticmethod

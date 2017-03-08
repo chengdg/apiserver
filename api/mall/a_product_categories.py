@@ -37,9 +37,7 @@ class AProductCategories(api_resource.ApiResource):
 		data = []
 		for category in categories:
 			data.append(AProductCategories.category_to_dict(category))
-		print '--------------------------------------------------!'
-		print data
-		print '--------------------------------------------------!'
+
 		return data
 
 

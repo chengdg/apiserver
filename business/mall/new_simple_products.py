@@ -335,7 +335,11 @@ class NewSimpleProducts(business_model.Model):
 		# 	cache_no_data = True
 				
 		product_ids = list(redis_util.lrange(key, 0, -1))
-		
+		if product_ids and product_ids[0] == 'NONE':
+			# 说明分组无商品
+			page_info, page_product_ids = paginator.paginate([], cur_page, 6)
+			
+			return page_info, []
 		# 获取分页信息
 		page_info, page_product_ids = paginator.paginate(product_ids, cur_page, 6)
 		# 有缓存缓存但是缓存里没有数据

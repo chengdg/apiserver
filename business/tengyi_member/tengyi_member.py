@@ -70,7 +70,10 @@ class TengyiMember(business_model.Model):
     @staticmethod
     def __fill_member_info(webapp_owner, members):
         member_ids = [m.member_id for m in members]
-        account_members = Member.from_ids(webapp_owner, member_ids)
+        account_members = Member.from_ids({
+            'webapp_owner': webapp_owner,
+            'member_ids': member_ids
+        })
         member_id2info = {m.id: m for m in account_members}
 
         for member in members:

@@ -94,7 +94,7 @@ class Member(business_model.Model):
 			return None
 
 	@staticmethod
-	@param_required(['webapp_owner', 'member_id'])
+	@param_required(['webapp_owner', 'member_ids'])
 	def from_ids(args):
 		webapp_owner = args['webapp_owner']
 		member_ids = args['member_ids']

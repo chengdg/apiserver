@@ -245,3 +245,21 @@ else:
 
 COMMON_SERVICE_ERROR_TYPE = 'common:wtf'
 
+if 'deploy' == MODE:
+    MNS_ACCESS_KEY_ID = 'LTAICKQ4rQBofAhF'
+    MNS_ACCESS_KEY_SECRET = 'bPKU71c0cfrui4bWgGPO96tLiOJ0PZ'
+    MNS_ENDPOINT = 'http://1615750970594173.mns.cn-hangzhou.aliyuncs.com/'
+    MNS_SECURITY_TOKEN = ''
+    SUBSCRIBE_QUEUE_NAME = 'mall-cache-manager'
+
+else:
+    MNS_ACCESS_KEY_ID = 'LTAICKQ4rQBofAhF'
+    MNS_ACCESS_KEY_SECRET = 'bPKU71c0cfrui4bWgGPO96tLiOJ0PZ'
+    MNS_ENDPOINT = 'https://1615750970594173.mns.cn-beijing.aliyuncs.com/'
+    MNS_SECURITY_TOKEN = ''
+    SUBSCRIBE_QUEUE_NAME = 'test-mall-cache-manager'
+
+# event service相关设置
+MESSAGE_BROKER = os.environ.get('_MESSAGE_BROKER', 'redis')
+# 临时
+TOPIC_NAME = "test-topic"

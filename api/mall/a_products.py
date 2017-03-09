@@ -16,7 +16,7 @@ class AProducts(api_resource.ApiResource):
 	@param_required(['category_id'])
 	def get(args):
 		"""
-		获取商品列表
+		获取商品列表 新版本
 
 		@param category_id 商品分类ID
 		@return {

@@ -97,7 +97,7 @@ class NewProductSearch(business_model.Model):
 			watchdog.alert(msg)
 		cache_no_data = False
 		webapp_owner = self.context['webapp_owner']
-		category_products_key = '{wo:%s}_{co:%s}_pids' % (webapp_owner.id, category_id)
+		category_products_key = '{wo:%s}_{co:%s}_pids' % (webapp_owner.id, 0)
 		if not cache_util.exists_key(category_products_key):
 			# 发送消息让manager_cache缓存分组数据
 			topic_name = settings.TOPIC_NAME

@@ -69,7 +69,7 @@ class AUserCenter(api_resource.ApiResource):
 
 		#腾易微众定制需求
 		tengyi_member_level = 0
-		if webapp_owner.user_profile.user.username == 'weizoommm':
+		if webapp_owner.user_profile.user.username in ['ceshi01', 'kftengyi']:
 			member_id = webapp_user.member.id
 			tengyi_member = TengyiMember.get(member_id)
 			if tengyi_member:

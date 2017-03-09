@@ -19,8 +19,8 @@ class AMemberReferees(api_resource.ApiResource):
 		webapp_owner = args['webapp_owner']
 		member_id = webapp_user.member.id
 
-		referee = TengyiMember.get(member_id)
-		referees = referee.get_referees(webapp_owner, {
+		ty_member = TengyiMember.get(member_id)
+		referees = ty_member.get_referees(webapp_owner, {
 			'fill_member_info': True
 		})
 
@@ -35,7 +35,7 @@ class AMemberReferees(api_resource.ApiResource):
 			})
 		return {
 			'member_info': {
-				'rebate_info': referee.get_rebated_details(webapp_owner)
+				'rebate_info': ty_member.get_rebated_details(webapp_owner)
 			},
 			'referees_info': details
 		}

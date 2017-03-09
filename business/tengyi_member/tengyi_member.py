@@ -40,11 +40,11 @@ class TengyiMember(business_model.Model):
         models = member_models.TengyiMember.select().dj_where(
             recommend_by_member_id = self.member_id,
         )
-        members = [TengyiMember(model) for model in models]
+        ty_members = [TengyiMember(model) for model in models]
         if fill_info:
             if fill_info.get('fill_member_info'):
-                TengyiMember.__fill_member_info(webapp_owner, members)
-        return members
+                TengyiMember.__fill_member_info(webapp_owner, ty_members)
+        return ty_members
 
     def get_rebated_details(self, webapp_owner):
         rebate_logs = member_models.TengyiRebateLog.select().dj_where(member_id=self.member_id,
@@ -74,18 +74,18 @@ class TengyiMember(business_model.Model):
         return self.rebate_info
 
     @staticmethod
-    def __fill_member_info(webapp_owner, members):
-        member_ids = [m.member_id for m in members]
+    def __fill_member_info(webapp_owner, ty_members):
+        member_ids = [m.member_id for m in ty_members]
         account_members = Member.from_ids({
             'webapp_owner': webapp_owner,
             'member_ids': member_ids
         })
         member_id2info = {m.id: m for m in account_members}
 
-        for member in members:
-            member_id = member.member_id
+        for ty_member in ty_members:
+            member_id = ty_member.member_id
             member_info = member_id2info[member_id]
-            member.member_info = {
+            ty_member.member_info = {
                 'member_name': member_info.username_for_html,
                 'user_icon': member_info.user_icon
             }

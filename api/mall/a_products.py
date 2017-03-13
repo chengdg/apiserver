@@ -33,8 +33,8 @@ class AProducts(api_resource.ApiResource):
 		cur_page = args.get('cur_page', 1)
 		webapp_type = webapp_owner.user_profile.webapp_type
 		product_name = args.get('product_name', None)
-		# if webapp_type == 1:
-		if False:
+		if webapp_type == 1:
+		# if False:
 			# 自营平台
 			simple_products = NewSimpleProducts.get({
 				"webapp_owner": webapp_owner,

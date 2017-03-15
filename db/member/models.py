@@ -532,6 +532,17 @@ class TengyiMember(models.Model):
 	class Meta(object):
 		db_table = 'tengyi_member'
 
+class TengyiMemberRelation(models.Model):
+	"""
+	腾易微众星级会员推荐关系表(待成为星级会员)
+	"""
+	member_id = models.IntegerField(default=0)
+	recommend_by_member_id = models.IntegerField(default=0)  # 推荐人id
+	created_at = models.DateTimeField(auto_now_add=True)
+
+	class Meta(object):
+		db_table = 'tengyi_member_relation'
+
 class TengyiRebateLog(models.Model):
 	"""
 	腾易微众星级会员返利记录表

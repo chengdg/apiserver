@@ -22,6 +22,7 @@ class TengyiMember(business_model.Model):
     def __init__(self, model):
         business_model.Model.__init__(self)
         self.rebate_info = []
+        self.level = 0 #此时表示还未成为正式星级会员
 
         if model:
             self._init_slot_from_model(model)
@@ -40,11 +41,21 @@ class TengyiMember(business_model.Model):
         models = member_models.TengyiMember.select().dj_where(
             recommend_by_member_id = self.member_id,
         )
+        ty_member_ids = [m.member_id for m in models]
+
+        relation_modes = member_models.TengyiMemberRelation.select().dj_where(member_id__notin=ty_member_ids, recommend_by_member_id=self.member_id)
+        ty_pre_members = [TengyiMember.from_dict({
+            'member_id': m.member_id,
+            'recommend_by_member_id': m.recommend_by_member_id,
+            'level': 0,
+            'created_at': m.created_at
+        }, ('member_id', 'recommend_by_member_id', 'level', 'created_at')) for m in relation_modes]
         ty_members = [TengyiMember(model) for model in models]
+        all = ty_pre_members + ty_members
         if fill_info:
             if fill_info.get('fill_member_info'):
-                TengyiMember.__fill_member_info(webapp_owner, ty_members)
-        return ty_members
+                TengyiMember.__fill_member_info(webapp_owner, all)
+        return all
 
     def get_rebated_details(self, webapp_owner):
         rebate_logs = member_models.TengyiRebateLog.select().dj_where(member_id=self.member_id,

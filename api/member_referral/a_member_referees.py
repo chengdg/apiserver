@@ -24,20 +24,32 @@ class AMemberReferees(api_resource.ApiResource):
 			'fill_member_info': True
 		})
 
-		details = []
+		vips = []
+		not_vips = []
 		for referee in referees:
-			details.append({
-				'member_id': referee.member_id,
-				'member_name': referee.member_info['member_name'],
-				'member_icon': referee.member_info['user_icon'],
-				'level': referee.level,
-				'created_at': referee.created_at.strftime('%Y/%m/%d')
-			})
+			if referee.level == 0:
+				not_vips.append({
+					'member_id': referee.member_id,
+					'member_name': referee.member_info['member_name'],
+					'member_icon': referee.member_info['user_icon'],
+					'created_at': referee.created_at.strftime('%Y/%m/%d')
+				})
+			else:
+				vips.append({
+					'member_id': referee.member_id,
+					'member_name': referee.member_info['member_name'],
+					'member_icon': referee.member_info['user_icon'],
+					'level': referee.level,
+					'created_at': referee.created_at.strftime('%Y/%m/%d')
+				})
 		return {
 			'member_info': {
 				'rebate_info': ty_member.get_rebated_details(webapp_owner)
 			},
-			'referees_info': details
+			'referees_info': {
+				'vips': vips,
+				'not_vips': not_vips
+			}
 		}
 
 

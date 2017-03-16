@@ -43,7 +43,11 @@ class TengyiMember(business_model.Model):
         )
         ty_member_ids = [m.member_id for m in models]
 
-        relation_modes = member_models.TengyiMemberRelation.select().dj_where(member_id__notin=ty_member_ids, recommend_by_member_id=self.member_id)
+        if ty_member_ids:
+            relation_modes = member_models.TengyiMemberRelation.select().dj_where(member_id__notin=ty_member_ids,
+                                                                                  recommend_by_member_id=self.member_id)
+        else:
+            relation_modes = member_models.TengyiMemberRelation.select().dj_where(recommend_by_member_id=self.member_id)
         ty_pre_members = [TengyiMember.from_dict({
             'member_id': m.member_id,
             'recommend_by_member_id': m.recommend_by_member_id,

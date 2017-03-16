@@ -19,7 +19,7 @@ class TengyiMember(business_model.Model):
         'rebate_info'
     )
 
-    def __init__(self, model):
+    def __init__(self, model=None):
         business_model.Model.__init__(self)
         self.rebate_info = []
         self.level = 0 #此时表示还未成为正式星级会员
@@ -49,7 +49,7 @@ class TengyiMember(business_model.Model):
             'recommend_by_member_id': m.recommend_by_member_id,
             'level': 0,
             'created_at': m.created_at
-        }, ('member_id', 'recommend_by_member_id', 'level', 'created_at')) for m in relation_modes]
+        }) for m in relation_modes]
         ty_members = [TengyiMember(model) for model in models]
         all = ty_pre_members + ty_members
         if fill_info:

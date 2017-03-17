@@ -44,7 +44,8 @@ class AMemberReferees(api_resource.ApiResource):
 				})
 		return {
 			'member_info': {
-				'rebate_info': ty_member.get_rebated_details(webapp_owner)
+				'rebate_info': ty_member.get_rebated_details(webapp_owner),
+				'rebate_plan': ty_member.get_rebate_plan()
 			},
 			'referees_info': {
 				'vips': vips,

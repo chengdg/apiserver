@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from datetime import datetime
 from business import model as business_model
 from business.account.member import Member
 from db.member import models as member_models
@@ -87,6 +88,39 @@ class TengyiMember(business_model.Model):
                 'rebate_money': '%.2f' % log.rebate_money
             })
         return self.rebate_info
+
+    def get_rebate_plan(self):
+        plans = member_models.TengyiMemberRebateCycle.select().dj_where(member_id=self.member_id)
+
+        return [{
+            'date_range': ''.join([plan.start_time.strftime('%Y/%m/%d'), plan.end_time.strftime('%Y/%m/%d')]),
+            'created_at': plan.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'rebate_money': plan.recommend_member_rebate_money,
+            'status': self.__get_plan_status_text(plan)[0],
+            'status_text': self.__get_plan_status_text(plan)[1]
+        } for plan in plans]
+
+    def __get_plan_status_text(self, plan):
+        status_num2text = [u'待激活', u'7天后到账', u'已到帐', u'已过期', u'未知']
+        is_receive_reward = plan.is_receive_reward
+        start_time = plan.start_time.strftime('%Y/%m/%d')
+        end_time = plan.end_time.strftime('%Y/%m/%d')
+        now_time = datetime.now().strftime('%Y/%m/%d')
+
+        if is_receive_reward: #已到帐
+            return 2, status_num2text[2]
+        else:
+            logs = member_models.TengyiRebateLog.select().dj_where(member_id=plan.member_id,
+                                                                   created_at__range=[plan.start_time.strftime('%Y-%m-%d'), plan.end_time.strftime('%Y-%m-%d')],
+                                                                   is_exchanged=False, is_self_order=True)
+            if logs.count() > 0:  # 已经返利但未到账
+                return 1, status_num2text[1]
+            if now_time < start_time or (now_time >= start_time and now_time <= end_time): #还未到计划时间或者当前正处于计划之中
+                return 0, status_num2text[0]
+            elif now_time > end_time: #已超过计划时间
+                return 3, status_num2text[3]
+            else: #
+                return 4, status_num2text[4]
 
     @staticmethod
     def __fill_member_info(webapp_owner, ty_members):

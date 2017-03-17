@@ -93,7 +93,7 @@ class TengyiMember(business_model.Model):
         plans = member_models.TengyiMemberRebateCycle.select().dj_where(member_id=self.member_id)
 
         return [{
-            'date_range': ''.join([plan.start_time.strftime('%Y/%m/%d'), plan.end_time.strftime('%Y/%m/%d')]),
+            'date_range': ' - '.join([plan.start_time.strftime('%Y/%m/%d'), plan.end_time.strftime('%Y/%m/%d')]),
             'created_at': plan.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'rebate_money': plan.recommend_member_rebate_money,
             'status': self.__get_plan_status_text(plan)[0],

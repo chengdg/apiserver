@@ -91,10 +91,10 @@ class TengyiMember(business_model.Model):
 
     def get_rebate_plan(self):
         plans = member_models.TengyiMemberRebateCycle.select().dj_where(member_id=self.member_id)
-		if int(self.level) == 1:
-			rebate_money = 20
-		else:
-			rebate_money = 40
+        if int(self.level) == 1:
+            rebate_money = 20
+        else:
+            rebate_money = 40
 
         return [{
             'date_range': ' - '.join([plan.start_time.strftime('%Y/%m/%d'), plan.end_time.strftime('%Y/%m/%d')]),

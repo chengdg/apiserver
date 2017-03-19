@@ -13,7 +13,7 @@ def step_impl(context, user):
 	db_order = steps_db_util.get_latest_order()
 
 	response = context.client.get('/mall/order/', {
-		'woid': context.client.woid,
+		'woid': context.webapp_owner_id,
 		'order_id': db_order.order_id
 	})
 
@@ -61,7 +61,7 @@ def step_impl(context, webapp_user_name):
 def step_impl(context, webapp_user_name, order_id):
 	logging.info('webapp_user_name: {}'.format(webapp_user_name))
 	response = context.client.post('/mall/order/', {
-		'woid': context.client.woid,
+		'woid': context.webapp_owner_id,
 		'order_id': order_id,
 		'action': 'cancel'
 	})
@@ -73,7 +73,7 @@ def step_impl(context, webapp_user_name, order_id):
 def step_impl(context, webapp_user_name, order_id):
 	logging.info('webapp_user_name: {}'.format(webapp_user_name))
 	response = context.client.post('/mall/order/', {
-		'woid': context.client.woid,
+		'woid': context.webapp_owner_id,
 		'order_id': order_id,
 		'action': 'finish'
 	})
@@ -84,7 +84,7 @@ def step_impl(context, webapp_user_name, order_id):
 def step_impl(context, webapp_user_name, is_can, order_id):
 	logging.info('webapp_user_name: {}'.format(webapp_user_name))
 	response = context.client.get('/mall/order/', {
-		'woid': context.client.woid,
+		'woid': context.webapp_owner_id,
 		'order_id': order_id
 	})
 
@@ -101,7 +101,7 @@ def step_impl(context, webapp_user_name, is_can, order_id):
 def step_impl(context, webapp_user_name, order_id):
 	expected_order = json.loads(context.text)
 	response = context.client.get('/mall/express_details/', {
-		'woid': context.client.woid,
+		'woid': context.webapp_owner_id,
 		'order_id': order_id
 	})
 	context.tc.assertTrue(200 == response.body['code'])
@@ -139,7 +139,7 @@ def step_impl(context, webapp_user_name, action, order_id):
 		a_action = ''
 	if a_action:
 		response = context.client.post('/mall/order/', {
-			'woid': context.client.woid,
+			'woid': context.webapp_owner_id,
 			'order_id': order_id,
 			'action': a_action
 		})

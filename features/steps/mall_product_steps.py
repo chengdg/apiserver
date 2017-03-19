@@ -10,7 +10,7 @@ from features.util.helper import WAIT_SHORT_TIME
 def step_impl(context, user):
 	response = context.client.get('/mall/product_categories/', {
 		'at':context.client.user.token, 
-		'woid':context.client.woid
+		'woid':context.webapp_owner_id
 	})
 	
 	expected = json.loads(context.text)

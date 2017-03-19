@@ -105,7 +105,7 @@ class TengyiMember(business_model.Model):
         } for plan in plans]
 
     def __get_plan_status_text(self, plan):
-        status_num2text = [u'待激活', u'7天后到账', u'已到帐', u'已过期', u'未知']
+        status_num2text = [u'待激活', u'待入帐', u'已到帐', u'已过期', u'未知']
         is_receive_reward = plan.is_receive_reward
         start_time = plan.start_time.strftime('%Y/%m/%d')
         end_time = plan.end_time.strftime('%Y/%m/%d')
@@ -140,5 +140,6 @@ class TengyiMember(business_model.Model):
             member_info = member_id2info[member_id]
             ty_member.member_info = {
                 'member_name': member_info.username_for_html,
-                'user_icon': member_info.user_icon
+                'user_icon': member_info.user_icon,
+                'is_subscribed': member_info.is_subscribed
             }

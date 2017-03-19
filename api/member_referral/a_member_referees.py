@@ -32,7 +32,8 @@ class AMemberReferees(api_resource.ApiResource):
 					'member_id': referee.member_id,
 					'member_name': referee.member_info['member_name'],
 					'member_icon': referee.member_info['user_icon'],
-					'created_at': referee.created_at.strftime('%Y/%m/%d')
+					'created_at': referee.created_at.strftime('%Y/%m/%d'),
+					'is_subscribed': referee.member_info['is_subscribed']
 				})
 			else:
 				vips.append({
@@ -40,7 +41,8 @@ class AMemberReferees(api_resource.ApiResource):
 					'member_name': referee.member_info['member_name'],
 					'member_icon': referee.member_info['user_icon'],
 					'level': referee.level,
-					'created_at': referee.created_at.strftime('%Y/%m/%d')
+					'created_at': referee.created_at.strftime('%Y/%m/%d'),
+					'is_subscribed': referee.member_info['is_subscribed']
 				})
 		return {
 			'member_info': {

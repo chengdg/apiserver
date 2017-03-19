@@ -98,7 +98,7 @@ class TengyiMember(business_model.Model):
 
         return [{
             'date_range': ' - '.join([plan.start_time.strftime('%Y/%m/%d'), plan.end_time.strftime('%Y/%m/%d')]),
-            'created_at': plan.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'created_at': plan.receive_reward_at.strftime('%Y-%m-%d %H:%M:%S'),
             'rebate_money': rebate_money if int(plan.recommend_member_rebate_money) == 10 else 50,
             'status': self.__get_plan_status_text(plan)[0],
             'status_text': self.__get_plan_status_text(plan)[1]

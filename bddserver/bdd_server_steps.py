@@ -2,6 +2,7 @@
 # bdd server相关的step
 
 import base64
+import sys
 import decimal
 import json
 import os
@@ -12,22 +13,6 @@ from wsgiref.util import setup_testing_defaults
 from features import environment
 
 from behave import *
-
-try:
-	import settings
-except ImportError:
-	from django.conf import settings
-except:
-	raise ImportError('bdd_server import setting error.')
-
-if not hasattr(settings, 'BDD_SERVER2PORT'):
-	from weapp import settings
-
-	assert hasattr(settings, 'BDD_SERVER2PORT'), 'BDD_SERVER2PORT import error!'
-
-BDD_SERVER2PORT = settings.BDD_SERVER2PORT
-
-BDD_SERVER_HOST = '127.0.0.1'
 
 
 def full_stack():
@@ -107,7 +92,6 @@ def step_impl(context):
 	# A relatively simple WSGI application. It's going to print(out the)
 	# environment dictionary after being updated by setup_testing_defaults
 	def simple_app(environ, start_response):
-
 		# 修改窗口名,目前只对windows有效
 		try:
 			os.system("title {}_bdd_server".format(self_name))
@@ -198,7 +182,8 @@ def step_impl(context):
 			# 传递context时忽略基本类型外的对象
 			return base64.b64encode(json.dumps(resp, default=_default))
 
-	port = BDD_SERVER2PORT.get(self_name, 0)
+	import port_util
+	port = port_util.get_my_port()
 	assert port, "{} is not valid name.You can't change the git repository name!".format(self_name)
 
 	# 启动服务器

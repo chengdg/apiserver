@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from datetime import datetime
+from datetime import datetime, timedelta
+
 from business import model as business_model
 from business.account.member import Member
 from db.member import models as member_models
@@ -97,7 +98,7 @@ class TengyiMember(business_model.Model):
             rebate_money = 40
 
         return [{
-            'date_range': ' - '.join([plan.start_time.strftime('%Y/%m/%d'), plan.end_time.strftime('%Y/%m/%d')]),
+            'date_range': ' - '.join([plan.start_time.strftime('%Y/%m/%d'), (plan.end_time.date() - timedelta(1)).strftime('%Y/%m/%d')]),
             'created_at': plan.receive_reward_at.strftime('%Y-%m-%d %H:%M:%S'),
             'rebate_money': rebate_money if int(plan.recommend_member_rebate_money) == 10 else 50,
             'status': self.__get_plan_status_text(plan)[0],
@@ -105,7 +106,7 @@ class TengyiMember(business_model.Model):
         } for plan in plans]
 
     def __get_plan_status_text(self, plan):
-        status_num2text = [u'待激活', u'待入帐', u'已到帐', u'已过期', u'未知']
+        status_num2text = [u'待激活', u'{}到账', u'已到帐', u'已过期', u'未知']
         is_receive_reward = plan.is_receive_reward
         start_time = plan.start_time.strftime('%Y/%m/%d')
         end_time = plan.end_time.strftime('%Y/%m/%d')
@@ -118,7 +119,7 @@ class TengyiMember(business_model.Model):
                                                                    created_at__range=[plan.start_time.strftime('%Y-%m-%d'), plan.end_time.strftime('%Y-%m-%d')],
                                                                    is_exchanged=False, is_self_order=True)
             if logs.count() > 0:  # 已经返利但未到账
-                return 1, status_num2text[1]
+                return 1, status_num2text[1].format(plan.receive_reward_at.strftime('%Y/%m/%d'))
             if now_time < start_time or (now_time >= start_time and now_time <= end_time): #还未到计划时间或者当前正处于计划之中
                 return 0, status_num2text[0]
             elif now_time > end_time: #已超过计划时间

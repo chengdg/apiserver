@@ -53,8 +53,8 @@ class ProductModelGenerator(business_model.Model):
 		# else:
 		# 	properties = list(mall_models.ProductModelProperty.select().dj_where(owner_id=webapp_owner_id))
 		# property_ids = [property.id for property in properties]
-		# id2property = dict([(str(property.id), property)
-		# 				   for property in properties])
+		id2property = dict([(str(property.id), property)
+						   for property in properties])
 		# # 兼容商品池
 		# mall_type = self.context['webapp_owner'].mall_type
 		# if mall_type:

@@ -842,7 +842,7 @@ class Product(business_model.Model):
 				return ''
 			# 手动添加的供货商
 			if self.supplier:
-				return Supplier.get_supplier_name(self.supplier)
+				return account_model.UserProfile.select().dj_where(user_id=self.supplier).first().store_name
 			# 同步的供货商
 			relation = mall_models.WeizoomHasMallProductRelation.select().dj_where(weizoom_product_id=self.id).first()
 			if relation:

@@ -48,22 +48,22 @@ class ProductModelGenerator(business_model.Model):
 		if not is_enable_model_property_info:
 			return {}, {}
 		# 兼容微众商城老数据
-		if webapp_owner_id == 216 or webapp_owner_id == 119:
-			properties = list(mall_models.ProductModelProperty.select())
-		else:
-			properties = list(mall_models.ProductModelProperty.select().dj_where(owner_id=webapp_owner_id))
+		# if webapp_owner_id == 216 or webapp_owner_id == 119:
+		properties = list(mall_models.ProductModelProperty.select())
+		# else:
+		# 	properties = list(mall_models.ProductModelProperty.select().dj_where(owner_id=webapp_owner_id))
 		property_ids = [property.id for property in properties]
 		id2property = dict([(str(property.id), property)
 						   for property in properties])
-		# 兼容商品池
-		mall_type = self.context['webapp_owner'].mall_type
-		if mall_type:
-			pool_weapp_account = mall_models.UserProfile.select().dj_where(webapp_type=2).first()
-			if pool_weapp_account:
-				pool_properties = mall_models.ProductModelProperty.select().dj_where(owner_id=pool_weapp_account.user_id)
-				property_ids += [pool_property.id for pool_property in pool_properties]
-				id2property.update(dict([(str(property.id), property)
-										 for property in pool_properties]))
+		# # 兼容商品池
+		# mall_type = self.context['webapp_owner'].mall_type
+		# if mall_type:
+		# 	pool_weapp_account = mall_models.UserProfile.select().dj_where(webapp_type=2).first()
+		# 	if pool_weapp_account:
+		# 		pool_properties = mall_models.ProductModelProperty.select().dj_where(owner_id=pool_weapp_account.user_id)
+		# 		property_ids += [pool_property.id for pool_property in pool_properties]
+		# 		id2property.update(dict([(str(property.id), property)
+		# 								 for property in pool_properties]))
 		id2propertyvalue = {}
 		for value in mall_models.ProductModelPropertyValue.select().dj_where(property__in=property_ids):
 			id = '%d:%d' % (value.property_id, value.id)

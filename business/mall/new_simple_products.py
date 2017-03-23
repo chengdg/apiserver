@@ -369,6 +369,7 @@ class NewSimpleProducts(business_model.Model):
 			return page_info, None
 		products = [pickle.loads(product) for product in redis_products]
 		result = sorted(products, key=lambda k: page_product_ids.index(str(k.get('id'))))
+		# 判断社群平台是否是"固定底价+溢价"类型平台
 		
 		return page_info, result
 

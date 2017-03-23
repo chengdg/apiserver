@@ -102,3 +102,12 @@ class ProductModel(business_model.Model):
 
 		self.property_values = property_values
 		self.property2value = property2value
+		
+	def community_model_price(self, corp_id):
+		"""
+		社群修改商品某个规格的改价
+		"""
+		mall_models.ProductCustomizedPrice.select().dj_where(corp_id=corp_id, product_id=self.product_id,
+															 product_model_id=self.id)
+		
+		pass

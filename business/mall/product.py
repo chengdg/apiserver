@@ -491,8 +491,8 @@ class Product(business_model.Model):
 					product_model = custom_models[0]
 					
 					product.price_info = {
-						'display_price': str("%.2f" % product_model.original_price),
-						'display_original_price': str("%.2f" % product_model.price),
+						'display_price': str("%.2f" % product_model.price),
+						'display_original_price': str("%.2f" % product_model.original_price),
 						'display_market_price': str("%.2f" % product_model.market_price),
 						'min_price': product_model.price,
 						'max_price': product_model.price,
@@ -550,8 +550,8 @@ class Product(business_model.Model):
 					# 暂时修改,前段展示的是display_original_price,应该概念替换display_price展示改价后的,display_original_price
 					# 展示供货价,目前代码display_price是展示的供货价
 					product.price_info = {
-						'display_price': str("%.2f" % standard_model.original_price),
-						'display_original_price': str("%.2f" % standard_model.price),
+						'display_price': str("%.2f" % standard_model.price),
+						'display_original_price': str("%.2f" % standard_model.original_price),
 						'display_market_price': str("%.2f" % standard_model.market_price),
 						'min_price': standard_model.price,
 						'max_price': standard_model.price,

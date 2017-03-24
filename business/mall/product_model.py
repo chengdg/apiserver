@@ -47,7 +47,11 @@ class ProductModel(business_model.Model):
 			self._init_slot_from_model(db_model)
 			self.original_price = db_model.price
 			# 如果改社群是属于固定底价的平台,那么它设置了加价后的话,那么就用改方法设置,用上边的original_price作为商品原始的供货价格
+			print self.price
 			self.price = self.community_model_price(corp_id)
+			print 'iloveyou......................................'
+			print self.price
+			print 'iloveyou......................................'
 			self.stocks = db_model.stocks if db_model.stock_type == mall_models.PRODUCT_STOCK_TYPE_LIMIT else u'无限'
 
 			self.__fill_model_property_info(id2property, id2propertyvalue)

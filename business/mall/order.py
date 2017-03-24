@@ -125,7 +125,8 @@ class Order(business_model.Model):
 		'is_first_order',
 		'supplier_user_id',
 		'total_purchase_price',
-		'member_card_money'
+		'member_card_money',
+		'third_party_money'
 	)
 
 	@staticmethod

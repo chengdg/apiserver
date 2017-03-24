@@ -10,3 +10,4 @@ import news
 import openapi
 import member_card
 import member_referral
+import third_party_pay

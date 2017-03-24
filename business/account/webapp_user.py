@@ -33,6 +33,7 @@ from business.wzcard.wzcard_package import WZCardPackage
 from business.mall.coupon.coupon import Coupon
 
 from business.member_card.member_card import MemberCard
+from business.third_party_pay.jinge_card import JinGeCard
 
 class WebAppUser(business_model.Model):
 	"""
@@ -666,3 +667,7 @@ class WebAppUser(business_model.Model):
 			'fill_options': {
 				'with_price': True  #这个值一定要为True duhao
 			}})
+
+	@property
+	def jinge_card(self):
+		return JinGeCard.from_member_id({'member_id': self.member.id})

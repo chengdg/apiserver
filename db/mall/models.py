@@ -1496,6 +1496,7 @@ class Order(models.Model):
 
 	#add by bert 
 	member_card_money = models.FloatField(default=0.0)  # 会员卡抵扣金额  alter table mall_order add column member_card_money float default 0;
+	third_party_money = models.FloatField(default=0.0)  # 第三方抵扣金额，如锦歌饭卡 duhao 20170320
 
 	class Meta(object):
 		db_table = 'mall_order'

@@ -228,7 +228,7 @@ class AOrder(api_resource.ApiResource):
 
 	@staticmethod
 	def to_dict(order):
-		order_dict = order.to_dict('latest_express_detail', 'products', 'is_group_buy', 'order_group_info', 'refund_info', 'member_card_money')
+		order_dict = order.to_dict('latest_express_detail', 'products', 'is_group_buy', 'order_group_info', 'refund_info', 'member_card_money', 'third_party_money')
 		api_keys = [
 			"buyer_name",
 			"coupon_money",
@@ -277,6 +277,7 @@ class AOrder(api_resource.ApiResource):
 			"order_group_info",
 			"refund_info",
 			"member_card_money",
+			"third_party_money",
 			"order_remind_info",
 			"kefu_url"
 		]

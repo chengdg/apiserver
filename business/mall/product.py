@@ -489,6 +489,7 @@ class Product(business_model.Model):
 				if len(custom_models) == 1:
 					#只有一个custom model，显示custom model的价格信息
 					product_model = custom_models[0]
+					
 					product.price_info = {
 						'display_price': str("%.2f" % product_model.price),
 						'display_original_price': str("%.2f" % product_model.original_price),
@@ -539,12 +540,15 @@ class Product(business_model.Model):
 						'min_price': min_price,
 						'max_price': max_price,
 					}
+			
 			else:
 				standard_model = None
 				if product.models:
 					standard_model = product.models[0]
 
 				if standard_model:
+					# 暂时修改,前段展示的是display_original_price,应该概念替换display_price展示改价后的,display_original_price
+					# 展示供货价,目前代码display_price是展示的供货价
 					product.price_info = {
 						'display_price': str("%.2f" % standard_model.price),
 						'display_original_price': str("%.2f" % standard_model.original_price),

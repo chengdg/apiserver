@@ -2305,3 +2305,17 @@ class ClassificationHasProduct(models.Model):
 		verbose_name = "商品分类与商品的关系"
 		verbose_name_plural = "商品分类与商品的关系"
 		db_table = "mall_classification_has_product"
+	
+			
+class ProductCustomizedPrice(models.Model):
+	"""
+	社群采购方式为固定低价的，可以修改商品售价，存储于此
+	"""
+	corp_id = models.IntegerField(default=-1)
+	product_id = models.IntegerField(default=-1)
+	# ProductModel id
+	product_model_id = models.IntegerField(default=-1)
+	price = models.FloatField(default=0.0)
+	
+	class Meta(object):
+		db_table = 'mall_product_customized_price'

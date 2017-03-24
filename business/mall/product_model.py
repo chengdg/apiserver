@@ -40,12 +40,20 @@ class ProductModel(business_model.Model):
 		'property2value'
 	)
 
-	def __init__(self, db_model=None, id2property=None, id2propertyvalue=None):
+	def __init__(self, db_model=None, id2property=None, id2propertyvalue=None, corp_id=None):
 		business_model.Model.__init__(self)
 
 		if db_model:
 			self._init_slot_from_model(db_model)
+			# if db_model.name == 'standard':
 			self.original_price = db_model.price
+			# 社群改价,单规格original_price展示供货价
+			self.price = self.community_model_price(corp_id)
+			# else:
+			# 	self.original_price = self.community_model_price(corp_id)
+			# 	# 多规格颠倒过来
+			# 	self.price = db_model.price
+			
 			self.stocks = db_model.stocks if db_model.stock_type == mall_models.PRODUCT_STOCK_TYPE_LIMIT else u'无限'
 
 			self.__fill_model_property_info(id2property, id2propertyvalue)
@@ -102,3 +110,12 @@ class ProductModel(business_model.Model):
 
 		self.property_values = property_values
 		self.property2value = property2value
+		
+	def community_model_price(self, corp_id):
+		"""
+		社群修改商品某个规格的改价
+		"""
+		
+		price_model = mall_models.ProductCustomizedPrice.select()\
+			.dj_where(corp_id=corp_id, product_id=self.product_id, product_model_id=self.id).first()
+		return price_model.price if price_model else self.price

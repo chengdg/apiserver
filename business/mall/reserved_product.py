@@ -156,7 +156,8 @@ class ReservedProduct(business_model.Model):
 		model = product.get_specific_model(product_info['model_name'])
 		self.is_model_deleted = model.is_deleted
 		self.price = model.price
-		self.original_price = model.price
+		# 已区分original_price和price的定义,original_price是供货价
+		self.original_price = model.original_price
 		self.weight = model.weight
 		self.stock_type = model.stock_type
 		self.stocks = model.stocks
@@ -169,7 +170,7 @@ class ReservedProduct(business_model.Model):
 		for p in model.property_values if model.property_values else []:
 			self.product_model_name_texts.append(p['name'])
 
-		self.total_price = self.original_price * int(self.purchase_count)
+		self.total_price = self.price * int(self.purchase_count)
 
 		#获取商品当前的promotion
 		product_promotion = product.promotion

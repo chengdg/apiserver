@@ -369,7 +369,12 @@ class NewSimpleProducts(business_model.Model):
 			return page_info, None
 		products = [pickle.loads(product) for product in redis_products]
 		result = sorted(products, key=lambda k: page_product_ids.index(str(k.get('id'))))
-		
+		# 判断社群平台是否是"固定底价+溢价"类型平台
+		for product in result:
+			temp_key = "customized_price_{wo:%s}_{pid:%s}" % (corp_id, product.get('id'))
+			customized_price = cache_util.get_cache(temp_key)
+			if cache_util.get_cache(temp_key):
+				product['display_price'] = customized_price
 		return page_info, result
 
 	def __get_categories(self, corp_id):

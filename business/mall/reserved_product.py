@@ -170,7 +170,7 @@ class ReservedProduct(business_model.Model):
 		for p in model.property_values if model.property_values else []:
 			self.product_model_name_texts.append(p['name'])
 
-		self.total_price = self.original_price * int(self.purchase_count)
+		self.total_price = self.price * int(self.purchase_count)
 
 		#获取商品当前的promotion
 		product_promotion = product.promotion

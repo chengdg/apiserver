@@ -63,6 +63,9 @@ class AProduct(api_resource.ApiResource):
 			# 'member': member,
 			'product_id': args['product_id']
 		})
+		print "========================"
+		print product.price
+		print "========================"
 		if product.is_deleted:
 			return {'is_deleted': True}
 		else:

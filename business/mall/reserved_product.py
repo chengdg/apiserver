@@ -156,7 +156,8 @@ class ReservedProduct(business_model.Model):
 		model = product.get_specific_model(product_info['model_name'])
 		self.is_model_deleted = model.is_deleted
 		self.price = model.price
-		self.original_price = model.price
+		# 已区分original_price和price的定义,original_price是供货价
+		self.original_price = model.original_price
 		self.weight = model.weight
 		self.stock_type = model.stock_type
 		self.stocks = model.stocks

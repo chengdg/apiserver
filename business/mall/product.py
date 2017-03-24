@@ -540,9 +540,7 @@ class Product(business_model.Model):
 						'min_price': min_price,
 						'max_price': max_price,
 					}
-					print 'what fuck.................---------------------------'
-					print product.price_info
-					print 'what fuck.................---------------------------'
+			
 			else:
 				standard_model = None
 				if product.models:

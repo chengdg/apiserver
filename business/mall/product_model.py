@@ -45,14 +45,14 @@ class ProductModel(business_model.Model):
 
 		if db_model:
 			self._init_slot_from_model(db_model)
-			if db_model.name == 'standard':
-				self.original_price = db_model.price
-				# 如果改社群是属于固定底价的平台,那么它设置了加价后的话,那么就用改方法设置,用上边的original_price作为商品原始的供货价格
-				self.price = self.community_model_price(corp_id)
-			else:
-				self.original_price = self.community_model_price(corp_id)
-				# 如果改社群是属于固定底价的平台,那么它设置了加价后的话,那么就用改方法设置,用上边的original_price作为商品原始的供货价格
-				self.price = db_model.price
+			# if db_model.name == 'standard':
+			self.original_price = db_model.price
+			# 社群改价,单规格original_price展示供货价
+			self.price = self.community_model_price(corp_id)
+			# else:
+			# 	self.original_price = self.community_model_price(corp_id)
+			# 	# 多规格颠倒过来
+			# 	self.price = db_model.price
 			
 			self.stocks = db_model.stocks if db_model.stock_type == mall_models.PRODUCT_STOCK_TYPE_LIMIT else u'无限'
 

@@ -489,9 +489,10 @@ class Product(business_model.Model):
 				if len(custom_models) == 1:
 					#只有一个custom model，显示custom model的价格信息
 					product_model = custom_models[0]
+					# 多规格是正常的display_price是改价后的
 					product.price_info = {
-						'display_price': str("%.2f" % product_model.original_price),
-						'display_original_price': str("%.2f" % product_model.price),
+						'display_price': str("%.2f" % product_model.price),
+						'display_original_price': str("%.2f" % product_model.original_price),
 						'display_market_price': str("%.2f" % product_model.market_price),
 						'min_price': product_model.price,
 						'max_price': product_model.price,

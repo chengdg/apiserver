@@ -30,7 +30,7 @@ class AJinGeCard(api_resource.ApiResource):
 				'is_binded': False
 			}
 		
-		if jinge_card.password:
+		if jinge_card.card_password:
 			data = {
 				'card_number': jinge_card.card_number,
 				'is_active': True,
@@ -57,7 +57,7 @@ class AJinGeCard(api_resource.ApiResource):
 
 		jinge_card = JinGeCard.from_member_id(webapp_user.member.id)
 		if captcha:  #提交验证码
-			if jinge_card and jinge_card.captcha == captcha:
+			if jinge_card and jinge_card.get_captcha(phone_number) == captcha:
 				#绑定饭卡
 				if jinge_card.bind(phone_number):
 					return u'绑定成功'

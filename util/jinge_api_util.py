@@ -33,6 +33,12 @@ def set_password(card_number, token, password):
 	首次设置支付密码
 	"""
 	url = JINGE_HOST + 'setPass.json'
+	try:
+		card_number = card_number.encode('utf-8')
+		token = token.encode('utf-8')
+	except:
+		pass
+	print '-----------------',card_number,token,password,type(card_number),type(token),type(password)
 	params = {
 		'cardNo': card_number,
 		'token': token,
@@ -41,13 +47,17 @@ def set_password(card_number, token, password):
 	resp = requests.post(url, data=params)
 
 	if resp.status_code == 200:
-		json_data = json.loads(resp.text)
-		watchdog.info('success requests: %s, params: %s, results: %s' % (url, params, json_data))
+		try:
+			json_data = json.loads(resp.text)
+			if json_data['ret'] == 1:
+				watchdog.info('success requests: %s, params: %s, results: %s' % (url, params, json_data))
+				return True
+		except Exception, e:
+			watchdog.alert('fail requests: %s, params: %s, resp: %s, Exception: %s' % (url, params, resp.content, e))
+		
 
-		if json_data['ret'] == 1:
-			return True
 	else:
-		watchdog.alert('fail requests: %s, params: %s, resp: %s' % (url, params, resp.text))
+		watchdog.alert('fail requests: %s, params: %s, resp: %s' % (url, params, resp.content))
 	
 	return False
 

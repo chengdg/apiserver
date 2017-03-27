@@ -58,9 +58,8 @@ class JinGeCard(business_model.Model):
 			return JinGeCard.from_model(model)
 		return None
 
-	@property
-	def captcha(self):
-		return redis_db.get('captcha_%s' % self.phone_number)
+	def get_captcha(self, phone_number):
+		return redis_db.get('captcha_%s' % phone_number)
 
 	@property
 	def balance(self):
@@ -102,6 +101,15 @@ class JinGeCard(business_model.Model):
 			return True
 		else:
 			return False
+
+	def set_password(self, password):
+		if password:
+			self.card_password = password
+			third_party_pay_models.JinGeCard.update(
+				card_password=password, 
+			).dj_where(owner_id=self.owner_id, member_id=self.member_id, card_number=self.card_number, is_deleted=False).execute()
+			return True
+		return False
 
 	@staticmethod
 	def use(self, order_id, money):

@@ -12,6 +12,7 @@ from business import model as business_model
 from business.mall.order import Order
 from business.mall.product_review import ProductReview
 from db.mall import models as mall_models
+from eaglet.utils.resource_client import Resource
 
 
 class OrderRemind(business_model.Model):
@@ -77,18 +78,21 @@ class OrderRemind(business_model.Model):
 			sub_orders = mall_models.Order.select().dj_where(webapp_id=webapp_id, origin_order_id=order.id, status=mall_models.ORDER_STATUS_PAYED_NOT_SHIP)
 			for sub_order in sub_orders:
 				supplier_id = sub_order.supplier
-				supplier = mall_models.Supplier.get(id=supplier_id)
-
+				# supplier = mall_models.Supplier.get(id=supplier_id)
+				supplier_info = OrderRemind.__get_supplier_info(supplier_id=supplier_id)
+				if not supplier_info:
+					watchdog.error(u'Can not find supplier info use id :%s' % supplier_id)
+					return False
 				sub_order_id = sub_order.order_id
 				mall_models.OrderOperationLog.create(
 					order_id=sub_order_id,
 					action=u'催单',
 					operator=u'客户',
-					remark=supplier.name
+					remark=supplier_info['name']
 				)
 				#发短信
 				data = {
-					"phones": str(supplier.supplier_tel),
+					"phones": str(supplier_info['tel']),
 					"content": {
 						"order_id": sub_order.order_id,
 						"name": sub_order.ship_name
@@ -97,9 +101,37 @@ class OrderRemind(business_model.Model):
 				}
 				result = msgutil.send_message('notify', 'phone', data)
 				if result:
-					watchdog.info(u"发送催单短信成功，订单号：{}，手机号：{}，供货商：{}".format(sub_order.order_id, supplier.supplier_tel, supplier.name))
+					watchdog.info(u"发送催单短信成功，订单号：{}，手机号：{}，供货商：{}".format(sub_order.order_id,
+																		  supplier_info['tel'], supplier_info['name']))
 				else:
-					watchdog.alert(u"发送催单短信失败，订单号：{}，手机号：{}，供货商：{}".format(sub_order.order_id, supplier.supplier_tel, supplier.name))
+					watchdog.alert(u"发送催单短信失败，订单号：{}，手机号：{}，供货商：{}".format(sub_order.order_id,
+																		   supplier_info['tel'], supplier_info['name']))
 
 			return True
 		return False
+	
+	@staticmethod
+	def __get_supplier_info(supplier_id):
+		supplier = mall_models.Supplier.select().dj_where(id=supplier_id).first()
+		if supplier:
+			return {
+				"name": supplier.name,
+				"tel": supplier.supplier_tel
+			}
+		else:
+			# 从wcas获取
+			resp = Resource.use('wcas').get({
+				'resource': 'corp.supplier',
+				'data': {
+					"corp_id": supplier_id
+				}
+				
+			})
+			if resp and resp.get('code') == 200:
+				resp_data = resp.get('data')
+				return {
+					"name": resp_data['name'],
+					"tel": resp_data['contact_phone']
+				}
+			else:
+				return None

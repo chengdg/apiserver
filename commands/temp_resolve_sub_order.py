@@ -19,13 +19,8 @@ class Command(BaseCommand):
 	args = ''
 	
 	def handle(self, *args, **kargs):
-		
-		order_id_2_supplier = {685062: 100000958,
-							   684530: 100000215,
-							   684385: 100000958,
-							   685061: 100000958,
-							   # 1:1
-							   }
+		# order_id , supplier
+		order_id_2_supplier = {684928: 100001637,}
 		temp_orders = mall_models.Order.select().dj_where(id__in=order_id_2_supplier.keys())
 	
 		for order in temp_orders:

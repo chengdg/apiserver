@@ -67,7 +67,7 @@ class AProduct(api_resource.ApiResource):
 		if product.is_deleted:
 			return {'is_deleted': True}
 		else:
-			product.apply_discount(args['webapp_user'])
+			# product.apply_discount(args['webapp_user'])
 
 			if product.promotion:
 				#检查促销是否能使用

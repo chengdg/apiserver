@@ -78,14 +78,17 @@ class JinGeCard(business_model.Model):
 		return self.card_number and self.card_password
 
 	def update_phone_captcha(self, phone_number, captcha):
-		key = 'jinge_captcha_%s' % phone_number
-		redis_db.setex(key, captcha, EXPIRE_SECONDS)
-		for i in range(1, 6):  #本地测试发现有设置失败的情况，所以重试5次
-			if redis_db.get(key) != captcha:
-				watchdog.alert(u'设置redis key失败，重试第%d次，key: %s' % (i, key))
-				redis_db.setex(key, captcha, EXPIRE_SECONDS)
-			else:
-				break
+		"""
+		如果用户更改绑定的手机号则更新一下手机号
+		在redis中设置用户的验证码
+		"""
+		#更新手机号
+		if phone_number != self.phone_number:
+			third_party_pay_models.JinGeCard.update(
+				phone_number=phone_number
+			).dj_where(owner_id=self.owner_id, member_id=self.member_id, is_deleted=False).execute()
+
+		redis_db.setex('jinge_captcha_%s' % phone_number, captcha, EXPIRE_SECONDS)
 
 	@staticmethod
 	def create(owner_id, member_id, phone_number):

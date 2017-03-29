@@ -25,7 +25,7 @@ class AJinGeCard(api_resource.ApiResource):
 		member_id = webapp_user.member.id
 		jinge_card = JinGeCard.from_member_id(member_id)
 
-		if not jinge_card:
+		if not jinge_card or not jinge_card.card_number:
 			return {
 				'is_binded': False
 			}

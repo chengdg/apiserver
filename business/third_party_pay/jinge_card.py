@@ -30,6 +30,8 @@ class JinGeCard(business_model.Model):
 		'token',
 		'name',
 		'company',
+		'mer_id',
+		'term_id',
 		'is_deleted',
 		'created_at'
 	)
@@ -96,7 +98,11 @@ class JinGeCard(business_model.Model):
 		if data:
 			third_party_pay_models.JinGeCard.update(
 				card_number=data['card_number'], 
-				token=data['token']
+				token=data['token'],
+				name=data['name'],
+				company=data['company'],
+				mer_id=data['mer_id'],
+				term_id=data['term_id']
 			).dj_where(owner_id=self.owner_id, member_id=self.member_id, phone_number=phone_number, is_deleted=False).execute()
 			return True
 		else:
@@ -111,13 +117,12 @@ class JinGeCard(business_model.Model):
 			return True
 		return False
 
-	@staticmethod
 	def use(self, order_id, money):
 		"""
 		使用锦歌饭卡支付
 		"""
 		trade_time = datetime.now().strftime('%Y%m%d%H%M%S')
-		is_success, reason, trade_id = jinge_api_util.pay(self.card_number, self.card_password, self.token, money, trade_time)
+		is_success, trade_id = jinge_api_util.pay(self.card_number, self.card_password, self.token, money, self.mer_id, self.term_id, trade_time)
 		if is_success:
 			watchdog.info(u'use jinge_card: {}, order_id: {}, trade_id: {}, money: {}'.format(self.card_number, order_id, trade_id, money))
 			third_party_pay_models.JinGeCardLog.create(
@@ -125,28 +130,28 @@ class JinGeCard(business_model.Model):
 				price=money,
 				trade_id=trade_id,
 				order_id=order_id,
-				reason=u"下单"
+				reason=u"下单",
+				balance=self.balance,
 			)
 		else:
-			watchdog.alert(u'use jinge_card error: {}, order_id: {}, trade_id: {}, money: {}, reason: {}'.format(self.card_number, order_id, trade_id, money, reason))
+			watchdog.alert(u'use jinge_card error: {}, order_id: {}, trade_id: {}, money: {}'.format(self.card_number, order_id, trade_id, money))
 
-		return is_success, reason, trade_id
+		return is_success, trade_id
 
-	@staticmethod
 	def refund(self, order_id, trade_id, money):
 		"""
 		锦歌饭卡退款，取消订单或者下单失败时使用
 		"""
-		is_success, reason, trade_id = jinge_api_util.refund(self.card_number, self.card_password, self.token, money, trade_time)
-
+		is_success, refund_trade_id, trade_amount = jinge_api_util.refund(self.card_number, self.card_password, self.token, trade_id, order_id, money)
 		if is_success:
-			watchdog.info(u'refund jinge_card: {}, order_id: {}, trade_id: {}, money: {}'.format(self.card_number, order_id, trade_id, money))
-			member_models.JinGeCardLog.create(
+			watchdog.info(u'refund jinge_card: {}, order_id: {}, trade_id: {}, money: {}'.format(self.card_number, order_id, refund_trade_id, trade_amount))
+			third_party_pay_models.JinGeCardLog.create(
 				jinge_card=self.id,
-				trade_id=trade_id,
+				trade_id=refund_trade_id,
 				order_id=order_id,
 				reason=u"取消下单或下单失败",
-				price=money
+				balance=self.balance,
+				price=trade_amount
 			)
 			
 		return is_success

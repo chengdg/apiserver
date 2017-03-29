@@ -13,11 +13,11 @@ public class RSAJavaKeyFileGenerator {
 	 * pem文件我们在python程序中使用，key文件交给慧能达使用
 	 * @author duhao
 	 */
-	private static String privateKeyFile = "./pri3.key";
-	private static String publicKeyFile = "./pub3.key";
+	private static String privateKeyFile = "./pri.key";
+	private static String publicKeyFile = "./pub.key";
 	
-	private static String privatePemFile = "./private3.pem";
-	private static String publicPemFile = "./public3.pem";
+	private static String privatePemFile = "./private.pem";
+	private static String publicPemFile = "./public.pem";
 	
 	public static void main(String[] args) throws Exception {
 		KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("RSA");
@@ -31,8 +31,8 @@ public class RSAJavaKeyFileGenerator {
 		RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
 		
 		// 生成python使用的pem文件
-		String publicKeyString=Base64Utils.encode(publicKey.getEncoded());
-		String privateKeyString=Base64Utils.encode(privateKey.getEncoded());
+		String publicKeyString = Base64Utils.encode(publicKey.getEncoded());
+		String privateKeyString = Base64Utils.encode(privateKey.getEncoded());
 		FileWriter fw = new FileWriter(privatePemFile);
 		fw.write("-----BEGIN PRIVATE KEY-----\n");
 		fw.write(privateKeyString + "\n");

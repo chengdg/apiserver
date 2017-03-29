@@ -263,3 +263,8 @@ else:
 MESSAGE_BROKER = os.environ.get('_MESSAGE_BROKER', 'redis')
 # 临时
 TOPIC_NAME = "test-topic"
+
+if 'deploy' == MODE:
+    JINGE_HOST = 'http://101.200.142.53:8088/wxPay/'  #锦歌饭卡的第三方支付公司host
+else:
+    JINGE_HOST = 'http://101.200.142.53:8088/wxPay/'

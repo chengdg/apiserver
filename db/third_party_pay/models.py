@@ -15,10 +15,12 @@ class JinGeCard(models.Model):
 	member_id = models.IntegerField() #会员id
 	phone_number = models.CharField(max_length=11)  #手机号
 	card_number = models.CharField(max_length=20, default='')  #卡号
-	card_password = models.CharField(max_length=256, default='')  #RSA加密后的密码
+	card_password = models.CharField(max_length=512, default='')  #RSA加密后的密码
 	token = models.CharField(max_length=256, default='')  #用户在饭卡数据系统中的身份标识
-	name = models.CharField(max_length=32)  #持卡人姓名
-	company = models.CharField(max_length=64)  #持卡人公司名称
+	name = models.CharField(max_length=64, default='')  #持卡人姓名
+	company = models.CharField(max_length=128, default='')  #持卡人公司名称
+	mer_id = models.CharField(max_length=64, default='')  #商户号
+	term_id = models.CharField(max_length=64, default='')  #终端号
 	is_deleted = models.BooleanField(default=False) #是否删除/解绑
 	created_at = models.DateTimeField(auto_now_add=True) #添加时间
 
@@ -37,6 +39,7 @@ class JinGeCardLog(models.Model):
 	trade_id = models.CharField(max_length=50, default='') #支付流水号
 	order_id = models.CharField(max_length=32, default='') #订单号
 	reason = models.CharField(max_length=128)  # 原因
+	balance = models.FloatField(default=0.0)  # 余额
 	created_at = models.DateTimeField(auto_now_add=True) #时间
 	
 	class Meta(object):

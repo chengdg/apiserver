@@ -14,7 +14,6 @@ def encrypt(text):
 		text = text.encode('utf-8')
 	except:
 		pass
-	print text,type(text)
 	with open('util/jinge_public_key.pem') as f:
 		key = f.read()
 		rsakey = RSA.importKey(key)

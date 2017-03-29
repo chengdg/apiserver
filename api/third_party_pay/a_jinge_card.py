@@ -59,10 +59,13 @@ class AJinGeCard(api_resource.ApiResource):
 		if captcha:  #提交验证码
 			if jinge_card and jinge_card.get_captcha(phone_number) == captcha:
 				#绑定饭卡
-				if jinge_card.bind(phone_number):
+				is_success, reason = jinge_card.bind(phone_number)
+				if is_success:
 					return u'绑定成功'
 				else:
-					return 500, u'绑定失败，请重试'
+					if not reason:
+						reason = u'绑定失败，请重试'
+					return 500, reason
 			else:
 				return 500, u'手机验证码错误，请重新输入'
 
@@ -72,14 +75,12 @@ class AJinGeCard(api_resource.ApiResource):
 		elif JinGeCard.from_phone_number(phone_number):
 			return 500, u'该手机号已经绑定过饭卡'
 		else:  #获取验证码
-			company_name = webapp_owner.mpuser_preview_info.name
-			#TODO 新建一个绑定饭卡的短信模板
-			result, captcha = send_phone_msg.send_captcha(phone_number,company_name)
-			if result and captcha:
-				if jinge_card:
-					jinge_card.update_phone_captcha(phone_number, captcha)
-				else:
-					JinGeCard.create(webapp_owner.id, webapp_user.member.id, phone_number)
+			captcha = send_phone_msg.send_jinge_captcha(phone_number)
+			if captcha:
+				if not jinge_card:
+					jinge_card = JinGeCard.create(webapp_owner.id, webapp_user.member.id, phone_number)
+
+				jinge_card.update_phone_captcha(phone_number, captcha)
 				
 				return {"captcha": captcha}
 			else:

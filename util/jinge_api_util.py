@@ -30,15 +30,16 @@ def get_card_info_by_phone(phone_number):
 					'company': json_data['merName'],  #公司名称
 					'mer_id': json_data['merId'],  #商户号
 					'term_id': json_data['termId']  #终端号
-				}
+				}, ''
 			else:
+				return None, json_data['tip']
 				watchdog.alert('get_card_info_by_phone fail requests: %s, params: %s, resp: %s' % (url, params, resp.content))
 		except Exception, e:
 			watchdog.alert('get_card_info_by_phone fail requests: %s, params: %s, resp: %s, Exception: %s' % (url, params, resp.content, e))
 	else:
 		watchdog.alert('get_card_info_by_phone fail requests: %s, params: %s, resp: %s' % (url, params, resp.content))
 	
-	return None
+	return None, None
 
 
 def set_password(card_number, token, password):
@@ -130,7 +131,7 @@ def refund(card_number, card_password, token, trade_id, order_id, price):
 				refund_trade_id = json_data['tradeId']
 				if trade_amount != price:
 					#如果退款的金额跟消费的金额不一致就往钉钉群里发报警消息
-					msg = u'锦歌饭卡退款金额与消费金额不一致,\n消费金额: {}\n退款金额: {}\norder_id: {}\ncard_number: {}\ntrade_id: {}\nrefund_trade_id: {}'.format(
+					msg = u'锦歌饭卡退款金额与消费金额不一致,\n请求退款金额: {}\n实际退款金额: {}\norder_id: {}\ncard_number: {}\ntrade_id: {}\nrefund_trade_id: {}'.format(
 						price,
 						trade_amount,
 						order_id,

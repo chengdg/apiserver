@@ -61,7 +61,7 @@ class JinGeCard(business_model.Model):
 		return None
 
 	def get_captcha(self, phone_number):
-		return redis_db.get('captcha_%s' % phone_number)
+		return redis_db.get('jinge_captcha_%s' % phone_number)
 
 	@property
 	def balance(self):
@@ -78,23 +78,33 @@ class JinGeCard(business_model.Model):
 		return self.card_number and self.card_password
 
 	def update_phone_captcha(self, phone_number, captcha):
-		redis_db.setex('captcha_%s' % phone_number, captcha, EXPIRE_SECONDS)
+		key = 'jinge_captcha_%s' % phone_number
+		redis_db.setex(key, captcha, EXPIRE_SECONDS)
+		for i in range(1, 6):  #本地测试发现有设置失败的情况，所以重试5次
+			if redis_db.get(key) != captcha:
+				watchdog.alert(u'设置redis key失败，重试第%d次，key: %s' % (i, key))
+				redis_db.setex(key, captcha, EXPIRE_SECONDS)
+			else:
+				break
 
 	@staticmethod
 	def create(owner_id, member_id, phone_number):
 		if third_party_pay_models.JinGeCard.select().dj_where(owner_id=owner_id, member_id=member_id, is_deleted=False).count() == 0:
-			return third_party_pay_models.JinGeCard.create(
+			model = third_party_pay_models.JinGeCard.create(
 				owner=owner_id,
 				member_id=member_id,
 				phone_number=phone_number
 			)
+			jinge_card = JinGeCard.from_model(model)
+			return jinge_card
+		return None
 
 	def bind(self, phone_number):
 		#如果该手机号已经绑定过，则返回失败
 		if JinGeCard.from_phone_number(phone_number):
-			return False
+			return False, u'该手机号已经绑定过饭卡'
 
-		data = jinge_api_util.get_card_info_by_phone(phone_number)
+		data, reason = jinge_api_util.get_card_info_by_phone(phone_number)
 		if data:
 			third_party_pay_models.JinGeCard.update(
 				card_number=data['card_number'], 
@@ -104,9 +114,11 @@ class JinGeCard(business_model.Model):
 				mer_id=data['mer_id'],
 				term_id=data['term_id']
 			).dj_where(owner_id=self.owner_id, member_id=self.member_id, phone_number=phone_number, is_deleted=False).execute()
-			return True
+			return True, ''
 		else:
-			return False
+			if reason:
+				return False, reason
+			return False, None
 
 	def set_password(self, password):
 		if password:

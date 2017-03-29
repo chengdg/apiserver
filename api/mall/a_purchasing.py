@@ -15,7 +15,7 @@ from business.mall.forbidden_coupon_product_ids import ForbiddenCouponProductIds
 from business.mall.supplier_postage_config import SupplierPostageConfig
 
 #可以使用锦歌饭卡的账号id列表
-CAN_USE_JINGE_CARD_ACCOUNT_IDS = [1]
+CAN_USE_JINGE_CARD_ACCOUNT_IDS = [119, 1375]  #ceshi01和锦歌商城
 class APurchasing(api_resource.ApiResource):
 	"""
 	下单页数据
@@ -177,7 +177,7 @@ class APurchasing(api_resource.ApiResource):
 			'jinge_card_balance': 0,
 			'is_active': False
 		}
-		#TODO owner_id修改成正确的id
+		
 		if webapp_owner.id in CAN_USE_JINGE_CARD_ACCOUNT_IDS:  #进行一下owner_id的判断，避免其他账号额外多出数据库查询
 			jinge_card = webapp_user.jinge_card
 			if jinge_card and jinge_card.is_active:

@@ -34,7 +34,7 @@ class AWebAppPageProducts(api_resource.ApiResource):
 		if product_ids:
 			products = instance.get_by_product_ids(product_ids=product_ids)
 			
-			return products
+			return {'products': products}
 		
 		if count_per_page > 0:
 			products = instance.get_by_category(category_id=category_id, count_per_page=count_per_page)

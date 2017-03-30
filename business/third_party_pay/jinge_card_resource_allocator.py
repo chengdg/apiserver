@@ -58,8 +58,8 @@ class JinGeCardResourceAllocator(business_model.Service):
 		logging.info("calling JinGeCardResourceAllocator.release() to release resources, resource: {}".format(resource))
 		order_id = resource.order_id
 		trade_id = resource.trade_id
-		trade_id = resource.money
-		is_success = self.__webapp_user.refund(order_id, trade_id, money)
+		money = resource.money
+		is_success = self.__webapp_user.jinge_card.refund(order_id, trade_id, money)
 		# TODO: 如果退款失败怎么办？
 		return is_success
 

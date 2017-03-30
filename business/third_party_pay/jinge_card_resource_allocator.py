@@ -39,7 +39,7 @@ class JinGeCardResourceAllocator(business_model.Service):
 		if not should_use_card:
 			return True, [], None
 
-		is_success, trade_id = self.__webapp_user.jinge_card.use(order_id, purchase_info.jinge_card_price)
+		is_success, trade_id = self.__webapp_user.jinge_card.use(order.order_id, purchase_info.jinge_card_price)
 
 		if is_success:
 			paid_money = purchase_info.jinge_card_price

@@ -14,7 +14,7 @@ def encrypt(text):
 		text = text.encode('utf-8')
 	except:
 		pass
-	with open('util/jinge_public_key.pem') as f:
+	with open('common-conf/jinge-conf/jinge_public_key.pem') as f:
 		key = f.read()
 		rsakey = RSA.importKey(key)
 		cipher = Cipher_pkcs1_v1_5.new(rsakey)
@@ -28,7 +28,7 @@ def decrypt(text):
 	except:
 		pass
 	random_generator = Random.new().read
-	with open('util/jinge_private_key.pem') as f:
+	with open('common-conf/jinge-conf/jinge_private_key.pem') as f:
 		key = f.read()
 		rsakey = RSA.importKey(key)
 		cipher = Cipher_pkcs1_v1_5.new(rsakey)

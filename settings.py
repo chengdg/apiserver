@@ -265,6 +265,9 @@ MESSAGE_BROKER = os.environ.get('_MESSAGE_BROKER', 'redis')
 TOPIC_NAME = "test-topic"
 
 if 'deploy' == MODE:
-    JINGE_HOST = 'http://101.200.142.53:8088/wxPay/'  #锦歌饭卡的第三方支付公司host
+    #锦歌饭卡的第三方支付公司host
+    #如果apiserver在线上增加了部署节点，一定要把新ip告知该公司进行增加白名单操作，不然可能会出现饭卡无法消费的情况
+    #目前的白名单ip有：114.55.86.248 114.55.74.184 114.55.74.184 114.215.255.147
+    JINGE_HOST = 'http://59.110.52.17:8088/wxPay/'
 else:
     JINGE_HOST = 'http://101.200.142.53:8088/wxPay/'

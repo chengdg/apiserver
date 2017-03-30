@@ -670,4 +670,4 @@ class WebAppUser(business_model.Model):
 
 	@property
 	def jinge_card(self):
-		return JinGeCard.from_member_id({'member_id': self.member.id})
+		return JinGeCard.from_member_id(self.member.id)

@@ -842,6 +842,9 @@ class Order(business_model.Model):
 		# 微众卡抵扣金额
 		db_model.weizoom_card_money = self.weizoom_card_money
 
+		# 第三方支付(如锦歌饭卡)抵扣金额
+		db_model.third_party_money = self.third_party_money
+
 
 
 		logging.info("Order db_model: {}".format(db_model))

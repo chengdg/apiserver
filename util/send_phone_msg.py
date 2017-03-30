@@ -72,3 +72,23 @@ def send_captcha(phone_number, company_name=u'微众传媒'):
 	#result = True
 	result = send_phone_captcha(phone_number, captcha, company_name)
 	return result,captcha
+
+
+def send_jinge_captcha(phone_number):
+	"""
+	锦歌商城绑定饭卡的验证码  duhao 20170329
+	"""
+	captcha = ''.join(random.sample(string.digits, 4))
+	data = {
+		"content" : {
+			"code": captcha
+		},
+		"phones": phone_number,
+		"sms_code": "SMS_59085069",
+		"sign_name": u"验证码"
+	}
+	try:
+		msgutil.send_message('notify', 'phone', data)
+		return captcha
+	except:
+		return None

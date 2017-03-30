@@ -16,6 +16,8 @@ import logging
 from business import model as business_model
 from business.member_card.member_card_resource import MemberCardResource
 from business.member_card.member_card_resource_allocator import MemberCardResourceAllocator
+from business.third_party_pay.jinge_card_resource import JinGeCardResource
+from business.third_party_pay.jinge_card_resource_allocator import JinGeCardResourceAllocator
 
 from business.resource.integral_resource import IntegralResource
 from business.mall.allocator.integral_resource_allocator import IntegralResourceAllocator
@@ -33,6 +35,7 @@ from business.wzcard.wzcard_resource import WZCardResource
 from db.mall import models as mall_models
 from db.member import models as member_models
 import db.wzcard.models as wzcard_models
+import db.third_party_pay.models as third_patry_models
 
 class OrderResourceExtractor(business_model.Model):
 	"""
@@ -186,6 +189,20 @@ class OrderResourceExtractor(business_model.Model):
 			resource = None
 		return resource
 
+	def __extract_jinge_card_resource(self, order):
+
+		webapp_owner = self.context['webapp_owner']
+		webapp_user = self.context['webapp_user']
+
+		resource_type = JinGeCardResourceAllocator(webapp_owner, webapp_user).resource_type
+		info = third_patry_models.JinGeCardLog.select().dj_where(order_id=order.order_id).first()
+		if info:
+			trade_id = info.trade_id
+			resource = JinGeCardResource(resource_type, order.order_id, trade_id, info.price)
+		else:
+			resource = None
+		return resource
+
 	def extract(self, order):
 		"""
 		根据Order实例抽取资源，用于释放
@@ -220,6 +237,11 @@ class OrderResourceExtractor(business_model.Model):
 		member_card_resource = self.__extract_member_card_resource(order)
 		if member_card_resource:
 			resources.append(member_card_resource)
+
+		# 抽取锦歌饭卡资源
+		jinge_card_resource = self.__extract_jinge_card_resource(order)
+		if jinge_card_resource:
+			resources.append(jinge_card_resource)
 
 		logging.info(u"extracted {} resources".format(len(resources)))
 		return resources

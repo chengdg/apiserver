@@ -40,7 +40,7 @@ class AMemberBindingPhone(api_resource.ApiResource):
 		webapp_owner = args['webapp_owner']
 		captcha = args['captcha']
 		sessionid = args['sessionid']
-		print phone_number,'>>>>>>>', webapp_user.phone_number
+		
 		if phone_number != webapp_user.phone_number:
 			return 500, u'手机号错误'
 		elif captcha != webapp_user.captcha or len(captcha) != 4:

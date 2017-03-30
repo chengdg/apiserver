@@ -8,7 +8,7 @@ from eaglet.decorator import param_required
 from db.mall import models as mall_models
 from db.mall import promotion_models
 from util import dateutil as utils_dateutil
-#import resource
+import settings
 from business.mall.purchase_info import PurchaseInfo
 from business.mall.purchase_order import PurchaseOrder
 from business.mall.forbidden_coupon_product_ids import ForbiddenCouponProductIds
@@ -169,6 +169,21 @@ class APurchasing(api_resource.ApiResource):
 			'is_delivery': order.is_delivery # 是否勾选配送时间,发货时间判断字段
 		}
 		usable_cards = [card.to_dict() for card in webapp_user.wzcard_package.usable_cards]
+
+		#锦歌饭卡信息
+		jinge_card_info = {
+			'jinge_card_balance': 0,
+			'is_active': False
+		}
+		
+		if webapp_owner.id in settings.CAN_USE_JINGE_CARD_ACCOUNT_IDS:  #进行一下owner_id的判断，避免其他账号额外多出数据库查询
+			jinge_card = webapp_user.jinge_card
+			if jinge_card and jinge_card.is_active:
+				jinge_card_info = {
+					'jinge_card_balance': jinge_card.balance,
+					'is_active': True
+				}
+
 		return {
 			'order': order_info,
 			'enable_wzcard': webapp_owner.has_wzcard_permission,
@@ -182,6 +197,7 @@ class APurchasing(api_resource.ApiResource):
 			'usable_cards': usable_cards,
 			'mall_type': webapp_owner.user_profile.webapp_type,
 			'product_supplier_configs': product_supplier_configs,
-			'member_card': member_card
+			'member_card': member_card,
+			'jinge_card': jinge_card_info
 		}
 

@@ -26,8 +26,6 @@ class AMemberCard(api_resource.ApiResource):
 		"""
 		webapp_user = args['webapp_user']
 		is_binded = webapp_user.is_binded
-
-		webapp_user = args['webapp_user']
 		member_id = webapp_user.member.id
 
 		member_card = MemberCard.from_member_id({

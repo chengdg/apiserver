@@ -41,15 +41,21 @@ class WebAppPageProducts(business_model.Model):
 		products = []
 		for db_product in db_products:
 			product = Product.from_model({"webapp_owner": self.webapp_owner,
-									 'model': db_product,
-									 "fill_options": {'with_price': True}})
+									 	  'model': db_product,
+									 	  "fill_options": {'with_price': True,
+														   "with_product_promotion": True},
+										  })
 			products.append({
 				'id': db_product.id,
 				'name': db_product.name,
-				'is_deleted': product.is_deleted,
-				'thumbnails_url': product.thumbnails_url,
+				'is_deleted': db_product.is_deleted,
+				'thumbnails_url': db_product.thumbnails_url,
 				# 商品的规格已经处理过改价
-				'display_price': product.price_info['display_price']
+				'display_price': product.price_info['display_price'],
+				'is_member_product': product.is_member_product,
+				'supplier': product.supplier,
+				'promotion_js': product.promotion.to_dict() if product.promotion else None,
+				'integral_sale': product.integral_sale.to_dict() if product.integral_sale else None,
 			})
 		
 		return products
@@ -66,11 +72,22 @@ class WebAppPageProducts(business_model.Model):
 			# mall_models.ProductPool.select().dj_where(product_id__in=product_ids,
 			# 										  status=mall_models.PP_STATUS_ON,
 			# 										  woid=corp_id)
-			if self.webapp_owner.user_profile.webapp_type:
-				# 自营
+			
+			# 普通分组
+			if category_id:
 				product_relations = mall_models.CategoryHasProduct.select().dj_where(category_id=category_id)\
 					.order_by(mall_models.CategoryHasProduct.display_index,
 							  mall_models.CategoryHasProduct.created_at.desc())
+	
 				return [relation.product_id for relation in product_relations][:count_per_page]
-
-		
+			else:
+				# 如果是自营
+				if self.webapp_owner.user_profile.webapp_type:
+					product_pools = mall_models.ProductPool.select().dj_where(woid=self.webapp_user.id,
+																			  status=mall_models.PP_STATUS_ON)\
+						.order_by(mall_models.ProductPool.display_index, mall_models.ProductPool.sync_at.desc)
+					return [pool.product_id for pool in product_pools][:count_per_page]
+				else:
+					products = mall_models.Product.select().dj_where(owner_id=self.webapp_user.id,
+																	 shelve_type=mall_models.PRODUCT_SHELVE_TYPE_ON)
+					return [product.id for product in products][:count_per_page]

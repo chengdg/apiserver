@@ -24,7 +24,7 @@ class AWebAppPageProducts(api_resource.ApiResource):
 	
 		"""
 		product_ids = args.get('product_ids', '[]')
-		count_per_page = args.get('count_per_page', -1)
+		count_per_page = int(args.get('count_per_page', -1))
 		category_id = args.get('category_id', 0)
 		product_ids = json.loads(product_ids)
 		webapp_owner = args['webapp_owner']
@@ -35,7 +35,7 @@ class AWebAppPageProducts(api_resource.ApiResource):
 			products = instance.get_by_product_ids(product_ids=product_ids)
 			
 			return products
-		print products
+		
 		if count_per_page > 0:
 			products = instance.get_by_category(category_id=category_id, count_per_page=count_per_page)
 		# 'id': db_product.id,

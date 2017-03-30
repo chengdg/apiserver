@@ -2242,6 +2242,7 @@ class ProductPool(models.Model):
 	status = models.IntegerField(default=PP_STATUS_ON_POOL) #商品状态
 	display_index = models.IntegerField(default=0, blank=True)  # 显示的排序
 	created_at = models.DateTimeField(auto_now_add=True)  # 添加时间
+	sync_at = models.DateTimeField(null=True, blank=True)  # 上架时间
 
 	class Meta(object):
 		verbose_name = "商品池商品"

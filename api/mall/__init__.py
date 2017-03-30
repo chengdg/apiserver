@@ -29,3 +29,4 @@ import a_product_limit_zone
 import a_order_remind
 import a_simple_product
 import a_product_sales
+import a_webapp_page_products
